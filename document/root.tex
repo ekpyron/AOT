@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
 
 % further packages required for unusual symbols (see also
@@ -31,10 +31,10 @@
 \isabellestyle{it}
 
 % for uniform font size
-\renewcommand{\isastyle}{\isastyleminor}
+\renewcommand{\isastyleminor}{\isastyle}
 
 % theorem environments
-\newtheorem*{remark}{Remark}
+\newtheorem{remark}{Remark}
 \newtheorem{TODO}{TODO}
 
 \begin{document}
@@ -42,7 +42,13 @@
 \title{Embedding of the Theory of Abstract Objects in Isabelle/HOL}
 \author{Daniel Kirchner}
 \maketitle
-
+\abstract{
+This document constitutes a core contribution of the MSc project of
+Daniel Kirchner. The supervisor of this project is Christoph
+Benzmüller. The project idea results from an ongoing collaboration
+between Benzmüller and Zalta since 2015 and from the Computational
+Metaphysics lecture course held at FU Berlin in 2016.
+}
 \tableofcontents
 
 % sane default for proof documents

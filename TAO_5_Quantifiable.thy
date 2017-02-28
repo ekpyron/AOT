@@ -1,34 +1,43 @@
+(*<*)
 theory TAO_5_Quantifiable
 imports TAO_4_MetaSolver
 begin
+(*>*)
 
 section{* General Quantification *}
 
-text{* In order to define general quantifiers that can act
-        on all variable types a type class is introduced
-        which assumes the semantics of the all quantifier.
-        This type class is then instantiated for all variable
-        types. *}
+text{*
+\begin{remark}
+  In order to define general quantifiers that can act
+  on all variable types a type class is introduced
+  which assumes the semantics of the all quantifier.
+  This type class is then instantiated for all variable
+  types.
+\end{remark}
+*}
 
 subsection{* Type Class *}
 
-text{* datatype for types for which quantification is defined *}
+text{* Datatype for types for which quantification is defined: *}
+
 datatype var = \<nu>var (var\<nu>: \<nu>) | \<o>var (var\<o>: \<o>) | \<Pi>\<^sub>1var (var\<Pi>\<^sub>1: \<Pi>\<^sub>1)
              | \<Pi>\<^sub>2var (var\<Pi>\<^sub>2: \<Pi>\<^sub>2) | \<Pi>\<^sub>3var (var\<Pi>\<^sub>3: \<Pi>\<^sub>3)
 
-text{* type class for quantifiable types *}
+text{* Type class for quantifiable types: *}
+
 class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>" [8] 9)
                        and qvar :: "'a\<Rightarrow>var"
                        and varq :: "var\<Rightarrow>'a"
-  assumes quantifiable_T8: "\<And>w \<psi> . (w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
-      and varq_qvar_id: "\<And>x. varq (qvar x) = x"
+  assumes quantifiable_T8: "(w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
+      and varq_qvar_id: "varq (qvar x) = x"
 begin
   definition exists :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<exists>" [8] 9) where
     "exists \<equiv> \<lambda> \<phi> . \<^bold>\<not>(\<^bold>\<forall> x . \<^bold>\<not>\<phi> x)"
   declare exists_def[conn_defs]
 end
 
-text{* semantics for general quantifier *}
+text{* Semantics for the general all quantifier: *}
+
 lemma (in Semantics) T8: shows "(w \<Turnstile> \<^bold>\<forall> x . \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
   using quantifiable_T8 .
 
@@ -116,12 +125,16 @@ end
 
 subsection{* MetaSolver Rules *}
 
-text{* The @{text "meta_solver"} is extended by rules for
-       general quantification. *}
+text{*
+\begin{remark}
+  The @{text "meta_solver"} is extended by rules for
+  general quantification.
+\end{remark}
+*}
 
 context MetaSolver
 begin
-  text{* Rules for general all quantification. *}
+  subsubsection{* Rules for General All Quantification. *}
   lemma AllI[meta_intro]: "(\<And>x::'a::quantifiable. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall> x. \<phi> x in v]"
     by (auto simp: Semantics.T8)
   lemma AllE[meta_elim]: "[\<^bold>\<forall>x. \<phi> x in v] \<Longrightarrow> (\<And>x::'a::quantifiable.[\<phi> x in v])"
@@ -129,7 +142,7 @@ begin
   lemma AllS[meta_subst]: "[\<^bold>\<forall>x. \<phi> x in v] = (\<forall>x::'a::quantifiable.[\<phi> x in v])"
     by (auto simp: Semantics.T8)
 
-  text{* Rules for existence. *}
+  subsubsection{* Rules for Existence *}
   lemma ExIRule: "([\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
     by (auto simp: exists_def NotS AllS)
   lemma ExI[meta_intro]: "(\<exists> y . [\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
@@ -140,6 +153,9 @@ begin
     by (auto simp: exists_def NotS AllS)
   lemma ExERule: assumes "[\<^bold>\<exists>x. \<phi> x in v]" obtains x where "[\<phi> x in v]" 
     using ExE assms by auto
-end
 
 end
+
+(*<*)
+end
+(*>*)

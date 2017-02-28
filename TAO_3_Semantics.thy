@@ -1,17 +1,23 @@
+(*<*)
 theory TAO_3_Semantics
 imports TAO_1_Embedding "~~/src/HOL/Eisbach/Eisbach"
 begin
+(*>*)
 
 section{* Semantics *}
 
 subsection{* Propositional Formulas *}
 
-text{* Our embedding extends the notion of propositional formulas
-       to functions that are propositional in the individual variables
-       that are their parameters, i.e. their parameters only occur
-       in exemplification and not in encoding subformulas. This weaker
-       condition is enough to prove the semantics of propositional
-       formulas. *}
+text{*
+\begin{remark}
+  The embedding extends the notion of propositional formulas
+  to functions that are propositional in the individual variables
+  that are their parameters, i.e. their parameters only occur
+  in exemplification and not in encoding subformulas. This weaker
+  condition is enough to prove the semantics of propositional
+  formulas.
+\end{remark}
+*}
 
 named_theorems IsPropositional_intros
 
@@ -20,17 +26,21 @@ definition IsPropositionalInX :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" 
     (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
     (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
     (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-    (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-    (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>))"
+    (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                            (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+    (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                            (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>))"
 
 lemma IsPropositionalInX_intro[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<chi>
     (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
     (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
     (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-    (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-    (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>))"
-                               unfolding IsPropositionalInX_def by blast
+    (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                            (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+    (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                            (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>))"
+  unfolding IsPropositionalInX_def by blast
 
 definition IsPropositionalInXY :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" where
   "IsPropositionalInXY \<equiv> \<lambda> \<Theta> . \<exists> \<chi> . \<Theta> = (\<lambda> x y . \<chi>
@@ -38,45 +48,60 @@ definition IsPropositionalInXY :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<
       (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
       (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
+      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
     (* only y *)
       (* one place *) (\<lambda> F . \<lparr>F,y\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,y,y\<rparr>) (\<lambda> F a . \<lparr>F,y,a\<rparr>) (\<lambda> F a . \<lparr>F,a,y\<rparr>)
       (* three place three y *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
-      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
-      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
+      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
+      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
     (* x and y *)
       (* two place *) (\<lambda> F . \<lparr>F,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,x\<rparr>)
-      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
-      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
+      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
+      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
       (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>) (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
       (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>))"
 
-lemma IsPropositionalInXY_intro[IsPropositional_intros]: "IsPropositionalInXY (\<lambda> x y . \<chi> 
+lemma IsPropositionalInXY_intro[IsPropositional_intros]:
+  "IsPropositionalInXY (\<lambda> x y . \<chi>
     (* only x *)
       (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
       (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
+      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
     (* only y *)
       (* one place *) (\<lambda> F . \<lparr>F,y\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,y,y\<rparr>) (\<lambda> F a . \<lparr>F,y,a\<rparr>) (\<lambda> F a . \<lparr>F,a,y\<rparr>)
       (* three place three y *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
-      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
-      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
+      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
+      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
     (* x and y *)
       (* two place *) (\<lambda> F . \<lparr>F,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,x\<rparr>)
-      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
-      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
-      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>) (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
-      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
+      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
+      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
+      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
+      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>))"
-                               unfolding IsPropositionalInXY_def by metis
+  unfolding IsPropositionalInXY_def by metis
 
 definition IsPropositionalInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" where
   "IsPropositionalInXYZ \<equiv> \<lambda> \<Theta> . \<exists> \<chi> . \<Theta> = (\<lambda> x y z . \<chi>
@@ -84,49 +109,66 @@ definition IsPropositionalInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\
       (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
       (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
+      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
     (* only y *)
       (* one place *) (\<lambda> F . \<lparr>F,y\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,y,y\<rparr>) (\<lambda> F a . \<lparr>F,y,a\<rparr>) (\<lambda> F a . \<lparr>F,a,y\<rparr>)
       (* three place three y *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
-      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
-      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
+      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
+      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
     (* only z *)
       (* one place *) (\<lambda> F . \<lparr>F,z\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,z,z\<rparr>) (\<lambda> F a . \<lparr>F,z,a\<rparr>) (\<lambda> F a . \<lparr>F,a,z\<rparr>)
       (* three place three z *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
-      (* three place two z *) (\<lambda> F a . \<lparr>F,z,z,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,z,z\<rparr>)
-      (* three place one z *) (\<lambda> F a b. \<lparr>F,z,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,z,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,z\<rparr>)
+      (* three place two z *) (\<lambda> F a . \<lparr>F,z,z,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,z\<rparr>)
+      (* three place one z *) (\<lambda> F a b. \<lparr>F,z,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,z,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,z\<rparr>)
     (* x and y *)
       (* two place *) (\<lambda> F . \<lparr>F,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,x\<rparr>)
-      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
-      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
-      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>) (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
-      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
+      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
+      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
+      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
+      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
     (* x and z *)
       (* two place *) (\<lambda> F . \<lparr>F,x,z\<rparr>) (\<lambda> F . \<lparr>F,z,x\<rparr>)
-      (* three place (x,z) *) (\<lambda> F a . \<lparr>F,x,z,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,x,z\<rparr>)
-      (* three place (z,x) *) (\<lambda> F a . \<lparr>F,z,x,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,z,x\<rparr>)
-      (* three place (x,x,z) *) (\<lambda> F . \<lparr>F,x,x,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,x\<rparr>) (\<lambda> F . \<lparr>F,z,x,x\<rparr>)
-      (* three place (x,z,z) *) (\<lambda> F . \<lparr>F,x,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,x,z\<rparr>) (\<lambda> F . \<lparr>F,z,z,x\<rparr>)
+      (* three place (x,z) *) (\<lambda> F a . \<lparr>F,x,z,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,z\<rparr>)
+      (* three place (z,x) *) (\<lambda> F a . \<lparr>F,z,x,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,x\<rparr>)
+      (* three place (x,x,z) *) (\<lambda> F . \<lparr>F,x,x,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,x\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,x,x\<rparr>)
+      (* three place (x,z,z) *) (\<lambda> F . \<lparr>F,x,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,x,z\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,z,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (z,z,z) *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
     (* y and z *)
       (* two place *) (\<lambda> F . \<lparr>F,y,z\<rparr>) (\<lambda> F . \<lparr>F,z,y\<rparr>)
-      (* three place (y,z) *) (\<lambda> F a . \<lparr>F,y,z,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,y,z\<rparr>)
-      (* three place (z,y) *) (\<lambda> F a . \<lparr>F,z,y,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,z,y\<rparr>)
-      (* three place (y,y,z) *) (\<lambda> F . \<lparr>F,y,y,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,y\<rparr>)
-      (* three place (y,z,z) *) (\<lambda> F . \<lparr>F,y,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,y,z\<rparr>) (\<lambda> F . \<lparr>F,z,z,y\<rparr>)
+      (* three place (y,z) *) (\<lambda> F a . \<lparr>F,y,z,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,z\<rparr>)
+      (* three place (z,y) *) (\<lambda> F a . \<lparr>F,z,y,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,y\<rparr>)
+      (* three place (y,y,z) *) (\<lambda> F . \<lparr>F,y,y,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,y\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,y,y\<rparr>)
+      (* three place (y,z,z) *) (\<lambda> F . \<lparr>F,y,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,y,z\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,z,y\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
       (* three place (z,z,z) *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
     (* x y z *)
       (* three place (x,...) *) (\<lambda> F . \<lparr>F,x,y,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,y\<rparr>)
       (* three place (y,...) *) (\<lambda> F . \<lparr>F,y,x,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,x\<rparr>)
-      (* three place (z,...) *) (\<lambda> F . \<lparr>F,z,x,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,x\<rparr>)
-)"
+      (* three place (z,...) *) (\<lambda> F . \<lparr>F,z,x,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,x\<rparr>))"
 
 lemma IsPropositionalInXYZ_intro[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<chi>
@@ -134,50 +176,72 @@ lemma IsPropositionalInXYZ_intro[IsPropositional_intros]:
       (* one place *) (\<lambda> F . \<lparr>F,x\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,x,x\<rparr>) (\<lambda> F a . \<lparr>F,x,a\<rparr>) (\<lambda> F a . \<lparr>F,a,x\<rparr>)
       (* three place three x *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
-      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
-      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
+      (* three place two x *) (\<lambda> F a . \<lparr>F,x,x,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,x\<rparr>)
+      (* three place one x *) (\<lambda> F a b. \<lparr>F,x,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,x,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,x\<rparr>)
     (* only y *)
       (* one place *) (\<lambda> F . \<lparr>F,y\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,y,y\<rparr>) (\<lambda> F a . \<lparr>F,y,a\<rparr>) (\<lambda> F a . \<lparr>F,a,y\<rparr>)
       (* three place three y *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
-      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
-      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
+      (* three place two y *) (\<lambda> F a . \<lparr>F,y,y,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,y\<rparr>)
+      (* three place one y *) (\<lambda> F a b. \<lparr>F,y,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,y,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,y\<rparr>)
     (* only z *)
       (* one place *) (\<lambda> F . \<lparr>F,z\<rparr>)
       (* two place *) (\<lambda> F . \<lparr>F,z,z\<rparr>) (\<lambda> F a . \<lparr>F,z,a\<rparr>) (\<lambda> F a . \<lparr>F,a,z\<rparr>)
       (* three place three z *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
-      (* three place two z *) (\<lambda> F a . \<lparr>F,z,z,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,z,z\<rparr>)
-      (* three place one z *) (\<lambda> F a b. \<lparr>F,z,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,z,b\<rparr>) (\<lambda> F a b . \<lparr>F,a,b,z\<rparr>)
+      (* three place two z *) (\<lambda> F a . \<lparr>F,z,z,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,z\<rparr>)
+      (* three place one z *) (\<lambda> F a b. \<lparr>F,z,a,b\<rparr>) (\<lambda> F a b. \<lparr>F,a,z,b\<rparr>)
+                              (\<lambda> F a b . \<lparr>F,a,b,z\<rparr>)
     (* x and y *)
       (* two place *) (\<lambda> F . \<lparr>F,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,x\<rparr>)
-      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
-      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
-      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>) (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
-      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>) (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
+      (* three place (x,y) *) (\<lambda> F a . \<lparr>F,x,y,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,y\<rparr>)
+      (* three place (y,x) *) (\<lambda> F a . \<lparr>F,y,x,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,x\<rparr>)
+      (* three place (x,x,y) *) (\<lambda> F . \<lparr>F,x,x,y\<rparr>) (\<lambda> F . \<lparr>F,x,y,x\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,x,x\<rparr>)
+      (* three place (x,y,y) *) (\<lambda> F . \<lparr>F,x,y,y\<rparr>) (\<lambda> F . \<lparr>F,y,x,y\<rparr>)
+                                (\<lambda> F . \<lparr>F,y,y,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
     (* x and z *)
       (* two place *) (\<lambda> F . \<lparr>F,x,z\<rparr>) (\<lambda> F . \<lparr>F,z,x\<rparr>)
-      (* three place (x,z) *) (\<lambda> F a . \<lparr>F,x,z,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,x,z\<rparr>)
-      (* three place (z,x) *) (\<lambda> F a . \<lparr>F,z,x,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,x\<rparr>) (\<lambda> F a . \<lparr>F,a,z,x\<rparr>)
-      (* three place (x,x,z) *) (\<lambda> F . \<lparr>F,x,x,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,x\<rparr>) (\<lambda> F . \<lparr>F,z,x,x\<rparr>)
-      (* three place (x,z,z) *) (\<lambda> F . \<lparr>F,x,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,x,z\<rparr>) (\<lambda> F . \<lparr>F,z,z,x\<rparr>)
+      (* three place (x,z) *) (\<lambda> F a . \<lparr>F,x,z,a\<rparr>) (\<lambda> F a . \<lparr>F,x,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,x,z\<rparr>)
+      (* three place (z,x) *) (\<lambda> F a . \<lparr>F,z,x,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,x\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,x\<rparr>)
+      (* three place (x,x,z) *) (\<lambda> F . \<lparr>F,x,x,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,x\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,x,x\<rparr>)
+      (* three place (x,z,z) *) (\<lambda> F . \<lparr>F,x,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,x,z\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,z,x\<rparr>)
       (* three place (x,x,x) *) (\<lambda> F . \<lparr>F,x,x,x\<rparr>)
       (* three place (z,z,z) *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
     (* y and z *)
       (* two place *) (\<lambda> F . \<lparr>F,y,z\<rparr>) (\<lambda> F . \<lparr>F,z,y\<rparr>)
-      (* three place (y,z) *) (\<lambda> F a . \<lparr>F,y,z,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,z\<rparr>) (\<lambda> F a . \<lparr>F,a,y,z\<rparr>)
-      (* three place (z,y) *) (\<lambda> F a . \<lparr>F,z,y,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,y\<rparr>) (\<lambda> F a . \<lparr>F,a,z,y\<rparr>)
-      (* three place (y,y,z) *) (\<lambda> F . \<lparr>F,y,y,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,y\<rparr>)
-      (* three place (y,z,z) *) (\<lambda> F . \<lparr>F,y,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,y,z\<rparr>) (\<lambda> F . \<lparr>F,z,z,y\<rparr>)
+      (* three place (y,z) *) (\<lambda> F a . \<lparr>F,y,z,a\<rparr>) (\<lambda> F a . \<lparr>F,y,a,z\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,y,z\<rparr>)
+      (* three place (z,y) *) (\<lambda> F a . \<lparr>F,z,y,a\<rparr>) (\<lambda> F a . \<lparr>F,z,a,y\<rparr>)
+                              (\<lambda> F a . \<lparr>F,a,z,y\<rparr>)
+      (* three place (y,y,z) *) (\<lambda> F . \<lparr>F,y,y,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,y\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,y,y\<rparr>)
+      (* three place (y,z,z) *) (\<lambda> F . \<lparr>F,y,z,z\<rparr>) (\<lambda> F . \<lparr>F,z,y,z\<rparr>)
+                                (\<lambda> F . \<lparr>F,z,z,y\<rparr>)
       (* three place (y,y,y) *) (\<lambda> F . \<lparr>F,y,y,y\<rparr>)
       (* three place (z,z,z) *) (\<lambda> F . \<lparr>F,z,z,z\<rparr>)
     (* x y z *)
       (* three place (x,...) *) (\<lambda> F . \<lparr>F,x,y,z\<rparr>) (\<lambda> F . \<lparr>F,x,z,y\<rparr>)
       (* three place (y,...) *) (\<lambda> F . \<lparr>F,y,x,z\<rparr>) (\<lambda> F . \<lparr>F,y,z,x\<rparr>)
-      (* three place (z,...) *) (\<lambda> F . \<lparr>F,z,x,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,x\<rparr>)
-)"
-                      unfolding IsPropositionalInXYZ_def by metis (* takes a long time *)
+      (* three place (z,...) *) (\<lambda> F . \<lparr>F,z,x,y\<rparr>) (\<lambda> F . \<lparr>F,z,y,x\<rparr>))"
+  unfolding IsPropositionalInXYZ_def by metis (* takes a long time *)
+
+named_theorems IsPropositionalIn_defs
+declare IsPropositionalInX_def[IsPropositionalIn_defs]
+        IsPropositionalInXY_def[IsPropositionalIn_defs]
+        IsPropositionalInXYZ_def[IsPropositionalIn_defs]
 
 subsection{* Semantics *}
 
@@ -194,7 +258,8 @@ begin
   type_synonym W = i
 
   text{* Denotations of the terms in the language. *}
-  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is "\<lambda> x . (if fst x then Some (snd x) else None)" .
+  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is
+    "\<lambda> x . (if fst x then Some (snd x) else None)" .
   lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
   lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is Some .
   lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
@@ -203,7 +268,7 @@ begin
   text{* Designated actual world. *}
   definition w\<^sub>0 where "w\<^sub>0 \<equiv> dw"
 
-  text{* exemplification extensions *}
+  text{* Exemplification extensions. *}
 
   definition ex0 :: "R\<^sub>0\<Rightarrow>W\<Rightarrow>bool"
     where "ex0 \<equiv> \<lambda> F . F dj"
@@ -214,29 +279,50 @@ begin
   definition ex3 :: "R\<^sub>3\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
     where "ex3 \<equiv> \<lambda> F w . { (x,y,z) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) dj w }"
 
-  text{* encoding extensions *}
+  text{* Encoding extensions. *}
 
   definition en :: "R\<^sub>1\<Rightarrow>(R\<^sub>\<kappa> set)"
-    where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> make\<Pi>\<^sub>1 (\<lambda> x . F x) \<in> y | _ \<Rightarrow> False }"
+    where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> make\<Pi>\<^sub>1 (\<lambda> x . F x) \<in> y
+                                       | _ \<Rightarrow> False }"
 
-  text{* semantics for exemplification and encoding *}
+  text{* Collect definitions. *}
+  named_theorems semantics_defs
+  declare d\<^sub>0_def[semantics_defs] d\<^sub>1_def[semantics_defs]
+          d\<^sub>2_def[semantics_defs] d\<^sub>3_def[semantics_defs]
+          ex0_def[semantics_defs] ex1_def[semantics_defs]
+          ex2_def[semantics_defs] ex3_def[semantics_defs]
+          en_def[semantics_defs] d\<^sub>\<kappa>_def[semantics_defs]
+          w\<^sub>0_def[semantics_defs]
 
-  lemma T1_1[semantics]: "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
-    by (simp add: meta_defs meta_aux ex1_def d\<^sub>1_def d\<^sub>\<kappa>_def denotation_def meta_denotes_def)
-  lemma T1_2[semantics]: "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
-                                                    \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
-    by (simp add: meta_defs meta_aux ex2_def d\<^sub>2_def d\<^sub>\<kappa>_def denotation_def meta_denotes_def)
-  lemma T1_3[semantics]: "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
-                                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
-    by (simp add: meta_defs meta_aux ex3_def d\<^sub>3_def d\<^sub>\<kappa>_def denotation_def meta_denotes_def)
+  text{* Semantics for exemplification and encoding. *}
 
-  lemma T2[semantics]: "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
-    by (simp add: meta_defs meta_aux en_def d\<^sub>1_def d\<^sub>\<kappa>_def denotation_def meta_denotes_def split: \<nu>.split)
+  lemma T1_1[semantics]:
+    "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
+    unfolding semantics_defs
+    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+  lemma T1_2[semantics]:
+    "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
+                               \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
+    unfolding semantics_defs
+    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+  lemma T1_3[semantics]:
+    "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
+                                    \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
+                                    \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
+    unfolding semantics_defs
+    by (simp add: meta_defs meta_aux denotation_def denotes_def)
 
-  lemma T3[semantics]: "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
-    by (simp add: meta_defs meta_aux ex0_def d\<^sub>0_def)
+  lemma T2[semantics]:
+    "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
+    unfolding semantics_defs
+    by (simp add: meta_defs meta_aux denotation_def denotes_def split: \<nu>.split)
 
-  text{* semantics for connectives and quantifiers *}
+  lemma T3[semantics]:
+    "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
+    unfolding semantics_defs
+    by (simp add: meta_defs meta_aux)
+
+  text{* Semantics for connectives and quantifiers. *}
 
   lemma T4[semantics]: "(w \<Turnstile> \<^bold>\<not>\<psi>) = (\<not>(w \<Turnstile> \<psi>))"
     by (simp add: meta_defs meta_aux)
@@ -268,11 +354,13 @@ begin
   lemma T8_\<o>[semantics]: "(w \<Turnstile> \<^bold>\<forall>\<^sub>\<o> x. \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
     by (simp add: meta_defs meta_aux)
 
-  text{* semantics for descriptions and lambda expressions *}
+  text{* Semantics for descriptions and lambda expressions. *}
 
-  lemma D3[semantics]: "d\<^sub>\<kappa> (\<^bold>\<iota>x . \<psi> x) = (if (\<exists>x . (w\<^sub>0 \<Turnstile> \<psi> x) \<and> (\<forall> y . (w\<^sub>0  \<Turnstile> \<psi> y) \<longrightarrow> y = x))
-                                         then (Some (THE x . (w\<^sub>0 \<Turnstile> \<psi> x))) else None)"
-    by (auto simp: meta_defs meta_aux d\<^sub>\<kappa>_def w\<^sub>0_def)
+  lemma D3[semantics]:
+    "d\<^sub>\<kappa> (\<^bold>\<iota>x . \<psi> x) = (if (\<exists>x . (w\<^sub>0 \<Turnstile> \<psi> x) \<and> (\<forall> y . (w\<^sub>0  \<Turnstile> \<psi> y) \<longrightarrow> y = x))
+                      then (Some (THE x . (w\<^sub>0 \<Turnstile> \<psi> x))) else None)"
+    unfolding semantics_defs
+    by (auto simp: meta_defs meta_aux)
 
   lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) = d\<^sub>1 F"
     by (simp add: meta_defs meta_aux)
@@ -283,39 +371,55 @@ begin
   lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)) = d\<^sub>3 F"
     by (simp add: meta_defs meta_aux)
 
-  lemma [simp]: "fst (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P))"
-    apply transfer by simp
-  lemma [simp]: "(\<nu>\<upsilon> (snd (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> (snd (eval\<kappa> x)))"
-    apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id by auto
+  lemma D5_1[semantics]:
+    assumes "IsPropositionalInX \<phi>"
+    shows "\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
+                      \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = (w \<Turnstile> \<phi> x)"
+    using assms unfolding IsPropositionalIn_defs semantics_defs
+    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
 
-  lemma D5_1[semantics]: "IsPropositionalInX \<phi> \<Longrightarrow> (\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = (w \<Turnstile> \<phi> x))"
-    unfolding IsPropositionalInX_def
-    by (auto simp: ex1_def ex2_def meta_defs meta_aux d\<^sub>2_def d\<^sub>1_def d\<^sub>\<kappa>_def meta_denotes_def denotation_def)
+  lemma D5_2[semantics]:
+    assumes "IsPropositionalInXY \<phi>"
+    shows "\<And> w o\<^sub>1 o\<^sub>2 r . Some r = d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P)))
+                       \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
+                       \<longrightarrow> ((o\<^sub>1,o\<^sub>2) \<in> ex2 r w) = (w \<Turnstile> \<phi> x y)"
+    using assms unfolding IsPropositionalIn_defs semantics_defs
+    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
 
-  lemma D5_2[semantics]: "IsPropositionalInXY \<phi> \<Longrightarrow> (\<And> w o\<^sub>1 o\<^sub>2 r . Some r = d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<longrightarrow> ((o\<^sub>1,o\<^sub>2) \<in> ex2 r w) = (w \<Turnstile> \<phi> x y))"
-    unfolding IsPropositionalInX_def IsPropositionalInXY_def
-    by (auto simp: ex1_def ex2_def meta_defs meta_aux d\<^sub>2_def d\<^sub>1_def d\<^sub>\<kappa>_def meta_denotes_def denotation_def)
-
-  lemma D5_3[semantics]: "IsPropositionalInXYZ \<phi> \<Longrightarrow> (\<And> w o\<^sub>1 o\<^sub>2 o\<^sub>3 r . Some r = d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z \<longrightarrow> ((o\<^sub>1,o\<^sub>2,o\<^sub>3) \<in> ex3 r w) = (w \<Turnstile> \<phi> x y z))"
-    unfolding IsPropositionalInX_def IsPropositionalInXY_def  IsPropositionalInXYZ_def
-    by (auto simp: ex1_def ex2_def ex3_def meta_defs meta_aux d\<^sub>3_def d\<^sub>2_def d\<^sub>1_def d\<^sub>\<kappa>_def meta_denotes_def denotation_def)
+  lemma D5_3[semantics]:
+    assumes "IsPropositionalInXYZ \<phi>"
+    shows "\<And> w o\<^sub>1 o\<^sub>2 o\<^sub>3 r . Some r = d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)))
+                          \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
+                          \<longrightarrow> ((o\<^sub>1,o\<^sub>2,o\<^sub>3) \<in> ex3 r w) = (w \<Turnstile> \<phi> x y z)"
+    using assms unfolding IsPropositionalIn_defs semantics_defs
+    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
 
   lemma D6[semantics]: "(\<And> w r . Some r = d\<^sub>0 (\<^bold>\<lambda>\<^sup>0 \<phi>) \<longrightarrow> ex0 r w = (w \<Turnstile> \<phi>))"
-    by (auto simp: ex0_def meta_defs meta_aux d\<^sub>0_def)
+    by (auto simp: meta_defs meta_aux semantics_defs)
 
-  text{* auxiliary lemmata *}
+  text{* Auxiliary lemmata. *}
 
-  lemma propex\<^sub>1: "\<exists> r . Some r = d\<^sub>1 F" unfolding d\<^sub>1_def by simp
-  lemma d\<^sub>1_inject: "\<And>x y. d\<^sub>1 x = d\<^sub>1 y \<Longrightarrow> x = y" unfolding d\<^sub>1_def by (simp add: eval\<Pi>\<^sub>1_inject)
+  lemma propex\<^sub>1: "\<exists> r . Some r = d\<^sub>1 F"
+    unfolding d\<^sub>1_def by simp
+  lemma d\<^sub>1_inject: "\<And>x y. d\<^sub>1 x = d\<^sub>1 y \<Longrightarrow> x = y"
+    unfolding d\<^sub>1_def by (simp add: eval\<Pi>\<^sub>1_inject)
   lemma d\<^sub>\<kappa>_inject: "\<And>x y o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y \<Longrightarrow> x = y"
   proof -
     fix x :: \<kappa> and y :: \<kappa> and o\<^sub>1 :: \<nu>
     assume "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y"
-    moreover then have "fst (eval\<kappa> x) \<and> fst (eval\<kappa> y) \<and> snd (eval\<kappa> x) = o\<^sub>1 \<and> snd (eval\<kappa> x) = o\<^sub>1"
-      unfolding d\<^sub>\<kappa>_def apply transfer apply simp by (metis option.distinct(1) option.inject)
-    ultimately show "x = y" unfolding d\<^sub>\<kappa>_def apply transfer by auto
+    moreover hence
+      "fst (eval\<kappa> x) \<and> fst (eval\<kappa> y) \<and> snd (eval\<kappa> x) = o\<^sub>1 \<and> snd (eval\<kappa> x) = o\<^sub>1"
+      unfolding d\<^sub>\<kappa>_def
+      apply transfer
+      apply simp
+      by (metis option.distinct(1) option.inject)
+    ultimately show "x = y"
+      unfolding d\<^sub>\<kappa>_def
+      apply transfer
+      by auto
   qed
-  lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u" unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
+  lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
+    unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
 end
 
 subsection{* Validity Syntax *}
@@ -331,4 +435,6 @@ abbreviation actual_validity :: "\<o>\<Rightarrow>bool" ("[_]" [1]) where
 abbreviation necessary_validity :: "\<o>\<Rightarrow>bool" ("\<box>[_]" [1]) where
   "necessary_validity \<equiv> \<lambda> \<phi> . \<forall> v . (v \<Turnstile> \<phi>)"
 
+(*<*)
 end
+(*>*)

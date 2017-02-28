@@ -1,22 +1,30 @@
+(*<*)
 theory TAO_6_Identifiable
 imports TAO_5_Quantifiable
 begin
+(*>*)
 
 section{* General Identity *}
 
-text{* In order to define a general identity symbol that can act
-        on all types of terms a type class is introduced
-        which assumes the substitution property of equality which
-        is needed to state the axioms later.
-        This type class is then instantiated for all applicable types. *}
+text{*
+\begin{remark}
+  In order to define a general identity symbol that can act
+  on all types of terms a type class is introduced
+  which assumes the substitution property of equality which
+  is needed to state the axioms later.
+  This type class is then instantiated for all applicable types.
+\end{remark}
+*}
 
 subsection{* Type Classes *}
 
 class identifiable =
 fixes identity :: "'a\<Rightarrow>'a\<Rightarrow>\<o>" (infixl "\<^bold>=" 63)
-assumes identifiable_identity: "\<And> (x::'a) (y::'a) w \<phi> . (w \<Turnstile> x \<^bold>= y) \<Longrightarrow> (w \<Turnstile> \<phi> x) = (w \<Turnstile> \<phi> y)"
+assumes l_identity:
+  "w \<Turnstile> x \<^bold>= y \<Longrightarrow> w \<Turnstile> \<phi> x \<Longrightarrow> w \<Turnstile> \<phi> y"
 begin
-  abbreviation notequal (infixl "\<^bold>\<noteq>" 63) where "notequal \<equiv> \<lambda> x y . \<^bold>\<not>(x \<^bold>= y)"
+  abbreviation notequal (infixl "\<^bold>\<noteq>" 63) where
+    "notequal \<equiv> \<lambda> x y . \<^bold>\<not>(x \<^bold>= y)"
 end
 
 class quantifiable_and_identifiable = quantifiable + identifiable
@@ -34,8 +42,9 @@ begin
   definition identity_\<kappa> where "identity_\<kappa> \<equiv> basic_identity\<^sub>\<kappa>"
   instance proof
     fix x y :: \<kappa> and w \<phi>
-    show "[x \<^bold>= y in w] \<Longrightarrow> [\<phi> x in w] = [\<phi> y in w]"
-      unfolding identity_\<kappa>_def using MetaSolver.Eq\<kappa>_prop .
+    show "[x \<^bold>= y in w] \<Longrightarrow> [\<phi> x in w] \<Longrightarrow> [\<phi> y in w]"
+      unfolding identity_\<kappa>_def
+      using MetaSolver.Eq\<kappa>_prop ..
   qed
 end
 
@@ -45,10 +54,14 @@ begin
   instance proof
     fix \<alpha> :: \<nu> and \<beta> :: \<nu> and v \<phi>
     assume "v \<Turnstile> \<alpha> \<^bold>= \<beta>"
-    hence "v \<Turnstile> \<alpha>\<^sup>P \<^bold>= \<beta>\<^sup>P" unfolding identity_\<nu>_def by auto
-    hence "\<And>\<phi>.(v \<Turnstile> \<phi> (\<alpha>\<^sup>P)) = (v \<Turnstile> \<phi> (\<beta>\<^sup>P))" using identifiable_identity by auto
-    hence "(v \<Turnstile> \<phi> (denotation (\<alpha>\<^sup>P))) = (v \<Turnstile> \<phi> (denotation (\<beta>\<^sup>P)))" by meson
-    thus "(v \<Turnstile> \<phi> \<alpha>) = (v \<Turnstile> \<phi> \<beta>)" by (simp only: proper_denotation)
+    hence "v \<Turnstile> \<alpha>\<^sup>P \<^bold>= \<beta>\<^sup>P"
+      unfolding identity_\<nu>_def by auto
+    hence "\<And>\<phi>.(v \<Turnstile> \<phi> (\<alpha>\<^sup>P)) \<Longrightarrow> (v \<Turnstile> \<phi> (\<beta>\<^sup>P))"
+      using l_identity by auto
+    hence "(v \<Turnstile> \<phi> (denotation (\<alpha>\<^sup>P))) \<Longrightarrow> (v \<Turnstile> \<phi> (denotation (\<beta>\<^sup>P)))"
+      by meson
+    thus "(v \<Turnstile> \<phi> \<alpha>) \<Longrightarrow> (v \<Turnstile> \<phi> \<beta>)"
+      by (simp only: proper_denotation)
   qed
 end
 
@@ -57,8 +70,8 @@ begin
   definition identity_\<Pi>\<^sub>1 where "identity_\<Pi>\<^sub>1 \<equiv> basic_identity\<^sub>1"
   instance proof
     fix F G :: \<Pi>\<^sub>1 and w \<phi>
-    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) = (w \<Turnstile> \<phi> G)"
-      unfolding identity_\<Pi>\<^sub>1_def using MetaSolver.Eq\<^sub>1_prop .
+    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) \<Longrightarrow> (w \<Turnstile> \<phi> G)"
+      unfolding identity_\<Pi>\<^sub>1_def using MetaSolver.Eq\<^sub>1_prop ..
   qed
 end
 
@@ -67,8 +80,8 @@ begin
   definition identity_\<Pi>\<^sub>2 where "identity_\<Pi>\<^sub>2 \<equiv> basic_identity\<^sub>2"
   instance proof
     fix F G :: \<Pi>\<^sub>2 and w \<phi>
-    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) = (w \<Turnstile> \<phi> G)"
-      unfolding identity_\<Pi>\<^sub>2_def using MetaSolver.Eq\<^sub>2_prop .
+    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) \<Longrightarrow> (w \<Turnstile> \<phi> G)"
+      unfolding identity_\<Pi>\<^sub>2_def using MetaSolver.Eq\<^sub>2_prop ..
   qed
 end
 
@@ -77,8 +90,8 @@ begin
   definition identity_\<Pi>\<^sub>3 where "identity_\<Pi>\<^sub>3 \<equiv> basic_identity\<^sub>3"
   instance proof
     fix F G :: \<Pi>\<^sub>3 and w \<phi>
-    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) = (w \<Turnstile> \<phi> G)"
-      unfolding identity_\<Pi>\<^sub>3_def using MetaSolver.Eq\<^sub>3_prop .
+    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) \<Longrightarrow> (w \<Turnstile> \<phi> G)"
+      unfolding identity_\<Pi>\<^sub>3_def using MetaSolver.Eq\<^sub>3_prop ..
   qed
 end
 
@@ -87,8 +100,8 @@ begin
   definition identity_\<o> where "identity_\<o> \<equiv> basic_identity\<^sub>\<o>"
   instance proof
     fix F G :: \<o> and w \<phi>
-    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) = (w \<Turnstile> \<phi> G)"
-      unfolding identity_\<o>_def using MetaSolver.Eq\<^sub>\<o>_prop .
+    show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) \<Longrightarrow> (w \<Turnstile> \<phi> G)"
+      unfolding identity_\<o>_def using MetaSolver.Eq\<^sub>\<o>_prop ..
   qed
 end
 
@@ -100,9 +113,13 @@ instance \<o> :: quantifiable_and_identifiable ..
 
 subsection{* New Identity Definitions *}
 
-text{* The basic definitions of identity used the type specific quantifiers
-       and identities. We now introduce equivalent alternative definitions that
-       use the general identity and general quantifiers. *}
+text{*
+\begin{remark}
+  The basic definitions of identity used the type specific quantifiers
+  and identities. We now introduce equivalent alternative definitions that
+  use the general identity and general quantifiers.
+\end{remark}
+*}
 
 named_theorems identity_defs
 lemma identity\<^sub>E_def[identity_defs]:
@@ -131,4 +148,6 @@ lemma identity\<^sub>3_def[identity_defs]:
 lemma identity\<^sub>\<o>_def[identity_defs]: "op \<^bold>= \<equiv> \<lambda>F G. (\<^bold>\<lambda>y. F) \<^bold>= (\<^bold>\<lambda>y. G)"
   unfolding identity_\<o>_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>\<o>_def by simp
 
+(*<*)
 end
+(*>*)
