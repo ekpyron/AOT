@@ -17,3 +17,13 @@ session "TAO" = "HOL" +
 	TAO_99_Sanity_Tests
   document_files
     "root.tex"
+
+session "Results" = "TAO" +
+  options [document = pdf, document_output = "results", show_question_marks = false, names_short = true]
+  theories [document = false]
+  theories
+	Results
+  document_files (in results)
+    "root.tex"
+	"root.bib"
+	"external.aux"
