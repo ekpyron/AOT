@@ -13,6 +13,7 @@ session "TAO" = "HOL" +
 	TAO_7_Axioms
 	TAO_8_Definitions
 	TAO_9_PLM
+	TAO_10_PossibleWorlds
 	TAO_99_Sanity_Tests
   document_files
     "root.tex"
