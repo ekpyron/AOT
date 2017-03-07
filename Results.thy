@@ -15,7 +15,7 @@ text{*
   we were able to identify some minor issues and typographical errors during the
   formalization.
 
-  For example the follwing issue was noticed in the proof of the back implication of
+  For example the following issue was noticed in the proof of the back implication of
   theorem (\ref{PM-ord=E2}). In the current draft of Principia Metaphysica the proof states:
 
 
@@ -48,7 +48,7 @@ text{*
   The Theory of Abstract Objects has a syntactic definition of possible worlds. Besides that
   it also has a semantic notion of possible worlds (i.e. a point in the Kripke semantics).
 
-  During a discussion between Zalta and Paleo the following meta-conjecture about possible
+  During a discussion between Zalta and Woltzenlogel-Paleo the following meta-conjecture about possible
   worlds and their semantics in the Theory of Abstract Objects arose:
 
   \emph{For every syntactic possible world "w", there exists a semantic point "p" which is
