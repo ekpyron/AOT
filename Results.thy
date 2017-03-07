@@ -1,7 +1,12 @@
 (*<*)
 theory Results
-imports TAO_10_PossibleWorlds
+imports TAO_10_PossibleWorlds "~~/src/HOL/Library/LaTeXsugar" "~~/src/HOL/Library/OptionalSugar"
 begin
+(*>*)
+
+(*<*)
+notation (latex output)
+  validity_in ("[\<^raw:\embeddedstyle{>_\<^raw:}> in _]")
 (*>*)
 
 section{* Corrections for PM *}
