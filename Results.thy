@@ -21,7 +21,7 @@ text{*
 
   \emph{It suffices to prove the contrapositive.
   So assume @{text "[\<lambda>y y =\<^sub>E x] = [\<lambda>y y =\<^sub>E z]"}. Then by reasoning just given (inside the
-  reductio), @{text "x =\<^sub>E z"}.} \cite[p.~477]{PM}.
+  reductio), @{text "x =\<^sub>E z"}.} \cite[p.~765]{PM}.
 
 
   The back implication is @{text "([\<lambda>y y =\<^sub>E x] \<noteq> [\<lambda>y y =\<^sub>E z]) \<^bold>\<rightarrow> x \<noteq> z"}, though, and therefore
@@ -30,7 +30,7 @@ text{*
   in PM seems to have accidentally reversed the proof objective.
 
   Another issue in the current draft was found in the proof of theorem (\ref{PM-box-phi-a}.2).
-  The proof states: \emph{So by theorem (\ref{PM-nec-exist-!}), it follows that:} \cite[p.~483]{PM}.
+  The proof states: \emph{So by theorem (\ref{PM-nec-exist-!}), it follows that:} \cite[p.~771]{PM}.
   The correct theorem to reference is (\ref{PM-!box-desc}), though. This kind of mistake can easily
   happen and can easily be missed in a review process. In the representation in Isabelle on the other
   hand it immediately becomes apparent that the proof objective can not be solved by the stated
