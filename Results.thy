@@ -13,7 +13,7 @@ section{* Corrections for PM *}
 text{*
   Although the draft of Principia Metaphysica has a remarkably high quality
   we were able to identify some minor issues and typographical errors during the
-  formalization.
+  construction of the representation in Isabelle/HOL.
 
   For example the following issue was noticed in the proof of the back implication of
   theorem (\ref{PM-ord=E2}). In the current draft of Principia Metaphysica the proof states:
@@ -26,13 +26,13 @@ text{*
 
   The back implication is @{text "([\<lambda>y y =\<^sub>E x] \<noteq> [\<lambda>y y =\<^sub>E z]) \<^bold>\<rightarrow> x \<noteq> z"}, though, and therefore
   the contrapositive @{text "x = z \<^bold>\<rightarrow> [\<lambda>y y =\<^sub>E x] = [\<lambda>y y =\<^sub>E z]"}. This can easily be proven
-  by the substitution of identicals as demonstrated in our formalization. Nevertheless the proof
+  by the substitution of identicals as demonstrated in our representation. Nevertheless the proof
   in PM seems to have accidentally reversed the proof objective.
 
   Another issue in the current draft was found in the proof of theorem (\ref{PM-box-phi-a}.2).
   The proof states: \emph{So by theorem (\ref{PM-nec-exist-!}), it follows that:} \cite[p.~483]{PM}.
   The correct theorem to reference is (\ref{PM-!box-desc}), though. This kind of mistake can easily
-  happen and can easily be missed in a review process. In the formalization in Isabelle on the other
+  happen and can easily be missed in a review process. In the representation in Isabelle on the other
   hand it immediately becomes apparent that the proof objective can not be solved by the stated
   theorem and the correct theorem can automatically be found.
 *}
@@ -54,11 +54,11 @@ text{*
   \emph{For every syntactic possible world "w", there exists a semantic point "p" which is
         the denotation of "w".}
 
-  Using the formalization of the theory it was not only possible to immediately confirm the
+  Using the representation of the theory it was not only possible to immediately confirm the
   conjecture, but even to extend it to the more general statement that there exists a natural
   bijection between syntactic and semantic possible worlds (in fact the equivalence had already
-  independently become apparent in an earlier formalization of a proof of the fundamental theorem
-  of possible worlds in the meta-logic of the embedding).
+  independently become apparent in an earlier proof of the fundamental theorem of possible worlds
+  in the meta-logic of the embedding).
 
   Namely it is possible to show, that:
 
