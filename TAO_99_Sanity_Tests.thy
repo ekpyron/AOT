@@ -6,69 +6,62 @@ begin
 
 section{* Sanity Tests *}
 
+locale SanityTests
+begin
+  interpretation MetaSolver.
+  interpretation Semantics.
+
 subsection{* Consistency *}
 
-context
-begin
   lemma "True"
     nitpick[expect=genuine, user_axioms, satisfy]
     by auto
-end
 
 subsection{* Intensionality *}
 
-context
-begin
-    interpretation MetaSolver.
 
-    lemma "[(\<^bold>\<lambda>y. (q \<^bold>\<or> \<^bold>\<not>q)) \<^bold>= (\<^bold>\<lambda>y. (p \<^bold>\<or> \<^bold>\<not>p)) in v]"
-      unfolding identity_\<Pi>\<^sub>1_def
-      apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
-      nitpick[expect = genuine, user_axioms=true,
-              sat_solver = MiniSat_JNI,
-              card i = 2, card j = 2, card \<sigma> = 1, card \<omega> = 1,
-              card "(i \<Rightarrow> bool) \<times> i" = 4,
-              card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
-              card \<upsilon> = 2, verbose, show_all, debug]
-      oops --{* Countermodel by Nitpick *}
-    lemma "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"
-      unfolding identity_\<Pi>\<^sub>1_def
-      apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
-      nitpick[expect = genuine, user_axioms=true,
-              sat_solver = MiniSat_JNI,
-              card i = 2, card j = 2, card \<sigma> = 1,
-              card \<omega> = 1, card "(i \<Rightarrow> bool) \<times> i" = 4,
-              card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
-              card \<upsilon> = 2, verbose, show_all, debug]
-      oops --{* Countermodel by Nitpick *}
-end
+  lemma "[(\<^bold>\<lambda>y. (q \<^bold>\<or> \<^bold>\<not>q)) \<^bold>= (\<^bold>\<lambda>y. (p \<^bold>\<or> \<^bold>\<not>p)) in v]"
+    unfolding identity_\<Pi>\<^sub>1_def
+    apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
+    nitpick[expect = genuine, user_axioms=true,
+            sat_solver = MiniSat_JNI,
+            card i = 2, card j = 2, card \<sigma> = 1, card \<omega> = 1,
+            card "(i \<Rightarrow> bool) \<times> i" = 4,
+            card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
+            card \<upsilon> = 2, verbose, show_all, debug]
+    oops --{* Countermodel by Nitpick *}
+  lemma "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"
+    unfolding identity_\<Pi>\<^sub>1_def
+    apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
+    nitpick[expect = genuine, user_axioms=true,
+            sat_solver = MiniSat_JNI,
+            card i = 2, card j = 2, card \<sigma> = 1,
+            card \<omega> = 1, card "(i \<Rightarrow> bool) \<times> i" = 4,
+            card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
+            card \<upsilon> = 2, verbose, show_all, debug]
+    oops --{* Countermodel by Nitpick *}
 
 subsection{* Concreteness coindices with Object Domains *}
-context
-begin
-  private lemma OrdCheck:
+  lemma OrdCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
      (denotes x) \<and> (case (denotation x) of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
     by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
-  private lemma AbsCheck:
+  lemma AbsCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
      (denotes x) \<and> (case (denotation x) of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
     by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
-end
 
 subsection{* Justification for Meta-Logical Axioms *}
 
-context
-begin
 text{*
 \begin{remark}
   OrdinaryObjectsPossiblyConcreteAxiom is equivalent to "all ordinary objects are
    possibly concrete".
 \end{remark}
 *}
-  private lemma OrdAxiomCheck:
+  lemma OrdAxiomCheck:
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
        \<longleftrightarrow> (case x of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)))"
@@ -80,7 +73,7 @@ text{*
   necessarily not concrete".
 \end{remark}
 *}
-  private lemma AbsAxiomCheck:
+  lemma AbsAxiomCheck:
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
        \<longleftrightarrow> (case x of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)))"
@@ -92,12 +85,12 @@ text{*
   in the embedded logic.
 \end{remark}
 *}
-  private lemma PossiblyContingentObjectExistsCheck:
+  lemma PossiblyContingentObjectExistsCheck:
     "[\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>)) in v]"
      apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
      using PossiblyContingentObjectExistsAxiom
      by (metis \<nu>.simps(5) \<nu>\<upsilon>_def \<upsilon>.simps(1) no_\<sigma>\<omega>)
-  private lemma "PossiblyContingentObjectExists"
+  lemma "PossiblyContingentObjectExists"
     apply (auto simp: meta_defs)
     using PossiblyContingentObjectExistsCheck
     apply (auto simp: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
@@ -109,32 +102,27 @@ text{*
   in the embedded logic.
 \end{remark}
 *}
-  private lemma PossiblyNoContingentObjectExistsCheck:
+  lemma PossiblyNoContingentObjectExistsCheck:
     "[\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
     apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
     using PossiblyNoContingentObjectExistsAxiom by blast  
-  private lemma "PossiblyNoContingentObjectExists"
+  lemma "PossiblyNoContingentObjectExists"
     using PossiblyNoContingentObjectExistsCheck
     apply (auto simp: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
     by (metis \<upsilon>.simps(5) \<nu>\<upsilon>_\<upsilon>\<nu>_id)
-end
 
 subsection{* Relations in the Meta-Logic *}
 
-context
-begin
 text{*
 \begin{remark}
   Material equality in the embedded logic corresponds to
   equality in the actual state in the meta-logic.
 \end{remark}
 *}
-  private lemma mat_eq_is_eq_dj:
+  lemma mat_eq_is_eq_dj:
     "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v] \<longleftrightarrow>
      ((\<lambda> x . (eval\<Pi>\<^sub>1 F) x dj) = (\<lambda> x . (eval\<Pi>\<^sub>1 G) x dj))"
   proof
-    interpret MetaSolver .
-    interpret Semantics .
     assume 1: "[\<^bold>\<forall>x. \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v]"
     {
       fix v
@@ -157,8 +145,6 @@ text{*
     thus "(\<lambda>x. eval\<Pi>\<^sub>1 F x dj) = (\<lambda>x. eval\<Pi>\<^sub>1 G x dj)"
       by auto
   next
-    interpret MetaSolver .
-    interpret Semantics .
     assume 1: "(\<lambda>x. eval\<Pi>\<^sub>1 F x dj) = (\<lambda>x. eval\<Pi>\<^sub>1 G x dj)"
     {
       fix y v
@@ -186,7 +172,7 @@ text{*
   if and only if they also coincide in all other states.
 \end{remark}
 *}
-  private lemma mat_eq_is_eq_if_eq_forall_j:
+  lemma mat_eq_is_eq_if_eq_forall_j:
     assumes "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v]"
     shows "[F \<^bold>= G in v] \<longleftrightarrow>
            (\<forall> s . s \<noteq> dj \<longrightarrow> (\<forall> x . (eval\<Pi>\<^sub>1 F) x s = (eval\<Pi>\<^sub>1 G) x s))"
@@ -223,7 +209,18 @@ text{*
     by (metis (no_types) MetaSolver.Eq\<^sub>1S assms identity_\<Pi>\<^sub>1_def
                          mat_eq_is_eq_dj mat_eq_is_eq_if_eq_forall_j)
 
+subsection{* Lambda Expressions in the Meta-Logic *}
+
+  lemma lambda_impl_meta:
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v)"
+    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
+  
+  lemma meta_impl_lambda:
+    "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
+    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
+
 end
+
 (*<*)
 end
 (*>*)
