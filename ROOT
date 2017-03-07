@@ -20,10 +20,18 @@ session "TAO" = "HOL" +
 
 session "Results" = "TAO" +
   options [document = pdf, document_output = "results", show_question_marks = false, names_short = true]
-  theories [document = false]
   theories
 	Results
   document_files (in results)
+    "root.tex"
+	"root.bib"
+	"external.aux"
+
+session "Differences" = "TAO" +
+  options [document = pdf, document_output = "differences", show_question_marks = false, names_short = true]
+  theories
+	Differences
+  document_files (in differences)
     "root.tex"
 	"root.bib"
 	"external.aux"
