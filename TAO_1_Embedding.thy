@@ -41,7 +41,8 @@ text{*
   relation variables.
 \end{remark}
 *}
-typedef \<kappa> = "UNIV::(bool\<times>\<nu>) set" morphisms eval\<kappa> make\<kappa> ..
+(*typedef \<kappa> = "UNIV::(bool\<times>\<nu>) set" morphisms eval\<kappa> make\<kappa> ..*)
+typedef \<kappa> = "UNIV::(\<nu> option) set" morphisms eval\<kappa> make\<kappa> ..
 
 setup_lifting type_definition_\<o>
 setup_lifting type_definition_\<kappa>
@@ -56,9 +57,9 @@ text{*
 \end{remark}
 *}
 
-lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is "Pair True" .
-lift_definition denotes :: "\<kappa>\<Rightarrow>bool" is fst .
-lift_definition denotation :: "\<kappa>\<Rightarrow>\<nu>" is snd .
+lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
+lift_definition denotes :: "\<kappa>\<Rightarrow>bool" is "\<lambda> x . x \<noteq> None" .
+lift_definition denotation :: "\<kappa>\<Rightarrow>\<nu>" is the .
 
 subsection{* Mapping from abstract objects to special Urelements *}
 
@@ -121,8 +122,8 @@ lift_definition not :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<not>_" [54] 70) is
   "\<lambda> p s w . s = dj \<and> \<not>p dj w \<or> s \<noteq> dj \<and> (I_NOT s (p s) w)" .
 lift_definition impl :: "\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl "\<^bold>\<rightarrow>" 51) is
   "\<lambda> p q s w . s = dj \<and> (p dj w \<longrightarrow> q dj w) \<or> s \<noteq> dj \<and> (I_IMPL s (p s) (q s)) w" .
-lift_definition forall\<^sub>\<nu> :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<nu>" [8] 9) is
-  "\<lambda> \<phi> s w . \<forall> x :: \<nu> . (\<phi> x) s w" .
+lift_definition forall\<^sub>\<nu> :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<kappa>" [8] 9) is
+  "\<lambda> \<phi> s w . \<forall> x :: \<kappa> . (denotes x) \<longrightarrow> (\<phi> x) s w" .
 lift_definition forall\<^sub>0 :: "(\<Pi>\<^sub>0\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>0" [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>0 . (\<phi> x) s w" .
 lift_definition forall\<^sub>1 :: "(\<Pi>\<^sub>1\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>1" [8] 9) is
@@ -150,7 +151,7 @@ text{*
 *}
 
 lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
-  "\<lambda> \<phi> . (\<exists>! x . (\<phi> x) dj dw, THE x . (\<phi> x) dj dw)" .
+  "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw) then Some (THE x . (\<phi> x) dj dw) else None" .
 
 subsection{* Lambda Expressions *}
 
@@ -176,12 +177,12 @@ text{*
 *}
 
 lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
-lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
-  "\<lambda> \<phi> u . \<phi> (\<upsilon>\<nu> u)" .
-lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
-  "\<lambda> \<phi> u v . \<phi> (\<upsilon>\<nu> u) (\<upsilon>\<nu> v)" .
-lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
-  "\<lambda> \<phi> u v w .  \<phi> (\<upsilon>\<nu> u) (\<upsilon>\<nu> v) (\<upsilon>\<nu> w)" .
+lift_definition lambdabinder1 :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
+  "\<lambda> \<phi> u . \<phi> (Some (\<upsilon>\<nu> u))" .
+lift_definition lambdabinder2 :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
+  "\<lambda> \<phi> u v . \<phi> (Some (\<upsilon>\<nu> u)) (Some (\<upsilon>\<nu> v))" .
+lift_definition lambdabinder3 :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
+  "\<lambda> \<phi> u v w .  \<phi> (Some (\<upsilon>\<nu> u)) (Some (\<upsilon>\<nu> v)) (Some (\<upsilon>\<nu> w))" .
 
 subsection{* Validity *} 
 
@@ -280,14 +281,6 @@ lemma \<nu>\<upsilon>_\<upsilon>\<nu>_id[meta_aux]: "\<nu>\<upsilon> (\<upsilon>
 lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> (\<alpha>\<nu> x) = \<omega>\<upsilon> y)" by (simp add: \<nu>\<upsilon>_def)
 lemma no_\<sigma>\<omega>[meta_aux]: "\<not>(\<sigma>\<upsilon> x = \<omega>\<upsilon> y)" by blast
 lemma \<nu>\<upsilon>_surj[meta_aux]: "surj \<nu>\<upsilon>" using \<nu>\<upsilon>_\<upsilon>\<nu>_id surjI by blast
-lemma \<upsilon>\<nu>\<kappa>_aux1[meta_aux]:
-  "fst (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P))"
-  apply transfer
-  by simp
-lemma \<upsilon>\<nu>\<kappa>_aux2[meta_aux]:
-  "(\<nu>\<upsilon> (snd (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> (snd (eval\<kappa> x)))"
-  apply transfer
-  using \<nu>\<upsilon>_\<upsilon>\<nu>_id by auto
 
 (*<*)
 end

@@ -258,8 +258,7 @@ begin
   type_synonym W = i
 
   text{* Denotations of the terms in the language. *}
-  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is
-    "\<lambda> x . (if fst x then Some (snd x) else None)" .
+  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is id .
   lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
   lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is Some .
   lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
@@ -298,24 +297,33 @@ begin
 
   lemma T1_1[semantics]:
     "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
-    unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    unfolding semantics_defs apply simp
+    apply (simp add: meta_defs meta_aux denotation_def denotes_def) 
+    apply transfer
+    by (auto simp: meta_defs meta_aux denotation_def denotes_def) 
   lemma T1_2[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    apply (simp add: meta_defs meta_aux denotation_def denotes_def) 
+    apply transfer
+    by (auto simp: meta_defs meta_aux denotation_def denotes_def) 
   lemma T1_3[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                     \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                                     \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    apply (simp add: meta_defs meta_aux denotation_def denotes_def) 
+    apply transfer
+    by (auto simp: meta_defs meta_aux denotation_def denotes_def) 
 
   lemma T2[semantics]:
     "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def split: \<nu>.split)
+    apply (auto simp: meta_defs meta_aux denotation_def denotes_def split: \<nu>.split)
+    apply (metis \<nu>.simps(4) option.sel)
+    apply (metis \<nu>.exhaust)
+    by (metis \<nu>.exhaust option.sel)
 
   lemma T3[semantics]:
     "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
@@ -336,7 +344,7 @@ begin
   lemma T7[semantics]: "(w \<Turnstile> \<^bold>\<A>\<psi>) = (dw \<Turnstile> \<psi>)"
     by (simp add: meta_defs meta_aux)
 
-  lemma T8_\<nu>[semantics]: "(w \<Turnstile> \<^bold>\<forall>\<^sub>\<nu> x. \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
+  lemma T8_\<nu>[semantics]: "(w \<Turnstile> \<^bold>\<forall>\<^sub>\<kappa> x. \<psi> x) = (\<forall> x . (denotes x) \<longrightarrow> (w \<Turnstile> \<psi> x))"
     by (simp add: meta_defs meta_aux)
 
   lemma T8_0[semantics]: "(w \<Turnstile> \<^bold>\<forall>\<^sub>0 x. \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
@@ -357,30 +365,31 @@ begin
   text{* Semantics for descriptions and lambda expressions. *}
 
   lemma D3[semantics]:
-    "d\<^sub>\<kappa> (\<^bold>\<iota>x . \<psi> x) = (if (\<exists>x . (w\<^sub>0 \<Turnstile> \<psi> x) \<and> (\<forall> y . (w\<^sub>0  \<Turnstile> \<psi> y) \<longrightarrow> y = x))
-                      then (Some (THE x . (w\<^sub>0 \<Turnstile> \<psi> x))) else None)"
+    "d\<^sub>\<kappa> (\<^bold>\<iota>x . \<psi> x) = eval\<kappa> (\<^bold>\<iota>x . \<psi> x)"
     unfolding semantics_defs
     by (auto simp: meta_defs meta_aux)
 
-  lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) = d\<^sub>1 F"
-    by (simp add: meta_defs meta_aux)
+  lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<rparr>) = d\<^sub>1 F"
+    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_aux)
 
-  lemma D4_2[semantics]: "d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x\<^sup>P, y\<^sup>P\<rparr>)) = d\<^sub>2 F"
-    by (simp add: meta_defs meta_aux)
+  lemma D4_2[semantics]: "d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x, y\<rparr>)) = d\<^sub>2 F"
+    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_defs meta_aux)
 
-  lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)) = d\<^sub>3 F"
-    by (simp add: meta_defs meta_aux)
+  lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x, y, z\<rparr>)) = d\<^sub>3 F"
+    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_defs meta_aux)
 
+    lemma [meta_aux]: "Some o\<^sub>1 = eval\<kappa> x \<longrightarrow> (\<exists>y. eval\<kappa> x = Some y)" apply transfer by auto
+    lemma [meta_aux]: "Some o\<^sub>1 = eval\<kappa> x \<longrightarrow> ((\<nu>\<upsilon> (the (eval\<kappa> x))) = (\<nu>\<upsilon> o\<^sub>1))" apply transfer by auto
   lemma D5_1[semantics]:
     assumes "IsPropositionalInX \<phi>"
-    shows "\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
+    shows "\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                       \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = (w \<Turnstile> \<phi> x)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
     by (auto simp: meta_defs meta_aux denotes_def denotation_def)
 
   lemma D5_2[semantics]:
     assumes "IsPropositionalInXY \<phi>"
-    shows "\<And> w o\<^sub>1 o\<^sub>2 r . Some r = d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P)))
+    shows "\<And> w o\<^sub>1 o\<^sub>2 r . Some r = d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x) (y)))
                        \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
                        \<longrightarrow> ((o\<^sub>1,o\<^sub>2) \<in> ex2 r w) = (w \<Turnstile> \<phi> x y)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
@@ -388,7 +397,7 @@ begin
 
   lemma D5_3[semantics]:
     assumes "IsPropositionalInXYZ \<phi>"
-    shows "\<And> w o\<^sub>1 o\<^sub>2 o\<^sub>3 r . Some r = d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)))
+    shows "\<And> w o\<^sub>1 o\<^sub>2 o\<^sub>3 r . Some r = d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x) (y) (z)))
                           \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                           \<longrightarrow> ((o\<^sub>1,o\<^sub>2,o\<^sub>3) \<in> ex3 r w) = (w \<Turnstile> \<phi> x y z)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
@@ -408,11 +417,10 @@ begin
     fix x :: \<kappa> and y :: \<kappa> and o\<^sub>1 :: \<nu>
     assume "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y"
     moreover hence
-      "fst (eval\<kappa> x) \<and> fst (eval\<kappa> y) \<and> snd (eval\<kappa> x) = o\<^sub>1 \<and> snd (eval\<kappa> x) = o\<^sub>1"
+      "(denotes x) \<and> (denotes y) \<and> (denotation x) = o\<^sub>1 \<and> (denotation x) = o\<^sub>1"
       unfolding d\<^sub>\<kappa>_def
       apply transfer
-      apply simp
-      by (metis option.distinct(1) option.inject)
+      by auto
     ultimately show "x = y"
       unfolding d\<^sub>\<kappa>_def
       apply transfer

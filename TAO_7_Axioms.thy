@@ -127,28 +127,13 @@ text{*
 *}
 
   lemma cqt_1[axiom]:
-    "[[(\<^bold>\<forall> \<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>]]"
-    by axiom_meta_solver
-  lemma cqt_1_\<kappa>[axiom]:
-    "[[(\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>)]]"
-    proof -
-      {
-        fix v
-        assume 1: "[(\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)) in v]"
-        assume "[(\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) in v]"
-        then obtain \<beta> where 2:
-          "[(\<beta>\<^sup>P) \<^bold>= \<alpha> in v]" by (rule ExERule)
-        hence "[\<phi> (\<beta>\<^sup>P) in v]" using 1 AllE by blast
-        hence "[\<phi> \<alpha> in v]"
-          using l_identity[where \<phi>=\<phi>, axiom_instance]
-          ImplS 2 by simp
-      }
-      thus "[[(\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>)]]"
-        unfolding axiom_def using ImplI by blast
-    qed
+    "[[(\<^bold>\<forall> \<alpha> . \<phi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>)]]"
+    apply axiom_meta_solver apply auto using meta_identity by blast
+  lemma cqt_2[axiom]:
+    "[[(\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<alpha>)]]" unfolding axiom_def apply axiom_meta_solver oops
   lemma cqt_3[axiom]:
-    "[[(\<^bold>\<forall>\<alpha>. \<phi> \<alpha> \<^bold>\<rightarrow> \<psi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<forall>\<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<psi> \<alpha>))]]"
-    by axiom_meta_solver
+    "[[(\<^bold>\<forall>\<alpha>. \<phi> \<alpha> \<^bold>\<rightarrow> \<psi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<forall>\<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<psi> \<alpha>))]]" unfolding axiom_def
+    using AllS ImplS by metis
   lemma cqt_4[axiom]:
     "[[\<phi> \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<phi>)]]"
     by axiom_meta_solver

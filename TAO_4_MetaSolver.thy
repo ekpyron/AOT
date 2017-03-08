@@ -98,11 +98,11 @@ subsection{* Rules for Possibility *}
 
 subsection{* Rules for Quantification *}
 
-  lemma All\<^sub>\<nu>I[meta_intro]: "(\<And>x::\<nu>. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>\<nu> x. \<phi> x in v]"
+  lemma All\<^sub>\<kappa>I[meta_intro]: "(\<And>x::\<kappa>. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>\<kappa> x. \<phi> x in v]"
     by (auto simp: Semantics.T8_\<nu>)
-  lemma All\<^sub>\<nu>E[meta_elim]: "[\<^bold>\<forall>\<^sub>\<nu>x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<nu>.[\<phi> x in v])"
+  lemma All\<^sub>\<kappa>E[meta_elim]: "[\<^bold>\<forall>\<^sub>\<kappa> x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<kappa>. denotes x \<longrightarrow> [\<phi> x in v])"
     by (auto simp: Semantics.T8_\<nu>)
-  lemma All\<^sub>\<nu>S[meta_subst]: "[\<^bold>\<forall>\<^sub>\<nu>x. \<phi> x in v] = (\<forall>x::\<nu>.[\<phi> x in v])"
+  lemma All\<^sub>\<kappa>S[meta_subst]: "[\<^bold>\<forall>\<^sub>\<kappa>x. \<phi> x in v] = (\<forall>x::\<kappa>. denotes x \<longrightarrow> [\<phi> x in v])"
     by (auto simp: Semantics.T8_\<nu>)
 
   lemma All\<^sub>0I[meta_intro]: "(\<And>x::\<Pi>\<^sub>0. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>0 x. \<phi> x in v]"
@@ -237,16 +237,16 @@ subsection{* Rules for Being Ordinary *}
     ultimately show ?thesis
       unfolding Ordinary_def conn_defs meta_defs
       apply (simp add: meta_aux)
-      apply transfer
-      by (metis (full_types) \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5)
-                option.distinct(1) option.sel)
+      apply transfer apply (simp add: meta_aux meta_defs)
+      using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by auto
   qed
   lemma OrdE[meta_elim]:
     assumes "[\<lparr>O!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
     using assms unfolding Ordinary_def conn_defs meta_defs
     apply (simp add: meta_aux d\<^sub>\<kappa>_def denotes_def denotation_def)
-    by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6) comp_apply)
+    apply transfer
+    by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6) comp_def option.sel)
   lemma OrdS[meta_cong]:
     "[\<lparr>O!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y)"
     using OrdI OrdE by blast
@@ -261,26 +261,22 @@ subsection{* Rules for Being Abstract *}
       using assms by auto
     thus ?thesis
       unfolding Abstract_def conn_defs meta_defs
+      apply (simp add: meta_aux) apply transfer
       apply (simp add: meta_aux)
-      by (metis d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6)
-                o_apply proper_denotation proper_denotes)
+      by (metis \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6) comp_apply option.sel)
   qed
   lemma AbsE[meta_elim]:
     assumes "[\<lparr>A!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     using assms unfolding conn_defs meta_defs Abstract_def
     apply (simp add: meta_aux d\<^sub>\<kappa>_def denotes_def denotation_def)
-    by (metis OrdinaryObjectsPossiblyConcreteAxiom \<nu>.exhaust
-              \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5))
+    apply transfer
+    by (metis OrdinaryObjectsPossiblyConcreteAxiom \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5) option.sel)
   lemma AbsS[meta_cong]:
     "[\<lparr>A!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y)"
     using AbsI AbsE by blast
 
 subsection{* Rules for Definite Descriptions *}
-
-  lemma TheS: "(\<^bold>\<iota>x. \<phi> x) = make\<kappa> (\<exists>! x . eval\<o> (\<phi> x) dj dw,
-                                  THE x . eval\<o> (\<phi> x) dj dw)"
-    by (auto simp: meta_defs)
 
 
 subsection{* Rules for Identity *}
@@ -297,8 +293,8 @@ subsubsection{* Ordinary Objects *}
                 split: \<nu>.split \<upsilon>.split)
     using OrdinaryObjectsPossiblyConcreteAxiom
     apply transfer
-    apply simp
-    by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1) option.distinct(1) option.sel)
+    apply (simp add: meta_aux)
+    by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1) option.sel)
   lemma Eq\<^sub>EE[meta_elim]:
     assumes "[x \<^bold>=\<^sub>E y in v]"
     shows "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
@@ -314,10 +310,10 @@ subsubsection{* Ordinary Objects *}
     then obtain o\<^sub>1 o\<^sub>2 X Y where 3:
       "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> X \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>2 = \<omega>\<nu> Y"
       by auto
-    have "\<exists> r . Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
+    have "\<exists> r . Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z) = Some o\<^sub>1))"
       using propex\<^sub>1 by auto
     then obtain r where 4:
-      "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
+      "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z) = Some o\<^sub>1))"
       by auto
     hence 5: "r = (\<lambda>u w s. Some (\<upsilon>\<nu> u) = Some o\<^sub>1)"
       unfolding lambdabinder1_def d\<^sub>1_def d\<^sub>\<kappa>_proper
@@ -431,11 +427,12 @@ subsubsection{* One-Place Relations *}
 
   lemma Eq\<^sub>1I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>1 G in v]"
     unfolding basic_identity\<^sub>1_def
-    apply (rule BoxI, rule All\<^sub>\<nu>I, rule EquivI)
+    apply (rule BoxI, rule All\<^sub>\<kappa>I, rule EquivI)
     by simp
   lemma Eq\<^sub>1E[meta_elim]: "[F \<^bold>=\<^sub>1 G in v] \<Longrightarrow> F = G"
     unfolding basic_identity\<^sub>1_def
-    apply (drule BoxE, drule_tac x="(\<alpha>\<nu> { F })" in All\<^sub>\<nu>E, drule EquivE)
+    apply (drule BoxE) apply (drule_tac x="make\<kappa> (Some (\<alpha>\<nu> { F }))" in All\<^sub>\<kappa>E)
+    unfolding denotes_def apply (simp add: meta_aux) apply (drule EquivE)
     apply (simp add: Semantics.T2)
     unfolding en_def d\<^sub>\<kappa>_def d\<^sub>1_def
     using proper_denotation proper_denotes
@@ -449,16 +446,18 @@ subsubsection{* Two-Place Relations *}
 
   lemma Eq\<^sub>2I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>2 G in v]"
     unfolding basic_identity\<^sub>2_def
-    apply (rule All\<^sub>\<nu>I, rule ConjI, (subst Eq\<^sub>1S)+)
+    apply (rule All\<^sub>\<kappa>I, rule ConjI, (subst Eq\<^sub>1S)+)
     by simp
   lemma Eq\<^sub>2E[meta_elim]: "[F \<^bold>=\<^sub>2 G in v] \<Longrightarrow> F = G"
   proof -
     assume "[F \<^bold>=\<^sub>2 G in v]"
-    hence "[\<^bold>\<forall>\<^sub>\<nu> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
+    hence "[\<^bold>\<forall>\<^sub>\<kappa> x. (\<^bold>\<lambda>y. \<lparr>F,x,y\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x,y\<rparr>) in v]"
       unfolding basic_identity\<^sub>2_def
-      apply cut_tac apply meta_solver by auto
+      apply cut_tac apply meta_solver by (auto simp: meta_defs)
     hence "\<And>x. (make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x)) = make\<Pi>\<^sub>1 ((eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))))"
+     apply cut_tac apply (drule_tac x="make\<kappa> (Some x)" in All\<^sub>\<kappa>E)
      apply cut_tac apply meta_solver
+     apply (simp add: meta_defs meta_aux) apply transfer
      by (simp add: meta_defs meta_aux)
     hence "\<And>x. (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) = eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))"
       by (simp add: make\<Pi>\<^sub>1_inject)
@@ -479,14 +478,15 @@ subsubsection{* Three-Place Relations *}
   lemma Eq\<^sub>3E[meta_elim]: "[F \<^bold>=\<^sub>3 G in v] \<Longrightarrow> F = G"
   proof -
     assume "[F \<^bold>=\<^sub>3 G in v]"
-    hence "[\<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
-      unfolding basic_identity\<^sub>3_def apply cut_tac
-      apply meta_solver by auto
-    hence "\<And>x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) = (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
-      using Eq\<^sub>1E All\<^sub>\<nu>S by (metis (mono_tags, lifting))
+    hence "[\<^bold>\<forall>\<^sub>\<kappa> x y. (\<^bold>\<lambda>z. \<lparr>F,x,y,z\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x,y,z\<rparr>) in v]"
+      unfolding basic_identity\<^sub>3_def
+      using All\<^sub>\<kappa>S ConjS by simp
+    hence "\<And>x y. (denotes x) \<and> (denotes y) \<longrightarrow> ((\<^bold>\<lambda>z. \<lparr>F,x,y,z\<rparr>) = (\<^bold>\<lambda>z. \<lparr>G,x,y,z\<rparr>))"
+      using Eq\<^sub>1E All\<^sub>\<kappa>S by meson
     hence "\<And>x y. make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 F x y) = make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 G x y)"
       apply (auto simp: meta_defs meta_aux)
-      using \<nu>\<upsilon>_surj by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
+      using \<nu>\<upsilon>_surj apply transfer apply (auto simp: meta_aux)
+      by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id option.sel)
     thus "F = G" using make\<Pi>\<^sub>1_inject eval\<Pi>\<^sub>3_inject by blast
   qed
   lemma Eq\<^sub>3S[meta_subst]: "[F \<^bold>=\<^sub>3 G in v] = (F = G)"

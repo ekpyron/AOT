@@ -23,14 +23,14 @@ declare diamond_def[conn_defs] conj_def[conn_defs]
 
 subsection{* Abstract and Ordinary Objects *}
 
-definition Ordinary :: "\<Pi>\<^sub>1" ("O!") where "Ordinary \<equiv> \<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
-definition Abstract :: "\<Pi>\<^sub>1" ("A!") where "Abstract \<equiv> \<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
+definition Ordinary :: "\<Pi>\<^sub>1" ("O!") where "Ordinary \<equiv> \<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>"
+definition Abstract :: "\<Pi>\<^sub>1" ("A!") where "Abstract \<equiv> \<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>"
 
 subsection{* Identity Definitions *}
 
 definition basic_identity\<^sub>E::"\<Pi>\<^sub>2" where
-  "basic_identity\<^sub>E \<equiv> \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>
-                         \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>))"
+  "basic_identity\<^sub>E \<equiv> \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
+                         \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
 
 definition basic_identity\<^sub>E_infix::"\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (infixl "\<^bold>=\<^sub>E" 63) where
   "x \<^bold>=\<^sub>E y \<equiv> \<lparr>basic_identity\<^sub>E, x, y\<rparr>"
@@ -40,16 +40,16 @@ definition basic_identity\<^sub>\<kappa> (infixl "\<^bold>=\<^sub>\<kappa>" 63) 
                              \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>)"
 
 definition basic_identity\<^sub>1 (infixl "\<^bold>=\<^sub>1" 63) where
-  "basic_identity\<^sub>1 \<equiv> \<lambda> F G . \<^bold>\<box>(\<^bold>\<forall>\<^sub>\<nu> x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,G\<rbrace>)"
+  "basic_identity\<^sub>1 \<equiv> \<lambda> F G . \<^bold>\<box>(\<^bold>\<forall>\<^sub>\<kappa> x. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>x,G\<rbrace>)"
 
 definition basic_identity\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>\<Pi>\<^sub>2\<Rightarrow>\<o>" (infixl "\<^bold>=\<^sub>2" 63) where
-  "basic_identity\<^sub>2 \<equiv> \<lambda> F G .  \<^bold>\<forall>\<^sub>\<nu> x. ((\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>))
-                                  \<^bold>& ((\<^bold>\<lambda>y. \<lparr>F,y\<^sup>P,x\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,y\<^sup>P,x\<^sup>P\<rparr>))"
+  "basic_identity\<^sub>2 \<equiv> \<lambda> F G .  \<^bold>\<forall>\<^sub>\<kappa> x. ((\<^bold>\<lambda>y. \<lparr>F,x,y\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x,y\<rparr>))
+                                  \<^bold>& ((\<^bold>\<lambda>y. \<lparr>F,y,x\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,y,x\<rparr>))"
 
 definition basic_identity\<^sub>3::"\<Pi>\<^sub>3\<Rightarrow>\<Pi>\<^sub>3\<Rightarrow>\<o>" (infixl "\<^bold>=\<^sub>3" 63) where
-  "basic_identity\<^sub>3 \<equiv> \<lambda> F G . \<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>)
-                                   \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,z\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,z\<^sup>P,y\<^sup>P\<rparr>)
-                                   \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
+  "basic_identity\<^sub>3 \<equiv> \<lambda> F G . \<^bold>\<forall>\<^sub>\<kappa> x y. (\<^bold>\<lambda>z. \<lparr>F,z,x,y\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,z,x,y\<rparr>)
+                                   \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x,z,y\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x,z,y\<rparr>)
+                                   \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x,y,z\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x,y,z\<rparr>)"
 
 definition basic_identity\<^sub>\<o>::"\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl "\<^bold>=\<^sub>\<o>" 63) where
   "basic_identity\<^sub>\<o> \<equiv> \<lambda> F G . (\<^bold>\<lambda>y. F) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. G)"
