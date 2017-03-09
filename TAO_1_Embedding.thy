@@ -150,9 +150,9 @@ text{*
 \end{remark}
 *}
 
-lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
-  "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw) then Some (THE x . (\<phi> x) dj dw) else None" .
-
+lift_definition that::"(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
+(*  "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw) then (THE x . (\<phi> x) dj dw) else None" .*)
+  "\<lambda> \<phi> . if ((\<exists>! x . (\<phi> (Some x)) dj dw)) then Some (THE x . (\<phi> (Some x)) dj dw) else None" .
 subsection{* Lambda Expressions *}
 
 text{*

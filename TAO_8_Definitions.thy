@@ -19,11 +19,11 @@ begin
   definition propnot\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>\<Pi>\<^sub>0" where
     "propnot\<^sub>0 \<equiv> \<lambda> p . \<^bold>\<lambda>\<^sup>0 (\<^bold>\<not>p)"
   definition propnot\<^sub>1 where
-    "propnot\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<lambda> x . \<^bold>\<not>\<lparr>F, x\<^sup>P\<rparr>"
+    "propnot\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<lambda> x . \<^bold>\<not>\<lparr>F, x\<rparr>"
   definition propnot\<^sub>2 where
-    "propnot\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<^bold>\<not>\<lparr>F, x\<^sup>P, y\<^sup>P\<rparr>)"
+    "propnot\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<^bold>\<not>\<lparr>F, x, y\<rparr>)"
   definition propnot\<^sub>3 where
-    "propnot\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<^bold>\<not>\<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)"
+    "propnot\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<^bold>\<not>\<lparr>F, x, y, z\<rparr>)"
 end
 
 named_theorems propnot_defs
@@ -41,11 +41,11 @@ begin
   definition Necessary\<^sub>0 where
     "Necessary\<^sub>0 \<equiv> \<lambda> p . \<^bold>\<box>p"
   definition Necessary\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>\<o>" where
-    "Necessary\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x . \<lparr>F,x\<^sup>P\<rparr>)"
+    "Necessary\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x . \<lparr>F,x\<rparr>)"
   definition Necessary\<^sub>2 where
-    "Necessary\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y . \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>)"
+    "Necessary\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y . \<lparr>F,x,y\<rparr>)"
   definition Necessary\<^sub>3 where
-    "Necessary\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y z . \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
+    "Necessary\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y z . \<lparr>F,x,y,z\<rparr>)"
 end
 
 named_theorems Necessary_defs
@@ -61,11 +61,11 @@ begin
   definition Impossible\<^sub>0 where
     "Impossible\<^sub>0 \<equiv> \<lambda> p . \<^bold>\<box>\<^bold>\<not>p"
   definition Impossible\<^sub>1 where
-    "Impossible\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)"
+    "Impossible\<^sub>1 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x. \<^bold>\<not>\<lparr>F,x\<rparr>)"
   definition Impossible\<^sub>2 where
-    "Impossible\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y. \<^bold>\<not>\<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>)"
+    "Impossible\<^sub>2 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y. \<^bold>\<not>\<lparr>F,x,y\<rparr>)"
   definition Impossible\<^sub>3 where
-    "Impossible\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y z. \<^bold>\<not>\<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
+    "Impossible\<^sub>3 \<equiv> \<lambda> F . \<^bold>\<box>(\<^bold>\<forall> x y z. \<^bold>\<not>\<lparr>F,x,y,z\<rparr>)"
 end
 
 named_theorems Impossible_defs
@@ -83,7 +83,7 @@ definition ContingentlyFalse :: "\<o>\<Rightarrow>\<o>" where
   "ContingentlyFalse \<equiv> \<lambda> p . \<^bold>\<not>p \<^bold>& \<^bold>\<diamond>p"
 
 definition WeaklyContingent where
-  "WeaklyContingent \<equiv> \<lambda> F . Contingent F \<^bold>& (\<^bold>\<forall> x. \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr>)"
+  "WeaklyContingent \<equiv> \<lambda> F . Contingent F \<^bold>& (\<^bold>\<forall> x. \<^bold>\<diamond>\<lparr>F,x\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>F,x\<rparr>)"
 
 subsection{* Null and Universal Objects *}
 
@@ -93,9 +93,9 @@ definition Universal :: "\<kappa>\<Rightarrow>\<o>" where
   "Universal \<equiv> \<lambda> x . \<lparr>A!,x\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x, F\<rbrace>)"
 
 definition NullObject :: "\<kappa>" ("\<^bold>a\<^sub>\<emptyset>") where
-  "NullObject \<equiv> (\<^bold>\<iota>x . Null (x\<^sup>P))"
+  "NullObject \<equiv> (\<^bold>\<iota>x . Null (x))"
 definition UniversalObject :: "\<kappa>" ("\<^bold>a\<^sub>V") where
-  "UniversalObject \<equiv> (\<^bold>\<iota>x . Universal (x\<^sup>P))"
+  "UniversalObject \<equiv> (\<^bold>\<iota>x . Universal (x))"
 
 subsection{* Propositional Properties *}
 
@@ -105,12 +105,12 @@ definition Propositional where
 subsection{* Indiscriminate Properties *}
 
 definition Indiscriminate :: "\<Pi>\<^sub>1\<Rightarrow>\<o>" where
-  "Indiscriminate \<equiv> \<lambda> F . \<^bold>\<box>((\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<rightarrow> (\<^bold>\<forall> x . \<lparr>F,x\<^sup>P\<rparr>))"
+  "Indiscriminate \<equiv> \<lambda> F . \<^bold>\<box>((\<^bold>\<exists> x . \<lparr>F,x\<rparr>) \<^bold>\<rightarrow> (\<^bold>\<forall> x . \<lparr>F,x\<rparr>))"
 
 subsection{* Miscellaneous *}
 
 definition not_identical\<^sub>E :: "\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (infixl "\<^bold>\<noteq>\<^sub>E" 63)
-  where "not_identical\<^sub>E \<equiv> \<lambda> x y . \<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P))\<^sup>-, x, y\<rparr>"
+  where "not_identical\<^sub>E \<equiv> \<lambda> x y . \<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . x \<^bold>=\<^sub>E y))\<^sup>-, x, y\<rparr>"
 
 (*<*)
 end
