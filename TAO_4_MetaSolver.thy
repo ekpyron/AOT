@@ -293,7 +293,6 @@ subsubsection{* Ordinary Objects *}
                 split: \<nu>.split \<upsilon>.split)
     using OrdinaryObjectsPossiblyConcreteAxiom
     apply transfer
-    apply (simp add: meta_aux)
     by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1) option.sel)
   lemma Eq\<^sub>EE[meta_elim]:
     assumes "[x \<^bold>=\<^sub>E y in v]"
@@ -325,8 +324,9 @@ subsubsection{* Ordinary Objects *}
       using BoxE EquivE All\<^sub>1E by fast
     hence 7: "\<forall> v . (o\<^sub>1 \<in> ex1 r v) = (o\<^sub>2 \<in> ex1 r v)"
       using 2 4 unfolding valid_in_def
-      by (metis "3" "6" d\<^sub>1.rep_eq d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper ex1_def eval\<o>_inverse exe1.rep_eq
-          mem_Collect_eq option.sel proper_denotation proper_denotes valid_in.abs_eq)
+      by (metis (mono_tags, lifting) "3" "6" Semantics.D4_1 Semantics.d\<^sub>1_inject
+          Semantics.d\<^sub>\<kappa>_inject Semantics.d\<^sub>\<kappa>_proper \<upsilon>\<nu>_\<omega>\<upsilon>_is_\<omega>\<nu> eval\<o>_inverse
+          lambdabinder1.rep_eq option.sel valid_in.abs_eq)
     have "o\<^sub>1 \<in> ex1 r v"
       using 5 3 unfolding ex1_def by (simp add: meta_aux)
     hence "o\<^sub>2 \<in> ex1 r v"
@@ -383,8 +383,8 @@ subsubsection{* Individuals *}
         using propex\<^sub>1 d\<^sub>1_inject apply simp
         apply transfer by simp
       hence 8: "\<forall> r. (o\<^sub>1 \<in> en r) = (o\<^sub>2 \<in> en r)"
-        using 3 d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper apply simp
-        by (metis option.inject)
+        using 3 apply simp
+        by (metis (full_types) option.sel)
       hence "\<forall>r. (o\<^sub>1 \<in> r) = (o\<^sub>2 \<in> r)"
         unfolding en_def using 3
         by (metis Collect_cong Collect_mem_eq \<nu>.simps(6)
@@ -457,7 +457,6 @@ subsubsection{* Two-Place Relations *}
     hence "\<And>x. (make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x)) = make\<Pi>\<^sub>1 ((eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))))"
      apply cut_tac apply (drule_tac x="make\<kappa> (Some x)" in All\<^sub>\<kappa>E)
      apply cut_tac apply meta_solver
-     apply (simp add: meta_defs meta_aux) apply transfer
      by (simp add: meta_defs meta_aux)
     hence "\<And>x. (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) = eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))"
       by (simp add: make\<Pi>\<^sub>1_inject)

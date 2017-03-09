@@ -53,9 +53,17 @@ subsection{* (Modally Strict) Proofs and Derivations *}
   *}
 
 subsection{* GEN and RN *}
+
+  lemma proper_domain: "\<alpha>\<^sup>P \<in> domain" by (simp add: denotes.rep_eq domain_\<kappa>_def proper.rep_eq)
+  lemma proper_domain2: "\<alpha> \<in> domain \<Longrightarrow> \<exists> \<beta> . \<alpha> = (\<beta>\<^sup>P)" using denotes.rep_eq domain_\<kappa>_def eval\<kappa>_inject proper.rep_eq by fastforce
+
+  lemma rule_gen_\<kappa>[PLM]:
+    "\<lbrakk>\<And>\<alpha> . [\<phi> (\<alpha>\<^sup>P) in v]\<rbrakk> \<Longrightarrow> [\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v]"
+    using proper_domain2 quantifiable_T8 by blast
+
   lemma rule_gen[PLM]:
     "\<lbrakk>\<And>\<alpha> . [\<phi> \<alpha> in v]\<rbrakk> \<Longrightarrow> [\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v]"
-    by (simp add: Semantics.T8)
+    using quantifiable_T8 by blast
 
   lemma RN_2[PLM]:
     "(\<And> v . [\<psi> in v] \<Longrightarrow> [\<phi> in v]) \<Longrightarrow> ([\<^bold>\<box>\<psi> in v] \<Longrightarrow> [\<^bold>\<box>\<phi> in v])"
@@ -312,11 +320,18 @@ text{*
       "\<not>[\<^bold>\<box>\<phi> in v] \<Longrightarrow> (\<exists> v . \<not>[\<phi> in v])"
       using BoxI by blast
 
+    private lemma AllI\<kappa>[PLM_intro]:
+      "(\<And> x . [\<phi> (x\<^sup>P) in v]) \<Longrightarrow> [\<^bold>\<forall> x . \<phi> x in v]"
+      using rule_gen_\<kappa> by blast
+    lemma NotAllD\<kappa>[PLM_dest]:
+      "\<not>[\<^bold>\<forall> x . \<phi> x in v] \<Longrightarrow> (\<exists> x . \<not>[\<phi> (x\<^sup>P) in v])"
+      using AllI\<kappa> by fastforce
+
     private lemma AllI[PLM_intro]:
-      "(\<And> x . [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall> x . \<phi> x in v]"
+      "(\<And> x :: 'a::AlwaysDenoting. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall> x . \<phi> x in v]"
       using rule_gen by blast
     lemma NotAllD[PLM_dest]:
-      "\<not>[\<^bold>\<forall> x . \<phi> x in v] \<Longrightarrow> (\<exists> x . \<not>[\<phi> x in v])"
+      "\<not>[\<^bold>\<forall> x :: 'a::AlwaysDenoting . \<phi> x in v] \<Longrightarrow> (\<exists> x . \<not>[\<phi> x in v])"
       using AllI by fastforce
   end
 
@@ -536,44 +551,59 @@ subsection{* Identity *}
     "[(x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
     proof (rule "\<^bold>\<equiv>I"; rule CP)
       assume 1: "[x \<^bold>=\<^sub>E y in v]"
-      have "[\<^bold>\<forall> x y . ((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) \<^bold>\<equiv> (\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>
+      have "[\<^bold>\<forall> x y . ((x) \<^bold>=\<^sub>E (y)) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
+              \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
+        proof (rule rule_gen_\<kappa>; rule rule_gen_\<kappa>)
+          fix x y
+          show "[((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) \<^bold>\<equiv> (\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>
               \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
-        unfolding identity\<^sub>E_infix_def identity\<^sub>E_def
-        apply (rule lambda_predicates_2_2[axiom_universal, axiom_universal, axiom_instance])
-        by (rule IsPropositional_intros)
-      moreover have "[\<^bold>\<exists> \<alpha> . (\<alpha>\<^sup>P) \<^bold>= x in v]"
+            unfolding identity\<^sub>E_infix_def identity\<^sub>E_def
+            apply (rule lambda_predicates_2_2[axiom_instance])
+            by (rule IsPropositional_intros)
+        qed
+      moreover have "[\<^bold>\<exists> \<alpha> . \<alpha> \<^bold>= x in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> x . x \<^bold>=\<^sub>E y", axiom_instance,deduction])
         unfolding identity\<^sub>E_infix_def
         apply (rule SimpleExOrEnc.intros)
         using 1 unfolding identity\<^sub>E_infix_def by auto
-      moreover have "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= y in v]"
+      ultimately have "[\<^bold>\<forall> y. (x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
+                        \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
+        using cqt_1[axiom_instance,deduction, deduction] by blast
+      moreover have "[\<^bold>\<exists> \<beta> . \<beta> \<^bold>= y in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> y . x \<^bold>=\<^sub>E y",axiom_instance,deduction])
         unfolding identity\<^sub>E_infix_def
         apply (rule SimpleExOrEnc.intros) using 1
         unfolding identity\<^sub>E_infix_def by auto
       ultimately have "[(x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
                         \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
-        using cqt_1_\<kappa>[axiom_instance,deduction, deduction] by meson
+        using cqt_1[axiom_instance,deduction, deduction] by blast
       thus "[(\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
         using 1 "\<^bold>\<equiv>E"(1) by blast
     next
       assume 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
-      have "[\<^bold>\<forall> x y . ((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) \<^bold>\<equiv> (\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>
-              \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
-        unfolding identity\<^sub>E_def identity\<^sub>E_infix_def
-        apply (rule lambda_predicates_2_2[axiom_universal, axiom_universal, axiom_instance])
-        by (rule IsPropositional_intros)
-      moreover have "[\<^bold>\<exists> \<alpha> . (\<alpha>\<^sup>P) \<^bold>= x in v]"
+      have "[\<^bold>\<forall> x y . (x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
+              \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
+        proof (rule rule_gen_\<kappa>; rule rule_gen_\<kappa>)
+          fix x y
+          show "[(x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P) \<^bold>\<equiv> \<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]"
+            unfolding identity\<^sub>E_def identity\<^sub>E_infix_def
+            apply (rule lambda_predicates_2_2[axiom_instance])
+            by (rule IsPropositional_intros)
+        qed
+      moreover have "[\<^bold>\<exists> \<alpha> . \<alpha> \<^bold>= x in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> x . \<lparr>O!,x\<rparr>",axiom_instance,deduction])
         apply (rule SimpleExOrEnc.intros)
         using 1[conj1,conj1] by auto
-      moreover have "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= y in v]"
+      ultimately have "[\<^bold>\<forall> y . (x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
+                        \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
+        using cqt_1[axiom_instance,deduction, deduction] by blast
+      moreover have "[\<^bold>\<exists> \<beta> . \<beta> \<^bold>= y in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> y . \<lparr>O!,y\<rparr>",axiom_instance,deduction])
          apply (rule SimpleExOrEnc.intros)
         using 1[conj1,conj2] by auto
       ultimately have "[(x \<^bold>=\<^sub>E y) \<^bold>\<equiv> (\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr>
                         \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)) in v]"
-      using cqt_1_\<kappa>[axiom_instance,deduction, deduction] by meson
+        using cqt_1[axiom_instance,deduction, deduction] by blast
       thus "[(x \<^bold>=\<^sub>E y) in v]" using 1 "\<^bold>\<equiv>E"(2) by blast
     qed
   lemma eq_E_simple_2[PLM]:
@@ -594,10 +624,10 @@ subsection{* Identity *}
         using CP "\<^bold>\<or>E"(1) by blast
       moreover {
         assume "[(\<^bold>\<diamond>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
-        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> in v]"
+        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr> in v]"
           apply (rule lambda_predicates_2_1[axiom_instance, equiv_rl, rotated])
           by (rule IsPropositional_intros)+
-        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
+        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr>) in v]"
           apply cut_tac by PLM_solver
         hence "[(x\<^sup>P) \<^bold>=\<^sub>E (x\<^sup>P) in v]"
@@ -605,10 +635,10 @@ subsection{* Identity *}
       }
       moreover {
         assume "[(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
-        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> in v]"
+        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr> in v]"
           apply (rule lambda_predicates_2_1[axiom_instance, equiv_rl, rotated])
           by (rule IsPropositional_intros)+
-        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
+        hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>) in v]"
           apply cut_tac by PLM_solver
       }
@@ -616,8 +646,8 @@ subsection{* Identity *}
         using "\<^bold>\<or>I" by blast
     qed
   lemma id_eq_obj_2[PLM]:
-    "[((x\<^sup>P) \<^bold>= (y\<^sup>P)) \<^bold>\<rightarrow> ((y\<^sup>P) \<^bold>= (x\<^sup>P)) in v]"
-    by (meson l_identity[axiom_instance] id_eq_obj_1 CP ded_thm_cor_3)
+    "[(x \<^bold>= y) \<^bold>\<rightarrow> (y \<^bold>= x) in v]"
+    by (mesn l_identity[axiom_instance] id_eq_obj_1 CP ded_thm_cor_3)
   lemma id_eq_obj_3[PLM]:
     "[((x\<^sup>P) \<^bold>= (y\<^sup>P)) \<^bold>& ((y\<^sup>P) \<^bold>= (z\<^sup>P)) \<^bold>\<rightarrow> ((x\<^sup>P) \<^bold>= (z\<^sup>P)) in v]"
     by (metis l_identity[axiom_instance] ded_thm_cor_4 CP "\<^bold>&E")
@@ -630,22 +660,24 @@ text{*
 *}
 
 class id_eq = quantifiable_and_identifiable +
-  assumes id_eq_1: "[(x :: 'a) \<^bold>= x in v]"
+  assumes id_eq_1: "x \<in> domain \<Longrightarrow> [(x :: 'a) \<^bold>= x in v]"
   assumes id_eq_2: "[((x :: 'a) \<^bold>= y) \<^bold>\<rightarrow> (y \<^bold>= x) in v]"
   assumes id_eq_3: "[((x :: 'a) \<^bold>= y) \<^bold>& (y \<^bold>= z) \<^bold>\<rightarrow> (x \<^bold>= z) in v]"
 
-instantiation \<nu> :: id_eq
+instantiation \<kappa> :: id_eq
 begin
   instance proof
-    fix x :: \<nu> and v
-    show "[x \<^bold>= x in v]"
+    fix x :: \<kappa> and v
+    assume "x \<in> domain"
+    thus "[x \<^bold>= x in v]"
       using PLM.id_eq_obj_1
-      by (simp add: identity_\<nu>_def)
+      apply (simp add: identity_\<kappa>_def)
+      using PLM.proper_domain2 by blast
   next
-    fix x y::\<nu> and v
+    fix x y::\<kappa> and v
     show "[x \<^bold>= y \<^bold>\<rightarrow> y \<^bold>= x in v]"
       using PLM.id_eq_obj_2
-      by (simp add: identity_\<nu>_def)
+      by (simp add: identity_\<kappa>_def)
   next
     fix x y z::\<nu> and v
     show "[((x \<^bold>= y) \<^bold>& (y \<^bold>= z)) \<^bold>\<rightarrow> x \<^bold>= z in v]"

@@ -57,9 +57,11 @@ text{*
 \end{remark}
 *}
 
-lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
 lift_definition denotes :: "\<kappa>\<Rightarrow>bool" is "\<lambda> x . x \<noteq> None" .
 lift_definition denotation :: "\<kappa>\<Rightarrow>\<nu>" is the .
+
+lift_definition proper :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" 900) is Some .
+lemma "denotes (x\<^sup>P)" unfolding denotes_def proper_def apply simp apply transfer by auto
 
 subsection{* Mapping from abstract objects to special Urelements *}
 
@@ -270,12 +272,12 @@ declare make\<kappa>_inverse[meta_aux] eval\<kappa>_inverse[meta_aux]
         make\<Pi>\<^sub>3_inverse[meta_aux] eval\<Pi>\<^sub>3_inverse[meta_aux]
 lemma \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>[meta_aux]: "\<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x" by (simp add: \<nu>\<upsilon>_def)
 lemma \<upsilon>\<nu>_\<omega>\<upsilon>_is_\<omega>\<nu>[meta_aux]: "\<upsilon>\<nu> (\<omega>\<upsilon> x) = \<omega>\<nu> x" by (simp add: \<upsilon>\<nu>_def)
-lemma denotation_proper[meta_aux]: "denotation (x\<^sup>P) = x"
-  by (simp add: meta_aux \<nu>\<kappa>_def denotation_def)
-lemma proper_denotes[meta_aux]: "denotes (x\<^sup>P)"
-  by (simp add: meta_aux \<nu>\<kappa>_def denotes_def)
-lemma proper_denotation[meta_aux]: "denotation (x\<^sup>P) = x"
-  by (simp add: meta_aux \<nu>\<kappa>_def denotation_def)
+lemma denotation_proper[meta_aux]: "denotation (make\<kappa> (Some x)) = x"
+  by (simp add: meta_aux denotation_def)
+lemma proper_denotes[meta_aux]: "denotes (make\<kappa> (Some x))"
+  by (simp add: meta_aux denotes_def)
+lemma proper_denotation[meta_aux]: "denotation (make\<kappa> (Some x)) = x"
+  by (simp add: meta_aux denotation_def)
 lemma \<nu>\<upsilon>_\<upsilon>\<nu>_id[meta_aux]: "\<nu>\<upsilon> (\<upsilon>\<nu> (x)) = x"
   by (simp add: \<nu>\<upsilon>_def \<upsilon>\<nu>_def \<alpha>\<sigma>_surj surj_f_inv_f split: \<upsilon>.split)
 lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> (\<alpha>\<nu> x) = \<omega>\<upsilon> y)" by (simp add: \<nu>\<upsilon>_def)

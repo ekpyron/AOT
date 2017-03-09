@@ -203,7 +203,7 @@ text{*
       have "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> (\<^bold>\<iota>x . \<phi> x)))"
         using assms apply induct by (meta_solver;metis)+
       moreover hence
-        "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (denotation (that \<phi>))\<^sup>P)"
+        "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (make\<kappa> (Some (denotation (that \<phi>)))))"
         apply transfer apply simp by force
      ultimately show ?thesis
       apply cut_tac unfolding identity_\<kappa>_def
@@ -217,7 +217,7 @@ text{*
     proof -
       have "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> x))"
         using assms apply induct by (meta_solver;metis)+
-      moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (denotation (x))\<^sup>P)"
+      moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (make\<kappa> (Some (denotation (x)))))"
         apply transfer apply simp by force
       ultimately show ?thesis
         apply cut_tac unfolding identity_\<kappa>_def
@@ -284,53 +284,51 @@ subsection{* Axioms of Necessity and Actuality *}
 
 subsection{* Axioms of Descriptions *}
   lemma descriptions[axiom]:
-    "denotes x \<Longrightarrow> [[x \<^bold>= (\<^bold>\<iota>x. \<phi> x) \<^bold>\<equiv> (\<^bold>\<forall>z.(\<^bold>\<A>(\<phi> z) \<^bold>\<equiv> z \<^bold>= x))]]"
+    "[[(x\<^sup>P) \<^bold>= (\<^bold>\<iota>x. \<phi> x) \<^bold>\<equiv> (\<^bold>\<forall>z.(\<^bold>\<A>(\<phi> z) \<^bold>\<equiv> z \<^bold>= (x\<^sup>P)))]]"
     unfolding axiom_def
     proof (rule allI, rule EquivI; rule)
       fix v
-      assume "[x \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"
+      assume "[(x\<^sup>P) \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"
       moreover hence 1:
-        "\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (x) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
+        "\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
         apply cut_tac unfolding identity_\<kappa>_def by meta_solver
       then obtain o\<^sub>1 o\<^sub>2 where 2:
-        "Some o\<^sub>1 = d\<^sub>\<kappa> (x) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
+        "Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
         by auto
-      have "\<forall> z . denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z in v] = [z \<^bold>= x in v]"
+      have "\<forall> z . denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z in v] = [z \<^bold>= (x\<^sup>P) in v]"
       proof
         fix z
-        have "denotes z \<Longrightarrow> [\<^bold>\<A>\<phi> z in v] \<Longrightarrow> [z \<^bold>= x in v]"
+        have "denotes z \<Longrightarrow> [\<^bold>\<A>\<phi> z in v] \<Longrightarrow> [z \<^bold>= (x\<^sup>P) in v]"
           unfolding identity_\<kappa>_def apply meta_solver
           unfolding d\<^sub>\<kappa>_def using 2 apply transfer
           apply simp
           by (metis (no_types, lifting) option.distinct(1) the1_equality)
-        moreover have "[z \<^bold>= x in v] \<Longrightarrow> [\<^bold>\<A>\<phi> z in v]"
+        moreover have "[z \<^bold>= (x\<^sup>P) in v] \<Longrightarrow> [\<^bold>\<A>\<phi> z in v]"
           unfolding identity_\<kappa>_def apply meta_solver
           using 2 apply transfer apply simp
           by (metis (no_types, lifting) option.distinct(1) the1_equality)
-        ultimately show "denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z in v] = [z \<^bold>= x in v]"
+        ultimately show "denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z in v] = [z \<^bold>= (x\<^sup>P) in v]"
           by auto
       qed
-      thus "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= x in v]"
+      thus "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= (x\<^sup>P) in v]"
         unfolding identity_\<kappa>_def
         by (simp add: MetaSolver.EquivS domain_\<kappa>_def quantifiable_T8)
     next
       fix v
-      assume asm: "denotes x"
-      assume "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> (z) \<^bold>= (x) in v]"
+      assume "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> (z) \<^bold>= (x\<^sup>P) in v]"
       hence 1: "\<And>z. denotes z \<longrightarrow> ((dw \<Turnstile> \<phi> z) = (\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (z)
-                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (x) \<and> o\<^sub>1 = o\<^sub>2))"
+                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 = o\<^sub>2))"
         proof -
           fix z
-          assume "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= x in v]"
-          hence "denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= x in v]" by (simp add: MetaSolver.All\<^sub>\<kappa>S forall_\<kappa>_def)
-          thus "denotes z \<longrightarrow> ([\<phi> z in dw] = (\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> z \<and> Some o\<^sub>2 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = o\<^sub>2))"
+          assume "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= (x\<^sup>P) in v]"
+          hence "denotes z \<longrightarrow> [\<^bold>\<A>\<phi> z \<^bold>\<equiv> z \<^bold>= (x\<^sup>P) in v]" by (simp add: MetaSolver.All\<^sub>\<kappa>S forall_\<kappa>_def)
+          thus "denotes z \<longrightarrow> ([\<phi> z in dw] = (\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> z \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 = o\<^sub>2))"
           using MetaSolver.Eq\<kappa>S MetaSolver.EquivE Semantics.T7 identity_\<kappa>_def by fastforce
         qed
-      hence "\<forall> z . denotes z \<longrightarrow> eval\<o> (\<phi> z) dj dw = (z = x)" apply transfer by auto 
-      hence "(x = (\<^bold>\<iota>x. \<phi> x))" apply transfer by auto
-      hence "denotes x \<longrightarrow> [x \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]" unfolding identity_\<kappa>_def 
-      using "1" MetaSolver.Eq\<kappa>S \<open>\<forall>z. denotes z \<longrightarrow> eval\<o> (\<phi> z) dj dw = (z = x)\<close> valid_in.rep_eq by blast
-      thus "[x \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]" using asm by auto
+      hence 2: "\<forall> z . denotes z \<longrightarrow> eval\<o> (\<phi> z) dj dw = (z = (x\<^sup>P))" apply transfer by auto 
+      hence "((x\<^sup>P) = (\<^bold>\<iota>x. \<phi> x))" apply transfer by auto
+      thus "[(x\<^sup>P) \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"  unfolding identity_\<kappa>_def 
+      using 1 MetaSolver.Eq\<kappa>S 2 valid_in.rep_eq by (metis Semantics.D3 proper.rep_eq)
     qed
 
 subsection{* Axioms for Complex Relation Terms *}
@@ -340,31 +338,28 @@ subsection{* Axioms for Complex Relation Terms *}
 
   lemma lambda_predicates_2_1[axiom]:
     assumes "IsPropositionalInX \<phi>"
-    shows "denotes x \<Longrightarrow> [[\<lparr>\<^bold>\<lambda> x . \<phi> x, x\<rparr> \<^bold>\<equiv> \<phi> x]]"
+    shows "[[\<lparr>\<^bold>\<lambda> x . \<phi> x, x\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P)]]"
     apply axiom_meta_solver
     using D5_1[OF assms]
     apply transfer by auto 
 
   lemma lambda_predicates_2_2[axiom]:
     assumes "IsPropositionalInXY \<phi>"
-    shows "denotes x \<Longrightarrow> denotes y \<Longrightarrow> [[\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y)), x, y\<rparr> \<^bold>\<equiv> \<phi> x y]]"
+    shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y)), x\<^sup>P, y\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P)]]"
     apply axiom_meta_solver
     using D5_2[OF assms] apply transfer by auto
 
   lemma lambda_predicates_2_3[axiom]:
     assumes "IsPropositionalInXYZ \<phi>"
-    shows "denotes x \<Longrightarrow> denotes y \<Longrightarrow> denotes z \<Longrightarrow> [[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x,y,z\<rparr> \<^bold>\<equiv> \<phi> x y z]]"
+    shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]]"
     proof -
-      assume a1: "denotes x"
-      assume a2: "denotes y"
-      assume a3: "denotes z"
-      have "\<box>[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x,y,z\<rparr> \<^bold>\<rightarrow> \<phi> x y z]"
+      have "\<box>[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<rightarrow> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]"
         apply meta_solver using D5_3[OF assms] by auto
       moreover have
-        "\<box>[\<phi> x y z \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x,y,z\<rparr>]"
+        "\<box>[\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z)),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>]"
         apply axiom_meta_solver
         using D5_3[OF assms] unfolding d\<^sub>3_def ex3_def
-        using a1 a2 a3 apply transfer by auto
+        apply transfer by auto
       ultimately show ?thesis unfolding axiom_def equiv_def ConjS by blast
     qed
 
@@ -378,8 +373,7 @@ subsection{* Axioms for Complex Relation Terms *}
     "[[(\<^bold>\<lambda> x . \<lparr>F, x\<rparr>) \<^bold>= F]]"
     unfolding identity_defs
     apply axiom_meta_solver
-    apply (simp add: meta_defs meta_aux)
-    apply transfer by (simp add: meta_aux)
+    by (simp add: meta_defs meta_aux)
 
   lemma lambda_predicates_3_2[axiom]:
     "[[(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x, y\<rparr>)) \<^bold>= F]]"
@@ -438,9 +432,9 @@ subsection{* Axioms of Encoding *}
       moreover have "[(\<^bold>\<forall>F. \<lbrace>?x,F\<rbrace> \<^bold>\<equiv> \<phi> F) in v]"
         apply meta_solver unfolding en_def
         using d\<^sub>1.rep_eq d\<^sub>\<kappa>_def d\<^sub>\<kappa>_proper eval\<Pi>\<^sub>1_inverse
-        by (simp add: Semantics.d\<^sub>1.abs_eq Semantics.d\<^sub>1_inject \<nu>.simps(6) \<nu>\<kappa>.abs_eq mem_Collect_eq proper_denotation)
+        by (simp add: Semantics.d\<^sub>1.abs_eq Semantics.d\<^sub>1_inject)
       ultimately show "?x \<in> domain \<and> [\<lparr>A!,?x\<rparr> \<^bold>& (\<^bold>\<forall>F. \<lbrace>?x,F\<rbrace> \<^bold>\<equiv> \<phi> F) in v]"
-        by (metis (no_types, lifting) MetaSolver.ConjI Semantics.d\<^sub>\<kappa>.abs_eq Semantics.d\<^sub>\<kappa>_inject Semantics.d\<^sub>\<kappa>_proper domain_\<kappa>_def mem_Collect_eq proper_denotes)
+        by (metis (no_types, lifting) MetaSolver.ConjI domain_\<kappa>_def mem_Collect_eq proper_denotes)
     qed
 end
 

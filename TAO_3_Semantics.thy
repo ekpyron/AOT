@@ -370,13 +370,13 @@ begin
     by (auto simp: meta_defs meta_aux)
 
   lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<rparr>) = d\<^sub>1 F"
-    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_aux)
+    by (simp add: meta_defs meta_aux)
 
   lemma D4_2[semantics]: "d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x, y\<rparr>)) = d\<^sub>2 F"
-    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_defs meta_aux)
+    by (simp add: meta_defs meta_aux)
 
   lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x, y, z\<rparr>)) = d\<^sub>3 F"
-    apply (simp add: meta_defs meta_aux) apply transfer by (simp add: meta_defs meta_aux)
+    by (simp add: meta_defs meta_aux)
 
     lemma [meta_aux]: "Some o\<^sub>1 = eval\<kappa> x \<longrightarrow> (\<exists>y. eval\<kappa> x = Some y)" apply transfer by auto
     lemma [meta_aux]: "Some o\<^sub>1 = eval\<kappa> x \<longrightarrow> ((\<nu>\<upsilon> (the (eval\<kappa> x))) = (\<nu>\<upsilon> o\<^sub>1))" apply transfer by auto
@@ -426,8 +426,8 @@ begin
       apply transfer
       by auto
   qed
-  lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
-    unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
+  lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (make\<kappa> (Some u)) = Some u"
+    unfolding d\<^sub>\<kappa>_def by (simp add: meta_aux)
 end
 
 subsection{* Validity Syntax *}
