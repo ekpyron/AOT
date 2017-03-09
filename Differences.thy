@@ -40,39 +40,39 @@ begin
 text{*
   The Principia explicitly distinguishes between terms and variables for all primitive types.
   Furthermore, it postulates  (\ref{PM-cqt}.2)\cite[p. 191]{PM}, that for every term @{text "\<tau>"}, 
-  which is not a definite description,
-  there exists (a variable) @{text "\<beta>"} that is equal to t: @{text "\<exists>\<beta> (\<beta> = \<tau>)"}. Thereby, any denoting term can be substituted
-  for any variable (the substitution of identicals is an axiom). The only terms that may not denote
+  which is not a definite description, there exists (a variable) @{text "\<beta>"} that is equal to @{text "\<tau>"}:
+  @{text "\<exists>\<beta> (\<beta> = \<tau>)"}. Thereby, any denoting term can be substituted for any variable
+  (the substitution of identicals is an axiom). The only terms that may not denote
   are definite descriptions. 
 
-  Mapping the Principia's  notion of undefinedness/partiality to the (non-partial) functional logic of Isabelle/HOL,
-  where generally every free variable symbol can be substituted by any term of the same type, is not trivial.
- (In fact, future work could/should 
-  investigate whether the embedding of free logic in HOL as studied in the papers by Christoph and 
+  Mapping this distinction between terms and variable and the Principia's  notion of non-denoting
+  terms to the (non-partial) functional logic of Isabelle/HOL, where generally every free variable symbol
+  can be substituted by any term of the same type, is not trivial. (In fact, there is ongoing work
+  to investigate whether the embedding of free logic in HOL as studied in the papers by Christoph and 
   Dana Scott could be fruitfully combined with the work presented here; the solution presented 
   here has been worked out independently).
 
   The solution in the current embedding is as follows: First, it does not explicitly distinguish between
-  relation variables and relation terms and drops the
-  corresponding axiom (\ref{PM-cqt}.2)\cite[p. 191]{PM}, which implicitly holds our context. Consequently, the
-  additional precondition  @{text "\<exists>\<beta> (\<beta> = \<tau>)"} in axiom (\ref{PM-cqt}.1)\cite[p. 190]{PM} is
-  dropped as well.
-  To address
-  the issue of possibly non-denoting definite descriptions, the embedding distinguishes between the 
+  relation variables and relation terms and drops the corresponding axiom (\ref{PM-cqt}.2)\cite[p. 191]{PM},
+  which implicitly holds in our context (note that this is the case, although the equality is not primitive,
+  but defined: the statement @{term "\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<tau>"} for one-place relations for instance expands to
+  @{term "\<^bold>\<exists> \<beta> . \<^bold>\<box>(\<^bold>\<forall> x. \<lbrace>x\<^sup>P,\<beta>\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,\<tau>\<rbrace>)"}. This still has to be proven, but without the distinction
+  between variables and terms it suffices to show that @{term "\<^bold>\<box>(\<^bold>\<forall> x. \<lbrace>x\<^sup>P,\<tau>\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,\<tau>\<rbrace>)"} which
+  follows from the remaining axioms). Consequently, the additional precondition  @{text "\<exists>\<beta> (\<beta> = \<tau>)"}
+  in axiom (\ref{PM-cqt}.1)\cite[p. 190]{PM} is dropped as well.
+  To address the issue of possibly non-denoting definite descriptions, the embedding distinguishes between the 
   types @{type \<nu>} and @{type \<kappa>}.  Roughly speaking, the type @{text \<nu>} corresponds to PLMs individual 
-  variables, whereas the type
-  @{text \<kappa>} corresponds to the Principia's individual terms. 
+  variables, whereas the type @{text \<kappa>} corresponds to the Principia's individual terms.
   Constructs of type @{type \<nu>} always denote (individuals), whereas objects of type @{type \<kappa>} may 
-  contain definite descriptions
-  that may not denote. The condition under which an object of type @{type \<kappa>} denotes is
-  internally stored/remembered by an annotation (Boolean flag). More precisely, the type @{type \<kappa>} is 
-  internally represented as a tuple of a
+  contain definite descriptions that may not denote. The condition under which an object of type
+  @{type \<kappa>} denotes is internally stored/remembered by an annotation (Boolean flag).
+  More precisely, the type @{type \<kappa>} is internally represented as a tuple of a
   Boolean and an object of type @{type \<nu>}). The decoration @{text "_\<^sup>P"} is used to represent
   only objects of @{type \<kappa>} that denote (internally @{text "x\<^sup>P"} maps @{text "x"} which is of
   type @{type \<nu>} to an object of type @{type \<kappa>} representing the tuple @{text "(True, x)"}).
   Consequently, any theorem of the Principia that uses individual variables can be represented
-  in the embedding using a variable of type @{type \<nu>} decorated by @{text "_\<^sup>P"}.
-
+  in the embedding using a variable of type @{type \<nu>} decorated by @{text "_\<^sup>P"} (see also
+  the section about axiom and theorem schemata below).
   
   In order to be able to substitute denoting definite descriptions for an expression
   like @{text "x\<^sup>P"}, the axiom @{text "cqt_5_mod"} assures the following:
@@ -100,8 +100,8 @@ text{*
   be instantiated for definite descriptions that can be substituted for an expression
   of the form @{text "x\<^sup>P"}, i.e. for definite descriptions that denote.
 
-  Consequently, the modified axioms of quantification in the embedding are equivalent to, resp. correspond to,
-  the original axioms (\ref{PM-cqt})\cite[p. 191]{PM}.
+  Consequently, the modified axioms of quantification in the embedding are equivalent to,
+  resp. correspond to, the original axioms (\ref{PM-cqt})\cite[p. 191]{PM}.
 
   The embedding could easily be modified to include a similar distinction for relation terms as
   well. The equivalent of the @{text "_\<^sup>P"} decoration for relations would then internally
@@ -110,7 +110,9 @@ text{*
   such a distinction in the embedding.
 
   However, the combination with a proper embedding of free logic (see above) 
-  seems an interesting opportunity for future work. 
+  seems an interesting opportunity for future work. First investigations suggest
+  that such a combination may make it possible to drop the current distinction
+  between the types @{type "\<kappa>"} and @{type "\<nu>"} and the adjustment of the axioms.
 *}
 
 section{* Propositional Formulas and Lambda Expressions *}
@@ -158,6 +160,30 @@ text{*
   would expect. Still these kinds of expressions are not part of PLM.
 *}
 
+section{* Theorem and Axiom Schemata *}
+
+text{*
+  As already mentioned above, in the logic of Isabelle/HOL generally every free variable symbol
+  can be substituted by any term of the same type. Stating an axiom or theorem containing a free
+  variable symbol (e.g. of type @{type "\<o>"}) therefore implicitly asserts that the statement is true
+  for all objects of the same type (e.g. all propositions). Axiom (\ref{PM-pl}.1)\cite[p. 186]{PM})
+  for instance can therefore simply be stated as the following:
+
+  @{thm pl_1}
+
+  This automatically asserts that all expressions of type @{type "\<o>"} can be substituted for 
+  @{text "\<phi>"} or @{text "\<psi>"}, so the statement itself is in fact already the complete axiom schema.
+
+  Consequently the equivalence of alphabetic variants as well as @{text "\<alpha>"}-Conversion implicitly
+  hold in the context of Isabelle/HOL and don't have to be explicitly stated.
+
+  Note that stating an axiom or theorem for a decorated variable @{text "x\<^sup>P"} as described in
+  the previous sections, only allows objects of type @{type "\<nu>"} to be substituted for @{text "x"}.
+  To substitute a definite description it first has to be assured that
+  @{text "\<^bold>\<exists> x . (x\<^sup>P) \<^bold>= \<^bold>\<iota>x . \<phi> x"}, as the type of @{term "\<^bold>\<iota>x . \<phi> x"} is @{type "\<kappa>"} which is
+  different from the type @{type "\<nu>"}.
+*}
+
 section{* Modally-Strict Proofs *}
 
 text{*
@@ -188,9 +214,9 @@ text{*
 
   However, in Isabelle/HOL all dependencies necessary to prove a theorem are explicitly stated
   in its proof and we explicitly refrain from stating or using the converse of \emph{RN}
-  (although automation suffers due to this restriction). All theorems that are derived
-  from the deductive system in the embedding therefore still correspond to modally-strict
-  theorems in PLM.
+  (although automation suffers due to this restriction). All theorems that are derived for
+  arbitrary possible worlds from the deductive system in the embedding therefore still correspond
+  to modally-strict theorems in PLM.
 
   Using the meta-logic directly it would be possible to prove that theorems hold for
   an arbitrary possible world, that are not modally-strict theorems in PLM, though.
