@@ -206,7 +206,7 @@ text{*
   notion of concreteness coincides with the meta-logical distinction between
   abstract objects and ordinary objects. Furthermore the axioms about
   concreteness have to be satisfied. This is achieved by introducing an
-  uninterpreted that determines whether an ordinary object is concrete
+  uninterpreted constant that determines whether an ordinary object is concrete
   in a given possible world. This constant is axiomatized, such that
   all ordinary objects are possibly concrete, contingent objects possibly
   exist and possibly no contingent objects exist.

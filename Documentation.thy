@@ -360,6 +360,11 @@ text{*
     \end{itemize}
   \end{remark}
 
+  An example of a statement containing lambda-expressions that contain encoding subformulas
+  that becomes derivable using the meta-logic is the following:
+
+  @{lemma "[\<^bold>\<forall> F y . \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>, y\<^sup>P\<rparr> in v]" by (simp add: meta_aux meta_defs conn_defs forall_\<nu>_def forall_\<Pi>\<^sub>1_def)}
+
 *}
 
 subsection{* Validity *}
