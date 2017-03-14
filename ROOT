@@ -35,3 +35,12 @@ session "Differences" = "TAO" +
     "root.tex"
 	"root.bib"
 	"external.aux"
+
+session "Documentation" = "TAO" +
+  options [document = pdf, document_output = "documentation", show_question_marks = false, names_short = true]
+  theories
+	Documentation
+  document_files (in documentation)
+    "root.tex"
+	"root.bib"
+	"external.aux"

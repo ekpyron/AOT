@@ -44,12 +44,12 @@ subsection{* Intensionality *}
 subsection{* Concreteness coindices with Object Domains *}
   lemma OrdCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
-     (denotes x) \<and> (case (denotation x) of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
+     (proper x) \<and> (case (rep x) of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
     by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
   lemma AbsCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
-     (denotes x) \<and> (case (denotation x) of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
+     (proper x) \<and> (case (rep x) of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
     by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
 
@@ -86,15 +86,9 @@ text{*
 \end{remark}
 *}
   lemma PossiblyContingentObjectExistsCheck:
-    "[\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>)) in v]"
+    "PossiblyContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>)) in v]"
      apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
-     using PossiblyContingentObjectExistsAxiom
-     by (metis \<nu>.simps(5) \<nu>\<upsilon>_def \<upsilon>.simps(1) no_\<sigma>\<omega>)
-  lemma "PossiblyContingentObjectExists"
-    apply (auto simp: meta_defs)
-    using PossiblyContingentObjectExistsCheck
-    apply (auto simp: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
-    by (metis \<upsilon>.exhaust \<upsilon>.simps(5) \<upsilon>.simps(6))
+     by (metis \<nu>.simps(5) \<nu>\<upsilon>_def \<upsilon>.simps(1) no_\<sigma>\<omega> \<upsilon>.exhaust)
 
 text{*
 \begin{remark}
@@ -103,13 +97,9 @@ text{*
 \end{remark}
 *}
   lemma PossiblyNoContingentObjectExistsCheck:
-    "[\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
+    "PossiblyNoContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
     apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
-    using PossiblyNoContingentObjectExistsAxiom by blast  
-  lemma "PossiblyNoContingentObjectExists"
-    using PossiblyNoContingentObjectExistsCheck
-    apply (auto simp: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
-    by (metis \<upsilon>.simps(5) \<nu>\<upsilon>_\<upsilon>\<nu>_id)
+    by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
 
 subsection{* Relations in the Meta-Logic *}
 
@@ -218,6 +208,15 @@ subsection{* Lambda Expressions in the Meta-Logic *}
   lemma meta_impl_lambda:
     "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
     unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
+
+  lemma lambda_enc_impl:
+    "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<lbrace>y\<^sup>P, F\<rbrace> in v])"
+    apply (simp add: meta_defs meta_aux)
+    by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id id_apply)
+
+  lemma lambda_enc_cond:
+    "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> [\<lbrace>y\<^sup>P, F\<rbrace> in v]) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v]"
+    by (simp add: meta_defs meta_aux)
 
 end
 

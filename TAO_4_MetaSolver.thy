@@ -245,7 +245,7 @@ subsection{* Rules for Being Ordinary *}
     assumes "[\<lparr>O!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
     using assms unfolding Ordinary_def conn_defs meta_defs
-    apply (simp add: meta_aux d\<^sub>\<kappa>_def denotes_def denotation_def)
+    apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
     by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6) comp_apply)
   lemma OrdS[meta_cong]:
     "[\<lparr>O!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y)"
@@ -263,13 +263,13 @@ subsection{* Rules for Being Abstract *}
       unfolding Abstract_def conn_defs meta_defs
       apply (simp add: meta_aux)
       by (metis d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6)
-                o_apply proper_denotation proper_denotes)
+                o_apply \<nu>\<kappa>_proper rep_proper_id)
   qed
   lemma AbsE[meta_elim]:
     assumes "[\<lparr>A!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     using assms unfolding conn_defs meta_defs Abstract_def
-    apply (simp add: meta_aux d\<^sub>\<kappa>_def denotes_def denotation_def)
+    apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
     by (metis OrdinaryObjectsPossiblyConcreteAxiom \<nu>.exhaust
               \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5))
   lemma AbsS[meta_cong]:
@@ -293,7 +293,7 @@ subsubsection{* Ordinary Objects *}
     using assms
     apply (simp add: meta_defs meta_aux basic_identity\<^sub>E_def basic_identity\<^sub>E_infix_def
                      conn_defs Ordinary_def OrdinaryObjectsPossiblyConcreteAxiom
-                     denotes_def Semantics.d\<^sub>\<kappa>_def
+                     proper_def Semantics.d\<^sub>\<kappa>_def
                 split: \<nu>.split \<upsilon>.split)
     using OrdinaryObjectsPossiblyConcreteAxiom
     apply transfer
@@ -330,7 +330,7 @@ subsubsection{* Ordinary Objects *}
     hence 7: "\<forall> v . (o\<^sub>1 \<in> ex1 r v) = (o\<^sub>2 \<in> ex1 r v)"
       using 2 4 unfolding valid_in_def
       by (metis "3" "6" d\<^sub>1.rep_eq d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper ex1_def eval\<o>_inverse exe1.rep_eq
-          mem_Collect_eq option.sel proper_denotation proper_denotes valid_in.abs_eq)
+          mem_Collect_eq option.sel rep_proper_id \<nu>\<kappa>_proper valid_in.abs_eq)
     have "o\<^sub>1 \<in> ex1 r v"
       using 5 3 unfolding ex1_def by (simp add: meta_aux)
     hence "o\<^sub>2 \<in> ex1 r v"
@@ -438,8 +438,8 @@ subsubsection{* One-Place Relations *}
     apply (drule BoxE, drule_tac x="(\<alpha>\<nu> { F })" in All\<^sub>\<nu>E, drule EquivE)
     apply (simp add: Semantics.T2)
     unfolding en_def d\<^sub>\<kappa>_def d\<^sub>1_def
-    using proper_denotation proper_denotes
-    by (simp add: denotation_def denotes_def meta_aux)
+    using \<nu>\<kappa>_proper rep_proper_id
+    by (simp add: rep_def proper_def meta_aux)
   lemma Eq\<^sub>1S[meta_subst]: "[F \<^bold>=\<^sub>1 G in v] = (F = G)"
     using Eq\<^sub>1I Eq\<^sub>1E by auto
   lemma Eq\<^sub>1_prop: "[F \<^bold>=\<^sub>1 G in v] \<Longrightarrow> [\<phi> F in v] = [\<phi> G in v]"

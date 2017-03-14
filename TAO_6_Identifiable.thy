@@ -58,10 +58,10 @@ begin
       unfolding identity_\<nu>_def by auto
     hence "\<And>\<phi>.(v \<Turnstile> \<phi> (\<alpha>\<^sup>P)) \<Longrightarrow> (v \<Turnstile> \<phi> (\<beta>\<^sup>P))"
       using l_identity by auto
-    hence "(v \<Turnstile> \<phi> (denotation (\<alpha>\<^sup>P))) \<Longrightarrow> (v \<Turnstile> \<phi> (denotation (\<beta>\<^sup>P)))"
+    hence "(v \<Turnstile> \<phi> (rep (\<alpha>\<^sup>P))) \<Longrightarrow> (v \<Turnstile> \<phi> (rep (\<beta>\<^sup>P)))"
       by meson
     thus "(v \<Turnstile> \<phi> \<alpha>) \<Longrightarrow> (v \<Turnstile> \<phi> \<beta>)"
-      by (simp only: proper_denotation)
+      by (simp only: rep_proper_id)
   qed
 end
 

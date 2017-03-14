@@ -299,23 +299,23 @@ begin
   lemma T1_1[semantics]:
     "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    by (simp add: meta_defs meta_aux rep_def proper_def)
   lemma T1_2[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    by (simp add: meta_defs meta_aux rep_def proper_def)
   lemma T1_3[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                     \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                                     \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def)
+    by (simp add: meta_defs meta_aux rep_def proper_def)
 
   lemma T2[semantics]:
     "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux denotation_def denotes_def split: \<nu>.split)
+    by (simp add: meta_defs meta_aux  rep_def proper_def split: \<nu>.split)
 
   lemma T3[semantics]:
     "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
@@ -376,7 +376,7 @@ begin
     shows "\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                       \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = (w \<Turnstile> \<phi> x)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
-    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
+    by (auto simp: meta_defs meta_aux rep_def proper_def)
 
   lemma D5_2[semantics]:
     assumes "IsPropositionalInXY \<phi>"
@@ -384,7 +384,7 @@ begin
                        \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
                        \<longrightarrow> ((o\<^sub>1,o\<^sub>2) \<in> ex2 r w) = (w \<Turnstile> \<phi> x y)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
-    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
+    by (auto simp: meta_defs meta_aux rep_def proper_def)
 
   lemma D5_3[semantics]:
     assumes "IsPropositionalInXYZ \<phi>"
@@ -392,7 +392,7 @@ begin
                           \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                           \<longrightarrow> ((o\<^sub>1,o\<^sub>2,o\<^sub>3) \<in> ex3 r w) = (w \<Turnstile> \<phi> x y z)"
     using assms unfolding IsPropositionalIn_defs semantics_defs
-    by (auto simp: meta_defs meta_aux denotes_def denotation_def)
+    by (auto simp: meta_defs meta_aux rep_def proper_def)
 
   lemma D6[semantics]: "(\<And> w r . Some r = d\<^sub>0 (\<^bold>\<lambda>\<^sup>0 \<phi>) \<longrightarrow> ex0 r w = (w \<Turnstile> \<phi>))"
     by (auto simp: meta_defs meta_aux semantics_defs)

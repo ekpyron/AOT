@@ -169,7 +169,7 @@ text{*
       have "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> (\<^bold>\<iota>x . \<phi> x)))"
         using assms apply induct by (meta_solver;metis)+
       moreover hence
-        "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (denotation (that \<phi>))\<^sup>P)"
+        "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (rep (that \<phi>))\<^sup>P)"
         apply transfer by (metis (mono_tags, lifting) eq_snd_iff fst_conv option.simps(3))
      ultimately show ?thesis
       apply cut_tac unfolding identity_\<kappa>_def
@@ -182,7 +182,7 @@ text{*
     proof -
       have "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> x))"
         using assms apply induct by (meta_solver;metis)+
-      moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (denotation (x))\<^sup>P)"
+      moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (rep (x))\<^sup>P)"
         apply transfer by (metis (mono_tags, lifting) eq_snd_iff fst_conv option.simps(3))
       ultimately show ?thesis
         apply cut_tac unfolding identity_\<kappa>_def
