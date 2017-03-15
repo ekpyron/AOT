@@ -218,6 +218,27 @@ subsection{* Lambda Expressions in the Meta-Logic *}
     "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> [\<lbrace>y\<^sup>P, F\<rbrace> in v]) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v]"
     by (simp add: meta_defs meta_aux)
 
+  lemma lambda_interpret_1:
+  assumes "[a \<^bold>= b in v]"
+  shows "(\<^bold>\<lambda>x. \<lparr>R,x\<^sup>P,a\<rparr>) = (\<^bold>\<lambda>x . \<lparr>R,x\<^sup>P, b\<rparr>)"
+  proof -
+    have "a = b"
+      using MetaSolver.Eq\<kappa>S Semantics.d\<^sub>\<kappa>_inject assms
+            identity_\<kappa>_def by auto
+    thus ?thesis by simp
+  qed
+
+  lemma lambda_interpret_2:
+  assumes "[a \<^bold>= (\<^bold>\<iota>y. \<lparr>G,y\<^sup>P\<rparr>) in v]"
+  shows "(\<^bold>\<lambda>x. \<lparr>R,x\<^sup>P,a\<rparr>) = (\<^bold>\<lambda>x . \<lparr>R,x\<^sup>P, \<^bold>\<iota>y. \<lparr>G,y\<^sup>P\<rparr>\<rparr>)"
+  proof -
+    have "a = (\<^bold>\<iota>y. \<lparr>G,y\<^sup>P\<rparr>)"
+      using MetaSolver.Eq\<kappa>S Semantics.d\<^sub>\<kappa>_inject assms
+            identity_\<kappa>_def by auto
+    thus ?thesis by simp
+  qed
+
+
 end
 
 (*<*)
