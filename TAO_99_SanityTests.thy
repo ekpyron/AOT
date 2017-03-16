@@ -1,5 +1,5 @@
 (*<*)
-theory TAO_99_Sanity_Tests
+theory TAO_99_SanityTests
 imports TAO_7_Axioms
 begin
 (*>*)
@@ -42,6 +42,7 @@ subsection{* Intensionality *}
     oops --{* Countermodel by Nitpick *}
 
 subsection{* Concreteness coindices with Object Domains *}
+
   lemma OrdCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
      (proper x) \<and> (case (rep x) of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
@@ -73,6 +74,7 @@ text{*
   necessarily not concrete".
 \end{remark}
 *}
+
   lemma AbsAxiomCheck:
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
@@ -85,6 +87,7 @@ text{*
   in the embedded logic.
 \end{remark}
 *}
+
   lemma PossiblyContingentObjectExistsCheck:
     "PossiblyContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>)) in v]"
      apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
@@ -96,6 +99,7 @@ text{*
   in the embedded logic.
 \end{remark}
 *}
+
   lemma PossiblyNoContingentObjectExistsCheck:
     "PossiblyNoContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
     apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
@@ -109,6 +113,7 @@ text{*
   equality in the actual state in the meta-logic.
 \end{remark}
 *}
+
   lemma mat_eq_is_eq_dj:
     "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v] \<longleftrightarrow>
      ((\<lambda> x . (eval\<Pi>\<^sub>1 F) x dj) = (\<lambda> x . (eval\<Pi>\<^sub>1 G) x dj))"
@@ -162,6 +167,7 @@ text{*
   if and only if they also coincide in all other states.
 \end{remark}
 *}
+
   lemma mat_eq_is_eq_if_eq_forall_j:
     assumes "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v]"
     shows "[F \<^bold>= G in v] \<longleftrightarrow>
@@ -194,6 +200,7 @@ text{*
   the defined equality degenerates to material equality.
 \end{remark}
 *}
+
   lemma assumes "\<forall> F x s . (eval\<Pi>\<^sub>1 F) x s = (eval\<Pi>\<^sub>1 F) x dj"
     shows "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v] \<longleftrightarrow> [F \<^bold>= G in v]"
     by (metis (no_types) MetaSolver.Eq\<^sub>1S assms identity_\<Pi>\<^sub>1_def
@@ -208,15 +215,6 @@ subsection{* Lambda Expressions in the Meta-Logic *}
   lemma meta_impl_lambda:
     "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
     unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
-
-  lemma lambda_enc_impl:
-    "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<lbrace>y\<^sup>P, F\<rbrace> in v])"
-    apply (simp add: meta_defs meta_aux)
-    by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id id_apply)
-
-  lemma lambda_enc_cond:
-    "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> [\<lbrace>y\<^sup>P, F\<rbrace> in v]) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v]"
-    by (simp add: meta_defs meta_aux)
 
   lemma lambda_interpret_1:
   assumes "[a \<^bold>= b in v]"
@@ -237,7 +235,6 @@ subsection{* Lambda Expressions in the Meta-Logic *}
             identity_\<kappa>_def by auto
     thus ?thesis by simp
   qed
-
 
 end
 

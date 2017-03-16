@@ -1,6 +1,6 @@
 (*<*)
 theory Documentation
-imports TAO_99_Sanity_Tests "~~/src/HOL/Library/LaTeXsugar" "~~/src/HOL/Library/OptionalSugar"
+imports TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar" "~~/src/HOL/Library/OptionalSugar"
 begin
 (*>*)
 
@@ -355,8 +355,8 @@ text{*
   \begin{remark}
     Formally the following statements are true:
     \begin{itemize}
-      \item @{thm[display] SanityTests.lambda_enc_impl}
-      \item @{thm[display] SanityTests.lambda_enc_cond}
+      \item @{thm[display] ArtificialTheorems.lambda_enc_4}
+      \item @{thm[display] ArtificialTheorems.lambda_enc_5}
     \end{itemize}
   \end{remark}
 

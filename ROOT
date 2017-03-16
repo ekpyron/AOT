@@ -14,7 +14,8 @@ session "TAO" = "HOL" +
 	TAO_8_Definitions
 	TAO_9_PLM
 	TAO_10_PossibleWorlds
-	TAO_99_Sanity_Tests
+	TAO_98_ArtificialTheorems
+	TAO_99_SanityTests
   document_files
     "root.tex"
 
