@@ -170,7 +170,7 @@ text{*
         using assms apply induct by (meta_solver;metis)+
       moreover hence
         "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (rep (that \<phi>))\<^sup>P)"
-        apply transfer by (metis (mono_tags, lifting) eq_snd_iff fst_conv option.simps(3))
+        apply transfer apply simp by force
      ultimately show ?thesis
       apply cut_tac unfolding identity_\<kappa>_def
       apply axiom_meta_solver by metis
@@ -183,7 +183,7 @@ text{*
       have "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> x))"
         using assms apply induct by (meta_solver;metis)+
       moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (rep (x))\<^sup>P)"
-        apply transfer by (metis (mono_tags, lifting) eq_snd_iff fst_conv option.simps(3))
+        apply transfer by auto
       ultimately show ?thesis
         apply cut_tac unfolding identity_\<kappa>_def
         apply axiom_meta_solver by metis
@@ -328,7 +328,7 @@ subsection{* Axioms for Complex Relation Terms *}
         "\<box>[\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>]"
         apply axiom_meta_solver
         using D5_3[OF assms] unfolding d\<^sub>3_def ex3_def
-        apply transfer apply simp by fastforce
+        apply transfer by simp
       ultimately show ?thesis unfolding axiom_def equiv_def ConjS by blast
     qed
 

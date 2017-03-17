@@ -238,15 +238,15 @@ subsection{* Rules for Being Ordinary *}
       unfolding Ordinary_def conn_defs meta_defs
       apply (simp add: meta_aux)
       apply transfer
-      by (metis (full_types) \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5)
-                option.distinct(1) option.sel)
+      using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by auto
   qed
   lemma OrdE[meta_elim]:
     assumes "[\<lparr>O!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
     using assms unfolding Ordinary_def conn_defs meta_defs
     apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
-    by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6) comp_apply)
+    by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6)
+              comp_apply option.collapse)
   lemma OrdS[meta_cong]:
     "[\<lparr>O!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y)"
     using OrdI OrdE by blast
@@ -270,16 +270,16 @@ subsection{* Rules for Being Abstract *}
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     using assms unfolding conn_defs meta_defs Abstract_def
     apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
-    by (metis OrdinaryObjectsPossiblyConcreteAxiom \<nu>.exhaust
-              \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5))
+    by (metis Exe1S OrdinaryObjectsPossiblyConcreteAxiom d\<^sub>\<kappa>.rep_eq
+              \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5) assms option.sel)
   lemma AbsS[meta_cong]:
     "[\<lparr>A!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y)"
     using AbsI AbsE by blast
 
 subsection{* Rules for Definite Descriptions *}
 
-  lemma TheS: "(\<^bold>\<iota>x. \<phi> x) = make\<kappa> (\<exists>! x . eval\<o> (\<phi> x) dj dw,
-                                  THE x . eval\<o> (\<phi> x) dj dw)"
+  lemma TheS: "(\<^bold>\<iota>x. \<phi> x) = make\<kappa> (if (\<exists>! x . eval\<o> (\<phi> x) dj dw) then
+                                  Some (THE x . eval\<o> (\<phi> x) dj dw) else None)"
     by (auto simp: meta_defs)
 
 
@@ -439,7 +439,7 @@ subsubsection{* One-Place Relations *}
     apply (simp add: Semantics.T2)
     unfolding en_def d\<^sub>\<kappa>_def d\<^sub>1_def
     using \<nu>\<kappa>_proper rep_proper_id
-    by (simp add: rep_def proper_def meta_aux)
+    by (simp add: rep_def proper_def meta_aux \<nu>\<kappa>.rep_eq)
   lemma Eq\<^sub>1S[meta_subst]: "[F \<^bold>=\<^sub>1 G in v] = (F = G)"
     using Eq\<^sub>1I Eq\<^sub>1E by auto
   lemma Eq\<^sub>1_prop: "[F \<^bold>=\<^sub>1 G in v] \<Longrightarrow> [\<phi> F in v] = [\<phi> G in v]"

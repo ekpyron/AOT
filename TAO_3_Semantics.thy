@@ -258,8 +258,7 @@ begin
   type_synonym W = i
 
   text{* Denotations of the terms in the language. *}
-  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is
-    "\<lambda> x . (if fst x then Some (snd x) else None)" .
+  lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is id .
   lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
   lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is Some .
   lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
@@ -299,23 +298,30 @@ begin
   lemma T1_1[semantics]:
     "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux rep_def proper_def)
+    apply (simp add: meta_defs meta_aux rep_def proper_def)
+    by (metis option.discI option.exhaust option.sel)
+
   lemma T1_2[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux rep_def proper_def)
+    apply (simp add: meta_defs meta_aux rep_def proper_def)
+    by (metis option.discI option.exhaust option.sel)
+
   lemma T1_3[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                     \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                                     \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux rep_def proper_def)
+    apply (simp add: meta_defs meta_aux rep_def proper_def)
+    by (metis option.discI option.exhaust option.sel)
 
   lemma T2[semantics]:
     "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux  rep_def proper_def split: \<nu>.split)
+    apply (simp add: meta_defs meta_aux rep_def proper_def split: \<nu>.split)
+    by (metis \<nu>.exhaust \<nu>.inject(2) \<nu>.simps(4) \<nu>\<kappa>.rep_eq option.collapse
+              option.discI rep.rep_eq rep_proper_id)
 
   lemma T3[semantics]:
     "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
@@ -407,16 +413,7 @@ begin
   proof -
     fix x :: \<kappa> and y :: \<kappa> and o\<^sub>1 :: \<nu>
     assume "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y"
-    moreover hence
-      "fst (eval\<kappa> x) \<and> fst (eval\<kappa> y) \<and> snd (eval\<kappa> x) = o\<^sub>1 \<and> snd (eval\<kappa> x) = o\<^sub>1"
-      unfolding d\<^sub>\<kappa>_def
-      apply transfer
-      apply simp
-      by (metis option.distinct(1) option.inject)
-    ultimately show "x = y"
-      unfolding d\<^sub>\<kappa>_def
-      apply transfer
-      by auto
+    thus "x = y" apply transfer by auto
   qed
   lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
     unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)

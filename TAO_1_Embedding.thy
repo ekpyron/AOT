@@ -35,13 +35,16 @@ datatype \<nu> = \<omega>\<nu> \<omega> | \<alpha>\<nu> \<alpha> --{* individual
 text{*
 \begin{remark}
   Individual terms can be definite descriptions which may not denote.
-  The condition under which an individual term denotes is stored as
-  a boolean. Note that relation terms on the other hand always denote,
+  Therefore the type for individual terms @{text "\<kappa>"} is defined as
+  @{text "\<nu> option"}. Individuals are represented by @{term "Some x"}
+  for an individual @{text "x"} of type @{type \<nu>}, whereas non-denoting
+  individual terms are represented by @{term "None"}.
+  Note that relation terms on the other hand always denote,
   so there is no need for a distinction between relation terms and
   relation variables.
 \end{remark}
 *}
-typedef \<kappa> = "UNIV::(bool\<times>\<nu>) set" morphisms eval\<kappa> make\<kappa> ..
+typedef \<kappa> = "UNIV::(\<nu> option) set" morphisms eval\<kappa> make\<kappa> ..
 
 setup_lifting type_definition_\<o>
 setup_lifting type_definition_\<kappa>
@@ -56,25 +59,28 @@ text{*
   Individual terms can be explicitly marked to represent
   only logically proper objects. Their logical propriety
   and their representative individual variable can be
-  extracted from the internal tuple.
+  extracted from the internal representation as an
+  @{typ "\<nu> option"}.
 \end{remark}
 *}
 
-lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is "Pair True" .
-lift_definition proper :: "\<kappa>\<Rightarrow>bool" is fst .
-lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is snd .
+lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
+lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "op\<noteq> None" .
+lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
 
 text{*
 \begin{remark}
   Definite descriptions map conditions on individual variables
-  to individual terms. Whether the condition is satisfied by
-  a unique individual (and therefore the definite description is logically proper)
-  is stored as a boolean.
+  to individual terms. If no unique object satisfying the condition
+  exists (and therefore the definite description is not logically proper),
+  the individual term is set to @{term "None"}.
 \end{remark}
 *}
 
 lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
-  "\<lambda> \<phi> . (\<exists>! x . (\<phi> x) dj dw, THE x . (\<phi> x) dj dw)" .
+  "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw)
+         then Some (THE x . (\<phi> x) dj dw)
+         else None" .
 
 subsection{* Mapping from abstract objects to special Urelements *}
 
@@ -281,13 +287,19 @@ lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> (\<alpha>\<nu> x) =
 lemma no_\<sigma>\<omega>[meta_aux]: "\<not>(\<sigma>\<upsilon> x = \<omega>\<upsilon> y)" by blast
 lemma \<nu>\<upsilon>_surj[meta_aux]: "surj \<nu>\<upsilon>" using \<nu>\<upsilon>_\<upsilon>\<nu>_id surjI by blast
 lemma \<upsilon>\<nu>\<kappa>_aux1[meta_aux]:
-  "fst (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P))"
+  "None \<noteq> (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (the (eval\<kappa> x)))\<^sup>P))"
   apply transfer
   by simp
 lemma \<upsilon>\<nu>\<kappa>_aux2[meta_aux]:
-  "(\<nu>\<upsilon> (snd (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (snd (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> (snd (eval\<kappa> x)))"
+  "(\<nu>\<upsilon> (the (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (the (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> (the (eval\<kappa> x)))"
   apply transfer
   using \<nu>\<upsilon>_\<upsilon>\<nu>_id by auto
+lemma \<upsilon>\<nu>\<kappa>_aux3[meta_aux]:
+  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (None \<noteq> eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> o\<^sub>1)\<^sup>P)) = (None \<noteq> eval\<kappa> x)"
+  apply transfer by (auto simp: meta_aux)
+lemma \<upsilon>\<nu>\<kappa>_aux4[meta_aux]:
+  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (\<nu>\<upsilon> (the (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> o\<^sub>1)\<^sup>P)))) = \<nu>\<upsilon> (the (eval\<kappa> x))"
+  apply transfer by (auto simp: meta_aux)
 
 (*<*)
 end

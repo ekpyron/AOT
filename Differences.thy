@@ -60,18 +60,19 @@ text{*
   between variables and terms it suffices to show that @{term "\<^bold>\<box>(\<^bold>\<forall> x. \<lbrace>x\<^sup>P,\<tau>\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,\<tau>\<rbrace>)"} which
   follows from the remaining axioms). Consequently, the additional precondition  @{text "\<exists>\<beta> (\<beta> = \<tau>)"}
   in axiom (\ref{PM-cqt}.1)\cite[p. 190]{PM} is dropped as well.
-  To address the issue of possibly non-denoting definite descriptions, the embedding distinguishes between the 
-  types @{type \<nu>} and @{type \<kappa>}.  Roughly speaking, the type @{text \<nu>} corresponds to PLMs individual 
-  variables, whereas the type @{text \<kappa>} corresponds to the Principia's individual terms.
+  To address the issue of possibly non-denoting definite descriptions, the embedding distinguishes
+  between the types @{type \<nu>} and @{type \<kappa>}. Roughly speaking, the type @{text \<nu>} corresponds to PLMs
+  individual variables, whereas the type @{text \<kappa>} corresponds to the Principia's individual terms.
   Constructs of type @{type \<nu>} always denote (individuals), whereas objects of type @{type \<kappa>} may 
-  contain definite descriptions that may not denote. The condition under which an object of type
-  @{type \<kappa>} denotes is internally stored/remembered by an annotation (Boolean flag).
-  More precisely, the type @{type \<kappa>} is internally represented as a tuple of a
-  Boolean and an object of type @{type \<nu>}). The decoration @{text "_\<^sup>P"} is used to represent
-  only objects of @{type \<kappa>} that denote (internally @{text "x\<^sup>P"} maps @{text "x"} which is of
-  type @{type \<nu>} to an object of type @{type \<kappa>} representing the tuple @{text "(True, x)"}).
-  Consequently, any theorem of the Principia that uses individual variables can be represented
-  in the embedding using a variable of type @{type \<nu>} decorated by @{text "_\<^sup>P"} (see also
+  contain definite descriptions that may not denote. Internally an object of type @{type \<kappa>} is
+  represented by an object of type @{typ "\<nu> option"} and can either be @{term "Some x"} for an
+  individual @{term "x"} of type @{type \<nu>} or @{term "None"} for definite descriptions that do not
+  denote an individual (The @{typ "'a option"} type is part of Isabelle/HOL and consists of a type
+  constructor @{term "Some x"} for an object of type @{typ 'a} and a special element @{term "None"}).
+  The decoration @{text "_\<^sup>P"} is used to represent only objects of @{type \<kappa>} that denote (internally
+  @{text "x\<^sup>P"} maps @{text "x"} which is of type @{type \<nu>} to an object of type @{type \<kappa>} representing
+  @{text "Some x"}). Consequently, any theorem of the Principia that uses individual variables can be
+  represented in the embedding using a variable of type @{type \<nu>} decorated by @{text "_\<^sup>P"} (see also
   the section about axiom and theorem schemata below).
   
   In order to be able to substitute denoting definite descriptions for an expression

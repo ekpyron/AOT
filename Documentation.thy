@@ -103,11 +103,12 @@ Based on the primitive types above the following types are defined:
   \item Type @{type \<nu>} is defined as @{datatype \<nu>}. This type represents individuals and can
         be either an ordinary urelement @{type \<omega>} or an abstract object @{type \<alpha>} (with the
         respective type constructors @{term \<omega>\<nu>} and @{term \<alpha>\<nu>}.
-  \item Type @{type \<kappa>} is defined as the set of all tuples of type @{typ "(bool\<times>\<nu>)"} and
-        represents individual terms. That is every pair of a meta-logical truth value (@{term "True"}
-        or @{term "False"}) and an individual of type @{type \<nu>} constitutes an object
-        of type @{type \<kappa>}. The boolean encodes the condition under which the individual term
-        is logically proper (see below).
+  \item Type @{type \<kappa>} is defined as the set of all objects of type @{typ "\<nu> option"} and
+        represents individual terms. The type @{typ "'a option"} is part of Isabelle/HOL and
+        consists of a type constructor @{term "Some x"} for an object @{term "x"} of type @{typ 'a}
+        (in our case type @{type \<nu>}) and an additional special element called @{term "None"}.
+        @{term "None"} is used to represent individual terms that are definite descriptions
+        that do not denote an individual.
 \end{itemize}
 
 \begin{remark}
@@ -145,19 +146,20 @@ object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^s
 
 @{thm[display] \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_def]}
 
-The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be logically proper
-(the propriety condition is constant @{text "True"}) and to always denote the same object as the individual
-variable @{text "x"}.
+The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
+logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
+and to always denote the same object as the individual variable @{text "x"}.
 
 It is now possible to define definite descriptions as follows:
 
 @{thm[display] that.rep_eq[where x=\<phi>, THEN embedded_def]}
 
-The propriety condition of a definite description is therefore @{prop "\<exists>!x. \<phi> x dj dw"},
+If the propriety condition of a definite description @{prop "\<exists>!x. \<phi> x dj dw"} holds,
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
-the actual world}, and the representing individual variable is set to @{term "THE x . \<phi> x dj dw"}.
-The latter expression uses Isabelle's \emph{THE} operator, which evaluates to the unique object,
-for which the given condition holds, if there is a unique such object, and is undefined otherwise.
+the actual world}, the representing individual variable is set to @{term "Some (THE x . \<phi> x dj dw)"}.
+Isabelle's \emph{THE} operator evaluates to the unique object, for which the given condition holds,
+if there is a unique such object, and is undefined otherwise. If the propriety condition does not hold,
+the individual term is set to @{term "None"}.
 
 The following meta-logical functions are defined to aid in handling individual terms:
 
@@ -165,12 +167,10 @@ The following meta-logical functions are defined to aid in handling individual t
 
 @{thm[display] rep.rep_eq}
 
-@{term "fst"} and @{term "snd"} here operate on the underlying tuple used to represent the object
-of type @{type \<kappa>}. For an object of type @{type \<kappa>} the expression @{term "proper x"} therefore
-evaluates to the first component of the underlying tuple, i.e. the propriety condition of the term.
-The expression @{term "rep x"} evalutes to the second component of the underlying tuple, i.e.
-the individual variable of type @{type \<nu>}.
-
+@{term "the"} maps an object of type @{typ "'a option"} that is of the form @{term "Some x"} to
+@{term "x"} and is undefined for @{term "None"}. For an object of type @{type \<kappa>} the expression
+@{term "proper x"} is therefore true, if the term is logically proper, and if this is the case,
+the expression @{term "rep x"} evaluates to the individual of type @{type \<nu>} that the term denotes.
 *}
 
 subsection{* Mapping from abstract objects to special Urelements *}
