@@ -5,20 +5,22 @@ begin
 (*>*)
 
 section{* General Quantification *}
+text{* \label{TAO_Quantifiable} *}
 
 text{*
 \begin{remark}
   In order to define general quantifiers that can act
-  on all variable types a type class is introduced
-  which assumes the semantics of the all quantifier.
-  This type class is then instantiated for all variable
-  types.
+  on all individuals as well as relations a type class
+  is introduced which assumes the semantics of the all quantifier.
+  This type class is then instantiated for individuals and
+  relations.
 \end{remark}
 *}
 
 subsection{* Type Class *}
+text{* \label{TAO_Quantifiable_Class} *}
 
-text{* Datatype for types for which quantification is defined: *}
+text{* Datatype of types for which quantification is defined: *}
 
 datatype var = \<nu>var (var\<nu>: \<nu>) | \<o>var (var\<o>: \<o>) | \<Pi>\<^sub>1var (var\<Pi>\<^sub>1: \<Pi>\<^sub>1)
              | \<Pi>\<^sub>2var (var\<Pi>\<^sub>2: \<Pi>\<^sub>2) | \<Pi>\<^sub>3var (var\<Pi>\<^sub>3: \<Pi>\<^sub>3)
@@ -42,6 +44,7 @@ lemma (in Semantics) T8: shows "(w \<Turnstile> \<^bold>\<forall> x . \<psi> x) 
   using quantifiable_T8 .
 
 subsection{* Instantiations *}
+text{* \label{TAO_Quantifiable_Instantiation} *}
 
 instantiation \<nu> :: quantifiable
 begin
@@ -124,6 +127,7 @@ begin
 end
 
 subsection{* MetaSolver Rules *}
+text{* \label{TAO_Quantifiable_Rules} *}
 
 text{*
 \begin{remark}

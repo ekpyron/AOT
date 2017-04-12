@@ -5,8 +5,10 @@ begin
 (*>*)
 
 section{* Semantics *}
+text{* \label{TAO_Semantics} *}
 
 subsection{* Propositional Formulas *}
+text{* \label{TAO_Semantics_Propositional} *}
 
 text{*
 \begin{remark}
@@ -244,6 +246,7 @@ declare IsPropositionalInX_def[IsPropositionalIn_defs]
         IsPropositionalInXYZ_def[IsPropositionalIn_defs]
 
 subsection{* Semantics *}
+text{* \label{TAO_Semantics_Semantics} *}
 
 locale Semantics
 begin
@@ -420,6 +423,7 @@ begin
 end
 
 subsection{* Validity Syntax *}
+text{* \label{TAO_Semantics_Validity} *}
 
 (* disable list syntax [] to replace it with truth evaluation *)
 (*<*) no_syntax "_list" :: "args \<Rightarrow> 'a list" ("[(_)]") (*>*) 

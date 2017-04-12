@@ -5,6 +5,7 @@ begin
 (*>*)
 
 section{* The Axioms of Principia Metaphysica *}
+text{* \label{TAO_Axioms} *}
 
 text{*
 \begin{remark}
@@ -26,6 +27,7 @@ begin
   named_theorems axiom
 
 subsection{* Closures *}
+text{* \label{TAO_Axioms_Closures} *}
 
 text{*
 \begin{remark}
@@ -81,6 +83,7 @@ text{*
   *}
 
 subsection{* Axioms for Negations and Conditionals *}
+text{* \label{TAO_Axioms_NegationsAndConditionals} *}
 
   lemma pl_1[axiom]:
     "[[\<phi> \<^bold>\<rightarrow> (\<psi> \<^bold>\<rightarrow> \<phi>)]]"
@@ -93,12 +96,14 @@ subsection{* Axioms for Negations and Conditionals *}
     by axiom_meta_solver
 
 subsection{* Axioms of Identity *}
+text{* \label{TAO_Axioms_Identity} *}
 
   lemma l_identity[axiom]:
     "[[\<alpha> \<^bold>= \<beta> \<^bold>\<rightarrow> (\<phi> \<alpha> \<^bold>\<rightarrow> \<phi> \<beta>)]]"
-    using l_identity apply cut_tac by axiom_meta_solver
+    using l_identity apply - by axiom_meta_solver
 
 subsection{* Axioms of Quantification *}
+text{* \label{TAO_Axioms_Quantification} *}
 
 text{*
 \begin{remark}
@@ -124,6 +129,9 @@ text{*
       the original @{text "cqt_5"} together with the omitted @{text "cqt_2"}.
   \end{itemize}
 \end{remark}
+\begin{TODO}
+  Reformulate the above more precisely.
+\end{TODO}
 *}
 
   lemma cqt_1[axiom]:
@@ -172,7 +180,7 @@ text{*
         "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (rep (that \<phi>))\<^sup>P)"
         apply transfer apply simp by force
      ultimately show ?thesis
-      apply cut_tac unfolding identity_\<kappa>_def
+      apply - unfolding identity_\<kappa>_def
       apply axiom_meta_solver by metis
     qed
 
@@ -185,11 +193,12 @@ text{*
       moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (rep (x))\<^sup>P)"
         apply transfer by auto
       ultimately show ?thesis
-        apply cut_tac unfolding identity_\<kappa>_def
+        apply - unfolding identity_\<kappa>_def
         apply axiom_meta_solver by metis
     qed
 
 subsection{* Axioms of Actuality *}
+text{* \label{TAO_Axioms_Actuality} *}
 
 text{*
 \begin{remark}
@@ -219,6 +228,7 @@ text{*
     by axiom_meta_solver
 
 subsection{* Axioms of Necessity *}
+text{* \label{TAO_Axioms_Necessity} *}
 
   lemma qml_1[axiom]:
     "[[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)]]"
@@ -239,6 +249,8 @@ subsection{* Axioms of Necessity *}
      by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1))
 
 subsection{* Axioms of Necessity and Actuality *}
+text{* \label{TAO_Axioms_NecessityAndActuality} *}
+
   lemma qml_act_1[axiom]:
     "[[\<^bold>\<A>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<A>\<phi>]]"
     by axiom_meta_solver
@@ -247,6 +259,8 @@ subsection{* Axioms of Necessity and Actuality *}
     by axiom_meta_solver
 
 subsection{* Axioms of Descriptions *}
+text{* \label{TAO_Axioms_Descriptions} *}
+
   lemma descriptions[axiom]:
     "[[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<phi> x) \<^bold>\<equiv> (\<^bold>\<forall>z.(\<^bold>\<A>(\<phi> z) \<^bold>\<equiv> z \<^bold>= x))]]"
     unfolding axiom_def
@@ -255,7 +269,7 @@ subsection{* Axioms of Descriptions *}
       assume "[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"
       moreover hence 1:
         "\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
-        apply cut_tac unfolding identity_\<kappa>_def by meta_solver
+        apply - unfolding identity_\<kappa>_def by meta_solver
       then obtain o\<^sub>1 o\<^sub>2 where 2:
         "Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) \<and> o\<^sub>1 = o\<^sub>2"
         by auto
@@ -292,7 +306,7 @@ subsection{* Axioms of Descriptions *}
       assume "[\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<equiv> (z) \<^bold>= (x) in v]"
       hence "\<And>z. (dw \<Turnstile> \<phi> z) = (\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (z\<^sup>P)
                 \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 = o\<^sub>2)"
-        apply cut_tac unfolding identity_\<nu>_def identity_\<kappa>_def by meta_solver
+        apply - unfolding identity_\<nu>_def identity_\<kappa>_def by meta_solver
       hence "\<forall> z . eval\<o> (\<phi> z) dj dw = (z = x)" apply transfer by simp
       moreover hence "\<exists>!x . eval\<o> (\<phi> x) dj dw" by metis
       ultimately have "x\<^sup>P = (\<^bold>\<iota>x. \<phi> x)" unfolding TheS by (simp add: \<nu>\<kappa>_def)
@@ -301,6 +315,7 @@ subsection{* Axioms of Descriptions *}
     qed
 
 subsection{* Axioms for Complex Relation Terms *}
+text{* \label{TAO_Axioms_ComplexRelationTerms} *}
 
   lemma lambda_predicates_1[axiom]:
     "(\<^bold>\<lambda> x . \<phi> x) = (\<^bold>\<lambda> y . \<phi> y)" ..
@@ -359,28 +374,29 @@ subsection{* Axioms for Complex Relation Terms *}
   lemma lambda_predicates_4_0[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[(\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x))) in v]"
-    unfolding identity_defs using assms apply cut_tac
+    unfolding identity_defs using assms apply -
     apply meta_solver by (auto simp: meta_defs)
 
   lemma lambda_predicates_4_1[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[((\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<phi> x) x) \<^bold>= (\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<psi> x) x)) in v]"
-    unfolding identity_defs using assms apply cut_tac
+    unfolding identity_defs using assms apply -
     apply meta_solver by (auto simp: meta_defs)
 
   lemma lambda_predicates_4_2[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[((\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<phi> x) x y)) \<^bold>= (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<psi> x) x y))) in v]"
-    unfolding identity_defs using assms apply cut_tac
+    unfolding identity_defs using assms apply -
     apply meta_solver by (auto simp: meta_defs)
 
   lemma lambda_predicates_4_3[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<phi> x) x y z)) \<^bold>= (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<psi> x) x y z)) in v]"
-    unfolding identity_defs using assms apply cut_tac
+    unfolding identity_defs using assms apply -
     apply meta_solver by (auto simp: meta_defs)
 
 subsection{* Axioms of Encoding *}
+text{* \label{TAO_Axioms_Encoding} *}
 
   lemma encoding[axiom]:
     "[[\<lbrace>x,F\<rbrace> \<^bold>\<rightarrow> \<^bold>\<box>\<lbrace>x,F\<rbrace>]]"

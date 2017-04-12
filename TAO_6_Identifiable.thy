@@ -5,18 +5,20 @@ begin
 (*>*)
 
 section{* General Identity *}
+text{* \label{TAO_Identifiable} *}
 
 text{*
 \begin{remark}
   In order to define a general identity symbol that can act
   on all types of terms a type class is introduced
-  which assumes the substitution property of equality which
+  which assumes the substitution property which
   is needed to state the axioms later.
   This type class is then instantiated for all applicable types.
 \end{remark}
 *}
 
 subsection{* Type Classes *}
+text{* \label{TAO_Identifiable_Class} *}
 
 class identifiable =
 fixes identity :: "'a\<Rightarrow>'a\<Rightarrow>\<o>" (infixl "\<^bold>=" 63)
@@ -36,6 +38,7 @@ begin
 end
 
 subsection{* Instantiations *}
+text{* \label{TAO_Identifiable_Instantiation} *}
 
 instantiation \<kappa> :: identifiable
 begin
@@ -112,11 +115,12 @@ instance \<Pi>\<^sub>3 :: quantifiable_and_identifiable ..
 instance \<o> :: quantifiable_and_identifiable ..
 
 subsection{* New Identity Definitions *}
+text{* \label{TAO_Identifiable_Definitions} *}
 
 text{*
 \begin{remark}
   The basic definitions of identity used the type specific quantifiers
-  and identities. We now introduce equivalent alternative definitions that
+  and identities. We now introduce equivalent definitions that
   use the general identity and general quantifiers.
 \end{remark}
 *}

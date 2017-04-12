@@ -5,6 +5,7 @@ begin
 (*>*)
 
 section{* Sanity Tests *}
+text{* \label{TAO_SanityTests} *}
 
 locale SanityTests
 begin
@@ -12,36 +13,33 @@ begin
   interpretation Semantics.
 
 subsection{* Consistency *}
+text{* \label{TAO_SanityTests_Consistency} *}
 
   lemma "True"
     nitpick[expect=genuine, user_axioms, satisfy]
     by auto
 
 subsection{* Intensionality *}
-
+text{* \label{TAO_SanityTests_Intensionality} *}
 
   lemma "[(\<^bold>\<lambda>y. (q \<^bold>\<or> \<^bold>\<not>q)) \<^bold>= (\<^bold>\<lambda>y. (p \<^bold>\<or> \<^bold>\<not>p)) in v]"
-    unfolding identity_\<Pi>\<^sub>1_def
+    unfolding identity_\<Pi>\<^sub>1_def conn_defs
     apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
-    nitpick[expect = genuine, user_axioms=true,
-            sat_solver = MiniSat_JNI,
-            card i = 2, card j = 2, card \<sigma> = 1, card \<omega> = 1,
-            card "(i \<Rightarrow> bool) \<times> i" = 4,
-            card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
-            card \<upsilon> = 2, verbose, show_all, debug]
+    nitpick[expect = genuine, user_axioms=true, card i = 2,
+            card j = 2, card \<omega> = 1, card \<sigma> = 1,
+            sat_solver = MiniSat_JNI, verbose, show_all]
     oops --{* Countermodel by Nitpick *}
   lemma "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"
     unfolding identity_\<Pi>\<^sub>1_def
     apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
     nitpick[expect = genuine, user_axioms=true,
-            sat_solver = MiniSat_JNI,
-            card i = 2, card j = 2, card \<sigma> = 1,
-            card \<omega> = 1, card "(i \<Rightarrow> bool) \<times> i" = 4,
-            card "(i \<Rightarrow> bool) \<times> (i \<Rightarrow> bool) \<times> i" = 4,
-            card \<upsilon> = 2, verbose, show_all, debug]
+            sat_solver = MiniSat_JNI, card i = 2,
+            card j = 2, card \<sigma> = 1, card \<omega> = 1,
+            card \<upsilon> = 2, verbose, show_all]
     oops --{* Countermodel by Nitpick *}
 
 subsection{* Concreteness coindices with Object Domains *}
+text{* \label{TAO_SanityTests_Concreteness} *}
 
   lemma OrdCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
@@ -55,6 +53,7 @@ subsection{* Concreteness coindices with Object Domains *}
     by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
 
 subsection{* Justification for Meta-Logical Axioms *}
+text{* \label{TAO_SanityTests_MetaAxioms} *}
 
 text{*
 \begin{remark}
@@ -106,6 +105,7 @@ text{*
     by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
 
 subsection{* Relations in the Meta-Logic *}
+text{* \label{TAO_SanityTests_MetaRelations} *}
 
 text{*
 \begin{remark}
@@ -125,7 +125,7 @@ text{*
       obtain x where y_def: "y = \<nu>\<upsilon> x" by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
       have "(\<exists>r o\<^sub>1. Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v) =
             (\<exists>r o\<^sub>1. Some r = d\<^sub>1 G \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v)"
-            using 1 apply cut_tac by meta_solver
+            using 1 apply - by meta_solver
       moreover obtain r where r_def: "Some r = d\<^sub>1 F"
         unfolding d\<^sub>1_def by auto
       moreover obtain s where s_def: "Some s = d\<^sub>1 G"
@@ -154,7 +154,7 @@ text{*
       ultimately have "(y \<in> ex1 r v) = (y \<in> ex1 s v)"
         by (simp add: d\<^sub>1.rep_eq ex1_def \<nu>\<upsilon>_\<upsilon>\<nu>_id x_def)
       hence "[\<lparr>F,y\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,y\<^sup>P\<rparr> in v]"
-        apply cut_tac apply meta_solver
+        apply - apply meta_solver
         using r_def s_def by (metis Semantics.d\<^sub>\<kappa>_proper option.inject)
     }
     thus "[\<^bold>\<forall>x. \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v]"
@@ -176,7 +176,7 @@ text{*
       interpret MetaSolver .
       assume "[F \<^bold>= G in v]"
       hence "F = G"
-        apply cut_tac unfolding identity_\<Pi>\<^sub>1_def by meta_solver
+        apply - unfolding identity_\<Pi>\<^sub>1_def by meta_solver
       thus "\<forall>s. s \<noteq> dj \<longrightarrow> (\<forall>x. eval\<Pi>\<^sub>1 F x s = eval\<Pi>\<^sub>1 G x s)"
         by auto
     next
@@ -207,6 +207,7 @@ text{*
                          mat_eq_is_eq_dj mat_eq_is_eq_if_eq_forall_j)
 
 subsection{* Lambda Expressions in the Meta-Logic *}
+text{* \label{TAO_SanityTests_MetaLambda} *}
 
   lemma lambda_impl_meta:
     "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v)"

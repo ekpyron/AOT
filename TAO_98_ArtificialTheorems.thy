@@ -5,6 +5,7 @@ begin
 (*>*)
 
 section{* Artificial Theorems *}
+text{* \label{TAO_ArtificialTheorems} *}
 
 text{*
 \begin{remark}

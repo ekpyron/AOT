@@ -5,6 +5,7 @@ begin
 (*>*)
 
 section{* Definitions *}
+text{* \label{TAO_Definitions} *}
 
 text{* Various definitions needed throughout PLM. *}
 

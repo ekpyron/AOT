@@ -5,16 +5,17 @@ begin
 (*>*)
 
 section{* MetaSolver *}
+text{* \label{TAO_MetaSolver} *}
 
 text{*
 \begin{remark}
   @{text "meta_solver"} is a resolution prover that translates
-  expressions in the embedded logic to expressions in the meta-logic
-  as far as possible. The rules for connectives and quantifiers
-  are simple, whereas the rules for exemplification and encoding
-  are more verbose.
-  Futhermore rules for the defined identities are proven. By design
-  the defined identities in the embedded logic coincides with the
+  expressions in the embedded logic to expressions in the meta-logic,
+  resp. semantic expressions as far as possible.
+  The rules for connectives, quantifiers, exemplification
+  and encoding are easy to prove.
+  Futhermore rules for the defined identities are derived using more verbose proofs.
+  By design the defined identities in the embedded logic coincide with the
   meta-logical equality.
 \end{remark}
 *}
@@ -34,6 +35,7 @@ begin
       )+
 
 subsection{* Rules for Implication *}
+text{* \label{TAO_MetaSolver_Implication} *}
 
   lemma ImplI[meta_intro]: "([\<phi> in v] \<Longrightarrow> [\<psi> in v]) \<Longrightarrow> ([\<phi> \<^bold>\<rightarrow> \<psi> in v])"
     by (simp add: Semantics.T5)
@@ -43,6 +45,7 @@ subsection{* Rules for Implication *}
     by (simp add: Semantics.T5)
 
 subsection{* Rules for Negation *}
+text{* \label{TAO_MetaSolver_Negation} *}
 
   lemma NotI[meta_intro]: "\<not>[\<phi> in v] \<Longrightarrow> [\<^bold>\<not>\<phi> in v]"
     by (simp add: Semantics.T4)
@@ -52,6 +55,7 @@ subsection{* Rules for Negation *}
     by (simp add: Semantics.T4)
 
 subsection{* Rules for Conjunction *}
+text{* \label{TAO_MetaSolver_Conjunction} *}
 
   lemma ConjI[meta_intro]: "([\<phi> in v] \<and> [\<psi> in v]) \<Longrightarrow> [\<phi> \<^bold>& \<psi> in v]"
     by (simp add: conj_def NotS ImplS)
@@ -61,6 +65,7 @@ subsection{* Rules for Conjunction *}
     by (simp add: conj_def NotS ImplS)
 
 subsection{* Rules for Equivalence *}
+text{* \label{TAO_MetaSolver_Equivalence} *}
 
   lemma EquivI[meta_intro]: "([\<phi> in v] \<longleftrightarrow> [\<psi> in v]) \<Longrightarrow> [\<phi> \<^bold>\<equiv> \<psi> in v]"
     by (simp add: equiv_def NotS ImplS ConjS)
@@ -70,6 +75,7 @@ subsection{* Rules for Equivalence *}
     by (auto simp: equiv_def NotS ImplS ConjS)
 
 subsection{* Rules for Disjunction *}
+text{* \label{TAO_MetaSolver_Disjunction} *}
 
   lemma DisjI[meta_intro]: "([\<phi> in v] \<or> [\<psi> in v]) \<Longrightarrow> [\<phi> \<^bold>\<or> \<psi> in v]"
     by (auto simp: disj_def NotS ImplS)
@@ -79,6 +85,7 @@ subsection{* Rules for Disjunction *}
     by (auto simp: disj_def NotS ImplS)
 
 subsection{* Rules for Necessity *}
+text{* \label{TAO_MetaSolver_Necessity} *}
 
   lemma BoxI[meta_intro]: "(\<And>v.[\<phi> in v]) \<Longrightarrow> [\<^bold>\<box>\<phi> in v]"
     by (simp add: Semantics.T6)
@@ -88,6 +95,7 @@ subsection{* Rules for Necessity *}
     by (simp add: Semantics.T6)
 
 subsection{* Rules for Possibility *}
+text{* \label{TAO_MetaSolver_Possibility} *}
 
   lemma DiaI[meta_intro]: "(\<exists>v.[\<phi> in v]) \<Longrightarrow> [\<^bold>\<diamond>\<phi> in v]"
     by (metis BoxS NotS diamond_def)
@@ -97,6 +105,7 @@ subsection{* Rules for Possibility *}
     by (metis BoxS NotS diamond_def)
 
 subsection{* Rules for Quantification *}
+text{* \label{TAO_MetaSolver_Quantification} *}
 
   lemma All\<^sub>\<nu>I[meta_intro]: "(\<And>x::\<nu>. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>\<nu> x. \<phi> x in v]"
     by (auto simp: Semantics.T8_\<nu>)
@@ -134,6 +143,7 @@ subsection{* Rules for Quantification *}
     by (auto simp: Semantics.T8_3)
 
 subsection{* Rules for Actuality *}
+text{* \label{TAO_MetaSolver_Actuality} *}
 
   lemma ActualI[meta_intro]: "[\<phi> in dw] \<Longrightarrow> [\<^bold>\<A>(\<phi>) in v]"
     by (auto simp: Semantics.T7)
@@ -143,6 +153,7 @@ subsection{* Rules for Actuality *}
     by (auto simp: Semantics.T7)
 
 subsection {* Rules for Encoding *}
+text{* \label{TAO_MetaSolver_Encoding} *}
 
   lemma EncI[meta_intro]:
     assumes "\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r"
@@ -157,6 +168,7 @@ subsection {* Rules for Encoding *}
     by (auto simp: Semantics.T2)
 
 subsection{* Rules for Exemplification *}
+text{* \label{TAO_MetaSolver_Exemplification} *}
 
 subsubsection{* Zero-place Relations *}
 
@@ -225,6 +237,7 @@ subsubsection{* Three-Place Relations *}
     by (auto simp: Semantics.T1_3)
 
 subsection{* Rules for Being Ordinary *}
+text{* \label{TAO_MetaSolver_Ordinary} *}
 
   lemma OrdI[meta_intro]:
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
@@ -252,6 +265,7 @@ subsection{* Rules for Being Ordinary *}
     using OrdI OrdE by blast
 
 subsection{* Rules for Being Abstract *}
+text{* \label{TAO_MetaSolver_Abstract} *}
 
   lemma AbsI[meta_intro]:
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
@@ -277,6 +291,7 @@ subsection{* Rules for Being Abstract *}
     using AbsI AbsE by blast
 
 subsection{* Rules for Definite Descriptions *}
+text{* \label{TAO_MetaSolver_DefiniteDescription} *}
 
   lemma TheS: "(\<^bold>\<iota>x. \<phi> x) = make\<kappa> (if (\<exists>! x . eval\<o> (\<phi> x) dj dw) then
                                   Some (THE x . eval\<o> (\<phi> x) dj dw) else None)"
@@ -284,8 +299,10 @@ subsection{* Rules for Definite Descriptions *}
 
 
 subsection{* Rules for Identity *}
+text{* \label{TAO_MetaSolver_Identity} *}
 
 subsubsection{* Ordinary Objects *}
+text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
 
   lemma Eq\<^sub>EI[meta_intro]:
     assumes "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
@@ -339,13 +356,14 @@ subsubsection{* Ordinary Objects *}
       unfolding ex1_def 5 using 3 by (auto simp: meta_aux)
     thus ?thesis
       using 3 by auto
-  qed --{* TODO: simplify this *}
+  qed
   lemma Eq\<^sub>ES[meta_subst]:
     "[x \<^bold>=\<^sub>E y in v] = (\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
                                 \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X)"
     using Eq\<^sub>EI Eq\<^sub>EE by blast
 
 subsubsection{* Individuals *}
+text{* \label{TAO_MetaSolver_Identity_Individual} *}
 
   lemma Eq\<kappa>I[meta_intro]:
     assumes "\<exists> o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2"
@@ -383,7 +401,7 @@ subsubsection{* Individuals *}
         using BoxE All\<^sub>1E EquivE by fast
       hence 7: "\<forall>v r. (\<exists> o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)
                     = (\<exists> o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> y \<and> o\<^sub>1 \<in> en r)"
-        apply cut_tac apply meta_solver
+        apply - apply meta_solver
         using propex\<^sub>1 d\<^sub>1_inject apply simp
         apply transfer by simp
       hence 8: "\<forall> r. (o\<^sub>1 \<in> en r) = (o\<^sub>2 \<in> en r)"
@@ -428,6 +446,7 @@ subsubsection{* Individuals *}
     using Eq\<kappa>I Eq\<kappa>E by blast
 
 subsubsection{* One-Place Relations *}
+text{* \label{TAO_MetaSolver_Identity_OnePlaceRelation} *}
 
   lemma Eq\<^sub>1I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>1 G in v]"
     unfolding basic_identity\<^sub>1_def
@@ -446,6 +465,7 @@ subsubsection{* One-Place Relations *}
     using Eq\<^sub>1E by blast
 
 subsubsection{* Two-Place Relations *}
+text{* \label{TAO_MetaSolver_Identity_TwoPlaceRelation} *}
 
   lemma Eq\<^sub>2I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>2 G in v]"
     unfolding basic_identity\<^sub>2_def
@@ -456,9 +476,9 @@ subsubsection{* Two-Place Relations *}
     assume "[F \<^bold>=\<^sub>2 G in v]"
     hence "[\<^bold>\<forall>\<^sub>\<nu> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
       unfolding basic_identity\<^sub>2_def
-      apply cut_tac apply meta_solver by auto
+      apply - apply meta_solver by auto
     hence "\<And>x. (make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x)) = make\<Pi>\<^sub>1 ((eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))))"
-     apply cut_tac apply meta_solver
+     apply - apply meta_solver
      by (simp add: meta_defs meta_aux)
     hence "\<And>x. (eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) = eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x))"
       by (simp add: make\<Pi>\<^sub>1_inject)
@@ -472,6 +492,7 @@ subsubsection{* Two-Place Relations *}
     using Eq\<^sub>2E by blast
 
 subsubsection{* Three-Place Relations *}
+text{* \label{TAO_MetaSolver_Identity_ThreePlaceRelation} *}
 
   lemma Eq\<^sub>3I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>3 G in v]"
     apply (simp add: meta_defs meta_aux conn_defs basic_identity\<^sub>3_def)
@@ -480,12 +501,14 @@ subsubsection{* Three-Place Relations *}
   proof -
     assume "[F \<^bold>=\<^sub>3 G in v]"
     hence "[\<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
-      unfolding basic_identity\<^sub>3_def apply cut_tac
+      unfolding basic_identity\<^sub>3_def apply -
       apply meta_solver by auto
     hence "\<And>x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) = (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
       using Eq\<^sub>1E All\<^sub>\<nu>S by (metis (mono_tags, lifting))
+    hence "\<And>x y. make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y))
+               = make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> x) (\<nu>\<upsilon> y))"
+      by (auto simp: meta_defs meta_aux)
     hence "\<And>x y. make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 F x y) = make\<Pi>\<^sub>1 (eval\<Pi>\<^sub>3 G x y)"
-      apply (auto simp: meta_defs meta_aux)
       using \<nu>\<upsilon>_surj by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
     thus "F = G" using make\<Pi>\<^sub>1_inject eval\<Pi>\<^sub>3_inject by blast
   qed
@@ -495,6 +518,7 @@ subsubsection{* Three-Place Relations *}
     using Eq\<^sub>3E by blast
 
 subsubsection{* Propositions *}
+text{* \label{TAO_MetaSolver_Identity_Proposition} *}
 
   lemma Eq\<^sub>\<o>I[meta_intro]: "x = y \<Longrightarrow> [x \<^bold>=\<^sub>\<o> y in v]"
     unfolding basic_identity\<^sub>\<o>_def by (simp add: Eq\<^sub>1S)

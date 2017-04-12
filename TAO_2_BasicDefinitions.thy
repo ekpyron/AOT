@@ -5,8 +5,10 @@ begin
 (*>*)
 
 section{* Basic Definitions *}
+text{* \label{TAO_BasicDefinitions} *}
 
 subsection{* Derived Connectives *}
+text{* \label{TAO_BasicDefinitions_DerivedConnectives} *}
 
 definition diamond::"\<o>\<Rightarrow>\<o>" ("\<^bold>\<diamond>_" [62] 63) where
   "diamond \<equiv> \<lambda> \<phi> . \<^bold>\<not>\<^bold>\<box>\<^bold>\<not>\<phi>"
@@ -22,11 +24,13 @@ declare diamond_def[conn_defs] conj_def[conn_defs]
         disj_def[conn_defs] equiv_def[conn_defs]
 
 subsection{* Abstract and Ordinary Objects *}
+text{* \label{TAO_BasicDefinitions_AbstractOrdinary} *}
 
 definition Ordinary :: "\<Pi>\<^sub>1" ("O!") where "Ordinary \<equiv> \<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
 definition Abstract :: "\<Pi>\<^sub>1" ("A!") where "Abstract \<equiv> \<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
 
 subsection{* Identity Definitions *}
+text{* \label{TAO_BasicDefinitions_Identity} *}
 
 definition basic_identity\<^sub>E::"\<Pi>\<^sub>2" where
   "basic_identity\<^sub>E \<equiv> \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>

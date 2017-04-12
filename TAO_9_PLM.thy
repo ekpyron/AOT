@@ -5,13 +5,15 @@ begin
 (*>*)
 
 section{* The Deductive System PLM *}
+text{* \label{TAO_PLM} *}
 
 declare meta_defs[no_atp] meta_aux[no_atp]
 
 locale PLM = Axioms
 begin
 
-  subsection{* Automatic Solver *}
+subsection{* Automatic Solver *}
+text{* \label{TAO_PLM_Solver} *}
 
   named_theorems PLM
   named_theorems PLM_intro
@@ -25,17 +27,20 @@ begin
         | fastforce | safe | drule PLM_dest | erule PLM_elim); (PLM_solver)?)
 
 subsection{* Modus Ponens *}
+text{* \label{TAO_PLM_ModusPonens} *}
 
   lemma modus_ponens[PLM]:
     "\<lbrakk>[\<phi> in v]; [\<phi> \<^bold>\<rightarrow> \<psi> in v]\<rbrakk> \<Longrightarrow> [\<psi> in v]"
     by (simp add: Semantics.T5)
 
 subsection{* Axioms *}
+text{* \label{TAO_PLM_Axioms} *}
 
   interpretation Axioms .
   declare axiom[PLM]
 
 subsection{* (Modally Strict) Proofs and Derivations *}
+text{* \label{TAO_PLM_ProofsAndDerivations} *}
 
   lemma vdash_properties_6[no_atp]:
     "\<lbrakk>[\<phi> in v]; [\<phi> \<^bold>\<rightarrow> \<psi> in v]\<rbrakk> \<Longrightarrow> [\<psi> in v]"
@@ -53,6 +58,8 @@ subsection{* (Modally Strict) Proofs and Derivations *}
   *}
 
 subsection{* GEN and RN *}
+text{* \label{TAO_PLM_GEN_RN} *}
+
   lemma rule_gen[PLM]:
     "\<lbrakk>\<And>\<alpha> . [\<phi> \<alpha> in v]\<rbrakk> \<Longrightarrow> [\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v]"
     by (simp add: Semantics.T8)
@@ -66,6 +73,8 @@ subsection{* GEN and RN *}
     using qml_3[axiom_necessitation, axiom_instance] RN_2 by blast
 
 subsection{* Negations and Conditionals *}
+text{* \label{TAO_PLM_NegationsAndConditionals} *}
+
   lemma if_p_then_p[PLM]:
     "[\<phi> \<^bold>\<rightarrow> \<phi> in v]"
     using pl_1 pl_2 vdash_properties_10 axiom_instance by blast
@@ -481,6 +490,8 @@ text{*
 
   
 subsection{* Identity *}
+text{* \label{TAO_PLM_Identity} *}
+
   text{* \begin{remark}
           For the following proofs first the definitions for the respective identities have to be
           expanded. They are defined directly in the embedded logic, though, so the proofs are still
@@ -583,7 +594,7 @@ subsection{* Identity *}
     "[(x \<^bold>= y) \<^bold>\<equiv> ((\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))
                \<^bold>\<or> (\<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>))) in v]"
     using eq_E_simple_1
-    apply cut_tac unfolding identity_defs
+    apply - unfolding identity_defs
     by PLM_solver
 
   lemma id_eq_obj_1[PLM]: "[(x\<^sup>P) \<^bold>= (x\<^sup>P) in v]"
@@ -599,7 +610,7 @@ subsection{* Identity *}
           by (rule IsPropositional_intros)+
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr>) in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         hence "[(x\<^sup>P) \<^bold>=\<^sub>E (x\<^sup>P) in v]"
           using eq_E_simple_1[equiv_rl] unfolding Ordinary_def by fast
       }
@@ -610,7 +621,7 @@ subsection{* Identity *}
           by (rule IsPropositional_intros)+
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>) in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
       }
       ultimately show ?thesis unfolding identity_defs Ordinary_def Abstract_def
         using "\<^bold>\<or>I" by blast
@@ -754,7 +765,7 @@ begin
       moreover {
         assume "[\<tau> \<^bold>=\<^sub>E \<tau>' in v]"
         hence "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<tau> in v]"
-          apply cut_tac
+          apply -
           apply (rule cqt_5_mod[where \<psi>="\<lambda> \<tau> . \<tau> \<^bold>=\<^sub>E \<tau>'", axiom_instance, deduction])
            subgoal unfolding identity_defs by (rule SimpleExOrEnc.intros)
           by simp
@@ -762,7 +773,7 @@ begin
       moreover {
         assume "[\<lparr>A!,\<tau>\<rparr> \<^bold>& \<lparr>A!,\<tau>'\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>\<tau>,F\<rbrace> \<^bold>\<equiv> \<lbrace>\<tau>',F\<rbrace>) in v]"
         hence "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<tau> in v]"
-          apply cut_tac
+          apply -
           apply (rule cqt_5_mod[where \<psi>="\<lambda> \<tau> . \<lparr>A!,\<tau>\<rparr>", axiom_instance, deduction])
            subgoal unfolding identity_defs by (rule SimpleExOrEnc.intros)
           by PLM_solver
@@ -777,7 +788,7 @@ begin
     moreover {
       assume "[\<tau> \<^bold>=\<^sub>E \<tau>' in v]"
       hence "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<tau>' in v]"
-        apply cut_tac
+        apply -
         apply (rule cqt_5_mod[where \<psi>="\<lambda> \<tau>' . \<tau> \<^bold>=\<^sub>E \<tau>'", axiom_instance, deduction])
          subgoal unfolding identity_defs by (rule SimpleExOrEnc.intros)
         by simp
@@ -785,7 +796,7 @@ begin
     moreover {
       assume "[\<lparr>A!,\<tau>\<rparr> \<^bold>& \<lparr>A!,\<tau>'\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>\<tau>,F\<rbrace> \<^bold>\<equiv> \<lbrace>\<tau>',F\<rbrace>) in v]"
       hence "[\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<tau>' in v]"
-        apply cut_tac
+        apply -
         apply (rule cqt_5_mod[where \<psi>="\<lambda> \<tau> . \<lparr>A!,\<tau>\<rparr>", axiom_instance, deduction])
          subgoal unfolding identity_defs by (rule SimpleExOrEnc.intros)
         by PLM_solver
@@ -807,7 +818,7 @@ begin
       assume "[(\<^bold>\<exists> \<alpha>. (\<alpha>\<^sup>P) \<^bold>= (\<^bold>\<iota>x . \<phi> x)) in v] \<and> [(\<^bold>\<exists> \<beta>. (\<beta>\<^sup>P) \<^bold>= (\<^bold>\<iota>x . \<psi> x)) in v]"
       then obtain \<alpha> and \<beta> where
         "[(\<alpha>\<^sup>P) \<^bold>= (\<^bold>\<iota>x . \<phi> x) in v] \<and> [(\<beta>\<^sup>P) \<^bold>= (\<^bold>\<iota>x . \<psi> x) in v]"
-        apply cut_tac unfolding conn_defs by PLM_solver
+        apply - unfolding conn_defs by PLM_solver
       moreover {
         moreover have "[(\<alpha>) \<^bold>= (\<beta>) \<^bold>\<equiv> \<^bold>\<box>((\<alpha>) \<^bold>= (\<beta>)) in v]" by PLM_solver
         ultimately have "[((\<^bold>\<iota>x. \<phi> x) \<^bold>= (\<beta>\<^sup>P) \<^bold>\<equiv> \<^bold>\<box>((\<^bold>\<iota>x. \<phi> x) \<^bold>= (\<beta>\<^sup>P))) in v]"
@@ -826,12 +837,13 @@ begin
       using cqt_5[axiom_instance] PLM.contraposition_1 SimpleExOrEnc.intros
             vdash_properties_10 by meson
       hence "\<not>[(\<^bold>\<iota>x . \<phi> x) \<^bold>= (\<^bold>\<iota>x . \<psi> x) in v]"
-        apply cut_tac unfolding identity_defs by PLM_solver
-      thus ?thesis apply cut_tac apply PLM_solver
+        apply - unfolding identity_defs by PLM_solver
+      thus ?thesis apply - apply PLM_solver
         using qml_2[axiom_instance, deduction] by auto
     qed
 
 subsection{* Quantification *}
+text{* \label{TAO_PLM_Quantification} *}
 
   --{* TODO: think about the distinction in PM here *}
   lemma rule_ui[PLM,PLM_elim,PLM_dest]:
@@ -971,6 +983,7 @@ subsection{* Quantification *}
 
 
 subsection{* Actuality and Descriptions *}
+text{* \label{TAO_PLM_ActualityAndDescriptions} *}
 
   lemma nec_imp_act[PLM]: "[\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<A>\<phi> in v]"
     apply (rule CP)
@@ -1444,7 +1457,7 @@ subsection{* Actuality and Descriptions *}
            {
              assume "[\<^bold>\<A>\<psi> z in v]"
              hence "[\<^bold>\<A>\<phi> z in v]"
-              using assms[where x=z] apply cut_tac by PLM_solver
+              using assms[where x=z] apply - by PLM_solver
              moreover have "[\<^bold>\<A>\<phi> z \<^bold>\<rightarrow> z \<^bold>= x in v]"
                using 2 cqt_1[axiom_instance,deduction] by auto
              ultimately have "[z \<^bold>= x in v]"
@@ -1455,7 +1468,7 @@ subsection{* Actuality and Descriptions *}
         hence "[(\<^bold>\<forall> z . \<^bold>\<A>\<psi> z \<^bold>\<rightarrow> z \<^bold>= x) in v]" by (rule "\<^bold>\<forall>I")
         moreover have "[\<^bold>\<A>\<psi> x in v]"
           using 1[conj1] assms[where x=x]
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         ultimately have "[\<^bold>\<A>\<psi> x \<^bold>& (\<^bold>\<forall>z. \<^bold>\<A>\<psi> z \<^bold>\<rightarrow> z \<^bold>= x) in v]"
           by PLM_solver
         hence "[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<psi> x) in v]"
@@ -1473,7 +1486,7 @@ subsection{* Actuality and Descriptions *}
             assume "[\<^bold>\<A>\<phi> z in v]"
             hence "[\<^bold>\<A>\<psi> z in v]"
               using assms[where x=z]
-              apply cut_tac by PLM_solver
+              apply - by PLM_solver
             moreover have "[\<^bold>\<A>\<psi> z \<^bold>\<rightarrow> z \<^bold>= x in v]"
               using 2 cqt_1[axiom_instance,deduction] by auto
             ultimately have "[z \<^bold>= x in v]"
@@ -1484,7 +1497,7 @@ subsection{* Actuality and Descriptions *}
         hence "[(\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<rightarrow> z \<^bold>= x) in v]" by (rule "\<^bold>\<forall>I")
         moreover have "[\<^bold>\<A>\<phi> x in v]"
           using 1[conj1] assms[where x=x]
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         ultimately have "[\<^bold>\<A>\<phi> x \<^bold>& (\<^bold>\<forall>z. \<^bold>\<A>\<phi> z \<^bold>\<rightarrow> z \<^bold>= x) in v]"
           by PLM_solver
         hence "[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"
@@ -1584,7 +1597,7 @@ subsection{* Actuality and Descriptions *}
           "[((\<alpha>\<^sup>P) \<^bold>= (\<^bold>\<iota>x. \<phi> x)) in v]"
           by (rule "\<^bold>\<exists>E")
         hence "[\<lparr>A!,(\<^bold>\<iota>x. \<phi> x)\<rparr> in v] \<or> [(\<alpha>\<^sup>P) \<^bold>=\<^sub>E (\<^bold>\<iota>x. \<phi> x) in v]"
-          apply (cut_tac) unfolding identity_defs by PLM_solver
+          apply - unfolding identity_defs by PLM_solver
         then obtain x where
           "[((\<^bold>\<A>\<phi> x \<^bold>& (\<^bold>\<forall> z . \<^bold>\<A>(\<phi> z) \<^bold>\<rightarrow> z \<^bold>= x))) in v]"
           using nec_russell_axiom[where \<psi>="\<lambda>x . \<lparr>A!,x\<rparr>", equiv_lr, THEN "\<^bold>\<exists>E"]
@@ -1667,6 +1680,7 @@ subsection{* Actuality and Descriptions *}
           unique_box_desc_1[deduction] by blast
 
 subsection{* Necessity *}
+text{* \label{TAO_PLM_Necessity} *}
 
   lemma RM_1[PLM]:
     "(\<And>v.[\<phi> \<^bold>\<rightarrow> \<psi> in v]) \<Longrightarrow> [\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi> in v]"
@@ -2101,21 +2115,21 @@ subsection{* Necessity *}
       hence "[(\<^bold>\<not>(\<^bold>\<diamond>(\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))))) \<^bold>\<equiv> (\<^bold>\<box>(\<^bold>\<not>\<phi>) \<^bold>& \<^bold>\<box>(\<^bold>\<not>\<psi>)) in v]"
         using "Df\<^bold>\<box>" by (rule "\<^bold>\<equiv>E"(6))
       hence "[(\<^bold>\<not>(\<^bold>\<diamond>(\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))))) \<^bold>\<equiv> ((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>))) in v]"
-        apply cut_tac apply (PLM_subst_method "\<^bold>\<box>(\<^bold>\<not>\<phi>)" "\<^bold>\<not>(\<^bold>\<diamond>\<phi>)")
+        apply - apply (PLM_subst_method "\<^bold>\<box>(\<^bold>\<not>\<phi>)" "\<^bold>\<not>(\<^bold>\<diamond>\<phi>)")
          apply (rule KBasic2_4)
         apply (PLM_subst_method "\<^bold>\<box>(\<^bold>\<not>\<psi>)" "\<^bold>\<not>(\<^bold>\<diamond>\<psi>)")
          apply (rule KBasic2_4)
         unfolding diamond_def by assumption
       hence "[(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>))) \<^bold>\<equiv> ((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>))) in v]"
-        apply cut_tac apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))" "\<phi> \<^bold>\<or> \<psi>")
+        apply - apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))" "\<phi> \<^bold>\<or> \<psi>")
         using oth_class_taut_6_b[equiv_sym] by auto
       hence "[(\<^bold>\<not>(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)))) \<^bold>\<equiv> (\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>))\<^bold>&(\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))) in v]"
         by (rule oth_class_taut_5_d[equiv_lr])
       hence "[\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>) \<^bold>\<equiv> (\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))) in v]"
-        apply cut_tac apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)))" "\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)")
+        apply - apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)))" "\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)")
         using oth_class_taut_4_b[equiv_sym] by assumption+
       thus ?thesis
-        apply cut_tac apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))" "(\<^bold>\<diamond>\<phi>) \<^bold>\<or> (\<^bold>\<diamond>\<psi>)")
+        apply - apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))" "(\<^bold>\<diamond>\<phi>) \<^bold>\<or> (\<^bold>\<diamond>\<psi>)")
         using oth_class_taut_6_b[equiv_sym] by assumption+
     qed
 
@@ -2168,7 +2182,7 @@ subsection{* Necessity *}
       hence "[\<^bold>\<box>(\<psi> \<^bold>\<or> \<phi>) \<^bold>\<rightarrow> (\<^bold>\<diamond>\<psi> \<^bold>\<or> \<^bold>\<box>\<phi>) in v]"
         unfolding diamond_def disj_def
         by (meson CP "\<^bold>\<not>\<^bold>\<not>E" vdash_properties_6)
-      thus ?thesis apply cut_tac
+      thus ?thesis apply -
         apply (PLM_subst_method "(\<^bold>\<diamond>\<psi> \<^bold>\<or> \<^bold>\<box>\<phi>)" "(\<^bold>\<box>\<phi> \<^bold>\<or> \<^bold>\<diamond>\<psi>)")
          apply (simp add: PLM.oth_class_taut_3_e)
         apply (PLM_subst_method "(\<psi> \<^bold>\<or> \<phi>)" "(\<phi> \<^bold>\<or> \<psi>)")
@@ -2197,7 +2211,7 @@ subsection{* Necessity *}
       ultimately have "[\<^bold>\<not>\<^bold>\<diamond>\<^bold>\<not>\<phi> in v]"
         by (simp add: PLM.modus_tollens_1)
       thus "[\<^bold>\<box>\<phi> in v]"
-        unfolding diamond_def apply cut_tac
+        unfolding diamond_def apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<not>\<phi>" "\<phi>")
          using oth_class_taut_4_b[equiv_sym] apply assumption
         unfolding diamond_def using oth_class_taut_4_b[equiv_rl]
@@ -2659,6 +2673,7 @@ subsection{* Necessity *}
     using encoding[axiom_instance] nec_imp_act ded_thm_cor_3 by blast
 
 subsection{* The Theory of Relations *} 
+text{* \label{TAO_PLM_Relations} *}
 
   lemma beta_equiv_eq_1_1[PLM]:
     assumes "IsPropositionalInX \<phi>"
@@ -2759,17 +2774,17 @@ subsection{* The Theory of Relations *}
   lemma relations_1[PLM]:
     assumes "IsPropositionalInX \<phi>"
     shows "[\<^bold>\<exists> F. \<^bold>\<box>(\<^bold>\<forall> x. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P)) in v]"
-    using assms apply cut_tac by PLM_solver
+    using assms apply - by PLM_solver
 
   lemma relations_2[PLM]:
     assumes "IsPropositionalInXY \<phi>"
     shows "[\<^bold>\<exists> F. \<^bold>\<box>(\<^bold>\<forall> x y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P)) in v]"
-    using assms apply cut_tac by PLM_solver
+    using assms apply - by PLM_solver
 
   lemma relations_3[PLM]:
     assumes "IsPropositionalInXYZ \<phi>"
     shows "[\<^bold>\<exists> F. \<^bold>\<box>(\<^bold>\<forall> x y z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)) in v]"
-    using assms apply cut_tac by PLM_solver
+    using assms apply - by PLM_solver
 
   lemma prop_equiv[PLM]:
     shows "[(\<^bold>\<forall> x . (\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,G\<rbrace>)) \<^bold>\<rightarrow> F \<^bold>= G in v]"
@@ -2852,17 +2867,17 @@ subsection{* The Theory of Relations *}
   lemma thm_relation_negation_2_1[PLM]:
     "[(\<^bold>\<not>\<lparr>F\<^sup>-, x\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>F, x\<^sup>P\<rparr> in v]"
     using thm_relation_negation_1_1[THEN oth_class_taut_5_d[equiv_lr]]
-    apply cut_tac by PLM_solver
+    apply - by PLM_solver
 
   lemma thm_relation_negation_2_2[PLM]:
     "[(\<^bold>\<not>\<lparr>F\<^sup>-, x\<^sup>P, y\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>F, x\<^sup>P, y\<^sup>P\<rparr> in v]"
     using thm_relation_negation_1_2[THEN oth_class_taut_5_d[equiv_lr]]
-    apply cut_tac by PLM_solver
+    apply - by PLM_solver
 
   lemma thm_relation_negation_2_3[PLM]:
     "[(\<^bold>\<not>\<lparr>F\<^sup>-, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr> in v]"
     using thm_relation_negation_1_3[THEN oth_class_taut_5_d[equiv_lr]]
-    apply cut_tac by PLM_solver
+    apply - by PLM_solver
 
   lemma thm_relation_negation_3[PLM]:
     "[(p)\<^sup>- \<^bold>\<equiv> \<^bold>\<not>p in v]"
@@ -2872,7 +2887,7 @@ subsection{* The Theory of Relations *}
   lemma thm_relation_negation_4[PLM]:
     "[(\<^bold>\<not>((p::\<o>)\<^sup>-)) \<^bold>\<equiv> p in v]"
     using thm_relation_negation_3[THEN oth_class_taut_5_d[equiv_lr]]
-    apply cut_tac by PLM_solver
+    apply - by PLM_solver
 
   lemma thm_relation_negation_5_1[PLM]:
     "[(F::\<Pi>\<^sub>1) \<^bold>\<noteq> (F\<^sup>-) in v]"
@@ -2943,11 +2958,11 @@ subsection{* The Theory of Relations *}
       hence "[\<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) in v]"
         unfolding NonContingent_def Necessary_defs Impossible_defs .
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst1_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
         using thm_relation_negation_2_1[equiv_sym] by auto
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F\<^sup>-,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst1_goal_method
                "\<lambda> \<phi> . \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<phi> x)" "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1[equiv_sym] by auto
@@ -2961,11 +2976,11 @@ subsection{* The Theory of Relations *}
         unfolding NonContingent_def Necessary_defs Impossible_defs
         by (rule oth_class_taut_3_e[equiv_lr])
       hence "[\<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst1_method  "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_2_1 by auto
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst1_method "\<lambda> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1 by auto
       thus "[NonContingent F in v]"
@@ -2983,13 +2998,13 @@ subsection{* The Theory of Relations *}
       hence "[(\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>)) in v]"
         using KBasic2_2[equiv_lr] "\<^bold>&I" "\<^bold>&E" by meson
       thus "[(\<^bold>\<diamond>(\<^bold>\<exists> x.\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
-        unfolding exists_def apply cut_tac
+        unfolding exists_def apply -
         apply (PLM_subst1_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using oth_class_taut_4_b by auto
     next
       assume "[(\<^bold>\<diamond>(\<^bold>\<exists> x.\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
       hence "[(\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>)) in v]"
-        unfolding exists_def apply cut_tac
+        unfolding exists_def apply -
         apply (PLM_subst1_goal_method
                "\<lambda> \<phi> . (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x. \<phi> x))" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using oth_class_taut_4_b[equiv_sym] by auto
@@ -3105,7 +3120,7 @@ subsection{* The Theory of Relations *}
       assume "[NonContingent F in v]"
       hence "[\<^bold>\<not>(Contingent F) in v]"
         unfolding NonContingent_def Contingent_def
-        apply cut_tac by PLM_solver
+        apply - by PLM_solver
       moreover {
          assume "[\<^bold>\<exists> G . Contingent G \<^bold>& G \<^bold>= F in v]"
          then obtain P where "[Contingent P \<^bold>& P \<^bold>= F in v]"
@@ -3124,7 +3139,7 @@ subsection{* The Theory of Relations *}
       assume "[Contingent F in v]"
       hence "[\<^bold>\<not>(NonContingent F) in v]"
         unfolding NonContingent_def Contingent_def
-        apply cut_tac by PLM_solver
+        apply - by PLM_solver
       moreover {
          assume "[\<^bold>\<exists> G . NonContingent G \<^bold>& G \<^bold>= F in v]"
          then obtain P where "[NonContingent P \<^bold>& P \<^bold>= F in v]"
@@ -3204,11 +3219,11 @@ subsection{* The Theory of Relations *}
       hence "[\<^bold>\<box>p \<^bold>\<or> \<^bold>\<box>\<^bold>\<not>p in v]"
         unfolding NonContingent_def Necessary_defs Impossible_defs .
       hence "[\<^bold>\<box>(\<^bold>\<not>(p\<^sup>-)) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<not>p) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "p" "\<^bold>\<not>(p\<^sup>-)")
         using thm_relation_negation_4[equiv_sym] by auto
       hence "[\<^bold>\<box>(\<^bold>\<not>(p\<^sup>-)) \<^bold>\<or> \<^bold>\<box>(p\<^sup>-) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_goal_method "\<lambda>\<phi> . \<^bold>\<box>(\<^bold>\<not>(p\<^sup>-)) \<^bold>\<or> \<^bold>\<box>(\<phi>)" "\<^bold>\<not>p")
         using thm_relation_negation_3[equiv_sym] by auto
       hence "[\<^bold>\<box>(p\<^sup>-) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<not>(p\<^sup>-)) in v]"
@@ -3221,11 +3236,11 @@ subsection{* The Theory of Relations *}
         unfolding NonContingent_def Necessary_defs Impossible_defs
         by (rule oth_class_taut_3_e[equiv_lr])
       hence "[\<^bold>\<box>(p) \<^bold>\<or> \<^bold>\<box>(p\<^sup>-) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_goal_method  "\<lambda>\<phi> . \<^bold>\<box>\<phi> \<^bold>\<or> \<^bold>\<box>(p\<^sup>-)" "\<^bold>\<not>(p\<^sup>-)")
         using thm_relation_negation_4 by auto
       hence "[\<^bold>\<box>(p) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<not>p) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "p\<^sup>-" "\<^bold>\<not>p")
         using thm_relation_negation_3 by auto
       thus "[NonContingent p in v]"
@@ -3243,13 +3258,13 @@ subsection{* The Theory of Relations *}
       hence "[(\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<not>p)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>p) in v]"
         using KBasic2_2[equiv_lr] "\<^bold>&I" "\<^bold>&E" by meson
       thus "[(\<^bold>\<diamond>p) \<^bold>& (\<^bold>\<diamond>(\<^bold>\<not>p)) in v]"
-        apply cut_tac apply PLM_solver
+        apply - apply PLM_solver
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<not>p" "p")
         using oth_class_taut_4_b[equiv_sym] by auto
     next
       assume "[(\<^bold>\<diamond>p) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(p)) in v]"
       hence "[(\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<not>p)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(p)) in v]"
-        apply cut_tac apply PLM_solver
+        apply - apply PLM_solver
         apply (PLM_subst_method "p" "\<^bold>\<not>\<^bold>\<not>p")
         using oth_class_taut_4_b by auto
       hence "[(\<^bold>\<not>\<^bold>\<box>p) \<^bold>& (\<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>p)) in v]"
@@ -3336,7 +3351,7 @@ subsection{* The Theory of Relations *}
         assume "[NonContingent p in v]"
         hence "[\<^bold>\<not>(Contingent p) in v]"
           unfolding NonContingent_def Contingent_def
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         moreover {
            assume "[\<^bold>\<exists> q . Contingent q \<^bold>& q \<^bold>= p in v]"
            then obtain r where "[Contingent r \<^bold>& r \<^bold>= p in v]"
@@ -3355,7 +3370,7 @@ subsection{* The Theory of Relations *}
         assume "[Contingent p in v]"
         hence "[\<^bold>\<not>(NonContingent p) in v]"
           unfolding NonContingent_def Contingent_def
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         moreover {
            assume "[\<^bold>\<exists> q . NonContingent q \<^bold>& q \<^bold>= p in v]"
            then obtain r where "[NonContingent r \<^bold>& r \<^bold>= p in v]"
@@ -3481,7 +3496,7 @@ subsection{* The Theory of Relations *}
       "[ContingentlyFalse q\<^sub>0 \<^bold>\<or> ContingentlyFalse (q\<^sub>0\<^sup>-) in v]"
       using cont_tf_thm_1 cont_true_cont_3[where p="q\<^sub>0"]
             cont_true_cont_4[where p="q\<^sub>0"]
-      apply cut_tac by PLM_solver
+      apply - by PLM_solver
 
     lemma cont_tf_thm_3[PLM]:
       "[\<^bold>\<exists> p . ContingentlyTrue p in v]"
@@ -3525,7 +3540,7 @@ subsection{* The Theory of Relations *}
           unfolding ContingentlyTrue_def Necessary_defs
           using "\<^bold>&E" "\<^bold>&I" by blast
         hence "[\<^bold>\<not>\<^bold>\<box>p in v]"
-          apply cut_tac apply (drule "\<^bold>&E"(1))
+          apply - apply (drule "\<^bold>&E"(1))
           unfolding diamond_def
           apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<not>p" "p")
           using oth_class_taut_4_b[equiv_sym] by auto
@@ -3549,7 +3564,7 @@ subsection{* The Theory of Relations *}
           unfolding ContingentlyFalse_def Impossible_defs
           using "\<^bold>&E" "\<^bold>&I" by blast
         hence "[\<^bold>\<not>\<^bold>\<diamond>q in v]"
-          unfolding diamond_def apply cut_tac by PLM_solver
+          unfolding diamond_def apply - by PLM_solver
         moreover {
           assume "[p \<^bold>= q in v]"
           hence "[\<^bold>\<diamond>q in v]"
@@ -3576,7 +3591,7 @@ subsection{* The Theory of Relations *}
         moreover have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           apply (rule beta_C_meta_1) by (rule IsPropositional_intros)+
         ultimately have "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
       }
       thus ?thesis
         using oth_class_taut_1_b modus_tollens_1 CP
@@ -3597,13 +3612,13 @@ subsection{* The Theory of Relations *}
           by (rule IsPropositional_intros)+
         ultimately show ?thesis
           unfolding Ordinary_def Abstract_def
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
     qed
 
   lemma oa_contingent_3[PLM]:
     "[\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
     using oa_contingent_2
-    apply cut_tac by PLM_solver
+    apply - by PLM_solver
 
   lemma oa_contingent_4[PLM]:
     "[Contingent O! in v]"
@@ -3651,12 +3666,12 @@ subsection{* The Theory of Relations *}
           using l_identity[axiom_instance, deduction, deduction]
           by fast
         hence "[(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
-          apply cut_tac
+          apply -
           apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)")
            apply (rule beta_C_meta_1; (rule IsPropositional_intros)+)
           by assumption
         hence "[\<lparr>O!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
-          using oa_contingent_2 apply cut_tac by PLM_solver
+          using oa_contingent_2 apply - by PLM_solver
       }
       thus ?thesis
         using oth_class_taut_1_b modus_tollens_1 CP
@@ -3677,7 +3692,7 @@ subsection{* The Theory of Relations *}
       ultimately show ?thesis
         unfolding propnot_defs
         using oa_contingent_3
-        apply cut_tac by PLM_solver
+        apply - by PLM_solver
     qed
 
   lemma oa_contingent_8[PLM]:
@@ -3693,14 +3708,14 @@ subsection{* The Theory of Relations *}
     proof (rule CP)
       assume "[\<lparr>O!,x\<^sup>P\<rparr> in v]"
       hence "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-        unfolding Ordinary_def apply cut_tac
+        unfolding Ordinary_def apply -
         apply (rule beta_C_meta_1[equiv_lr])
         by (rule IsPropositional_intros | assumption)+
       hence "[\<^bold>\<box>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using qml_3[axiom_instance, deduction] by auto
       thus "[\<^bold>\<box>\<lparr>O!,x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1[equiv_sym],
             (rule IsPropositional_intros | assumption)+)
@@ -3711,18 +3726,18 @@ subsection{* The Theory of Relations *}
     proof (rule CP)
       assume "[\<lparr>A!,x\<^sup>P\<rparr> in v]"
       hence "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-        unfolding Abstract_def apply cut_tac
+        unfolding Abstract_def apply -
         apply (rule beta_C_meta_1[equiv_lr])
         by (rule IsPropositional_intros | assumption)+
       hence "[\<^bold>\<box>\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using KBasic2_4[equiv_rl] "4\<^bold>\<box>"[deduction] by auto
       hence "[\<^bold>\<box>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>" "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
         using KBasic2_4 by auto
       thus "[\<^bold>\<box>\<lparr>A!,x\<^sup>P\<rparr> in v]"
         unfolding Abstract_def
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
     qed
@@ -3754,13 +3769,13 @@ subsection{* The Theory of Relations *}
     proof -
       assume "[\<^bold>\<A>\<lparr>O!,x\<^sup>P\<rparr> in v]"
       hence "[\<^bold>\<A>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
-        unfolding Ordinary_def  apply cut_tac
+        unfolding Ordinary_def  apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
       hence "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using Act_Basic_6[equiv_rl] by auto
       thus "[\<lparr>O!,x\<^sup>P\<rparr> in v]"
-        unfolding Ordinary_def apply cut_tac
+        unfolding Ordinary_def apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1[equiv_sym],
             (rule IsPropositional_intros | assumption)+)
@@ -3773,17 +3788,17 @@ subsection{* The Theory of Relations *}
     proof -
       assume "[\<^bold>\<A>\<lparr>A!,x\<^sup>P\<rparr> in v]"
       hence "[\<^bold>\<A>(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
-        unfolding Abstract_def apply cut_tac
+        unfolding Abstract_def apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
       hence "[\<^bold>\<A>(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>)" "(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>)")
         using KBasic2_4[equiv_sym] by auto
       hence "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using qml_act_2[axiom_instance, equiv_rl] KBasic2_4[equiv_lr] by auto
       thus "[\<lparr>A!,x\<^sup>P\<rparr> in v]"
-        unfolding Abstract_def apply cut_tac
+        unfolding Abstract_def apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
         by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
     qed
@@ -3801,7 +3816,7 @@ subsection{* The Theory of Relations *}
           fix x
           assume "[\<^bold>\<diamond>\<lparr>F\<^sup>-,x\<^sup>P\<rparr> in v]"
           hence "[\<^bold>\<not>\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
-            unfolding diamond_def apply cut_tac
+            unfolding diamond_def apply -
             apply (PLM_subst_method "\<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lparr>F,x\<^sup>P\<rparr>")
             using thm_relation_negation_2_1 by auto
           moreover {
@@ -3810,7 +3825,7 @@ subsection{* The Theory of Relations *}
               unfolding propnot_defs .
             hence "[\<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> in v]"
               unfolding diamond_def
-              apply cut_tac apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
+              apply - apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
                apply (rule beta_C_meta_1; rule IsPropositional_intros)
               by simp
             hence "[\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
@@ -3836,14 +3851,14 @@ subsection{* The Theory of Relations *}
           fix x
           assume "[\<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> in v]"
           hence "[\<^bold>\<not>\<^bold>\<box>\<lparr>F\<^sup>-,x\<^sup>P\<rparr> in v]"
-            unfolding diamond_def apply cut_tac
+            unfolding diamond_def apply -
             apply (PLM_subst_method "\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>" "\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
             using thm_relation_negation_1_1[equiv_sym] by auto
           moreover {
             assume "[\<^bold>\<not>\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
             hence "[\<^bold>\<diamond>\<lparr>F\<^sup>-,x\<^sup>P\<rparr> in v]"
               unfolding diamond_def
-              apply cut_tac apply (PLM_subst_method "\<lparr>F,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
+              apply - apply (PLM_subst_method "\<lparr>F,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
               using thm_relation_negation_2_1[equiv_sym] by auto
             hence "[\<^bold>\<box>\<lparr>F\<^sup>-,x\<^sup>P\<rparr> in v]"
               using wc_def[conj2] cqt_1[axiom_instance, deduction]
@@ -3980,7 +3995,7 @@ subsection{* The Theory of Relations *}
       hence "[\<^bold>\<box>(\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
         using "\<^bold>&I" KBasic_3[equiv_rl] by presburger
       thus "[\<^bold>\<box>((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method
                "(\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>))"
                "(x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)")
@@ -4030,7 +4045,7 @@ subsection{* The Theory of Relations *}
         using id_nec3_2[equiv_sym] oth_class_taut_5_d[equiv_lr]
         KBasic2_4[equiv_sym] intro_elim_6_e by fast
       thus ?thesis
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "(\<^bold>\<not>((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)))" "(x\<^sup>P) \<^bold>\<noteq>\<^sub>E (y\<^sup>P)")
         using thm_neg_eqE[equiv_sym] by auto
     qed
@@ -4050,7 +4065,7 @@ subsection{* The Theory of Relations *}
     next
       assume "[\<^bold>\<A>((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) in v]"
       hence "[\<^bold>\<A>(\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst_method
                "(x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)"
                "(\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>))")
@@ -4058,7 +4073,7 @@ subsection{* The Theory of Relations *}
       hence "[\<^bold>\<A>\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<A>\<lparr>O!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<A>(\<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
         using Act_Basic_2[equiv_lr] "\<^bold>&I" "\<^bold>&E" by meson
       thus "[(x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P) in v]"
-        apply cut_tac apply (rule eq_E_simple_1[equiv_rl])
+        apply - apply (rule eq_E_simple_1[equiv_rl])
         using oa_facts_7[equiv_rl] qml_act_2[axiom_instance, equiv_rl]
               "\<^bold>&I" "\<^bold>&E" by meson
     qed
@@ -4225,6 +4240,7 @@ begin
     by metis
 
 subsection{* The Theory of Objects *}
+text{* \label{TAO_PLM_Objects} *}
 
   lemma partition_1[PLM]:
     "[\<^bold>\<forall> x . \<lparr>O!,x\<^sup>P\<rparr> \<^bold>\<or> \<lparr>A!,x\<^sup>P\<rparr> in v]"
@@ -5034,7 +5050,7 @@ subsection{* The Theory of Objects *}
                 cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)\<rbrace> in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         hence "[\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)\<rbrace> in v]"
           using \<theta>[conj1] id_eq_1 "\<^bold>&I" vdash_properties_10 by fast
       }
@@ -5083,7 +5099,7 @@ subsection{* The Theory of Objects *}
                 cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)\<rbrace> in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         hence "[\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)\<rbrace> in v]"
           using \<theta>[conj1] id_eq_1 "\<^bold>&I" vdash_properties_10 by fast
       }
@@ -5131,7 +5147,7 @@ subsection{* The Theory of Objects *}
                 cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)\<rbrace> in v]"
-          apply cut_tac by PLM_solver
+          apply - by PLM_solver
         hence "[\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)\<rbrace> in v]"
           using \<theta>[conj1] id_eq_1 "\<^bold>&I" vdash_properties_10 by fast
       }
@@ -5191,7 +5207,7 @@ subsection{* The Theory of Objects *}
          apply (rule IsPropositional_intros)
         using oth_class_taut_4_a[THEN "\<^bold>\<forall>I"] by fast
       hence "[\<lparr>\<^bold>\<lambda> z . \<lparr>?R\<^sub>1, z\<^sup>P, a\<^sup>P\<rparr>, a\<^sup>P\<rparr> in v]"
-        apply cut_tac apply (rule beta_C_meta_1[equiv_rl])
+        apply - apply (rule beta_C_meta_1[equiv_rl])
          apply (rule IsPropositional_intros)
         by auto
       hence "[\<lparr>\<^bold>\<lambda> z . \<lparr>?R\<^sub>1, z\<^sup>P, b\<^sup>P\<rparr>, a\<^sup>P\<rparr> in v]"
@@ -5209,6 +5225,7 @@ subsection{* The Theory of Objects *}
     qed
 
 subsection{* Propositional Properties *}
+text{* \label{TAO_PLM_PropositionalProperties} *}
 
   lemma prop_prop2_1:
     "[\<^bold>\<forall> p . \<^bold>\<exists> F . F \<^bold>= (\<^bold>\<lambda> x . p) in v]"
@@ -5340,7 +5357,7 @@ subsection{* Propositional Properties *}
         have "[(\<^bold>\<not>(\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr>)) \<^bold>\<rightarrow> ((\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<rightarrow> (\<^bold>\<forall> x . \<lparr>F,x\<^sup>P\<rparr>)) in w]"
           using useful_tautologies_3 by auto
         hence "[(\<^bold>\<forall> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<rightarrow> ((\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<rightarrow> (\<^bold>\<forall> x . \<lparr>F,x\<^sup>P\<rparr>)) in w]"
-          apply cut_tac apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<exists> x. \<lparr>F,x\<^sup>P\<rparr>)" "(\<^bold>\<forall> x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)")
+          apply - apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<exists> x. \<lparr>F,x\<^sup>P\<rparr>)" "(\<^bold>\<forall> x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)")
           using cqt_further_4 unfolding exists_def by fast+
       }
       thus ?thesis
@@ -5375,14 +5392,14 @@ subsection{* Propositional Properties *}
         unfolding Indiscriminate_def
         using qml_1[axiom_instance, deduction, deduction] by blast
       thus "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
-        apply cut_tac
+        apply -
         apply (PLM_subst1_method "\<lambda> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1 by auto
     next
       show "[\<^bold>\<not>\<^bold>\<box>(\<^bold>\<forall> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
         using o_objects_exist_1
         unfolding diamond_def exists_def
-        apply cut_tac
+        apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<not>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>)" "\<^bold>\<forall>x. \<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>")
         using oth_class_taut_4_b[equiv_sym] by auto
     qed
@@ -5493,7 +5510,7 @@ subsection{* Propositional Properties *}
           using prop_prop_nec_1[deduction] by auto
       }
       thus "[(\<^bold>\<forall> F . \<lbrace>x\<^sup>P, F\<rbrace> \<^bold>\<rightarrow> (\<^bold>\<exists> p . F \<^bold>= (\<^bold>\<lambda> x . p))) in v]"
-        apply cut_tac by PLM_solver
+        apply - by PLM_solver
     qed
 
   lemma enc_prop_nec_2:
