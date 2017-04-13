@@ -242,24 +242,30 @@ text{* \label{TAO_MetaSolver_Ordinary} *}
   lemma OrdI[meta_intro]:
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
     shows "[\<lparr>O!,x\<rparr> in v]"
-  proof -
-    obtain o\<^sub>1 and y where 1: "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
-      using assms by auto
-    moreover obtain v where "ConcreteInWorld y v"
-      using OrdinaryObjectsPossiblyConcreteAxiom by auto
-    ultimately show ?thesis
-      unfolding Ordinary_def conn_defs meta_defs
-      apply (simp add: meta_aux)
-      apply transfer
-      using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by auto
-  qed
+    proof -
+      have "IsPropositionalInX (\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        using IsPropositional_intros by fast
+      moreover have "[\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
+        apply meta_solver
+        using ConcretenessSemantics1 propex\<^sub>1 assms by fast
+      ultimately show "[\<lparr>O!,x\<rparr> in v]"
+        unfolding Ordinary_def
+        using D5_1 propex\<^sub>1 assms ConcretenessSemantics1 Exe1S
+        by blast
+    qed
   lemma OrdE[meta_elim]:
     assumes "[\<lparr>O!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
-    using assms unfolding Ordinary_def conn_defs meta_defs
-    apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
-    by (metis \<nu>.exhaust \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6)
-              comp_apply option.collapse)
+    proof -
+      have "\<exists>r o\<^sub>1. Some r = d\<^sub>1 O! \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r v"
+        using assms Exe1E by simp
+      hence "[\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
+        using D5_1 IsPropositional_intros
+        unfolding Ordinary_def by fast
+      thus ?thesis
+        apply - apply meta_solver
+        using ConcretenessSemantics2 by blast
+    qed
   lemma OrdS[meta_cong]:
     "[\<lparr>O!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y)"
     using OrdI OrdE by blast
@@ -270,22 +276,32 @@ text{* \label{TAO_MetaSolver_Abstract} *}
   lemma AbsI[meta_intro]:
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     shows "[\<lparr>A!,x\<rparr> in v]"
-  proof -
-    obtain o\<^sub>1 y where "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
-      using assms by auto
-    thus ?thesis
-      unfolding Abstract_def conn_defs meta_defs
-      apply (simp add: meta_aux)
-      by (metis d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper \<nu>.simps(6) \<nu>\<upsilon>_def \<upsilon>.simps(6)
-                o_apply \<nu>\<kappa>_proper rep_proper_id)
-  qed
+    proof -
+      have "IsPropositionalInX (\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        using IsPropositional_intros by fast
+      moreover have "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
+        apply meta_solver
+        using ConcretenessSemantics2 propex\<^sub>1 assms
+        by (metis \<nu>.distinct(1) option.sel)
+      ultimately show "[\<lparr>A!,x\<rparr> in v]"
+        unfolding Abstract_def
+        using D5_1 propex\<^sub>1 assms ConcretenessSemantics1 Exe1S
+        by blast
+    qed
   lemma AbsE[meta_elim]:
     assumes "[\<lparr>A!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
-    using assms unfolding conn_defs meta_defs Abstract_def
-    apply (simp add: meta_aux d\<^sub>\<kappa>_def proper_def rep_def)
-    by (metis Exe1S OrdinaryObjectsPossiblyConcreteAxiom d\<^sub>\<kappa>.rep_eq
-              \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.simps(5) assms option.sel)
+    proof -
+      have "\<exists>r o\<^sub>1. Some r = d\<^sub>1 A! \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r v"
+        using assms Exe1E by simp
+      moreover hence "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
+        using D5_1 IsPropositional_intros
+        unfolding Abstract_def by fast
+      ultimately show ?thesis
+        apply - apply meta_solver
+        using ConcretenessSemantics1 propex\<^sub>1
+        by (metis \<nu>.exhaust)
+    qed
   lemma AbsS[meta_cong]:
     "[\<lparr>A!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y)"
     using AbsI AbsE by blast
@@ -307,15 +323,29 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
   lemma Eq\<^sub>EI[meta_intro]:
     assumes "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
     shows "[x \<^bold>=\<^sub>E y in v]"
-    using assms
-    apply (simp add: meta_defs meta_aux basic_identity\<^sub>E_def basic_identity\<^sub>E_infix_def
-                     conn_defs Ordinary_def OrdinaryObjectsPossiblyConcreteAxiom
-                     proper_def Semantics.d\<^sub>\<kappa>_def
-                split: \<nu>.split \<upsilon>.split)
-    using OrdinaryObjectsPossiblyConcreteAxiom
-    apply transfer
-    apply simp
-    by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1) option.distinct(1) option.sel)
+    proof -
+      obtain o\<^sub>1 X o\<^sub>2 where 1:
+        "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
+        using assms by auto
+      obtain r where 2:
+        "Some r = d\<^sub>2 basic_identity\<^sub>E"
+        using propex\<^sub>2 by auto
+      have "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+        proof -
+          have "[\<lparr>O!,x\<rparr> in v] \<and> [\<lparr>O!,y\<rparr> in v]"
+            using OrdI 1 by blast
+          moreover have "[\<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+            apply meta_solver using 1 by force
+          ultimately show ?thesis using ConjI by simp
+        qed
+      hence "(o\<^sub>1, o\<^sub>2) \<in> ex2 r v"
+        using D5_2 1 2 IsPropositional_intros
+        unfolding basic_identity\<^sub>E_def by fast
+      thus "[x \<^bold>=\<^sub>E y in v]"
+        using Exe2I 1 2
+        unfolding basic_identity\<^sub>E_infix_def basic_identity\<^sub>E_def
+        by blast
+    qed
   lemma Eq\<^sub>EE[meta_elim]:
     assumes "[x \<^bold>=\<^sub>E y in v]"
     shows "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"

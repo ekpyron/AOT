@@ -408,8 +408,14 @@ begin
 
   text{* Auxiliary lemmata. *}
 
+  lemma propex\<^sub>0: "\<exists> r . Some r = d\<^sub>0 F"
+    unfolding d\<^sub>0_def by simp
   lemma propex\<^sub>1: "\<exists> r . Some r = d\<^sub>1 F"
     unfolding d\<^sub>1_def by simp
+  lemma propex\<^sub>2: "\<exists> r . Some r = d\<^sub>2 F"
+    unfolding d\<^sub>2_def by simp
+  lemma propex\<^sub>3: "\<exists> r . Some r = d\<^sub>3 F"
+    unfolding d\<^sub>3_def by simp
   lemma d\<^sub>1_inject: "\<And>x y. d\<^sub>1 x = d\<^sub>1 y \<Longrightarrow> x = y"
     unfolding d\<^sub>1_def by (simp add: eval\<Pi>\<^sub>1_inject)
   lemma d\<^sub>\<kappa>_inject: "\<And>x y o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y \<Longrightarrow> x = y"
@@ -420,6 +426,14 @@ begin
   qed
   lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
     unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
+  lemma ConcretenessSemantics1:
+    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<forall> x . \<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
+    unfolding semantics_defs apply transfer
+    by (simp add: OrdinaryObjectsPossiblyConcreteAxiom \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>)
+  lemma ConcretenessSemantics2:
+    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<forall> x . x \<in> ex1 r w \<longrightarrow> (\<exists>y. x = \<omega>\<nu> y))"
+    unfolding semantics_defs apply transfer apply simp
+    by (metis \<nu>.exhaust \<upsilon>.exhaust \<upsilon>.simps(6) no_\<alpha>\<omega>)
 end
 
 subsection{* Validity Syntax *}
