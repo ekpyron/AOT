@@ -176,12 +176,10 @@ text{*
     proof -
       have "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> (\<^bold>\<iota>x . \<phi> x)))"
         using assms apply induct by (meta_solver;metis)+
-      moreover hence
-        "\<forall> w . ([(\<psi> (\<^bold>\<iota>x . \<phi> x)) in w] \<longrightarrow> (that \<phi>) = (rep (that \<phi>))\<^sup>P)"
-        apply transfer apply simp by force
-     ultimately show ?thesis
+     thus ?thesis
       apply - unfolding identity_\<kappa>_def
-      apply axiom_meta_solver by metis
+      apply axiom_meta_solver
+      using d\<^sub>\<kappa>_proper by auto
     qed
 
   lemma cqt_5_mod[axiom]:
@@ -190,11 +188,10 @@ text{*
     proof -
       have "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> x))"
         using assms apply induct by (meta_solver;metis)+
-      moreover hence "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (x) = (rep (x))\<^sup>P)"
-        apply transfer by auto
-      ultimately show ?thesis
+      thus ?thesis
         apply - unfolding identity_\<kappa>_def
-        apply axiom_meta_solver by metis
+        apply axiom_meta_solver
+        using d\<^sub>\<kappa>_proper by auto
     qed
 
 subsection{* Axioms of Actuality *}
@@ -289,12 +286,11 @@ text{* \label{TAO_Axioms_Descriptions} *}
         fix z
         have "[\<^bold>\<A>\<phi> z in v] \<Longrightarrow> [(z\<^sup>P) \<^bold>= (x\<^sup>P) in v]"
           unfolding identity_\<kappa>_def apply meta_solver
-          unfolding d\<^sub>\<kappa>_def using 4 5 2 apply transfer
-          apply simp by (metis w\<^sub>0_def)
+          using 4 5 2 d\<^sub>\<kappa>_proper w\<^sub>0_def by auto
         moreover have "[(z\<^sup>P) \<^bold>= (x\<^sup>P) in v] \<Longrightarrow> [\<^bold>\<A>\<phi> z in v]"
           unfolding identity_\<kappa>_def apply meta_solver
-          using 2 4 5 apply transfer apply simp
-          by (metis w\<^sub>0_def)
+          using 2 4 5 
+          by (simp add: d\<^sub>\<kappa>_proper w\<^sub>0_def)
         ultimately show "[\<^bold>\<A>\<phi> z in v] = [(z\<^sup>P) \<^bold>= (x\<^sup>P) in v]"
           by auto
       qed
@@ -307,9 +303,11 @@ text{* \label{TAO_Axioms_Descriptions} *}
       hence "\<And>z. (dw \<Turnstile> \<phi> z) = (\<exists>o\<^sub>1 o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> (z\<^sup>P)
                 \<and> Some o\<^sub>2 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 = o\<^sub>2)"
         apply - unfolding identity_\<nu>_def identity_\<kappa>_def by meta_solver
-      hence "\<forall> z . eval\<o> (\<phi> z) dj dw = (z = x)" apply transfer by simp
-      moreover hence "\<exists>!x . eval\<o> (\<phi> x) dj dw" by metis
-      ultimately have "x\<^sup>P = (\<^bold>\<iota>x. \<phi> x)" unfolding TheS by (simp add: \<nu>\<kappa>_def)
+      hence "\<forall> z . (dw \<Turnstile> \<phi> z) = (z = x)"
+        by (simp add: d\<^sub>\<kappa>_proper)
+      moreover hence "x = (THE z . (dw \<Turnstile> \<phi> z))" by simp
+      ultimately have "x\<^sup>P = (\<^bold>\<iota>x. \<phi> x)"
+        using D3 d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper w\<^sub>0_def by presburger
       thus "[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<phi> x) in v]"
         using Eq\<kappa>S unfolding identity_\<kappa>_def by (metis d\<^sub>\<kappa>_proper)
     qed
@@ -324,14 +322,15 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
     assumes "IsPropositionalInX \<phi>"
     shows "[[\<lparr>\<^bold>\<lambda> x . \<phi> (x\<^sup>P), x\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P)]]"
     apply axiom_meta_solver
-    using D5_1[OF assms]
-    apply transfer by simp
+    using D5_1[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>1
+    by metis
 
   lemma lambda_predicates_2_2[axiom]:
     assumes "IsPropositionalInXY \<phi>"
     shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P))), x\<^sup>P, y\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P)]]"
     apply axiom_meta_solver
-    using D5_2[OF assms] apply transfer by simp
+    using D5_2[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>2
+    by metis
 
   lemma lambda_predicates_2_3[axiom]:
     assumes "IsPropositionalInXYZ \<phi>"
@@ -342,8 +341,8 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
       moreover have
         "\<box>[\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>]"
         apply axiom_meta_solver
-        using D5_3[OF assms] unfolding d\<^sub>3_def ex3_def
-        apply transfer by simp
+        using D5_3[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>3
+        by (metis (no_types, lifting))
       ultimately show ?thesis unfolding axiom_def equiv_def ConjS by blast
     qed
 

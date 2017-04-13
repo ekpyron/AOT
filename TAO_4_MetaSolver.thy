@@ -306,14 +306,6 @@ text{* \label{TAO_MetaSolver_Abstract} *}
     "[\<lparr>A!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y)"
     using AbsI AbsE by blast
 
-subsection{* Rules for Definite Descriptions *}
-text{* \label{TAO_MetaSolver_DefiniteDescription} *}
-
-  lemma TheS: "(\<^bold>\<iota>x. \<phi> x) = make\<kappa> (if (\<exists>! x . eval\<o> (\<phi> x) dj dw) then
-                                  Some (THE x . eval\<o> (\<phi> x) dj dw) else None)"
-    by (auto simp: meta_defs)
-
-
 subsection{* Rules for Identity *}
 text{* \label{TAO_MetaSolver_Identity} *}
 
