@@ -416,8 +416,14 @@ begin
     unfolding d\<^sub>2_def by simp
   lemma propex\<^sub>3: "\<exists> r . Some r = d\<^sub>3 F"
     unfolding d\<^sub>3_def by simp
+  lemma d\<^sub>0_inject: "\<And>x y. d\<^sub>0 x = d\<^sub>0 y \<Longrightarrow> x = y"
+    unfolding d\<^sub>0_def by (simp add: eval\<o>_inject)
   lemma d\<^sub>1_inject: "\<And>x y. d\<^sub>1 x = d\<^sub>1 y \<Longrightarrow> x = y"
     unfolding d\<^sub>1_def by (simp add: eval\<Pi>\<^sub>1_inject)
+  lemma d\<^sub>2_inject: "\<And>x y. d\<^sub>2 x = d\<^sub>2 y \<Longrightarrow> x = y"
+    unfolding d\<^sub>2_def by (simp add: eval\<Pi>\<^sub>2_inject)
+  lemma d\<^sub>3_inject: "\<And>x y. d\<^sub>3 x = d\<^sub>3 y \<Longrightarrow> x = y"
+    unfolding d\<^sub>3_def by (simp add: eval\<Pi>\<^sub>3_inject)
   lemma d\<^sub>\<kappa>_inject: "\<And>x y o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y \<Longrightarrow> x = y"
   proof -
     fix x :: \<kappa> and y :: \<kappa> and o\<^sub>1 :: \<nu>

@@ -354,45 +354,48 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
 
   lemma lambda_predicates_3_1[axiom]:
     "[[(\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) \<^bold>= F]]"
-    unfolding identity_defs
-    apply axiom_meta_solver
-    by (simp add: meta_defs meta_aux)
+    unfolding axiom_def
+    apply (rule allI)
+    unfolding identity_\<Pi>\<^sub>1_def apply (rule Eq\<^sub>1I)
+    using D4_1 d\<^sub>1_inject by simp
 
   lemma lambda_predicates_3_2[axiom]:
     "[[(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x\<^sup>P, y\<^sup>P\<rparr>)) \<^bold>= F]]"
-    unfolding identity_defs
-    apply axiom_meta_solver
-    by (simp add: meta_defs meta_aux)
+    unfolding axiom_def
+    apply (rule allI)
+    unfolding identity_\<Pi>\<^sub>2_def apply (rule Eq\<^sub>2I)
+    using D4_2 d\<^sub>2_inject by simp
 
   lemma lambda_predicates_3_3[axiom]:
     "[[(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)) \<^bold>= F]]"
-    unfolding identity_defs
-    apply axiom_meta_solver
-    by (simp add: meta_defs meta_aux)
+    unfolding axiom_def
+    apply (rule allI)
+    unfolding identity_\<Pi>\<^sub>3_def apply (rule Eq\<^sub>3I)
+    using D4_3 d\<^sub>3_inject by simp
 
   lemma lambda_predicates_4_0[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[(\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x))) in v]"
-    unfolding identity_defs using assms apply -
-    apply meta_solver by (auto simp: meta_defs)
+    unfolding identity_\<o>_def apply - apply (rule Eq\<^sub>\<o>I)
+    using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_1[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[((\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<phi> x) x) \<^bold>= (\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<psi> x) x)) in v]"
-    unfolding identity_defs using assms apply -
-    apply meta_solver by (auto simp: meta_defs)
+    unfolding identity_\<Pi>\<^sub>1_def apply - apply (rule Eq\<^sub>1I)
+    using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_2[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[((\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<phi> x) x y)) \<^bold>= (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<psi> x) x y))) in v]"
-    unfolding identity_defs using assms apply -
-    apply meta_solver by (auto simp: meta_defs)
+    unfolding identity_\<Pi>\<^sub>2_def apply - apply (rule Eq\<^sub>2I)
+    using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_3[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<phi> x) x y z)) \<^bold>= (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<psi> x) x y z)) in v]"
-    unfolding identity_defs using assms apply -
-    apply meta_solver by (auto simp: meta_defs)
+    unfolding identity_\<Pi>\<^sub>3_def apply - apply (rule Eq\<^sub>3I)
+    using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
 subsection{* Axioms of Encoding *}
 text{* \label{TAO_Axioms_Encoding} *}

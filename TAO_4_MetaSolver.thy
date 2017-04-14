@@ -137,19 +137,19 @@ text{* \label{TAO_MetaSolver_Quantification} *}
 
   lemma All\<^sub>3I[meta_intro]: "(\<And>x::\<Pi>\<^sub>3. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>3 x. \<phi> x in v]"
     by (auto simp: Semantics.T8_3)
-  lemma All\<^sub>3E[meta_elim]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>3 .[\<phi> x in v])"
+  lemma All\<^sub>3E[meta_elim]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>3. [\<phi> x in v])"
     by (auto simp: Semantics.T8_3)
-  lemma All\<^sub>3S[meta_subst]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>3.[\<phi> x in v])"
+  lemma All\<^sub>3S[meta_subst]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>3. [\<phi> x in v])"
     by (auto simp: Semantics.T8_3)
 
 subsection{* Rules for Actuality *}
 text{* \label{TAO_MetaSolver_Actuality} *}
 
-  lemma ActualI[meta_intro]: "[\<phi> in dw] \<Longrightarrow> [\<^bold>\<A>(\<phi>) in v]"
+  lemma ActualI[meta_intro]: "[\<phi> in dw] \<Longrightarrow> [\<^bold>\<A>\<phi> in v]"
     by (auto simp: Semantics.T7)
-  lemma ActualE[meta_elim]: "[\<^bold>\<A>(\<phi>) in v] \<Longrightarrow> [\<phi> in dw]"
+  lemma ActualE[meta_elim]: "[\<^bold>\<A>\<phi> in v] \<Longrightarrow> [\<phi> in dw]"
     by (auto simp: Semantics.T7)
-  lemma ActualS[meta_subst]: "[\<^bold>\<A>(\<phi>) in v] = [\<phi> in dw]"
+  lemma ActualS[meta_subst]: "[\<^bold>\<A>\<phi> in v] = [\<phi> in dw]"
     by (auto simp: Semantics.T7)
 
 subsection {* Rules for Encoding *}
@@ -305,6 +305,27 @@ text{* \label{TAO_MetaSolver_Abstract} *}
   lemma AbsS[meta_cong]:
     "[\<lparr>A!,x\<rparr> in v] = (\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y)"
     using AbsI AbsE by blast
+
+subsection{* Rules for Definite Descriptions *}
+text{* \label{TAO_MetaSolver_DefiniteDescription} *}
+
+  lemma TheEqI:
+    assumes "\<And>x. [\<phi> x in dw] = [\<psi> x in dw]"
+    shows "(\<^bold>\<iota>x. \<phi> x) = (\<^bold>\<iota>x. \<psi> x)"
+    proof -
+      have 1: "d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x) = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<psi> x)"
+        using assms D3 unfolding w\<^sub>0_def by simp
+      {
+        assume "\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x)"
+        hence ?thesis using 1 d\<^sub>\<kappa>_inject by force
+      }
+      moreover {
+        assume "\<not>(\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> (\<^bold>\<iota>x. \<phi> x))"
+        hence ?thesis using 1 D3
+        by (metis d\<^sub>\<kappa>.rep_eq eval\<kappa>_inverse)
+      }
+      ultimately show ?thesis by blast
+    qed
 
 subsection{* Rules for Identity *}
 text{* \label{TAO_MetaSolver_Identity} *}
