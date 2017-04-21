@@ -52,18 +52,107 @@ translations
 
 chapter{* Introduction *}
 
-section{* Background *}
+section{* Overview *}
+
+text{*
+  \begin{TODO}
+    Improve and adjust.
+  \end{TODO}
+
+  The overall structure of this document is the following:
+
+  \begin{itemize}
+    \item This first chapter provides a brief introduction to the background of
+          automated reasoning and semantical representations of logical systems
+          and describes the motivation, challenges and results of our work.
+  
+    \item The second chapter gives an overview of the motivation and structure of
+          the target theory of our embedding, the Theory of Abstract Objects.
+  
+    \item The third chapter is a detailed documentation of the concepts and
+          technical structure of our embedding. This chapter references the
+          Isabelle theory that can be found in the appendix.
+  
+    \item The fourth chapter discusses the philosophical implications of our embedding
+          and its relation to the target theory of PLM. Furthermore it describes 
+          our meta-logical results achieved using the embedding and states interesting
+          open questions future research may address.
+  
+    \item The last chapter consists of a technical discussion about some issues encountered
+          during the construction of our embedding due to limitations of the logical framework
+          of Isabelle/HOL and our solutions.
+  \end{itemize}
+
+  Note that this entire document is generated from an Isabelle theory file and thereby all formal
+  statements throughout the document are well-formed terms, resp. verified valid theorems in our
+  constructed embedding.
+*}
+
+section{* Universal Logical Reasoning *}
+
+text{*
+
+\begin{TODO}
+  Add references throughout the section.
+\end{TODO}
+
+The concept of understanding rational argumentation and reasoning using formal logical systems
+has a long tradition and can already be found in the study of syllogistic arguments by Aristotle.
+Since then a large variety of formal systems has evolved, each using different syntactical
+and semantical structures to capture specific aspects of logical reasoning (e.g. propositional logic,
+first-order/higher-order logic, modal logic, free logic, etc.). This diversity of formal systems
+gives rise to the question, whether a \emph{universal} logic can be devised, that would be capable
+of expressing statements of all existing specialized logical systems and provide a basis for
+meta-logical considerations like the equivalence of or relations between those systems.
+
+The idea of a universal logical framework is very prominent in the works of Gottfried Wilhelm Leibniz
+(1646-1716) with his concept of a \emph{characteristica universalis}, i.e. a universal formal language
+able to express metaphysical, scientific and mathematical concepts. Based thereupon he envisioned 
+the \emph{calculus ratiocinator}, a universal logical calculus with which the truth of statements
+formulated in the characteristica universalis could be decided purely by formal calculation and thereby
+in an automated fashion. 
+
+Nowadays with the rise of powerful computer systems such a universal logical framework could have
+repercussions throughout the sciences (TODO: change this?) and may be a vital part of machine-computer interaction in
+the future. In this spirit Leibniz' ideas have inspired recent efforts to use functional higher-order logic (HOL)
+as such a universal logical language and to represent various logical systems by the use of
+\emph{shallow semantical embeddings} (TODO: reference \url{https://arxiv.org/abs/1703.09620}).
+
+Notably this approach recently received attention due to the formalisation, validation and analysis
+of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller (TODO: reference),
+for which a modal higher-order logic was embedded in the computerized logic framework Isabelle/HOL.
+
+The concept of this approach that is adapted for our work is outlined in the next section.
+*}
+
+section{* Shallow Semantical Embeddings in HOL *}
 
 text{*
 \begin{TODO}
-  Higher-order logic as universal reasoning tool. Success with G\"odel's onthological proof
-  of the existence of god, etc.
+  Think about terminology: background logic, target logic, embedded logic.
 \end{TODO}
+
+Most contemporary logical systems are semantically characterized by the means of set theory.
+An embedding of a target logical system (equationally) defines the syntactical elements of the target language
+in the background logic (e.g. in a framework like Isabelle/HOL) based on their set theoretic semantics.
+This way syntactic statements in the embedded logic can be translated to statements in the background logic.
+
+
 *}
 
+(* TODO: no new section? *)
 section{* Relational Type Theory vs. Functional Type Theory *}
 
 text{*
+The universality of this approach has since been challenged by Paul Oppenheimer and Edward Zalta
+who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
+Considerations}(\ref{rtt}) that relational type theory is more general than functional type theory.
+In particular they argue that the Theory of Abstract Objects, which is founded in relational type
+theory, can not be properly characterized in functional type theory.
+
+ 
+
+
 \begin{TODO}
   Challenge of approach: Paper Zalta, Oppenheimer; relational type theory; Theory of Abstract Objects.
 \end{TODO}
@@ -207,13 +296,13 @@ Based on the primitive types above the following types are defined:
         represents abstract objects.
   \item Type @{type \<nu>} is defined as @{datatype \<nu>}. This type represents individuals and can
         be either an ordinary urelement @{type \<omega>} or an abstract object @{type \<alpha>} (with the
-        respective type constructors @{term \<omega>\<nu>} and @{term \<alpha>\<nu>}.
+        respective type constructors @{term \<omega>\<nu>} and @{term \<alpha>\<nu>}).
   \item Type @{type \<kappa>} is defined as the set of all objects of type @{typ "\<nu> option"} and
         represents individual terms. The type @{typ "'a option"} is part of Isabelle/HOL and
         consists of a type constructor @{term "Some x"} for an object @{term "x"} of type @{typ 'a}
         (in our case type @{type \<nu>}) and an additional special element called @{term "None"}.
         @{term "None"} is used to represent individual terms that are definite descriptions
-        that do not denote an individual.
+        that are not logically proper (i.e. they do not denote an individual).
 \end{itemize}
 
 \begin{remark}
@@ -241,7 +330,7 @@ Based on the primitive types above the following types are defined:
 section{* Individual Terms and Definite Descriptions *}
 
 text{*
-There are two basic types of individual terms: definite descriptions and individual variables.
+There are two basic types of individual terms in PLM: definite descriptions and individual variables.
 For any logically proper definite description there is an individual variable that denotes
 the same object.
 
@@ -253,7 +342,7 @@ object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^s
 
 The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
 logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
-and to always denote the same object as the individual variable @{text "x"}.
+and to always denote the same object as the individual variable @{term "x"}.
 
 It is now possible to define definite descriptions as follows:
 
@@ -261,10 +350,10 @@ It is now possible to define definite descriptions as follows:
 
 If the propriety condition of a definite description @{prop "\<exists>!x. \<phi> x dj dw"} holds,
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
-the actual world}, the representing individual variable is set to @{term "Some (THE x . \<phi> x dj dw)"}.
+the actual world}, the term @{term "\<^bold>\<iota>x . \<phi> x"} is represented by @{term "Some (THE x . \<phi> x dj dw)"}.
 Isabelle's \emph{THE} operator evaluates to the unique object, for which the given condition holds,
 if there is a unique such object, and is undefined otherwise. If the propriety condition does not hold,
-the individual term is set to @{term "None"}.
+the term is represented by @{term "None"}.
 
 The following meta-logical functions are defined to aid in handling individual terms:
 
@@ -281,7 +370,7 @@ the expression @{term "rep x"} evaluates to the individual of type @{type \<nu>}
 section{* Mapping from abstract objects to special Urelements *}
 
 text{*
-To map abstract objects to urelements (for which relations are defined), a constant
+To map abstract objects to urelements (for which relations can be evaluated), a constant
 @{term \<alpha>\<sigma>} of type @{typeof \<alpha>\<sigma>} is introduced, which maps abstract objects (of type @{type \<alpha>})
 to special urelements (of type @{type \<sigma>}).
 
@@ -402,7 +491,7 @@ text{*
 \begin{remark}
   For technical reasons Isabelle only allows lambda expressions for one-place relations
   to use a nice binder notation. For two- and three-place relations the following notation
-  can be used instead: \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y))"}},
+  is used instead: \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y))"}},
   \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z))"}}.
 \end{remark}
 

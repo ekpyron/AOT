@@ -86,9 +86,20 @@ PD Dr. Christoph Benzm\"uller
     \large{Berlin, \today}
 \end{center}
 \end{titlepage}
-\abstract{
-	TODO: abstract
-}
+\begin{abstract}
+	We present an embedding of the second order fragment of the Theory of Abstract Objects as described in Edward Zalta's
+  upcoming work Principia Logico-Metaphysica (PLM\cite{PLM}) in the automated reasoning framework Isabelle/HOL. The Theory of Abstract
+  Objects is a metaphysical theory that reifies property patterns, as they for example occur in the abstract reasoning
+  of mathematics, as \emph{abstract objects} and provides an axiomatic framework that allows to reason about these objects.
+  It thereby serves as a fundamental metaphysical theory that can be used to axiomatize and describe a wide range of philosophical
+  objects, such as Platonic forms or Leibniz's concepts, and has the ambition to function as a foundational theory of mathematics.
+  The target theory of our embedding as described in chapters 7-9 of PLM\cite{PLM} employs a modal relational type theory as
+  logical foundation for which a representation in functional type theory is known to be challenging\cite{rtt}.
+  
+  Nevertheless we arrive at a functioning representation of the theory in the functional logic of Isabelle/HOL based on a semantical
+  representation of an Aczel model of the theory. Based on this representation we construct an implementation of the deductive
+  system of PLM (\cite[Chap. 9]{PLM}) which allows it to automatically and interactively find and verify theorems of PLM.
+\end{abstract}
 \tableofcontents
 
 % sane default for proof documents
