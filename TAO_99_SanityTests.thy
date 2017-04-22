@@ -122,7 +122,7 @@ text{*
     {
       fix v
       fix y
-      obtain x where y_def: "y = \<nu>\<upsilon> x" by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
+      obtain x where y_def: "y = \<nu>\<upsilon> dj x" by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
       have "(\<exists>r o\<^sub>1. Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v) =
             (\<exists>r o\<^sub>1. Some r = d\<^sub>1 G \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v)"
             using 1 apply - by meta_solver
@@ -143,7 +143,7 @@ text{*
     assume 1: "(\<lambda>x. eval\<Pi>\<^sub>1 F x dj) = (\<lambda>x. eval\<Pi>\<^sub>1 G x dj)"
     {
       fix y v
-      obtain x where x_def: "x = \<nu>\<upsilon> y"
+      obtain x where x_def: "x = \<nu>\<upsilon> dj y"
         by simp
       hence "eval\<Pi>\<^sub>1 F x dj = eval\<Pi>\<^sub>1 G x dj"
         using 1 by metis
@@ -210,12 +210,13 @@ subsection{* Lambda Expressions in the Meta-Logic *}
 text{* \label{TAO_SanityTests_MetaLambda} *}
 
   lemma lambda_impl_meta:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v)"
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<longrightarrow> eval\<o> (\<phi> y) dj v)"
     unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
   
   lemma meta_impl_lambda:
-    "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
-    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
+    "(\<forall> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
+    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def
+    apply simp by metis
 
   lemma lambda_interpret_1:
   assumes "[a \<^bold>= b in v]"

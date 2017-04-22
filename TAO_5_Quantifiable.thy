@@ -126,8 +126,31 @@ begin
   qed
 end
 
-subsection{* MetaSolver Rules *}
+subsection{* Rules *}
 text{* \label{TAO_Quantifiable_Rules} *}
+
+text{*
+\begin{remark}
+  Introduction rules for IsPropsositionalInX, IsPropsositionalInXY and IsPropsositionalInXYZ
+  are derived for general quantification.
+\end{remark}
+*}
+
+lemma IsPropositionalInX_forall[IsPropositional_intros]:
+  assumes "\<And> a . IsPropositionalInX (\<phi> a)"
+  shows "IsPropositionalInX (\<lambda> x . (\<^bold>\<forall> a . (\<phi> a) x))"
+  using assms unfolding IsPropositionalInX_def
+  by (simp add: quantifiable_T8)
+lemma IsPropositionalInXY_forall[IsPropositional_intros]:
+  assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
+  shows "IsPropositionalInXY (\<lambda> x y . (\<^bold>\<forall> a . (\<phi> a) x y))"
+  using assms unfolding IsPropositionalInXY_def
+  by (simp add: quantifiable_T8)
+lemma IsPropositionalInXYZ_forall[IsPropositional_intros]:
+  assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
+  shows "IsPropositionalInXYZ (\<lambda> x y z . (\<^bold>\<forall> a . (\<phi> a) x y z))"
+  using assms unfolding IsPropositionalInXYZ_def
+  by (simp add: quantifiable_T8)
 
 text{*
 \begin{remark}

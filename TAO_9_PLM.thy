@@ -551,7 +551,8 @@ text{* \label{TAO_PLM_Identity} *}
               \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
         unfolding identity\<^sub>E_infix_def identity\<^sub>E_def
         apply (rule lambda_predicates_2_2[axiom_universal, axiom_universal, axiom_instance])
-        by (rule IsPropositional_intros)
+        unfolding conn_defs
+        by (simp add: IsPropositional_intros)
       moreover have "[\<^bold>\<exists> \<alpha> . (\<alpha>\<^sup>P) \<^bold>= x in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> x . x \<^bold>=\<^sub>E y", axiom_instance,deduction])
         unfolding identity\<^sub>E_infix_def
@@ -573,7 +574,8 @@ text{* \label{TAO_PLM_Identity} *}
               \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>)) in v]"
         unfolding identity\<^sub>E_def identity\<^sub>E_infix_def
         apply (rule lambda_predicates_2_2[axiom_universal, axiom_universal, axiom_instance])
-        by (rule IsPropositional_intros)
+        unfolding conn_defs
+        by (simp add: IsPropositional_intros)
       moreover have "[\<^bold>\<exists> \<alpha> . (\<alpha>\<^sup>P) \<^bold>= x in v]"
         apply (rule cqt_5_mod[where \<psi>="\<lambda> x . \<lparr>O!,x\<rparr>",axiom_instance,deduction])
         apply (rule SimpleExOrEnc.intros)
@@ -607,7 +609,8 @@ text{* \label{TAO_PLM_Identity} *}
         assume "[(\<^bold>\<diamond>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> in v]"
           apply (rule lambda_predicates_2_1[axiom_instance, equiv_rl, rotated])
-          by (rule IsPropositional_intros)+
+          unfolding conn_defs
+          by (simp add: IsPropositional_intros)
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr>) in v]"
           apply - by PLM_solver
@@ -618,7 +621,8 @@ text{* \label{TAO_PLM_Identity} *}
         assume "[(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> in v]"
           apply (rule lambda_predicates_2_1[axiom_instance, equiv_rl, rotated])
-          by (rule IsPropositional_intros)+
+          unfolding conn_defs
+          by (simp add: IsPropositional_intros)
         hence "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>& \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>
                 \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>) in v]"
           apply - by PLM_solver
@@ -2850,19 +2854,19 @@ text{* \label{TAO_PLM_Relations} *}
     "[\<lparr>F\<^sup>-, x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>F, x\<^sup>P\<rparr> in v]"
     unfolding propnot_defs
     apply (rule lambda_predicates_2_1[axiom_instance])
-    by (rule IsPropositional_intros)+
+    by (simp add: IsPropositional_intros)
 
   lemma thm_relation_negation_1_2[PLM]:
     "[\<lparr>F\<^sup>-, x\<^sup>P, y\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>F, x\<^sup>P, y\<^sup>P\<rparr> in v]"
     unfolding propnot_defs
     apply (rule lambda_predicates_2_2[axiom_instance])
-    by (rule IsPropositional_intros)+
+    by (simp add: IsPropositional_intros)
 
   lemma thm_relation_negation_1_3[PLM]:
     "[\<lparr>F\<^sup>-, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr> in v]"
     unfolding propnot_defs
     apply (rule lambda_predicates_2_3[axiom_instance])
-    by (rule IsPropositional_intros)+
+    by (simp add: IsPropositional_intros)
 
   lemma thm_relation_negation_2_1[PLM]:
     "[(\<^bold>\<not>\<lparr>F\<^sup>-, x\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>F, x\<^sup>P\<rparr> in v]"
@@ -3585,11 +3589,13 @@ text{* \label{TAO_PLM_Relations} *}
         hence "[(\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
           unfolding Ordinary_def Abstract_def .
         moreover have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-          apply (rule beta_C_meta_1) by (rule IsPropositional_intros)+
+          apply (rule beta_C_meta_1)
+          by (simp add: conn_defs IsPropositional_intros)
         ultimately have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           using l_identity[axiom_instance, deduction, deduction] by fast
         moreover have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
-          apply (rule beta_C_meta_1) by (rule IsPropositional_intros)+
+          apply (rule beta_C_meta_1)
+          by (simp add: conn_defs IsPropositional_intros)
         ultimately have "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           apply - by PLM_solver
       }
@@ -3603,13 +3609,13 @@ text{* \label{TAO_PLM_Relations} *}
     proof -
         have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           apply (rule beta_C_meta_1)
-          by (rule IsPropositional_intros)+
+          by (simp add: conn_defs IsPropositional_intros)
         hence "[(\<^bold>\<not>\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr>) \<^bold>\<equiv> \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           using oth_class_taut_5_d[equiv_lr] oth_class_taut_4_b[equiv_sym]
                 "\<^bold>\<equiv>E"(5) by blast
         moreover have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
           apply (rule beta_C_meta_1)
-          by (rule IsPropositional_intros)+
+          by (simp add: conn_defs IsPropositional_intros)
         ultimately show ?thesis
           unfolding Ordinary_def Abstract_def
           apply - by PLM_solver
@@ -3626,7 +3632,8 @@ text{* \label{TAO_PLM_Relations} *}
     subgoal
       unfolding Ordinary_def
       apply (PLM_subst1_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-       apply (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
+       apply (rule beta_C_meta_1[equiv_sym])
+        apply (simp add: conn_defs IsPropositional_intros)
       using "BF\<^bold>\<diamond>"[deduction, OF thm_cont_prop_2[equiv_lr, OF thm_cont_e_2, conj1]]
       by (rule "T\<^bold>\<diamond>"[deduction])
     subgoal
@@ -3645,7 +3652,8 @@ text{* \label{TAO_PLM_Relations} *}
     subgoal
       unfolding Abstract_def
       apply (PLM_subst1_method "\<lambda> x . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-       apply (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
+       apply (rule beta_C_meta_1[equiv_sym])
+        apply (simp add: conn_defs IsPropositional_intros)
       apply (PLM_subst1_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
        using oth_class_taut_4_b apply simp
       using "BF\<^bold>\<diamond>"[deduction, OF thm_cont_prop_2[equiv_lr, OF thm_cont_e_2, conj1]]
@@ -3661,14 +3669,15 @@ text{* \label{TAO_PLM_Relations} *}
           unfolding propnot_defs .
         moreover have "[\<lparr>(\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           apply (rule beta_C_meta_1)
-          by (rule IsPropositional_intros)+
+          by (simp add: IsPropositional_intros)
         ultimately have "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>\<equiv>  \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           using l_identity[axiom_instance, deduction, deduction]
           by fast
         hence "[(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           apply -
           apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)")
-           apply (rule beta_C_meta_1; (rule IsPropositional_intros)+)
+           apply (rule beta_C_meta_1)
+            apply (simp add: IsPropositional_intros)
           by assumption
         hence "[\<lparr>O!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           using oa_contingent_2 apply - by PLM_solver
@@ -3683,12 +3692,12 @@ text{* \label{TAO_PLM_Relations} *}
     proof -
       have "[(\<^bold>\<not>\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>A!,x\<^sup>P\<rparr> in v]"
         apply (PLM_subst_method "(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-         apply (rule beta_C_meta_1[equiv_sym];
-                (rule IsPropositional_intros)+)
+         apply (rule beta_C_meta_1[equiv_sym])
+          apply (simp add: conn_defs IsPropositional_intros)
         using oth_class_taut_4_b[equiv_sym] by auto
       moreover have "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
         apply (rule beta_C_meta_1)
-        by (rule IsPropositional_intros)+
+        by (simp add: conn_defs IsPropositional_intros)
       ultimately show ?thesis
         unfolding propnot_defs
         using oa_contingent_3
@@ -3710,15 +3719,15 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def apply -
         apply (rule beta_C_meta_1[equiv_lr])
-        by (rule IsPropositional_intros | assumption)+
+        by (simp add: conn_defs IsPropositional_intros)
       hence "[\<^bold>\<box>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using qml_3[axiom_instance, deduction] by auto
       thus "[\<^bold>\<box>\<lparr>O!,x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def
         apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym],
-            (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1[equiv_sym])
+         by (simp add: conn_defs IsPropositional_intros)
     qed
 
   lemma oa_facts_2[PLM]:
@@ -3728,7 +3737,7 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         unfolding Abstract_def apply -
         apply (rule beta_C_meta_1[equiv_lr])
-        by (rule IsPropositional_intros | assumption)+
+        by (simp add: conn_defs IsPropositional_intros)
       hence "[\<^bold>\<box>\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using KBasic2_4[equiv_rl] "4\<^bold>\<box>"[deduction] by auto
       hence "[\<^bold>\<box>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
@@ -3739,7 +3748,8 @@ text{* \label{TAO_PLM_Relations} *}
         unfolding Abstract_def
         apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1[equiv_sym])
+         by (simp add: conn_defs IsPropositional_intros)
     qed
 
   lemma oa_facts_3[PLM]:
@@ -3771,14 +3781,15 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<A>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         unfolding Ordinary_def  apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1)
+         by (simp add: conn_defs IsPropositional_intros)
       hence "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using Act_Basic_6[equiv_rl] by auto
       thus "[\<lparr>O!,x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym],
-            (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1[equiv_sym])
+         by (simp add: conn_defs IsPropositional_intros)
     qed
 
   lemma oa_facts_8[PLM]:
@@ -3790,7 +3801,8 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<A>(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         unfolding Abstract_def apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1)
+         by (simp add: conn_defs IsPropositional_intros)
       hence "[\<^bold>\<A>(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         apply -
         apply (PLM_subst_method "(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>)" "(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>)")
@@ -3800,7 +3812,8 @@ text{* \label{TAO_PLM_Relations} *}
       thus "[\<lparr>A!,x\<^sup>P\<rparr> in v]"
         unfolding Abstract_def apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
+         apply (rule beta_C_meta_1[equiv_sym])
+         by (simp add: conn_defs IsPropositional_intros)
     qed
 
   lemma cont_nec_fact1_1[PLM]:
@@ -3826,8 +3839,8 @@ text{* \label{TAO_PLM_Relations} *}
             hence "[\<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> in v]"
               unfolding diamond_def
               apply - apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
-               apply (rule beta_C_meta_1; rule IsPropositional_intros)
-              by simp
+               apply (rule beta_C_meta_1)
+               by (simp add: conn_defs IsPropositional_intros)
             hence "[\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
               using wc_def[conj2] cqt_1[axiom_instance, deduction]
                     modus_ponens by fast
@@ -4026,7 +4039,7 @@ text{* \label{TAO_PLM_Relations} *}
         unfolding not_identical\<^sub>E_def by simp
       also have "... = [\<^bold>\<not>\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . (x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P))), x\<^sup>P, y\<^sup>P\<rparr> in v]"
         unfolding propnot_defs using beta_C_meta_2[equiv_lr]
-        beta_C_meta_2[equiv_rl] IsPropositional_intros by fast
+        beta_C_meta_2[equiv_rl] IsPropositional_intros by meson
       also have "... = [\<^bold>\<not>((x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)) in v]"
         apply (PLM_subst_method
                "\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . (x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P))), x\<^sup>P, y\<^sup>P\<rparr>"
@@ -4249,9 +4262,11 @@ text{* \label{TAO_PLM_Objects} *}
       have "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<or> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         by PLM_solver
       moreover have "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>\<^bold>\<lambda> y . \<^bold>\<diamond>\<lparr>E!,y\<^sup>P\<rparr>, x\<^sup>P\<rparr> in v]"
-        by (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
+        apply (rule beta_C_meta_1[equiv_sym])
+        by (simp add: conn_defs IsPropositional_intros)
       moreover have "[(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>\<^bold>\<lambda> y . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,y\<^sup>P\<rparr>, x\<^sup>P\<rparr> in v]"
-        by (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
+        apply (rule beta_C_meta_1[equiv_sym])
+        by (simp add: conn_defs IsPropositional_intros)
       ultimately show "[\<lparr>O!, x\<^sup>P\<rparr> \<^bold>\<or> \<lparr>A!, x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def Abstract_def by PLM_solver
     qed
@@ -4362,7 +4377,7 @@ text{* \label{TAO_PLM_Objects} *}
         using "\<^bold>\<equiv>E" by blast
       hence "[y\<^sup>P \<^bold>=\<^sub>E x\<^sup>P in v]"
         using beta_C_meta_1[equiv_lr] IsPropositional_intros
-        unfolding identity\<^sub>E_infix_def by fast
+        unfolding identity\<^sub>E_infix_def by meson
       thus "[x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P in v]"
         by (rule ord_eq_Eequiv_2[deduction])
     qed
@@ -4393,7 +4408,7 @@ text{* \label{TAO_PLM_Objects} *}
           using l_identity[axiom_instance, deduction, deduction] by fast
         hence "[x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P in v]"
           using beta_C_meta_1[equiv_lr] IsPropositional_intros
-          unfolding identity\<^sub>E_infix_def by fast
+          unfolding identity\<^sub>E_infix_def by meson
       }
       ultimately show "[(\<^bold>\<lambda>z . z\<^sup>P \<^bold>=\<^sub>E x\<^sup>P) \<^bold>\<noteq> (\<^bold>\<lambda>z . z\<^sup>P \<^bold>=\<^sub>E y\<^sup>P) in v]"
         using modus_tollens_1 CP by blast
@@ -4478,7 +4493,8 @@ text{* \label{TAO_PLM_Objects} *}
     "[\<^bold>\<box>(\<^bold>\<exists> x . \<lparr>O!,x\<^sup>P\<rparr>) in v]"
     apply (rule RN) unfolding Ordinary_def
     apply (PLM_subst1_method  "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>y. \<^bold>\<diamond>\<lparr>E!,y\<^sup>P\<rparr>, x\<^sup>P\<rparr>")
-     apply (rule beta_C_meta_1[equiv_sym], rule IsPropositional_intros)
+     apply (rule beta_C_meta_1[equiv_sym])
+     apply (simp add: conn_defs IsPropositional_intros)
     using o_objects_exist_1 "BF\<^bold>\<diamond>"[deduction] by blast
 
   lemma o_objects_exist_3[PLM]:
@@ -4522,8 +4538,8 @@ text{* \label{TAO_PLM_Objects} *}
           by (rule "\<^bold>\<exists>E")
         hence "[\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,a\<^sup>P\<rparr>) in v]"
           unfolding Abstract_def
-          using beta_C_meta_1[equiv_lr] IsPropositional_intros
-          by fast
+          apply - apply (rule beta_C_meta_1[equiv_lr])
+          by (auto simp: conn_defs IsPropositional_intros)
         hence "[(\<^bold>\<not>\<lparr>E!,a\<^sup>P\<rparr>) in v]"
           using KBasic2_4[equiv_rl] qml_2[axiom_instance,deduction]
           by simp
@@ -5204,19 +5220,21 @@ text{* \label{TAO_PLM_Objects} *}
         by (rule "\<^bold>\<exists>E")
       have "[\<lparr>?R\<^sub>1, a\<^sup>P, a\<^sup>P\<rparr> in v]"
         apply (rule beta_C_meta_2[equiv_rl])
-         apply (rule IsPropositional_intros)
+         apply (simp add: conn_defs IsPropositional_intros)
         using oth_class_taut_4_a[THEN "\<^bold>\<forall>I"] by fast
       hence "[\<lparr>\<^bold>\<lambda> z . \<lparr>?R\<^sub>1, z\<^sup>P, a\<^sup>P\<rparr>, a\<^sup>P\<rparr> in v]"
         apply - apply (rule beta_C_meta_1[equiv_rl])
-         apply (rule IsPropositional_intros)
+         apply (simp add: IsPropositional_intros)
         by auto
       hence "[\<lparr>\<^bold>\<lambda> z . \<lparr>?R\<^sub>1, z\<^sup>P, b\<^sup>P\<rparr>, a\<^sup>P\<rparr> in v]"
         using ab_prop[conj2] l_identity[axiom_instance, deduction, deduction]
         by fast
-      hence "[\<lparr>?R\<^sub>1, a\<^sup>P, b\<^sup>P\<rparr> in v]"
-        using beta_C_meta_1[equiv_lr] IsPropositional_intros by fast
-      hence "[\<^bold>\<forall>F. \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,b\<^sup>P\<rparr> in v]"
-        using beta_C_meta_2[equiv_lr] IsPropositional_intros by fast
+      hence "[\<lparr>?R\<^sub>1, a\<^sup>P, b\<^sup>P\<rparr> in v]" unfolding conn_defs
+        using beta_C_meta_1[equiv_lr] IsPropositional_intros by meson
+      moreover have "IsPropositionalInXY (\<lambda>x y. \<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)"
+        by (simp add: IsPropositional_intros conn_defs)
+      ultimately have "[\<^bold>\<forall>F. \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,b\<^sup>P\<rparr> in v]"
+        using beta_C_meta_2[equiv_lr] by blast
       hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& \<lparr>A!,b\<^sup>P\<rparr> \<^bold>& a \<^bold>\<noteq> b \<^bold>& (\<^bold>\<forall>F. \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,b\<^sup>P\<rparr>) in v]"
         using ab_prop[conj1] "\<^bold>&I" by presburger
       hence "[\<^bold>\<exists> y . \<lparr>A!,a\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& a \<^bold>\<noteq> y \<^bold>& (\<^bold>\<forall>F. \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]"
