@@ -1713,8 +1713,8 @@ text{* \label{TAO_PLM_Necessity} *}
      apply (rule "\<^bold>&I")
       using RM_1 oth_class_taut_9_a vdash_properties_6 apply blast
      using RM_1 oth_class_taut_9_b vdash_properties_6 apply blast
-    using qml_1[axiom_instance] RM_1 ded_thm_cor_3 oth_class_taut_10_a oth_class_taut_8_b
-          vdash_properties_10
+    using qml_1[axiom_instance] RM_1 ded_thm_cor_3 oth_class_taut_10_a
+          oth_class_taut_8_b vdash_properties_10
     by blast
   lemma KBasic_4[PLM]:
     "[\<^bold>\<box>(\<phi> \<^bold>\<equiv> \<psi>) \<^bold>\<equiv> (\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>& \<^bold>\<box>(\<psi> \<^bold>\<rightarrow> \<phi>)) in v]"
@@ -1785,240 +1785,201 @@ text{* \label{TAO_PLM_Necessity} *}
     using KBasic_6 "\<^bold>\<equiv>I" "\<^bold>\<equiv>E"(1) vdash_properties_9
     by blast
 
-  definition Substable :: "(\<o>\<Rightarrow>\<o>) \<Rightarrow> bool" where
-    "Substable \<equiv> \<lambda> \<phi> . \<forall> \<psi> \<chi> v . (\<forall> w . [\<psi> \<^bold>\<equiv> \<chi> in w]) \<longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
-  definition Substable1 :: "(('a::quantifiable\<Rightarrow>\<o>)\<Rightarrow>\<o>) \<Rightarrow> bool" where
-    "Substable1 \<equiv> \<lambda> \<phi> . \<forall> \<psi> \<chi> v . (\<forall> x w . [\<psi> x \<^bold>\<equiv> \<chi> x in w]) \<longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
-  definition Substable2 :: "(('a::quantifiable\<Rightarrow>'b::quantifiable\<Rightarrow>\<o>)\<Rightarrow>\<o>) \<Rightarrow> bool" where
-    "Substable2 \<equiv> \<lambda> \<phi> . \<forall> \<psi> \<chi> v . (\<forall> x y w . [\<psi> x y \<^bold>\<equiv> \<chi> x y in w])
-                                   \<longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
-  definition SubstableVar :: "((var list\<Rightarrow>\<o>)\<Rightarrow>\<o>) \<Rightarrow> bool" where
-    "SubstableVar \<equiv> \<lambda> \<phi> . \<forall> \<psi> \<chi> v . (\<forall> x w . [\<psi> x \<^bold>\<equiv> \<chi> x in w])
-                                     \<longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
+
+  named_theorems Substable_intros
+  
+  definition Substable :: "('a\<Rightarrow>'a\<Rightarrow>bool)\<Rightarrow>('a\<Rightarrow>\<o>) \<Rightarrow> bool"
+    where "Substable \<equiv> (\<lambda> cond \<phi> . \<forall> \<psi> \<chi> v . (cond \<psi> \<chi>) \<longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v])"
+  
+  lemma Substable_intro_const[Substable_intros]:
+    "Substable cond (\<lambda> \<phi> . \<Theta>)"
+    unfolding Substable_def using oth_class_taut_4_a by blast
+
+  lemma Substable_intro_not[Substable_intros]:
+    assumes "Substable cond \<psi>"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<not>(\<psi> \<phi>))"
+    using assms unfolding Substable_def
+    using rule_sub_lem_1_a RN_2 "\<^bold>\<equiv>E" oth_class_taut_5_d by metis
+  lemma Substable_intro_impl[Substable_intros]:
+    assumes "Substable cond \<psi>"
+        and "Substable cond \<chi>"
+    shows "Substable cond (\<lambda> \<phi> . \<psi> \<phi> \<^bold>\<rightarrow> \<chi> \<phi>)"
+    using assms unfolding Substable_def
+    by (metis "\<^bold>\<equiv>I" CP intro_elim_6_a intro_elim_6_b)
+  lemma Substable_intro_box[Substable_intros]:
+    assumes "Substable cond \<psi>"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<box>(\<psi> \<phi>))"
+    using assms unfolding Substable_def
+    using rule_sub_lem_1_f RN by meson
+  lemma Substable_intro_actual[Substable_intros]:
+    assumes "Substable cond \<psi>"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<A>(\<psi> \<phi>))"
+    using assms unfolding Substable_def
+    using rule_sub_lem_1_e RN by meson
+  lemma Substable_intro_all[Substable_intros]:
+    assumes "\<forall> x . Substable cond (\<psi> x)"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<forall> x . \<psi> x \<phi>)"
+    using assms unfolding Substable_def
+    by (simp add: RN rule_sub_lem_1_d)
+
+  named_theorems Substable_Cond_defs
+end
+
+class Substable =
+  fixes Substable_Cond :: "'a\<Rightarrow>'a\<Rightarrow>bool"
+  assumes rule_sub_nec:
+    "\<And> \<phi> \<psi> \<chi> \<Theta> v . \<lbrakk>PLM.Substable Substable_Cond \<phi>; Substable_Cond \<psi> \<chi>\<rbrakk>
+      \<Longrightarrow> \<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]"
+
+instantiation \<o> :: Substable
+begin
+  definition Substable_Cond_\<o> where [PLM.Substable_Cond_defs]:
+    "Substable_Cond_\<o> \<equiv> \<lambda> \<phi> \<psi> . \<forall> v . [\<phi> \<^bold>\<equiv> \<psi> in v]"
+  instance proof
+    interpret PLM .
+    fix \<phi> :: "\<o> \<Rightarrow> \<o>" and  \<psi> \<chi> :: \<o> and \<Theta> :: "bool \<Rightarrow> bool" and v::i
+    assume "Substable Substable_Cond \<phi>"
+    moreover assume "Substable_Cond \<psi> \<chi>"
+    ultimately have "[\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
+    unfolding Substable_def by blast
+    hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]" using "\<^bold>\<equiv>E" by blast
+    moreover assume "\<Theta> [\<phi> \<psi> in v]"
+    ultimately show "\<Theta> [\<phi> \<chi> in v]" by simp
+  qed
+end
+
+instantiation "fun" :: (type, Substable) Substable
+begin
+  definition Substable_Cond_fun where [PLM.Substable_Cond_defs]:
+    "Substable_Cond_fun \<equiv> \<lambda> \<phi> \<psi> . \<forall> x . Substable_Cond (\<phi> x) (\<psi> x)"
+  instance proof
+    interpret PLM .
+    fix \<phi>:: "('a \<Rightarrow> 'b) \<Rightarrow> \<o>" and  \<psi> \<chi> :: "'a \<Rightarrow> 'b" and \<Theta> v
+    assume "Substable Substable_Cond \<phi>"
+    moreover assume "Substable_Cond \<psi> \<chi>"
+    ultimately have "[\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
+      unfolding Substable_def by blast
+    hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]" using "\<^bold>\<equiv>E" by blast
+    moreover assume "\<Theta> [\<phi> \<psi> in v]"
+    ultimately show "\<Theta> [\<phi> \<chi> in v]" by simp
+  qed
+end
+
+context PLM
+begin
+
+  lemma Substable_intro_equiv[Substable_intros]:
+    assumes "Substable cond \<psi>"
+        and "Substable cond \<chi>"
+    shows "Substable cond (\<lambda> \<phi> . \<psi> \<phi> \<^bold>\<equiv> \<chi> \<phi>)"
+    unfolding conn_defs by (simp add: assms Substable_intros)
+  lemma Substable_intro_conj[Substable_intros]:
+    assumes "Substable cond \<psi>"
+        and "Substable cond \<chi>"
+    shows "Substable cond (\<lambda> \<phi> . \<psi> \<phi> \<^bold>& \<chi> \<phi>)"
+    unfolding conn_defs by (simp add: assms Substable_intros)
+  lemma Substable_intro_disj[Substable_intros]:
+    assumes "Substable cond \<psi>"
+        and "Substable cond \<chi>"
+    shows "Substable cond (\<lambda> \<phi> . \<psi> \<phi> \<^bold>\<or> \<chi> \<phi>)"
+    unfolding conn_defs by (simp add: assms Substable_intros)
+  lemma Substable_intro_diamond[Substable_intros]:
+    assumes "Substable cond \<psi>"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<diamond>(\<psi> \<phi>))"
+    unfolding conn_defs by (simp add: assms Substable_intros)
+  lemma Substable_intro_exist[Substable_intros]:
+    assumes "\<forall> x . Substable cond (\<psi> x)"
+    shows "Substable cond (\<lambda> \<phi> . \<^bold>\<exists> x . \<psi> x \<phi>)"
+    unfolding conn_defs by (simp add: assms Substable_intros)
+
+  lemma Substable_intro_id_\<o>[Substable_intros]:
+    "Substable Substable_Cond (\<lambda> \<phi> . \<phi>)"
+    unfolding Substable_def Substable_Cond_\<o>_def by blast
+  lemma Substable_intro_id_fun[Substable_intros]:
+    assumes "Substable Substable_Cond \<psi>"
+    shows "Substable Substable_Cond (\<lambda> \<phi> . \<psi> (\<phi> x))"
+    using assms unfolding Substable_def Substable_Cond_fun_def
+    by blast
+
+  method PLM_subst_method for \<psi>::"'a::Substable" and \<chi>::"'a::Substable" =
+    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
+      \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
+        ((fast intro: Substable_intros, ((assumption)+)?)+; fail),
+        unfold Substable_Cond_defs)\<close>)
+
+  method PLM_autosubst =
+    (match premises in "\<And>v . [\<psi> \<^bold>\<equiv> \<chi> in v]" for \<psi> and \<chi> \<Rightarrow>
+      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> \<phi> and v \<Rightarrow>
+        \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
+          ((fast intro: Substable_intros, ((assumption)+)?)+; fail),
+          unfold Substable_Cond_defs)\<close> \<close>)
+
+  method PLM_autosubst1 =
+    (match premises in "\<And>v x . [\<psi> x \<^bold>\<equiv> \<chi> x in v]"
+      for \<psi>::"'a::type\<Rightarrow>\<o>" and \<chi>::"'a\<Rightarrow>\<o>" \<Rightarrow>
+      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> \<phi> and v \<Rightarrow>
+        \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
+          ((fast intro: Substable_intros, ((assumption)+)?)+; fail),
+          unfold Substable_Cond_defs)\<close> \<close>)
+
+  method PLM_autosubst2 =
+    (match premises in "\<And>v x y . [\<psi> x y \<^bold>\<equiv> \<chi> x y in v]"
+      for \<psi>::"'a::type\<Rightarrow>'a\<Rightarrow>\<o>" and \<chi>::"'a::type\<Rightarrow>'a\<Rightarrow>\<o>" \<Rightarrow>
+      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> \<phi> and v \<Rightarrow>
+        \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
+          ((fast intro: Substable_intros, ((assumption)+)?)+; fail),
+          unfold Substable_Cond_defs)\<close> \<close>)
+
+  method PLM_subst_goal_method for \<phi>::"'a::Substable\<Rightarrow>\<o>" and \<psi>::"'a" =
+    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<chi> and v \<Rightarrow>
+      \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
+        ((fast intro: Substable_intros, ((assumption)+)?)+; fail),
+        unfold Substable_Cond_defs)\<close>)
 
 (*
   text{* \begin{TODO}
             This can only be proven using the Semantics of the Box operator.
             As it is not needed for the further reasoning it remains commented for now.
          \end{TODO} *}
-  lemma rule_sub_lem_2: assumes "Substable \<phi>" shows "[\<^bold>\<box>(\<psi> \<^bold>\<equiv> \<chi>) in v] \<Longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
-    using assms unfolding Substable_def using Semantics.T6 by fast
+  lemma rule_sub_lem_2:
+    assumes "Substable Substable_Cond \<phi>"
+    shows "[\<^bold>\<box>(\<psi> \<^bold>\<equiv> \<chi>) in v] \<Longrightarrow> [\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"
+    using assms unfolding Substable_def Substable_Cond_defs
+    using Semantics.T6 by fast
 *)
+
   lemma rule_sub_nec[PLM]:
-    assumes "Substable \<phi>"
+    assumes "Substable Substable_Cond \<phi>"
     shows "(\<And>v.[(\<psi> \<^bold>\<equiv> \<chi>) in v]) \<Longrightarrow> \<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]"
     proof -
       assume "(\<And>v.[(\<psi> \<^bold>\<equiv> \<chi>) in v])"
       hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]"
-        using assms RN unfolding Substable_def
+        using assms RN unfolding Substable_def Substable_Cond_defs
         using "\<^bold>\<equiv>I" CP "\<^bold>\<equiv>E"(1) "\<^bold>\<equiv>E"(2) by meson
       thus "\<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]" by auto
     qed
 
   lemma rule_sub_nec1[PLM]:
-    assumes "Substable1 \<phi>"
+    assumes "Substable Substable_Cond \<phi>"
     shows "(\<And>v x .[(\<psi> x \<^bold>\<equiv> \<chi> x) in v]) \<Longrightarrow> \<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]"
     proof -
       assume "(\<And>v x.[(\<psi> x \<^bold>\<equiv> \<chi> x) in v])"
       hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]"
-        using assms RN unfolding Substable1_def
+        using assms RN unfolding Substable_def Substable_Cond_defs
         using "\<^bold>\<equiv>I" CP "\<^bold>\<equiv>E"(1) "\<^bold>\<equiv>E"(2) by metis
       thus "\<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]" by auto
     qed
 
   lemma rule_sub_nec2[PLM]:
-    assumes "Substable2 \<phi>"
+    assumes "Substable Substable_Cond \<phi>"
     shows "(\<And>v x y .[\<psi> x y \<^bold>\<equiv> \<chi> x y in v]) \<Longrightarrow> \<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]"
     proof -
       assume "(\<And>v x y .[\<psi> x y \<^bold>\<equiv> \<chi> x y in v])"
       hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]"
-        using assms RN unfolding Substable2_def
+        using assms RN unfolding Substable_def Substable_Cond_defs
         using "\<^bold>\<equiv>I" CP "\<^bold>\<equiv>E"(1) "\<^bold>\<equiv>E"(2) by metis
       thus "\<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]" by auto
     qed
-
-  lemma rule_sub_necq[PLM]:
-    assumes "SubstableVar \<phi>"
-    shows "(\<And>v x .[\<psi> x \<^bold>\<equiv> \<chi> x in v]) \<Longrightarrow> \<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]"
-    proof -
-      assume "(\<And>v x.[\<psi> x \<^bold>\<equiv> \<chi> x in v])"
-      hence "[\<phi> \<psi> in v] = [\<phi> \<chi> in v]"
-        using assms RN unfolding SubstableVar_def
-        using "\<^bold>\<equiv>I" CP "\<^bold>\<equiv>E"(1) "\<^bold>\<equiv>E"(2) by metis
-      thus "\<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]" by auto
-    qed
-
-  definition SubstableAuxVar :: "('a\<Rightarrow>(var list\<Rightarrow>\<o>)\<Rightarrow>(var list\<Rightarrow>\<o>)) \<Rightarrow> bool" where
-    "SubstableAuxVar \<equiv> \<lambda> \<phi> . \<forall> \<psi> \<chi> v x bndvars . (\<forall> x v . [\<psi> x \<^bold>\<equiv> \<chi> x in v])
-                                  \<longrightarrow> ([\<phi> bndvars \<psi> x \<^bold>\<equiv> \<phi> bndvars \<chi> x in v])"
-
-  named_theorems Substable_intros
-
-  lemma SubstableVar_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableVar (\<lambda> \<phi> . \<psi> (\<Theta> x) \<phi> x)"
-    unfolding SubstableVar_def SubstableAuxVar_def by blast
-  lemma SubstableAux_bndvars_intro[Substable_intros]:
-    "SubstableAuxVar (\<lambda> bndvars \<phi> x . \<phi> (\<Theta> bndvars x))"
-    unfolding SubstableAuxVar_def using qml_2[axiom_instance, deduction] by blast
-  lemma SubstableAux_const_intro[Substable_intros]:
-    "SubstableAuxVar (\<lambda> bndvars \<phi> x . \<Theta> bndvars x)"
-    unfolding SubstableAuxVar_def using oth_class_taut_4_a by blast
-  lemma SubstableAux_not_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<not>(\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)))"
-    unfolding SubstableAuxVar_def
-    using rule_sub_lem_1_a RN_2 "\<^bold>\<equiv>E"(1) oth_class_taut_5_d by blast
-  lemma SubstableAux_impl_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar \<chi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      (\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)) \<^bold>\<rightarrow> (\<chi> (\<Theta>3 bndvars x) \<phi> (\<Theta>4 bndvars x)))"
-    unfolding SubstableAuxVar_def by (metis "\<^bold>\<equiv>I" CP intro_elim_6_a intro_elim_6_b)
-  lemma SubstableAux_box_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<box>(\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)))"
-    unfolding SubstableAuxVar_def using rule_sub_lem_1_f RN by meson
-  lemma SubstableAux_actual_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<A>(\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)))"
-    unfolding SubstableAuxVar_def using rule_sub_lem_1_e RN by meson
-  lemma SubstableAux_all_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<forall> y . (\<psi> (\<Theta>1 bndvars x y) \<phi> (\<Theta>2 bndvars x y)))"
-    unfolding SubstableAuxVar_def
-    proof (rule allI)+
-      fix \<Psi> \<chi> :: "var list\<Rightarrow>\<o>" and v x bndvars
-      assume a1: "\<forall>\<Psi> \<chi> v x bndvars. (\<forall>x w . [\<Psi> x \<^bold>\<equiv> \<chi> x in w])
-                  \<longrightarrow> [\<psi> bndvars \<Psi> x \<^bold>\<equiv> \<psi> bndvars \<chi> x in v]"
-      {
-        assume a2: "(\<forall>x v. [\<Psi> x \<^bold>\<equiv> \<chi> x in v])"
-        {
-          fix y
-          have "[\<psi> (\<Theta>1 bndvars x y) \<Psi> (\<Theta>2 bndvars x y)
-              \<^bold>\<equiv> \<psi> (\<Theta>1 bndvars x y) \<chi> (\<Theta>2 bndvars x y) in v]"
-            using a1 a2 by auto
-        }
-        hence "[(\<^bold>\<forall>y. \<psi> (\<Theta>1 bndvars x y) \<Psi> (\<Theta>2 bndvars x y))
-              \<^bold>\<equiv> (\<^bold>\<forall>y. \<psi> (\<Theta>1 bndvars x y) \<chi> (\<Theta>2 bndvars x y)) in v]"
-          using cqt_basic_3[deduction] "\<^bold>\<forall>I" by fast
-      }
-      thus "(\<forall>x v . [\<Psi> x \<^bold>\<equiv> \<chi> x in v]) \<longrightarrow>
-       [(\<^bold>\<forall>y. \<psi> (\<Theta>1 bndvars x y) \<Psi> (\<Theta>2 bndvars x y))
-        \<^bold>\<equiv> (\<^bold>\<forall>y. \<psi> (\<Theta>1 bndvars x y) \<chi> (\<Theta>2 bndvars x y)) in v]"
-        by auto
-    qed
-
-  lemma Substable_intro[Substable_intros]:
-    "SubstableVar (\<lambda> \<phi> . \<psi> \<phi>) \<Longrightarrow> Substable (\<lambda> \<phi> . \<psi> (\<lambda> v . \<phi>))"
-    unfolding SubstableVar_def Substable_def by fast
-
-  lemma Substable1_intro[Substable_intros]:
-    "SubstableVar (\<lambda> \<phi> . \<psi> (\<lambda> y . \<phi> ((qvar y)#Nil))) \<Longrightarrow> Substable1 \<psi>"
-    unfolding SubstableVar_def Substable1_def
-    proof (rule allI)+
-      fix \<Psi> :: "'a::quantifiable\<Rightarrow>\<o>" and \<chi> v
-      assume 1: "\<forall> \<Psi> \<chi> v.
-          (\<forall>x w. [\<Psi> x \<^bold>\<equiv> \<chi> x in w]) \<longrightarrow> [\<psi> (\<lambda>y. \<Psi> ((qvar y)#Nil))
-                                      \<^bold>\<equiv> \<psi> (\<lambda>y. \<chi> ((qvar y)#Nil)) in v]"
-      {
-        assume "(\<forall>x w . [\<Psi> x \<^bold>\<equiv> \<chi> x in w])"
-        hence "[\<psi> (\<lambda>y. \<Psi> (varq (hd ((qvar y)#Nil))))
-              \<^bold>\<equiv> \<psi> (\<lambda> y . \<chi> (varq (hd ((qvar y)#Nil)))) in v]"
-          using 1 by fast
-        hence "[\<psi> (\<lambda>y. \<Psi> y) \<^bold>\<equiv> \<psi> (\<lambda> y . \<chi> y) in v]"
-          using varq_qvar_id[where 'a='a] by fastforce
-      }
-      thus "(\<forall>x w . [\<Psi> x \<^bold>\<equiv> \<chi> x in w]) \<longrightarrow> [\<psi> \<Psi> \<^bold>\<equiv> \<psi> \<chi> in v]"
-        by blast
-  qed
-
-  lemma Substable2_intro[Substable_intros]:
-    "SubstableVar (\<lambda> \<phi> . \<psi> (\<lambda> x y . \<phi> ((qvar x)#(qvar y)#Nil))) \<Longrightarrow> Substable2 \<psi>"
-    unfolding SubstableVar_def Substable2_def
-    proof (rule allI)+
-      fix \<Psi> :: "'a::quantifiable\<Rightarrow>'b::quantifiable\<Rightarrow>\<o>" and \<chi> v
-      let ?L = "\<lambda> x y . (qvar x)#(qvar y)#Nil"
-      assume 1: "\<forall> \<Psi> \<chi> v. (\<forall>x w. [\<Psi> x \<^bold>\<equiv> \<chi> x in w])
-        \<longrightarrow> [\<psi> (\<lambda>x y. \<Psi> (?L x y)) \<^bold>\<equiv> \<psi> (\<lambda>x y. \<chi> (?L x y)) in v]"
-      {
-        assume "\<forall>x y w. [\<Psi> x y \<^bold>\<equiv> \<chi> x y in w]"
-        hence "[\<psi> (\<lambda>x y. \<Psi> (varq (hd (?L x y))) (varq (hd (tl (?L x y)))))
-                  \<^bold>\<equiv> \<psi> (\<lambda>x y . \<chi> (varq (hd (?L x y))) (varq (hd (tl (?L x y))))) in v]"
-          using 1 by fast
-        hence "[\<psi> (\<lambda>x y. \<Psi> x y) \<^bold>\<equiv> \<psi> (\<lambda>x y . \<chi> x y) in v]"
-          using varq_qvar_id[where 'a='a] varq_qvar_id[where 'a='b] by fastforce
-      }
-      thus "(\<forall>x y w . [\<Psi> x y \<^bold>\<equiv> \<chi> x y in w]) \<longrightarrow> [\<psi> \<Psi> \<^bold>\<equiv> \<psi> \<chi> in v]"
-        by blast
-  qed
-
-  (* derived introduction rules *)
-  lemma SubstableAux_conj_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar \<chi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      (\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)) \<^bold>& (\<chi> (\<Theta>3 bndvars x) \<phi> (\<Theta>5 bndvars x)))"
-    unfolding conn_defs by ((rule Substable_intros)+; ((assumption+)?))+
-  lemma SubstableAux_disj_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar \<chi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      (\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)) \<^bold>\<or> (\<chi> (\<Theta>3 bndvars x) \<phi> (\<Theta>4 bndvars x)))"
-    unfolding conn_defs by ((rule Substable_intros)+; ((assumption+)?))+
-  lemma SubstableAux_equiv_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar \<chi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      (\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)) \<^bold>\<equiv> (\<chi> (\<Theta>3 bndvars x) \<phi> (\<Theta>4 bndvars x)))"
-    unfolding conn_defs by ((rule Substable_intros)+; ((assumption+)?))+
-  lemma SubstableAux_diamond_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<diamond>(\<psi> (\<Theta>1 bndvars x) \<phi> (\<Theta>2 bndvars x)))"
-    unfolding conn_defs by ((rule Substable_intros)+; ((assumption+)?))+
-  lemma SubstableAux_exists_intro[Substable_intros]:
-    "SubstableAuxVar \<psi> \<Longrightarrow> SubstableAuxVar (\<lambda> bndvars \<phi> x.
-      \<^bold>\<exists> y . (\<psi> (\<Theta>1 bndvars x y) \<phi> (\<Theta>2 bndvars x y)))"
-    unfolding conn_defs by ((rule Substable_intros)+; ((assumption+)?))+
-
-  method PLM_subst_method for \<psi>::\<o> and \<chi>::\<o> =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-  method PLM_subst_goal_method for \<phi>::"\<o>\<Rightarrow>\<o>" and \<psi>::\<o> =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<chi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-  method PLM_subst1_method for \<psi>::"('a::quantifiable)\<Rightarrow>\<o>" and \<chi>::"('a)\<Rightarrow>\<o>" =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec1[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-  method PLM_subst1_goal_method for \<phi>::"('a::quantifiable\<Rightarrow>\<o>)\<Rightarrow>\<o>" and \<psi>::"'a\<Rightarrow>\<o>" =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<chi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec1[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-  method PLM_subst2_method for \<psi>::"'a::quantifiable\<Rightarrow>'a\<Rightarrow>\<o>" and \<chi>::"'a\<Rightarrow>'a\<Rightarrow>\<o>" =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec2[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-  method PLM_subst2_goal_method for \<phi>::"('a::quantifiable\<Rightarrow>'a\<Rightarrow>\<o>)\<Rightarrow>\<o>"
-                                and \<psi>::"'a\<Rightarrow>'a\<Rightarrow>\<o>" =
-    (match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<chi> and v \<Rightarrow>
-      \<open>(rule rule_sub_nec2[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-        ((rule Substable_intros, ((assumption)+)?)+; fail))\<close>)
-
-  method PLM_autosubst =
-    (match premises in "\<And>v . [\<psi> \<^bold>\<equiv> \<chi> in v]" for \<psi> and \<chi> \<Rightarrow>
-      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> \<phi> and v \<Rightarrow>
-        \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-          ((rule Substable_intros, ((assumption)+)?)+; fail))\<close> \<close>)
-  method PLM_autosubst_with uses WITH =
-    (match WITH in Y: "\<And>v . [\<psi> \<^bold>\<equiv> \<chi> in v]" for \<psi> and \<chi> \<Rightarrow>
-      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-        \<open>(rule rule_sub_nec[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-          ((rule Substable_intros)+; fail)), ((fact WITH)?)\<close> \<close>)
-  method PLM_autosubst1 =
-    (match premises in "\<And>v x :: 'a::quantifiable . [\<psi> x \<^bold>\<equiv> \<chi> x in v]" for \<psi> and \<chi> \<Rightarrow>
-      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-        \<open>(rule rule_sub_nec1[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-          ((rule Substable_intros, ((assumption)+)?)+; fail))\<close> \<close>)
-  method PLM_autosubst2 =
-    (match premises in "\<And>v (x :: 'a::quantifiable) (y::'a) . [\<psi> x y \<^bold>\<equiv> \<chi> x y in v]"
-           for \<psi> and \<chi> \<Rightarrow>
-      \<open> match conclusion in "\<Theta> [\<phi> \<chi> in v]" for \<Theta> and \<phi> and v \<Rightarrow>
-        \<open>(rule rule_sub_nec2[where \<Theta>=\<Theta> and \<chi>=\<chi> and \<psi>=\<psi> and \<phi>=\<phi> and v=v],
-          ((rule Substable_intros, ((assumption)+)?)+; fail))\<close> \<close>)
 
   lemma rule_sub_remark_1:
     assumes "(\<And>v.[\<lparr>A!,x\<rparr> \<^bold>\<equiv> (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>)) in v])"
@@ -2116,9 +2077,9 @@ text{* \label{TAO_PLM_Necessity} *}
         using "Df\<^bold>\<box>" by (rule "\<^bold>\<equiv>E"(6))
       hence "[(\<^bold>\<not>(\<^bold>\<diamond>(\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))))) \<^bold>\<equiv> ((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>))) in v]"
         apply - apply (PLM_subst_method "\<^bold>\<box>(\<^bold>\<not>\<phi>)" "\<^bold>\<not>(\<^bold>\<diamond>\<phi>)")
-         apply (rule KBasic2_4)
+         apply (simp add: KBasic2_4)
         apply (PLM_subst_method "\<^bold>\<box>(\<^bold>\<not>\<psi>)" "\<^bold>\<not>(\<^bold>\<diamond>\<psi>)")
-         apply (rule KBasic2_4)
+         apply (simp add: KBasic2_4)
         unfolding diamond_def by assumption
       hence "[(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>))) \<^bold>\<equiv> ((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>))) in v]"
         apply - apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>& (\<^bold>\<not>\<psi>))" "\<phi> \<^bold>\<or> \<psi>")
@@ -2127,10 +2088,10 @@ text{* \label{TAO_PLM_Necessity} *}
         by (rule oth_class_taut_5_d[equiv_lr])
       hence "[\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>) \<^bold>\<equiv> (\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))) in v]"
         apply - apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<not>(\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)))" "\<^bold>\<diamond>(\<phi> \<^bold>\<or> \<psi>)")
-        using oth_class_taut_4_b[equiv_sym] by assumption+
+        using oth_class_taut_4_b[equiv_sym] by auto
       thus ?thesis
         apply - apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>& (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))" "(\<^bold>\<diamond>\<phi>) \<^bold>\<or> (\<^bold>\<diamond>\<psi>)")
-        using oth_class_taut_6_b[equiv_sym] by assumption+
+        using oth_class_taut_6_b[equiv_sym] by auto
     qed
 
   lemma KBasic2_7[PLM]:
@@ -2157,11 +2118,11 @@ text{* \label{TAO_PLM_Necessity} *}
   lemma KBasic2_9[PLM]:
     "[\<^bold>\<diamond>(\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<equiv> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<diamond>\<psi>) in v]"
     apply (PLM_subst_method "(\<^bold>\<not>(\<^bold>\<box>\<phi>)) \<^bold>\<or> (\<^bold>\<diamond>\<psi>)" "\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<diamond>\<psi>")
-     using oth_class_taut_5_k[equiv_sym] apply assumption
+     using oth_class_taut_5_k[equiv_sym] apply simp
     apply (PLM_subst_method "(\<^bold>\<not>\<phi>) \<^bold>\<or> \<psi>" "\<phi> \<^bold>\<rightarrow> \<psi>")
-     using oth_class_taut_5_k[equiv_sym] apply assumption
+     using oth_class_taut_5_k[equiv_sym] apply simp
     apply (PLM_subst_method "\<^bold>\<diamond>(\<^bold>\<not>\<phi>)" "\<^bold>\<not>(\<^bold>\<box>\<phi>)")
-     using KBasic2_2[equiv_sym] apply assumption
+     using KBasic2_2[equiv_sym] apply simp
     using KBasic2_6 .
 
   lemma KBasic2_10[PLM]:
@@ -2195,9 +2156,9 @@ text{* \label{TAO_PLM_Necessity} *}
     unfolding diamond_def
     apply (subst contraposition_1)
     apply (PLM_subst_method "\<^bold>\<box>\<^bold>\<not>\<phi>" "\<^bold>\<not>\<^bold>\<not>\<^bold>\<box>\<^bold>\<not>\<phi>")
-     apply (simp only: PLM.oth_class_taut_4_b)
+     apply (simp add: PLM.oth_class_taut_4_b)
     using qml_2[where \<phi>="\<^bold>\<not>\<phi>", axiom_instance]
-    by assumption
+    by simp
   lemmas "T\<^bold>\<diamond>" = TBasic
 
   lemma S5Basic_1[PLM]:
@@ -2213,7 +2174,7 @@ text{* \label{TAO_PLM_Necessity} *}
       thus "[\<^bold>\<box>\<phi> in v]"
         unfolding diamond_def apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<not>\<phi>" "\<phi>")
-         using oth_class_taut_4_b[equiv_sym] apply assumption
+         using oth_class_taut_4_b[equiv_sym] apply simp
         unfolding diamond_def using oth_class_taut_4_b[equiv_rl]
         by simp
     qed
@@ -2261,20 +2222,20 @@ text{* \label{TAO_PLM_Necessity} *}
     "[\<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<box>\<psi>) \<^bold>\<equiv> (\<^bold>\<box>\<phi> \<^bold>\<or> \<^bold>\<box>\<psi>) in v]"
     apply (rule "\<^bold>\<equiv>I")
      apply (PLM_subst_goal_method "\<lambda> \<chi> . \<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<box>\<psi>) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<or> \<chi>)" "\<^bold>\<diamond>\<^bold>\<box>\<psi>")
-      using S5Basic_2[equiv_sym] apply assumption
+      using S5Basic_2[equiv_sym] apply simp
      using KBasic2_12 apply assumption
     apply (PLM_subst_goal_method "\<lambda> \<chi> .(\<^bold>\<box>\<phi> \<^bold>\<or> \<chi>) \<^bold>\<rightarrow> \<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<box>\<psi>)" "\<^bold>\<box>\<^bold>\<box>\<psi>")
-     using S5Basic_7[equiv_sym] apply assumption
+     using S5Basic_7[equiv_sym] apply simp
     using KBasic2_7 by auto
 
   lemma S5Basic_11[PLM]:
     "[\<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<diamond>\<psi>) \<^bold>\<equiv> (\<^bold>\<box>\<phi> \<^bold>\<or> \<^bold>\<diamond>\<psi>) in v]"
     apply (rule "\<^bold>\<equiv>I")
      apply (PLM_subst_goal_method "\<lambda> \<chi> . \<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<diamond>\<psi>) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<or> \<chi>)" "\<^bold>\<diamond>\<^bold>\<diamond>\<psi>")
-      using S5Basic_9 apply assumption
+      using S5Basic_9 apply simp
      using KBasic2_12 apply assumption
     apply (PLM_subst_goal_method "\<lambda> \<chi> .(\<^bold>\<box>\<phi> \<^bold>\<or> \<chi>) \<^bold>\<rightarrow> \<^bold>\<box>(\<phi> \<^bold>\<or> \<^bold>\<diamond>\<psi>)" "\<^bold>\<box>\<^bold>\<diamond>\<psi>")
-     using S5Basic_3[equiv_sym] apply assumption
+     using S5Basic_3[equiv_sym] apply simp
     using KBasic2_7 by assumption
 
   lemma S5Basic_12[PLM]:
@@ -2286,25 +2247,25 @@ text{* \label{TAO_PLM_Necessity} *}
         using oth_class_taut_5_d[equiv_lr] by auto
       have 2: "[(\<^bold>\<diamond>(\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>\<or> (\<^bold>\<not>(\<^bold>\<diamond>\<psi>))))) \<^bold>\<equiv> (\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>\<or> (\<^bold>\<not>(\<^bold>\<diamond>\<psi>)))) in v]"
         apply (PLM_subst_method "\<^bold>\<box>\<^bold>\<not>\<psi>" "\<^bold>\<not>\<^bold>\<diamond>\<psi>")
-         using KBasic2_4 apply assumption
+         using KBasic2_4 apply simp
         apply (PLM_subst_method "\<^bold>\<box>\<^bold>\<not>\<phi>" "\<^bold>\<not>\<^bold>\<diamond>\<phi>")
-         using KBasic2_4 apply assumption
+         using KBasic2_4 apply simp
         apply (PLM_subst_method "(\<^bold>\<not>\<^bold>\<box>((\<^bold>\<not>\<phi>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<not>\<psi>)))" "(\<^bold>\<diamond>(\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>\<or> (\<^bold>\<box>(\<^bold>\<not>\<psi>)))))")
          unfolding diamond_def
          apply (simp add: RN oth_class_taut_4_b rule_sub_lem_1_a rule_sub_lem_1_f)
         using 1 by assumption
       show ?thesis
         apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>\<phi>) \<^bold>\<or> (\<^bold>\<not>\<^bold>\<diamond>\<psi>))" "\<phi> \<^bold>& \<^bold>\<diamond>\<psi>")
-         using oth_class_taut_6_a[equiv_sym] apply assumption
+         using oth_class_taut_6_a[equiv_sym] apply simp
         apply (PLM_subst_method "\<^bold>\<not>((\<^bold>\<not>(\<^bold>\<diamond>\<phi>)) \<^bold>\<or> (\<^bold>\<not>\<^bold>\<diamond>\<psi>))" "\<^bold>\<diamond>\<phi> \<^bold>& \<^bold>\<diamond>\<psi>")
-         using oth_class_taut_6_a[equiv_sym] apply assumption
+         using oth_class_taut_6_a[equiv_sym] apply simp
         using 2 by assumption
     qed
 
   lemma S5Basic_13[PLM]:
     "[\<^bold>\<diamond>(\<phi> \<^bold>& (\<^bold>\<box>\<psi>)) \<^bold>\<equiv> (\<^bold>\<diamond>\<phi> \<^bold>& (\<^bold>\<box>\<psi>)) in v]"
     apply (PLM_subst_method "\<^bold>\<diamond>\<^bold>\<box>\<psi>" "\<^bold>\<box>\<psi>")
-     using S5Basic_2[equiv_sym] apply assumption
+     using S5Basic_2[equiv_sym] apply simp
     using S5Basic_12 by simp
 
   lemma S5Basic_14[PLM]:
@@ -2502,11 +2463,11 @@ text{* \label{TAO_PLM_Necessity} *}
         using CBF by auto
       have 2: "[(\<^bold>\<exists> \<alpha> . (\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<phi> \<alpha>))))) \<^bold>\<rightarrow> (\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall>\<alpha>. \<^bold>\<not>(\<phi> \<alpha>)))) in v]"
         apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<forall>\<alpha>. \<^bold>\<box>(\<^bold>\<not>(\<phi> \<alpha>)))" "(\<^bold>\<exists> \<alpha> . (\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<phi> \<alpha>)))))")
-         using cqt_further_2 apply assumption
+         using cqt_further_2 apply blast
         using 1 using contraposition_1 by metis
       have "[(\<^bold>\<exists> \<alpha> . (\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<phi> \<alpha>))))) \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>(\<phi> \<alpha>))) in v]"
         apply (PLM_subst_method "\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall>\<alpha>. \<^bold>\<not>(\<phi> \<alpha>)))" "\<^bold>\<diamond>(\<^bold>\<not>(\<^bold>\<forall>\<alpha>. \<^bold>\<not>(\<phi> \<alpha>)))")
-         using KBasic2_2 apply assumption
+         using KBasic2_2 apply blast
         using 2 by assumption
       thus ?thesis
         unfolding diamond_def exists_def by auto
@@ -2655,9 +2616,9 @@ text{* \label{TAO_PLM_Necessity} *}
   lemma en_eq_8[PLM]:
     "[\<^bold>\<diamond>(\<^bold>\<not>\<lbrace>x,F\<rbrace>) \<^bold>\<equiv> (\<^bold>\<not>\<lbrace>x,F\<rbrace>) in v]"
      unfolding diamond_def apply (PLM_subst_method "\<lbrace>x,F\<rbrace>" "\<^bold>\<not>\<^bold>\<not>\<lbrace>x,F\<rbrace>")
-      using oth_class_taut_4_b apply assumption
+      using oth_class_taut_4_b apply simp
      apply (PLM_subst_method "\<lbrace>x,F\<rbrace>" "\<^bold>\<box>\<lbrace>x,F\<rbrace>")
-      using en_eq_2 apply assumption
+      using en_eq_2 apply simp
      using oth_class_taut_4_a by assumption
   lemma en_eq_9[PLM]:
     "[\<^bold>\<diamond>(\<^bold>\<not>\<lbrace>x,F\<rbrace>) \<^bold>\<equiv> \<^bold>\<box>(\<^bold>\<not>\<lbrace>x,F\<rbrace>) in v]"
@@ -2830,8 +2791,6 @@ text{* \label{TAO_PLM_Relations} *}
         by blast
     qed
 
-  text{* \begin{TODO} Remark 132? \end{TODO} *}
-
   lemma propositions[PLM]:
     "[\<^bold>\<exists> p . \<^bold>\<box>(p \<^bold>\<equiv> p') in v]"
     by PLM_solver
@@ -2959,11 +2918,11 @@ text{* \label{TAO_PLM_Relations} *}
         unfolding NonContingent_def Necessary_defs Impossible_defs .
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) in v]"
         apply -
-        apply (PLM_subst1_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
         using thm_relation_negation_2_1[equiv_sym] by auto
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F\<^sup>-,x\<^sup>P\<rparr>) in v]"
         apply -
-        apply (PLM_subst1_goal_method
+        apply (PLM_subst_goal_method
                "\<lambda> \<phi> . \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<phi> x)" "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1[equiv_sym] by auto
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F\<^sup>-,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) in v]"
@@ -2977,11 +2936,11 @@ text{* \label{TAO_PLM_Relations} *}
         by (rule oth_class_taut_3_e[equiv_lr])
       hence "[\<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F\<^sup>-,x\<^sup>P\<rparr>) in v]"
         apply -
-        apply (PLM_subst1_method  "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>")
+        apply (PLM_subst_method  "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_2_1 by auto
       hence "[\<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<or> \<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) in v]"
         apply -
-        apply (PLM_subst1_method "\<lambda> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1 by auto
       thus "[NonContingent F in v]"
         unfolding NonContingent_def Necessary_defs Impossible_defs .
@@ -2999,13 +2958,13 @@ text{* \label{TAO_PLM_Relations} *}
         using KBasic2_2[equiv_lr] "\<^bold>&I" "\<^bold>&E" by meson
       thus "[(\<^bold>\<diamond>(\<^bold>\<exists> x.\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
         unfolding exists_def apply -
-        apply (PLM_subst1_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using oth_class_taut_4_b by auto
     next
       assume "[(\<^bold>\<diamond>(\<^bold>\<exists> x.\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
       hence "[(\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>)) in v]"
         unfolding exists_def apply -
-        apply (PLM_subst1_goal_method
+        apply (PLM_subst_goal_method
                "\<lambda> \<phi> . (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<forall>x. \<phi> x))" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
         using oth_class_taut_4_b[equiv_sym] by auto
       hence "[(\<^bold>\<not>\<^bold>\<box>(\<^bold>\<forall>x.\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>& (\<^bold>\<not>\<^bold>\<box>(\<^bold>\<forall>x.\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
@@ -3029,17 +2988,17 @@ text{* \label{TAO_PLM_Relations} *}
              = [(\<^bold>\<exists> x . \<^bold>\<diamond>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>))) in v]"
         using "BF\<^bold>\<diamond>"[deduction] "CBF\<^bold>\<diamond>"[deduction] by fast
       also have "... = [\<^bold>\<exists> x . (\<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) in v]"
-        apply (PLM_subst1_method
+        apply (PLM_subst_method
                "\<lambda> x . \<^bold>\<diamond>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>))"
                "\<lambda> x . \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)")
         using S5Basic_12 by auto
       also have "... = [\<^bold>\<exists> x . \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> in v]" 
-        apply (PLM_subst1_method
+        apply (PLM_subst_method
                "\<lambda> x . \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)"
                "\<lambda> x . \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr>")
         using oth_class_taut_3_b by auto
       also have "... = [\<^bold>\<exists> x . \<^bold>\<diamond>((\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr>) in v]"
-        apply (PLM_subst1_method
+        apply (PLM_subst_method
                "\<lambda> x . \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr>"
                "\<lambda> x . \<^bold>\<diamond>((\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr>)")
         using S5Basic_12[equiv_sym] by auto
@@ -3050,9 +3009,9 @@ text{* \label{TAO_PLM_Relations} *}
 
   lemma lem_cont_e_2[PLM]:
     "[\<^bold>\<diamond>(\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>)) \<^bold>\<equiv> \<^bold>\<diamond>(\<^bold>\<exists> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr> \<^bold>& \<^bold>\<diamond>(\<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>)) in v]"
-    apply (PLM_subst1_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
+    apply (PLM_subst_method "\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
      using thm_relation_negation_2_1[equiv_sym] apply simp
-    apply (PLM_subst1_method "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
+    apply (PLM_subst_method "\<lambda> x . \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>F\<^sup>-,x\<^sup>P\<rparr>")
      using thm_relation_negation_1_1[equiv_sym] apply simp
     using lem_cont_e by simp
 
@@ -3625,12 +3584,12 @@ text{* \label{TAO_PLM_Relations} *}
     apply (rule thm_cont_prop_2[equiv_rl], rule "\<^bold>&I")
     subgoal
       unfolding Ordinary_def
-      apply (PLM_subst1_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-       apply (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
+      apply (PLM_subst_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
+       using beta_C_meta_1[equiv_sym] IsPropositional_intros apply fast
       using "BF\<^bold>\<diamond>"[deduction, OF thm_cont_prop_2[equiv_lr, OF thm_cont_e_2, conj1]]
       by (rule "T\<^bold>\<diamond>"[deduction])
     subgoal
-      apply (PLM_subst1_method "\<lambda> x . \<lparr>A!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>")
+      apply (PLM_subst_method "\<lambda> x . \<lparr>A!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>")
        using oa_contingent_3 apply simp
       using cqt_further_5[deduction,conj1, OF A_objects[axiom_instance]]
       by (rule "T\<^bold>\<diamond>"[deduction])
@@ -3644,9 +3603,9 @@ text{* \label{TAO_PLM_Relations} *}
       by (rule "T\<^bold>\<diamond>"[deduction])
     subgoal
       unfolding Abstract_def
-      apply (PLM_subst1_method "\<lambda> x . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-       apply (rule beta_C_meta_1[equiv_sym]; (rule IsPropositional_intros)+)
-      apply (PLM_subst1_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
+      apply (PLM_subst_method "\<lambda> x . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
+       using beta_C_meta_1[equiv_sym] IsPropositional_intros apply fast
+      apply (PLM_subst_method "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
        using oth_class_taut_4_b apply simp
       using "BF\<^bold>\<diamond>"[deduction, OF thm_cont_prop_2[equiv_lr, OF thm_cont_e_2, conj1]]
       by (rule "T\<^bold>\<diamond>"[deduction])
@@ -3668,7 +3627,7 @@ text{* \label{TAO_PLM_Relations} *}
         hence "[(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           apply -
           apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)")
-           apply (rule beta_C_meta_1; (rule IsPropositional_intros)+)
+           using beta_C_meta_1 IsPropositional_intros apply fast
           by assumption
         hence "[\<lparr>O!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
           using oa_contingent_2 apply - by PLM_solver
@@ -3683,8 +3642,7 @@ text{* \label{TAO_PLM_Relations} *}
     proof -
       have "[(\<^bold>\<not>\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>) \<^bold>\<equiv> \<lparr>A!,x\<^sup>P\<rparr> in v]"
         apply (PLM_subst_method "(\<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-         apply (rule beta_C_meta_1[equiv_sym];
-                (rule IsPropositional_intros)+)
+         using beta_C_meta_1[equiv_sym] IsPropositional_intros apply fast
         using oth_class_taut_4_b[equiv_sym] by auto
       moreover have "[\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr> in v]"
         apply (rule beta_C_meta_1)
@@ -3717,8 +3675,7 @@ text{* \label{TAO_PLM_Relations} *}
         unfolding Ordinary_def
         apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym],
-            (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1[equiv_sym] IsPropositional_intros by fast+
     qed
 
   lemma oa_facts_2[PLM]:
@@ -3739,7 +3696,7 @@ text{* \label{TAO_PLM_Relations} *}
         unfolding Abstract_def
         apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1[equiv_sym] IsPropositional_intros by fast+
     qed
 
   lemma oa_facts_3[PLM]:
@@ -3771,14 +3728,13 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<A>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         unfolding Ordinary_def  apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1 IsPropositional_intros by fast
       hence "[\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"
         using Act_Basic_6[equiv_rl] by auto
       thus "[\<lparr>O!,x\<^sup>P\<rparr> in v]"
         unfolding Ordinary_def apply -
         apply (PLM_subst_method "\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym],
-            (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1[equiv_sym] IsPropositional_intros by fast
     qed
 
   lemma oa_facts_8[PLM]:
@@ -3790,7 +3746,7 @@ text{* \label{TAO_PLM_Relations} *}
       hence "[\<^bold>\<A>(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         unfolding Abstract_def apply -
         apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1, (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1 IsPropositional_intros by fast
       hence "[\<^bold>\<A>(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         apply -
         apply (PLM_subst_method "(\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>)" "(\<^bold>\<box>\<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>)")
@@ -3800,7 +3756,7 @@ text{* \label{TAO_PLM_Relations} *}
       thus "[\<lparr>A!,x\<^sup>P\<rparr> in v]"
         unfolding Abstract_def apply -
         apply (PLM_subst_method "\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>")
-        by (rule beta_C_meta_1[equiv_sym], (rule IsPropositional_intros | assumption)+)
+        using beta_C_meta_1[equiv_sym] IsPropositional_intros by fast
     qed
 
   lemma cont_nec_fact1_1[PLM]:
@@ -3818,7 +3774,7 @@ text{* \label{TAO_PLM_Relations} *}
           hence "[\<^bold>\<not>\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
             unfolding diamond_def apply -
             apply (PLM_subst_method "\<^bold>\<not>\<lparr>F\<^sup>-,x\<^sup>P\<rparr>" "\<lparr>F,x\<^sup>P\<rparr>")
-            using thm_relation_negation_2_1 by auto
+             using thm_relation_negation_2_1 by auto
           moreover {
             assume "[\<^bold>\<not>\<^bold>\<box>\<lparr>F\<^sup>-,x\<^sup>P\<rparr> in v]"
             hence "[\<^bold>\<not>\<^bold>\<box>\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>,x\<^sup>P\<rparr> in v]"
@@ -3826,8 +3782,7 @@ text{* \label{TAO_PLM_Relations} *}
             hence "[\<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> in v]"
               unfolding diamond_def
               apply - apply (PLM_subst_method "\<lparr>\<^bold>\<lambda>x. \<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>,x\<^sup>P\<rparr>" "\<^bold>\<not>\<lparr>F,x\<^sup>P\<rparr>")
-               apply (rule beta_C_meta_1; rule IsPropositional_intros)
-              by simp
+               using beta_C_meta_1 IsPropositional_intros by fast+
             hence "[\<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr> in v]"
               using wc_def[conj2] cqt_1[axiom_instance, deduction]
                     modus_ponens by fast
@@ -4031,9 +3986,8 @@ text{* \label{TAO_PLM_Relations} *}
         apply (PLM_subst_method
                "\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . (x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P))), x\<^sup>P, y\<^sup>P\<rparr>"
                "(x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P)")
-         apply (rule beta_C_meta_2) unfolding identity_defs
-         apply (rule IsPropositional_intros)
-        by auto
+         using beta_C_meta_2 unfolding identity_defs
+         using IsPropositional_intros by fast+
       finally show ?thesis
         using "\<^bold>\<equiv>I" CP by presburger
     qed
@@ -4156,7 +4110,7 @@ begin
       have "[\<^bold>\<A>((\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>)
              \<^bold>& (\<^bold>\<lambda>y. \<lparr>F,y\<^sup>P,x\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,y\<^sup>P,x\<^sup>P\<rparr>)) in v]"
         using a logic_actual_nec_3[axiom_instance, equiv_lr] cqt_basic_4[equiv_lr] "\<^bold>\<forall>E"
-        unfolding identity\<^sub>2_def by blast
+        unfolding identity\<^sub>2_def by fast
       hence "[((\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>))
               \<^bold>& ((\<^bold>\<lambda>y. \<lparr>F,y\<^sup>P,x\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,y\<^sup>P,x\<^sup>P\<rparr>)) in v]"
         using "\<^bold>&I" "\<^bold>&E" id_act_prop Act_Basic_2[equiv_lr] by metis
@@ -4179,7 +4133,8 @@ begin
       {
         fix y
         have "[\<^bold>\<A>(?p x y) in v]"
-          using a logic_actual_nec_3[axiom_instance, equiv_lr] cqt_basic_4[equiv_lr] "\<^bold>\<forall>E"
+          using a logic_actual_nec_3[axiom_instance, equiv_lr]
+                cqt_basic_4[equiv_lr] "\<^bold>\<forall>E"[where 'a=\<nu>]
           unfolding identity\<^sub>3_def by blast
         hence "[?p x y in v]"
           using "\<^bold>&I" "\<^bold>&E" id_act_prop Act_Basic_2[equiv_lr] by metis
@@ -4288,7 +4243,7 @@ text{* \label{TAO_PLM_Objects} *}
       hence 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
         using eq_E_simple_1[equiv_lr] by simp
       have "[\<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,y\<rparr> \<^bold>\<equiv> \<lparr>F,x\<rparr>) in v]"
-        apply (PLM_subst1_method
+        apply (PLM_subst_method
                "\<lambda> F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>"
                "\<lambda> F . \<lparr>F,y\<rparr> \<^bold>\<equiv> \<lparr>F,x\<rparr>")
         using oth_class_taut_3_g 1[conj2] by auto
@@ -4366,12 +4321,6 @@ text{* \label{TAO_PLM_Objects} *}
       thus "[x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P in v]"
         by (rule ord_eq_Eequiv_2[deduction])
     qed
-
-  text{*
-        \begin{TODO}
-          Check the proof in PM. The last part of the proof by contraposition seems invalid.
-        \end{TODO}
-       *}
 
   lemma ord_eq_E2[PLM]:
     "[(\<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>) \<^bold>\<rightarrow>
@@ -4477,15 +4426,15 @@ text{* \label{TAO_PLM_Objects} *}
   lemma o_objects_exist_2[PLM]:
     "[\<^bold>\<box>(\<^bold>\<exists> x . \<lparr>O!,x\<^sup>P\<rparr>) in v]"
     apply (rule RN) unfolding Ordinary_def
-    apply (PLM_subst1_method  "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>y. \<^bold>\<diamond>\<lparr>E!,y\<^sup>P\<rparr>, x\<^sup>P\<rparr>")
-     apply (rule beta_C_meta_1[equiv_sym], rule IsPropositional_intros)
+    apply (PLM_subst_method  "\<lambda> x . \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>\<^bold>\<lambda>y. \<^bold>\<diamond>\<lparr>E!,y\<^sup>P\<rparr>, x\<^sup>P\<rparr>")
+     using beta_C_meta_1[equiv_sym] IsPropositional_intros apply fast
     using o_objects_exist_1 "BF\<^bold>\<diamond>"[deduction] by blast
 
   lemma o_objects_exist_3[PLM]:
     "[\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x . \<lparr>A!,x\<^sup>P\<rparr>)) in v]"
     apply (PLM_subst_method "(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>)" "\<^bold>\<not>(\<^bold>\<forall>x. \<lparr>A!,x\<^sup>P\<rparr>)")
      using cqt_further_2[equiv_sym] apply fast
-    apply (PLM_subst1_method "\<lambda> x . \<lparr>O!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>")
+    apply (PLM_subst_method "\<lambda> x . \<lparr>O!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>A!,x\<^sup>P\<rparr>")
     using oa_contingent_2 o_objects_exist_2 by auto
 
   lemma a_objects_exist_1[PLM]:
@@ -4505,7 +4454,7 @@ text{* \label{TAO_PLM_Objects} *}
     "[\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x . \<lparr>O!,x\<^sup>P\<rparr>)) in v]"
     apply (PLM_subst_method "(\<^bold>\<exists>x. \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>)" "\<^bold>\<not>(\<^bold>\<forall>x. \<lparr>O!,x\<^sup>P\<rparr>)")
      using cqt_further_2[equiv_sym] apply fast
-    apply (PLM_subst1_method "\<lambda> x . \<lparr>A!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>")
+    apply (PLM_subst_method "\<lambda> x . \<lparr>A!,x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>O!,x\<^sup>P\<rparr>")
      using oa_contingent_3 a_objects_exist_1 by auto
 
   lemma a_objects_exist_3[PLM]:
@@ -4685,27 +4634,6 @@ text{* \label{TAO_PLM_Objects} *}
         using l_identity[axiom_instance, deduction, deduction] by fast
     qed
 
-  text{* \begin{TODO} Have another look at remark 185. \end{TODO} *}
-
-  notepad
-  begin
-    let ?x = "\<^bold>\<iota>x . \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x\<^sup>P, F\<rbrace> \<^bold>\<equiv> (\<^bold>\<exists> q . q \<^bold>& F \<^bold>= (\<^bold>\<lambda> y . q)))"
-    have "[(\<^bold>\<exists> p . ContingentlyTrue p) in dw]"
-      using cont_tf_thm_3 by auto
-    then obtain p\<^sub>1 where "[ContingentlyTrue p\<^sub>1 in dw]" by (rule "\<^bold>\<exists>E")
-    hence "[p\<^sub>1 in dw]" unfolding ContingentlyTrue_def using "\<^bold>&E" by fast
-    hence "[p\<^sub>1 \<^bold>& (\<^bold>\<lambda> y . p\<^sub>1) \<^bold>= (\<^bold>\<lambda> y . p\<^sub>1) in dw]" using "\<^bold>&I" id_eq_1 by fast
-    hence "[\<^bold>\<exists> q . q \<^bold>& (\<^bold>\<lambda> y . p\<^sub>1) \<^bold>= (\<^bold>\<lambda> y . q) in dw]" using "\<^bold>\<exists>I" by fast
-    moreover have "[\<lbrace>?x, \<^bold>\<lambda> y . p\<^sub>1\<rbrace> \<^bold>\<equiv> (\<^bold>\<exists> q . q \<^bold>& (\<^bold>\<lambda> y . p\<^sub>1) \<^bold>= (\<^bold>\<lambda> y . q)) in dw]"
-      using desc_encode by fast
-    ultimately have "[\<lbrace>?x, \<^bold>\<lambda> y . p\<^sub>1\<rbrace> in dw]"
-      using "\<^bold>\<equiv>E" by blast
-    hence "[\<^bold>\<box>\<lbrace>?x, \<^bold>\<lambda> y . p\<^sub>1\<rbrace> in dw]"
-      using encoding[axiom_instance,deduction] by fast
-    hence "\<forall> v . [\<lbrace>?x, \<^bold>\<lambda> y . p\<^sub>1\<rbrace> in v]"
-      using Semantics.T6 by simp
-  end
-
   lemma desc_nec_encode[PLM]:
     "[\<lbrace>\<^bold>\<iota>x . \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<phi> F), G\<rbrace> \<^bold>\<equiv> \<^bold>\<A>(\<phi> G) in v]"
     proof -
@@ -4810,7 +4738,7 @@ text{* \label{TAO_PLM_Objects} *}
               hence "[\<lbrace>x\<^sup>P, F\<rbrace> in v]"
                 using qml_2[axiom_instance, deduction] by blast
               hence "[\<phi> F in v]"
-                using a[conj2] "\<^bold>\<forall>E" "\<^bold>\<equiv>E" by blast
+                using a[conj2] "\<^bold>\<forall>E"[where 'a=\<Pi>\<^sub>1] "\<^bold>\<equiv>E" by blast
               thus "[\<^bold>\<box>(\<phi> F) in v]"
                 using \<theta>[THEN qml_2[axiom_instance, deduction], deduction] by simp
             next
@@ -4818,7 +4746,7 @@ text{* \label{TAO_PLM_Objects} *}
               hence "[\<phi> F in v]"
                 using qml_2[axiom_instance, deduction] by blast
               hence "[\<lbrace>x\<^sup>P, F\<rbrace> in v]"
-                using a[conj2] "\<^bold>\<forall>E" "\<^bold>\<equiv>E" by blast
+                using a[conj2] "\<^bold>\<forall>E"[where 'a=\<Pi>\<^sub>1] "\<^bold>\<equiv>E" by blast
               thus "[\<^bold>\<box>\<lbrace>x\<^sup>P, F\<rbrace> in v]"
                 using encoding[axiom_instance, deduction] by simp
             qed
@@ -4828,12 +4756,6 @@ text{* \label{TAO_PLM_Objects} *}
       ultimately show "[\<^bold>\<box>(\<lparr>A!,x\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall>F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<phi> F)) in v]"
        using "\<^bold>&I" KBasic_3[equiv_rl] by blast
     qed
-
-  text{*
-    \begin{TODO}
-      The proof of the following theorem seems to incorrectly reference (88) instead of (108).
-    \end{TODO}
-  *}
 
   lemma box_phi_a_2[PLM]:
     assumes "[\<^bold>\<box>(\<^bold>\<forall> F . \<phi> F \<^bold>\<rightarrow> \<^bold>\<box>(\<phi> F)) in v]"
@@ -4914,7 +4836,7 @@ text{* \label{TAO_PLM_Objects} *}
         by (rule "\<^bold>\<exists>E")
       have 1: "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>a\<^sup>P, F\<rbrace>) in v]"
         using a_prop[conj1] apply (rule "\<^bold>&I")
-        using "\<^bold>\<forall>I" a_prop[conj2, THEN "\<^bold>\<forall>E", equiv_rl] id_eq_1 by blast
+        using "\<^bold>\<forall>I" a_prop[conj2, THEN "\<^bold>\<forall>E", equiv_rl] id_eq_1 by fast
       moreover have "[\<^bold>\<forall> y . (\<lparr>A!,y\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>y\<^sup>P, F\<rbrace>)) \<^bold>\<rightarrow> y \<^bold>= a in v]"
         proof (rule "\<^bold>\<forall>I"; rule CP)
           fix y
@@ -4962,7 +4884,7 @@ text{* \label{TAO_PLM_Objects} *}
             hence "[\<lbrace>x\<^sup>P, P\<rbrace> in v]"
               using en_eq_3[equiv_lr] by simp
             hence "[\<^bold>\<exists>  F . \<lbrace>x\<^sup>P, F\<rbrace> in v]"
-              using "\<^bold>\<exists>I" by blast
+              using "\<^bold>\<exists>I" by fast
           }
           thus ?thesis
             using 1[conj2] modus_tollens_1 CP
@@ -5047,7 +4969,7 @@ text{* \label{TAO_PLM_Objects} *}
         hence "[\<^bold>\<not>(\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)
                 \<^bold>& \<^bold>\<not>\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)\<rbrace>) in v]"
           using \<theta>[conj2, THEN "\<^bold>\<forall>E", THEN oth_class_taut_5_d[equiv_lr], equiv_lr]
-                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
+                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by fast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,z\<^sup>P,a\<^sup>P\<rparr>)\<rbrace> in v]"
           apply - by PLM_solver
@@ -5096,7 +5018,7 @@ text{* \label{TAO_PLM_Objects} *}
         hence "[\<^bold>\<not>(\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)
                 \<^bold>& \<^bold>\<not>\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)\<rbrace>) in v]"
           using \<theta>[conj2, THEN "\<^bold>\<forall>E", THEN oth_class_taut_5_d[equiv_lr], equiv_lr]
-                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
+                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by fast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P,z\<^sup>P\<rparr>)\<rbrace> in v]"
           apply - by PLM_solver
@@ -5144,7 +5066,7 @@ text{* \label{TAO_PLM_Objects} *}
         hence "[\<^bold>\<not>(\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)
                 \<^bold>& \<^bold>\<not>\<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)\<rbrace>) in v]"
           using \<theta>[conj2, THEN "\<^bold>\<forall>E", THEN oth_class_taut_5_d[equiv_lr], equiv_lr]
-                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by blast
+                cqt_further_4[equiv_lr] "\<^bold>\<forall>E" by fast
         hence "[\<lparr>A!,a\<^sup>P\<rparr> \<^bold>& (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)
                 \<^bold>\<rightarrow> \<lbrace>a\<^sup>P, (\<^bold>\<lambda> z . \<lparr>R,a\<^sup>P\<rparr>)\<rbrace> in v]"
           apply - by PLM_solver
@@ -5382,10 +5304,10 @@ text{* \label{TAO_PLM_PropositionalProperties} *}
     proof (rule reductio_aa_2)
       assume "[Indiscriminate (E!\<^sup>-) in v]"
       moreover have "[\<^bold>\<box>(\<^bold>\<exists> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>) in v]"
-        apply (PLM_subst1_method "\<lambda> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>" "\<lambda> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>")
          using thm_relation_negation_1_1[equiv_sym] apply simp
         unfolding exists_def
-        apply (PLM_subst1_method "\<lambda> x . \<lparr>E!, x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<lparr>E!, x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>")
          using oth_class_taut_4_b apply simp
         using a_objects_exist_3 by auto
       ultimately have "[\<^bold>\<box>(\<^bold>\<forall>x. \<lparr>E!\<^sup>-,x\<^sup>P\<rparr>) in v]"
@@ -5393,7 +5315,7 @@ text{* \label{TAO_PLM_PropositionalProperties} *}
         using qml_1[axiom_instance, deduction, deduction] by blast
       thus "[\<^bold>\<box>(\<^bold>\<forall>x. \<^bold>\<not>\<lparr>E!,x\<^sup>P\<rparr>) in v]"
         apply -
-        apply (PLM_subst1_method "\<lambda> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>")
+        apply (PLM_subst_method "\<lambda> x . \<lparr>E!\<^sup>-, x\<^sup>P\<rparr>" "\<lambda> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>")
         using thm_relation_negation_1_1 by auto
     next
       show "[\<^bold>\<not>\<^bold>\<box>(\<^bold>\<forall> x . \<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>) in v]"
@@ -5503,7 +5425,7 @@ text{* \label{TAO_PLM_PropositionalProperties} *}
         hence "[\<^bold>\<box>\<lbrace>x\<^sup>P,Q\<rbrace> in v]"
           using encoding[axiom_instance, deduction] by auto
         moreover have "[\<^bold>\<diamond>(\<lbrace>x\<^sup>P,Q\<rbrace> \<^bold>\<rightarrow> (\<^bold>\<exists>p. Q \<^bold>= (\<^bold>\<lambda>x. p))) in v]"
-          using cqt_1[axiom_instance, deduction] 1 by auto
+          using cqt_1[axiom_instance, deduction] 1 by fast
         ultimately have "[\<^bold>\<diamond>(\<^bold>\<exists>p. Q \<^bold>= (\<^bold>\<lambda>x. p)) in v]"
           using KBasic2_9[equiv_lr,deduction] by auto
         hence "[(\<^bold>\<exists>p. Q \<^bold>= (\<^bold>\<lambda>x. p)) in v]"

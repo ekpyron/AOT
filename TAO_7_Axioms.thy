@@ -146,7 +146,7 @@ text{*
         assume "[(\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) in v]"
         then obtain \<beta> where 2:
           "[(\<beta>\<^sup>P) \<^bold>= \<alpha> in v]" by (rule ExERule)
-        hence "[\<phi> (\<beta>\<^sup>P) in v]" using 1 AllE by blast
+        hence "[\<phi> (\<beta>\<^sup>P) in v]" using 1 AllE by fast
         hence "[\<phi> \<alpha> in v]"
           using l_identity[where \<phi>=\<phi>, axiom_instance]
           ImplS 2 by simp
