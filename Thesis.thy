@@ -7,11 +7,11 @@ begin
 (*<*)
 (* Pretty printing settings for antiquotations. *)
 notation (latex output)
-  validity_in ("[\<^raw:\embeddedstyle{>_\<^raw:}> in _]")
+  validity_in ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> in _]")
 definition embedded_style where "embedded_style \<equiv> id"
 lemma embedded_def: "A = B \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
 notation (latex output)
-  embedded_style ("\<^raw:\embeddedstyle{>_\<^raw:}>")
+  embedded_style ("\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>")
 notation (latex output)
   make\<kappa> ("")
 notation (latex output)
