@@ -30,11 +30,11 @@ text{*
 named_theorems IsPropositional_intros
 
 lift_definition IsPropositionalInX :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x v . (v \<Turnstile> \<phi> (x\<^sup>P)) = (v \<Turnstile> \<phi> ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj x))\<^sup>P))" .
+  "\<lambda> \<phi> . \<forall> x v . (\<exists> a . \<nu>\<upsilon> dj a = \<nu>\<upsilon> dj x \<and> (v \<Turnstile> \<phi> (a\<^sup>P))) = (v \<Turnstile> \<phi> (x\<^sup>P))" .
 lift_definition IsPropositionalInXY :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x y v . (v \<Turnstile> \<phi> (x\<^sup>P) (y\<^sup>P)) = (v \<Turnstile> \<phi> ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj x))\<^sup>P) ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj y))\<^sup>P))" .
+  "\<lambda> \<phi> . \<forall> x y v . (\<exists> a b . \<nu>\<upsilon> dj a = \<nu>\<upsilon> dj x \<and> \<nu>\<upsilon> dj b = \<nu>\<upsilon> dj y \<and> (v \<Turnstile> \<phi> (a\<^sup>P) (b\<^sup>P))) = (v \<Turnstile> \<phi> (x\<^sup>P) (y\<^sup>P))" .
 lift_definition IsPropositionalInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x y z v . (v \<Turnstile> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)) = (v \<Turnstile> \<phi> ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj x))\<^sup>P) ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj y))\<^sup>P) ((\<upsilon>\<nu> dj (\<nu>\<upsilon> dj z))\<^sup>P))" .
+  "\<lambda> \<phi> . \<forall> x y z v . (\<exists> a b c . \<nu>\<upsilon> dj a = \<nu>\<upsilon> dj x \<and> \<nu>\<upsilon> dj b = \<nu>\<upsilon> dj y \<and> \<nu>\<upsilon> dj c = \<nu>\<upsilon> dj z \<and> (v \<Turnstile> \<phi> (a\<^sup>P) (b\<^sup>P) (c\<^sup>P))) = (v \<Turnstile> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))" .
 
 
 named_theorems IsPropositionalIn_defs
@@ -42,674 +42,717 @@ declare IsPropositionalInX_def[IsPropositionalIn_defs]
         IsPropositionalInXY_def[IsPropositionalIn_defs]
         IsPropositionalInXYZ_def[IsPropositionalIn_defs]
 
+lemma testaux1: "((\<exists>a. \<nu>\<upsilon> dj a = \<nu>\<upsilon> dj x) \<and> eval\<o> \<Theta> dj v) = eval\<o> \<Theta> dj v"
+  by blast
+
 lemma IsPropositionalInX_const[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<Theta>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (simp add: meta_defs meta_aux testaux1)
 lemma IsPropositionalInX_impl[IsPropositional_intros]:
   assumes "IsPropositionalInX \<phi>" and "IsPropositionalInX \<psi>"
   shows "IsPropositionalInX (\<lambda> x . \<phi> x \<^bold>\<rightarrow> \<psi> x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis impl.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_not[IsPropositional_intros]:
   assumes "IsPropositionalInX \<phi>"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<not>\<phi> x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis not.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_box[IsPropositional_intros]:
   assumes "IsPropositionalInX \<phi>"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<box>\<phi> x)"
   using assms unfolding IsPropositionalInX_def
-  by (auto simp: meta_defs meta_aux)
+  apply simp by (metis box.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_actual[IsPropositional_intros]:
   assumes "IsPropositionalInX \<phi>"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<A>\<phi> x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis actual.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_forall\<^sub>0[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInX (\<phi> a)"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<forall>\<^sub>0 a . \<phi> a x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>0.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_forall\<^sub>1[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInX (\<phi> a)"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<forall>\<^sub>1 a . \<phi> a x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>1.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_forall\<^sub>2[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInX (\<phi> a)"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<forall>\<^sub>2 a . \<phi> a x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>2.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_forall\<^sub>3[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInX (\<phi> a)"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<forall>\<^sub>3 a . \<phi> a x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>3.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_forall\<^sub>\<nu>[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInX (\<phi> a)"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<forall>\<^sub>\<nu> a . \<phi> a x)"
   using assms unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>\<nu>.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInX_ex_x[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xx[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xb[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,b\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_ax[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,a,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xxx[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,x,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xxc[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,x,c\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xbx[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,b,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_xbc[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,x,b,c\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_axx[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,a,x,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_axc[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,a,x,c\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInX_ex_abx[IsPropositional_intros]:
   "IsPropositionalInX (\<lambda> x . \<lparr>F,a,b,x\<rparr>)"
   unfolding IsPropositionalInX_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_const[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<Theta>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_impl[IsPropositional_intros]:
   assumes "IsPropositionalInXY \<phi>" and "IsPropositionalInXY \<psi>"
   shows "IsPropositionalInXY (\<lambda> x y . \<phi> x y \<^bold>\<rightarrow> \<psi> x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis impl.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_not[IsPropositional_intros]:
   assumes "IsPropositionalInXY \<phi>"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<not>\<phi> x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis not.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_box[IsPropositional_intros]:
   assumes "IsPropositionalInXY \<phi>"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<box>\<phi> x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (auto simp: meta_defs meta_aux)
+  apply simp by (metis box.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_actual[IsPropositional_intros]:
   assumes "IsPropositionalInXY \<phi>"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<A>\<phi> x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis actual.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_forall\<^sub>0[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<forall>\<^sub>0 a . \<phi> a x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>0.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_forall\<^sub>1[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<forall>\<^sub>1 a . \<phi> a x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>1.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_forall\<^sub>2[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<forall>\<^sub>2 a . \<phi> a x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>2.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_forall\<^sub>3[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<forall>\<^sub>3 a . \<phi> a x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>3.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_forall\<^sub>\<nu>[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXY (\<phi> a)"
   shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<forall>\<^sub>\<nu> a . \<phi> a x y)"
   using assms unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  apply simp by (metis forall\<^sub>\<nu>.rep_eq valid_in.rep_eq)
 lemma IsPropositionalInXY_ex_x[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_y[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xb[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,b\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yb[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,b\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ax[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ay[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xxx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,x,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xxy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,x,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xxc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,x,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xyx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,y,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xyy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,y,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xyc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,y,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xbx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,b,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xby[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,b,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_xbc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,x,b,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yxx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,x,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yxy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,x,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yxc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,x,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yyx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,y,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yyy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,y,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yyc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,y,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ybx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,b,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_yby[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,b,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ybc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,y,b,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_axx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,x,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_axy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,x,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_axc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,x,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ayx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,y,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ayy[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,y,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_ayc[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,y,c\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_abx[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,b,x\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXY_ex_aby[IsPropositional_intros]:
   "IsPropositionalInXY (\<lambda> x y . \<lparr>F,a,b,y\<rparr>)"
   unfolding IsPropositionalInXY_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_const[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<Theta>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
+
 lemma IsPropositionalInXYZ_impl[IsPropositional_intros]:
   assumes "IsPropositionalInXYZ \<phi>" and "IsPropositionalInXYZ \<psi>"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<phi> x y z \<^bold>\<rightarrow> \<psi> x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using impl.rep_eq valid_in.rep_eq by fastforce
 lemma IsPropositionalInXYZ_not[IsPropositional_intros]:
   assumes "IsPropositionalInXYZ \<phi>"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<not>\<phi> x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using not.rep_eq valid_in.rep_eq by fastforce
 lemma IsPropositionalInXYZ_box[IsPropositional_intros]:
   assumes "IsPropositionalInXYZ \<phi>"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<box>\<phi> x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (auto simp: meta_defs meta_aux)
+  using box.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_actual[IsPropositional_intros]:
   assumes "IsPropositionalInXYZ \<phi>"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<A>\<phi> x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using actual.rep_eq valid_in.rep_eq by simp
 lemma IsPropositionalInXYZ_forall\<^sub>0[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<forall>\<^sub>0 a . \<phi> a x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using forall\<^sub>0.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_forall\<^sub>1[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<forall>\<^sub>1 a . \<phi> a x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using forall\<^sub>1.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_forall\<^sub>2[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<forall>\<^sub>2 a . \<phi> a x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using forall\<^sub>2.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_forall\<^sub>3[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<forall>\<^sub>3 a . \<phi> a x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using forall\<^sub>3.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_forall\<^sub>\<nu>[IsPropositional_intros]:
   assumes "\<And> a . IsPropositionalInXYZ (\<phi> a)"
   shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<forall>\<^sub>\<nu> a . \<phi> a x y z)"
   using assms unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  using forall\<^sub>\<nu>.rep_eq valid_in.rep_eq apply simp by blast
 lemma IsPropositionalInXYZ_ex_x[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_y[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_z[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xb[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,b\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yb[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,b\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zb[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,b\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ax[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ay[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_az[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xxx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,x,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xxy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,x,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xxz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,x,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xxc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,x,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xyx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,y,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xyy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,y,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xyz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,y,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xyc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,y,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xzx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,z,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xzy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,z,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xzz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,z,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xzc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,z,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xbx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,b,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xby[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,b,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xbz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,b,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_xbc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,x,b,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yxx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,x,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yxy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,x,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yxz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,x,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yxc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,x,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yyx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,y,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yyy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,y,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yyz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,y,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yyc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,y,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yzx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,z,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yzy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,z,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yzz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,z,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yzc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,z,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ybx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,b,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_yby[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,b,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ybz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,b,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ybc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,y,b,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zxx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,x,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zxy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,x,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zxz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,x,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zxc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,x,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zyx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,y,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zyy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,y,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zyz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,y,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zyc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,y,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zzx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,z,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zzy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,z,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zzz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,z,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zzc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,z,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zbx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,b,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zby[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,b,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zbz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,b,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_zbc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,z,b,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_axx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,x,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_axy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,x,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_axz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,x,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_axc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,x,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ayx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,y,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ayy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,y,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ayz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,y,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_ayc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,y,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_azx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,z,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_azy[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,z,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_azz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,z,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_azc[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,z,c\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_abx[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,b,x\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_aby[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,b,y\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
+  by (auto simp: meta_defs meta_aux)
 lemma IsPropositionalInXYZ_ex_abz[IsPropositional_intros]:
   "IsPropositionalInXYZ (\<lambda> x y z . \<lparr>F,a,b,z\<rparr>)"
   unfolding IsPropositionalInXYZ_def
-  by (simp add: meta_defs meta_aux)
-
-
+  by (auto simp: meta_defs meta_aux)
 
 lemma IsPropositionalInX_diamond[IsPropositional_intros]:
   assumes "IsPropositionalInX \<phi>"
   shows "IsPropositionalInX (\<lambda> x . \<^bold>\<diamond>\<phi> x)"
   unfolding conn_defs using assms
   by (simp add: IsPropositional_intros)
+lemma IsPropositionalInX_conj[IsPropositional_intros]:
+  assumes "IsPropositionalInX \<phi>" and "IsPropositionalInX \<psi>"
+  shows "IsPropositionalInX (\<lambda> x . \<phi> x \<^bold>& \<psi> x)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+lemma IsPropositionalInX_disj[IsPropositional_intros]:
+  assumes "IsPropositionalInX \<phi>" and "IsPropositionalInX \<psi>"
+  shows "IsPropositionalInX (\<lambda> x . \<phi> x \<^bold>\<or> \<psi> x)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
 
+lemma IsPropositionalInXY_diamond[IsPropositional_intros]:
+  assumes "IsPropositionalInXY \<phi>"
+  shows "IsPropositionalInXY (\<lambda> x y . \<^bold>\<diamond>\<phi> x y)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+lemma IsPropositionalInXY_conj[IsPropositional_intros]:
+  assumes "IsPropositionalInXY \<phi>" and "IsPropositionalInXY \<psi>"
+  shows "IsPropositionalInXY (\<lambda> x y . \<phi> x y \<^bold>& \<psi> x y)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+lemma IsPropositionalInXY_disj[IsPropositional_intros]:
+  assumes "IsPropositionalInXY \<phi>" and "IsPropositionalInXY \<psi>"
+  shows "IsPropositionalInXY (\<lambda> x y . \<phi> x y \<^bold>\<or> \<psi> x y)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+
+lemma IsPropositionalInXYZ_diamond[IsPropositional_intros]:
+  assumes "IsPropositionalInXYZ \<phi>"
+  shows "IsPropositionalInXYZ (\<lambda> x y z . \<^bold>\<diamond>\<phi> x y z)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+lemma IsPropositionalInXYZ_conj[IsPropositional_intros]:
+  assumes "IsPropositionalInXYZ \<phi>" and "IsPropositionalInXYZ \<psi>"
+  shows "IsPropositionalInXYZ (\<lambda> x y z . \<phi> x y z \<^bold>& \<psi> x y z)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
+lemma IsPropositionalInXYZ_disj[IsPropositional_intros]:
+  assumes "IsPropositionalInXYZ \<phi>" and "IsPropositionalInXYZ \<psi>"
+  shows "IsPropositionalInXYZ (\<lambda> x y z . \<phi> x y z \<^bold>\<or> \<psi> x y z)"
+  unfolding conn_defs using assms
+  by (simp add: IsPropositional_intros)
 
 subsection{* Semantics *}
 text{* \label{TAO_Semantics_Semantics} *}
@@ -836,6 +879,66 @@ begin
                       then (Some (THE x . (w\<^sub>0 \<Turnstile> \<psi> x))) else None)"
     unfolding semantics_defs
     by (auto simp: meta_defs meta_aux)
+
+  lemma testaux2[meta_aux]: "make\<Pi>\<^sub>1 (\<lambda>u s w. \<exists>x. \<nu>\<upsilon> s x = u \<and> eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> s x) s w) = F"
+  proof -
+    have "(\<lambda>u s w. \<exists>x. \<nu>\<upsilon> s x = u \<and> eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> s x) s w) = eval\<Pi>\<^sub>1 F"
+    proof -
+      {
+        fix u s w
+        assume "\<exists>x. \<nu>\<upsilon> s x = u \<and> eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> s x) s w"
+        hence "(eval\<Pi>\<^sub>1 F) u s w" by blast
+      }
+      moreover {
+        fix u s w
+        assume "(eval\<Pi>\<^sub>1 F) u s w"
+        hence "\<exists>x. \<nu>\<upsilon> s x = u \<and> eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> s x) s w"
+          by (metis \<nu>\<upsilon>_surj surj_def)
+      }
+      ultimately show ?thesis by fast
+    qed
+    thus ?thesis by (simp add: meta_aux)
+  qed
+
+  lemma testaux3[meta_aux]: "make\<Pi>\<^sub>2 (\<lambda>u v s w. \<exists>x . \<nu>\<upsilon> s x = u \<and> (\<exists> y . \<nu>\<upsilon> s y = v \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) s w)) = F"
+  proof -
+    have "(\<lambda>u v s w. \<exists>x . \<nu>\<upsilon> s x = u \<and> (\<exists> y . \<nu>\<upsilon> s y = v \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) s w)) = eval\<Pi>\<^sub>2 F"
+    proof -
+      {
+        fix u v s w
+        assume "\<exists>x . \<nu>\<upsilon> s x = u \<and> (\<exists> y . \<nu>\<upsilon> s y = v \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) s w)"
+        hence "(eval\<Pi>\<^sub>2 F) u v s w" by blast
+      }
+      moreover {
+        fix u v s w
+        assume "(eval\<Pi>\<^sub>2 F) u v s w"
+        hence "\<exists>x . \<nu>\<upsilon> s x = u \<and> (\<exists> y . \<nu>\<upsilon> s y = v \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) s w)"
+          by (metis \<nu>\<upsilon>_surj surj_def)
+      }
+      ultimately show ?thesis by fast
+    qed
+    thus ?thesis by (simp add: meta_aux)
+  qed
+
+  lemma testaux4[meta_aux]: "make\<Pi>\<^sub>3 (\<lambda>u v r s w. \<exists>x. \<nu>\<upsilon> s x = u \<and> (\<exists>y. \<nu>\<upsilon> s y = v \<and> (\<exists>z. \<nu>\<upsilon> s z = r \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s z) s w))) = F"
+  proof -
+    have "(\<lambda>u v r s w. \<exists>x. \<nu>\<upsilon> s x = u \<and> (\<exists>y. \<nu>\<upsilon> s y = v \<and> (\<exists>z. \<nu>\<upsilon> s z = r \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s z) s w))) = eval\<Pi>\<^sub>3 F"
+    proof -
+      {
+        fix u v r s w
+        assume "\<exists>x. \<nu>\<upsilon> s x = u \<and> (\<exists>y. \<nu>\<upsilon> s y = v \<and> (\<exists>z. \<nu>\<upsilon> s z = r \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s z) s w))"
+        hence "(eval\<Pi>\<^sub>3 F) u v r s w" by blast
+      }
+      moreover {
+        fix u v r s w
+        assume "(eval\<Pi>\<^sub>3 F) u v r s w"
+        hence "\<exists>x. \<nu>\<upsilon> s x = u \<and> (\<exists>y. \<nu>\<upsilon> s y = v \<and> (\<exists>z. \<nu>\<upsilon> s z = r \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s z) s w))"
+          by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
+      }
+      ultimately show ?thesis by fast
+    qed
+    thus ?thesis by (simp add: meta_aux)
+  qed
 
   lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) = d\<^sub>1 F"
     by (simp add: meta_defs meta_aux)

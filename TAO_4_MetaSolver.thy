@@ -392,7 +392,7 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
     then obtain r where 4:
       "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
       by auto
-    hence 5: "r = (\<lambda>u s w. Some (\<upsilon>\<nu> s u) = Some o\<^sub>1)"
+    hence 5: "r = (\<lambda>u s w. \<exists> x . \<nu>\<upsilon> s x = u \<and> Some x = Some o\<^sub>1)"
       unfolding lambdabinder1_def d\<^sub>1_def d\<^sub>\<kappa>_proper
       apply transfer
       by simp
@@ -530,17 +530,30 @@ text{* \label{TAO_MetaSolver_Identity_TwoPlaceRelation} *}
   lemma Eq\<^sub>2E[meta_elim]: "[F \<^bold>=\<^sub>2 G in v] \<Longrightarrow> F = G"
   proof -
     assume "[F \<^bold>=\<^sub>2 G in v]"
-    hence "[\<^bold>\<forall>\<^sub>\<nu> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
+    hence 1: "[\<^bold>\<forall>\<^sub>\<nu> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
       unfolding basic_identity\<^sub>2_def
       apply - apply meta_solver by auto
-    hence "\<And>x . make\<Pi>\<^sub>1 (\<lambda>u s. eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) u s) = make\<Pi>\<^sub>1 (\<lambda>u s. eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) u s)"
-     apply - apply meta_solver
-     by (simp add: meta_defs meta_aux)
-    hence "\<And>x . (\<lambda>u s. eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) u s) = (\<lambda>u s. eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) u s)"
-      by (simp add: make\<Pi>\<^sub>1_inject)
-    hence "\<And>x y . (\<lambda>u s. eval\<Pi>\<^sub>2 F y u s) = (\<lambda>u s. eval\<Pi>\<^sub>2 G y u s)"
-      using \<nu>\<upsilon>_surj by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
-    thus "F = G" using eval\<Pi>\<^sub>2_inject by blast
+    {
+      fix u v s w
+      obtain x where x_def: "\<nu>\<upsilon> s x = v" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain a where a_def:
+        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s xa) s w)"
+        by auto
+      obtain b where b_def:
+        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s xa) s w)"
+        by auto
+      have "a = b" unfolding a_def b_def
+          using 1 apply - apply meta_solver
+          by (auto simp: meta_defs meta_aux make\<Pi>\<^sub>1_inject)
+      hence "a u s w = b u s w" by auto
+      hence "(eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) u s w) = (eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) u s w)"
+        unfolding a_def b_def
+        by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
+      hence "(eval\<Pi>\<^sub>2 F v u s w) = (eval\<Pi>\<^sub>2 G v u s w)"
+        unfolding x_def by auto
+    }
+    hence "(eval\<Pi>\<^sub>2 F) = (eval\<Pi>\<^sub>2 G)" by blast
+    thus "F = G" by (simp add: eval\<Pi>\<^sub>2_inject)
   qed
   lemma Eq\<^sub>2S[meta_subst]: "[F \<^bold>=\<^sub>2 G in v] = (F = G)"
     using Eq\<^sub>2I Eq\<^sub>2E by auto
@@ -555,25 +568,33 @@ text{* \label{TAO_MetaSolver_Identity_ThreePlaceRelation} *}
     using MetaSolver.Eq\<^sub>1I valid_in.rep_eq by auto
   lemma Eq\<^sub>3E[meta_elim]: "[F \<^bold>=\<^sub>3 G in v] \<Longrightarrow> F = G"
   proof -
+
     assume "[F \<^bold>=\<^sub>3 G in v]"
-    hence "[\<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
-      unfolding basic_identity\<^sub>3_def apply -
-      apply meta_solver by auto
-    hence "\<And>x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) = (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
-      using Eq\<^sub>1E All\<^sub>\<nu>S by (metis (mono_tags, lifting))
-    hence "\<And>x y. make\<Pi>\<^sub>1 (\<lambda> u s . eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s)
-               = make\<Pi>\<^sub>1 (\<lambda> u s . eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s)"
-      by (auto simp: meta_defs meta_aux)
-    hence "\<And>x y. (\<lambda> u s . eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s)
-               = (\<lambda> u s . eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s)"
-      by (simp add: make\<Pi>\<^sub>1_inject)
-    hence "\<And>x y. (\<lambda> u s . eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) y u s)
-               = (\<lambda> u s . eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) y u s)"
-      using \<nu>\<upsilon>_surj by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
-    hence "\<And>x y. (\<lambda> u s . eval\<Pi>\<^sub>3 F x y u s)
-               = (\<lambda> u s . eval\<Pi>\<^sub>3 G x y u s)"
-      using \<nu>\<upsilon>_surj by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
-    thus "F = G" using eval\<Pi>\<^sub>3_inject by blast
+    hence 1: "[\<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
+      unfolding basic_identity\<^sub>3_def
+      apply - apply meta_solver by auto
+    {
+      fix u v r s w
+      obtain x where x_def: "\<nu>\<upsilon> s x = v" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain y where y_def: "\<nu>\<upsilon> s y = r" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain a where a_def:
+        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s xa) s w)"
+        by auto
+      obtain b where b_def:
+        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s xa) s w)"
+        by auto
+      have "a = b" unfolding a_def b_def
+          using 1 apply - apply meta_solver
+          by (auto simp: meta_defs meta_aux make\<Pi>\<^sub>1_inject)
+      hence "a u s w = b u s w" by auto
+      hence "(eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s w) = (eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s w)"
+        unfolding a_def b_def
+        by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
+      hence "(eval\<Pi>\<^sub>3 F v r u s w) = (eval\<Pi>\<^sub>3 G v r u s w)"
+        unfolding x_def y_def by auto
+    }
+    hence "(eval\<Pi>\<^sub>3 F) = (eval\<Pi>\<^sub>3 G)" by blast
+    thus "F = G" by (simp add: eval\<Pi>\<^sub>3_inject)
   qed
   lemma Eq\<^sub>3S[meta_subst]: "[F \<^bold>=\<^sub>3 G in v] = (F = G)"
     using Eq\<^sub>3I Eq\<^sub>3E by auto
@@ -586,11 +607,22 @@ text{* \label{TAO_MetaSolver_Identity_Proposition} *}
   lemma Eq\<^sub>\<o>I[meta_intro]: "x = y \<Longrightarrow> [x \<^bold>=\<^sub>\<o> y in v]"
     unfolding basic_identity\<^sub>\<o>_def by (simp add: Eq\<^sub>1S)
   lemma Eq\<^sub>\<o>E[meta_elim]: "[F \<^bold>=\<^sub>\<o> G in v] \<Longrightarrow> F = G"
-    unfolding basic_identity\<^sub>\<o>_def
-    apply (drule Eq\<^sub>1E)
-    apply (simp add: meta_defs)
-    using eval\<o>_inject make\<Pi>\<^sub>1_inject
-    by (metis UNIV_I)
+    proof -
+      assume "[F \<^bold>=\<^sub>\<o> G in v]"
+      hence "[(\<^bold>\<lambda>y. F) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. G) in v]"
+        unfolding basic_identity\<^sub>\<o>_def by simp
+      hence "(\<^bold>\<lambda>y. F) = (\<^bold>\<lambda>y. G)"
+        using Eq\<^sub>1S by simp
+      hence "(\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> s x = u) \<and> eval\<o> F s w)
+           = (\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> s x = u) \<and> eval\<o> G s w)"
+        apply (simp add: meta_defs meta_aux)
+        by (metis (no_types, lifting) UNIV_I make\<Pi>\<^sub>1_inverse)
+      hence "\<And>s w.(eval\<o> F s w) = (eval\<o> G s w)"
+        by metis
+      hence "(eval\<o> F) = (eval\<o> G)" by blast
+      thus "F = G"
+      by (metis eval\<o>_inverse)
+    qed
   lemma Eq\<^sub>\<o>S[meta_subst]: "[F \<^bold>=\<^sub>\<o> G in v] = (F = G)"
     using Eq\<^sub>\<o>I Eq\<^sub>\<o>E by auto
   lemma Eq\<^sub>\<o>_prop: "[F \<^bold>=\<^sub>\<o> G in v] \<Longrightarrow> [\<phi> F in v] = [\<phi> G in v]"
