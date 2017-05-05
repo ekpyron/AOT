@@ -132,11 +132,50 @@ text{*
   Think about terminology: background logic, target logic, embedded logic.
 \end{TODO}
 
-Most contemporary logical systems are semantically characterized by the means of set theory.
-An embedding of a target logical system (equationally) defines the syntactical elements of the target language
-in the background logic (e.g. in a framework like Isabelle/HOL) based on their set theoretic semantics.
-This way syntactic statements in the embedded logic can be translated to statements in the background logic.
+A semantic embedding of a target logical system defines the syntactical elements of the target language
+in a background logic (e.g. in a framework like Isabelle/HOL) based on their semantics.
+This way the background logic can be used to argue about the semantic truth of syntactic statements
+in the embedded logic.
 
+A \emph{deep} embedding represents the complete syntactical structure of the target language
+separately from the background logic, i.e. every term, variable symbol, connective, etc. of the
+target language is represented as a syntactical object and then the background logic is used to
+evaluate a syntactic expression by quantifying over all models that can be associated with the
+syntax. Variable symbols of the target logic for instance would be represented as constants in
+the background logic and a proposition would be considered semantically valid if it holds for
+all possible denotations an interpretation function can assign to these variables.
+
+While this approach will work for most target logics, it has several drawbacks. There are likely
+principles that are shared between the target logic and the background logic, such as alpha-conversion
+for lambda expressions or the equivalence of terms with renamed variables in general. In a deep
+embedding these principles have to be explicitly shown to hold for the syntactic representation
+of the target logic, which is usually connected with significant complexity. Furthermore if the
+framework used for the background logic allows automated reasoning, the degree of automation that
+can be achieved in the embedded logic is limited, as any reasoning in the target logic will have
+to consider the syntactical translation process that will usually be complex.
+
+A \emph{shallow} embedding uses a different approach based on the idea that most contemporary
+logical systems are semantically characterized by the means of set theory. A shallow embedding
+now defines primitive syntactical objects of the target language such as variables or propositions
+using a set theoretic representation. For example propositions in a modal logic can be represented
+as functions from possible worlds to truth values in a non-modal logic. The shallow embedding aims
+to equationally define only the syntactical elements of the target logic that are not already
+present in the background logic or whose semantics behave differently than in the background logic,
+while preserving as much of the logical structure of the background logic as possible.
+The modal box operator for example can be represented as a quantification over all possible worlds
+satisfying an accessibility relation, while negation and quantification can be directly represented
+using the negation and quantification of the background logic (preserving the dependency on possible worlds).
+
+This way basic principles of the background logic (such as alpha conversion) can often be directly
+applied to the embedded logic and the equational, definitional nature of the representation preverses
+a larger degree of automation. Furthermore axioms in the embedded logic can often be equivalently
+stated in the background logic, which makes model finding for the system easier and again increases
+the degree of retained automation.
+
+The approach of shallow semantical embeddings of modal logic was for example used in the analysis of
+G\"odel's onthological argument and has shown great potential as a universal tool for logical embeddings
+while retaining the existing infrastructure for automation as for example present in a framework like
+Isabelle/HOL.
 
 *}
 
@@ -150,12 +189,21 @@ Considerations}(\ref{rtt}) that relational type theory is more general than func
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
 theory, can not be properly characterized in functional type theory.
 
- 
+This has led to the question whether a shallow semantical embedding of the Theory of Abstract Objects
+in a functional logical framework as Isabelle/HOL is at all possible, which is the core question
+of the work presented here.
 
+One of their main arguments is that unrestricted lambda expressions as present in functional type
+theory lead to an inconsistency when combined with one of the axioms of the theory and indeed it
+has been shown for early attempts on embedding the theory that despite significant efforts
+to avoid the aforementioned inconsistency by excluding problematic lambda expressions in the embedded
+logic, it could still be reproduced using an appropriate construction in the background logic.
 
-\begin{TODO}
-  Challenge of approach: Paper Zalta, Oppenheimer; relational type theory; Theory of Abstract Objects.
-\end{TODO}
+Our solution circumvents this problem by identifying lambda expressions as one element of the
+target language that behaves differently than their counterparts in the background logic and
+consequently by representing lambda expressions of the target logic using a new \emph{defined}
+kind of lambda expressions. This forces lambda expressions in the embedded logic to have a particular
+semantics that is inspired by the \emph{Aczel-model} of the target theory and avoids prior inconsistencies.
 *}
 
 section{* Our Contribution *}
@@ -380,7 +428,7 @@ individual objects, the constant @{term \<alpha>\<sigma>} is axiomatized to be s
 *}
 
 section{* Conversion between objects and Urelements *}
-
+(*
 text{*
 
 In order to represent relation exemplification as the function application of the meta-logical
@@ -405,7 +453,7 @@ In order to define lambda expressions the inverse mapping is defined as well:
   as @{term \<alpha>\<sigma>} is axiomatized to be surjective.
 \end{remark}
 *}
-
+*)
 section{* Exemplification of n-place relations *}
 
 text{*
@@ -475,7 +523,7 @@ text{*
 *}
 
 section{* Lambda Expressions *}
-
+(*
 text{*
   The bound variables of the lambda expressions of the embedded logic are individual
   variables, whereas relations are represented as functions acting on urelements.
@@ -560,7 +608,7 @@ text{*
   @{lemma "[\<^bold>\<forall> F y . \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>, y\<^sup>P\<rparr> in v]" by (simp add: meta_aux meta_defs conn_defs forall_\<nu>_def forall_\<Pi>\<^sub>1_def)}
 
 *}
-
+*)
 section{* Validity *}
 
 text{*
