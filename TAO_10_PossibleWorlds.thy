@@ -179,7 +179,7 @@ text{* \label{TAO_PossibleWorlds_SyntacticSemantic} *}
           using PossWorldExpanded[conj1,conj1] .
         
         have "[\<^bold>\<diamond>(\<^bold>\<forall>p. \<lbrace>x\<^sup>P,\<^bold>\<lambda>x. p\<rbrace> \<^bold>\<equiv> p) in w]"
-          apply (PLM_subst1_method
+          apply (PLM_subst_method
                  "\<lambda>p. \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lbrace>x\<^sup>P,\<^bold>\<lambda>x. p\<rbrace>"
                  "\<lambda> p . \<lbrace>x\<^sup>P,\<^bold>\<lambda>x. p\<rbrace>")
            subgoal using PossWorldExpanded[conj1,conj1,THEN oa_facts_2[deduction]]
