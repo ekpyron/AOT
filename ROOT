@@ -66,5 +66,6 @@ session "Thesis" = "HOL" +
     "root.tex"
 	"root.bib"
 	"external.aux"
+	"aczel-model.pdf"
 	"BNF.pdf"
 	"logo.pdf"

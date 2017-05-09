@@ -49,45 +49,15 @@ notation (latex output)
 translations
   (type) "\<alpha>" <= (type) "\<Pi>\<^sub>1 set"
 (*>*)
+  
+(* abstract in thesis/root.tex *)
 
 chapter{* Introduction *}
 
-section{* Overview *}
-
 text{*
-  \begin{TODO}
-    Improve and adjust.
-  \end{TODO}
-
-  The overall structure of this document is the following:
-
-  \begin{itemize}
-    \item This first chapter provides a brief introduction to the background of
-          automated reasoning and semantical representations of logical systems
-          and describes the motivation, challenges and results of our work.
-  
-    \item The second chapter gives an overview of the motivation and structure of
-          the target theory of our embedding, the Theory of Abstract Objects.
-  
-    \item The third chapter is a detailed documentation of the concepts and
-          technical structure of our embedding. This chapter references the
-          Isabelle theory that can be found in the appendix.
-  
-    \item The fourth chapter discusses the philosophical implications of our embedding
-          and its relation to the target theory of PLM. Furthermore it describes 
-          our meta-logical results achieved using the embedding and states interesting
-          open questions future research may address.
-  
-    \item The last chapter consists of a technical discussion about some issues encountered
-          during the construction of our embedding due to limitations of the logical framework
-          of Isabelle/HOL and our solutions.
-  \end{itemize}
-
-  Note that this entire document is generated from an Isabelle theory file and thereby all formal
-  statements throughout the document are well-formed terms, resp. verified valid theorems in our
-  constructed embedding.
+\epigraph{Calculemus!}{\textit{Leibniz}}
 *}
-
+  
 section{* Universal Logical Reasoning *}
 
 text{*
@@ -110,7 +80,7 @@ The idea of a universal logical framework is very prominent in the works of Gott
 able to express metaphysical, scientific and mathematical concepts. Based thereupon he envisioned 
 the \emph{calculus ratiocinator}, a universal logical calculus with which the truth of statements
 formulated in the characteristica universalis could be decided purely by formal calculation and thereby
-in an automated fashion. 
+in an automated fashion, an idea that became famous under the slogan \emph{Calculemus!}.
 
 Nowadays with the rise of powerful computer systems such a universal logical framework could have
 repercussions throughout the sciences (TODO: change this?) and may be a vital part of machine-computer interaction in
@@ -118,11 +88,13 @@ the future. In this spirit Leibniz' ideas have inspired recent efforts to use fu
 as such a universal logical language and to represent various logical systems by the use of
 \emph{shallow semantical embeddings} (TODO: reference \url{https://arxiv.org/abs/1703.09620}).
 
+One approach for achieving universal logical reasoning is based on \emph{shallow
+semantical embeddings} of various logic systems in functional higher-order logic.
 Notably this approach recently received attention due to the formalisation, validation and analysis
 of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller (TODO: reference),
 for which a modal higher-order logic was embedded in the computerized logic framework Isabelle/HOL.
 
-The concept of this approach that is adapted for our work is outlined in the next section.
+The concept of this approach that is the basis for our work is outlined in the next section.
 *}
 
 section{* Shallow Semantical Embeddings in HOL *}
@@ -158,13 +130,15 @@ A \emph{shallow} embedding uses a different approach based on the idea that most
 logical systems are semantically characterized by the means of set theory. A shallow embedding
 now defines primitive syntactical objects of the target language such as variables or propositions
 using a set theoretic representation. For example propositions in a modal logic can be represented
-as functions from possible worlds to truth values in a non-modal logic. The shallow embedding aims
-to equationally define only the syntactical elements of the target logic that are not already
-present in the background logic or whose semantics behave differently than in the background logic,
-while preserving as much of the logical structure of the background logic as possible.
-The modal box operator for example can be represented as a quantification over all possible worlds
-satisfying an accessibility relation, while negation and quantification can be directly represented
-using the negation and quantification of the background logic (preserving the dependency on possible worlds).
+as functions from possible worlds to truth values in a non-modal logic.
+
+The shallow embedding aims to equationally define only the syntactical elements of the target logic
+that are not already present in the background logic or whose semantics behaves differently than in
+the background logic, while preserving as much of the logical structure of the background logic
+as possible. The modal box operator for example can be represented as a quantification over all
+possible worlds satisfying an accessibility relation, while negation and quantification can be
+directly represented using the negation and quantification of the background logic (preserving
+the dependency on possible worlds).
 
 This way basic principles of the background logic (such as alpha conversion) can often be directly
 applied to the embedded logic and the equational, definitional nature of the representation preverses
@@ -215,56 +189,173 @@ text{*
 \end{TODO}
 *}
 
+section{* Overview of the following Chapters *}
+
+text{*
+  \begin{TODO}
+    Improve and adjust.
+  \end{TODO}
+
+  The following chapters are structured as follows:
+
+  \begin{itemize}
+    \item The second chapter gives an overview of the motivation and structure of
+          the target theory of our embedding, the Theory of Abstract Objects. It also
+          introduces the \emph{Aczel-model} of the theory, that was adapted as the basis
+          for our embedding.
+  
+    \item The third chapter is a detailed documentation of the concepts and
+          technical structure of our embedding. This chapter references the
+          Isabelle theory that can be found in the appendix.
+  
+    \item The fourth chapter discusses the philosophical implications of our embedding
+          and its relation to the target theory of PLM. Furthermore it describes 
+          our meta-logical results achieved using the embedding and states interesting
+          open questions for future research.
+  
+    \item The last chapter consists of a technical discussion about some issues encountered
+          during the construction of our embedding due to limitations of the logical framework
+          of Isabelle/HOL and our solutions.
+  \end{itemize}
+
+  Note that this entire document is generated from an Isabelle theory file and thereby starting
+  from the third chapter all formal statements throughout the document are well-formed terms,
+  resp. verified valid theorems in our constructed embedding.
+*}
+
 chapter{* The Theory of Abstract Objects *}
+
+text{*
+  \epigraph{
+It is widely supposed that every entity falls into one of two categories:
+Some are concrete; the rest abstract. The distinction is supposed to be
+of fundamental significance for metaphysics and epistemology.
+}{\textit{Stanford Encyclopedia of Philosophy\cite{sep-abstract-objects}}}
+*}
 
 section{* Motivation *}
 
 text{*
 
-\textquote[{\cite{MallyTheory}}]{
-The theory of abstract objects is a metaphysical theory. Whereas physics attempts a systematic
-description of fundamental and complex concrete objects, metaphysics attempts a systematic
-description of fundamental and complex abstract objects. Abstract objects are the objects that are
-presupposed by our scientific conceptual framework. For example, when doing natural science, we
-presuppose that we can use the natural numbers to count concrete objects, and that we can use the
-real numbers to measure them in various ways. It is part of our understanding of science that natural
-laws exist (even if no one were around to discover them) and that the states of affairs that obtain
-in the natural world are governed by such laws. As part of our scientific investigations, we
-presuppose that objects behave in certain ways because they have certain properties, and that
-natural laws govern not just actual objects that have certain properties, but any physically
-possible object having those properties. So metaphysics investigates numbers, laws, properties,
-possibilities, etc., as entities in their own right, since they seem to be presupposed by our very
-understanding of the scientific enterprise. The theory of abstract objects attempts to organize
-these objects within a systematic and axiomatic framework.
+As the name suggests the Theory of Abstract Objects revolves around \emph{abstract objects} and
+is thereby a metaphysical theory.
+As Zalta puts it: \textquote{Whereas physics attempts a systematic description of fundamental
+and complex concrete objects, metaphysics attempts a systematic description of fundamental
+and complex abstract objects. \textelp{} The theory of abstract objects attempts to organize
+these objects within a systematic and axiomatic framework. \textelp{We can} think of abstract
+objects as possible and actual property-patterns. \textelp{} Our theory of abstract
+objects will \emph{objectify} or \emph{reify} the group of properties satisfying \textins{such a}
+pattern.}\cite{MallyTheory}
 
-It would be a mistake to think that a theory postulating abstract objects is incompatible with our
-theories of natural science, which seem to presuppose that the only things that exist are the things
-governed by our true scientific theories. To see that the theory of abstract objects is compatible
-with natural scientific theories, we only have to think of abstract objects as possible and actual
-property-patterns. These patterns of properties objectify a group of properties that satisfy a
-certain pattern. For example, it will turn out that the real number @{text "\<pi>"} can be thought of as the
-pattern of properties satisfying the open sentence "According to the axioms of real number theory,
-@{text "\<pi>"} has the property F" (where "F" is a variable ranging over properties). There are an
-infinite number of properties satisfying this pattern (and an infinite number that don't).
-Our theory of abstract objects will "objectify" or "reify" the group of properties satisfying this
-pattern. So, on this view of what abstract objects are, we need not think of them as some ghostly,
-imperceptible kind of nonspatiotemporal substances. Instead, they are possible and actual patterns
-that are grounded in the arrangement of particles in the natural world and in the systematic behavior
-and linguistic usage of mathematicians and scientists as they discover, state, and apply theories
-of the natural world. 
-}
+So what is the fundamental distinction between abstract and concrete objects? The analysis
+in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
+predication that is based on the ideas of Ernst Mally (TODO: reference, maybe again just \cite{MallyTheory}).
+Whereas objects that are concrete (the Theory of Abstract Objects calls them \emph{ordinary objects})
+are characterized by the classical mode of predication, i.e. \emph{exemplification}, a second mode
+of predication is introduced that is reserved for abstract objects. This new mode of predication is
+called \emph{encoding}.
+
+Mally informally introduces this second mode of predication in order to represent sentences about
+fictional objects. In his thinking only concrete objects, that for example have a fixed spatiotemporal
+location, a body and shape, etc., can \emph{exemplify} their properties and are characterized
+by the properties they exemplify. Sentences about fictional objects such as \textquote{Sherlock Holmes
+is a detective} have a different meaning. Stating that \textquote{Sherlock Holmes is a detective} 
+does not imply that there is some concrete object that is Sherlock Holmes and this object exemplifies
+the property of being a detective - it rather states that the concept we have of the fictional
+character Sherlock Holmes includes the property of being a detective. Sherlock Holmes is not concrete,
+but an abstract object that is \emph{determined} by the properties Sherlock Holmes is given by the
+fictional works involving him as character. This is expressed using the second mode of predication
+\emph{Sherlock Holmes encodes the property of being a detective}.
+
+To clarify the difference between the two concepts note that any object either exemplifies a property
+or its negation. The same is not true for encoding. For example it is not determinate whether 
+Sherlock Holmes has a mole on his left foot. Therefore the abstract object Sherlock Holmes neither
+encodes the property of having a mole on his left foot, nor the property of not having a mole on
+his left foot.
+
+The theory even allows for an abstract object to encode properties that no object
+could possibly exemplify and reason about them, for example the quadratic circle. In classical logic
+meaningful reasoning about a quadratic circle is impossible - as soon as I suppose an object that
+\emph{exemplifies} the properties of being a circle and of being quadratic, this will lead to a
+contradiction and every statement becomes derivable.
+
+In the Theory of Abstract Objects on the other hand
+there is an abstract object that encodes exactly these two properties and it is possible to reason
+about it. For example we can state that this object \emph{exemplifies} the property of \emph{being
+thought about by the reader of this paragraph}. This shows that the Theory of Abstract Objects provides
+the means to reason about processes of human thought in a much broader sense than classical logic
+would allow.
+
+It turns out that by the means of the concepts of abstract objects and encoding the Theory of
+Abstract Objects can be used to represent and reason about a large variety of concepts that
+regularly occur in philosophy, mathematics or linguistics.
+
+In \cite{MallyTheory} the principal objectives of the theory are summerized as follows:
+
+\begin{itemize}
+  \item To describe the logic underlying (scientific) thought and reasoning by extending
+        classical propositional, predicate, and modal logic.
+  \item To describe the laws governing universal entities such as properties, relations,
+        and propositions (i.e., states of affairs).
+  \item To identify \emph{theoretical} mathematical objects and relations as well as
+        the \emph{natural} mathematical objects such as natural numbers and natural sets.
+  \item To analyze the distinction between fact and fiction and systematize the various
+        relationships between stories, characters, and other fictional objects.
+  \item To systematize our modal thoughts about possible (actual, necessary) objects,
+        states of affairs, situations and worlds.
+  \item To systematize our modal thoughts about possible (actual, necessary) objects,
+        states of affairs, situations and worlds.
+  \item To account for the deviant logic of propositional attitude reports, explain the
+        informativeness of identity statements, and give a general account of the objective
+        and cognitive content of natural language.
+  \item To axiomatize philosophical objects postulated by other philosophers, such as Forms (Plato),
+        concepts (Leibniz), monads (Leibniz), possible worlds (Leibniz), nonexistent objects (Meinong),
+        senses (Frege), extensions of concepts (Frege), noematic senses (Husserl), the world as a
+        state of affairs (early Wittgenstein), moments of time, etc.
+\end{itemize}
+
+The Theory of Abstract Objects has therefore the ambition and the potential to serve as a foundational
+theory of metaphysics as well as mathematics and can provide a simple unified axiomatic framework to reason
+about a huge variety of concepts throughout the sciences. This makes the attempt to represent the
+theory using the universal reasoning approach of shallow semantical embeddings outlined in the previous
+chapter particularly challenging and at the same time rewarding.
+
+A successful implementation of
+the theory that allows it to utilize the existing sophisticated infrastructure for automated reasoning 
+present in a framework like Isabelle/HOL would not only strongly support the applicability of shallow
+semantical embeddings as a universal reasoning tool, but could also serve as the basis for spreading
+the utilization of the theory itself as a foundational theory for various scientific fields by
+enabling convenient interactive and automated reasoning in a verified framework.
+
+Although our embedding revealed certain challenges in this approach and there remain open questions
+for example about the precise relationship between the embedding and the target theory or its soundness
+and completeness, it is safe to say that our work represents a significant step towards achieving this
+goal. 
+
 *}
 
-section{* The Language of PLM *}
+section{* Basic Concepts *}
 
 text{*
-The target of our embedding is the second order fragment of Object Theory as described
-in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico Metaphysica} (PLM) \cite{PM}.
-The logical foundation of the target theory uses second-order modal relational type theory
-as logical foundation.
 
-The used language can be described in Backus-Naur Form (BNF)\cite[p. 170]{PM}. The following
-grammatical categories are used:
+*}
+  
+section{* The Language of PLM *}
+  
+text{*
+The target of our embedding is the second order fragment of Object Theory as described
+in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico Metaphysica} (PLM) @{cite PM}.
+The logical foundation of the theory uses a second-order modal logic (without primitive identity)
+formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
+of predication besides the traditional mode of predication \emph{exemplification}.
+In the following we provide an informal description of the important aspects of the language;
+for a detailed and formal description and the type-theoretic background refer to the respective
+chapters of PLM @{cite PM}.
+
+
+
+A compact description of the language can be given in Backus-Naur Form (BNF)@{cite \<open>p. 170\<close> PM}.
+For this the following grammatical categories are used:
 
 \begin{tabular}[h]{ll}
   @{text "\<delta>"}   & individual constants \\
@@ -283,12 +374,53 @@ The syntax of the target theory can now be described as BNF grammar\cite[ibid.]{
 
 \includegraphics{BNF.pdf}
 
+It is important to note that the language distinguishes between two types of formulas,
+namely \emph{formulas} that \emph{may} contain encoding subformulas such as @{text "xF"} 
+(read \emph{@{text "x"} encodes @{text "F"}} and \emph{propositional formulas} that
+\emph{may not} contain encoding subformulas. Only propositional formulas
+may be used in lambda expressions. The main reason for this distinction will be explained
+in the next section.
+
+\begin{remark}
+  Note that propositional formulas may also contain encoding expressions, since
+  individual terms in exemplification formulas may be definite descriptions whose
+  matrices are not restricted to being propositional formulas, i.e.
+  @{text "F\<iota>x(xQ)"} is a propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed
+  lambda expression (@{text "\<iota>x(xQ)"} does not count as a \emph{subformula} of @{text "F\<iota>x(xQ)"},
+  though). On the other hand @{text "xF"} is not a propositional formula and therefore
+  @{text "[\<lambda>x xF]"} not a well-formed lambda expression.
+\end{remark}
+
+It is also important to note that the language does not contain the identity as primitive.
+Instead the language uses \emph{defined} identities.
+
 \begin{TODO}
-  
+  More...
 \end{TODO}
 
 *}
 
+section{* The Aczel-Model *}
+
+text{*
+
+When thinking about a model for the theory one will quickly notice the following problem:
+The comprehension axiom for abstract objects implies that for each set of properties there
+exists an abstract object, hence there exists an injective map from the power set of properties
+to the set of abstract objects. On the other hand for an object @{text "y"} the term
+@{text "[\<lambda>x Rxy]"} constitutes a property. If for distinct objects these properties were always
+distinct, this would result in a violation of Cantor's theorem, since this would mean that
+there is an injective map from the power set of properties to the set of properties.
+
+
+
+\begin{figure}[h]
+  \caption{Illustration of the Aczel-Model}
+  \includegraphics[width=\textwidth]{aczel-model.pdf}
+\end{figure}
+
+*}
+  
 chapter{* Embedding *}
 
 section{* Background *}
@@ -298,7 +430,9 @@ The background theory for the embedding is Isabelle/HOL, that provides a higher 
 that serves as our meta-logic. For a short overview of the extents of the background theory
 see \cite{WhatsInMain}.
 *}
-
+  
+section{* Basic Concepts *}
+  
 section{* Primitives *}
 
 text{*

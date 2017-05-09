@@ -6,6 +6,7 @@
 \usepackage{csquotes}
 \usepackage{graphicx}
 \usepackage{geometry}
+\usepackage{epigraph}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 
@@ -88,17 +89,22 @@ PD Dr. Christoph Benzm\"uller
 \end{titlepage}
 \begin{abstract}
 	We present an embedding of the second order fragment of the Theory of Abstract Objects as described in Edward Zalta's
-  upcoming work Principia Logico-Metaphysica (PLM\cite{PLM}) in the automated reasoning framework Isabelle/HOL. The Theory of Abstract
+  upcoming work Principia Logico-Metaphysica (PLM\cite{PM}) in the automated reasoning framework Isabelle/HOL. The Theory of Abstract
   Objects is a metaphysical theory that reifies property patterns, as they for example occur in the abstract reasoning
   of mathematics, as \emph{abstract objects} and provides an axiomatic framework that allows to reason about these objects.
   It thereby serves as a fundamental metaphysical theory that can be used to axiomatize and describe a wide range of philosophical
   objects, such as Platonic forms or Leibniz's concepts, and has the ambition to function as a foundational theory of mathematics.
-  The target theory of our embedding as described in chapters 7-9 of PLM\cite{PLM} employs a modal relational type theory as
+  The target theory of our embedding as described in chapters 7-9 of PLM\cite{PM} employs a modal relational type theory as
   logical foundation for which a representation in functional type theory is known to be challenging\cite{rtt}.
   
   Nevertheless we arrive at a functioning representation of the theory in the functional logic of Isabelle/HOL based on a semantical
   representation of an Aczel model of the theory. Based on this representation we construct an implementation of the deductive
-  system of PLM (\cite[Chap. 9]{PLM}) which allows it to automatically and interactively find and verify theorems of PLM.
+  system of PLM (\cite[Chap. 9]{PM}) which allows it to automatically and interactively find and verify theorems of PLM.
+
+  Our work thereby supports the concept of shallow semantical embeddings of
+  logical systems in HOL as a universal tool for logical reasoning as
+  promoted by Christoph Benzm\"uller (TODO: reference).
+
 \end{abstract}
 \tableofcontents
 
