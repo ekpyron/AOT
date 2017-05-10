@@ -1,6 +1,7 @@
 (*<*)
 theory Thesis
-imports TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar" "~~/src/HOL/Library/OptionalSugar"
+imports TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar"
+        "~~/src/HOL/Library/OptionalSugar"
 begin
 (*>*)
 
@@ -83,18 +84,15 @@ formulated in the characteristica universalis could be decided purely by formal 
 in an automated fashion, an idea that became famous under the slogan \emph{Calculemus!}.
 
 Nowadays with the rise of powerful computer systems such a universal logical framework could have
-repercussions throughout the sciences (TODO: change this?) and may be a vital part of machine-computer interaction in
-the future. In this spirit Leibniz' ideas have inspired recent efforts to use functional higher-order logic (HOL)
-as such a universal logical language and to represent various logical systems by the use of
-\emph{shallow semantical embeddings} (TODO: reference \url{https://arxiv.org/abs/1703.09620}).
+repercussions throughout the sciences (TODO: change this?) and may be a vital part of
+machine-computer interaction in the future. In this spirit Leibniz' ideas have inspired
+recent efforts to use functional higher-order logic (HOL) as such a universal logical language
+and to represent various logical systems by the use of \emph{shallow semantical embeddings}
+(TODO: reference \url{https://arxiv.org/abs/1703.09620}).
 
-One approach for achieving universal logical reasoning is based on \emph{shallow
-semantical embeddings} of various logic systems in functional higher-order logic.
 Notably this approach recently received attention due to the formalisation, validation and analysis
 of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller (TODO: reference),
 for which a modal higher-order logic was embedded in the computerized logic framework Isabelle/HOL.
-
-The concept of this approach that is the basis for our work is outlined in the next section.
 *}
 
 section{* Shallow Semantical Embeddings in HOL *}
@@ -146,10 +144,10 @@ a larger degree of automation. Furthermore axioms in the embedded logic can ofte
 stated in the background logic, which makes model finding for the system easier and again increases
 the degree of retained automation.
 
-The approach of shallow semantical embeddings of modal logic was for example used in the analysis of
+The shallow semantical embeddings of modal logic was the basis for the analysis of
 G\"odel's onthological argument and has shown great potential as a universal tool for logical embeddings
 while retaining the existing infrastructure for automation as for example present in a framework like
-Isabelle/HOL.
+Isabelle/HOL. (TODO: more application examples)
 
 *}
 
@@ -251,9 +249,10 @@ So what is the fundamental distinction between abstract and concrete objects? Th
 in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
 predication that is based on the ideas of Ernst Mally (TODO: reference, maybe again just \cite{MallyTheory}).
 Whereas objects that are concrete (the Theory of Abstract Objects calls them \emph{ordinary objects})
-are characterized by the classical mode of predication, i.e. \emph{exemplification}, a second mode
-of predication is introduced that is reserved for abstract objects. This new mode of predication is
-called \emph{encoding}.
+are characterized by the classical mode of predication, i.e. \emph{exemplification},
+a second mode of predication is introduced that is reserved for abstract objects. This new mode of
+predication is called \emph{encoding} and formally written as @{text "xF"} (@{text "x"}
+\emph{encodes} @{text "F"}) in contrast to @{text "Fx"} (@{text "x"} \emph{exemplifies} @{text "F"}).
 
 Mally informally introduces this second mode of predication in order to represent sentences about
 fictional objects. In his thinking only concrete objects, that for example have a fixed spatiotemporal
@@ -334,10 +333,44 @@ goal.
 
 *}
 
-section{* Basic Concepts *}
+section{* Basic Principles *}
 
 text{*
+  Although the formal the language of the theory is introduced only in the next section,
+  it is worth to present some of the basic concepts of the theory in advance to provide
+  further motivation for the formalism.
 
+  The following are the two most important principles of the theory:
+
+  \begin{center}
+    @{text "\<exists>x(A!x & \<forall>F(xF \<equiv> \<Phi>))"}\\
+    @{text "x = y \<equiv> \<box>\<forall>F(xF \<equiv> yF)"}
+  \end{center}
+
+  The first statement asserts that for every condition on properties @{text "\<Phi>"} there exists
+  an abstract object that encodes exactly those properties satisfying @{text "\<Phi>"}, whereas the
+  second statement holds for two abstract objects @{text "x"} and @{text "y"} and states that
+  they are equal, if and only if they necessarily encode the same properties.
+
+  Together these two principles clarify the notion of abstract objects as the reification
+  of property patterns: Any set of properties is objectified as a distinct abstract object.
+
+  Note that these principles already allow it to postulate interesting abstract objects.
+
+  For example the Leibnizian concept of an (ordinary) individual @{text "u"} can be 
+  defined as \emph{the (unique) object that encodes all properties that @{text "u"} exemplifies},
+  formally: @{text "\<iota>x \<forall>F (xF \<equiv> Fu)"}
+  
+  Other interesting examples include possible worlds, Platonic Forms or even basic logical objects
+  like truth values. Here it is important to note that the theory allows it to formulate
+  a purely \emph{syntactic} definition of objects like possible worlds and truth values and
+  from these syntactic definitions it can be \emph{derived} that there are two truth values
+  or that the application of the modal box operator to a property is equivalent to the property
+  being true in all possible worlds (where \emph{being true in a possible world} is again defined
+  syntactically).
+
+  This is an impressive property of the Theory of Abstract Objects: it can \emph{syntactically}
+  define objects that are usually only considered semantically.
 *}
   
 section{* The Language of PLM *}
@@ -347,12 +380,12 @@ The target of our embedding is the second order fragment of Object Theory as des
 in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico Metaphysica} (PLM) @{cite PM}.
 The logical foundation of the theory uses a second-order modal logic (without primitive identity)
 formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
-of predication besides the traditional mode of predication \emph{exemplification}.
+of predication besides the traditional \emph{exemplification}.
 In the following we provide an informal description of the important aspects of the language;
-for a detailed and formal description and the type-theoretic background refer to the respective
-chapters of PLM @{cite PM}.
+for a detailed and fully formal description and the type-theoretic background refer to the respective
+chapters of PLM@{cite PM}.
 
-
+TODO: recursive definition of the language?
 
 A compact description of the language can be given in Backus-Naur Form (BNF)@{cite \<open>p. 170\<close> PM}.
 For this the following grammatical categories are used:
@@ -374,22 +407,22 @@ The syntax of the target theory can now be described as BNF grammar\cite[ibid.]{
 
 \includegraphics{BNF.pdf}
 
-It is important to note that the language distinguishes between two types of formulas,
-namely \emph{formulas} that \emph{may} contain encoding subformulas such as @{text "xF"} 
-(read \emph{@{text "x"} encodes @{text "F"}} and \emph{propositional formulas} that
-\emph{may not} contain encoding subformulas. Only propositional formulas
-may be used in lambda expressions. The main reason for this distinction will be explained
+The remaining connectives (@{text "&"}, @{text "\<or>"}, @{text "\<equiv>"}, @{text "\<diamondop>"}) and the
+existence quantifier (@{text "\<exists>"}) are defined in the usual manner.
+
+It is important to note that the language distinguishes between two types of basic formulas,
+namely (non-propositional) \emph{formulas} that \emph{may} contain encoding subformulas and
+\emph{propositional formulas} that \emph{may not} contain encoding subformulas. Only propositional
+formulas may be used in lambda expressions. The main reason for this distinction will be explained
 in the next section.
 
-\begin{remark}
-  Note that propositional formulas may also contain encoding expressions, since
-  individual terms in exemplification formulas may be definite descriptions whose
-  matrices are not restricted to being propositional formulas, i.e.
-  @{text "F\<iota>x(xQ)"} is a propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed
-  lambda expression (@{text "\<iota>x(xQ)"} does not count as a \emph{subformula} of @{text "F\<iota>x(xQ)"},
-  though). On the other hand @{text "xF"} is not a propositional formula and therefore
-  @{text "[\<lambda>x xF]"} not a well-formed lambda expression.
-\end{remark}
+Note that there is a case in which propositional formulas \emph{can} contain encoding
+expressions. This is due to the fact that \emph{subformula} is defined in such a way that
+@{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"} (for a formal definition of subformula
+refer to definition (\ref{PM-df-subformula}) in @{cite PM}). Thereby @{text "F\<iota>x(xQ)"} is a
+propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed lambda expression.
+On the other hand @{text "xF"} is not a propositional formula and therefore
+@{text "[\<lambda>x xF]"} not a well-formed lambda expression.
 
 It is also important to note that the language does not contain the identity as primitive.
 Instead the language uses \emph{defined} identities.
