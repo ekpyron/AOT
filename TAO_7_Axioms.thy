@@ -422,6 +422,7 @@ text{* \label{TAO_Axioms_Encoding} *}
       ultimately show "[\<lparr>A!,?x\<^sup>P\<rparr> \<^bold>& (\<^bold>\<forall>F. \<lbrace>?x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<phi> F) in v]"
         by (simp only: ConjS)
     qed
+
 end
 
 (*<*)

@@ -89,27 +89,26 @@ text{*
 subsection{* Mapping from abstract objects to special urelements *}
 text{* \label{TAO_Embedding_AbstractObjectsToSpecialUrelements} *}
 
-consts \<alpha>\<sigma> :: "\<alpha>\<Rightarrow>\<sigma>"
-axiomatization where \<alpha>\<sigma>_surj: "surj \<alpha>\<sigma>"
+consts \<alpha>\<sigma> :: "j\<Rightarrow>\<alpha>\<Rightarrow>\<sigma>"
+axiomatization where \<alpha>\<sigma>_surj: "surj (\<alpha>\<sigma> j)"
 
 subsection{* Conversion between objects and urelements *}
 text{* \label{TAO_IndToUr} *}
 
-definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsilon> \<equiv> case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>)"
-definition \<upsilon>\<nu> :: "\<upsilon>\<Rightarrow>\<nu>" where "\<upsilon>\<nu> \<equiv> case_\<upsilon> \<omega>\<nu> (\<alpha>\<nu> \<circ> (inv \<alpha>\<sigma>))"
+definition \<nu>\<upsilon> :: "j\<Rightarrow>\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsilon> \<equiv> \<lambda> s . case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> (\<alpha>\<sigma> s))"
 
 subsection{* Exemplification of n-place relations. *}
 text{* \label{TAO_Embedding_Exemplification} *}
 
 lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is id .
 lift_definition exe1::"\<Pi>\<^sub>1\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_\<rparr>") is
-  "\<lambda> F x w s . (proper x) \<and> F (\<nu>\<upsilon> (rep x)) w s" .
+  "\<lambda> F x s w . (proper x) \<and> F (\<nu>\<upsilon> s (rep x)) s w" .
 lift_definition exe2::"\<Pi>\<^sub>2\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_\<rparr>") is
-  "\<lambda> F x y w s . (proper x) \<and> (proper y) \<and>
-     F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) w s" .
+  "\<lambda> F x y s w . (proper x) \<and> (proper y) \<and>
+     F (\<nu>\<upsilon> s (rep x)) (\<nu>\<upsilon> s (rep y)) s w" .
 lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_,_\<rparr>") is
-"\<lambda> F x y z w s . (proper x) \<and> (proper y) \<and> (proper z) \<and>
-   F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) w s" .
+"\<lambda> F x y z s w . (proper x) \<and> (proper y) \<and> (proper z) \<and>
+   F (\<nu>\<upsilon> s (rep x)) (\<nu>\<upsilon> s (rep y)) (\<nu>\<upsilon> s (rep z)) s w" .
 
 text{*
 \begin{remark}
@@ -174,11 +173,11 @@ text{* \label{TAO_Embedding_Lambda} *}
 
 lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
 lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
-  "\<lambda> \<phi> u . \<phi> (\<upsilon>\<nu> u)" .
+  "\<lambda> \<phi> u s w . \<exists> x . \<nu>\<upsilon> s x = u \<and> \<phi> x s w" .
 lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
-  "\<lambda> \<phi> u v . \<phi> (\<upsilon>\<nu> u) (\<upsilon>\<nu> v)" .
+  "\<lambda> \<phi> u v s w . \<exists> x y . \<nu>\<upsilon> s x = u \<and> \<nu>\<upsilon> s y = v \<and> \<phi> x y s w" .
 lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
-  "\<lambda> \<phi> u v w .  \<phi> (\<upsilon>\<nu> u) (\<upsilon>\<nu> v) (\<upsilon>\<nu> w)" .
+  "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> s x = u \<and> \<nu>\<upsilon> s y = v \<and> \<nu>\<upsilon> s z = r \<and> \<phi> x y z s w" .
 
 text{*
 \begin{remark}
@@ -290,31 +289,32 @@ declare make\<kappa>_inverse[meta_aux] eval\<kappa>_inverse[meta_aux]
         make\<Pi>\<^sub>1_inverse[meta_aux] eval\<Pi>\<^sub>1_inverse[meta_aux]
         make\<Pi>\<^sub>2_inverse[meta_aux] eval\<Pi>\<^sub>2_inverse[meta_aux]
         make\<Pi>\<^sub>3_inverse[meta_aux] eval\<Pi>\<^sub>3_inverse[meta_aux]
-lemma \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>[meta_aux]: "\<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x" by (simp add: \<nu>\<upsilon>_def)
-lemma \<upsilon>\<nu>_\<omega>\<upsilon>_is_\<omega>\<nu>[meta_aux]: "\<upsilon>\<nu> (\<omega>\<upsilon> x) = \<omega>\<nu> x" by (simp add: \<upsilon>\<nu>_def)
+lemma \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>[meta_aux]: "\<nu>\<upsilon> s (\<omega>\<nu> x) = \<omega>\<upsilon> x" by (simp add: \<nu>\<upsilon>_def)
 lemma rep_proper_id[meta_aux]: "rep (x\<^sup>P) = x"
   by (simp add: meta_aux \<nu>\<kappa>_def rep_def)
 lemma \<nu>\<kappa>_proper[meta_aux]: "proper (x\<^sup>P)"
   by (simp add: meta_aux \<nu>\<kappa>_def proper_def)
-lemma \<nu>\<upsilon>_\<upsilon>\<nu>_id[meta_aux]: "\<nu>\<upsilon> (\<upsilon>\<nu> (x)) = x"
-  by (simp add: \<nu>\<upsilon>_def \<upsilon>\<nu>_def \<alpha>\<sigma>_surj surj_f_inv_f split: \<upsilon>.split)
-lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> (\<alpha>\<nu> x) = \<omega>\<upsilon> y)" by (simp add: \<nu>\<upsilon>_def)
+lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> s (\<alpha>\<nu> x) = \<omega>\<upsilon> y)" by (simp add: \<nu>\<upsilon>_def)
 lemma no_\<sigma>\<omega>[meta_aux]: "\<not>(\<sigma>\<upsilon> x = \<omega>\<upsilon> y)" by blast
-lemma \<nu>\<upsilon>_surj[meta_aux]: "surj \<nu>\<upsilon>" using \<nu>\<upsilon>_\<upsilon>\<nu>_id surjI by blast
+lemma \<nu>\<upsilon>_surj[meta_aux]: "surj (\<nu>\<upsilon> s)"
+  using \<alpha>\<sigma>_surj unfolding \<nu>\<upsilon>_def surj_def
+  by (metis \<nu>.simps(5) \<nu>.simps(6) \<upsilon>.exhaust comp_apply)
+(*
 lemma \<upsilon>\<nu>\<kappa>_aux1[meta_aux]:
-  "None \<noteq> (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (the (eval\<kappa> x)))\<^sup>P))"
+  "None \<noteq> (eval\<kappa> (\<upsilon>\<nu> s (\<nu>\<upsilon> s (the (eval\<kappa> x)))\<^sup>P))"
   apply transfer
   by simp
 lemma \<upsilon>\<nu>\<kappa>_aux2[meta_aux]:
-  "(\<nu>\<upsilon> (the (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> (the (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> (the (eval\<kappa> x)))"
+  "(\<nu>\<upsilon> s (the (eval\<kappa> (\<upsilon>\<nu> s (\<nu>\<upsilon> s (the (eval\<kappa> x)))\<^sup>P)))) = (\<nu>\<upsilon> s (the (eval\<kappa> x)))"
   apply transfer
   using \<nu>\<upsilon>_\<upsilon>\<nu>_id by auto
 lemma \<upsilon>\<nu>\<kappa>_aux3[meta_aux]:
-  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (None \<noteq> eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> o\<^sub>1)\<^sup>P)) = (None \<noteq> eval\<kappa> x)"
+  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (None \<noteq> eval\<kappa> (\<upsilon>\<nu> s (\<nu>\<upsilon> s o\<^sub>1)\<^sup>P)) = (None \<noteq> eval\<kappa> x)"
   apply transfer by (auto simp: meta_aux)
 lemma \<upsilon>\<nu>\<kappa>_aux4[meta_aux]:
-  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (\<nu>\<upsilon> (the (eval\<kappa> (\<upsilon>\<nu> (\<nu>\<upsilon> o\<^sub>1)\<^sup>P)))) = \<nu>\<upsilon> (the (eval\<kappa> x))"
+  "Some o\<^sub>1 = eval\<kappa> x \<Longrightarrow> (\<nu>\<upsilon> s (the (eval\<kappa> (\<upsilon>\<nu> s (\<nu>\<upsilon> s o\<^sub>1)\<^sup>P)))) = \<nu>\<upsilon> s (the (eval\<kappa> x))"
   apply transfer by (auto simp: meta_aux)
+*)
 
 (*<*)
 end

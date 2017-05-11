@@ -45,12 +45,14 @@ text{* \label{TAO_SanityTests_Concreteness} *}
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
      (proper x) \<and> (case (rep x) of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
-    by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by fastforce
   lemma AbsCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
      (proper x) \<and> (case (rep x) of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)"
     using OrdinaryObjectsPossiblyConcreteAxiom
-    by (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    using no_\<alpha>\<omega> by blast
 
 subsection{* Justification for Meta-Logical Axioms *}
 text{* \label{TAO_SanityTests_MetaAxioms} *}
@@ -65,7 +67,9 @@ text{*
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
        \<longleftrightarrow> (case x of \<omega>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)))"
-    unfolding Concrete_def by (auto simp: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    unfolding Concrete_def
+    apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by fastforce
 
 text{*
 \begin{remark}
@@ -78,7 +82,8 @@ text{*
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
        \<longleftrightarrow> (case x of \<alpha>\<nu> y \<Rightarrow> True | _ \<Rightarrow> False)))"
-    by (auto simp: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
+    using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> no_\<alpha>\<omega> by fastforce
   
 text{*
 \begin{remark}
@@ -102,7 +107,7 @@ text{*
   lemma PossiblyNoContingentObjectExistsCheck:
     "PossiblyNoContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
     apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
-    by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
+    using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by blast
 
 subsection{* Relations in the Meta-Logic *}
 text{* \label{TAO_SanityTests_MetaRelations} *}
@@ -122,7 +127,8 @@ text{*
     {
       fix v
       fix y
-      obtain x where y_def: "y = \<nu>\<upsilon> x" by (metis \<nu>\<upsilon>_\<upsilon>\<nu>_id)
+      obtain x where y_def: "y = \<nu>\<upsilon> dj x"
+        by (meson \<nu>\<upsilon>_surj surj_def)
       have "(\<exists>r o\<^sub>1. Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v) =
             (\<exists>r o\<^sub>1. Some r = d\<^sub>1 G \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v)"
             using 1 apply - by meta_solver
@@ -143,7 +149,7 @@ text{*
     assume 1: "(\<lambda>x. eval\<Pi>\<^sub>1 F x dj) = (\<lambda>x. eval\<Pi>\<^sub>1 G x dj)"
     {
       fix y v
-      obtain x where x_def: "x = \<nu>\<upsilon> y"
+      obtain x where x_def: "x = \<nu>\<upsilon> dj y"
         by simp
       hence "eval\<Pi>\<^sub>1 F x dj = eval\<Pi>\<^sub>1 G x dj"
         using 1 by metis
@@ -152,7 +158,7 @@ text{*
       moreover obtain s where s_def: "Some s = d\<^sub>1 G"
         unfolding d\<^sub>1_def by auto
       ultimately have "(y \<in> ex1 r v) = (y \<in> ex1 s v)"
-        by (simp add: d\<^sub>1.rep_eq ex1_def \<nu>\<upsilon>_\<upsilon>\<nu>_id x_def)
+        by (simp add: d\<^sub>1.rep_eq ex1_def \<nu>\<upsilon>_surj x_def)
       hence "[\<lparr>F,y\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,y\<^sup>P\<rparr> in v]"
         apply - apply meta_solver
         using r_def s_def by (metis Semantics.d\<^sub>\<kappa>_proper option.inject)
@@ -209,14 +215,10 @@ text{*
 subsection{* Lambda Expressions in the Meta-Logic *}
 text{* \label{TAO_SanityTests_MetaLambda} *}
 
-  lemma lambda_impl_meta:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] \<longrightarrow> (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v)"
-    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
+  lemma lambda_meta:
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> eval\<o> (\<phi> y) dj v)"
+    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_def by auto
   
-  lemma meta_impl_lambda:
-    "(\<forall> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<longrightarrow> eval\<o> (\<phi> y) dj v) \<longrightarrow> [\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v]"
-    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_\<upsilon>\<nu>_id \<nu>\<upsilon>_def by auto
-
   lemma lambda_interpret_1:
   assumes "[a \<^bold>= b in v]"
   shows "(\<^bold>\<lambda>x. \<lparr>R,x\<^sup>P,a\<rparr>) = (\<^bold>\<lambda>x . \<lparr>R,x\<^sup>P, b\<rparr>)"
