@@ -157,7 +157,7 @@ section{* Relational Type Theory vs. Functional Type Theory *}
 text{*
 The universality of this approach has since been challenged by Paul Oppenheimer and Edward Zalta
 who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
-Considerations}(\ref{rtt}) that relational type theory is more general than functional type theory.
+Considerations}(@{cite rtt}) that relational type theory is more general than functional type theory.
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
 theory, can not be properly characterized in functional type theory.
 
@@ -183,7 +183,7 @@ section{* Our Contribution *}
 text{*
 \begin{TODO}
   Embedding of second order fragment of PLM. Complex semantics, term-based syntax,
-  scope of the embedding, technical challenges.
+  scope of the embedding, technical challenges. Kirchner's paradox.
 \end{TODO}
 *}
 
@@ -385,8 +385,6 @@ In the following we provide an informal description of the important aspects of 
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
-TODO: recursive definition of the language?
-
 A compact description of the language can be given in Backus-Naur Form (BNF)@{cite \<open>p. 170\<close> PM}.
 For this the following grammatical categories are used:
 
@@ -424,18 +422,64 @@ propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed lam
 On the other hand @{text "xF"} is not a propositional formula and therefore
 @{text "[\<lambda>x xF]"} not a well-formed lambda expression.
 
-It is also important to note that the language does not contain the identity as primitive.
-Instead the language uses \emph{defined} identities.
+Furthermore the theory contains a designated relation constant @{text "E!"} to be read as
+\emph{being concrete}. Using this constant the distinction between ordinary and abstract objects
+is defined as follows:
 
-\begin{TODO}
-  More...
-\end{TODO}
+  \begin{center}
+    @{text "O! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<diamond>E!x]"}\\
+    @{text "A! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<not>\<^bold>\<diamond>E!x]"}
+  \end{center}
+
+So ordinary objects are possibly concrete, whereas abstract objects cannot possibly be concrete.
+
+It is also important to note that the language does not contain the identity as primitive.
+Instead the language uses \emph{defined} identities as follows:
+
+\begin{tabular}{lc}
+  ordinary objects & @{text "x =\<^sub>E y =\<^sub>d\<^sub>f O!x & O!y & \<box>(\<forall>F Fx \<equiv> Fy)"}\\
+  individuals & @{text "x = y =\<^sub>d\<^sub>f x =\<^sub>E y \<or> (A!x & A!y & \<box>(\<forall>F xF \<equiv> yF))"}\\
+  one-place relations & @{text "F\<^sup>1 = G\<^sup>1 =\<^sub>d\<^sub>f \<box>(\<forall>x xF\<^sup>1 \<equiv> xG\<^sup>1)"}\\
+  zero-place relations & @{text "F\<^sup>0 = G\<^sup>0 =\<^sub>d\<^sub>f [\<lambda>y F\<^sup>0] = [\<lambda>y G\<^sup>0]"}
+\end{tabular}
+
+The identity for @{text "n"}-place relations with @{text "n \<ge> 2"} is defined in terms of the
+identity of one-place relations, see (\ref{PM-p-identity})@{cite PM} for all details.
 
 *}
 
+section{* The Axioms *}
+  
+text{*
+
+Based on the language above an axiom system is defined that constructs a S5 modal logic with
+an actuality operator, axioms for definite descriptions that go along with Russell's analysis
+of descriptions, the substitution for identicals as per the defined identity, @{text "\<alpha>"}-,
+@{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
+as dedicated axioms for encoding. For a full accounting of the axioms refer to @{cite \<open>chap. 8\<close> PM}.
+We will refer to some of the subtleties involving the axioms of quantification and
+@{text "\<beta>"}-conversion in more detail in the next chapter while introducing our embedding.
+
+At this point we restrict ourselves to explicitely mentioning the axioms of encoding, namely:
+
+  \begin{center}
+    @{text "xF \<rightarrow> \<box>xF"}\\
+    @{text "O!x \<rightarrow> \<not>\<exists>F xF"}\\
+    @{text "\<exists>x (A!x & \<forall>F (xF \<equiv> \<phi>))"}, provided x doesn't occur free in @{text "\<phi>"}\\
+  \end{center}
+
+So encoding is modally rigid, ordinary objects do not encode properties and
+most importantly the comprehension axiom for abstract objects that was already mentioned above:
+
+For every condition on properties @{text "\<phi>"} there exists an abstract object, that encodes exactly
+those properties, that satisfy @{text "\<phi>"}.
+
+*}
+  
 section{* The Aczel-Model *}
 
 text{*
+\label{aczel-model}
 
 When thinking about a model for the theory one will quickly notice the following problem:
 The comprehension axiom for abstract objects implies that for each set of properties there
@@ -443,14 +487,17 @@ exists an abstract object, hence there exists an injective map from the power se
 to the set of abstract objects. On the other hand for an object @{text "y"} the term
 @{text "[\<lambda>x Rxy]"} constitutes a property. If for distinct objects these properties were always
 distinct, this would result in a violation of Cantor's theorem, since this would mean that
-there is an injective map from the power set of properties to the set of properties.
-
-
+there is an injective map from the power set of properties to the set of properties. So the question
+is, does the Theory of Abstract Objects as constructed above have a model? An answer was provided
+by Peter Aczel who proposed the model structure illustrated in figure~\ref{aczel-model-graphic}.
 
 \begin{figure}[h]
   \caption{Illustration of the Aczel-Model}
   \includegraphics[width=\textwidth]{aczel-model.pdf}
+  \label{aczel-model-graphic}
 \end{figure}
+
+
 
 *}
   
