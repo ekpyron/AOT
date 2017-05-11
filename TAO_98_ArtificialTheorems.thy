@@ -1,6 +1,6 @@
 (*<*)
 theory TAO_98_ArtificialTheorems
-imports TAO_7_Axioms
+imports TAO_7_Axioms TAO_9_PLM
 begin
 (*>*)
 
@@ -53,6 +53,11 @@ text{*
     "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> [\<phi> y in v])"
     by (simp add: meta_defs meta_aux)
 
+  lemma lambda_ex2:
+    "[\<^bold>\<exists> x . \<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), x\<^sup>P\<rparr> in v]"
+    apply (simp add: meta_defs meta_aux exists_def forall_\<nu>_def)
+    using \<nu>.simps(6) by blast
+
 text{*
 \begin{remark}
   These statements can also be translated to statements in the embedded logic.
@@ -92,6 +97,40 @@ text{*
         by auto
     qed
 
+  lemma lambda:
+    "[\<^bold>\<exists> F x . \<lparr>(\<^bold>\<lambda> y . \<lbrace>y\<^sup>P,F\<rbrace>), x\<^sup>P\<rparr> \<^bold>& \<^bold>\<not>\<lbrace>x\<^sup>P,F\<rbrace> in v]"
+  proof -
+    interpret PLM .
+    have "[\<^bold>\<exists>x y. \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& x \<^bold>\<noteq> y \<^bold>& (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]" using aclassical2 by auto
+    then obtain x where "[\<^bold>\<exists> y. \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& x \<^bold>\<noteq> y \<^bold>& (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]" by (rule Instantiate)
+    then obtain y where xy_def: "[\<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& x \<^bold>\<noteq> y \<^bold>& (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]" by (rule Instantiate)
+    have "[\<^bold>\<exists> F . \<^bold>\<not>(\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>y\<^sup>P,F\<rbrace>) in v]"
+      using cqt_further_2[equiv_lr] reductio_aa_2[OF xy_def[conj1,conj2], where \<phi>="\<^bold>\<forall> F . (\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>y\<^sup>P,F\<rbrace>)", unfolded identity_\<nu>_def, OF ab_obey_1[deduction, OF xy_def[conj1,conj1], deduction]]
+      by blast
+    then obtain F where "[\<^bold>\<not>(\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>y\<^sup>P,F\<rbrace>) in v]" by (rule Instantiate)
+    hence "[(\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>& \<^bold>\<not>\<lbrace>y\<^sup>P,F\<rbrace>) \<^bold>\<or> (\<^bold>\<not>\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>& \<lbrace>y\<^sup>P,F\<rbrace>) in v]" apply - by PLM_solver
+    moreover {
+      assume 1: "[\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>& \<^bold>\<not>\<lbrace>y\<^sup>P,F\<rbrace> in v]"
+      hence "[(\<^bold>\<forall> F . \<lparr>F,y\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<lbrace>x\<^sup>P,F\<rbrace> in v]" using xy_def[conj2] apply - by PLM_solver
+      hence "[\<^bold>\<exists> x . (\<^bold>\<forall> F . \<lparr>F,y\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr>) \<^bold>& \<lbrace>x\<^sup>P,F\<rbrace> in v]" by (rule existential)
+      hence "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), y\<^sup>P\<rparr> in v]" using lambda_ex_emb[equiv_rl] by simp
+      hence "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), y\<^sup>P\<rparr> \<^bold>& \<^bold>\<not>\<lbrace>y\<^sup>P,F\<rbrace> in v]" using 1[conj2] "\<^bold>&I" by auto
+      hence "[\<^bold>\<exists> y . \<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), y\<^sup>P\<rparr> \<^bold>& \<^bold>\<not>\<lbrace>y\<^sup>P,F\<rbrace> in v]" by (rule existential)
+      hence ?thesis by (rule existential)
+    }
+    moreover {
+      assume 1: "[\<^bold>\<not>\<lbrace>x\<^sup>P,F\<rbrace> \<^bold>& \<lbrace>y\<^sup>P,F\<rbrace> in v]"
+      hence "[(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P,F\<rbrace> in v]" using xy_def[conj2] apply - by PLM_solver
+      hence "[\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P,F\<rbrace> in v]" by (rule existential)
+      hence "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), x\<^sup>P\<rparr> in v]" using lambda_ex_emb[equiv_rl] by simp
+      hence "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), x\<^sup>P\<rparr> \<^bold>& \<^bold>\<not>\<lbrace>x\<^sup>P,F\<rbrace> in v]" using 1[conj1] "\<^bold>&I" by auto
+      hence "[\<^bold>\<exists> y . \<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>), y\<^sup>P\<rparr> \<^bold>& \<^bold>\<not>\<lbrace>y\<^sup>P,F\<rbrace> in v]" by (rule existential)
+      hence ?thesis by (rule existential)
+    }
+    ultimately show ?thesis
+      using PLM(67) PLM(81) by blast
+  qed
+      
   lemma lambda_enc_emb:
     "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P, F\<rbrace>) in v]"
     using lambda_ex_emb by simp
