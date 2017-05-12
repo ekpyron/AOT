@@ -138,14 +138,14 @@ text{* \label{TAO_PossibleWorlds_Aux} *}
               by (rule "\<^bold>\<exists>E")
             have "[\<lparr>(\<^bold>\<lambda> x . p), x\<^sup>P\<rparr> \<^bold>\<equiv> p in v]"
               apply (rule beta_C_meta_1)
-              by (rule IsPropositional_intros)+
+              by show_proper
             hence "[\<lparr>(\<^bold>\<lambda> x . p), x\<^sup>P\<rparr> in v]"
               using p_and_lambda_q_is_lambda_p[conj1] "\<^bold>\<equiv>E"(2) by auto
             hence "[\<lparr>(\<^bold>\<lambda> x . q), x\<^sup>P\<rparr> in v]"
               using p_and_lambda_q_is_lambda_p[conj2, THEN id_eq_prop_prop_2[deduction]]
                 l_identity[axiom_instance, deduction, deduction] by fast
             moreover have "[\<lparr>(\<^bold>\<lambda> x . q), x\<^sup>P\<rparr> \<^bold>\<equiv> q in v]"
-              apply (rule beta_C_meta_1) by (rule IsPropositional_intros)+
+              apply (rule beta_C_meta_1) by show_proper
             ultimately have "[q in v]"
               using "\<^bold>\<equiv>E"(1) by blast
           }
@@ -293,8 +293,9 @@ text{* \label{TAO_PossibleWorlds_SemanticSyntactic} *}
           then obtain p where 4:
             "[(p \<^bold>& ((\<^bold>\<lambda> x . q) \<^bold>= (\<^bold>\<lambda> x . p))) in v]"
             by (rule "\<^bold>\<exists>E")
-          have "[\<lparr>(\<^bold>\<lambda> x . p),x\<^sup>P\<rparr> \<^bold>\<equiv> p in v]" apply (rule beta_C_meta_1)
-            by (rule IsPropositional_intros)+
+          have "[\<lparr>(\<^bold>\<lambda> x . p),x\<^sup>P\<rparr> \<^bold>\<equiv> p in v]"
+            apply (rule beta_C_meta_1)
+            by show_proper
           hence "[\<lparr>(\<^bold>\<lambda> x . q),x\<^sup>P\<rparr> \<^bold>\<equiv> p in v]"
               using l_identity[where \<beta>="(\<^bold>\<lambda> x . q)" and \<alpha>="(\<^bold>\<lambda> x . p)",
                                axiom_instance, deduction, deduction]
@@ -302,7 +303,7 @@ text{* \label{TAO_PossibleWorlds_SemanticSyntactic} *}
           hence "[\<lparr>(\<^bold>\<lambda> x . q),x\<^sup>P\<rparr> in v]" using 4[conj1] "\<^bold>\<equiv>E"(2) by blast
           moreover have "[\<lparr>(\<^bold>\<lambda> x . q),x\<^sup>P\<rparr> \<^bold>\<equiv> q in v]"
             apply (rule beta_C_meta_1)
-            by (rule IsPropositional_intros)+
+            by show_proper
           ultimately have "[q in v]"
             using "\<^bold>\<equiv>E"(1) by blast
         }

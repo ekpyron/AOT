@@ -319,21 +319,21 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
     "(\<^bold>\<lambda> x . \<phi> x) = (\<^bold>\<lambda> y . \<phi> y)" ..
 
   lemma lambda_predicates_2_1[axiom]:
-    assumes "IsPropositionalInX \<phi>"
+    assumes "IsProperInX \<phi>"
     shows "[[\<lparr>\<^bold>\<lambda> x . \<phi> (x\<^sup>P), x\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P)]]"
     apply axiom_meta_solver
     using D5_1[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>1
     by metis
 
   lemma lambda_predicates_2_2[axiom]:
-    assumes "IsPropositionalInXY \<phi>"
+    assumes "IsProperInXY \<phi>"
     shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P))), x\<^sup>P, y\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P)]]"
     apply axiom_meta_solver
     using D5_2[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>2
     by metis
 
   lemma lambda_predicates_2_3[axiom]:
-    assumes "IsPropositionalInXYZ \<phi>"
+    assumes "IsProperInXYZ \<phi>"
     shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]]"
     proof -
       have "\<box>[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<rightarrow> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]"

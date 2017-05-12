@@ -243,9 +243,8 @@ text{* \label{TAO_MetaSolver_Ordinary} *}
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> y"
     shows "[\<lparr>O!,x\<rparr> in v]"
     proof -
-      have "IsPropositionalInX (\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+      have "IsProperInX (\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        by show_proper
       moreover have "[\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
         apply meta_solver
         using ConcretenessSemantics1 propex\<^sub>1 assms by fast
@@ -260,9 +259,8 @@ text{* \label{TAO_MetaSolver_Ordinary} *}
     proof -
       have "\<exists>r o\<^sub>1. Some r = d\<^sub>1 O! \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r v"
         using assms Exe1E by simp
-      moreover have "IsPropositionalInX (\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+      moreover have "IsProperInX (\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        by show_proper
       ultimately have "[\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
         using D5_1 unfolding Ordinary_def by fast
       thus ?thesis
@@ -280,9 +278,8 @@ text{* \label{TAO_MetaSolver_Abstract} *}
     assumes "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     shows "[\<lparr>A!,x\<rparr> in v]"
     proof -
-      have "IsPropositionalInX (\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+      have "IsProperInX (\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        by show_proper
       moreover have "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
         apply meta_solver
         using ConcretenessSemantics2 propex\<^sub>1 assms
@@ -296,9 +293,8 @@ text{* \label{TAO_MetaSolver_Abstract} *}
     assumes "[\<lparr>A!,x\<rparr> in v]"
     shows "\<exists> o\<^sub>1 y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<alpha>\<nu> y"
     proof -
-      have 1: "IsPropositionalInX (\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+      have 1: "IsProperInX (\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>)"
+        by show_proper
       have "\<exists>r o\<^sub>1. Some r = d\<^sub>1 A! \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r v"
         using assms Exe1E by simp
       moreover hence "[\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
@@ -358,9 +354,8 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
             apply meta_solver using 1 by force
           ultimately show ?thesis using ConjI by simp
         qed
-      moreover have "IsPropositionalInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+      moreover have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
+        by show_proper
       ultimately have "(o\<^sub>1, o\<^sub>2) \<in> ex2 r v"
         using D5_2 1 2
         unfolding basic_identity\<^sub>E_def by fast
@@ -373,9 +368,8 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
     assumes "[x \<^bold>=\<^sub>E y in v]"
     shows "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
   proof -
-    have "IsPropositionalInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
-        unfolding conn_defs
-        by (simp add: IsPropositional_intros)
+    have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
+      by show_proper
     hence 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
       using assms unfolding basic_identity\<^sub>E_def basic_identity\<^sub>E_infix_def
       using D4_2 T1_2 D5_2 by meson
@@ -392,7 +386,7 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
     then obtain r where 4:
       "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
       by auto
-    hence 5: "r = (\<lambda>u s w. \<exists> x . \<nu>\<upsilon> s x = u \<and> Some x = Some o\<^sub>1)"
+    hence 5: "r = (\<lambda>u s w. \<exists> x . \<nu>\<upsilon> x = u \<and> Some x = Some o\<^sub>1)"
       unfolding lambdabinder1_def d\<^sub>1_def d\<^sub>\<kappa>_proper
       apply transfer
       by simp
@@ -535,18 +529,18 @@ text{* \label{TAO_MetaSolver_Identity_TwoPlaceRelation} *}
       apply - apply meta_solver by auto
     {
       fix u v s w
-      obtain x where x_def: "\<nu>\<upsilon> s x = v" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain x where x_def: "\<nu>\<upsilon> x = v" by (metis \<nu>\<upsilon>_surj surj_def)
       obtain a where a_def:
-        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s xa) s w)"
+        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> xa = u \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> xa) s w)"
         by auto
       obtain b where b_def:
-        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s xa) s w)"
+        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> xa = u \<and> eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x) (\<nu>\<upsilon> xa) s w)"
         by auto
       have "a = b" unfolding a_def b_def
           using 1 apply - apply meta_solver
           by (auto simp: meta_defs meta_aux make\<Pi>\<^sub>1_inject)
       hence "a u s w = b u s w" by auto
-      hence "(eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> s x) u s w) = (eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> s x) u s w)"
+      hence "(eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) u s w) = (eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x) u s w)"
         unfolding a_def b_def
         by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
       hence "(eval\<Pi>\<^sub>2 F v u s w) = (eval\<Pi>\<^sub>2 G v u s w)"
@@ -575,19 +569,19 @@ text{* \label{TAO_MetaSolver_Identity_ThreePlaceRelation} *}
       apply - apply meta_solver by auto
     {
       fix u v r s w
-      obtain x where x_def: "\<nu>\<upsilon> s x = v" by (metis \<nu>\<upsilon>_surj surj_def)
-      obtain y where y_def: "\<nu>\<upsilon> s y = r" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain x where x_def: "\<nu>\<upsilon> x = v" by (metis \<nu>\<upsilon>_surj surj_def)
+      obtain y where y_def: "\<nu>\<upsilon> y = r" by (metis \<nu>\<upsilon>_surj surj_def)
       obtain a where a_def:
-        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s xa) s w)"
+        "a = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> xa = u \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> xa) s w)"
         by auto
       obtain b where b_def:
-        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> s xa = u \<and> eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) (\<nu>\<upsilon> s xa) s w)"
+        "b = (\<lambda>u s w. \<exists>xa. \<nu>\<upsilon> xa = u \<and> eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> xa) s w)"
         by auto
       have "a = b" unfolding a_def b_def
           using 1 apply - apply meta_solver
           by (auto simp: meta_defs meta_aux make\<Pi>\<^sub>1_inject)
       hence "a u s w = b u s w" by auto
-      hence "(eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s w) = (eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> s x) (\<nu>\<upsilon> s y) u s w)"
+      hence "(eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) u s w) = (eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) u s w)"
         unfolding a_def b_def
         by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
       hence "(eval\<Pi>\<^sub>3 F v r u s w) = (eval\<Pi>\<^sub>3 G v r u s w)"
@@ -613,8 +607,8 @@ text{* \label{TAO_MetaSolver_Identity_Proposition} *}
         unfolding basic_identity\<^sub>\<o>_def by simp
       hence "(\<^bold>\<lambda>y. F) = (\<^bold>\<lambda>y. G)"
         using Eq\<^sub>1S by simp
-      hence "(\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> s x = u) \<and> eval\<o> F s w)
-           = (\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> s x = u) \<and> eval\<o> G s w)"
+      hence "(\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> x = u) \<and> eval\<o> F s w)
+           = (\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> x = u) \<and> eval\<o> G s w)"
         apply (simp add: meta_defs meta_aux)
         by (metis (no_types, lifting) UNIV_I make\<Pi>\<^sub>1_inverse)
       hence "\<And>s w.(eval\<o> F s w) = (eval\<o> G s w)"

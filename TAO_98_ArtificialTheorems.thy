@@ -12,6 +12,8 @@ text{*
   Some examples of theorems that can be derived from the meta-logic, but which
   are (presumably) not derivable from the deductive system PLM itself.
 \end{remark}
+
+TODO: add theorem about missing state dependence of @{text "\<nu>\<upsilon>"}.
 *}
 
 locale ArtificialTheorems
@@ -46,11 +48,11 @@ text{*
 *}
 
   lemma lambda_enc_4:
-    "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> [\<lbrace>y\<^sup>P, F\<rbrace> in v])"
+    "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<lbrace>y\<^sup>P, F\<rbrace> in v])"
     by (simp add: meta_defs meta_aux)
 
   lemma lambda_ex:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> [\<phi> y in v])"
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> y in v])"
     by (simp add: meta_defs meta_aux)
 
 text{*
@@ -65,7 +67,7 @@ text{*
       interpret MetaSolver .
       {
         assume "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v]"
-        then obtain y where "\<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> [\<phi> y in v]"
+        then obtain y where "\<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> y in v]"
           using lambda_ex by blast
         moreover hence "[(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]"
           apply - apply meta_solver
@@ -80,9 +82,9 @@ text{*
         hence "\<And> F . [\<lparr>F,x\<^sup>P\<rparr> in v] = [\<lparr>F,y\<^sup>P\<rparr> in v]"
           apply - apply (drule ConjE) apply (drule conjunct1)
           apply (drule AllE) apply (drule EquivE) by simp
-        hence "[\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> dj y = u),x\<^sup>P\<rparr> in v]
-             = [\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> dj y = u),y\<^sup>P\<rparr> in v]" by auto
-        hence "\<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x" by (simp add: meta_defs meta_aux)
+        hence "[\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u),x\<^sup>P\<rparr> in v]
+             = [\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u),y\<^sup>P\<rparr> in v]" by auto
+        hence "\<nu>\<upsilon> y = \<nu>\<upsilon> x" by (simp add: meta_defs meta_aux)
         moreover have "[\<phi> y in v]" using y_def ConjE by blast
         ultimately have "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v]"
           using lambda_ex by blast

@@ -127,7 +127,7 @@ text{*
     {
       fix v
       fix y
-      obtain x where y_def: "y = \<nu>\<upsilon> dj x"
+      obtain x where y_def: "y = \<nu>\<upsilon> x"
         by (meson \<nu>\<upsilon>_surj surj_def)
       have "(\<exists>r o\<^sub>1. Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v) =
             (\<exists>r o\<^sub>1. Some r = d\<^sub>1 G \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (x\<^sup>P) \<and> o\<^sub>1 \<in> ex1 r v)"
@@ -149,7 +149,7 @@ text{*
     assume 1: "(\<lambda>x. eval\<Pi>\<^sub>1 F x dj) = (\<lambda>x. eval\<Pi>\<^sub>1 G x dj)"
     {
       fix y v
-      obtain x where x_def: "x = \<nu>\<upsilon> dj y"
+      obtain x where x_def: "x = \<nu>\<upsilon> y"
         by simp
       hence "eval\<Pi>\<^sub>1 F x dj = eval\<Pi>\<^sub>1 G x dj"
         using 1 by metis
@@ -216,7 +216,7 @@ subsection{* Lambda Expressions in the Meta-Logic *}
 text{* \label{TAO_SanityTests_MetaLambda} *}
 
   lemma lambda_meta:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> dj y = \<nu>\<upsilon> dj x \<and> eval\<o> (\<phi> y) dj v)"
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> eval\<o> (\<phi> y) dj v)"
     unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_def by auto
   
   lemma lambda_interpret_1:
