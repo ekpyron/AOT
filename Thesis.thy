@@ -157,7 +157,7 @@ section{* Relational Type Theory vs. Functional Type Theory *}
 text{*
 The universality of this approach has since been challenged by Paul Oppenheimer and Edward Zalta
 who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
-Considerations}(\ref{rtt}) that relational type theory is more general than functional type theory.
+Considerations}(@{cite rtt}) that relational type theory is more general than functional type theory.
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
 theory, can not be properly characterized in functional type theory.
 
@@ -183,7 +183,7 @@ section{* Our Contribution *}
 text{*
 \begin{TODO}
   Embedding of second order fragment of PLM. Complex semantics, term-based syntax,
-  scope of the embedding, technical challenges.
+  scope of the embedding, technical challenges. Kirchner's paradox.
 \end{TODO}
 *}
 
@@ -385,8 +385,6 @@ In the following we provide an informal description of the important aspects of 
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
-TODO: recursive definition of the language?
-
 A compact description of the language can be given in Backus-Naur Form (BNF)@{cite \<open>p. 170\<close> PM}.
 For this the following grammatical categories are used:
 
@@ -424,18 +422,117 @@ propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed lam
 On the other hand @{text "xF"} is not a propositional formula and therefore
 @{text "[\<lambda>x xF]"} not a well-formed lambda expression.
 
-It is also important to note that the language does not contain the identity as primitive.
-Instead the language uses \emph{defined} identities.
+Furthermore the theory contains a designated relation constant @{text "E!"} to be read as
+\emph{being concrete}. Using this constant the distinction between ordinary and abstract objects
+is defined as follows:
 
-\begin{TODO}
-  More...
-\end{TODO}
+  \begin{center}
+    @{text "O! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<diamond>E!x]"}\\
+    @{text "A! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<not>\<^bold>\<diamond>E!x]"}
+  \end{center}
+
+So ordinary objects are possibly concrete, whereas abstract objects cannot possibly be concrete.
+
+It is important to note that the language does not contain the identity as primitive.
+Instead the language uses \emph{defined} identities as follows:
+
+\begin{tabular}{lc}
+  ordinary objects & @{text "x =\<^sub>E y =\<^sub>d\<^sub>f O!x & O!y & \<box>(\<forall>F Fx \<equiv> Fy)"}\\
+  individuals & @{text "x = y =\<^sub>d\<^sub>f x =\<^sub>E y \<or> (A!x & A!y & \<box>(\<forall>F xF \<equiv> yF))"}\\
+  one-place relations & @{text "F\<^sup>1 = G\<^sup>1 =\<^sub>d\<^sub>f \<box>(\<forall>x xF\<^sup>1 \<equiv> xG\<^sup>1)"}\\
+  zero-place relations & @{text "F\<^sup>0 = G\<^sup>0 =\<^sub>d\<^sub>f [\<lambda>y F\<^sup>0] = [\<lambda>y G\<^sup>0]"}
+\end{tabular}
+
+The identity for @{text "n"}-place relations with @{text "n \<ge> 2"} is defined in terms of the
+identity of one-place relations, see (\ref{PM-p-identity})@{cite PM} for the full details.
+
+The identity for ordinary objects follows Leibniz's law of the identity of indiscernibles:
+Two ordinary objects that necessarily exemplify the same properties are identical.
+Abstract objects, however, are only identical if they necessarily \emph{encode} the same
+properties. As mentioned in the previous section this goes along with the concept of
+abstract objects as the reification of property patterns.
+Notably the identity for properties has a different definition than one would expect from
+classical logic. Classically two properties are considered identical if and only if they
+necessarily are \emph{exemplified} by the same objects. The Theory of Abstract Objects, however,
+defines two properties to be identical if and only if they are necessarily \emph{encoded} by
+the same (abstract) objects. This has some interesting consequences that will be considered
+in more detail in section \ref{hyperintensionality} that describes the \emph{hyperintensionality}
+of properties in the theory. 
 
 *}
 
+section{* The Axioms *}
+  
+text{*
+
+Based on the language above an axiom system is defined that constructs a S5 modal logic with
+an actuality operator, axioms for definite descriptions that go along with Russell's analysis
+of descriptions, the substitution for identicals as per the defined identity, @{text "\<alpha>"}-,
+@{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
+as dedicated axioms for encoding. For a full accounting of the axioms refer to @{cite \<open>chap. 8\<close> PM}.
+We will refer to some of the subtleties involving the axioms of quantification and
+@{text "\<beta>"}-conversion in more detail in the next chapter while introducing our embedding.
+
+At this point we restrict ourselves to explicitely mentioning the axioms of encoding, namely:
+
+  \begin{center}
+    @{text "xF \<rightarrow> \<box>xF"}\\
+    @{text "O!x \<rightarrow> \<not>\<exists>F xF"}\\
+    @{text "\<exists>x (A!x & \<forall>F (xF \<equiv> \<phi>))"}, provided x doesn't occur free in @{text "\<phi>"}\\
+  \end{center}
+
+So encoding is modally rigid, ordinary objects do not encode properties and
+most importantly the comprehension axiom for abstract objects that was already mentioned above:
+
+For every condition on properties @{text "\<phi>"} there exists an abstract object, that encodes exactly
+those properties, that satisfy @{text "\<phi>"}.
+
+*}
+  
+section{* Hyperintensionality *}
+  
+text{*
+
+\label{hyperintensionality}
+
+Another interesting property of the Theory of Abstract Objects results from the definition
+of identity of one-place relations. Recall that two properties are defined to be identical
+if and only if they are \emph{encoded} by the same (abstract) objects. Further note that
+the theory imposes no restrictions whatsoever on which properties an abstract object encodes.
+Let for example @{text "F"} be the property \emph{being the morning star} and @{text "G"} be the
+property \emph{being the evening star}. Now since the morning star and the evening star are
+actually both the planet Venus, every object that \emph{exemplifies} @{text "F"} will also
+\emph{exemplify} @{text "G"} and vice-versa: @{text "\<box>\<forall>x Fx \<equiv> Gx"}. However the concept of being
+the morning star is different from the concept of being the evening star. The Theory of Abstract
+Object therefore does not prohibit the existence of an abstract object that \emph{encodes} @{text "F"},
+but does \emph{not} encode @{text "G"}. Therefore by the definition of identity for properties
+it does \emph{not} hold that @{text "F = G"}. As a matter of fact the Theory of Abstract Object
+does not force @{text "F = G"} for any @{text "F"} or @{text "G"}. It rather tells us what we need
+to prove, if we want to establish that @{text "F = G"}, namely that they are necessarily encoded by
+the same objects. Therefore if we \emph{want} two properties to be equal we have to add an axiom
+to our theory that let's us prove that both properties are encoded by the same abstract objects.
+
+To understand the extend of this \emph{hyperintensionality} of the theory consider that the
+following are \emph{not} necessarily equal in object theory:
+
+\begin{center}
+    @{text "[\<lambda>y p \<or> \<not>p]"} and @{text "[\<lambda>y q \<or> \<not>q]"}\\
+    @{text "[\<lambda>y p & q]"} and @{text "[\<lambda>y q & p]"}
+\end{center}
+
+Of course the theory can be extended in such a way that these properties are equal, namely by
+introducing a new axiom that requires that they are necessarily encoded by the same abstract objects.
+Without additional axioms, however, it is not provable that above properties are equal.
+
+As we will see in the next chapter the hyperintensionality of the theory is a particular challenge
+for the representation of the theory in a shallow embedding.
+
+*}
+  
 section{* The Aczel-Model *}
 
 text{*
+\label{aczel-model}
 
 When thinking about a model for the theory one will quickly notice the following problem:
 The comprehension axiom for abstract objects implies that for each set of properties there
@@ -443,14 +540,45 @@ exists an abstract object, hence there exists an injective map from the power se
 to the set of abstract objects. On the other hand for an object @{text "y"} the term
 @{text "[\<lambda>x Rxy]"} constitutes a property. If for distinct objects these properties were always
 distinct, this would result in a violation of Cantor's theorem, since this would mean that
-there is an injective map from the power set of properties to the set of properties.
-
-
+there is an injective map from the power set of properties to the set of properties. So the question
+is, does the Theory of Abstract Objects as constructed above have a model? An answer was provided
+by Peter Aczel who proposed the model structure illustrated in figure~\ref{aczel-model-graphic}
+(in fact to our knowledge Dana Scott proposed a first model for the theory before Peter Aczel
+that we believe is a special case of an Aczel model).
 
 \begin{figure}[h]
   \caption{Illustration of the Aczel-Model}
   \includegraphics[width=\textwidth]{aczel-model.pdf}
+  \label{aczel-model-graphic}
 \end{figure}
+
+In an Aczel model abstract objects are represented by sets of properties. This of course validates
+the comprehension axiom of abstract objects. Properties on the other hand are not naively represented
+by sets of objects, which would lead to a violation of Cantor's theorem, but rather as the sets of
+\emph{urelements}. Urelements are partitioned into two groups, ordinary urelements
+(@{text "C"} in the illustration) and special urelements (@{text "S"} in the illustration).
+Ordinary urelements can serve as the denotations of the ordinary objects. Every abstract object on
+the other hand has a special urelement as its proxy. Which properties an abstract object exemplifies
+now solely depends on its proxy. Now note that the map from abstract objects to special urelements is
+not injective, so more than one abstract object can share the same proxy. This way a violation of
+Cantor's theorem is avoided. As a consequence there are abstract objects, that are
+exemplification-indistinguishable, though. Interestingly the existence of abstract objects
+that are exemplification-indistinguishable is a theorem the Theory of Abstract Objects, see
+(\ref{PM-aclassical2})@{cite PM}.
+
+Note that although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
+the extension to a modal version is straightforward by introducing primitive possible worlds
+as in the Kripke semantics of modal logic.
+
+Also note that the Aczel-model in figure~\ref{aczel-model-graphic} is \emph{extensional}.
+Since properties are represented as the power set of urelements, two properties are in fact
+equal if they are exemplified by the same objects. This has no bearing on the soundness of the
+Aczel-model as a model for the Theory of Abstract Objects, but it has the consequence, that
+statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model, although they are not
+derivable from the axioms of object theory as explained in the last section.
+
+For this reason we developed an \emph{intensional} variant of an Aczel-model and used it as the
+basis of our embedding. The technicalities of this are described in the next chapter.
 
 *}
   
@@ -462,10 +590,83 @@ text{*
 The background theory for the embedding is Isabelle/HOL, that provides a higher order logic
 that serves as our meta-logic. For a short overview of the extents of the background theory
 see \cite{WhatsInMain}.
+
+TODO: what more to say about Isabelle/HOL?
+
+TODO: overview section? Next section before this section?
+
+TODO: explain color distinction between embedded and meta-logic somewhere.
+
 *}
   
 section{* Basic Concepts *}
-  
+
+text{*
+
+In the introduction we mentioned that shallow semantical embeddings were used to successfully represent
+different varieties of modal logic by implementing them using Kripke semantics. The advantage here
+is that Kripke semantics is well understood and there are extensive results about its completeness
+(TODO: reference).
+
+For the Theory of Abstract Object the situation is different. Although it is believed that
+Aczel-models are sound, we already established in section~\ref{aczel-model} that in the traditional
+Aczel-model theorems are true, that are not derivable from the axioms of object theory.
+
+Although in the following we will construct a variant of an Aczel-model that preserves the
+hyperintensionality of the theory at least to some degree, it is still known that there are
+true theorems in this model that are not derivable from the axioms of object theory. TODO: reference later section.
+
+Given this lack of a model with a well-understood degree of completeness, our embedding uses
+a different approach. Our embedding is devided into several \emph{layers} as follows:
+
+\begin{itemize}
+  \item The first layer represents the primitives of PLM using a hyper-intensional variant of the
+        Aczel-model.
+  \item In a second layer the objects of the embedded logic constructed in the first layer are
+        considered as primitives and some of their semantic properties are derived using the
+        background logic as meta-logic.
+  \item The third layer derives the axiom system of PLM mostly using the semantics of the second
+        layer and partly using the meta-logic directly.
+  \item Based on the third layer the deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM}
+        is derived solely using the axiom system of the third layer and the meta-rules stated
+        in PLM. The meta-logic and the properties of the representation layer are explicitly
+        not used in any proofs. Thereby the reasoning in the third layer is independent of the
+        first two layers.
+\end{itemize}
+
+The reasoning behind this approach is the following:
+The first layer provides a representation of the embedded logic that is provably consistent.
+Only minimal axiomatization is necessary, whereas the main construction is purely definitional.
+Since the subsequent layers don't contain any additional axiomatization (the axiom system in layer three
+is \emph{derived}) their consistency is thereby guaranteed as well.
+
+The second layer tries to abstract from the details of the representation by implementing an
+approximation of the preliminary formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
+us with a preliminary version.}. The long time goal would be to arrive at the representation
+of a complete semantics in this layer, that would be sufficient to derive the axiom system in the
+next layer and which any specific model structure would have to satisfy. Unfortunately we were not
+yet able to achieve this at the moment, but we could lay some foundations for future work.
+
+At the moment full abstraction from the representation layer is only achieved after deriving the axiom
+system in the third layer. Still our reasoning is that in any model of object theory the axiom system
+has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and our
+own model structure directly our derivation of the deductive system PLM should be universal. The only
+exceptions are the primtive meta-rules of PLM: modus ponens, RN (necessitation) and
+GEN (universal generalisation). These rules do not follow from the axiom system itself, but are derived
+from the semantics in the second layer. Still as the corresponding semantical rules will again have to be
+derivable for \emph{any} model, this does not have an impact on the universality of our subsequent reasoning.
+
+There remains one issue, though. Since the logic of PLM is formulated in relational type theory,
+whereas Isabelle/HOL employs functional reasoning there may still be some reservations about
+the accuracy of our representation of the axiom system in the functional setting. This issue is addressed
+in section (TODO: reference).
+
+The next sections will now describe the technical details of our embedding, whereas
+the discussion about the theoretical concept including the underlying model will
+follow in the next chapter. (TODO: reverse this?)
+
+*}
+
 section{* Primitives *}
 
 text{*
