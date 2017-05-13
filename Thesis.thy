@@ -171,7 +171,7 @@ has been shown for early attempts on embedding the theory that despite significa
 to avoid the aforementioned inconsistency by excluding problematic lambda expressions in the embedded
 logic, it could still be reproduced using an appropriate construction in the background logic.
 
-Our solution circumvents this problem by identifying lambda expressions as one element of the
+The employed solution circumvents this problem by identifying lambda expressions as one element of the
 target language that behaves differently than their counterparts in the background logic and
 consequently by representing lambda expressions of the target logic using a new \emph{defined}
 kind of lambda expressions. This forces lambda expressions in the embedded logic to have a particular
@@ -198,27 +198,27 @@ text{*
 
   \begin{itemize}
     \item The second chapter gives an overview of the motivation and structure of
-          the target theory of our embedding, the Theory of Abstract Objects. It also
+          the target theory of the embedding, the Theory of Abstract Objects. It also
           introduces the \emph{Aczel-model} of the theory, that was adapted as the basis
-          for our embedding.
+          for the embedding.
   
     \item The third chapter is a detailed documentation of the concepts and
-          technical structure of our embedding. This chapter references the
+          technical structure of the embedding. This chapter references the
           Isabelle theory that can be found in the appendix.
   
-    \item The fourth chapter discusses the philosophical implications of our embedding
+    \item The fourth chapter discusses the philosophical implications of the embedding
           and its relation to the target theory of PLM. Furthermore it describes 
-          our meta-logical results achieved using the embedding and states interesting
+          the meta-logical results achieved using the embedding and states interesting
           open questions for future research.
   
     \item The last chapter consists of a technical discussion about some issues encountered
-          during the construction of our embedding due to limitations of the logical framework
-          of Isabelle/HOL and our solutions.
+          during the construction of the embedding due to limitations of the logical framework
+          of Isabelle/HOL and the solutions that were employed.
   \end{itemize}
 
   Note that this entire document is generated from an Isabelle theory file and thereby starting
   from the third chapter all formal statements throughout the document are well-formed terms,
-  resp. verified valid theorems in our constructed embedding.
+  resp. verified valid theorems in the constructed embedding.
 *}
 
 chapter{* The Theory of Abstract Objects *}
@@ -326,9 +326,9 @@ semantical embeddings as a universal reasoning tool, but could also serve as the
 the utilization of the theory itself as a foundational theory for various scientific fields by
 enabling convenient interactive and automated reasoning in a verified framework.
 
-Although our embedding revealed certain challenges in this approach and there remain open questions
+Although the embedding revealed certain challenges in this approach and there remain open questions
 for example about the precise relationship between the embedding and the target theory or its soundness
-and completeness, it is safe to say that our work represents a significant step towards achieving this
+and completeness, it is safe to say that it represents a significant step towards achieving this
 goal. 
 
 *}
@@ -376,12 +376,12 @@ text{*
 section{* The Language of PLM *}
   
 text{*
-The target of our embedding is the second order fragment of Object Theory as described
+The target of the embedding is the second order fragment of Object Theory as described
 in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico Metaphysica} (PLM) @{cite PM}.
 The logical foundation of the theory uses a second-order modal logic (without primitive identity)
 formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
 of predication besides the traditional \emph{exemplification}.
-In the following we provide an informal description of the important aspects of the language;
+In the following an informal description of the important aspects of the language is provided;
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
@@ -470,10 +470,9 @@ an actuality operator, axioms for definite descriptions that go along with Russe
 of descriptions, the substitution for identicals as per the defined identity, @{text "\<alpha>"}-,
 @{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
 as dedicated axioms for encoding. For a full accounting of the axioms refer to @{cite \<open>chap. 8\<close> PM}.
-We will refer to some of the subtleties involving the axioms of quantification and
-@{text "\<beta>"}-conversion in more detail in the next chapter while introducing our embedding.
-
-At this point we restrict ourselves to explicitely mentioning the axioms of encoding, namely:
+In the following chapters some of the subtleties involving specific axioms (e.g. the axioms of
+quantification and @{text "\<beta>"}-conversion) are discussed in more detail, at this point the axioms
+of encoding are the most relevant, namely:
 
   \begin{center}
     @{text "xF \<rightarrow> \<box>xF"}\\
@@ -507,10 +506,10 @@ the morning star is different from the concept of being the evening star. The Th
 Object therefore does not prohibit the existence of an abstract object that \emph{encodes} @{text "F"},
 but does \emph{not} encode @{text "G"}. Therefore by the definition of identity for properties
 it does \emph{not} hold that @{text "F = G"}. As a matter of fact the Theory of Abstract Object
-does not force @{text "F = G"} for any @{text "F"} or @{text "G"}. It rather tells us what we need
-to prove, if we want to establish that @{text "F = G"}, namely that they are necessarily encoded by
-the same objects. Therefore if we \emph{want} two properties to be equal we have to add an axiom
-to our theory that let's us prove that both properties are encoded by the same abstract objects.
+does not force @{text "F = G"} for any @{text "F"} or @{text "G"}. It rather stipulates what needs
+to be proven, if @{text "F = G"} is to be established, namely that they are necessarily encoded by
+the same objects. Therefore if two properties \emph{should} equal an axiom has to be added
+to the theory that allows it to prove that both properties are encoded by the same abstract objects.
 
 To understand the extend of this \emph{hyperintensionality} of the theory consider that the
 following are \emph{not} necessarily equal in object theory:
@@ -524,7 +523,7 @@ Of course the theory can be extended in such a way that these properties are equ
 introducing a new axiom that requires that they are necessarily encoded by the same abstract objects.
 Without additional axioms, however, it is not provable that above properties are equal.
 
-As we will see in the next chapter the hyperintensionality of the theory is a particular challenge
+As outlined in the next chapter the hyperintensionality of the theory is a particular challenge
 for the representation of the theory in a shallow embedding.
 
 *}
@@ -577,8 +576,8 @@ Aczel-model as a model for the Theory of Abstract Objects, but it has the conseq
 statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model, although they are not
 derivable from the axioms of object theory as explained in the last section.
 
-For this reason we developed an \emph{intensional} variant of an Aczel-model and used it as the
-basis of our embedding. The technicalities of this are described in the next chapter.
+For this reason an \emph{intensional} variant of the Aczel-model is developed and used as the
+basis of the embedding. The technicalities of this are described in the next chapter.
 
 *}
   
@@ -593,7 +592,7 @@ section{* Background *}
 
 text{*
 The background theory for the embedding is Isabelle/HOL, that provides a higher order logic
-that serves as our meta-logic. For a short overview of the extents of the background theory
+that serves as meta-logic. For a short overview of the extents of the background theory
 see \cite{WhatsInMain}.
 
 TODO: what more to say about Isabelle/HOL?
@@ -608,21 +607,21 @@ section{* Basic Concepts *}
 
 text{*
 
-In the introduction we mentioned that shallow semantical embeddings were used to successfully represent
+The introduction mentioned that shallow semantical embeddings were used to successfully represent
 different varieties of modal logic by implementing them using Kripke semantics. The advantage here
 is that Kripke semantics is well understood and there are extensive results about its completeness
 (TODO: reference).
 
 For the Theory of Abstract Object the situation is different. Although it is believed that
-Aczel-models are sound, we already established in section~\ref{aczel-model} that in the traditional
+Aczel-models are sound, section~\ref{aczel-model} already established that in the traditional
 Aczel-model theorems are true, that are not derivable from the axioms of object theory.
 
-Although in the following we will construct a variant of an Aczel-model that preserves the
+Although in the following a variant of an Aczel-model is constructed that preserves the
 hyperintensionality of the theory at least to some degree, it is still known that there are
 true theorems in this model that are not derivable from the axioms of object theory. TODO: reference later section.
 
-Given this lack of a model with a well-understood degree of completeness, our embedding uses
-a different approach. Our embedding is devided into several \emph{layers} as follows:
+Given this lack of a model with a well-understood degree of completeness, the embedding uses
+a different approach. The embedding is divided into several \emph{layers} as follows:
 
 \begin{itemize}
   \item The first layer represents the primitives of PLM using a hyper-intensional variant of the
@@ -649,24 +648,24 @@ The second layer tries to abstract from the details of the representation by imp
 approximation of the preliminary formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
 us with a preliminary version.}. The long time goal would be to arrive at the representation
 of a complete semantics in this layer, that would be sufficient to derive the axiom system in the
-next layer and which any specific model structure would have to satisfy. Unfortunately we were not
-yet able to achieve this at the moment, but we could lay some foundations for future work.
+next layer and which any specific model structure would have to satisfy. Unfortunately this could not
+be achieved so far, but it was possible to lay some foundations for future work.
 
 At the moment full abstraction from the representation layer is only achieved after deriving the axiom
-system in the third layer. Still our reasoning is that in any model of object theory the axiom system
-has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and our
-own model structure directly our derivation of the deductive system PLM should be universal. The only
+system in the third layer. Still it can be reasoned that in any model of object theory the axiom system
+has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and the
+model structure directly the derivation of the deductive system PLM should be universal. The only
 exceptions are the primtive meta-rules of PLM: modus ponens, RN (necessitation) and
 GEN (universal generalisation). These rules do not follow from the axiom system itself, but are derived
 from the semantics in the second layer. Still as the corresponding semantical rules will again have to be
-derivable for \emph{any} model, this does not have an impact on the universality of our subsequent reasoning.
+derivable for \emph{any} model, this does not have an impact on the universality of the subsequent reasoning.
 
 There remains one issue, though. Since the logic of PLM is formulated in relational type theory,
 whereas Isabelle/HOL employs functional reasoning there may still be some reservations about
-the accuracy of our representation of the axiom system in the functional setting. This issue is addressed
+the accuracy of the representation of the axiom system in the functional setting. This issue is addressed
 in section (TODO: reference).
 
-The next sections will now describe the technical details of our embedding, whereas
+The next sections will now describe the technical details of the embedding, whereas
 the discussion about the theoretical concept including the underlying model will
 follow in the next chapter. (TODO: reverse this?)
 
@@ -722,7 +721,7 @@ Based on the primitive types above the following types are defined (see \ref{TAO
   \item Type @{type \<kappa>} is defined as the set of all objects of type @{typ "\<nu> option"} and
         represents individual terms. The type @{typ "'a option"} is part of Isabelle/HOL and
         consists of a type constructor @{term "Some x"} for an object @{term "x"} of type @{typ 'a}
-        (in our case type @{type \<nu>}) and an additional special element called @{term "None"}.
+        (in this case type @{type \<nu>}) and an additional special element called @{term "None"}.
         @{term "None"} is used to represent individual terms that are definite descriptions
         that are not logically proper (i.e. they do not denote an individual).
 \end{itemize}

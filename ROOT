@@ -5,8 +5,8 @@ session "TAO" = "HOL" +
     "~~/src/HOL/Eisbach/Eisbach_Tools"
   theories
 	TAO_1_Embedding
-	TAO_2_BasicDefinitions
-	TAO_3_Semantics
+	TAO_2_Semantics
+	TAO_3_BasicDefinitions
 	TAO_4_MetaSolver
 	TAO_5_Quantifiable
 	TAO_6_Identifiable
@@ -50,8 +50,8 @@ session "Thesis" = "HOL" +
   options [document = pdf, document_output = "thesis", show_question_marks = false, names_short = true]
   theories
 	TAO_1_Embedding
-	TAO_2_BasicDefinitions
-	TAO_3_Semantics
+	TAO_2_Semantics
+	TAO_3_BasicDefinitions
 	TAO_4_MetaSolver
 	TAO_5_Quantifiable
 	TAO_6_Identifiable

@@ -1,5 +1,5 @@
 (*<*)
-theory TAO_2_BasicDefinitions
+theory TAO_3_BasicDefinitions
 imports TAO_1_Embedding
 begin
 (*>*)
