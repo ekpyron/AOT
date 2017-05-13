@@ -13,26 +13,26 @@ definition embedded_style where "embedded_style \<equiv> id"
 lemma embedded_def: "A = B \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
 notation (latex output)
   embedded_style ("\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>")
-notation (latex output)
-  make\<kappa> ("")
-notation (latex output)
-  make\<o> ("")
-notation (latex output)
-  make\<Pi>\<^sub>1 ("")
-notation (latex output)
-  make\<Pi>\<^sub>2 ("")
-notation (latex output)
-  make\<Pi>\<^sub>3 ("")
-notation (latex output)
-  eval\<kappa> ("")
-notation (latex output)
-  eval\<o> ("")
-notation (latex output)
-  eval\<Pi>\<^sub>1 ("")
-notation (latex output)
-  eval\<Pi>\<^sub>2 ("")
-notation (latex output)
-  eval\<Pi>\<^sub>3 ("")
+translations
+  "x" <= "CONST make\<kappa> x"
+translations
+  "p" <= "CONST make\<o> p"
+translations
+  "p" <= "CONST make\<Pi>\<^sub>1 p"
+translations
+  "p" <= "CONST make\<Pi>\<^sub>2 p"
+translations
+  "p" <= "CONST make\<Pi>\<^sub>3 p"
+translations
+  "x" <= "CONST eval\<kappa> x"
+translations
+  "p" <= "CONST eval\<o> p"
+translations
+  "p" <= "CONST eval\<Pi>\<^sub>1 p"
+translations
+  "p" <= "CONST eval\<Pi>\<^sub>2 p"
+translations
+  "p" <= "CONST eval\<Pi>\<^sub>3 p"
 notation (latex output)
   that ("\<^bold>\<iota>x . _ x")
 notation (latex output)
@@ -582,7 +582,12 @@ basis of our embedding. The technicalities of this are described in the next cha
 
 *}
   
-chapter{* Embedding *}
+chapter{* The Embedding *}
+  
+text{*
+\epigraph{TODO}{Maybe skip the epigraph here.}
+*}
+
 
 section{* Background *}
 
@@ -667,15 +672,16 @@ follow in the next chapter. (TODO: reverse this?)
 
 *}
 
-section{* Primitives *}
+section{* The Representation Layer *}
+subsection{* Primitives *}
 
 text{*
-The following primitive types are the basis of the embedding:
+The following primitive types are the basis of the embedding (see \ref{TAO_Embedding_Primitives}):
 
 \begin{itemize}
   \item Type @{type i} represents possible worlds in the Kripke semantics.
   \item Type @{type j} represents \emph{states} that are used for different interpretations
-        of relations and connectives to achieve a hyper-intensional logic (see below).
+        of relations and connectives to achieve a hyper-intensional logic (see below TODO: reference).
   \item Type @{type bool} represents meta-logical truth values (@{text "True"} or @{text "False"})
         and is inherited from Isabelle/HOL.
   \item Type @{type \<omega>} represents ordinary urelements.
@@ -689,7 +695,7 @@ Two constants are introduced:
   \item The constant @{term dj} of type @{typeof dj} represents the designated actual state.
 \end{itemize}
 
-Based on the primitive types above the following types are defined:
+Based on the primitive types above the following types are defined (see \ref{TAO_Embedding_Derived_Types}):
 
 \begin{itemize}
   \item Type @{type \<o>} is defined as the set of all functions of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} and
@@ -722,10 +728,10 @@ Based on the primitive types above the following types are defined:
 \end{itemize}
 
 \begin{remark}
-  The Isabelle syntax @{text "typedef \<o> = UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set morphisms eval\<o> make\<o> .."}
-  introduces a new abstract type @{type \<o>} that is represented by the full set (@{term UNIV})
-  of objects of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. The morphism @{text "eval\<o>"} maps an object of
-  abstract type @{type \<o>} to its representative of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}, whereas 
+  The Isabelle syntax @{theory_text "typedef \<o> = UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set morphisms eval\<o> make\<o> .."}
+  found in the theory source in the appendix introduces a new abstract type @{type \<o>} that is represented
+  by the full set (@{term UNIV})   of objects of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. The morphism @{text "eval\<o>"} maps
+  an object of abstract type @{type \<o>} to its representative of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}, whereas 
   the morphism @{text "make\<o>"} maps an object of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} to the object
   of type @{type \<o>} that is represented by it. Defining these abstract types makes it
   possible to consider the defined types as primitives in later stages of the embedding,
@@ -733,9 +739,9 @@ Based on the primitive types above the following types are defined:
   For a theoretical analysis of the representation layer the type @{type \<o>} can be considered
   a synonym of @{typ "j\<Rightarrow>i\<Rightarrow>bool"}.
 
-  The Isabelle syntax @{text "setup_lifting type_definition_\<o>"} allows definitions for the
+  The Isabelle syntax @{theory_text "setup_lifting type_definition_\<o>"} allows definitions for the
   abstract type @{type \<o>} to be stated directly for its representation type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}
-  using the syntax @{text "lift_definition"}.
+  using the syntax @{theory_text "lift_definition"}.
 
   In the remainder of this document these morphisms are omitted and definitions are stated
   directly for the representation types.
@@ -743,16 +749,17 @@ Based on the primitive types above the following types are defined:
 
 *}
 
-section{* Individual Terms and Definite Descriptions *}
+subsection{* Individual Terms and Definite Descriptions *}
 
 text{*
 There are two basic types of individual terms in PLM: definite descriptions and individual variables.
 For any logically proper definite description there is an individual variable that denotes
-the same object.
+the same object. A definite description is logically proper if its matrix is true for a unique
+object.
 
 In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e. individual variables
-\emph{and} definite descriptions. To use a pure individual variable (of type @{type \<nu>}) as an
-object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced:
+\emph{and} definite descriptions. To use an individual variable (of type @{type \<nu>}) as in place of
+an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced (see \ref{TAO_Embedding_IndividualTerms}):
 
 @{thm[display] \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_def]}
 
@@ -767,7 +774,7 @@ It is now possible to define definite descriptions as follows:
 If the propriety condition of a definite description @{prop "\<exists>!x. \<phi> x dj dw"} holds,
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
 the actual world}, the term @{term "\<^bold>\<iota>x . \<phi> x"} is represented by @{term "Some (THE x . \<phi> x dj dw)"}.
-Isabelle's \emph{THE} operator evaluates to the unique object, for which the given condition holds,
+Isabelle's @{theory_text THE} operator evaluates to the unique object, for which the given condition holds,
 if there is a unique such object, and is undefined otherwise. If the propriety condition does not hold,
 the term is represented by @{term "None"}.
 
@@ -783,53 +790,39 @@ The following meta-logical functions are defined to aid in handling individual t
 the expression @{term "rep x"} evaluates to the individual of type @{type \<nu>} that the term denotes.
 *}
 
-section{* Mapping from abstract objects to special Urelements *}
+subsection{* Mapping from Individuals to Urelements *}
 
 text{*
 To map abstract objects to urelements (for which relations can be evaluated), a constant
 @{term \<alpha>\<sigma>} of type @{typeof \<alpha>\<sigma>} is introduced, which maps abstract objects (of type @{type \<alpha>})
-to special urelements (of type @{type \<sigma>}).
+to special urelements (of type @{type \<sigma>}), see \ref{TAO_Embedding_AbstractObjectsToSpecialUrelements}.
 
 To assure that every object in the full domain of urelements actually is an urelement for (one or more)
 individual objects, the constant @{term \<alpha>\<sigma>} is axiomatized to be surjective.
 
+Now the mapping @{term "\<nu>\<upsilon>"} of type @{typeof "\<nu>\<upsilon>"} can be defined as follows:
+
+@{thm[display] \<nu>\<upsilon>_def[atomize]}
+
+To understand the syntax note that this is equivalent to the following:
+
+@{lemma[display] "(\<forall> x . \<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x) \<and> (\<forall> x . \<nu>\<upsilon> (\<alpha>\<nu> x) = \<sigma>\<upsilon> (\<alpha>\<sigma> x))" by (simp add: \<nu>\<upsilon>_def)}
+
+So ordinary objects are simply converted to an urelements by the type constructor
+@{term "\<omega>\<upsilon>"} for ordinary urelements, whereas for abstract objects the corresponding
+special urelement under @{text "\<alpha>\<sigma>"} is converted to an urelement by the type constructor
+@{term "\<sigma>\<upsilon>"} for special urelements.
+
 *}
 
-section{* Conversion between objects and Urelements *}
-(*
-text{*
-
-In order to represent relation exemplification as the function application of the meta-logical
-representative of a relation, individual variables have to be converted to urelements (see below).
-In order to define lambda expressions the inverse mapping is defined as well:
-
-@{thm[display] \<nu>\<upsilon>_def}
-
-@{thm[display] \<upsilon>\<nu>_def}
-
-\begin{remark}
-  The Isabelle notation @{term "case_\<nu>"} is used to define a function acting on objects of type
-  @{type \<nu>} using the underlying types @{type \<omega>} and @{type \<alpha>}. Every object of type @{type \<nu>}
-  is (by definition) either of the form @{term "\<omega>\<nu> x"} or of the form @{term "\<alpha>\<nu> x"}.
-  The expression @{term "case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>)"} for an argument @{term "y"} now evaluates to
-  @{term "\<omega>\<upsilon> x"} if @{term "y"} is of the form @{term "\<omega>\<nu> x"} and to @{term "(\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>) x"}
-  (i.e. @{term "\<sigma>\<upsilon> (\<alpha>\<sigma> x)"}) if @{term "y"} is of the form @{term "\<alpha>\<nu> x"}.
-
-  In the definition of @{term "\<upsilon>\<nu>"} the expression @{term "inv \<alpha>\<sigma>"} is part of the logic of
-  Isabelle/HOL and defined as some (arbitrary) object in the preimage under @{term \<alpha>\<sigma>}, i.e. it
-  holds that @{lemma "\<alpha>\<sigma> ((inv \<alpha>\<sigma>) x) = x" by (simp add: \<alpha>\<sigma>_surj surj_f_inv_f)},
-  as @{term \<alpha>\<sigma>} is axiomatized to be surjective.
-\end{remark}
-*}
-*)
-section{* Exemplification of n-place relations *}
+subsection{* Exemplification of n-place relations *}
 
 text{*
   Exemplification of n-place relations can now be defined. Exemplification of zero-place
   relations is simply defined as the identity, whereas exemplification of n-place relations
   for @{text "n \<ge> 1"} is defined to be true, if all individual terms are logically proper and
   the function application of the relation to the urelements corresponding to the individuals
-  yields true for a given possible world and state:
+  yields true for a given possible world and state (see \ref{TAO_Embedding_Exemplification}):
   \begin{itemize}
     \item @{thm[display] exe0.rep_eq[where x=p, THEN embedded_def]}
     \item @{thm[display] exe1.rep_eq[where x=F and xa=x, THEN embedded_def]}
@@ -838,10 +831,10 @@ text{*
   \end{itemize}
 *}
 
-section{* Encoding *}
+subsection{* Encoding *}
 
 text{*
-  Encoding can now be defined as follows:
+  Encoding can now be defined as follows (see \ref{TAO_Embedding_Encoding}):
 
   @{thm enc.rep_eq[of x F, THEN embedded_def]}
 
@@ -851,18 +844,19 @@ text{*
   some abstract object @{term \<alpha>} and @{term F} is contained in @{term \<alpha>} (remember that
   abstract objects are defined to be sets of one-place relations). Also note that encoding
   is a represented as a function of possible worlds and states to ensure type-correctness,
-  but its evaluation does not depend on either.
+  but its evaluation does not depend on either. On the other hand whether @{term F} is contained
+  in @{term \<alpha>} actually does depend on the behavior of @{term F} in \emph{all} states.
 *}
 
-section{* Connectives and Quantifiers *}
+subsection{* Connectives and Quantifiers *}
 
 text{*
   The reason to make truth values depend on the additional primitive type of \emph{states}
-  is to achieve hyper-intensionality. The connectives and quantifiers are defined in such a
+  is to achieve hyper-intensionality (see TODO: reference). The connectives and quantifiers are defined in such a
   way that they behave classically if evaluated for the designated actual state @{term "dj"},
   whereas their behavior is governed by uninterpreted constants in any other state.
 
-  For this purpose the following uninterpreted constants are introduced:
+  For this purpose the following uninterpreted constants are introduced (see \ref{TAO_Embedding_Connectives}):
   \begin{itemize}
     \item @{const I_NOT} of type @{typeof I_NOT}
     \item @{const I_IMPL} of type @{typeof I_IMPL}
@@ -871,7 +865,8 @@ text{*
   Modality is represented using the dependency on primitive possible worlds using
   a standard Kripke semantics for a S5 modal logic.
 
-  The basic connectives and quantifiers are now defined as follows:
+  The basic connectives and quantifiers are now defined as follows
+  (see \ref{TAO_Embedding_Connectives}):
   \begin{itemize}
     \item @{thm[display] not.rep_eq[of p, THEN embedded_def]}
     \item @{thm[display] impl.rep_eq[of p q, THEN embedded_def]}
@@ -887,21 +882,43 @@ text{*
   Note in particular that the definition of negation and implication behaves
   classically if evaluated for the actual state @{term "s = dj"}, but
   is governed by the uninterpreted constants @{term I_NOT} and @{term I_IMPL} for
-  @{term "s \<noteq> dj"}.
-*}
+  @{term "s \<noteq> dj"}:
 
-section{* Lambda Expressions *}
-(*
+  \begin{itemize}
+  \item @{lemma[display] "s = dj \<longrightarrow> eval\<o> (embedded_style (\<^bold>\<not>p)) s w = (\<not>eval\<o> (embedded_style (p)) s w)"
+          by (unfold embedded_style_def, transfer, auto)}
+  \item @{lemma "s \<noteq> dj \<longrightarrow> eval\<o> (embedded_style (\<^bold>\<not>p)) s w = (I_NOT (eval\<o> (embedded_style (p))) s w)"
+          by (unfold embedded_style_def, transfer, auto)}
+  \item @{lemma[display] "s = dj \<longrightarrow> eval\<o> (embedded_style (p \<^bold>\<rightarrow> q)) s w = (eval\<o> (embedded_style p) s w \<longrightarrow> eval\<o> (embedded_style q) s w)"
+          by (unfold embedded_style_def, transfer, auto)}
+  \item @{lemma "s \<noteq> dj \<longrightarrow> eval\<o> (embedded_style (p \<^bold>\<rightarrow> q)) s w = (I_IMPL (eval\<o> (embedded_style p)) (eval\<o> (embedded_style q)) s w)"
+          by (unfold embedded_style_def, transfer, auto)}
+  \end{itemize}
+
+  \begin{remark}
+    It may be that non-classical behavior in states @{term "s \<noteq> dj"}
+    for negation and implication is found not to be sufficient for achieving the
+    desired level of hyperintensionality. It would be trivial to introduce additional
+    uninterpreted constants to govern the behavior of the remaining connectives and quantifiers
+    in such states as well, though. The remainder of the embedding would not be affected, i.e.
+    no assumption about the behavior of connectives and quantifiers in states other than @{term "dj"}
+    is made in the subsequent reasoning.
+  \end{remark}
+
+*}
+  
+subsection{* Lambda Expressions *}
+
 text{*
   The bound variables of the lambda expressions of the embedded logic are individual
   variables, whereas relations are represented as functions acting on urelements.
-  Therefore the lambda expressions of the embedded logic are defined as follows:
+  Therefore the lambda expressions of the embedded logic are defined as follows (see \ref{TAO_Embedding_Lambda}):
 
   \begin{itemize}
     \item @{thm[display] lambdabinder0.rep_eq[of p, THEN embedded_def]}
     \item @{thm[display] lambdabinder1.rep_eq[of \<phi>, THEN embedded_def]}
-    \item @{thm[display] lambdabinder2.rep_eq[of \<phi>, THEN embedded_def]}
-    \item @{thm[display] lambdabinder3.rep_eq[of \<phi>, THEN embedded_def]}
+    \item @{thm[display, eta_contract=false] lambdabinder2.rep_eq[of "\<lambda> x y . \<phi> x y", THEN embedded_def]}
+    \item @{thm[display, eta_contract=false] lambdabinder3.rep_eq[of "\<lambda> x y z . \<phi> x y z", THEN embedded_def]}
   \end{itemize}
 
 \begin{remark}
@@ -912,87 +929,86 @@ text{*
 \end{remark}
 
   The representation of zero-place lambda expressions as the identity is straight-forward,
-  the representation of n-place lambda expressions for @{text "n \<ge> 1"} is illustrated
-  for the case @{text "n = 1"}:
+  the representation of n-place lambda expressions for \mbox{@{text "n \<ge> 1"}} is illustrated
+  for the case \mbox{@{text "n = 1"}}:
 
-  The matrix of the lambda expression @{term \<phi>} is a function from individual variables
+  The matrix of the lambda expression @{term "embedded_style \<phi>"} is a function from individuals
   (of type @{type \<nu>}) to truth values (of type @{type \<o>}, resp. @{typ "j\<Rightarrow>i\<Rightarrow>bool"}).
   One-place relations are represented as functions of type @{typ "\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool"}, though,
   where @{type \<upsilon>} is the type of urelements.
 
   The evaluation of a lambda expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u}
-  therefore has to be defined as @{term "\<phi> (\<upsilon>\<nu> u)"}. Remember that @{term "\<upsilon>\<nu>"} maps an urelement
-  to some (arbitrary) individual variable in its preimage. Note that this mapping is injective
-  only for ordinary objects, not for abstract objects. The expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"}
-  only implies \emph{being @{text "x"}, such that there exists some @{text "y"} that is mapped
-  to the same urelement as @{text "x"}, and it holds that @{text "\<phi> y"}}.
-  Conversely, only \emph{for all @{text "y"} that are mapped to the same
-  urelement as @{text "x"} it holds that @{text "\<phi> y"}} is a sufficient condition to conclude
-  that @{text "x"} exemplifies @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"}.
-  \begin{remark}
-    Formally the following statements hold, where @{term "[p in v]"} is the evaluation
-    of the formula @{term "embedded_style p"} in the embedded logic to its meta-logical representation for
-    a possible world @{text v} (and the actual state @{term dj}, for details refer to the next
-    subsection):
+  (and a state @{term s} and a possible world @{term w}) is therefore defined as follows:
 
-    \begin{itemize}
-      \item @{thm SanityTests.lambda_impl_meta}
-      \item @{thm SanityTests.meta_impl_lambda}
-    \end{itemize}
-  \end{remark}
-
-  Principia defines lambda expressions only for propositional formulas, though, i.e.
-  for formulas that do \emph{not} contain encoding subformulas. The only other kind
-  of formulas in which the bound variable @{term x} could be used in the matrix @{term \<phi>},
-  however, are exemplication subformulas, which are defined to only depend on urelmements.
-  Consider the following simple lambda-expression and the evaluation to its meta-logical
-  representation:
-  
-  @{lemma[display] "embedded_style (\<^bold>\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>) = make\<Pi>\<^sub>1 (\<lambda>u w s. eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> (\<upsilon>\<nu> u)) w s)"
+  @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) u s w = (\<exists> x . \<nu>\<upsilon> x = u \<and> eval\<o> (embedded_style (\<phi> x)) s w)"
     by (simp add: embedded_style_def meta_defs meta_aux)}
 
-  Further note that the following identity holds: \mbox{@{lemma "\<nu>\<upsilon> (\<upsilon>\<nu> u) = u" by (simp add: \<nu>\<upsilon>_\<upsilon>\<nu>_id)}}
-  and therefore \mbox{@{lemma "embedded_style (\<^bold>\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>) = F" by (simp add: embedded_style_def meta_defs meta_aux)}}, as desired.
+  Note that @{term "\<nu>\<upsilon>"} is bijective for ordinary objects and therefore:
 
-  Therefore the defined lambda-expressions can accurately represent the lambda-expressions of the
-  Principia. However the embedding still allows for lambda expressions that contain encoding
-  subformulas. @{term "embedded_style \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P, F\<rbrace>, y\<^sup>P\<rparr>"} does \emph{not} imply
-  @{term "embedded_style \<lbrace>y\<^sup>P, F\<rbrace>"}, but only that
-  there exists an abstract object @{term z}, that is mapped to the same urelement as @{term x}
-  and it holds that @{text "embedded_style \<lbrace>z\<^sup>P, F\<rbrace>"}. The former would lead to well-known
-  inconsistencies, which the latter avoids.
+  @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) (\<omega>\<upsilon> u) s w = eval\<o> (embedded_style (\<phi>) (\<omega>\<nu> u)) s w"
+    by (simp add: embedded_style_def meta_defs meta_aux, metis \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.inject(1) no_\<alpha>\<omega>)}
+
+  For abstract objects the same is only true, if @{term "\<phi>"} is \emph{proper} in its argument, i.e.
+  it does not contain an encoding formula in its argument. This is guaranteed by the meta-logical predicate
+  @{term "IsProperInX"} that is introduced with the semantics (see TODO: reference in this chapter, \ref{TAO_Semantics_Proper}).
+  Using this meta-logical predicate the expected behavior of lambda expression can be shown:
+
+  @{lemma "IsProperInX \<phi> \<longleftrightarrow> (\<forall> w x . eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> (x\<^sup>P))) (\<nu>\<upsilon> x) dj w = eval\<o> (embedded_style (\<phi> (x\<^sup>P))) dj w)"
+    by (auto simp: embedded_style_def meta_defs meta_aux IsProperInX_def)}
 
   \begin{remark}
-    Formally the following statements are true:
-    \begin{itemize}
-      \item @{thm[display] ArtificialTheorems.lambda_enc_4}
-      \item @{thm[display] ArtificialTheorems.lambda_enc_5}
-    \end{itemize}
+    Note that the above equation does not quantify over all states, but is only true for the actual state @{term "dj"}.
+    This is sufficient given that truth evaluation only depends on the actual state (see TODO: reference)
+    and goes along with the desired semantics of lambda expressions (see TODO: reference).
   \end{remark}
 
+  Therefore the defined lambda-expressions can accurately represent the lambda-expressions of the
+  Principia. However the embedding still assigns a denotation to lambda expressions that contain encoding
+  formulas in the bound variable, i.e. \emph{improper} lambda expressions.
+  @{term "embedded_style \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P, F\<rbrace>, y\<^sup>P\<rparr>"} does \emph{not} imply
+  @{term "embedded_style \<lbrace>y\<^sup>P, F\<rbrace>"}, though, but only that
+  there exists an abstract object @{term z}, that is mapped to the same urelement as @{term y}
+  and it holds that @{text "embedded_style \<lbrace>z\<^sup>P, F\<rbrace>"}. The former would lead to well-known
+  inconsistencies, which the latter avoids. (TODO: reference)
+
+  \begin{remark}
+    Formally the following statements are true (the first formulation uses the metalogical concept
+    of sharing an urelement, the second formulation expresses the same notion by being materially
+    equivalent and can be formulated entirely in the embedded logic, TODO reference to appendix):
+    \begin{itemize}
+      \item @{thm[display] ArtificialTheorems.lambda_enc_4}
+      \item @{thm[display] ArtificialTheorems.lambda_ex_emb}
+    \end{itemize}
+
+    For details about the not yet introduced validity syntax and the defined connectives and quantifiers
+    see (TODO: reference).
+  \end{remark}
+
+  TODO: mention this here or someplace else?
   An example of a statement containing lambda-expressions that contain encoding subformulas
   that becomes derivable using the meta-logic is the following:
 
-  @{lemma "[\<^bold>\<forall> F y . \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>, y\<^sup>P\<rparr> in v]" by (simp add: meta_aux meta_defs conn_defs forall_\<nu>_def forall_\<Pi>\<^sub>1_def)}
-
+  @{lemma "[\<^bold>\<forall> F y . \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>, y\<^sup>P\<rparr> in v]"
+    by (auto simp: meta_aux meta_defs conn_defs forall_\<nu>_def forall_\<Pi>\<^sub>1_def)}
 *}
-*)
-section{* Validity *}
+ 
+
+subsection{* Validity *}
 
 text{*
   A formula is considered semantically valid for a possible world @{term v} if it evaluates
   to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
-  Semantic validity is defined as follows:
+  Semantic validity is defined as follows (see \ref{TAO_Embedding_Validity}):
   
-    @{thm[display] valid_in.rep_eq[of v \<phi>]}
+    @{thm[display] valid_in.rep_eq[of v "embedded_style \<phi>"]}
   
   This way the truth evaluation of a proposition only depends on the evaluation of its representation
   for the actual state @{term dj}. Remember that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
-  evaluation \emph{does} depend on all states are formulas containing encoding subformulas.
+  evaluation \emph{does} depend on all states are formulas containing encoding expressions.
 *}
 
-section{* Concreteness *}
+subsection{* Concreteness *}
 
 text{*
   Principia defines concreteness as a one-place relation constant. For the embedding care has to
@@ -1019,19 +1035,19 @@ text{*
   In order to satisfy these requirements a constant @{const ConcreteInWorld} is introduced,
   that maps ordinary objects (of type @{type \<omega>}) and possible worlds (of type @{type i})
   to meta-logical truth values (of type @{type bool}). This constant is axiomatized in the
-  following way:
+  following way (see \ref{TAO_Embedding_Concreteness}):
   \begin{itemize}
     \item @{thm OrdinaryObjectsPossiblyConcreteAxiom}
     \item @{thm PossiblyContingentObjectExistsAxiom}
     \item @{thm PossiblyNoContingentObjectExistsAxiom}
   \end{itemize}
 
-  Concreteness can now be defined as a one-place relation:
+  Concreteness can now be defined as a one-place relation (see \ref{TAO_Embedding_Concreteness}):
 
   @{thm[display] Concrete.rep_eq[THEN embedded_def]}
 
   The equivalence of the axioms stated in the meta-logic and the notion of concreteness in Principia
-  can now be verified:
+  can now be verified (see \ref{TAO_SanityTests_MetaAxioms}):
 
   \begin{itemize}
     \item @{thm[display] SanityTests.OrdAxiomCheck[rename_abs x v y u z z]}

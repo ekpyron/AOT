@@ -12,8 +12,6 @@ text{* \label{TAO_Embedding_Primitives} *}
 
 typedecl i --{* possible worlds *}
 typedecl j --{* states *}
-typedef \<o> = "UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<o> make\<o> .. --{* truth values *}
 
 consts dw :: i --{* actual world *}
 consts dj :: j --{* actual state *}
@@ -21,6 +19,12 @@ consts dj :: j --{* actual state *}
 typedecl \<omega> --{* ordinary objects *}
 typedecl \<sigma> --{* special urelements *}
 datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> --{* urelements *}
+
+subsection{* Derived Types *}
+text{* \label{TAO_Embedding_Derived_Types} *}
+
+typedef \<o> = "UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set"
+  morphisms eval\<o> make\<o> .. --{* truth values *}
 
 type_synonym \<Pi>\<^sub>0 = \<o> --{* zero place relations *}
 typedef \<Pi>\<^sub>1 = "UNIV::(\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
@@ -34,17 +38,17 @@ type_synonym \<alpha> = "\<Pi>\<^sub>1 set" --{* abstract objects *}
 
 datatype \<nu> = \<omega>\<nu> \<omega> | \<alpha>\<nu> \<alpha> --{* individuals *}
 
+typedef \<kappa> = "UNIV::(\<nu> option) set"
+  morphisms eval\<kappa> make\<kappa> .. --{* individual terms *}
+
 setup_lifting type_definition_\<o>
+setup_lifting type_definition_\<kappa>
 setup_lifting type_definition_\<Pi>\<^sub>1
 setup_lifting type_definition_\<Pi>\<^sub>2
 setup_lifting type_definition_\<Pi>\<^sub>3
 
 subsection{* Individual Terms and Definite Descriptions *}
 text{* \label{TAO_Embedding_IndividualTerms} *}
-
-typedef \<kappa> = "UNIV::(\<nu> option) set" morphisms eval\<kappa> make\<kappa> ..
-
-setup_lifting type_definition_\<kappa>
 
 text{*
 \begin{remark}
@@ -86,15 +90,11 @@ text{*
 \end{remark}
 *}
 
-subsection{* Mapping from abstract objects to special urelements *}
+subsection{* Mapping from objects to urelements *}
 text{* \label{TAO_Embedding_AbstractObjectsToSpecialUrelements} *}
 
 consts \<alpha>\<sigma> :: "\<alpha>\<Rightarrow>\<sigma>"
 axiomatization where \<alpha>\<sigma>_surj: "surj \<alpha>\<sigma>"
-
-subsection{* Conversion between objects and urelements *}
-text{* \label{TAO_IndToUr} *}
-
 definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsilon> \<equiv> case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>)"
 
 subsection{* Exemplification of n-place relations. *}
@@ -158,7 +158,7 @@ lift_definition forall\<^sub>\<o> :: "(\<o>\<Rightarrow>\<o>)\<Rightarrow>\<o>" 
 lift_definition box :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<box>_" [62] 63) is
   "\<lambda> p s w . \<forall> v . p s v" .
 lift_definition actual :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<A>_" [64] 65) is
-  "\<lambda> p s w . p dj dw" .
+  "\<lambda> p s w . p s dw" .
 
 text{*
 \begin{remark}
@@ -261,8 +261,13 @@ text{*
 \end{remark}
 *}
 
-subsection{* Automation *}
-text{* \label{TAO_Embedding_Automation} *}
+subsection{* Collect Meta-Definitions *}
+text{* \label{TAO_Embedding_meta_defs} *}
+
+text{*
+  The meta-logical definitions are collected with the
+  theorem attribute @{text "meta_defs"}.
+*}
 
 named_theorems meta_defs
 
@@ -283,6 +288,12 @@ declare [[unify_search_bound = 40]] (* prevent unification bound errors *)
 subsection{* Auxiliary Lemmata *}
 text{* \label{TAO_Embedding_Aux} *}
 
+text{*
+Some auxiliary lemmata are proven to make reasoning in the
+meta-logic easier. These auxiliary lemmata are collected
+using the theorem attribute @{text "meta_aux"}.
+*}
+  
 named_theorems meta_aux
 
 declare make\<kappa>_inverse[meta_aux] eval\<kappa>_inverse[meta_aux]

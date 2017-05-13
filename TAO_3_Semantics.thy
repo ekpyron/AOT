@@ -1,14 +1,14 @@
 (*<*)
 theory TAO_3_Semantics
-imports TAO_1_Embedding TAO_2_BasicDefinitions "~~/src/HOL/Eisbach/Eisbach"
+imports TAO_1_Embedding "~~/src/HOL/Eisbach/Eisbach"
 begin
 (*>*)
 
 section{* Semantics *}
 text{* \label{TAO_Semantics} *}
 
-subsection{* Propositional Formulas *}
-text{* \label{TAO_Semantics_Propositional} *}
+subsection{* Proper Formulas *}
+text{* \label{TAO_Semantics_Proper} *}
 
 text{*
 \begin{remark}

@@ -169,7 +169,7 @@ text{*
 
 text{*
 \begin{remark}
-  Material equivalent relations are equal in the embedded logic
+  Materially equivalent relations are equal in the embedded logic
   if and only if they also coincide in all other states.
 \end{remark}
 *}
