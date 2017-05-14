@@ -49,6 +49,22 @@ notation (latex output)
   lambdabinder1 ("\<^bold>\<lambda>x. _ x")
 translations
   (type) "\<alpha>" <= (type) "\<Pi>\<^sub>1 set"
+(* auxiliary lemmata and attributes to aid in pretty printing *)
+lemma expand_def1: "p \<equiv> q \<Longrightarrow> (\<And>x . p x = q x)" by simp
+lemma expand_def2: "p \<equiv> q \<Longrightarrow> (\<And>x y . p x y = q x y)" by simp
+lemma expand_def3: "p \<equiv> q \<Longrightarrow> (\<And>x y z . p x y z = q x y z)" by simp
+attribute_setup expand1 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def1}))
+*}
+attribute_setup expand2 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def2}))
+*}
+attribute_setup expand3 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def3}))
+*}
 (*>*)
   
 (* abstract in thesis/root.tex *)
@@ -1058,6 +1074,14 @@ text{*
   for the actual state @{term dj}. Remember that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
   evaluation \emph{does} depend on all states are formulas containing encoding expressions.
+
+  \begin{remark}
+    The Isabelle Theory in the appendix defines the syntax @{text "v \<Turnstile> p"} in the representation
+    layer, as this is the syntax used in the preliminary formal semantics of PLM.
+    The syntax @{term "[p in v]"} that is easier to use in Isabelle due to bracketing the expression
+    is only introduced after the semantics is derived in \ref{TAO_Semantics_Validity}.
+    For simplicity only the latter syntax is used in this document.
+  \end{remark}
 *}
 
 subsection{* Concreteness *}
@@ -1194,26 +1218,13 @@ TODO: talk about scopes?
 TODO: constants vs. variables.
 
 *}
-  
-section{* Semantical Abstraction *}
 
 (*<*)
-lemma expand_def1: "p \<equiv> q \<Longrightarrow> (\<And>x . p x = q x)" by simp
-lemma expand_def2: "p \<equiv> q \<Longrightarrow> (\<And>x y . p x y = q x y)" by simp
-lemma expand_def3: "p \<equiv> q \<Longrightarrow> (\<And>x y z . p x y z = q x y z)" by simp
-attribute_setup expand1 = {*
-  Scan.succeed (Thm.rule_attribute [] 
-    (fn _ => fn thm => thm RS @{thm expand_def1}))
-*}
-attribute_setup expand2 = {*
-  Scan.succeed (Thm.rule_attribute [] 
-    (fn _ => fn thm => thm RS @{thm expand_def2}))
-*}
-attribute_setup expand3 = {*
-  Scan.succeed (Thm.rule_attribute [] 
-    (fn _ => fn thm => thm RS @{thm expand_def3}))
-*}
+context Semantics
+begin
 (*>*)
+
+section{* Semantical Abstraction *}
   
 text{*
 
@@ -1228,8 +1239,8 @@ subsection{* Domains and Denotation Functions *}
 text{*
 In order to do so the abstract types introduced in the representation layer
 @{typ \<kappa>}, @{typ \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2} and @{typ \<Pi>\<^sub>3} are considered
-as primitive types and assigned semantic domains: @{type Semantics.R\<^sub>\<kappa>}, @{typ Semantics.R\<^sub>0}, @{typ Semantics.R\<^sub>1},
-@{typ Semantics.R\<^sub>2} and @{typ Semantics.R\<^sub>3} (see~\ref{TAO_Semantics_Semantics_Domains}).
+as primitive types and assigned semantic domains: @{type R\<^sub>\<kappa>}, @{typ R\<^sub>0}, @{typ R\<^sub>1},
+@{typ R\<^sub>2} and @{typ R\<^sub>3} (see~\ref{TAO_Semantics_Semantics_Domains}).
 
 For the embedding the definition of these semantic domains is trivial, since the abstract types of
 the representation layer are already modeled using a representation set. Therefore the semantic domains
@@ -1242,14 +1253,14 @@ the denotation functions are represented as functions to map to the @{text "opti
 respective domain. This way they can either map a term to @{term "Some x"}, if the term denotes
 @{term "x"}, or to @{term "None"}, if the term does not denote.
 
-In the embedding all relation terms always denote, therefore the denotation functions @{term "Semantics.d\<^sub>0"},
-@{text "\<dots>"}, @{term "Semantics.d\<^sub>3"} for relations can simply be defined as the type constructor @{term "Some"}.
+In the embedding all relation terms always denote, therefore the denotation functions @{term "d\<^sub>0"},
+@{text "\<dots>"}, @{term "d\<^sub>3"} for relations can simply be defined as the type constructor @{term "Some"}.
 Individual terms on the other hand are already represented by an @{text "option"} type,
-so the denotation function @{term "Semantics.d\<^sub>\<kappa>"} can be defined as the identity.
+so the denotation function @{term "d\<^sub>\<kappa>"} can be defined as the identity.
 
 Moreover the primitive type of possible worlds @{type i} is used as the semantical domain of possible
-worlds @{typ Semantics.W} and the primitive actual world @{term "dw"} as the semantical actual world
-@{term "Semantics.w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
+worlds @{typ W} and the primitive actual world @{term "dw"} as the semantical actual world
+@{term "w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
 
 \begin{remark}
 The definitions for semantical domains and denotations seem trivial, however it must be considered that conceptually
@@ -1280,10 +1291,10 @@ of individuals in the case of @{text "n \<ge> 1"}. Formally they are defined as 
 (see~\ref{TAO_Semantics_Semantics_Exemplification_Extensions}):
 
 \begin{itemize}
-  \item @{thm[display] Semantics.ex0_def[expand2, of p w]}
-  \item @{thm[display] Semantics.ex1_def[expand2, of F w]}
-  \item @{thm[display] Semantics.ex2_def[expand2, of R w]}
-  \item @{thm[display] Semantics.ex3_def[expand2, of R w]}
+  \item @{thm[display] ex0_def[expand2, of p w]}
+  \item @{thm[display] ex1_def[expand2, of F w]}
+  \item @{thm[display] ex2_def[expand2, of R w]}
+  \item @{thm[display] ex3_def[expand2, of R w]}
 \end{itemize}
 
 The exemplification extension of a @{text "0"}-place relation is its evaluation for the actual state and the
@@ -1305,7 +1316,7 @@ Similarly to the exemplification extensions for one-place relations an \emph{enc
 is defined as follows (see~\ref{TAO_Semantics_Semantics_Encoding_Extension}):
 
 \begin{center}
-  @{thm[display] Semantics.en_def[expand1, of F]}
+  @{thm[display] en_def[expand1, of F]}
 \end{center}
 
 The encoding extension of a relation is defined as the set of all abstract objects that contain
@@ -1325,7 +1336,7 @@ it suffices to consider the case of one-place relations, for which the truth con
 as follows (see~\ref{TAO_Semantics_Semantics_Exemplification}):
 
 \begin{center}
-  @{thm[display] Semantics.T1_1[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+  @{thm[display] T1_1[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
 \end{center}
 
 The relation term @{term "embedded_style \<Pi>"} is exemplified by an individual term @{term "embedded_style \<kappa>"} in a possible world
@@ -1337,7 +1348,7 @@ The truth condition for encoding formulas is defined in a similar manner as
 (see~\ref{TAO_Semantics_Semantics_Encoding}):
 
 \begin{center}
-  @{thm[display] Semantics.T2[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+  @{thm[display] T2[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
 \end{center}
 
 The only difference to exemplification formulas is that the encoding extension does not depend
@@ -1347,15 +1358,15 @@ The definitions of truth conditions for complex formulas are straightforward
 (see~\ref{TAO_Semantics_Semantics_Complex_Formulas}):
 
 \begin{itemize}
-  \item @{thm[display] Semantics.T4[of w \<psi>]}
-  \item @{thm[display] Semantics.T5[of w \<psi> \<chi>]}
-  \item @{thm[display] Semantics.T6[of w \<psi>]}
-  \item @{thm[display] Semantics.T7[of w \<psi>]}
-  \item @{thm[display] Semantics.T8_\<nu>[of w \<psi>]}
-  \item @{thm[display] Semantics.T8_0[of w \<psi>]}
-  \item @{thm[display] Semantics.T8_1[of w \<psi>]}
-  \item @{thm[display] Semantics.T8_2[of w \<psi>]}
-  \item @{thm[display] Semantics.T8_3[of w \<psi>]}
+  \item @{thm[display] T4[of w \<psi>]}
+  \item @{thm[display] T5[of w \<psi> \<chi>]}
+  \item @{thm[display] T6[of w \<psi>]}
+  \item @{thm[display] T7[of w \<psi>]}
+  \item @{thm[display] T8_\<nu>[of w \<psi>]}
+  \item @{thm[display] T8_0[of w \<psi>]}
+  \item @{thm[display] T8_1[of w \<psi>]}
+  \item @{thm[display] T8_2[of w \<psi>]}
+  \item @{thm[display] T8_3[of w \<psi>]}
 \end{itemize}
 
 A negation formula @{term "embedded_style (\<^bold>\<not>\<psi>)"} is semantically true in a possible world, if and only if
@@ -1379,12 +1390,12 @@ The definition of the denotation of description terms (see~\ref{TAO_Semantics_Se
 is presented in a more readable form by splitting it into its two cases and by using the meta-logical
 quantifier for unique existence:
 \begin{itemize}
-  \item @{lemma[display] "(\<exists>!x. [\<psi> x in Semantics.w\<^sub>0])
-            \<Longrightarrow> Semantics.d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = Some (THE x. [\<psi> x in Semantics.w\<^sub>0])"
-    by (auto simp: embedded_style_def Semantics.D3)}
-  \item @{lemma[display] "\<not>(\<exists>!x. [\<psi> x in Semantics.w\<^sub>0])
-            \<Longrightarrow> Semantics.d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = None"
-    by (auto simp: embedded_style_def Semantics.D3)}
+  \item @{lemma[display] "(\<exists>!x. [\<psi> x in w\<^sub>0])
+            \<Longrightarrow> d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = Some (THE x. [\<psi> x in w\<^sub>0])"
+    by (auto simp: embedded_style_def D3)}
+  \item @{lemma[display] "\<not>(\<exists>!x. [\<psi> x in w\<^sub>0])
+            \<Longrightarrow> d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = None"
+    by (auto simp: embedded_style_def D3)}
 \end{itemize}
 
 If there exists a unique @{term "x"}, such that @{term "embedded_style (\<psi> x)"} is true in the actual world,
@@ -1414,13 +1425,13 @@ as a restriction for the matrix of a lambda expression that was introduced in se
 The definitions are implemented as follows (see~\ref{TAO_Semantics_Semantics_Lambda_Expressions}):
 
 \begin{itemize}
-  \item @{lemma[display] "Semantics.d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<lparr>\<Pi>, x\<^sup>P\<rparr>)) = Semantics.d\<^sub>1 (embedded_style \<Pi>)"
-          by (simp add: embedded_style_def Semantics.D4_1)}
-  \item @{lemma[display] "IsProperInX (embedded_style \<phi>) \<Longrightarrow> Some r = Semantics.d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<phi> (x\<^sup>P)))
-          \<and> Some o\<^sub>1 = Semantics.d\<^sub>\<kappa> (embedded_style x) \<longrightarrow> (o\<^sub>1 \<in> Semantics.ex1 r w) = [\<phi> x in w]"
-          by (simp add: embedded_style_def Semantics.D5_1)}
-  \item @{lemma[display] "Some r = Semantics.d\<^sub>0 (embedded_style (\<^bold>\<lambda>\<^sup>0 \<phi>)) \<longrightarrow> Semantics.ex0 r w = [\<phi> in w]"
-    by (simp add: embedded_style_def Semantics.D6)}
+  \item @{lemma[display] "d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<lparr>\<Pi>, x\<^sup>P\<rparr>)) = d\<^sub>1 (embedded_style \<Pi>)"
+          by (simp add: embedded_style_def D4_1)}
+  \item @{lemma[display] "IsProperInX (embedded_style \<phi>) \<Longrightarrow> Some r = d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<phi> (x\<^sup>P)))
+          \<and> Some o\<^sub>1 = d\<^sub>\<kappa> (embedded_style x) \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = [\<phi> x in w]"
+          by (simp add: embedded_style_def D5_1)}
+  \item @{lemma[display] "Some r = d\<^sub>0 (embedded_style (\<^bold>\<lambda>\<^sup>0 \<phi>)) \<longrightarrow> ex0 r w = [\<phi> in w]"
+    by (simp add: embedded_style_def D6)}
 \end{itemize}
 
 The first condition for \emph{elementary} lambda expressions is straightforward.
@@ -1434,7 +1445,7 @@ the truth condition of the lambda expression being exemplified by some denoting 
 is the same as the truth condition of the matrix of the term for the denoted individual.
 Therefore it is clear that the precondition that @{term "embedded_style \<phi>"} is a proper map
 is necessary and sufficient.
-Given this consideration the case for @{term "0"}-place relations is again straightforward.
+Given this consideration the case for @{text "0"}-place relations is again straightforward.
 
 *}
 
@@ -1442,9 +1453,105 @@ subsection{* Properties of the Semantics *}
 
 text{*
 
+  The formal semantics of PLM imposes several further restrictions some of which are derived as
+  auxiliary lemmas. Furthermore some auxiliary statements that are specific to the underlying
+  representation layer are derived. Future work may try to refrain from this second kind
+  of statements.
 
+  The statements are comprised of the following (see~\ref{TAO_Semantics_Semantics_Auxiliary_Lemmata}):
+  \begin{enumerate}
+    \item All relations denote, e.g. @{thm[display] propex\<^sub>1[of "embedded_style F"]}
+    \item An individual term of the form @{term "embedded_style (x\<^sup>P)"} denotes @{term "x"}:
+          @{lemma[display] "d\<^sub>\<kappa> (embedded_style (x\<^sup>P)) = Some (embedded_style x)"
+            by (simp add: embedded_style_def d\<^sub>\<kappa>_proper)}
+    \item Every ordinary object is contained in the extension of the concreteness property for some
+          possible world:
+          @{lemma[display] "Some r = d\<^sub>1 (embedded_style (E!)) \<Longrightarrow> (\<forall> x . \<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
+            by (simp add: embedded_style_def ConcretenessSemantics1)}
+    \item An object that is contained in the extension of the concreteness property in any world is
+          an ordinary object:
+          @{lemma[display] "Some r = d\<^sub>1 (embedded_style (E!)) \<Longrightarrow> (\<forall> x . x \<in> ex1 r w \<longrightarrow> (\<exists> y . x = \<omega>\<nu> y))"
+            by (simp add: embedded_style_def ConcretenessSemantics2)}
+    \item The denotation functions for relation terms are injective, e.g.
+          @{thm[display] d\<^sub>1_inject[of "embedded_style F" "embedded_style G"]}
+    \item The denotation functions for individual terms is injective for denoting terms:
+          @{thm[display] d\<^sub>\<kappa>_inject[of "o\<^sub>1" "embedded_style x" "embedded_style y"]}
+  \end{enumerate}
+
+  Especially the statements 5 and 6 are only derivable due to the specific construction of
+  the representation layer: since the semantical domains were defined as the representation sets
+  of the respective type of term and denotations were defined canonically, objects that have the
+  same denotation are identical as objects of their abstract type.
+*}
+
+subsection{* Proper Maps *}
+  
+text{*
+  The definition of \emph{proper maps} as described in section~\ref{lambda-expressions} is
+  formulated in terms of the meta-logic. Since denotation conditions in the semantics and
+  later some of the axioms have to be restricted to proper maps, a method has to be devised
+  by which the propriety of a map can easily be shown without using meta-logical concepts.
+
+  Therefore introduction rules for @{term "IsProperInX"}, @{term "IsProperInXY"} and
+  @{term "IsProperInXYZ"} are derived and a proving method @{method[names_short = true] "show_proper"}
+  is defined that can be used to proof the propriety of a map using these introduction rules
+  (see~\ref{TAO_Semantics_Proper}).
+
+  The rules themselves rely on the power of the \emph{unifier} of Isabelle/HOL: Any map acting
+  on individuals that can be expressed by another map that solely acts on exemplification expressions
+  involving the individuals, is shown to be proper. This effectively means that all maps whose arguments
+  only appear in exemplification expressions are proper. For a discussion about the relation between
+  this concept and admissible lambda expressions in PLM see TODO: reference.
+*}
+
+(*<*)
+end (* context Semantics *)
+(*>*)
+  
+section{* Derived Language Elements *}
+
+text{*
+  The language of the embedded logic constructed so far is limited to the minimal set of
+  primitive elements, e.g. only negation and implication are present and no notion of identity
+  has been introduced so far.
+
+  Since the last section has established the semantical properties of these basic elements of
+  the language, it now makes sense to extend the language by introducing some basic definitions
+  that can be expressed directly in the embedded logic.
+*}
+
+subsection{* Connectives *}
+
+text{*
+  The remaining classical connectives are defined in the traditional manner (see \ref{TAO_BasicDefinitions_DerivedConnectives}):
+  \begin{itemize}
+    \item @{thm[display] conj_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
+    \item @{thm[display] disj_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
+    \item @{thm[display] equiv_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
+    \item @{thm[display] diamond_def[expand1, of \<phi>, THEN embedded_def]}
+  \end{itemize}
+*}
+  
+(*<*)
+context MetaSolver
+begin
+(*>*)
+
+section{* Proving Method @{method[names_short = true] meta_solver} *}
+ 
+text{*
+  Since the last section constructed a first abstraction layer on top of the focus on a single kind
+  of model and the technicalities of the first layer, it makes sense to revisit the general concept
+  of the layered structure of the embedding.
+
+  The idea behind this approach is that the reasoning in subsequent layers should - as far as possible - only
+  rely on the previous layer. 
 
 *}
+
+(*<*)
+end (* context MetaSolver *)
+(*>*)
   
 (*<*)
 end

@@ -199,11 +199,11 @@ begin
   lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
     unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
   lemma ConcretenessSemantics1:
-    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<forall> x . \<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
+    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
     unfolding semantics_defs apply transfer
     by (simp add: OrdinaryObjectsPossiblyConcreteAxiom \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>)
   lemma ConcretenessSemantics2:
-    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<forall> x . x \<in> ex1 r w \<longrightarrow> (\<exists>y. x = \<omega>\<nu> y))"
+    "Some r = d\<^sub>1 E! \<Longrightarrow> (x \<in> ex1 r w \<longrightarrow> (\<exists>y. x = \<omega>\<nu> y))"
     unfolding semantics_defs apply transfer apply simp
     by (metis \<nu>.exhaust \<upsilon>.exhaust \<upsilon>.simps(6) no_\<alpha>\<omega>)
   lemma d\<^sub>0_inject: "\<And>x y. d\<^sub>0 x = d\<^sub>0 y \<Longrightarrow> x = y"
