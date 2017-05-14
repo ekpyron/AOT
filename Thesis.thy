@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-imports TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar"
+imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar"
         "~~/src/HOL/Library/OptionalSugar"
 begin
 (*>*)
@@ -92,7 +92,7 @@ and to represent various logical systems by the use of \emph{shallow semantical 
 
 Notably this approach recently received attention due to the formalisation, validation and analysis
 of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller (TODO: reference),
-for which a modal higher-order logic was embedded in the computerized logic framework Isabelle/HOL.
+for which higher-order modal logic was embedded in the computerized logic framework Isabelle/HOL.
 *}
 
 section{* Shallow Semantical Embeddings in HOL *}
@@ -163,7 +163,7 @@ theory, can not be properly characterized in functional type theory.
 
 This has led to the question whether a shallow semantical embedding of the Theory of Abstract Objects
 in a functional logical framework as Isabelle/HOL is at all possible, which is the core question
-of the work presented here.
+the work presented here attempts to examine and partially answer.
 
 One of their main arguments is that unrestricted lambda expressions as present in functional type
 theory lead to an inconsistency when combined with one of the axioms of the theory and indeed it
@@ -175,7 +175,10 @@ The employed solution circumvents this problem by identifying lambda expressions
 target language that behaves differently than their counterparts in the background logic and
 consequently by representing lambda expressions of the target logic using a new \emph{defined}
 kind of lambda expressions. This forces lambda expressions in the embedded logic to have a particular
-semantics that is inspired by the \emph{Aczel-model} of the target theory and avoids prior inconsistencies.
+semantics that is inspired by the \emph{Aczel-model} of the target theory (see \ref{aczel-model})
+and avoids prior inconsistencies. The mentioned issue and the employed solution is discussed in
+more detail in section \ref{challenges}.
+
 *}
 
 section{* Our Contribution *}
@@ -470,9 +473,8 @@ an actuality operator, axioms for definite descriptions that go along with Russe
 of descriptions, the substitution for identicals as per the defined identity, @{text "\<alpha>"}-,
 @{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
 as dedicated axioms for encoding. For a full accounting of the axioms refer to @{cite \<open>chap. 8\<close> PM}.
-In the following chapters some of the subtleties involving specific axioms (e.g. the axioms of
-quantification and @{text "\<beta>"}-conversion) are discussed in more detail, at this point the axioms
-of encoding are the most relevant, namely:
+In the following chapters some of the subtleties involving specific axioms are discussed in more detail,
+at this point the axioms of encoding are the most relevant, namely:
 
   \begin{center}
     @{text "xF \<rightarrow> \<box>xF"}\\
@@ -487,7 +489,7 @@ For every condition on properties @{text "\<phi>"} there exists an abstract obje
 those properties, that satisfy @{text "\<phi>"}.
 
 *}
-  
+
 section{* Hyperintensionality *}
   
 text{*
@@ -524,7 +526,7 @@ introducing a new axiom that requires that they are necessarily encoded by the s
 Without additional axioms, however, it is not provable that above properties are equal.
 
 As outlined in the next chapter the hyperintensionality of the theory is a particular challenge
-for the representation of the theory in a shallow embedding.
+for the representation of the theory in a shallow embedding (TODO: reference).
 
 *}
   
@@ -582,8 +584,9 @@ basis of the embedding. The technicalities of this are described in the next cha
 *}
   
 chapter{* The Embedding *}
-  
+
 text{*
+\label{embedding}
 \epigraph{TODO}{Maybe skip the epigraph here.}
 *}
 
@@ -597,11 +600,51 @@ see \cite{WhatsInMain}.
 
 TODO: what more to say about Isabelle/HOL?
 
-TODO: overview section? Next section before this section?
+TODO: overview section? Reorder the sections?
 
 TODO: explain color distinction between embedded and meta-logic somewhere.
 
 *}
+  
+section{* Challenges *}
+
+text{*
+\label{challenges}
+TODO: russel style paradox; hyperintensionality revisited; relations vs. functions revisited; general complexity, etc.
+*}
+
+subsection{* A Russel-style Paradox *}
+
+text{*
+  \label{russel-paradox}
+
+  One of the major challenges of an implementation of the Theory of Abstract Objects in functional
+  logic is the fact that the naive representation of the lambda expressions of the theory using the
+  unrestricted, beta-convertible lambda expressions of functional logic results in the following
+  paradox (see @{cite \<open>p. 24-25\<close> rtt}):
+
+  Assume @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} were a valid lambda expression denoting a relation.
+  Now the comprehension axiom of abstract objects requires the following:
+
+  \begin{center}
+    @{text "\<exists>x (A!x & \<forall>F (xF \<equiv> F = [\<lambda>x \<exists>F (xF & \<not>Fx)]))"}
+  \end{center}
+
+  So there is an abstract object that encodes only the property @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}.
+  Let @{text "b"} be such an object. Now first assume @{text "b"} exemplifies
+  @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By beta-reduction this implies that there exists a property, that
+  @{text "b"} encodes, but does not exemplify. Since @{text "b"} only encodes @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"},
+  but does also exemplify it by assumption this is a contradiction.
+
+  Now assume @{text "b"} does not exemplify @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By beta-reduction it
+  follows that there does not exist a property that @{text "b"} encodes, but does not exemplify.
+  Since @{text "b"} encodes @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} by construction and does not exemplify
+  it by assumption this is again a contradiction.
+
+  This paradox is prevented in the formulation of object theory by disallowing encoding
+  subformulas in lambda expressions, so in particular @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} is not
+  part of the language. TODO: reference paradox section? TODO: reference the lambda expression section?
+*}  
   
 section{* Basic Concepts *}
 
@@ -672,6 +715,15 @@ follow in the next chapter. (TODO: reverse this?)
 *}
 
 section{* The Representation Layer *}
+  
+text{*
+
+The first layer of the embedding (see \ref{TAO_Embedding}) implements the a variant
+of the Aczel-model and builds a representation of the language of PLM in the logic of Isabelle/HOL.
+This process is outlined step by step in this section.
+
+*}
+  
 subsection{* Primitives *}
 
 text{*
@@ -751,6 +803,8 @@ Based on the primitive types above the following types are defined (see \ref{TAO
 subsection{* Individual Terms and Definite Descriptions *}
 
 text{*
+\label{individual-terms-and-descriptions}
+
 There are two basic types of individual terms in PLM: definite descriptions and individual variables.
 For any logically proper definite description there is an individual variable that denotes
 the same object. A definite description is logically proper if its matrix is true for a unique
@@ -803,7 +857,7 @@ Now the mapping @{term "\<nu>\<upsilon>"} of type @{typeof "\<nu>\<upsilon>"} ca
 
 @{thm[display] \<nu>\<upsilon>_def[atomize]}
 
-To understand the syntax note that this is equivalent to the following:
+To clarify the syntax note that this is equivalent to the following:
 
 @{lemma[display] "(\<forall> x . \<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x) \<and> (\<forall> x . \<nu>\<upsilon> (\<alpha>\<nu> x) = \<sigma>\<upsilon> (\<alpha>\<sigma> x))" by (simp add: \<nu>\<upsilon>_def)}
 
@@ -850,6 +904,8 @@ text{*
 subsection{* Connectives and Quantifiers *}
 
 text{*
+  \label{connectives}
+
   The reason to make truth values depend on the additional primitive type of \emph{states}
   is to achieve hyper-intensionality (see TODO: reference). The connectives and quantifiers are defined in such a
   way that they behave classically if evaluated for the designated actual state @{term "dj"},
@@ -907,11 +963,15 @@ text{*
 *}
   
 subsection{* Lambda Expressions *}
-
+  
 text{*
+
+  \label{lambda-expressions}
+
   The bound variables of the lambda expressions of the embedded logic are individual
   variables, whereas relations are represented as functions acting on urelements.
-  Therefore the lambda expressions of the embedded logic are defined as follows (see \ref{TAO_Embedding_Lambda}):
+  Therefore the definition of the lambda expressions of the embedded logic is non trivial.
+  The embedding defines them as follows (see \ref{TAO_Embedding_Lambda}):
 
   \begin{itemize}
     \item @{thm[display] lambdabinder0.rep_eq[of p, THEN embedded_def]}
@@ -936,8 +996,8 @@ text{*
   One-place relations are represented as functions of type @{typ "\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool"}, though,
   where @{type \<upsilon>} is the type of urelements.
 
-  The evaluation of a lambda expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u}
-  (and a state @{term s} and a possible world @{term w}) is therefore defined as follows:
+  The result of the evaluation of a lambda expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u},
+  a state @{term s} and a possible world @{term w}) is given by the following equation:
 
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) u s w = (\<exists> x . \<nu>\<upsilon> x = u \<and> eval\<o> (embedded_style (\<phi> x)) s w)"
     by (simp add: embedded_style_def meta_defs meta_aux)}
@@ -947,10 +1007,22 @@ text{*
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) (\<omega>\<upsilon> u) s w = eval\<o> (embedded_style (\<phi>) (\<omega>\<nu> u)) s w"
     by (simp add: embedded_style_def meta_defs meta_aux, metis \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.inject(1) no_\<alpha>\<omega>)}
 
-  For abstract objects the same is only true, if @{term "\<phi>"} is \emph{proper} in its argument, i.e.
-  it does not contain an encoding formula in its argument. This is guaranteed by the meta-logical predicate
-  @{term "IsProperInX"} that is introduced with the semantics (see TODO: reference in this chapter, \ref{TAO_Semantics_Proper}).
-  Using this meta-logical predicate the expected behavior of lambda expression can be shown:
+  However in general @{term "\<nu>\<upsilon>"} can map several abstract objects to the same special urelement,
+  so an analog statement for abstract objects does not hold for arbitrary @{term "\<phi>"}. As described
+  in section~\ref{russel-paradox} such a statement would in fact not be desirable, since it would
+  lead to inconsistencies.
+
+  Instead the embedding introduces the concept of \emph{proper maps}.
+  A map from individuals is defined to be proper if its truth evaluation for the actual state only
+  depends on the urelement corresponding to the individual (see \ref{TAO_Embedding_Proper}):
+
+  \begin{itemize}
+    \item @{thm[display] IsProperInX.rep_eq[of \<phi>]}
+    \item @{thm[display] IsProperInXY.rep_eq[of \<phi>]}
+    \item @{thm[display] IsProperInXYZ.rep_eq[of \<phi>]}
+  \end{itemize}
+
+  Now by the definition of proper maps the evaluation of lambda expressions behaves as expected:
 
   @{lemma "IsProperInX \<phi> \<longleftrightarrow> (\<forall> w x . eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> (x\<^sup>P))) (\<nu>\<upsilon> x) dj w = eval\<o> (embedded_style (\<phi> (x\<^sup>P))) dj w)"
     by (auto simp: embedded_style_def meta_defs meta_aux IsProperInX_def)}
@@ -961,34 +1033,15 @@ text{*
     and goes along with the desired semantics of lambda expressions (see TODO: reference).
   \end{remark}
 
-  Therefore the defined lambda-expressions can accurately represent the lambda-expressions of the
-  Principia. However the embedding still assigns a denotation to lambda expressions that contain encoding
-  formulas in the bound variable, i.e. \emph{improper} lambda expressions.
-  @{term "embedded_style \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P, F\<rbrace>, y\<^sup>P\<rparr>"} does \emph{not} imply
-  @{term "embedded_style \<lbrace>y\<^sup>P, F\<rbrace>"}, though, but only that
-  there exists an abstract object @{term z}, that is mapped to the same urelement as @{term y}
-  and it holds that @{text "embedded_style \<lbrace>z\<^sup>P, F\<rbrace>"}. The former would lead to well-known
-  inconsistencies, which the latter avoids. (TODO: reference)
+  The concept behind this is that maps that contain encoding formulas in its argument are not proper
+  in general and thereby the paradox mentioned in section~\ref{russel-paradox} is avoided.
 
-  \begin{remark}
-    Formally the following statements are true (the first formulation uses the metalogical concept
-    of sharing an urelement, the second formulation expresses the same notion by being materially
-    equivalent and can be formulated entirely in the embedded logic, TODO reference to appendix):
-    \begin{itemize}
-      \item @{thm[display] ArtificialTheorems.lambda_enc_4}
-      \item @{thm[display] ArtificialTheorems.lambda_ex_emb}
-    \end{itemize}
-
-    For details about the not yet introduced validity syntax and the defined connectives and quantifiers
-    see (TODO: reference).
-  \end{remark}
-
-  TODO: mention this here or someplace else?
-  An example of a statement containing lambda-expressions that contain encoding subformulas
-  that becomes derivable using the meta-logic is the following:
-
-  @{lemma "[\<^bold>\<forall> F y . \<lparr>\<^bold>\<lambda>x. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,F\<rbrace>, y\<^sup>P\<rparr> in v]"
-    by (auto simp: meta_aux meta_defs conn_defs forall_\<nu>_def forall_\<Pi>\<^sub>1_def)}
+  In fact proper maps are the most general kind of functions that may appear in a lambda-expression,
+  such that beta-conversion holds. In what way proper maps correspond to the formulas that PLM
+  allows as the matrix of a lambda expression is a complex question and discussed seperately in
+  section TODO: reference. A detailed discussion about the denotations of \emph{improper}
+  lambda-expression and how the mentioned paradox is avoided precisely is presented in section
+  TODO: reference (same section as before?).
 *}
  
 
@@ -1056,6 +1109,343 @@ text{*
   \end{itemize}
 *}
 
+subsection{* The Syntax of the Embedded Logic*}
+
+
+text{*
+
+The embedding aims to provide a readable syntax for the embedded logic that is as close as possible
+to the syntax of PLM, that can be easily understood and that clearly distinguishes between the embedded
+logic and the meta-logic. Some concessions have to be made due to the limitations of definable syntax
+in Isabelle, though.
+
+The syntax for the basic formulas of PLM used in the embedding is summarized in the
+following table:
+
+\begin{center}
+\begin{tabular}{l|l|l|c}
+PLM & syntax in words & embedded logic & type \\
+\hline
+@{text "p"} & it holds that @{text "p"} & @{term "embedded_style (p)"} & @{type \<o>} \\
+@{text "\<not>p"} & not @{text "p"} & @{term "embedded_style (\<^bold>\<not>p)"} & @{type \<o>}  \\
+@{text "p \<rightarrow> q"} & @{text "p"} implies @{text "q"} & @{term "embedded_style (p \<^bold>\<rightarrow> q)"} & @{type \<o>}  \\
+@{text "\<Pi>\<upsilon>"} & @{text "\<upsilon>"} (an individual term) exemplifies @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,\<upsilon>\<rparr>"} & @{type \<o>}  \\
+@{text "\<Pi>x"} & @{text "x"} (an individual variable) exemplifies @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,x\<^sup>P\<rparr>"} & @{type \<o>}  \\
+@{text "\<Pi>\<upsilon>\<^sub>1\<upsilon>\<^sub>2"} & @{text "\<upsilon>\<^sub>1"} and @{text "\<upsilon>\<^sub>2"} exemplify @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,\<upsilon>\<^sub>1,\<upsilon>\<^sub>2\<rparr>"} & @{type \<o>}  \\
+@{text "\<Pi>xy"} & @{text "x"} and @{text "y"} exemplify @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,x\<^sup>P,y\<^sup>P\<rparr>"} & @{type \<o>}  \\
+@{text "\<Pi>\<upsilon>\<^sub>1\<upsilon>\<^sub>2\<upsilon>\<^sub>3"} & @{text "\<upsilon>\<^sub>1"}, @{text "\<upsilon>\<^sub>2"} and @{text "\<upsilon>\<^sub>3"} exemplify @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,\<upsilon>\<^sub>1,\<upsilon>\<^sub>2,\<upsilon>\<^sub>3\<rparr>"} & @{type \<o>}  \\
+@{text "\<Pi>xyz"} & @{text "x"}, @{text "y"} and @{text "z"} exemplify @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>"} & @{type \<o>}  \\
+@{text "\<upsilon>\<Pi>"} & @{text "\<upsilon>"} encodes @{text "\<Pi>"} & @{term "embedded_style \<lbrace>\<upsilon>,\<Pi>\<rbrace>"} & @{type \<o>}  \\
+@{text "\<iota>x\<phi>"} & \emph{the} @{text "x"}, such that @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<iota>x . \<phi> x)"} & @{type \<kappa>}  \\
+@{text "\<forall>x(\<phi>)"} & for all individuals @{text "x"} it holds that @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<forall>\<^sub>\<nu> x . \<phi> x)"} & @{type \<o>} \\
+@{text "\<forall>p(\<phi>)"} & for all propositions @{text "x"} it holds that @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<forall>\<^sub>0 x . \<phi> x)"} & @{type \<o>} \\
+@{text "\<forall>F(\<phi>)"} & for all relations @{text "F"} it holds that @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<forall>\<^sub>1 F . \<phi> F)"} & @{type \<o>} \\
+& & @{term "embedded_style (\<^bold>\<forall>\<^sub>2 F . \<phi> F)"} & \\
+& & @{term "embedded_style (\<^bold>\<forall>\<^sub>3 F . \<phi> F)"} & \\
+@{text "[\<lambda> p]"} & being such that @{text "p"} & @{term "embedded_style (\<^bold>\<lambda>\<^sup>0 p)"}  & @{typ \<Pi>\<^sub>0} \\
+@{text "[\<lambda>x \<phi>]"} & being @{text "x"} such that @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<lambda> x . \<phi> x)"} & @{type \<Pi>\<^sub>1} \\
+@{text "[\<lambda>xy \<phi>]"} & being @{text "x"} and @{text "y"} such that @{text "\<phi>"} & @{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y))"} & @{type \<Pi>\<^sub>2} \\
+@{text "[\<lambda>xyz \<phi>]"} & being @{text "x"}, @{text "y"} and @{text "z"} such that @{text "\<phi>"} & @{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z))"} & @{type \<Pi>\<^sub>3}
+\end{tabular}
+\end{center}
+
+Several subtleties have to be considered:
+
+\begin{itemize}
+  \item @{term "n"}-place relations are only represented up for \mbox{@{text "n \<le> 3"}}.
+        As the resulting language is already expressive enough to represent the most interesting
+        parts of the theory and analog implementations for \mbox{@{text "n > 3"}} would be trivial
+        to implement, this is considered to be sufficient.
+  \item There is a distinction between individual terms and variables. This circumstance
+        was already mentioned in section~\ref{individual-terms-and-descriptions}: an individual term
+        in PLM can either be an individual variable (or constant) or a definite description.
+        Statements in PLM that use individual variables are represented using the decoration
+        @{term "DUMMY\<^sup>P"}.
+  \item Whereas conceptually in PLM if a general term @{term "\<phi>"} as it occurs in definite descriptions,
+        quantifications and lambda expressions above contains a \emph{free} variable is used within
+        the scope of a variable binding operator, the free occurrences of the variable are considered
+        to be \emph{bound} by the operator. In the embedding this concept is replaced by considering
+        @{term "\<phi>"} to be a \emph{function} and using the native concept of binding operators in
+        Isabelle to convert this function to a term with bound variables. This concept is discussed
+        in more detail in section TODO: reference.
+  \item The representation layer of the embedding defines a separate quantifier for every type of
+        variable in PLM. This is done to assure that only quantifications ranging over these types
+        are part of the embedded language. The definition of a general quantifier in the representation layer
+        could for example be used to quantify over individual \emph{terms} (of type @{type \<kappa>}), whereas
+        only quantifications ranging over individuals (of type @{type \<nu>}) are part of the language of PLM.
+        Once the semantics is introduced in section TODO:reference, a \emph{type class} is introduced
+        that is defined by the semantics of all quantification and instantiated for all variable types.
+        This way a general binder that can be used for all variable types can be defined. The details
+        of this approach are explained in section TODO: reference.
+\end{itemize}
+
+The syntax used for stating that a proposition is semantically valid is the following:
+\begin{center}
+    @{term "[\<phi> in v]"}
+\end{center}
+
+In the expression above @{term "embedded_style \<phi>"} and @{term "v"} are free variables,
+therefore stating the expression as a lemma will implicitly be a quantified statement over all
+propositions @{term "embedded_style \<phi>"} and all possible worlds @{term "v"} (unless
+@{term "embedded_style \<phi>"} was explicitly declared as a constant in the global scope).
+
+TODO: talk about scopes?
+
+TODO: constants vs. variables.
+
+*}
+  
+section{* Semantical Abstraction *}
+
+(*<*)
+lemma expand_def1: "p \<equiv> q \<Longrightarrow> (\<And>x . p x = q x)" by simp
+lemma expand_def2: "p \<equiv> q \<Longrightarrow> (\<And>x y . p x y = q x y)" by simp
+lemma expand_def3: "p \<equiv> q \<Longrightarrow> (\<And>x y z . p x y z = q x y z)" by simp
+attribute_setup expand1 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def1}))
+*}
+attribute_setup expand2 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def2}))
+*}
+attribute_setup expand3 = {*
+  Scan.succeed (Thm.rule_attribute [] 
+    (fn _ => fn thm => thm RS @{thm expand_def3}))
+*}
+(*>*)
+  
+text{*
+
+The second layer of the embedding (see~\ref{TAO_Semantics}) abstracts away from the technicalities
+of the representation layer and states the truth conditions for the formulas of the embedded logic
+in a similar way as the (at the time of writing unpublished) preliminary semantics of object theory.
+
+*}
+
+subsection{* Domains and Denotation Functions *}
+  
+text{*
+In order to do so the abstract types introduced in the representation layer
+@{typ \<kappa>}, @{typ \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2} and @{typ \<Pi>\<^sub>3} are considered
+as primitive types and assigned semantic domains: @{type Semantics.R\<^sub>\<kappa>}, @{typ Semantics.R\<^sub>0}, @{typ Semantics.R\<^sub>1},
+@{typ Semantics.R\<^sub>2} and @{typ Semantics.R\<^sub>3} (see~\ref{TAO_Semantics_Semantics_Domains}).
+
+For the embedding the definition of these semantic domains is trivial, since the abstract types of
+the representation layer are already modeled using a representation set. Therefore the semantic domains
+can simply for each type can simply be defined as the type of its representatives.
+
+As a next step denotation functions are defined that assign each abstract type its semantic denotation
+(see~\ref{TAO_Semantics_Semantics_Denotations}).
+Note that the formal semantics of PLM does not a priori assume that every term has a denotation, therefore
+the denotation functions are represented as functions to map to the @{text "option"} type of the
+respective domain. This way they can either map a term to @{term "Some x"}, if the term denotes
+@{term "x"}, or to @{term "None"}, if the term does not denote.
+
+In the embedding all relation terms always denote, therefore the denotation functions @{term "Semantics.d\<^sub>0"},
+@{text "\<dots>"}, @{term "Semantics.d\<^sub>3"} for relations can simply be defined as the type constructor @{term "Some"}.
+Individual terms on the other hand are already represented by an @{text "option"} type,
+so the denotation function @{term "Semantics.d\<^sub>\<kappa>"} can be defined as the identity.
+
+Moreover the primitive type of possible worlds @{type i} is used as the semantical domain of possible
+worlds @{typ Semantics.W} and the primitive actual world @{term "dw"} as the semantical actual world
+@{term "Semantics.w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
+
+\begin{remark}
+The definitions for semantical domains and denotations seem trivial, however it must be considered that conceptually
+the abstract types of the representation layer now have the role of primitive types. Although for
+simplicity the last section regarded the type @{type \<o>} as synonym of @{typ "j\<Rightarrow>i\<Rightarrow>bool"}, it was
+introduced as a distinct type for which the set of all functions of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} merely
+serves as the underlying set of representatives. An object of type @{type \<o>} cannot directly be
+substituted for a variable of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. To do so it first has to be mapped to its
+representative of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} by the use of the morphism @{term "eval\<o>"} that was introduced
+in the type definition and omitted in the last section for the sake of readability. Therefore although
+the definitions of the semantic domains and denotation functions may seem trivial, the domains are
+different types than the corresponding abstract type and the denotation functions are functions between
+distinct types (note the use of @{theory_text "lift_definition"} rather than @{theory_text "definition"} 
+for the denotation functions in~\ref{TAO_Semantics_Semantics_Denotations} that allows to define
+functions on abstract types in the terms of the underlying representation types).
+\end{remark}
+
+*}
+
+subsection{* Exemplification and Encoding Extensions *}
+  
+text{*
+Semantical truth conditions for exemplification formulas are defined using \emph{exemplification extensions}.
+Exemplification extensions are functions relative to
+semantical possible worlds that map objects in the domain of @{text "n"}-place relations to meta-logical truth
+conditions in the case of @{text "n = 0"} and sets of @{text "n"}-tuples of objects in the domain
+of individuals in the case of @{text "n \<ge> 1"}. Formally they are defined as follows
+(see~\ref{TAO_Semantics_Semantics_Exemplification_Extensions}):
+
+\begin{itemize}
+  \item @{thm[display] Semantics.ex0_def[expand2, of p w]}
+  \item @{thm[display] Semantics.ex1_def[expand2, of F w]}
+  \item @{thm[display] Semantics.ex2_def[expand2, of R w]}
+  \item @{thm[display] Semantics.ex3_def[expand2, of R w]}
+\end{itemize}
+
+The exemplification extension of a @{text "0"}-place relation is its evaluation for the actual state and the
+given possible world. The exemplification extension of @{text "n"}-place relations \mbox{(@{text "n \<ge> 1"})}
+in a possible world is the set of all (tuples of) \emph{individuals} that are mapped to an
+\emph{urelement} for which the relation evaluates to true for the given possible world and the
+actual state. This is in accordance with the constructed Aczel-model TODO: reference.
+
+The fact that all exemplification extensions only depend on the evaluation of the respective relation
+in the actual state goes along with the concepts described in section TODO: reference.
+
+It is important to note that the concept of exemplification extensions as maps to sets of \emph{individuals}
+is independent of the underlying model and in particular does not need the concept of \emph{urelements}
+as they are present in an Aczel-model. The definition of truth conditions by the use of their
+exemplification extensions is therefore an abstraction away from the technicalities
+of the representation layer.
+
+Similarly to the exemplification extensions for one-place relations an \emph{encoding extension}
+is defined as follows (see~\ref{TAO_Semantics_Semantics_Encoding_Extension}):
+
+\begin{center}
+  @{thm[display] Semantics.en_def[expand1, of F]}
+\end{center}
+
+The encoding extension of a relation is defined as the set of all abstract objects that contain
+the relation. This is again in accordance with the Aczel-model. Since encoding is modally rigid
+the encoding extension does not need to be relativized for possible worlds.
+*}
+
+subsection{* Truth Conditons of Formulas *}
+
+text{*
+
+On the basis of the semantical definitions above it is now possible to define truth conditions
+for the atomic formulas of the language.
+
+For exemplification formulas of @{text "n"}-place relations
+it suffices to consider the case of one-place relations, for which the truth condition is defined
+as follows (see~\ref{TAO_Semantics_Semantics_Exemplification}):
+
+\begin{center}
+  @{thm[display] Semantics.T1_1[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+\end{center}
+
+The relation term @{term "embedded_style \<Pi>"} is exemplified by an individual term @{term "embedded_style \<kappa>"} in a possible world
+@{term "w"} if both terms have a denotation and the denoted individual is contained in the exemplification
+extension of the denoted relation in @{term "w"}. The definitions for @{text "n"}-place relations
+\mbox{(@{text "n > 1"})} and @{text "0"}-place relations are analog.
+
+The truth condition for encoding formulas is defined in a similar manner as
+(see~\ref{TAO_Semantics_Semantics_Encoding}):
+
+\begin{center}
+  @{thm[display] Semantics.T2[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+\end{center}
+
+The only difference to exemplification formulas is that the encoding extension does not depend
+on the possible world @{term "w"}.
+
+The definitions of truth conditions for complex formulas are straightforward
+(see~\ref{TAO_Semantics_Semantics_Complex_Formulas}):
+
+\begin{itemize}
+  \item @{thm[display] Semantics.T4[of w \<psi>]}
+  \item @{thm[display] Semantics.T5[of w \<psi> \<chi>]}
+  \item @{thm[display] Semantics.T6[of w \<psi>]}
+  \item @{thm[display] Semantics.T7[of w \<psi>]}
+  \item @{thm[display] Semantics.T8_\<nu>[of w \<psi>]}
+  \item @{thm[display] Semantics.T8_0[of w \<psi>]}
+  \item @{thm[display] Semantics.T8_1[of w \<psi>]}
+  \item @{thm[display] Semantics.T8_2[of w \<psi>]}
+  \item @{thm[display] Semantics.T8_3[of w \<psi>]}
+\end{itemize}
+
+A negation formula @{term "embedded_style (\<^bold>\<not>\<psi>)"} is semantically true in a possible world, if and only if
+@{term "embedded_style \<psi>"} is not semantically true in the given possible world, similarly truth conditions for
+implication formulas and quantification formulas are defined canonically.
+
+The truth condition of the modal box operator @{term "embedded_style (\<^bold>\<box>\<psi>)"} as @{term "embedded_style \<psi>"} being true in all
+possible worlds, shows that modality follows as a S5 logic.For the actuality operator @{term "embedded_style (\<^bold>\<A>\<psi>)"}
+is defined to be semantically true, if and only if @{term "embedded_style \<psi>"} is true in the designated actual world.
+
+Once more it is important to note that all introduced the truth conditions do \emph{not} depend
+on the actual state following section TODO: reference.
+
+*}
+
+subsection{* Denotation of Definite Descriptions *}
+  
+text{*
+
+The definition of the denotation of description terms (see~\ref{TAO_Semantics_Semantics_Descriptions})
+is presented in a more readable form by splitting it into its two cases and by using the meta-logical
+quantifier for unique existence:
+\begin{itemize}
+  \item @{lemma[display] "(\<exists>!x. [\<psi> x in Semantics.w\<^sub>0])
+            \<Longrightarrow> Semantics.d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = Some (THE x. [\<psi> x in Semantics.w\<^sub>0])"
+    by (auto simp: embedded_style_def Semantics.D3)}
+  \item @{lemma[display] "\<not>(\<exists>!x. [\<psi> x in Semantics.w\<^sub>0])
+            \<Longrightarrow> Semantics.d\<^sub>\<kappa> (embedded_style (\<^bold>\<iota>x. \<psi> x)) = None"
+    by (auto simp: embedded_style_def Semantics.D3)}
+\end{itemize}
+
+If there exists a unique @{term "x"}, such that @{term "embedded_style (\<psi> x)"} is true in the actual world,
+the definite description denotes and its denotation is this unique @{term "x"}, otherwise
+the definite description fails to denote.
+
+It is important to consider what happens if a non-denoting definite description occurs in a formula:
+The only positions in which such a term could occur in a complex formula is in an exemplification expression
+or in an encoding expression. Given the above truth conditions it becomes clear, that
+the presence of non-denoting terms does \emph{not} mean that there are formulas without
+truth conditions: Since exemplification and encoding formulas are defined to be true \emph{if and only if}
+the contained individual term has a denotation, such formulas are @{term "False"} for non-denoting
+individual terms.
+
+*}
+
+subsection{* Denotation of Lambda Expressions *}
+
+text{*
+
+The most complex part of the semantical abstraction is the definition of a denotation for lambda expressions.
+The preliminary formal semantics of PLM is split into several cases and uses a special class of
+\emph{Hilbert-Ackermann @{text "\<epsilon>"}-terms} that are challenging to represent. Therefore a simplified
+formulation of the denotation criteria is used. Moreover the denotations of lambda expressions are
+coupled to the syntactical conditions. This fact is represented using the notion of \emph{proper maps}
+as a restriction for the matrix of a lambda expression that was introduced in section~\ref{lambda-expressions}.
+The definitions are implemented as follows (see~\ref{TAO_Semantics_Semantics_Lambda_Expressions}):
+
+\begin{itemize}
+  \item @{lemma[display] "Semantics.d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<lparr>\<Pi>, x\<^sup>P\<rparr>)) = Semantics.d\<^sub>1 (embedded_style \<Pi>)"
+          by (simp add: embedded_style_def Semantics.D4_1)}
+  \item @{lemma[display] "IsProperInX (embedded_style \<phi>) \<Longrightarrow> Some r = Semantics.d\<^sub>1 (embedded_style (\<^bold>\<lambda>x. \<phi> (x\<^sup>P)))
+          \<and> Some o\<^sub>1 = Semantics.d\<^sub>\<kappa> (embedded_style x) \<longrightarrow> (o\<^sub>1 \<in> Semantics.ex1 r w) = [\<phi> x in w]"
+          by (simp add: embedded_style_def Semantics.D5_1)}
+  \item @{lemma[display] "Some r = Semantics.d\<^sub>0 (embedded_style (\<^bold>\<lambda>\<^sup>0 \<phi>)) \<longrightarrow> Semantics.ex0 r w = [\<phi> in w]"
+    by (simp add: embedded_style_def Semantics.D6)}
+\end{itemize}
+
+The first condition for \emph{elementary} lambda expressions is straightforward.
+The general case in the second condition is more complex: Given that @{term "embedded_style \<phi>"}
+is a proper map then the relation denoted by the lambda expression has the property, that for a
+denoting individual term @{term "embedded_style x"}, the denoted individual is contained in
+its exemplification extension for a possible world @{term "w"}, if and only if @{term "embedded_style \<phi> x"}
+holds in @{term "w"}.
+At a closer look this is the statement of beta-conversion restricted to denoting individuals:
+the truth condition of the lambda expression being exemplified by some denoting individual term,
+is the same as the truth condition of the matrix of the term for the denoted individual.
+Therefore it is clear that the precondition that @{term "embedded_style \<phi>"} is a proper map
+is necessary and sufficient.
+Given this consideration the case for @{term "0"}-place relations is again straightforward.
+
+*}
+
+subsection{* Properties of the Semantics *}
+
+text{*
+
+
+
+*}
+  
 (*<*)
 end
 (*>*)

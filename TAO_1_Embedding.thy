@@ -171,6 +171,13 @@ text{*
 subsection{* Lambda Expressions *}
 text{* \label{TAO_Embedding_Lambda} *}
 
+text{*
+\begin{remark}
+  Lambda expressions have to convert maps from individuals to propositions to
+  relations that are represented by maps from urelements to truth values.
+\end{remark}
+*}
+
 lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
 lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
   "\<lambda> \<phi> u s w . \<exists> x . \<nu>\<upsilon> x = u \<and> \<phi> x s w" .
@@ -179,27 +186,31 @@ lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Ri
 lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
   "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<nu>\<upsilon> z = r \<and> \<phi> x y z s w" .
 
+subsection{* Proper Maps from Individual Terms to Propositions *}
+text{* \label{TAO_Embedding_Proper} *}
+
 text{*
 \begin{remark}
-  TODO: adjust.
-  Lambda expressions map functions acting on individuals
-  to functions acting on urelements (i.e. relations). Note that
-  the inverse mapping @{term "\<upsilon>\<nu>"} is injective only for ordinary
-  objects. As propositional formulas, which are the only terms PM
-  allows inside lambda expressions, do not contain encoding
-  subformulas, they only depends on urelements, though. For
-  propositional formulas the lambda expressions therefore exactly
-  correspond to the lambda expressions in PM.
-  Lambda expressions with non-propositional formulas, which are not
-  allowed in PM, because in general they lead to inconsistencies,
-  have a non-standard semantics. @{term "\<^bold>\<lambda> x . \<lbrace>x\<^sup>P,F\<rbrace>"} can be
-  translated to "being @{term "x"} such that there exists an abstract
-  object, which encodes @{term "F"}, that is mapped to the same urelement
-  as @{term "x"}" instead of "being @{term "x"} such that @{term "x"}
-  encodes @{term "F"}". This construction avoids the aforementioned
-  inconsistencies.
+  The embedding introduces the notion of \emph{proper} maps from
+  individual terms to propositions.
+
+  Such a map is proper if and only for all proper individual terms its truth evaluation in the
+  actual state only depends on the urelement corresponding to the individual the term denotes.
+
+  Proper maps are exactly those maps that - when used in a lambda-expression - unconditionally
+  allow beta-reduction.
 \end{remark}
 *}
+
+lift_definition IsProperInX :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
+  "\<lambda> \<phi> . \<forall> x v . (\<exists> a . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> (\<phi> (a\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) dj v)" .
+lift_definition IsProperInXY :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
+  "\<lambda> \<phi> . \<forall> x y v . (\<exists> a b . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> \<nu>\<upsilon> b = \<nu>\<upsilon> y
+                    \<and> (\<phi> (a\<^sup>P) (b\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) (y\<^sup>P) dj v)" .
+lift_definition IsProperInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
+  "\<lambda> \<phi> . \<forall> x y z v . (\<exists> a b c . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> \<nu>\<upsilon> b = \<nu>\<upsilon> y \<and> \<nu>\<upsilon> c = \<nu>\<upsilon> z
+                      \<and> (\<phi> (a\<^sup>P) (b\<^sup>P) (c\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) dj v)" .
+
 
 subsection{* Validity *} 
 text{* \label{TAO_Embedding_Validity} *}
@@ -261,7 +272,7 @@ text{*
 \end{remark}
 *}
 
-subsection{* Collect Meta-Definitions *}
+subsection{* Collection of Meta-Definitions *}
 text{* \label{TAO_Embedding_meta_defs} *}
 
 text{*
@@ -336,7 +347,6 @@ lemma lambda\<Pi>\<^sub>3_aux[meta_aux]:
       using \<nu>\<upsilon>_surj unfolding surj_def by metis
     thus ?thesis apply transfer apply (rule ext)+ by metis
   qed
-
 (*<*)
 end
 (*>*)
