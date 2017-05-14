@@ -1,6 +1,6 @@
 (*<*)
-theory TAO_4_MetaSolver
-imports TAO_2_Semantics TAO_3_BasicDefinitions "~~/src/HOL/Eisbach/Eisbach"
+theory TAO_5_MetaSolver
+imports TAO_4_BasicDefinitions "~~/src/HOL/Eisbach/Eisbach"
 begin
 (*>*)
 
@@ -107,40 +107,24 @@ text{* \label{TAO_MetaSolver_Possibility} *}
 subsection{* Rules for Quantification *}
 text{* \label{TAO_MetaSolver_Quantification} *}
 
-  lemma All\<^sub>\<nu>I[meta_intro]: "(\<And>x::\<nu>. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>\<nu> x. \<phi> x in v]"
-    by (auto simp: Semantics.T8_\<nu>)
-  lemma All\<^sub>\<nu>E[meta_elim]: "[\<^bold>\<forall>\<^sub>\<nu>x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<nu>.[\<phi> x in v])"
-    by (auto simp: Semantics.T8_\<nu>)
-  lemma All\<^sub>\<nu>S[meta_subst]: "[\<^bold>\<forall>\<^sub>\<nu>x. \<phi> x in v] = (\<forall>x::\<nu>.[\<phi> x in v])"
-    by (auto simp: Semantics.T8_\<nu>)
+  lemma AllI[meta_intro]: "(\<And>x. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall> x. \<phi> x in v]"
+    by (auto simp: T8)
+  lemma AllE[meta_elim]: "[\<^bold>\<forall>x. \<phi> x in v] \<Longrightarrow> (\<And>x.[\<phi> x in v])"
+    by (auto simp: T8)
+  lemma AllS[meta_subst]: "[\<^bold>\<forall>x. \<phi> x in v] = (\<forall>x.[\<phi> x in v])"
+    by (auto simp: T8)
 
-  lemma All\<^sub>0I[meta_intro]: "(\<And>x::\<Pi>\<^sub>0. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>0 x. \<phi> x in v]"
-    by (auto simp: Semantics.T8_0)
-  lemma All\<^sub>0E[meta_elim]: "[\<^bold>\<forall>\<^sub>0 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>0 .[\<phi> x in v])"
-    by (auto simp: Semantics.T8_0)
-  lemma All\<^sub>0S[meta_subst]: "[\<^bold>\<forall>\<^sub>0 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>0.[\<phi> x in v])"
-    by (auto simp: Semantics.T8_0)
-
-  lemma All\<^sub>1I[meta_intro]: "(\<And>x::\<Pi>\<^sub>1. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>1 x. \<phi> x in v]"
-    by (auto simp: Semantics.T8_1)
-  lemma All\<^sub>1E[meta_elim]: "[\<^bold>\<forall>\<^sub>1 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>1 .[\<phi> x in v])"
-    by (auto simp: Semantics.T8_1)
-  lemma All\<^sub>1S[meta_subst]: "[\<^bold>\<forall>\<^sub>1 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>1.[\<phi> x in v])"
-    by (auto simp: Semantics.T8_1)
-
-  lemma All\<^sub>2I[meta_intro]: "(\<And>x::\<Pi>\<^sub>2. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>2 x. \<phi> x in v]"
-    by (auto simp: Semantics.T8_2)
-  lemma All\<^sub>2E[meta_elim]: "[\<^bold>\<forall>\<^sub>2 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>2 .[\<phi> x in v])"
-    by (auto simp: Semantics.T8_2)
-  lemma All\<^sub>2S[meta_subst]: "[\<^bold>\<forall>\<^sub>2 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>2.[\<phi> x in v])"
-    by (auto simp: Semantics.T8_2)
-
-  lemma All\<^sub>3I[meta_intro]: "(\<And>x::\<Pi>\<^sub>3. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall>\<^sub>3 x. \<phi> x in v]"
-    by (auto simp: Semantics.T8_3)
-  lemma All\<^sub>3E[meta_elim]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] \<Longrightarrow> (\<And>x::\<Pi>\<^sub>3. [\<phi> x in v])"
-    by (auto simp: Semantics.T8_3)
-  lemma All\<^sub>3S[meta_subst]: "[\<^bold>\<forall>\<^sub>3 x. \<phi> x in v] = (\<forall>x::\<Pi>\<^sub>3. [\<phi> x in v])"
-    by (auto simp: Semantics.T8_3)
+subsubsection{* Rules for Existence *}
+  lemma ExIRule: "([\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
+    by (auto simp: exists_def Semantics.T8 Semantics.T4)
+  lemma ExI[meta_intro]: "(\<exists> y . [\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
+    by (auto simp: exists_def Semantics.T8 Semantics.T4)
+  lemma ExE[meta_elim]: "[\<^bold>\<exists>x. \<phi> x in v] \<Longrightarrow> (\<exists> y . [\<phi> y in v])"
+    by (auto simp: exists_def Semantics.T8 Semantics.T4)
+  lemma ExS[meta_subst]: "[\<^bold>\<exists>x. \<phi> x in v] = (\<exists> y . [\<phi> y in v])"
+    by (auto simp: exists_def Semantics.T8 Semantics.T4)
+  lemma ExERule: assumes "[\<^bold>\<exists>x. \<phi> x in v]" obtains x where "[\<phi> x in v]" 
+    using ExE assms by auto
 
 subsection{* Rules for Actuality *}
 text{* \label{TAO_MetaSolver_Actuality} *}
@@ -346,15 +330,15 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
       obtain r where 2:
         "Some r = d\<^sub>2 basic_identity\<^sub>E"
         using propex\<^sub>2 by auto
-      have "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+      have "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
         proof -
           have "[\<lparr>O!,x\<rparr> in v] \<and> [\<lparr>O!,y\<rparr> in v]"
             using OrdI 1 by blast
-          moreover have "[\<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+          moreover have "[\<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
             apply meta_solver using 1 by force
           ultimately show ?thesis using ConjI by simp
         qed
-      moreover have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
+      moreover have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
         by show_proper
       ultimately have "(o\<^sub>1, o\<^sub>2) \<in> ex2 r v"
         using D5_2 1 2
@@ -368,9 +352,9 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
     assumes "[x \<^bold>=\<^sub>E y in v]"
     shows "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
   proof -
-    have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
+    have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
       by show_proper
-    hence 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+    hence 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
       using assms unfolding basic_identity\<^sub>E_def basic_identity\<^sub>E_infix_def
       using D4_2 T1_2 D5_2 by meson
     hence 2: "\<exists> o\<^sub>1 o\<^sub>2 X Y . Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> X
@@ -390,10 +374,10 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
       unfolding lambdabinder1_def d\<^sub>1_def d\<^sub>\<kappa>_proper
       apply transfer
       by simp
-    have "[\<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
+    have "[\<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
       using 1 using ConjE by blast
     hence 6: "\<forall> v F . [\<lparr>F,x\<rparr> in v] \<longleftrightarrow> [\<lparr>F,y\<rparr> in v]"
-      using BoxE EquivE All\<^sub>1E by fast
+      using BoxE EquivE AllE by fast
     hence 7: "\<forall> v . (o\<^sub>1 \<in> ex1 r v) = (o\<^sub>2 \<in> ex1 r v)"
       using 2 4 unfolding valid_in_def
       by (metis "3" "6" d\<^sub>1.rep_eq d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper ex1_def eval\<o>_inverse exe1.rep_eq
@@ -430,7 +414,7 @@ text{* \label{TAO_MetaSolver_Identity_Individual} *}
     assumes "[x \<^bold>=\<^sub>\<kappa> y in v]"
     shows "[\<phi> x in v] = [\<phi> y in v]"
   proof -
-    have "[x \<^bold>=\<^sub>E y \<^bold>\<or> \<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
+    have "[x \<^bold>=\<^sub>E y \<^bold>\<or> \<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
       using assms unfolding basic_identity\<^sub>\<kappa>_def by simp
     moreover {
       assume "[x \<^bold>=\<^sub>E y in v]"
@@ -438,17 +422,17 @@ text{* \label{TAO_MetaSolver_Identity_Individual} *}
         using Eq\<^sub>EE by fast
     }
     moreover {
-      assume 1: "[\<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
+      assume 1: "[\<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
       hence 2: "(\<exists> o\<^sub>1 o\<^sub>2 X Y. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
                               \<and> o\<^sub>1 = \<alpha>\<nu> X \<and> o\<^sub>2 = \<alpha>\<nu> Y)"
         using AbsE ConjE by meson
       moreover then obtain o\<^sub>1 o\<^sub>2 X Y where 3:
         "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = \<alpha>\<nu> X \<and> o\<^sub>2 = \<alpha>\<nu> Y"
         by auto
-      moreover have 4: "[\<^bold>\<box>(\<^bold>\<forall>\<^sub>1 F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
+      moreover have 4: "[\<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>) in v]"
         using 1 ConjE by blast
       hence 6: "\<forall> v F . [\<lbrace>x,F\<rbrace> in v] \<longleftrightarrow> [\<lbrace>y,F\<rbrace> in v]"
-        using BoxE All\<^sub>1E EquivE by fast
+        using BoxE AllE EquivE by fast
       hence 7: "\<forall>v r. (\<exists> o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)
                     = (\<exists> o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> y \<and> o\<^sub>1 \<in> en r)"
         apply - apply meta_solver
@@ -500,11 +484,11 @@ text{* \label{TAO_MetaSolver_Identity_OnePlaceRelation} *}
 
   lemma Eq\<^sub>1I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>1 G in v]"
     unfolding basic_identity\<^sub>1_def
-    apply (rule BoxI, rule All\<^sub>\<nu>I, rule EquivI)
+    apply (rule BoxI, rule AllI, rule EquivI)
     by simp
   lemma Eq\<^sub>1E[meta_elim]: "[F \<^bold>=\<^sub>1 G in v] \<Longrightarrow> F = G"
     unfolding basic_identity\<^sub>1_def
-    apply (drule BoxE, drule_tac x="(\<alpha>\<nu> { F })" in All\<^sub>\<nu>E, drule EquivE)
+    apply (drule BoxE, drule_tac x="(\<alpha>\<nu> { F })" in AllE, drule EquivE)
     apply (simp add: Semantics.T2)
     unfolding en_def d\<^sub>\<kappa>_def d\<^sub>1_def
     using \<nu>\<kappa>_proper rep_proper_id
@@ -519,12 +503,12 @@ text{* \label{TAO_MetaSolver_Identity_TwoPlaceRelation} *}
 
   lemma Eq\<^sub>2I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>2 G in v]"
     unfolding basic_identity\<^sub>2_def
-    apply (rule All\<^sub>\<nu>I, rule ConjI, (subst Eq\<^sub>1S)+)
+    apply (rule AllI, rule ConjI, (subst Eq\<^sub>1S)+)
     by simp
   lemma Eq\<^sub>2E[meta_elim]: "[F \<^bold>=\<^sub>2 G in v] \<Longrightarrow> F = G"
   proof -
     assume "[F \<^bold>=\<^sub>2 G in v]"
-    hence 1: "[\<^bold>\<forall>\<^sub>\<nu> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
+    hence 1: "[\<^bold>\<forall> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>) in v]"
       unfolding basic_identity\<^sub>2_def
       apply - apply meta_solver by auto
     {
@@ -558,13 +542,13 @@ subsubsection{* Three-Place Relations *}
 text{* \label{TAO_MetaSolver_Identity_ThreePlaceRelation} *}
 
   lemma Eq\<^sub>3I[meta_intro]: "F = G \<Longrightarrow> [F \<^bold>=\<^sub>3 G in v]"
-    apply (simp add: meta_defs meta_aux conn_defs basic_identity\<^sub>3_def)
+    apply (simp add: meta_defs meta_aux conn_defs forall_\<nu>_def basic_identity\<^sub>3_def)
     using MetaSolver.Eq\<^sub>1I valid_in.rep_eq by auto
   lemma Eq\<^sub>3E[meta_elim]: "[F \<^bold>=\<^sub>3 G in v] \<Longrightarrow> F = G"
   proof -
 
     assume "[F \<^bold>=\<^sub>3 G in v]"
-    hence 1: "[\<^bold>\<forall>\<^sub>\<nu> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
+    hence 1: "[\<^bold>\<forall> x y. (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>=\<^sub>1 (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) in v]"
       unfolding basic_identity\<^sub>3_def
       apply - apply meta_solver by auto
     {
@@ -598,13 +582,13 @@ text{* \label{TAO_MetaSolver_Identity_ThreePlaceRelation} *}
 subsubsection{* Propositions *}
 text{* \label{TAO_MetaSolver_Identity_Proposition} *}
 
-  lemma Eq\<^sub>\<o>I[meta_intro]: "x = y \<Longrightarrow> [x \<^bold>=\<^sub>\<o> y in v]"
-    unfolding basic_identity\<^sub>\<o>_def by (simp add: Eq\<^sub>1S)
-  lemma Eq\<^sub>\<o>E[meta_elim]: "[F \<^bold>=\<^sub>\<o> G in v] \<Longrightarrow> F = G"
+  lemma Eq\<^sub>0I[meta_intro]: "x = y \<Longrightarrow> [x \<^bold>=\<^sub>0 y in v]"
+    unfolding basic_identity\<^sub>0_def by (simp add: Eq\<^sub>1S)
+  lemma Eq\<^sub>0E[meta_elim]: "[F \<^bold>=\<^sub>0 G in v] \<Longrightarrow> F = G"
     proof -
-      assume "[F \<^bold>=\<^sub>\<o> G in v]"
+      assume "[F \<^bold>=\<^sub>0 G in v]"
       hence "[(\<^bold>\<lambda>y. F) \<^bold>=\<^sub>1 (\<^bold>\<lambda>y. G) in v]"
-        unfolding basic_identity\<^sub>\<o>_def by simp
+        unfolding basic_identity\<^sub>0_def by simp
       hence "(\<^bold>\<lambda>y. F) = (\<^bold>\<lambda>y. G)"
         using Eq\<^sub>1S by simp
       hence "(\<lambda>u s w. (\<exists>x. \<nu>\<upsilon> x = u) \<and> eval\<o> F s w)
@@ -617,10 +601,10 @@ text{* \label{TAO_MetaSolver_Identity_Proposition} *}
       thus "F = G"
       by (metis eval\<o>_inverse)
     qed
-  lemma Eq\<^sub>\<o>S[meta_subst]: "[F \<^bold>=\<^sub>\<o> G in v] = (F = G)"
-    using Eq\<^sub>\<o>I Eq\<^sub>\<o>E by auto
-  lemma Eq\<^sub>\<o>_prop: "[F \<^bold>=\<^sub>\<o> G in v] \<Longrightarrow> [\<phi> F in v] = [\<phi> G in v]"
-    using Eq\<^sub>\<o>E by blast
+  lemma Eq\<^sub>0S[meta_subst]: "[F \<^bold>=\<^sub>0 G in v] = (F = G)"
+    using Eq\<^sub>0I Eq\<^sub>0E by auto
+  lemma Eq\<^sub>0_prop: "[F \<^bold>=\<^sub>0 G in v] \<Longrightarrow> [\<phi> F in v] = [\<phi> G in v]"
+    using Eq\<^sub>0E by blast
 
 end
 

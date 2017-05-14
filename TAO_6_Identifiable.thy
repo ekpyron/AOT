@@ -1,6 +1,6 @@
 (*<*)
 theory TAO_6_Identifiable
-imports TAO_5_Quantifiable
+imports TAO_5_MetaSolver
 begin
 (*>*)
 
@@ -100,11 +100,11 @@ end
 
 instantiation \<o> :: identifiable
 begin
-  definition identity_\<o> where "identity_\<o> \<equiv> basic_identity\<^sub>\<o>"
+  definition identity_\<o> where "identity_\<o> \<equiv> basic_identity\<^sub>0"
   instance proof
     fix F G :: \<o> and w \<phi>
     show "(w \<Turnstile> F \<^bold>= G) \<Longrightarrow> (w \<Turnstile> \<phi> F) \<Longrightarrow> (w \<Turnstile> \<phi> G)"
-      unfolding identity_\<o>_def using MetaSolver.Eq\<^sub>\<o>_prop ..
+      unfolding identity_\<o>_def using MetaSolver.Eq\<^sub>0_prop ..
   qed
 end
 
@@ -150,7 +150,7 @@ lemma identity\<^sub>3_def[identity_defs]:
                       \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
   unfolding identity_\<Pi>\<^sub>3_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>3_def forall_\<nu>_def by simp
 lemma identity\<^sub>\<o>_def[identity_defs]: "op \<^bold>= \<equiv> \<lambda>F G. (\<^bold>\<lambda>y. F) \<^bold>= (\<^bold>\<lambda>y. G)"
-  unfolding identity_\<o>_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>\<o>_def by simp
+  unfolding identity_\<o>_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>0_def by simp
 
 (*<*)
 end

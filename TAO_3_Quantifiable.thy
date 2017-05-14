@@ -1,6 +1,6 @@
 (*<*)
-theory TAO_5_Quantifiable
-imports TAO_4_MetaSolver
+theory TAO_3_Quantifiable
+imports TAO_2_Semantics
 begin
 (*>*)
 
@@ -10,7 +10,7 @@ text{* \label{TAO_Quantifiable} *}
 text{*
 \begin{remark}
   In order to define general quantifiers that can act
-  on all individuals as well as relations a type class
+  on individuals as well as relations a type class
   is introduced which assumes the semantics of the all quantifier.
   This type class is then instantiated for individuals and
   relations.
@@ -25,9 +25,6 @@ text{* Type class for quantifiable types: *}
 class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>" [8] 9)
   assumes quantifiable_T8: "(w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
 begin
-  definition exists :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<exists>" [8] 9) where
-    "exists \<equiv> \<lambda> \<phi> . \<^bold>\<not>(\<^bold>\<forall> x . \<^bold>\<not>\<phi> x)"
-  declare exists_def[conn_defs]
 end
 
 text{* Semantics for the general all quantifier: *}
@@ -86,40 +83,6 @@ begin
     show "(w \<Turnstile> \<^bold>\<forall>x. \<psi> x) = (\<forall>x. (w \<Turnstile> \<psi> x))"
       unfolding forall_\<Pi>\<^sub>3_def using Semantics.T8_3 .
   qed
-end
-
-subsection{* Rules *}
-text{* \label{TAO_Quantifiable_Rules} *}
-
-text{*
-\begin{remark}
-  The @{text "meta_solver"} is extended by rules for
-  general quantification.
-\end{remark}
-*}
-
-context MetaSolver
-begin
-  subsubsection{* Rules for General All Quantification. *}
-  lemma AllI[meta_intro]: "(\<And>x::'a::quantifiable. [\<phi> x in v]) \<Longrightarrow> [\<^bold>\<forall> x. \<phi> x in v]"
-    by (auto simp: Semantics.T8)
-  lemma AllE[meta_elim]: "[\<^bold>\<forall>x. \<phi> x in v] \<Longrightarrow> (\<And>x::'a::quantifiable.[\<phi> x in v])"
-    by (auto simp: Semantics.T8)
-  lemma AllS[meta_subst]: "[\<^bold>\<forall>x. \<phi> x in v] = (\<forall>x::'a::quantifiable.[\<phi> x in v])"
-    by (auto simp: Semantics.T8)
-
-  subsubsection{* Rules for Existence *}
-  lemma ExIRule: "([\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
-    by (auto simp: exists_def NotS AllS)
-  lemma ExI[meta_intro]: "(\<exists> y . [\<phi> y in v]) \<Longrightarrow> [\<^bold>\<exists>x. \<phi> x in v]"
-    by (auto simp: exists_def NotS AllS)
-  lemma ExE[meta_elim]: "[\<^bold>\<exists>x. \<phi> x in v] \<Longrightarrow> (\<exists> y . [\<phi> y in v])"
-    by (auto simp: exists_def NotS AllS)
-  lemma ExS[meta_subst]: "[\<^bold>\<exists>x. \<phi> x in v] = (\<exists> y . [\<phi> y in v])"
-    by (auto simp: exists_def NotS AllS)
-  lemma ExERule: assumes "[\<^bold>\<exists>x. \<phi> x in v]" obtains x where "[\<phi> x in v]" 
-    using ExE assms by auto
-
 end
 
 (*<*)

@@ -6,9 +6,9 @@ session "TAO" = "HOL" +
   theories
 	TAO_1_Embedding
 	TAO_2_Semantics
-	TAO_3_BasicDefinitions
-	TAO_4_MetaSolver
-	TAO_5_Quantifiable
+	TAO_3_Quantifiable
+	TAO_4_BasicDefinitions
+	TAO_5_MetaSolver
 	TAO_6_Identifiable
 	TAO_7_Axioms
 	TAO_8_Definitions
@@ -51,9 +51,9 @@ session "Thesis" = "HOL" +
   theories
 	TAO_1_Embedding
 	TAO_2_Semantics
-	TAO_3_BasicDefinitions
-	TAO_4_MetaSolver
-	TAO_5_Quantifiable
+	TAO_3_Quantifiable
+	TAO_4_BasicDefinitions
+	TAO_5_MetaSolver
 	TAO_6_Identifiable
 	TAO_7_Axioms
 	TAO_8_Definitions

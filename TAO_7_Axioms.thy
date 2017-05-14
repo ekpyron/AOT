@@ -376,7 +376,7 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
   lemma lambda_predicates_4_0[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
     shows "[(\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x))) in v]"
-    unfolding identity_\<o>_def apply - apply (rule Eq\<^sub>\<o>I)
+    unfolding identity_\<o>_def apply - apply (rule Eq\<^sub>0I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_1[axiom]:
