@@ -33,7 +33,7 @@ lemma (in Semantics) T8: shows "(w \<Turnstile> \<^bold>\<forall> x . \<psi> x) 
   using quantifiable_T8 .
 
 subsection{* Instantiations *}
-text{* \label{TAO_Quantifiable_Instantiation} *}
+text{* \label{TAO_Quantifiable_Instantiations} *}
 
 instantiation \<nu> :: quantifiable
 begin

@@ -10,7 +10,12 @@ begin
 notation (latex output)
   validity_in ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> in _]")
 definition embedded_style where "embedded_style \<equiv> id"
-lemma embedded_def: "A = B \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
+lemma embedded_meta_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
+lemma embedded_meta_eq: "(A = B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
+lemma embedded_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = (embedded_style B)"
+    unfolding embedded_style_def by auto
+lemma embedded_eq: "(A = B) \<Longrightarrow> (embedded_style A) = (embedded_style B)"
+    unfolding embedded_style_def by auto
 notation (latex output)
   embedded_style ("\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>")
 translations
@@ -45,6 +50,12 @@ notation (latex output)
   forall\<^sub>2 ("\<^bold>\<forall>\<^sub>2 F . _ F")
 notation (latex output)
   forall\<^sub>3 ("\<^bold>\<forall>\<^sub>3 F . _ F")
+notation (latex output)
+  forall ("\<^bold>\<forall> \<alpha> . _ \<alpha>")
+notation (latex output)
+  exists ("\<^bold>\<exists> \<alpha> . _ \<alpha>")
+notation (latex output)
+  exists_unique ("\<^bold>\<exists>! \<alpha> . _ \<alpha>")
 notation (latex output)
   lambdabinder1 ("\<^bold>\<lambda>x. _ x")
 translations
@@ -830,7 +841,7 @@ In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e
 \emph{and} definite descriptions. To use an individual variable (of type @{type \<nu>}) as in place of
 an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced (see \ref{TAO_Embedding_IndividualTerms}):
 
-@{thm[display] \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_def]}
+@{thm[display] \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_meta_eq]}
 
 The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
 logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
@@ -838,7 +849,7 @@ and to always denote the same object as the individual variable @{term "x"}.
 
 It is now possible to define definite descriptions as follows:
 
-@{thm[display] that.rep_eq[where x=\<phi>, THEN embedded_def]}
+@{thm[display] that.rep_eq[where x=\<phi>, THEN embedded_meta_eq]}
 
 If the propriety condition of a definite description @{prop "\<exists>!x. \<phi> x dj dw"} holds,
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
@@ -893,10 +904,10 @@ text{*
   the function application of the relation to the urelements corresponding to the individuals
   yields true for a given possible world and state (see \ref{TAO_Embedding_Exemplification}):
   \begin{itemize}
-    \item @{thm[display] exe0.rep_eq[where x=p, THEN embedded_def]}
-    \item @{thm[display] exe1.rep_eq[where x=F and xa=x, THEN embedded_def]}
-    \item @{thm[display] exe2.rep_eq[where x=F and xa=x and xb=y, THEN embedded_def]}
-    \item @{thm[display] exe3.rep_eq[where x=F and xa=x and xb=y and xc=z, THEN embedded_def]}
+    \item @{thm[display] exe0.rep_eq[where x=p, THEN embedded_meta_eq]}
+    \item @{thm[display] exe1.rep_eq[where x=F and xa=x, THEN embedded_meta_eq]}
+    \item @{thm[display] exe2.rep_eq[where x=F and xa=x and xb=y, THEN embedded_meta_eq]}
+    \item @{thm[display] exe3.rep_eq[where x=F and xa=x and xb=y and xc=z, THEN embedded_meta_eq]}
   \end{itemize}
 *}
 
@@ -905,7 +916,7 @@ subsection{* Encoding *}
 text{*
   Encoding can now be defined as follows (see \ref{TAO_Embedding_Encoding}):
 
-  @{thm enc.rep_eq[of x F, THEN embedded_def]}
+  @{thm enc.rep_eq[of x F, THEN embedded_meta_eq]}
 
   That is for a given state @{term s} and a given possible world @{term w} it holds that
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
@@ -939,15 +950,15 @@ text{*
   The basic connectives and quantifiers are now defined as follows
   (see \ref{TAO_Embedding_Connectives}):
   \begin{itemize}
-    \item @{thm[display] not.rep_eq[of p, THEN embedded_def]}
-    \item @{thm[display] impl.rep_eq[of p q, THEN embedded_def]}
-    \item @{thm[display] forall\<^sub>\<nu>.rep_eq[of \<phi>, rename_abs s w x, THEN embedded_def]}
-    \item @{thm[display] forall\<^sub>0.rep_eq[of \<phi>, rename_abs s w p, THEN embedded_def]}
-    \item @{thm[display] forall\<^sub>1.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_def]}
-    \item @{thm[display] forall\<^sub>2.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_def]}
-    \item @{thm[display] forall\<^sub>3.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_def]}
-    \item @{thm[display] box.rep_eq[of p, THEN embedded_def]}
-    \item @{thm[display] actual.rep_eq[of p, THEN embedded_def]}
+    \item @{thm[display] not.rep_eq[of p, THEN embedded_meta_eq]}
+    \item @{thm[display] impl.rep_eq[of p q, THEN embedded_meta_eq]}
+    \item @{thm[display] forall\<^sub>\<nu>.rep_eq[of \<phi>, rename_abs s w x, THEN embedded_meta_eq]}
+    \item @{thm[display] forall\<^sub>0.rep_eq[of \<phi>, rename_abs s w p, THEN embedded_meta_eq]}
+    \item @{thm[display] forall\<^sub>1.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_meta_eq]}
+    \item @{thm[display] forall\<^sub>2.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_meta_eq]}
+    \item @{thm[display] forall\<^sub>3.rep_eq[of \<phi>, rename_abs s w F, THEN embedded_meta_eq]}
+    \item @{thm[display] box.rep_eq[of p, THEN embedded_meta_eq]}
+    \item @{thm[display] actual.rep_eq[of p, THEN embedded_meta_eq]}
   \end{itemize}
 
   Note in particular that the definition of negation and implication behaves
@@ -990,10 +1001,10 @@ text{*
   The embedding defines them as follows (see \ref{TAO_Embedding_Lambda}):
 
   \begin{itemize}
-    \item @{thm[display] lambdabinder0.rep_eq[of p, THEN embedded_def]}
-    \item @{thm[display] lambdabinder1.rep_eq[of \<phi>, THEN embedded_def]}
-    \item @{thm[display, eta_contract=false] lambdabinder2.rep_eq[of "\<lambda> x y . \<phi> x y", THEN embedded_def]}
-    \item @{thm[display, eta_contract=false] lambdabinder3.rep_eq[of "\<lambda> x y z . \<phi> x y z", THEN embedded_def]}
+    \item @{thm[display] lambdabinder0.rep_eq[of p, THEN embedded_meta_eq]}
+    \item @{thm[display] lambdabinder1.rep_eq[of \<phi>, THEN embedded_meta_eq]}
+    \item @{thm[display, eta_contract=false] lambdabinder2.rep_eq[of "\<lambda> x y . \<phi> x y", THEN embedded_meta_eq]}
+    \item @{thm[display, eta_contract=false] lambdabinder3.rep_eq[of "\<lambda> x y z . \<phi> x y z", THEN embedded_meta_eq]}
   \end{itemize}
 
 \begin{remark}
@@ -1120,7 +1131,7 @@ text{*
 
   Concreteness can now be defined as a one-place relation (see \ref{TAO_Embedding_Concreteness}):
 
-  @{thm[display] Concrete.rep_eq[THEN embedded_def]}
+  @{thm[display] Concrete.rep_eq[THEN embedded_meta_eq]}
 
   The equivalence of the axioms stated in the meta-logic and the notion of concreteness in Principia
   can now be verified (see \ref{TAO_SanityTests_MetaAxioms}):
@@ -1227,6 +1238,7 @@ begin
 section{* Semantical Abstraction *}
   
 text{*
+\label{semantics}
 
 The second layer of the embedding (see~\ref{TAO_Semantics}) abstracts away from the technicalities
 of the representation layer and states the truth conditions for the formulas of the embedded logic
@@ -1507,7 +1519,50 @@ text{*
 (*<*)
 end (* context Semantics *)
 (*>*)
-  
+
+section{* General All-Quantifier *}
+
+text{*
+  \label{general-quantifier}
+
+  Since the last section established the semantic truth conditions of the specific versions of the
+  all quantifier for all variable types of PLM, it is now possible to define a binding symbol for general
+  all quantification.
+
+  This is done using the concept of \emph{type classes} in Isabelle/HOL. Type classes define
+  constants that depend on a \emph{type variable} and state assumptions about this constant.
+  In subsequent reasoning the type of an object can be restricted to a type of the introduced
+  type class. Thereby the reasoning can make use of all assumptions that have been stated about
+  the constants of the type class. A priori it is not assumed that any type actually satisfies
+  the requirements of the type class, so initially statements involving types restricted
+  to a type class can not be applied to any specific type.
+
+  To allow this the type class has to be \emph{instantiated} for the desired type. This is done
+  by first providing a definition of the constants of the type class that is specific to the
+  respective type and then providing proofs for each assumption made by the type class given the
+  particular type and the provided definitions. Once this is done any statement that was proven for
+  the general type class can be applied to this type.
+
+  In the case of general all quantification for the embedding this concept can be utilized by
+  introducing the type class @{class quantifiable} that is equipped with a constant that is used
+  as the general all quantification binder (see~\ref{TAO_Quantifiable_Class}).
+  For this constant it can now be assumed that it satisfies the semantic properties of all
+  quantification: @{thm quantifiable_T8[of w \<psi>]}.
+
+  Since it was already shown in the last section that all variable types satisfy this property,
+  the type class can immediately be instantiated for the types @{type \<nu>}, @{type \<Pi>\<^sub>0}, @{type \<Pi>\<^sub>1},
+  @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3} (see~\ref{TAO_Quantifiable_Instantiation}). The instantiation proofs
+  only need to refer to the statements derived in the semantics section for the respective version
+  of the quantifier and are thereby independent of the representation layer.
+
+  From this point onward therefore the general all quantifier can be used and the type specific
+  versions of the quantifiers are no longer needed. This is true even if a quantification is meant
+  to only range over objects of a particular type: In this case the desired type
+  (if it can not implicitly be deduced from the context) can be stated explicitly while still using
+  the general quantifier.
+
+*}
+
 section{* Derived Language Elements *}
 
 text{*
@@ -1515,7 +1570,7 @@ text{*
   primitive elements, e.g. only negation and implication are present and no notion of identity
   has been introduced so far.
 
-  Since the last section has established the semantical properties of these basic elements of
+  Since the section~\ref{semantics} has established the semantical properties of these basic elements of
   the language, it now makes sense to extend the language by introducing some basic definitions
   that can be expressed directly in the embedded logic.
 *}
@@ -1523,15 +1578,44 @@ text{*
 subsection{* Connectives *}
 
 text{*
-  The remaining classical connectives are defined in the traditional manner (see \ref{TAO_BasicDefinitions_DerivedConnectives}):
+  The remaining classical connectives are defined in the traditional manner (see~\ref{TAO_BasicDefinitions_DerivedConnectives}):
   \begin{itemize}
-    \item @{thm[display] conj_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
-    \item @{thm[display] disj_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
-    \item @{thm[display] equiv_def[expand2, of \<phi> \<psi>, THEN embedded_def]}
-    \item @{thm[display] diamond_def[expand1, of \<phi>, THEN embedded_def]}
+    \item @{thm[display] conj_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
+    \item @{thm[display] disj_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
+    \item @{thm[display] equiv_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
+    \item @{thm[display] diamond_def[expand1, THEN embedded_eq, of \<phi>]}
   \end{itemize}
+
+  Furthermore the general all quantifier is supplemented by an existence qualifier as follows:
+  \begin{center}
+    @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq]}
+  \end{center}
 *}
+
+subsection{* Identity *}
   
+text{*
+  More importantly the definitions for identity are stated for each type of variable
+  (see~\ref{TAO_BasicDefinitions_Identity}):
+
+  \begin{itemize}
+    \item @{thm[display] basic_identity\<^sub>E_infix_def[unfolded basic_identity\<^sub>E_def, THEN embedded_def, of x y]}
+    \item @{thm[display] basic_identity\<^sub>1_def[expand2, of F G, rename_abs x, THEN embedded_eq]}
+    \item @{thm[display] basic_identity\<^sub>2_def[expand2, of F G, rename_abs x, THEN embedded_eq]}
+    \item @{thm basic_identity\<^sub>3_def[expand2, of F G, rename_abs x y, THEN embedded_eq]}
+  \end{itemize}
+
+  TODO: reformatting/line breaks in the list.
+
+  Similarly to the general all quantifier it makes sense to introduce a general identity
+  relation for all types of terms (@{type \<kappa>}, @{type \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2}, @{typ \<Pi>\<^sub>3}).
+  In contrast to all quantification this is more challenging, though, since there is no
+  semantic criterion that characterizes the identity for all these types. Therefore a general
+  identity symbol will only be introduced after the next section, since it will then be possible
+  to formulate and prove a reasonable property shared by the identity of all types of terms.
+
+*}
+
 (*<*)
 context MetaSolver
 begin
@@ -1539,20 +1623,201 @@ begin
 
 section{* Proving Method @{method[names_short = true] meta_solver} *}
  
+subsection{* Concept *}
+  
 text{*
-  Since the last section constructed a first abstraction layer on top of the focus on a single kind
-  of model and the technicalities of the first layer, it makes sense to revisit the general concept
-  of the layered structure of the embedding.
+
+  Since the section~\ref{semantics} constructed a first abstraction layer on top of the first layer
+  that focuses on a single kind of model and is connected with specific technicalities, it makes sense
+  to revisit the general concept of the layered structure of the embedding.
 
   The idea behind this approach is that the reasoning in subsequent layers should - as far as possible - only
-  rely on the previous layer. 
+  rely on the previous layer. Automated reasoning in this way, however, can be cumbersome, since
+  automated proving tools have to be restricted to only consider a specific set of theorems that are
+  true in the context. While this is possible it is still an interesting question whether the process
+  of automated reasoning in the layered approach can be made easier.
 
+  To that end the embedding facilitates the possibility of defining custom proving methods that
+  the Isabelle package \emph{Eisbach} makes possible. This package allows it to conveniently
+  define a new proving method that is based on the systematic application of existing methods.
+  
+  \begin{remark}
+    The Eisbach package even allows to construct more complex proving methods that involve
+    pattern matching. This option is used in section TODO: reference details
+  \end{remark}
+
+  The idea is to construct a simple resolution prover that allows it to deconstruct complex
+  formulas of the embedded logic to simpler formulas that are connected some relation in the meta-logic,
+  as required by the semantics.
+
+  For example an implication formula can be deconstructed as follows:
+  \begin{center}
+    @{thm[display] ImplS[of v \<phi> \<psi>]}
+  \end{center}
+
+  Whereas the basic proving methods available in Isabelle cannot immediately prove
+  \mbox{@{lemma "[\<phi> \<^bold>\<rightarrow> \<phi> in v]" by (simp add: ImplS)}} without any facts about the definitions of validity and implication,
+  they \emph{can} prove \mbox{@{lemma "[\<phi> in v] \<longrightarrow> [\<phi> in v]" by simp}} directly as an instance of
+  \mbox{@{lemma "p \<longrightarrow> p" by simp}}.
+*}
+  
+subsection{* Implementation *}
+
+text{*
+  Following this idea the method @{method meta_solver} is introduced (see~\ref{TAO_MetaSolver})
+  that repeatedly applies rules like the above in order to translate a formula in the embedded logic
+  to a meta-logical statement involving simpler formulas.
+
+  The statement of appropriate introduction, elimination and substitution rules for the logical
+  connectives and quantifiers is straightforward, but more than that the concept can be used to
+  resolve exemplification and encoding formulas to their semantic truth conditions as well,
+  e.g. (see~\ref{TAO_MetaSolver_Encoding}):
+  \begin{center}
+    @{thm[display] Exe1E[of v F x]}
+  \end{center}
+
+  This way a large set of formulas can be decomposed to semantic expressions that can be automatically
+  proven without having to rely on the meta-logical definitions directly.
+
+  As mentioned before the concept of a strict separation between the layers is not yet achieved by
+  the embedding. In particular the @{method meta_solver} is equipped with rules about
+  being abstract and ordinary and most importantly about the defined identity that depend on the
+  specific structure of the representation layer and are not solely derivable from the semantics.
+
+  Notably the representation layer has the property that the defined identities are equivalent to
+  the identity in the meta-logic. Formally the following statements are true and defined as rules
+  for the @{method meta_solver} (see~\ref{TAO_MetaSolver_Identity}):
+
+  \begin{itemize}
+    \item @{thm[display] Eq\<^sub>ES[of v "embedded_style x" "embedded_style y"]}
+    \item @{thm[display] Eq\<kappa>S[of v "embedded_style x" "embedded_style y"]}
+    \item @{thm[display] Eq\<^sub>1S[of v "embedded_style F" "embedded_style G"]}
+    \item @{thm[display] Eq\<^sub>2S[of v "embedded_style F" "embedded_style G"]}
+    \item @{thm[display] Eq\<^sub>3S[of v "embedded_style F" "embedded_style G"]}
+    \item @{thm[display] Eq\<^sub>0S[of v "embedded_style F" "embedded_style G"]}
+  \end{itemize}
+
+  The proofs for these statements (see~\ref{TAO_MetaSolver_Identity}) are complex and do not
+  solely rely on the properties of the formal semantics of PLM.
+
+  Although future work may try to forgo these statements or to replace them with statements that
+  are in fact based on the formal semantics alone, the fact that they are true in the constructed
+  embedding has a distinct advantage: since identical terms in the sense of PLM are identical in
+  the meta-logic, proving the axiom of substitution (TODO: reference) is trivial.
+
+  \begin{remark}
+    Note instead of introducing a custom proving method using the Eisbach package, a similar
+    effect could be achieved by instead supplying the derived introduction, elimination and substitution
+    rules directly to one of the existing proving methods like @{method auto} or @{method fast}.
+    In practice, however, we found that the custom @{method meta_solver} produces more reliable
+    results, especially in the case that a proving objective cannot be solved by the supplied rules
+    completely.
+  \end{remark}
+*}
+
+subsection{* Applicability *}
+
+text{*
+  Given the discussion above and keeping the layered structure of the embedding in mind, it is
+  important to precisely determine for which purposes it is valid to use the constructed
+  @{method meta_solver}.
+
+  The main application of the method in the embedding is deriving the axiom system as described in
+  section TODO: reference. Furthermore the @{method meta_solver} can be aid in examining the
+  meta-logical properties of the embedding. Care has been taken that the meta-solver only employs
+  \emph{reversable} transformations, thereby it is for example justified to use it to simplify a statement
+  before employing a tool like @{theory_text "nitpick"} in order to look for counter-models.
+
+  However it is \emph{not} justified to assume that a theorem that can be proven with the aid of the
+  @{method meta_solver} method can considered to be derivable in the formal system of PLM, since
+  the result still depends on the specific structure of the representation layer. Note, however,
+  that the concept of the @{method meta_solver} inspired another proving method that is
+  introduced in section TODO: reference, namely the @{method PLM.PLM_solver}. This proving method
+  only employs rules that are derivable from the formal system of PLM itself, thereby this method
+  \emph{can} be used in proves without sacrificing the universality of the result.
+  
 *}
 
 (*<*)
 end (* context MetaSolver *)
 (*>*)
+
+section{* General Identity Relation *}
+
+text{*
+  As already mentioned in section~\ref{general-quantifier} similarly to the general quantification
+  binder it is desirable to introduce a general identity relation.
+
+  Since the identity of PLM is not directly defined using semantic truth conditions, but instead
+  by the means of a complex formulas in the embedded logic that is specific to each type of terms,
+  the question is whether they share a property that can reasonably be used as the condition of
+  a type class.
+
+  A natural choice for such a condition is based on the axiom of the substitution of identicals
+  (see TODO: reference). The axiom states that if two objects are identical (in the sense of the defined
+  identity of PLM), then a formula involving the first object implies the formula resulting from
+  substituting the second object for the first object. This inspires the following condition for
+  the type class (see~\ref{TAO_Identifiable_Class}):
+
+  \begin{center}
+    @{thm[display] identifiable_class.l_identity[of v \<alpha> \<beta> \<phi>]}
+  \end{center}
+
+  Using the fact that in the last section it was already derived, that the defined identity
+  in the embedded-logic for each term implies the primitive identity of the meta-logical objects,
+  this type class can be instantiated for all types of terms: @{type \<kappa>}, @{typ \<Pi>\<^sub>0} resp. @{type \<o>},
+  @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2}, @{type \<Pi>\<^sub>3} (see~\ref{TAO_Identifiable_Instantiation}).
+
+  Since now general quantification and general identity are available, it seems reasonable to
+  define the unique existence quantifier that involves both quantification and identity. To that
+  end a derived type class that is introduced that is the combination of the @{class quantifiable}
+  and the @{class identifiable} classes (since both general quantification and identity have to be
+  available).Although this is straightforward for the relation types, this reveals a subtlety
+  involving the distinction between individuals of type @{type \<nu>} and individual terms of type @{type \<kappa>}:
+  The type @{type \<nu>} belongs to the class @{class quantifiable}, the type @{type \<kappa>} on the other hand
+  does not: no quantification over individual \emph{terms} (that may not denote) was defined.
+  On the other hand the class @{class identifiable} was only instantiated for the type @{type \<kappa>},
+  but not for the type @{type \<nu>}. This issue can be solved by noticing that it is straightforward and
+  justified to define an identity for @{type \<nu>} as allows:
+
+  \begin{center}
+    @{thm[display] identity_\<nu>_def[expand2, of x y, THEN embedded_eq]}
+  \end{center}
+
+  This way type @{type \<nu>} is equipped with both the general all quantifier and the general identity
+  relation and unique existence can be defined for all variable types as expected:
+
+  \begin{center}
+    @{thm[display] exists_unique_def[expand1, of \<phi>, THEN embedded_eq]}
+  \end{center}
+
+  Another subtlety has to be considered: at times it is necessary to expand the definitions
+  of identity for a specific type to derive statements in PLM. Since the defined identities were
+  introduced prior to the general identity symbol, such an expansion is therefore so far not possible
+  for a statement that uses the general identity, even if the types are fixed in the context.
+
+  To allow such an expansion the definitions of identity are equivalently restated for the general
+  identity symbol and each specific type (see~\ref{TAO_Identifiable_Definitions}). This way
+  the general identity can from this point onward completely replace the type-specific identity
+  symbols.
+
+*}
   
+(*<*)
+context Axioms
+begin
+(*>*)
+
+section{* The Axiom System of PLM *}
+
+text{*
+  
+*}
+  
+(*<*)
+end
+(*>*)
+
 (*<*)
 end
 (*>*)
