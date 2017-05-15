@@ -2780,7 +2780,7 @@ text{* \label{TAO_PLM_Relations} *}
     shows "[(\<chi>::\<kappa>\<Rightarrow>\<o>) (\<^bold>\<iota>x. \<phi> x) \<^bold>= \<chi> (\<^bold>\<iota>x. \<psi> x) in v]"
     proof -
       have "[\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x)) in v]"
-        using assms lambda_predicates_4_0
+        using assms lambda_predicates_4_0[axiom_instance]
         by blast
       hence "[(\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x)) in v]"
         using propositions_lemma_1[THEN id_eq_prop_prop_8_b[deduction]]

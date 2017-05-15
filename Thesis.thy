@@ -12,7 +12,7 @@ notation (latex output)
 notation (latex output)
   actual_validity ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]")
 notation (latex output)
-  Axioms.axiom ("[[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]]")
+  Axioms.axiom ("[[ \<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> ]]")
 definition embedded_style where "embedded_style \<equiv> id"
 lemma embedded_meta_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
 lemma embedded_meta_eq: "(A = B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
@@ -1925,6 +1925,8 @@ text{*
 subsubsection{* Axioms of Quantification *}
 
 text{*
+  \label{quantification-axioms}
+
   The axioms of quantification are formulated in a way that differs from the statements in
   PLM, as follows (see~\ref{TAO_Axioms_Quantification}):
 
@@ -2044,6 +2046,126 @@ text{*
 
 *}
 
+subsubsection{* Axioms of Necessity and Actuality *}
+  
+text{*
+  The axioms of necessity and actuality can be derived automatically
+  and require no further attention (see~\ref{TAO_Axioms_NecessityAndActuality}):
+
+  \begin{itemize}
+    \item @{thm qml_act_1} \hfill{(\ref{PM-qml-act}.1)}
+    \item @{thm qml_act_2} \hfill{(\ref{PM-qml-act}.2)}
+  \end{itemize}
+*}
+
+subsubsection{* Axioms of Descriptions *}
+
+text{*
+  There is only one axiom dedicated to descriptions only (note, however, that descriptions play
+  a role in the axioms of quantification). The statement is the following (see~\ref{TAO_Axioms_Descriptions}):
+
+  \begin{itemize}
+    \item @{thm descriptions} \hfill{(\ref{PM-descriptions})}
+  \end{itemize}
+
+  Given the technicalities of descriptions already discussed in section~\ref{quantification-axioms}
+  it comes at no surprise that the proof for this statement is rather verbose.
+
+*}
+
+subsubsection{* Axioms of Complex Relation Terms *}
+(*<*)
+context
+begin
+  interpretation MetaSolver .
+(*>*)
+text{*
+  The axioms of complex relation terms deal with the properties of lambda expressions.
+  
+  Since the @{method meta_solver} was not equipped with explicit rules for lambda expressions,
+  the statements rely on their semantic properties as described in section~\ref{semantics} directly.
+
+  The statements are the following (see~\ref{TAO_Axioms_ComplexRelationTerms}):
+  \begin{itemize}
+    \item @{thm lambda_predicates_1[THEN embedded_eq, of \<phi>]} \hfill{(\ref{PM-lambda-predicates}.1)}
+    \item @{thm lambda_predicates_2_1} \hfill{(\ref{PM-lambda-predicates}.2)}
+    \item @{thm lambda_predicates_2_2} \hfill{(\ref{PM-lambda-predicates}.2)}
+    \item @{thm[display] lambda_predicates_2_3} \hfill{(\ref{PM-lambda-predicates}.2)}
+    \item @{thm lambda_predicates_3_0} \hfill{(\ref{PM-lambda-predicates}.3)}
+    \item @{thm lambda_predicates_3_1} \hfill{(\ref{PM-lambda-predicates}.3)}
+    \item @{thm lambda_predicates_3_2} \hfill{(\ref{PM-lambda-predicates}.3)}
+    \item @{thm lambda_predicates_3_3} \hfill{(\ref{PM-lambda-predicates}.3)}
+    \item @{thm lambda_predicates_4_0} \hfill{(\ref{PM-lambda-predicates}.4)}
+    \item @{thm lambda_predicates_4_1} \hfill{(\ref{PM-lambda-predicates}.4)}
+    \item @{thm lambda_predicates_4_2} \hfill{(\ref{PM-lambda-predicates}.4)}
+    \item @{thm lambda_predicates_4_3} \hfill{(\ref{PM-lambda-predicates}.4)}
+  \end{itemize}
+
+  Note that the first axiom - alpha-conversion - could be omitted entirely, since the fact
+  that lambda-expressions are modelled using functions with bound variables and alpha-conversion
+  is part of the logic of Isabelle/HOL, it already holds implicitly.
+
+  Further note that the notion of \emph{proper maps} is used as a necessary precondition for
+  beta-conversion, as explained in section~\ref{lambda-expressions}.
+
+  Lastly note that the formulation of the last class of axioms
+  ((\ref{PM-lambda-predicates}.4), @{term "\<iota>"}-conversion)
+  has to be adjusted to be representable in the functional setting:
+  
+  The original axiom is stated as follows in the syntax of PLM:
+  \begin{center}
+    @{text "\<A>(\<phi> \<equiv> \<psi>) \<rightarrow> ([\<lambda>x\<^sub>1\<cdots>x\<^sub>n \<chi>\<^sup>*] = [\<lambda>x\<^sub>1\<cdots>x\<^sub>n \<chi>\<^sup>*']"}
+  \end{center}
+  Here @{text "\<chi>\<^sup>*'"} is required to be the result of substituting  @{text "\<iota>x\<psi>"} for zero or more occurrences of @{text "\<iota>x\<phi>"}
+  in @{text "\<chi>\<^sup>*"}. In the functional setting @{term "embedded_style \<chi>"} can be represented
+  as function from individual terms of type @{type \<kappa>} to propositions of type @{type \<o>}.
+  Thereby substituting @{text "\<iota>x\<psi>"} for occurences of @{text "\<iota>x\<phi>"} can be expressed as
+  comparing the function application of @{term "embedded_style \<chi>"} to @{term "embedded_style (\<^bold>\<iota>x. \<phi> x)"}
+  with that to @{term "embedded_style (\<^bold>\<iota>x. \<psi> x)"}.
+
+  Now since @{term "embedded_style \<phi>"} and @{term "embedded_style \<psi>"} are again functions (this time
+  from individuals of type @{type \<nu>} to type @{type \<o>}) the precondition has to be reformulated
+  to hold for the application of @{term "embedded_style \<phi>"} and @{term "embedded_style \<psi>"} to
+  an arbitrary individual @{term "embedded_style x"} to capture the concept of @{text "\<A>(\<phi> \<equiv> \<psi>)"} in PLM, where @{text "\<phi>"}
+  and @{text "\<psi>"} may contain @{text "x"} as a free variable.
+*}
+
+subsubsection{* Axioms of Encoding *}
+  
+text{*
+  The last class of axioms is comprised of the axioms of encoding (see~\ref{TAO_Axioms_Encoding}):
+
+  \begin{itemize}
+    \item @{thm encoding} \hfill{(\ref{PM-encoding})}
+    \item @{thm nocoder} \hfill{(\ref{PM-nocoder})}
+    \item @{thm A_objects} \hfill{(\ref{PM-A-objects})}
+  \end{itemize}
+
+  Whereas the first statement (encoding is modally rigid) is a direct consequence of the semantics
+  (recall that the encoding extension of a property was not relativized to possible worlds; see
+   section~\ref{semantics}), the second axiom (ordinary objects do not encode) is only derivable
+  by expanding the definition of the encoding extension and the meta-logical distinction
+  between ordinary and abstract objects.
+
+  Similarly the comprehension axiom for abstract objects
+  depends on the meta-logic and follows from the definition of abstract objects as the power set
+  of relations and the representation of encoding as set membership.
+
+  It is again a requirement of the representation in the functional setting that
+  @{term "embedded_style \<phi>"} in the comprehension axiom is a function and the condition
+  it imposes on @{term "embedded_style F"} is expressed as its application to @{term "embedded_style F"}.
+  The formulation in PLM on the other hand has to explicitly exclude a free occurence of @{text "x"}
+  in @{text "\<phi>"}. In the functional setting this is not necessary, since the only way the condition
+  @{term "embedded_style \<phi>"} imposes could depend on the @{term "embedded_style x"} bound by the
+  existential quantifier would be that @{term "embedded_style x"} was given to the @{term "embedded_style \<phi>"}
+  as an argument (note that for that to be possible @{term "embedded_style \<phi>"} would also have to have a different
+  type as a function).
+
+*}
+  
+(*<*)
+end
+(*>*)
 (*<*)
 end
 (*>*)

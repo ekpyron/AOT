@@ -375,26 +375,26 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
 
   lemma lambda_predicates_4_0[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
-    shows "[(\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x))) in v]"
-    unfolding identity_\<o>_def apply - apply (rule Eq\<^sub>0I)
+    shows "[[(\<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<phi> x)) \<^bold>= \<^bold>\<lambda>\<^sup>0 (\<chi> (\<^bold>\<iota>x. \<psi> x)))]]"
+    unfolding axiom_def identity_\<o>_def apply - apply (rule allI; rule Eq\<^sub>0I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_1[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
-    shows "[((\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<phi> x) x) \<^bold>= (\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<psi> x) x)) in v]"
-    unfolding identity_\<Pi>\<^sub>1_def apply - apply (rule Eq\<^sub>1I)
+    shows "[[((\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<phi> x) x) \<^bold>= (\<^bold>\<lambda> x . \<chi> (\<^bold>\<iota>x. \<psi> x) x))]]"
+    unfolding axiom_def identity_\<Pi>\<^sub>1_def apply - apply (rule allI; rule Eq\<^sub>1I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_2[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
-    shows "[((\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<phi> x) x y)) \<^bold>= (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<psi> x) x y))) in v]"
-    unfolding identity_\<Pi>\<^sub>2_def apply - apply (rule Eq\<^sub>2I)
+    shows "[[((\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<phi> x) x y)) \<^bold>= (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<chi> (\<^bold>\<iota>x. \<psi> x) x y)))]]"
+    unfolding axiom_def identity_\<Pi>\<^sub>2_def apply - apply (rule allI; rule Eq\<^sub>2I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
   lemma lambda_predicates_4_3[axiom]:
     assumes "\<And>x.[(\<^bold>\<A>(\<phi> x \<^bold>\<equiv> \<psi> x)) in v]"
-    shows "[(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<phi> x) x y z)) \<^bold>= (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<psi> x) x y z)) in v]"
-    unfolding identity_\<Pi>\<^sub>3_def apply - apply (rule Eq\<^sub>3I)
+    shows "[[(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<phi> x) x y z)) \<^bold>= (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<chi> (\<^bold>\<iota>x. \<psi> x) x y z))]]"
+    unfolding axiom_def identity_\<Pi>\<^sub>3_def apply - apply (rule allI; rule Eq\<^sub>3I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
 subsection{* Axioms of Encoding *}
