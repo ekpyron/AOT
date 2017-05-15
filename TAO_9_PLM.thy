@@ -1051,7 +1051,7 @@ text{* \label{TAO_PLM_ActualityAndDescriptions} *}
 
   lemma RA_2[PLM,PLM_intro]:
     "([\<psi> in dw] \<Longrightarrow> [\<phi> in dw]) \<Longrightarrow> ([\<^bold>\<A>\<psi> in dw] \<Longrightarrow> [\<^bold>\<A>\<phi> in dw])"
-    using RA logic_actual intro_elim_6_a by blast
+    using RA logic_actual[necessitation_averse_axiom_instance] intro_elim_6_a by blast
 
   context
   begin

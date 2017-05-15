@@ -26,9 +26,6 @@ begin
   interpretation Semantics .
   named_theorems axiom
 
-subsection{* Closures *}
-text{* \label{TAO_Axioms_Closures} *}
-
 text{*
 \begin{remark}
   The special syntax @{text "[[_]]"} is introduced for axioms. This allows to formulate
@@ -41,8 +38,11 @@ text{*
 
   definition axiom :: "\<o>\<Rightarrow>bool" ("[[_]]") where "axiom \<equiv> \<lambda> \<phi> . \<forall> v . [\<phi> in v]"
 
-  method axiom_meta_solver = ((unfold axiom_def)?, rule allI, meta_solver,
+  method axiom_meta_solver = ((((unfold axiom_def)?, rule allI) | (unfold actual_validity_def)?), meta_solver,
                               (simp | (auto; fail))?)
+
+subsection{* Closures *}
+text{* \label{TAO_Axioms_Closures} *}
 
   lemma axiom_instance[axiom]: "[[\<phi>]] \<Longrightarrow> [\<phi> in v]"
     unfolding axiom_def by simp
@@ -53,9 +53,9 @@ text{*
   lemma closures_necessitation[axiom]: "[[\<phi>]] \<Longrightarrow> [[\<^bold>\<box> \<phi>]]"
     by axiom_meta_solver
   lemma necessitation_averse_axiom_instance[axiom]: "[\<phi>] \<Longrightarrow> [\<phi> in dw]"
-    by meta_solver
+    by axiom_meta_solver
   lemma necessitation_averse_closures_universal[axiom]: "(\<And>x.[\<phi> x]) \<Longrightarrow> [\<^bold>\<forall> x. \<phi> x]"
-    by meta_solver
+    by axiom_meta_solver
 
   attribute_setup axiom_instance = {*
     Scan.succeed (Thm.rule_attribute [] 
@@ -184,9 +184,9 @@ text{*
 
   lemma cqt_5_mod[axiom]:
     assumes "SimpleExOrEnc \<psi>"
-    shows "[[\<psi> x \<^bold>\<rightarrow> (\<^bold>\<exists>  \<alpha> . (\<alpha>\<^sup>P) \<^bold>= x)]]"
+    shows "[[\<psi> \<tau> \<^bold>\<rightarrow> (\<^bold>\<exists>  \<alpha> . (\<alpha>\<^sup>P) \<^bold>= \<tau>)]]"
     proof -
-      have "\<forall> w . ([(\<psi> x) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> x))"
+      have "\<forall> w . ([(\<psi> \<tau>) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> \<tau>))"
         using assms apply induct by (meta_solver;metis)+
       thus ?thesis
         apply - unfolding identity_\<kappa>_def
@@ -206,7 +206,7 @@ text{*
 *}
 
   lemma logic_actual[axiom]: "[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]"
-    apply meta_solver by auto
+    by axiom_meta_solver
   lemma "[[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]]"
     nitpick[user_axioms, expect = genuine, card = 1, card i = 2]
     oops --{* Counter-model by nitpick *}
@@ -336,10 +336,10 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
     assumes "IsProperInXYZ \<phi>"
     shows "[[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<equiv> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]]"
     proof -
-      have "\<box>[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<rightarrow> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]"
-        apply meta_solver using D5_3[OF assms] by auto
+      have "[[\<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr> \<^bold>\<rightarrow> \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)]]"
+        apply axiom_meta_solver using D5_3[OF assms] by auto
       moreover have
-        "\<box>[\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>]"
+        "[[\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) \<^bold>\<rightarrow> \<lparr>(\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P))),x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>]]"
         apply axiom_meta_solver
         using D5_3[OF assms] d\<^sub>\<kappa>_proper propex\<^sub>3
         by (metis (no_types, lifting))

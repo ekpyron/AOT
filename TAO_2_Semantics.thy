@@ -364,9 +364,9 @@ text{* \label{TAO_Semantics_Validity} *}
 
 abbreviation validity_in :: "\<o>\<Rightarrow>i\<Rightarrow>bool" ("[_ in _]" [1]) where
   "validity_in \<equiv> \<lambda> \<phi> v . v \<Turnstile> \<phi>"
-abbreviation (input) actual_validity :: "\<o>\<Rightarrow>bool" ("[_]" [1]) where
+definition actual_validity :: "\<o>\<Rightarrow>bool" ("[_]" [1]) where
   "actual_validity \<equiv> \<lambda> \<phi> . dw \<Turnstile> \<phi>"
-abbreviation (input) necessary_validity :: "\<o>\<Rightarrow>bool" ("\<box>[_]" [1]) where
+definition necessary_validity :: "\<o>\<Rightarrow>bool" ("\<box>[_]" [1]) where
   "necessary_validity \<equiv> \<lambda> \<phi> . \<forall> v . (v \<Turnstile> \<phi>)"
 
 (*<*)

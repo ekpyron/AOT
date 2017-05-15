@@ -9,6 +9,10 @@ begin
 (* Pretty printing settings for antiquotations. *)
 notation (latex output)
   validity_in ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> in _]")
+notation (latex output)
+  actual_validity ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]")
+notation (latex output)
+  Axioms.axiom ("[[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]]")
 definition embedded_style where "embedded_style \<equiv> id"
 lemma embedded_meta_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
 lemma embedded_meta_eq: "(A = B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
@@ -76,6 +80,8 @@ attribute_setup expand3 = {*
   Scan.succeed (Thm.rule_attribute [] 
     (fn _ => fn thm => thm RS @{thm expand_def3}))
 *}
+no_syntax "_list" :: "args \<Rightarrow> 'a list" ("[(_)]") 
+no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]")
 (*>*)
   
 (* abstract in thesis/root.tex *)
@@ -499,9 +505,9 @@ Based on the language above an axiom system is defined that constructs a S5 moda
 an actuality operator, axioms for definite descriptions that go along with Russell's analysis
 of descriptions, the substitution for identicals as per the defined identity, @{text "\<alpha>"}-,
 @{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
-as dedicated axioms for encoding. For a full accounting of the axioms refer to @{cite \<open>chap. 8\<close> PM}.
-In the following chapters some of the subtleties involving specific axioms are discussed in more detail,
-at this point the axioms of encoding are the most relevant, namely:
+as dedicated axioms for encoding. A full accounting of the axioms in their representation in the
+embedding is found in section~\ref{axioms}. For the original axioms refer to @{cite \<open>chap. 8\<close> PM}.
+At this point the axioms of encoding are the most relevant, namely:
 
   \begin{center}
     @{text "xF \<rightarrow> \<box>xF"}\\
@@ -1098,6 +1104,8 @@ text{*
 subsection{* Concreteness *}
 
 text{*
+  \label{concreteness}
+
   Principia defines concreteness as a one-place relation constant. For the embedding care has to
   be taken that concreteness actually matches the primitive distinction between ordinary and
   abstract objects. The following requirements have to be satisfied by the introduced notion of
@@ -1708,10 +1716,12 @@ text{*
   \begin{remark}
     Note instead of introducing a custom proving method using the Eisbach package, a similar
     effect could be achieved by instead supplying the derived introduction, elimination and substitution
-    rules directly to one of the existing proving methods like @{method auto} or @{method fast}.
+    rules directly to one of the existing proving methods like @{method auto} or @{method clarsimp}.
     In practice, however, we found that the custom @{method meta_solver} produces more reliable
     results, especially in the case that a proving objective cannot be solved by the supplied rules
-    completely.
+    completely. Moreover the utilization of a custom proving rule may serve as a proof of concept
+    and inspire the development of further more complex proving methods that go beyond a simple
+    resolution prover.
   \end{remark}
 *}
 
@@ -1811,9 +1821,229 @@ begin
 section{* The Axiom System of PLM *}
 
 text{*
+  \label{axioms}
+
+  The last step in abstracting away from the representation layer used as the basis
+  of the embedding is the derivation of the axiom system of PLM. Conceptionally the
+  derivation of the axioms is the last moment in which it is deemed admissible to rely
+  on the meta-logical properties of the underlying model structure. Future work may even
+  restrict this further to only allow the use of the properties of the semantics in the
+  proofs (if this is found to be possible).
+
+  To be able to distinguish between the axioms and other statements and theorems in the
+  embedded logic they are stated using a dedicated syntax. To that end axioms are not
+  stated relative to a specific possible world, but using the following definition
+  (see~\ref{TAO_Axioms}):
+  \begin{center}
+    @{thm[display] axiom_def[expand1, of \<phi>]}
+  \end{center}
+
+  Axioms are unconditionally true in all possible worlds. The only exceptions are
+  \emph{necessitation-averse}, resp. \emph{modally fragile} axioms (currently there
+  is only one such axiom). Such axioms are stated using the following definition:
+  \begin{center}
+    @{thm[display] actual_validity_def[expand1, of \<phi>]}
+  \end{center}
+
+  \begin{remark}
+    Additionally a proving method @{method axiom_meta_solver} is introduced, that
+    unfolds above definition, then applies the meta-solver and if possible resolves
+    the proof objective automatically.
+  \end{remark}
   
 *}
   
+subsection{* Axioms as Schemata *}
+  
+text{*
+  The axioms in PLM are meant as axiom schemata. They are stated using variables that range over
+  and can therefore be instantiated for any formula and term (potentially satisfying explicitly stated
+  restrictions). Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
+  that the statement of an axiom schema implies that the universal generalization of the schema,
+  the actualization of the schema and the necessitation of the schema is also an axiom.
+  The modally fragile Axiom~\ref{PM-logic-actual} is the only exception to this.
+  This axiom is considered and its necessitation is not an axiom.
+
+  Since in Isabelle/HOL free variables in a theorem already range over all terms of the same type
+  no special measures have to be taken to allow instantiations for arbitrary terms. The concept of
+  closures is introduced using the following rules (see~\ref{TAO_Axioms_Closures}):
+
+  \begin{itemize}
+    \item @{thm[display] axiom_instance[of \<phi> v]}
+    \item @{thm[display] closures_universal[of \<phi>]}
+    \item @{thm[display] closures_actualization[of \<phi>]}
+    \item @{thm[display] closures_necessitation[of \<phi>]}
+  \end{itemize}
+
+  For modally fragile axioms only the following rules are introduced:
+
+  \begin{itemize}
+    \item @{thm[display] necessitation_averse_axiom_instance[of \<phi>]}
+    \item @{thm[display] necessitation_averse_closures_universal[of \<phi>]}
+  \end{itemize}
+*}
+
+subsection{* Derivation of the Axioms *}
+
+text{*
+  Most of the axioms can be derived by the @{method axiom_meta_solver} directly.
+  Some axioms, however, require more verbose proofs or special attention has to
+  be taken regarding their representation in the functional setting of Isabelle/HOL.
+  Therefore in the following the complete axiom system is listed and discussed in
+  detail where necessary. Additionally they are associated with the numbering in
+  the current draft of PLM @{cite PM}.
+*}
+  
+subsubsection{* Axioms for Negations and Conditionals *}
+  
+text{*
+  The axioms for negations and conditionals can be derived automatically and
+  present no further issues (see~\ref{TAO_Axioms_NegationsAndConditionals}):
+
+  \begin{itemize}
+    \item @{thm pl_1} \hfill{(\ref{PM-pl}.1)}
+    \item @{thm pl_2} \hfill{(\ref{PM-pl}.2)}
+    \item @{thm pl_3} \hfill{(\ref{PM-pl}.3)}
+  \end{itemize}
+
+*}
+
+subsubsection{* Axioms of Identity *}
+
+text{*
+  The axiom of the substitution of identicals can be proven automatically,
+  if additionally supplied with the defining assumption of the type class
+  @{class identifiable}. The statement is the following (see~\ref{TAO_Axioms_Identity}):
+
+  \begin{itemize}
+    \item @{thm l_identity} \hfill{(\ref{PM-l-identity})}
+  \end{itemize}
+
+  TODO: discussion
+*}
+
+subsubsection{* Axioms of Quantification *}
+
+text{*
+  The axioms of quantification are formulated in a way that differs from the statements in
+  PLM, as follows (see~\ref{TAO_Axioms_Quantification}):
+
+  \begin{itemize}
+    \item @{thm cqt_1} \hfill{(\ref{PM-cqt}.1)}
+    \item @{thm cqt_1_\<kappa>} \hfill{(\ref{PM-cqt}.1)}
+    \item @{thm cqt_3} \hfill{(\ref{PM-cqt}.3)}
+    \item @{thm cqt_4} \hfill{(\ref{PM-cqt}.4)}
+    \item @{thm cqt_5} \hfill{(\ref{PM-cqt}.5)}
+    \item @{thm cqt_5_mod} \hfill{(\ref{PM-cqt}.5)}
+  \end{itemize}
+
+  The direct translation of the axioms of PLM would be the following:
+
+  \begin{itemize}
+    \item @{term "[[(\<^bold>\<forall> \<alpha> . \<phi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<tau>) \<^bold>\<rightarrow> \<phi> \<tau>)]]"} \hfill{(\ref{PM-cqt}.1)}
+    \item @{term "[[\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<tau>]]"} \hfill{(\ref{PM-cqt}.2)}
+    \item @{thm cqt_3} \hfill{(\ref{PM-cqt}.3)}
+    \item @{thm cqt_4} \hfill{(\ref{PM-cqt}.4)}
+    \item @{thm cqt_5} \hfill{(\ref{PM-cqt}.5)}
+  \end{itemize}
+
+  Axiom~(\ref{PM-cqt}.2) is furthermore restricted to @{term "\<tau>"} not being a definite description.
+  Now in the embedding definite descriptions have the type @{type \<kappa>} that is different from the
+  type for individuals @{type \<nu>} and quantification is only defined for @{type \<nu>}, not for @{type \<kappa>}.
+
+  Thereby the restriction of (\ref{PM-cqt}.2) does not apply, since @{term "\<tau>"} cannot be a
+  definite description by construction. Since (\ref{PM-cqt}.2) would therefore hold in general,
+  the additional restriction of (\ref{PM-cqt}.1) can be dropped - again since a quantifier is used in the
+  formulation, the problematic case of definite descriptions (which would have type @{type \<kappa>})
+  is excluded already.
+
+  Now the modification of (\ref{PM-cqt}.5) can be explained: Since (\ref{PM-cqt}.2) already
+  implies the right hand side for every term except definite
+  descriptions, (\ref{PM-cqt}.5) can be stated for general terms
+  instead of stating it specifically for definite descriptions.
+
+  What's left to be considered is how (\ref{PM-cqt}.1) can be applied to definite
+  descriptions in the embedding. The modified version of (\ref{PM-cqt}.5) states that under the same condition
+  that the unmodified version requires for a description to denote, the description (that has type @{type \<kappa>})
+  denotes an object of type @{type \<nu>} and thereby (\ref{PM-cqt}.1) can be applied using the substitution of identicals.
+
+  Future work may want to reconsider the reformulation for the axioms, especially considering the most
+  recent developments described in TODO: reference. At the time of writing the fact that due to the
+  type restrictions of the embedding, the reformulated version of the axioms is \emph{derivable} from
+  the original version must suffice.
+
+  \begin{remark}
+    A formulation of the axioms as in PLM could be possible using the concept of domain restricted
+    quantification as employed in embedding free logics (TODO: reference) to define a restricted
+    quantification over the type @{type \<kappa>}. This would require some non-trivial restructuring of
+    the embedding, though.
+  \end{remark}
+
+  What's left is to clarify the precondition for (\ref{PM-cqt}.5). The predicate @{term "SimpleExOrEnc"}
+  is defined as an inductive predicate with the following introduction rules:
+
+  \begin{itemize}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,DUMMY,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lbrace>x,F\<rbrace>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+  \end{itemize}
+
+  This corresponds exactly to the restriction of @{term "embedded_style \<psi>"} to an exemplification
+  or encoding formula in PLM.
+
+*}
+
+subsubsection{* Axioms of Actuality *}
+  
+text{*
+  As mentioned in the beginning of the section the modally-fragile axiom of actuality
+  is stated using a different syntax (see~\ref{TAO_Axioms_Actuality}):
+
+  \begin{itemize}
+    \item @{thm logic_actual} \hfill{(\ref{PM-logic-actual})}
+  \end{itemize}
+
+  Note that the model finding tool @{theory_text nitpick} can find a counter-model for the
+  formulation as a regular axiom, as expected.
+
+  The remaining axioms of actuality are not modally-fragile and therefore stated as regular
+  axioms:
+  
+  \begin{itemize}
+    \item @{thm logic_actual_nec_1} \hfill{(\ref{PM-logic-actual-nec}.1)}
+    \item @{thm logic_actual_nec_2} \hfill{(\ref{PM-logic-actual-nec}.2)}
+    \item @{thm logic_actual_nec_3} \hfill{(\ref{PM-logic-actual-nec}.3)}
+    \item @{thm logic_actual_nec_4} \hfill{(\ref{PM-logic-actual-nec}.4)}
+  \end{itemize}
+
+  All of the above can be proven automatically by the @{method axiom_meta_solver} method.
+*}
+
+subsubsection{* Axioms of Necessity *}
+
+text{*
+  The axioms of necessity are the following (see~\ref{TAO_Axioms_Necessity}):
+
+  \begin{itemize}
+    \item @{thm qml_1} \hfill{(\ref{PM-qml}.1)}
+    \item @{thm qml_2} \hfill{(\ref{PM-qml}.2)}
+    \item @{thm qml_3} \hfill{(\ref{PM-qml}.3)}
+    \item @{thm qml_4} \hfill{(\ref{PM-qml}.4)}
+  \end{itemize}
+
+  While the first three axioms can be derived automatically, the last axiom requires
+  special attention. On a closer look the formulation may be familiar. The axiom
+  was already mentioned in section~\ref{concreteness} while constructing the representation
+  of the constant @{term "embedded_style E!"}. To be able to derive this axiom now this
+  constant had to be specifically axiomatized. Consequently the derivation here requires
+  the use of the axioms stated in the representation layer.
+
+*}
+
 (*<*)
 end
 (*>*)
