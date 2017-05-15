@@ -643,13 +643,13 @@ section{* Challenges *}
 
 text{*
 \label{challenges}
-TODO: russel style paradox; hyperintensionality revisited; relations vs. functions revisited; general complexity, etc.
+TODO: russell style paradox; hyperintensionality revisited; relations vs. functions revisited; general complexity, etc.
 *}
 
-subsection{* A Russel-style Paradox *}
+subsection{* A Russell-style Paradox *}
 
 text{*
-  \label{russel-paradox}
+  \label{russell-paradox}
 
   One of the major challenges of an implementation of the Theory of Abstract Objects in functional
   logic is the fact that the naive representation of the lambda expressions of the theory using the
@@ -1042,7 +1042,7 @@ text{*
 
   However in general @{term "\<nu>\<upsilon>"} can map several abstract objects to the same special urelement,
   so an analog statement for abstract objects does not hold for arbitrary @{term "\<phi>"}. As described
-  in section~\ref{russel-paradox} such a statement would in fact not be desirable, since it would
+  in section~\ref{russell-paradox} such a statement would in fact not be desirable, since it would
   lead to inconsistencies.
 
   Instead the embedding introduces the concept of \emph{proper maps}.
@@ -1067,7 +1067,7 @@ text{*
   \end{remark}
 
   The concept behind this is that maps that contain encoding formulas in its argument are not proper
-  in general and thereby the paradox mentioned in section~\ref{russel-paradox} is avoided.
+  in general and thereby the paradox mentioned in section~\ref{russell-paradox} is avoided.
 
   In fact proper maps are the most general kind of functions that may appear in a lambda-expression,
   such that beta-conversion holds. In what way proper maps correspond to the formulas that PLM
@@ -1881,6 +1881,17 @@ text{*
     \item @{thm[display] necessitation_averse_axiom_instance[of \<phi>]}
     \item @{thm[display] necessitation_averse_closures_universal[of \<phi>]}
   \end{itemize}
+
+  \begin{remark}
+    To simplify the instantiation of the axioms in subsequent proofs,
+    a set of \emph{attributes} is defined that can be used to transform
+    the statement of the axioms using the rules defined above.
+
+    This way for example the axiom \mbox{@{thm qml_2}} can be directly transformed
+    to \mbox{@{thm qml_2[axiom_universal, axiom_instance, of v \<phi>]}} by not referencing
+    it directly as @{theory_text qml_2}, but by applying the defined attributes
+    to it: @{theory_text "qml_2[axiom_universal, axiom_instance]"}
+  \end{remark}
 *}
 
 subsection{* Derivation of the Axioms *}
@@ -2162,7 +2173,31 @@ text{*
   type as a function).
 
 *}
+
+subsubsection{* Summery *}
   
+text{*
+  Although the formulation of some of the axioms has to be adjusted to work in the environment of
+  functional type theory it is possible to arrive at a formulation that faithfully represents
+  the original axiom system of PLM. Future work may attempt to further align the given representation
+  with PLM and compare the extents of both systems in detail.
+
+  Furthermore a large part of the axioms can be derived independently of the technicalities of
+  the representation layer by only depending on the representation of the semantics described in
+  section~\ref{semantics}. Future work may explore possible options to further minimize the dependency
+  on the underlying model structure.
+
+  To verify that the axiom system is a good representation of the reference, as a next step the
+  deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
+  formulation of the axioms without falling back to the meta-logic.
+*}
+  
+section{* The Deductive System PLM *}
+  
+text{*
+
+*}
+
 (*<*)
 end
 (*>*)
