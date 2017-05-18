@@ -149,8 +149,8 @@ the background logic and a proposition would be considered semantically valid if
 all possible denotations an interpretation function can assign to these variables.
 
 While this approach will work for most target logics, it has several drawbacks. There are likely
-principles that are shared between the target logic and the background logic, such as alpha-conversion
-for lambda expressions or the equivalence of terms with renamed variables in general. In a deep
+principles that are shared between the target logic and the background logic, such as @{text "\<alpha>"}-conversion
+for @{text "\<lambda>"}-expressions or the equivalence of terms with renamed variables in general. In a deep
 embedding these principles have to be explicitly shown to hold for the syntactic representation
 of the target logic, which is usually connected with significant complexity. Furthermore if the
 framework used for the background logic allows automated reasoning, the degree of automation that
@@ -198,16 +198,16 @@ This has led to the question whether a shallow semantical embedding of the Theor
 in a functional logical framework as Isabelle/HOL is at all possible, which is the core question
 the work presented here attempts to examine and partially answer.
 
-One of their main arguments is that unrestricted lambda expressions as present in functional type
+One of their main arguments is that unrestricted @{text "\<lambda>"}-expressions as present in functional type
 theory lead to an inconsistency when combined with one of the axioms of the theory and indeed it
 has been shown for early attempts on embedding the theory that despite significant efforts
-to avoid the aforementioned inconsistency by excluding problematic lambda expressions in the embedded
+to avoid the aforementioned inconsistency by excluding problematic @{text "\<lambda>"}-expressions in the embedded
 logic, it could still be reproduced using an appropriate construction in the background logic.
 
-The solution presented here circumvents this problem by identifying lambda expressions as one element of the
+The solution presented here circumvents this problem by identifying @{text "\<lambda>"}-expressions as one element of the
 target language that behaves differently than their counterparts in the background logic and
-consequently by representing lambda expressions of the target logic using a new \emph{defined}
-kind of lambda expressions. This forces lambda expressions in the embedded logic to have a particular
+consequently by representing @{text "\<lambda>"}-expressions of the target logic using a new \emph{defined}
+kind of @{text "\<lambda>"}-expressions. This forces @{text "\<lambda>"}-expressions in the embedded logic to have a particular
 semantics that is inspired by the \emph{Aczel-model} of the target theory (see \ref{aczel-model})
 and avoids prior inconsistencies. The mentioned issue and the employed solution is discussed in
 more detail in section \ref{challenges}.
@@ -445,16 +445,16 @@ The syntax of the target theory can now be described as BNF grammar\cite[ibid.]{
 It is important to note that the language distinguishes between two types of basic formulas,
 namely (non-propositional) \emph{formulas} that \emph{may} contain encoding subformulas and
 \emph{propositional formulas} that \emph{may not} contain encoding subformulas. Only propositional
-formulas may be used in lambda expressions. The main reason for this distinction will be explained
+formulas may be used in @{text "\<lambda>"}-expressions. The main reason for this distinction will be explained
 in the section~\ref{russell-paradox}.
 
 Note that there is a case in which propositional formulas \emph{can} contain encoding
 expressions. This is due to the fact that \emph{subformula} is defined in such a way that
 @{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"} (for a formal definition of subformula
 refer to definition (\ref{PM-df-subformula}) in @{cite PM}). Thereby @{text "F\<iota>x(xQ)"} is a
-propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed lambda expression.
+propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed @{text "\<lambda>"}-expression.
 On the other hand @{text "xF"} is not a propositional formula and therefore
-@{text "[\<lambda>x xF]"} not a well-formed lambda expression. This fact will become relevant in
+@{text "[\<lambda>x xF]"} not a well-formed @{text "\<lambda>"}-expression. This fact will become relevant in
 the discussion in section~\ref{paradox}, that describes a paradox in the formulation of
 the theory in the draft of PLM at the time of writing. (TODO: mention solvability already here?)
 
@@ -621,12 +621,6 @@ basis of the embedding. The technicalities of this model are described in the ne
   
 chapter{* The Embedding *}
 
-text{*
-\label{embedding}
-\epigraph{TODO}{Maybe skip the epigraph here.}
-*}
-
-
 section{* Background *}
 
 text{*
@@ -655,11 +649,11 @@ text{*
   \label{russell-paradox}
 
   One of the major challenges of an implementation of the Theory of Abstract Objects in functional
-  logic is the fact that the naive representation of the lambda expressions of the theory using the
-  unrestricted, beta-convertible lambda expressions of functional logic results in the following
+  logic is the fact that the naive representation of the @{text "\<lambda>"}-expressions of the theory using the
+  unrestricted, @{text "\<beta>"}-convertible @{text "\<lambda>"}-expressions of functional logic results in the following
   paradox (see @{cite \<open>p. 24-25\<close> rtt}):
 
-  Assume @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} were a valid lambda expression denoting a relation.
+  Assume @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} were a valid @{text "\<lambda>"}-expression denoting a relation.
   Now the comprehension axiom of abstract objects requires the following:
 
   \begin{center}
@@ -668,17 +662,17 @@ text{*
 
   So there is an abstract object that encodes only the property @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}.
   Let @{text "b"} be such an object. Now first assume @{text "b"} exemplifies
-  @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By beta-reduction this implies that there exists a property, that
+  @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By @{text "\<beta>"}-reduction this implies that there exists a property, that
   @{text "b"} encodes, but does not exemplify. Since @{text "b"} only encodes @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"},
   but does also exemplify it by assumption this is a contradiction.
 
-  Now assume @{text "b"} does not exemplify @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By beta-reduction it
+  Now assume @{text "b"} does not exemplify @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"}. By @{text "\<beta>"}-reduction it
   follows that there does not exist a property that @{text "b"} encodes, but does not exemplify.
   Since @{text "b"} encodes @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} by construction and does not exemplify
   it by assumption this is again a contradiction.
 
   This paradox is prevented in the formulation of object theory by disallowing encoding
-  subformulas in lambda expressions, so in particular @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} is not
+  subformulas in @{text "\<lambda>"}-expressions, so in particular @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} is not
   part of the language. However during the construction of the embedding it was discovered
   that this restriction is not sufficient to prevent paradoxes in general. This is discussed
   in section~\ref{paradox}. The solution used in the embedding is described in
@@ -1005,15 +999,15 @@ text{*
 
 *}
   
-subsection{* Lambda Expressions *}
+subsection{* $\lambda$-Expressions *}
   
 text{*
 
   \label{lambda-expressions}
 
-  The bound variables of the lambda expressions of the embedded logic are individual
+  The bound variables of the @{text "\<lambda>"}-expressions of the embedded logic are individual
   variables, whereas relations are represented as functions acting on urelements.
-  Therefore the definition of the lambda expressions of the embedded logic is non trivial.
+  Therefore the definition of the @{text "\<lambda>"}-expressions of the embedded logic is non trivial.
   The embedding defines them as follows (see \ref{TAO_Embedding_Lambda}):
 
   \begin{itemize}
@@ -1024,22 +1018,22 @@ text{*
   \end{itemize}
 
 \begin{remark}
-  For technical reasons Isabelle only allows lambda expressions for one-place relations
+  For technical reasons Isabelle only allows @{text "\<lambda>"}-expressions for one-place relations
   to use a nice binder notation. For two- and three-place relations the following notation
   is used instead: \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y))"}},
   \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z))"}}.
 \end{remark}
 
-  The representation of zero-place lambda expressions as the identity is straight-forward,
-  the representation of n-place lambda expressions for \mbox{@{text "n \<ge> 1"}} is illustrated
+  The representation of zero-place @{text "\<lambda>"}-expressions as the identity is straight-forward,
+  the representation of n-place @{text "\<lambda>"}-expressions for \mbox{@{text "n \<ge> 1"}} is illustrated
   for the case \mbox{@{text "n = 1"}}:
 
-  The matrix of the lambda expression @{term "embedded_style \<phi>"} is a function from individuals
+  The matrix of the @{text "\<lambda>"}-expression @{term "embedded_style \<phi>"} is a function from individuals
   (of type @{type \<nu>}) to truth values (of type @{type \<o>}, resp. @{typ "j\<Rightarrow>i\<Rightarrow>bool"}).
   One-place relations are represented as functions of type @{typ "\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool"}, though,
   where @{type \<upsilon>} is the type of urelements.
 
-  The result of the evaluation of a lambda expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u},
+  The result of the evaluation of a @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u},
   a state @{term s} and a possible world @{term w}) is given by the following equation:
 
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) u s w = (\<exists> x . \<nu>\<upsilon> x = u \<and> eval\<o> (embedded_style (\<phi> x)) s w)"
@@ -1065,7 +1059,7 @@ text{*
     \item @{thm[display] IsProperInXYZ.rep_eq[of \<phi>]}
   \end{itemize}
 
-  Now by the definition of proper maps the evaluation of lambda expressions behaves as expected:
+  Now by the definition of proper maps the evaluation of @{text "\<lambda>"}-expressions behaves as expected:
 
   @{lemma "IsProperInX \<phi> \<longleftrightarrow> (\<forall> w x . eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> (x\<^sup>P))) (\<nu>\<upsilon> x) dj w = eval\<o> (embedded_style (\<phi> (x\<^sup>P))) dj w)"
     by (auto simp: embedded_style_def meta_defs meta_aux IsProperInX_def)}
@@ -1073,15 +1067,15 @@ text{*
   \begin{remark}
     Note that the above equation does not quantify over all states, but is only true for the actual state @{term "dj"}.
     This is sufficient given that truth evaluation only depends on the actual state (see TODO: reference)
-    and goes along with the desired semantics of lambda expressions (see TODO: reference).
+    and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see TODO: reference).
   \end{remark}
 
   The concept behind this is that maps that contain encoding formulas in its argument are in general
   not proper and thereby the paradox mentioned in section~\ref{russell-paradox} is avoided.
 
   In fact proper maps are the most general kind of functions that may appear in a lambda-expression,
-  such that beta-conversion holds. In what way proper maps correspond to the formulas that PLM
-  allows as the matrix of a lambda expression is a complex question and discussed seperately in
+  such that @{text "\<beta>"}-conversion holds. In what way proper maps correspond to the formulas that PLM
+  allows as the matrix of a @{text "\<lambda>"}-expression is a complex question and discussed seperately in
   section TODO: reference. A detailed discussion about the denotations of \emph{improper}
   lambda-expression and how the mentioned paradox is avoided precisely is presented in section
   TODO: reference (same section as before?).
@@ -1215,7 +1209,7 @@ Several subtleties have to be considered:
         Statements in PLM that use individual variables are represented using the decoration
         @{term "DUMMY\<^sup>P"}.
   \item Whereas conceptually in PLM if a general term @{term "\<phi>"} as it occurs in definite descriptions,
-        quantifications and lambda expressions above contains a \emph{free} variable is used within
+        quantifications and @{text "\<lambda>"}-expressions above contains a \emph{free} variable is used within
         the scope of a variable binding operator, the free occurrences of the variable are considered
         to be \emph{bound} by the operator. In the embedding this concept is replaced by considering
         @{term "\<phi>"} to be a \emph{function} and using the native concept of binding operators in
@@ -1443,16 +1437,16 @@ individual terms (TODO: reference Russell's analysis).
 
 *}
 
-subsection{* Denotation of Lambda Expressions *}
+subsection{* Denotation of $\lambda$-Expressions *}
 
 text{*
 
-The most complex part of the semantical abstraction is the definition of a denotation for lambda expressions.
+The most complex part of the semantical abstraction is the definition of a denotation for @{text "\<lambda>"}-expressions.
 The preliminary formal semantics of PLM is split into several cases and uses a special class of
 \emph{Hilbert-Ackermann @{text "\<epsilon>"}-terms} that are challenging to represent. Therefore a simplified
-formulation of the denotation criteria is used. Moreover the denotations of lambda expressions are
+formulation of the denotation criteria is used. Moreover the denotations of @{text "\<lambda>"}-expressions are
 coupled to syntactical conditions. This fact is represented using the notion of \emph{proper maps}
-as a restriction for the matrix of a lambda expression that was introduced in section~\ref{lambda-expressions}.
+as a restriction for the matrix of a @{text "\<lambda>"}-expression that was introduced in section~\ref{lambda-expressions}.
 The definitions are implemented as follows (see~\ref{TAO_Semantics_Semantics_Lambda_Expressions}):
 
 \begin{itemize}
@@ -1465,14 +1459,14 @@ The definitions are implemented as follows (see~\ref{TAO_Semantics_Semantics_Lam
     by (simp add: embedded_style_def D6)}
 \end{itemize}
 
-The first condition for \emph{elementary} lambda expressions is straightforward.
+The first condition for \emph{elementary} @{text "\<lambda>"}-expressions is straightforward.
 The general case in the second condition is more complex: Given that @{term "embedded_style \<phi>"}
-is a proper map then the relation denoted by the lambda expression has the property, that for a
+is a proper map then the relation denoted by the @{text "\<lambda>"}-expression has the property, that for a
 denoting individual term @{term "embedded_style x"}, the denoted individual is contained in
 its exemplification extension for a possible world @{term "w"}, if and only if @{term "embedded_style (\<phi> x)"}
 holds in @{term "w"}.
-At a closer look this is the statement of beta-conversion restricted to denoting individuals:
-the truth condition of the lambda expression being exemplified by some denoting individual term,
+At a closer look this is the statement of @{text "\<beta>"}-conversion restricted to denoting individuals:
+the truth condition of the @{text "\<lambda>"}-expression being exemplified by some denoting individual term,
 is the same as the truth condition of the matrix of the term for the denoted individual.
 Therefore it is clear that the precondition that @{term "embedded_style \<phi>"} is a proper map
 is necessary and sufficient.
@@ -1532,7 +1526,7 @@ text{*
   on individuals that can be expressed by another map that solely acts on exemplification expressions
   involving the individuals, is shown to be proper. This effectively means that all maps whose arguments
   only appear in exemplification expressions are proper. For a discussion about the relation between
-  this concept and admissible lambda expressions in PLM see TODO: reference.
+  this concept and admissible @{text "\<lambda>"}-expressions in PLM see TODO: reference.
 *}
 
 (*<*)
@@ -2106,9 +2100,9 @@ begin
   interpretation MetaSolver .
 (*>*)
 text{*
-  The axioms of complex relation terms deal with the properties of lambda expressions.
+  The axioms of complex relation terms deal with the properties of @{text "\<lambda>"}-expressions.
   
-  Since the @{method meta_solver} was not equipped with explicit rules for lambda expressions,
+  Since the @{method meta_solver} was not equipped with explicit rules for @{text "\<lambda>"}-expressions,
   the statements rely on their semantic properties as described in section~\ref{semantics} directly.
 
 *}
@@ -2138,7 +2132,7 @@ text{*
   is part of the logic of Isabelle/HOL, it already holds implicitly.
 
   Further note that the notion of \emph{proper maps} is used as a necessary precondition for
-  beta-conversion, as explained in section~\ref{lambda-expressions}.
+  @{text "\<beta>"}-conversion, as explained in section~\ref{lambda-expressions}.
 
   Lastly note that the formulation of the last class of axioms
   ((\ref{PM-lambda-predicates}.4), @{term "\<iota>"}-conversion)
@@ -2549,17 +2543,138 @@ text{*
 end (* context PLM*)
 (*>*)
 
-chapter{* Results and Discussion *}
+chapter{* Discussion and Results *}
 
-section{* Corrections *}
-
-section{* Paradox *}
+section{* Differences between the Embedding and PLM *}
   
 text{*
+*}
+  
+subsection{* Terms and Variables *}
+
+text{*
+*}
+  
+subsection{* Propositional Formulas and $\lambda$-Expressions *}
+  
+text{*
+*}
+  
+subsection{* Modally-strict Proofs *}
+  
+text{*
+*}
+  
+section{* Corrections *}
+
+section{* Discovery of a Paradox *}
+
+text{*
   \label{paradox}
+
+  During the analysis of the constructed embedding it was discovered,
+  that the formulation of the theory in PLM allowed paradoxical constructions.
+
+  In this section the discovered paradox is first described in the language of
+  PLM, after which the process of its discovery and the role the embedding has played
+  in it will be explained in detail.
+
+  Note that the paradox has since been confirmed by Edward Zalta and a vivid discussion
+  about the repercussions and possible solutions has developed. At the time of writing
+  it has become clear that there are several options to recover from the paradox while
+  in essence retaining the full set of theorems of PLM. So far no final decision has been
+  reached about which option will be implemented in future versions of PLM.
+*}
+
+subsection{* Description using the Language of PLM *}
+  
+text{*
+
+  Object theory distinguishes between propositional and
+  non-propositional formulas. Propositional formulas are not allowed to
+  contain encoding subformulas, so for example @{text "\<exists>F xF"} is not
+  propositional. Only propositional formulas can be the matrix of a
+  @{text "\<lambda>"}-expression, so @{text "[\<lambda>x \<exists>F xF]"} is not a valid term of
+  the theory - it is excluded syntactically.
+
+  The reason for this is that considering @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} a valid, denoting
+  @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
+  paradox as described in section~\ref{russell-paradox}.
+
+  Now the idea was that not allowing non-propositional formulas in
+  @{text "\<lambda>"}-expressions would be sufficient to exclude \emph{all} cases that lead to
+  inconsistencies.
+
+  During the construction of the embedding this was shown to be incorrect, though.
+
+  The problem is the \emph{description backdoor}. The syntactical definition
+  of propositional formulas does allow expressions of the following form:
+  @{text "[\<lambda>y F\<iota>x\<psi>]"} where @{text "\<psi>"} does not have to be propositional itself,
+  but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
+  by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
+  \emph{may} contain encoding subformulas itself, and @{text "F\<iota>x\<psi>"} is still considered to be a
+  propositional formula.
+
+  This was deemed to be no problem and for cases like @{text "[\<lambda>y F\<iota>x(xG)]"} as
+  they are mentioned in PLM this is indeed true.
+
+  It had not been considered that @{text "y"} may appear within the matrix of
+  such a description and more so, it may appear in a encoding formula
+  within the matrix of such a description, for example 
+  @{text "[\<lambda>y F\<iota>x(xG & yG)]"} is still considered a propositional formula. At least
+  it had not been considered that this is a problem, but:
+
+  This way the following construction is possible:
+
+  \begin{equation}\tag{1}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
+  \end{equation}
+
+  Here @{text "\<psi>"} can be an arbitrary non-propositional formula in which @{text "x"} and @{text "y"}
+  may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
+  @{text "\<beta>"}-conversion holds.
+
+  Now it is possible to show that by @{text "\<beta>"}-conversion and description
+  theory the following is derivable:
+
+  \begin{equation}\tag{2}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>^x_y"}
+  \end{equation}
+
+  This effectively undermines the intention of restricting @{text "\<lambda>"}-expressions
+  to only propositional formulas:
+
+  Although @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} is not part of the language, it is possible to
+  formulate the following instead:
+
+  \begin{equation}\tag{3}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
+  \end{equation}
+
+  If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
+  exactly the way that @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} would do, if it were part of the
+  language (i.e. the result of @{text "\<beta>"}-reduction for @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} would be
+  the same as the right hand side of 2 when applied to 3). So the @{text "\<lambda>"}-expression
+  in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
+
+*}
+  
+subsection{* Discovery of the Paradox *}
+  
+text{*
+  The discovery of the paradox originates in the analysis of the representation of
+  @{text "\<lambda>"}-expressions in the embedding. The syntactic distinction between propositional and
+  non-propositional formulas of PLM is replaced by the concept of \emph{proper maps} as described
+  in section~\ref{lambda-expressions}. 
 *}
   
 chapter{* Technical Issues *}
+  
+section{* Limitations of Type Classes and Locales *}
+
+section{* Case Distinctions by Type *}
+
+section{* Structural Induction *}
   
 (*<*)
 end
