@@ -47,7 +47,7 @@ text{* \label{TAO_PLM_ProofsAndDerivations} *}
     using modus_ponens .
   lemma vdash_properties_9[PLM]:
     "[\<phi> in v] \<Longrightarrow> [\<psi> \<^bold>\<rightarrow> \<phi> in v]"
-    using modus_ponens pl_1 axiom_instance by blast
+    using modus_ponens pl_1[axiom_instance] by blast
   lemma vdash_properties_10[PLM]:
     "[\<phi> \<^bold>\<rightarrow> \<psi> in v] \<Longrightarrow> ([\<phi> in v] \<Longrightarrow> [\<psi> in v])"
     using vdash_properties_6 .
@@ -1981,11 +1981,19 @@ begin
       thus "\<Theta> [\<phi> \<psi> in v] \<Longrightarrow> \<Theta> [\<phi> \<chi> in v]" by auto
     qed
 
-  lemma rule_sub_remark_1:
+  lemma rule_sub_remark_1_autosubst:
     assumes "(\<And>v.[\<lparr>A!,x\<rparr> \<^bold>\<equiv> (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>)) in v])"
         and "[\<^bold>\<not>\<lparr>A!,x\<rparr> in v]"
     shows"[\<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
     apply (insert assms) apply PLM_autosubst by auto
+
+  lemma rule_sub_remark_1:
+    assumes "(\<And>v.[\<lparr>A!,x\<rparr> \<^bold>\<equiv> (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>)) in v])"
+        and "[\<^bold>\<not>\<lparr>A!,x\<rparr> in v]"
+      shows"[\<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"
+    apply (PLM_subst_method "\<lparr>A!,x\<rparr>" "(\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>))")
+     apply (simp add: assms(1))
+    by (simp add: assms(2))
 
   lemma rule_sub_remark_2:
     assumes "(\<And>v.[\<lparr>R,x,y\<rparr> \<^bold>\<equiv> (\<lparr>R,x,y\<rparr> \<^bold>& (\<lparr>Q,a\<rparr> \<^bold>\<or> (\<^bold>\<not>\<lparr>Q,a\<rparr>))) in v])"
@@ -1993,11 +2001,19 @@ begin
     shows"[p \<^bold>\<rightarrow> (\<lparr>R,x,y\<rparr> \<^bold>& (\<lparr>Q,a\<rparr> \<^bold>\<or> (\<^bold>\<not>\<lparr>Q,a\<rparr>)))  in v]"
     apply (insert assms) apply PLM_autosubst by auto
 
-  lemma rule_sub_remark_3:
+  lemma rule_sub_remark_3_autosubst:
     assumes "(\<And>v x.[\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>)) in v])"
         and "[\<^bold>\<exists> x . \<lparr>A!,x\<^sup>P\<rparr> in v]"
     shows"[\<^bold>\<exists> x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))  in v]"
     apply (insert assms) apply PLM_autosubst1 by auto
+
+  lemma rule_sub_remark_3:
+    assumes "(\<And>v x.[\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>)) in v])"
+        and "[\<^bold>\<exists> x . \<lparr>A!,x\<^sup>P\<rparr> in v]"
+    shows "[\<^bold>\<exists> x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))  in v]"
+    apply (PLM_subst_method "\<lambda>x . \<lparr>A!,x\<^sup>P\<rparr>" "\<lambda>x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))")
+     apply (simp add: assms(1))
+    by (simp add: assms(2))
 
   lemma rule_sub_remark_4:
     assumes "\<And>v x.[(\<^bold>\<not>(\<^bold>\<not>\<lparr>P,x\<^sup>P\<rparr>)) \<^bold>\<equiv> \<lparr>P,x\<^sup>P\<rparr> in v]"

@@ -735,9 +735,10 @@ system in the third layer. Still it can be reasoned that in any model of object 
 has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and the
 model structure directly the derivation of the deductive system PLM should be universal. The only
 exceptions are the primitive meta-rules of PLM: modus ponens, RN (necessitation) and
-GEN (universal generalisation). These rules do not follow from the axiom system itself, but are derived
-from the semantics in the second layer. Still as the corresponding semantical rules will again have to be
-derivable for \emph{any} model, this does not have an impact on the universality of the subsequent reasoning.
+GEN (universal generalisation), as well as the deduction rule. These rules do not follow from the axiom system
+itself, but are derived from the semantics in the second layer (see~\ref{PLM-metarules}).
+Still as the corresponding semantical rules will again have to be derivable for \emph{any} model,
+this does not have an impact on the universality of the subsequent reasoning.
 
 There remains one issue, though. Since the logic of PLM is formulated in relational type theory,
 whereas Isabelle/HOL employs functional reasoning some formulations have to be adjusted to be representable
@@ -1635,6 +1636,8 @@ begin
 
 section{* Proving Method @{method[names_short = true] meta_solver} *}
  
+text{* \label{meta_solver} *}
+  
 subsection{* Concept *}
   
 text{*
@@ -2017,6 +2020,8 @@ text{*
 subsubsection{* Axioms of Actuality *}
   
 text{*
+  \label{axioms-actuality}
+
   As mentioned in the beginning of the section the modally-fragile axiom of actuality
   is stated using a different syntax (see~\ref{TAO_Axioms_Actuality}):
 
@@ -2099,6 +2104,12 @@ text{*
   
   Since the @{method meta_solver} was not equipped with explicit rules for lambda expressions,
   the statements rely on their semantic properties as described in section~\ref{semantics} directly.
+
+*}
+(*<*)
+end (* unnamed subcontext with MetaSolver interpretation *)
+(*>*)
+text{*
 
   The statements are the following (see~\ref{TAO_Axioms_ComplexRelationTerms}):
   \begin{itemize}
@@ -2195,6 +2206,16 @@ text{*
   deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
   formulation of the axioms without falling back to the meta-logic.
 *}
+
+(*<*)
+end (* context Axioms *)
+(*>*)
+
+
+(*<*)
+context PLM
+begin
+(*>*)
   
 section{* The Deductive System PLM *}
   
@@ -2207,13 +2228,321 @@ text{*
   extract some interesting concepts.
 *}
 
+subsection{* Modally Strict Proofs *}
+  
+text{*
+  PLM distinguishes between two sets of theorems, the set of theorems, that are derivable from
+  the complete axiom system, and the set of theorems, that have \emph{modally strict} proofs.
+
+  A modally strict proof is a proof that does not use modally fragile axioms (namely the axiom
+  of actuality described in section~\ref{axioms-actuality}).
+
+  Although it is challenging to completely reproduce this distinction in the embedding
+  (see TODO: reference), the following schema can provide a reasonable representation:
+
+  Modally strict theorems are stated to be true for an \emph{arbitrary} semantic possible world
+  in the embedding as: \mbox{@{term "[\<phi> in v]"}}
+
+  Here the variable @{term "v"} implicitly ranges over \emph{any} semantic possible world of
+  type @{type i}, including the designated actual world @{term "dw"}. Since modally fragile axioms
+  only hold in @{term "dw"}, they therefore cannot be used to prove a statement formulated
+  this way, as desired.
+
+  Non-modally strict theorems on the other hand are stated to be true only for the designated
+  actual world: \mbox{@{term "[\<phi> in dw]"}}
+
+  This way necessary axioms, as well as modally fragile axioms can be used in the proofs. However
+  it is not possible to infer from a modally fragile theorem that the same statement holds as a
+  modally strict axiom.  
+*}
+
+subsection{* Fundamental Metarules of PLM *}
+
+text{*
+  \label{PLM-metarules}
+
+  The primitive rule of PLM is the modus ponens rule (see~\ref{TAO_PLM_ModusPonens}):
+  
+  \begin{itemize}
+    \item @{thm modus_ponens[of v \<phi> \<psi>]} \hfill{(\ref{PM-modus-ponens})}
+  \end{itemize}
+
+  In the embedding this rule is a direct consequence of the semantics of the implication.
+
+  Additionally two fundamental Metarules are derived in PLM, \emph{GEN} and \emph{RN} (see~\ref{TAO_PLM_GEN_RN}):
+
+  \begin{itemize}
+    \item @{thm rule_gen[of v \<phi>]} \hfill{(\ref{PM-rule-gen})}
+    \item @{thm RN_2[of \<phi> \<psi> v]} \hfill{(\ref{PM-RN})}
+  \end{itemize}
+
+  Although in PLM these rules are derived by structural induction on the complexity of
+  a formula, unfortunately this proving mechanism cannot be reproduced in Isabelle. However,
+  the rules are direct consequences of the semantics described in section~\ref{semantics}.
+  The same is true for the deduction rule (see~\ref{TAO_PLM_NegationsAndConditionals}):
+
+  \begin{itemize}
+    \item @{thm deduction_theorem[of v \<phi> \<psi>]} \hfill{(\ref{PM-deduction-theorem})}
+  \end{itemize}
+
+  As a consequence this rule is derived from the semantics of the implication as well.
+  
+  Note that these rules are the \emph{only} exceptions to the concept that the deductive system of
+  PLM is completely derived from the axiom system and the primitive rule of inference (modus ponens).
+
+*}
+  
+subsection{* PLM Solver *}
+
 (*<*)
-end
+context
+begin
+interpretation MetaSolver .
 (*>*)
+text{*
+
+  Similarly to the @{method meta_solver} described in section~\ref{meta_solver} another proving
+  method is introduced, namely the @{method PLM_solver} (see~\ref{TAO_PLM_Solver}).
+
+  This proving method is initially not equipped with any rules. Throughout the derivation of the
+  deductive system of PLM, however, some of the rules of PLM are added to its set of rules.
+  Furthermore at several instances further rules become trivially \emph{derivable} from the
+  statements of PLM proven so far. Such rules are added to the @{method PLM_solver} as well.
+
+  Furthermore the @{method PLM_solver} can instantiate any rule of the deductive system PLM proven
+  so far or any axiom, if this allows to resolve a proving objective.
+
+  By its construction the @{method PLM_solver} has the property, that it can \emph{only} prove
+  statements that are derivable from the deductive system PLM. Thereby it is safe to use to aid
+  in any proof throughout the section. As a matter of fact a lot of the simple tautological statements
+  derived in the beginning of @{cite \<open>Chap. 9\<close> PM} can be proven automatically using this method.
+
+  Unfortunately some rules that would make the solving method more powerful and would make it more
+  helpful in the derivation of more complex theorems, are \emph{not} derivable from the deductive
+  system itself (and consequently are \emph{not} added to the set of admissible rules). Namely
+  one example is the converse of the rule RN. This circumstance is discussed in more detail in
+  section (TODO: reference).
+
+*}
 (*<*)
-end
+end (* unnamed subcontext with MetaSolver interpretation *)
 (*>*)
 
+subsection{* Additional Type Classes *}
+  
+text{*
+  There is one further subtlety one may notice in the derivation of the deductive system.
+  In PLM it is possible to derive statements involving the general identity symbol by case
+  distinction: if such a statement is derivable for all types of terms in the language separately,
+  it can be concluded that it is derivable in general. Such a case distinction cannot be directly
+  reproduced in the embedding, since no assumption can be made, that every instantiation of the
+  type class @{class identifiable} is in fact one of the types of terms of PLM.
+
+  However, there is a simple way to still formulate such general statements. This is done by
+  the introduction of additional type classes. A simple example is the type class @{class id_eq}
+  (see~\ref{TAO_PLM_Identity}). This new type class assumes the following statements to be true:
+
+  \begin{itemize}
+    \item @{thm id_eq_1[of v \<alpha>]} \hfill{(\ref{PM-id-eq}.1)}
+    \item @{thm id_eq_2[of v \<alpha> \<beta>]} \hfill{(\ref{PM-id-eq}.2)}
+    \item @{thm id_eq_3[of v \<alpha> \<beta> \<gamma>]} \hfill{(\ref{PM-id-eq}.3)}
+  \end{itemize}
+
+  Since these statements can be derived \emph{separately} for the types @{type \<nu>}, @{type \<Pi>\<^sub>0},
+  @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3}, the type class @{class id_eq} can now trivially be
+  instantiated for each of these types.
+*}
+
+subsection{* The Rule of Substitution *}
+
+subsubsection{* The Issue *}
+  
+text{*
+  A challenge in the derivation of the deductive system that is worth to examine in
+  detail is the \emph{rule of substitution}.  The rule is stated in PLM as follows
+  (see~@{cite \<open>(\ref{PM-rule-sub-nec})\<close> PM}):
+
+  \begin{addmargin}{1cm}
+    If @{text "\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>"} and @{text "\<phi>'"} is the result of substituting the formula @{text "\<chi>"}
+    for zero or more occurrences of @{text "\<psi>"} where the latter is a subformula of @{text "\<phi>"},
+    then if @{text "\<Gamma> \<turnstile> \<phi>"}, then @{text "\<Gamma> \<turnstile> \<phi>'"}. [Variant: If @{text "\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>"}, then @{text "\<phi> \<turnstile> \<phi>'"}]
+  \end{addmargin}
+
+  Naively one could try to express this in the functional setting as follows:
+
+  \begin{center}
+    @{term[display] "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v]) \<Longrightarrow> [\<phi> \<psi> in v] \<longleftrightarrow> [\<phi> \<chi> in v]"}
+  \end{center}
+
+  However this statement would \emph{not} be derivable. The issue is connected to the restriction
+  of @{term "\<psi>"} being a \emph{subformula} of @{text "\<phi>"} in PLM. The formulation above would allow
+  the substitution for \emph{any function} @{term "embedded_style \<phi>"} from formulas to formulas.
+
+  Formulas in the embedding have type @{type \<o>} which is internally represented by functions of the
+  type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. Reasoning is only defined to be classically in the designated state
+  @{term "dj"}, though. In the formulation above nothing would prevent @{term "embedded_style \<phi>"}
+  to be a function with the following internal representation:
+  \mbox{@{term "\<lambda> \<psi> . make\<o>(\<lambda> s w .  \<forall> s . eval\<o> (embedded_style \<psi>) s w)"}}
+
+  So nothing prevents @{term "embedded_style \<phi>"} from evaluating its argument for a state
+  different from the designated actual state @{term "dj"}. The condition @{term "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v])"}
+  on the other hand only requires @{term "embedded_style \<psi>"} and @{term "embedded_style \<chi>"} to be
+  equivalent in all possible worlds particularly in the \emph{actual state} - no statement about
+  other states is implied.
+
+  Another issue arises if one considers one of the example cases of legitimate uses of the rule
+  of substitution in PLM (see~@{cite \<open>(\ref{PM-rule-sub-nec})\<close> PM}):
+
+  \begin{addmargin}{1cm}
+    If @{text "\<turnstile> \<exists>x A!x"} and @{text "\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x"}, then @{text "\<turnstile> \<exists>x \<not>\<diamond>E!x"}.
+  \end{addmargin}
+
+  This does not follow from the naive formulation above. Since @{text "x"} is \emph{bound} by
+  the existential quantifier, in the functional representation @{term "embedded_style \<phi>"}
+  has to have a different type: to be applicable in this example @{term "embedded_style \<phi>"}
+  has to be \mbox{@{term[eta_contract=false] "(embedded_style \<phi>) = (\<lambda> \<psi> . embedded_style (\<^bold>\<exists> x . \<psi> x))"}},
+  whereas @{term "embedded_style \<psi>"} and @{term "embedded_style \<chi>"} themselves have to be functions as follows:
+  \mbox{@{term[eta_contract=false] "(embedded_style \<psi>) = (\<lambda> x . embedded_style \<lparr>A!,x\<rparr>)"}} and
+  \mbox{@{term[eta_contract=false] "(embedded_style \<chi>) = (\<lambda> x . embedded_style (\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>))"}}.
+  Furthermore now the equivalence condition has to be \mbox{@{term "\<And> x v. [\<psi> x \<^bold>\<equiv> \<chi> x in v]"}}.
+  This is analog to the fact that @{text "x"}
+  is a free variable in the condition @{text "\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x"} in PLM.
+
+  
+*}
+
+subsubsection{* Solution *}
+
+text{*
+
+  The embedding employs a solution that is rather complex, but can successfully address the issues 
+  described above.
+
+  First of all the following definition is introduced:
+
+  \begin{center}
+    @{thm[display] Substable_def[expand2, of cond \<phi>]}
+  \end{center}
+
+  Given a condition @{term "cond"} a function @{term "embedded_style \<phi>"}
+  is considered @{term "Substable"}, if and only if for all @{term "embedded_style \<psi>"}
+  and  @{term "embedded_style \<chi>"} (which may have an arbitrary type) it follows in each
+  possible world @{term "v"} that \mbox{@{term "[\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"}}.
+
+  Now several introduction rules for this property are derived. The idea is to capture the
+  notion of \emph{subformula} in PLM. A few examples are:
+
+  \begin{itemize}
+    \item @{lemma "Substable cond (\<lambda>\<phi>. embedded_style \<Theta>)"
+            by (simp add: embedded_style_def Substable_intro_const)}
+    \item @{lemma "Substable cond \<psi> \<Longrightarrow> Substable cond (\<lambda>\<phi>. embedded_style ( \<^bold>\<not>\<psi> \<phi>))"
+            by (simp add: embedded_style_def Substable_intro_not)}
+    \item @{lemma "Substable cond \<psi> \<and> Substable cond \<chi> \<Longrightarrow> Substable cond (\<lambda>\<phi>. embedded_style (\<psi> \<phi> \<^bold>\<rightarrow> \<chi> \<phi>))"
+            by (simp add: embedded_style_def Substable_intro_impl)}
+  \end{itemize}
+
+  These rules can be derived from the rules proven in PLM.
+
+  Now as mentioned above in the functional setting substitution has to be allowed not only for formulas,
+  but also for \emph{functions} to formulas. To that end the type class @{class Substable} is introduced
+  that fixes a condition @{term "Substable_Cond"} to be used as @{term "cond"} in the definition above
+  and assumes the following:
+
+  \begin{center}
+    @{thm[display] Substable_class.rule_sub_nec[of \<phi> \<psi> \<chi> \<Theta> v]}
+  \end{center}
+
+  If @{term "embedded_style \<phi>"} is @{term "Substable"} (as per the definition above) under the
+  condition @{term "Substable_Cond"} that was fixed in the type class, and @{term "embedded_style \<psi>"}
+  and @{term "embedded_style \<chi>"} satisfy the fixed condition @{term "Substable_Cond"}, then everything
+  that is true for @{term "[\<phi> \<psi> in v]"} is also true for @{term "[\<phi> \<chi> in v]"}.
+
+  Now as a base case this type class is \emph{instantiated} for the type of formulas @{type \<o>} with
+  the following definition of @{term "Substable_Cond"}:
+
+  \begin{center}
+    @{thm[display] Substable_Cond_\<o>_def[expand2, of \<psi> \<chi>]}
+  \end{center}
+
+  Furthermore the type class is instantiated for \emph{functions} from an arbitrary type to
+  a type of the class @{class Substable} with the following definition of @{term "Substable_Cond"}:
+
+  \begin{center}
+    @{thm[display] Substable_Cond_fun_def[expand2, of \<psi> \<chi>]}
+  \end{center}
+
+  This construction now allows substitutions in all cases required by the original formulation in PLM.
+*}
+  
+subsubsection{* Proving Methods *}
+
+text{*
+
+  Although the construction above covers exactly the cases in which PLM allows substitutions, it does
+  not yet have a form that allows it to conveniently \emph{apply} the rule of substitution. In order
+  to apply the rule, it first has to be established that a formula can be decomposed into a
+  function with the substituents as arguments and it further has to be shown that this function
+  satisfies the appropriate @{term "Substable"} condition. This complexity prevents any reasonable
+  use cases. This problem is mitigated by the introduction of proving methods, that are convenient
+  to use. The main method is called @{method PLM_subst_method}.
+
+  This method uses a combination of pattern matching and automatic rule application, to provide
+  a convenient way to apply the rule of substitution in practice.
+
+  For example assume the current proof objective is @{term "[\<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"}. Now it is possible to
+  apply the @{method PLM_subst_method} method as follows:
+  \begin{center}
+    @{theory_text "apply (PLM_subst_method \"\<lparr>A!,x\<rparr>\" \"(\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>))\""}
+  \end{center}
+  This will now automatically analyze the current proof goal, look for an appropriate choice of
+  a function @{term "embedded_style \<phi>"}, apply the substitution rule and resolve the substitutability
+  claim about @{term "embedded_style \<phi>"}. Consequently it can resolve the current proof objective
+  by producing two new proving goals: @{term "\<forall>v. [\<lparr>A!,x\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"} and @{term "[\<^bold>\<not>\<lparr>A!,x\<rparr> in v]"},
+  as expected. The complexity of the construction above is hidden away entirely.
+
+  Similarly assume the proof objective is @{term "[\<^bold>\<exists> x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))  in v]"}. Now the method
+  @{method PLM_subst_method} can be invoked as follows:
+  \begin{center}
+    @{theory_text "apply (PLM_subst_method \"\<lambda>x . \<lparr>A!,x\<^sup>P\<rparr>\" \"\<lambda>x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))\""}
+  \end{center}
+  This will result in the following two new proving goals:
+  @{term "\<forall>x v. [\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"} and @{term "[\<^bold>\<exists>x. \<lparr>A!,x\<^sup>P\<rparr> in v]"}.
+
+*}  
+
+subsubsection{* Summery *}
+
+text{*
+  Although an adequate representation of the rule of substitution in the functional setting
+  is challenging, the above construction allows a convenient use of the rule. Moreover it is
+  important to note that despite the complexity of the representation no assumptions about
+  the meta-logic or the underlying model structure were made. The construction is completely
+  derivable from the rules of PLM itself, so the devised rule is safe to use without
+  compromising the provability claim of the layered structure of the embedding.
+
+  All statements that are proven using the constructed substitution methods, remain derivable
+  from the deductive system of PLM.
+*}
+
+subsection{* Automation and Interactivity in the Embedding *}
+  
+text{*
+  
+*}  
+
+subsection{* Summery *}
+  
+text{*
+  Despite the presented challenges it was possible to derive a full representation of
+  the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM} without sacrificing the
+  layered structure of the embedding.
+*}
+  
+(*<*)
+end (* context PLM*)
+(*>*)
+
+  
 (*<*)
 end
 (*>*)
