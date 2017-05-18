@@ -26,26 +26,30 @@ text{* \label{TAO_Embedding_Derived_Types} *}
 typedef \<o> = "UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set"
   morphisms eval\<o> make\<o> .. --{* truth values *}
 
-type_synonym \<Pi>\<^sub>0 = \<o> --{* zero place relations *}
-typedef \<Pi>\<^sub>1 = "UNIV::(\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>1 make\<Pi>\<^sub>1 .. --{* one place relations *}
-typedef \<Pi>\<^sub>2 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>2 make\<Pi>\<^sub>2 .. --{* two place relations *}
-typedef \<Pi>\<^sub>3 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>3 make\<Pi>\<^sub>3 .. --{* three place relations *}
+type_synonym \<Omega>\<^sub>0 = \<o> --{* zero place relations *}
+typedef \<Omega>\<^sub>1 = "UNIV::(\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
+  morphisms eval\<Omega>\<^sub>1 make\<Omega>\<^sub>1 .. --{* one place relations *}
+typedef \<Omega>\<^sub>2 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
+  morphisms eval\<Omega>\<^sub>2 make\<Omega>\<^sub>2 .. --{* two place relations *}
+typedef \<Omega>\<^sub>3 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
+  morphisms eval\<Omega>\<^sub>3 make\<Omega>\<^sub>3 .. --{* three place relations *}
 
-type_synonym \<alpha> = "\<Pi>\<^sub>1 set" --{* abstract objects *}
+type_synonym \<alpha> = "(\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set" --{* abstract objects *}
 
 datatype \<nu> = \<omega>\<nu> \<omega> | \<alpha>\<nu> \<alpha> --{* individuals *}
 
-typedef \<kappa> = "UNIV::(\<nu> option) set"
-  morphisms eval\<kappa> make\<kappa> .. --{* individual terms *}
+type_synonym ('a) trm = "('a) option" --{* terms *}
 
+type_synonym \<kappa> = "\<nu> trm"
+type_synonym \<Pi>\<^sub>0 = "\<Omega>\<^sub>0 trm"
+type_synonym \<Pi>\<^sub>1 = "\<Omega>\<^sub>1 trm"
+type_synonym \<Pi>\<^sub>2 = "\<Omega>\<^sub>2 trm"
+type_synonym \<Pi>\<^sub>3 = "\<Omega>\<^sub>3 trm"
+  
 setup_lifting type_definition_\<o>
-setup_lifting type_definition_\<kappa>
-setup_lifting type_definition_\<Pi>\<^sub>1
-setup_lifting type_definition_\<Pi>\<^sub>2
-setup_lifting type_definition_\<Pi>\<^sub>3
+setup_lifting type_definition_\<Omega>\<^sub>1
+setup_lifting type_definition_\<Omega>\<^sub>2
+setup_lifting type_definition_\<Omega>\<^sub>3
 
 subsection{* Individual Terms and Definite Descriptions *}
 text{* \label{TAO_Embedding_IndividualTerms} *}
@@ -63,9 +67,9 @@ text{*
 \end{remark}
 *}
 
-lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
-lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "op\<noteq> None" .
-lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
+lift_definition totrm :: "'a\<Rightarrow>'a trm" ("_\<^sup>P" [90] 90) is Some .
+lift_definition proper :: "'a trm\<Rightarrow>bool" is "op\<noteq> None" .
+lift_definition rep :: "'a trm\<Rightarrow>'a" is the .
 
 text{*
 \begin{remark}
@@ -100,15 +104,15 @@ definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsil
 subsection{* Exemplification of n-place relations. *}
 text{* \label{TAO_Embedding_Exemplification} *}
 
-lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is id .
+lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is "\<lambda> p s w . (proper p) \<and> (rep p) s w" .
 lift_definition exe1::"\<Pi>\<^sub>1\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_\<rparr>") is
-  "\<lambda> F x s w . (proper x) \<and> F (\<nu>\<upsilon> (rep x)) s w" .
+  "\<lambda> F x s w . (proper F) \<and> (proper x) \<and> (rep F) (\<nu>\<upsilon> (rep x)) s w" .
 lift_definition exe2::"\<Pi>\<^sub>2\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_\<rparr>") is
-  "\<lambda> F x y s w . (proper x) \<and> (proper y) \<and>
-     F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) s w" .
+  "\<lambda> F x y s w . (proper F) \<and> (proper x) \<and> (proper y)
+               \<and> (rep F) (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) s w" .
 lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_,_\<rparr>") is
-"\<lambda> F x y z s w . (proper x) \<and> (proper y) \<and> (proper z) \<and>
-   F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) s w" .
+"\<lambda> F x y z s w . (proper F) \<and> (proper x) \<and> (proper y) \<and> (proper z)
+               \<and> (rep F) (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) s w" .
 
 text{*
 \begin{remark}
@@ -122,7 +126,7 @@ subsection{* Encoding *}
 text{* \label{TAO_Embedding_Encoding} *}
 
 lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\<lbrace>_,_\<rbrace>") is
-  "\<lambda> x F w s . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
+  "\<lambda> x F w s . (proper x) \<and> (proper F) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . (rep F) \<in> \<alpha>) (the x)" .
 
 text{*
 \begin{remark}
@@ -147,12 +151,12 @@ lift_definition forall\<^sub>\<nu> :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<o>
   "\<lambda> \<phi> s w . \<forall> x :: \<nu> . (\<phi> x) s w" .
 lift_definition forall\<^sub>0 :: "(\<Pi>\<^sub>0\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>0" [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>0 . (\<phi> x) s w" .
-lift_definition forall\<^sub>1 :: "(\<Pi>\<^sub>1\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>1" [8] 9) is
-  "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>1  . (\<phi> x) s w" .
-lift_definition forall\<^sub>2 :: "(\<Pi>\<^sub>2\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>2" [8] 9) is
-  "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>2  . (\<phi> x) s w" .
-lift_definition forall\<^sub>3 :: "(\<Pi>\<^sub>3\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>3" [8] 9) is
-  "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>3  . (\<phi> x) s w" .
+lift_definition forall\<^sub>1 :: "(\<Omega>\<^sub>1\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>1" [8] 9) is
+  "\<lambda> \<phi> s w . \<forall> x :: \<Omega>\<^sub>1  . (\<phi> x) s w" .
+lift_definition forall\<^sub>2 :: "(\<Omega>\<^sub>2\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>2" [8] 9) is
+  "\<lambda> \<phi> s w . \<forall> x :: \<Omega>\<^sub>2  . (\<phi> x) s w" .
+lift_definition forall\<^sub>3 :: "(\<Omega>\<^sub>3\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>3" [8] 9) is
+  "\<lambda> \<phi> s w . \<forall> x :: \<Omega>\<^sub>3  . (\<phi> x) s w" .
 lift_definition forall\<^sub>\<o> :: "(\<o>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<o>" [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<o>  . (\<phi> x) s w" .
 lift_definition box :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<box>_" [62] 63) is
@@ -167,24 +171,6 @@ text{*
   other state.
 \end{remark}
 *}
-
-subsection{* Lambda Expressions *}
-text{* \label{TAO_Embedding_Lambda} *}
-
-text{*
-\begin{remark}
-  Lambda expressions have to convert maps from individuals to propositions to
-  relations that are represented by maps from urelements to truth values.
-\end{remark}
-*}
-
-lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
-lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
-  "\<lambda> \<phi> u s w . \<exists> x . \<nu>\<upsilon> x = u \<and> \<phi> x s w" .
-lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
-  "\<lambda> \<phi> u v s w . \<exists> x y . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<phi> x y s w" .
-lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
-  "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<nu>\<upsilon> z = r \<and> \<phi> x y z s w" .
 
 subsection{* Proper Maps from Individual Terms to Propositions *}
 text{* \label{TAO_Embedding_Proper} *}
@@ -203,14 +189,38 @@ text{*
 *}
 
 lift_definition IsProperInX :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x v . (\<exists> a . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> (\<phi> (a\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) dj v)" .
+  "\<lambda> \<phi> . (\<forall> x\<^sub>1 z\<^sub>1 . \<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1 \<longrightarrow> \<phi> (x\<^sub>1\<^sup>P) dj = \<phi> (z\<^sub>1\<^sup>P) dj)" .
 lift_definition IsProperInXY :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x y v . (\<exists> a b . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> \<nu>\<upsilon> b = \<nu>\<upsilon> y
-                    \<and> (\<phi> (a\<^sup>P) (b\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) (y\<^sup>P) dj v)" .
+  "\<lambda> \<phi> . (\<forall> x\<^sub>1 x\<^sub>2 z\<^sub>1 z\<^sub>2 . (\<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1) \<and> (\<nu>\<upsilon> x\<^sub>2 = \<nu>\<upsilon> z\<^sub>2)
+          \<longrightarrow> \<phi> (x\<^sub>1\<^sup>P) (x\<^sub>2\<^sup>P) dj = \<phi> (z\<^sub>1\<^sup>P) (z\<^sub>2\<^sup>P) dj)" .
 lift_definition IsProperInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
-  "\<lambda> \<phi> . \<forall> x y z v . (\<exists> a b c . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> \<nu>\<upsilon> b = \<nu>\<upsilon> y \<and> \<nu>\<upsilon> c = \<nu>\<upsilon> z
-                      \<and> (\<phi> (a\<^sup>P) (b\<^sup>P) (c\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) dj v)" .
+  "\<lambda> \<phi> . (\<forall> x\<^sub>1 x\<^sub>2 x\<^sub>3 z\<^sub>1 z\<^sub>2 z\<^sub>3 . (\<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1) \<and> (\<nu>\<upsilon> x\<^sub>2 = \<nu>\<upsilon> z\<^sub>2) \<and> (\<nu>\<upsilon> x\<^sub>3 = \<nu>\<upsilon> z\<^sub>3)
+        \<longrightarrow> \<phi> (x\<^sub>1\<^sup>P) (x\<^sub>2\<^sup>P) (x\<^sub>3\<^sup>P) dj = \<phi> (z\<^sub>1\<^sup>P) (z\<^sub>2\<^sup>P) (z\<^sub>3\<^sup>P) dj)" .
 
+
+subsection{* Lambda Expressions *}
+text{* \label{TAO_Embedding_Lambda} *}
+
+text{*
+\begin{remark}
+  Lambda expressions have to convert maps from individuals to propositions to
+  relations that are represented by maps from urelements to truth values.
+\end{remark}
+*}
+
+lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is Some .
+lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
+  "\<lambda> \<phi> . if (\<forall> x\<^sub>1 z\<^sub>1 . \<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1 \<longrightarrow> \<phi> x\<^sub>1 dj = \<phi> z\<^sub>1 dj)
+         then Some (\<lambda> u\<^sub>1 s w . \<exists> x\<^sub>1 . \<nu>\<upsilon> x\<^sub>1 = u\<^sub>1 \<and> \<phi> x\<^sub>1 s w)
+         else None" .
+lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
+  "\<lambda> \<phi> . if (\<forall> x\<^sub>1 x\<^sub>2 z\<^sub>1 z\<^sub>2 . (\<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1) \<and> (\<nu>\<upsilon> x\<^sub>2 = \<nu>\<upsilon> z\<^sub>2) \<longrightarrow> \<phi> x\<^sub>1 x\<^sub>2 dj = \<phi> z\<^sub>1 z\<^sub>2 dj)
+         then Some (\<lambda> u\<^sub>1 u\<^sub>2 s w . \<exists> x\<^sub>1 x\<^sub>2 . \<nu>\<upsilon> x\<^sub>1 = u\<^sub>1 \<and> \<nu>\<upsilon> x\<^sub>2 = u\<^sub>2 \<and> \<phi> x\<^sub>1 x\<^sub>2 s w)
+         else None" .
+lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
+  "\<lambda> \<phi> . if (\<forall> x\<^sub>1 x\<^sub>2 x\<^sub>3 z\<^sub>1 z\<^sub>2 z\<^sub>3 . (\<nu>\<upsilon> x\<^sub>1 = \<nu>\<upsilon> z\<^sub>1) \<and> (\<nu>\<upsilon> x\<^sub>2 = \<nu>\<upsilon> z\<^sub>2) \<and> (\<nu>\<upsilon> x\<^sub>3 = \<nu>\<upsilon> z\<^sub>3) \<longrightarrow> \<phi> x\<^sub>1 x\<^sub>2 x\<^sub>3 dj = \<phi> z\<^sub>1 z\<^sub>2 z\<^sub>3 dj)
+         then Some (\<lambda> u\<^sub>1 u\<^sub>2 u\<^sub>3 s w . \<exists> x\<^sub>1 x\<^sub>2 x\<^sub>3 . \<nu>\<upsilon> x\<^sub>1 = u\<^sub>1 \<and> \<nu>\<upsilon> x\<^sub>2 = u\<^sub>2 \<and> \<nu>\<upsilon> x\<^sub>3 = u\<^sub>3 \<and> \<phi> x\<^sub>1 x\<^sub>2 x\<^sub>3 s w)
+         else None" .  
 
 subsection{* Validity *} 
 text{* \label{TAO_Embedding_Validity} *}
@@ -261,7 +271,7 @@ text{*
 *}
 
 
-lift_definition Concrete::"\<Pi>\<^sub>1" ("E!") is
+lift_definition Concrete::"\<Omega>\<^sub>1" ("E!") is
   "\<lambda> u s w . case u of \<omega>\<upsilon> x \<Rightarrow> ConcreteInWorld x w | _ \<Rightarrow> False" .
 
 text{*
@@ -307,30 +317,29 @@ using the theorem attribute @{text "meta_aux"}.
   
 named_theorems meta_aux
 
-declare make\<kappa>_inverse[meta_aux] eval\<kappa>_inverse[meta_aux]
-        make\<o>_inverse[meta_aux] eval\<o>_inverse[meta_aux]
-        make\<Pi>\<^sub>1_inverse[meta_aux] eval\<Pi>\<^sub>1_inverse[meta_aux]
-        make\<Pi>\<^sub>2_inverse[meta_aux] eval\<Pi>\<^sub>2_inverse[meta_aux]
-        make\<Pi>\<^sub>3_inverse[meta_aux] eval\<Pi>\<^sub>3_inverse[meta_aux]
+declare make\<o>_inverse[meta_aux] eval\<o>_inverse[meta_aux]
+        make\<Omega>\<^sub>1_inverse[meta_aux] eval\<Omega>\<^sub>1_inverse[meta_aux]
+        make\<Omega>\<^sub>2_inverse[meta_aux] eval\<Omega>\<^sub>2_inverse[meta_aux]
+        make\<Omega>\<^sub>3_inverse[meta_aux] eval\<Omega>\<^sub>3_inverse[meta_aux]
 lemma \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>[meta_aux]: "\<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x" by (simp add: \<nu>\<upsilon>_def)
 lemma rep_proper_id[meta_aux]: "rep (x\<^sup>P) = x"
-  by (simp add: meta_aux \<nu>\<kappa>_def rep_def)
+  by (simp add: meta_aux proper_def rep_def totrm_def)
 lemma \<nu>\<kappa>_proper[meta_aux]: "proper (x\<^sup>P)"
-  by (simp add: meta_aux \<nu>\<kappa>_def proper_def)
+  by (simp add: meta_aux proper_def totrm_def)
 lemma no_\<alpha>\<omega>[meta_aux]: "\<not>(\<nu>\<upsilon> (\<alpha>\<nu> x) = \<omega>\<upsilon> y)" by (simp add: \<nu>\<upsilon>_def)
 lemma no_\<sigma>\<omega>[meta_aux]: "\<not>(\<sigma>\<upsilon> x = \<omega>\<upsilon> y)" by blast
 lemma \<nu>\<upsilon>_surj[meta_aux]: "surj \<nu>\<upsilon>"
   using \<alpha>\<sigma>_surj unfolding \<nu>\<upsilon>_def surj_def
   by (metis \<nu>.simps(5) \<nu>.simps(6) \<upsilon>.exhaust comp_apply)
 lemma lambda\<Pi>\<^sub>1_aux[meta_aux]:
-  "make\<Pi>\<^sub>1 (\<lambda>u s w. \<exists>x. \<nu>\<upsilon> x = u \<and> eval\<Pi>\<^sub>1 F (\<nu>\<upsilon> x) s w) = F"
+  "make\<Omega>\<^sub>1 (\<lambda>u s w. \<exists>x. \<nu>\<upsilon> x = u \<and> eval\<Omega>\<^sub>1 F (\<nu>\<upsilon> x) s w) = F"
   proof -
     have "\<And> u s w \<phi> . (\<exists> x . \<nu>\<upsilon> x = u \<and> \<phi> (\<nu>\<upsilon> x) (s::j) (w::i)) \<longleftrightarrow> \<phi> u s w"
       using \<nu>\<upsilon>_surj unfolding surj_def by metis
     thus ?thesis apply transfer by simp
   qed
 lemma lambda\<Pi>\<^sub>2_aux[meta_aux]:
-  "make\<Pi>\<^sub>2 (\<lambda>u v s w. \<exists>x . \<nu>\<upsilon> x = u \<and> (\<exists> y . \<nu>\<upsilon> y = v \<and> eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) s w)) = F"
+  "make\<Omega>\<^sub>2 (\<lambda>u v s w. \<exists>x . \<nu>\<upsilon> x = u \<and> (\<exists> y . \<nu>\<upsilon> y = v \<and> eval\<Omega>\<^sub>2 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) s w)) = F"
   proof -
     have "\<And> u v (s ::j) (w::i) \<phi> .
       (\<exists> x . \<nu>\<upsilon> x = u \<and> (\<exists> y . \<nu>\<upsilon> y = v \<and> \<phi> (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) s w))
@@ -339,8 +348,8 @@ lemma lambda\<Pi>\<^sub>2_aux[meta_aux]:
     thus ?thesis apply transfer by simp
   qed
 lemma lambda\<Pi>\<^sub>3_aux[meta_aux]:
-  "make\<Pi>\<^sub>3 (\<lambda>u v r s w. \<exists>x. \<nu>\<upsilon> x = u \<and> (\<exists>y. \<nu>\<upsilon> y = v \<and>
-   (\<exists>z. \<nu>\<upsilon> z = r \<and> eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) s w))) = F"
+  "make\<Omega>\<^sub>3 (\<lambda>u v r s w. \<exists>x. \<nu>\<upsilon> x = u \<and> (\<exists>y. \<nu>\<upsilon> y = v \<and>
+   (\<exists>z. \<nu>\<upsilon> z = r \<and> eval\<Omega>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) s w))) = F"
   proof -
     have "\<And> u v r (s::j) (w::i) \<phi> . \<exists>x. \<nu>\<upsilon> x = u \<and> (\<exists>y. \<nu>\<upsilon> y = v
           \<and> (\<exists>z. \<nu>\<upsilon> z = r \<and> \<phi> (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) s w)) = \<phi> u v r s w"

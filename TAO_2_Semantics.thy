@@ -27,10 +27,10 @@ begin
   text{* \label{TAO_Semantics_Semantics_Denotations} *}
 
   lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is id .
-  lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
-  lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is Some .
-  lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
-  lift_definition d\<^sub>3 :: "\<Pi>\<^sub>3\<Rightarrow>R\<^sub>3 option" is Some .
+  lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is id .
+  lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is id .
+  lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is id .
+  lift_definition d\<^sub>3 :: "\<Pi>\<^sub>3\<Rightarrow>R\<^sub>3 option" is id .
 
   subsubsection{* Actual World *}
   text{* \label{TAO_Semantics_Semantics_Actual_World} *}
@@ -52,7 +52,7 @@ begin
   text{* \label{TAO_Semantics_Semantics_Encoding_Extension} *}
 
   definition en :: "R\<^sub>1\<Rightarrow>(R\<^sub>\<kappa> set)"
-    where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> make\<Pi>\<^sub>1 (\<lambda> x . F x) \<in> y
+    where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> (\<lambda> x . F x) \<in> y
                                        | _ \<Rightarrow> False }"
 
   subsubsection{* Collection of Semantical Definitions *}
@@ -73,14 +73,14 @@ begin
     "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
     unfolding semantics_defs
     apply (simp add: meta_defs meta_aux rep_def proper_def)
-    by (metis option.discI option.exhaust option.sel)
+    by (metis map_option_is_None option.collapse option.distinct(1) option.sel)
 
   lemma T1_2[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 . Some r = d\<^sub>2 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                                \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> (o\<^sub>1, o\<^sub>2) \<in> ex2 r w)"
     unfolding semantics_defs
     apply (simp add: meta_defs meta_aux rep_def proper_def)
-    by (metis option.discI option.exhaust option.sel)
+    by (metis map_option_is_None option.collapse option.distinct(1) option.sel)
 
   lemma T1_3[semantics]:
     "(w \<Turnstile> \<lparr>F,x,y,z\<rparr>) = (\<exists> r o\<^sub>1 o\<^sub>2 o\<^sub>3 . Some r = d\<^sub>3 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
@@ -88,22 +88,21 @@ begin
                                     \<and> (o\<^sub>1, o\<^sub>2, o\<^sub>3) \<in> ex3 r w)"
     unfolding semantics_defs
     apply (simp add: meta_defs meta_aux rep_def proper_def)
-    by (metis option.discI option.exhaust option.sel)
+    by (metis map_option_is_None option.collapse option.distinct(1) option.sel)
 
   lemma T3[semantics]:
     "(w \<Turnstile> \<lparr>F\<rparr>) = (\<exists> r . Some r = d\<^sub>0 F \<and> ex0 r w)"
     unfolding semantics_defs
-    by (simp add: meta_defs meta_aux)
+    apply (simp add: meta_defs meta_aux rep_def proper_def)
+    by (metis (no_types, lifting) map_option_eq_Some option.sel)
 
   subsubsection{* Truth Conditions of Encoding Formulas *}
   text{* \label{TAO_Semantics_Semantics_Encoding} *}
 
   lemma T2[semantics]:
     "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
-    unfolding semantics_defs
-    apply (simp add: meta_defs meta_aux rep_def proper_def split: \<nu>.split)
-    by (metis \<nu>.exhaust \<nu>.inject(2) \<nu>.simps(4) \<nu>\<kappa>.rep_eq option.collapse
-              option.discI rep.rep_eq rep_proper_id)
+    unfolding semantics_defs apply transfer apply simp
+    by (metis not_None_eq option.map_ident option.sel proper.abs_eq rep.transfer)
 
   subsubsection{* Truth Conditions of Complex Formulas *}
   text{* \label{TAO_Semantics_Semantics_Complex_Formulas} *}
@@ -150,37 +149,37 @@ begin
   subsubsection{* Denotations of Lambda Expressions *}
   text{* \label{TAO_Semantics_Semantics_Lambda_Expressions} *}
 
-  lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) = d\<^sub>1 F"
-    by (simp add: meta_defs meta_aux)
+  lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F\<^sup>P, x\<^sup>P\<rparr>) = d\<^sub>1 (F\<^sup>P)"
+    by (simp add: meta_defs meta_aux rep_def proper_def totrm_def)
+    
+  lemma D4_2[semantics]: "d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F\<^sup>P, x\<^sup>P, y\<^sup>P\<rparr>)) = d\<^sub>2 (F\<^sup>P)"
+    by (simp add: meta_defs meta_aux rep_def proper_def totrm_def)
 
-  lemma D4_2[semantics]: "d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>F, x\<^sup>P, y\<^sup>P\<rparr>)) = d\<^sub>2 F"
-    by (simp add: meta_defs meta_aux)
-
-  lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)) = d\<^sub>3 F"
-    by (simp add: meta_defs meta_aux)
+  lemma D4_3[semantics]: "d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<lparr>F\<^sup>P, x\<^sup>P, y\<^sup>P, z\<^sup>P\<rparr>)) = d\<^sub>3 (F\<^sup>P)"
+    by (simp add: meta_defs meta_aux rep_def proper_def totrm_def)
 
   lemma D5_1[semantics]:
-    assumes "IsProperInX \<phi>"
     shows "\<And> w o\<^sub>1 r . Some r = d\<^sub>1 (\<^bold>\<lambda> x . (\<phi> (x\<^sup>P))) \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x
                       \<longrightarrow> (o\<^sub>1 \<in> ex1 r w) = (w \<Turnstile> \<phi> x)"
-    using assms unfolding IsProperInX_def semantics_defs
-    by (auto simp: meta_defs meta_aux rep_def proper_def \<nu>\<kappa>.abs_eq)
+    unfolding semantics_defs
+    apply simp apply transfer
+    by (smt option.inject option.map_ident option.simps(3))
 
   lemma D5_2[semantics]:
-    assumes "IsProperInXY \<phi>"
     shows "\<And> w o\<^sub>1 o\<^sub>2 r . Some r = d\<^sub>2 (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> (x\<^sup>P) (y\<^sup>P)))
                        \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
                        \<longrightarrow> ((o\<^sub>1,o\<^sub>2) \<in> ex2 r w) = (w \<Turnstile> \<phi> x y)"
-    using assms unfolding IsProperInXY_def semantics_defs
-    by (auto simp: meta_defs meta_aux rep_def proper_def \<nu>\<kappa>.abs_eq)
+    unfolding semantics_defs
+    apply simp apply transfer
+    by (smt option.inject option.map_ident option.simps(3))
 
   lemma D5_3[semantics]:
-    assumes "IsProperInXYZ \<phi>"
     shows "\<And> w o\<^sub>1 o\<^sub>2 o\<^sub>3 r . Some r = d\<^sub>3 (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P)))
                           \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> Some o\<^sub>3 = d\<^sub>\<kappa> z
                           \<longrightarrow> ((o\<^sub>1,o\<^sub>2,o\<^sub>3) \<in> ex3 r w) = (w \<Turnstile> \<phi> x y z)"
-    using assms unfolding IsProperInXYZ_def semantics_defs
-    by (auto simp: meta_defs meta_aux rep_def proper_def \<nu>\<kappa>.abs_eq)
+    unfolding semantics_defs
+    apply simp apply transfer
+    by (smt option.inject option.map_ident option.simps(3))
 
   lemma D6[semantics]: "(\<And> w r . Some r = d\<^sub>0 (\<^bold>\<lambda>\<^sup>0 \<phi>) \<longrightarrow> ex0 r w = (w \<Turnstile> \<phi>))"
     by (auto simp: meta_defs meta_aux semantics_defs)
@@ -188,32 +187,36 @@ begin
   subsubsection{* Auxiliary Lemmata *}
   text{* \label{TAO_Semantics_Semantics_Auxiliary_Lemmata} *}
 
-  lemma propex\<^sub>0: "\<exists> r . Some r = d\<^sub>0 F"
-    unfolding d\<^sub>0_def by simp
-  lemma propex\<^sub>1: "\<exists> r . Some r = d\<^sub>1 F"
-    unfolding d\<^sub>1_def by simp
-  lemma propex\<^sub>2: "\<exists> r . Some r = d\<^sub>2 F"
-    unfolding d\<^sub>2_def by simp
-  lemma propex\<^sub>3: "\<exists> r . Some r = d\<^sub>3 F"
-    unfolding d\<^sub>3_def by simp
+  lemma propex\<^sub>0: "\<exists> r . Some r = d\<^sub>0 (F\<^sup>P)"
+    unfolding d\<^sub>0_def totrm_def by simp
+  lemma propex\<^sub>1: "\<exists> r . Some r = d\<^sub>1 (F\<^sup>P)"
+    unfolding d\<^sub>1_def totrm_def by simp
+  lemma propex\<^sub>2: "\<exists> r . Some r = d\<^sub>2 (F\<^sup>P)"
+    unfolding d\<^sub>2_def totrm_def by simp
+  lemma propex\<^sub>3: "\<exists> r . Some r = d\<^sub>3 (F\<^sup>P)"
+    unfolding d\<^sub>3_def totrm_def by simp
   lemma d\<^sub>\<kappa>_proper: "d\<^sub>\<kappa> (u\<^sup>P) = Some u"
-    unfolding d\<^sub>\<kappa>_def by (simp add: \<nu>\<kappa>_def meta_aux)
+    unfolding d\<^sub>\<kappa>_def by (simp add: totrm_def meta_aux)
   lemma ConcretenessSemantics1:
-    "Some r = d\<^sub>1 E! \<Longrightarrow> (\<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
-    unfolding semantics_defs apply transfer
-    by (simp add: OrdinaryObjectsPossiblyConcreteAxiom \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon>)
+    "Some r = d\<^sub>1 (E!\<^sup>P) \<Longrightarrow> (\<exists> w . \<omega>\<nu> x \<in> ex1 r w)"
+    unfolding semantics_defs Concrete_def
+    by (simp add: meta_defs meta_aux totrm_def OrdinaryObjectsPossiblyConcreteAxiom)
   lemma ConcretenessSemantics2:
-    "Some r = d\<^sub>1 E! \<Longrightarrow> (x \<in> ex1 r w \<longrightarrow> (\<exists>y. x = \<omega>\<nu> y))"
-    unfolding semantics_defs apply transfer apply simp
+    "Some r = d\<^sub>1 (E!\<^sup>P) \<Longrightarrow> (x \<in> ex1 r w \<longrightarrow> (\<exists>y. x = \<omega>\<nu> y))"
+    unfolding semantics_defs Concrete_def apply (simp add: meta_defs meta_aux totrm_def)
     by (metis \<nu>.exhaust \<upsilon>.exhaust \<upsilon>.simps(6) no_\<alpha>\<omega>)
   lemma d\<^sub>0_inject: "\<And>x y. d\<^sub>0 x = d\<^sub>0 y \<Longrightarrow> x = y"
-    unfolding d\<^sub>0_def by (simp add: eval\<o>_inject)
+    unfolding d\<^sub>0_def apply simp 
+    by (metis eval\<o>_inject option.inj_map_strong)
   lemma d\<^sub>1_inject: "\<And>x y. d\<^sub>1 x = d\<^sub>1 y \<Longrightarrow> x = y"
-    unfolding d\<^sub>1_def by (simp add: eval\<Pi>\<^sub>1_inject)
+    unfolding d\<^sub>1_def apply simp
+    by (metis eval\<Omega>\<^sub>1_inverse option.inj_map_strong)
   lemma d\<^sub>2_inject: "\<And>x y. d\<^sub>2 x = d\<^sub>2 y \<Longrightarrow> x = y"
-    unfolding d\<^sub>2_def by (simp add: eval\<Pi>\<^sub>2_inject)
+    unfolding d\<^sub>2_def apply simp
+    by (metis eval\<Omega>\<^sub>2_inverse option.inj_map_strong)
   lemma d\<^sub>3_inject: "\<And>x y. d\<^sub>3 x = d\<^sub>3 y \<Longrightarrow> x = y"
-    unfolding d\<^sub>3_def by (simp add: eval\<Pi>\<^sub>3_inject)
+    unfolding d\<^sub>3_def apply simp
+    by (metis eval\<Omega>\<^sub>3_inverse option.inj_map_strong)
   lemma d\<^sub>\<kappa>_inject: "\<And>x y o\<^sub>1. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>1 = d\<^sub>\<kappa> y \<Longrightarrow> x = y"
   proof -
     fix x :: \<kappa> and y :: \<kappa> and o\<^sub>1 :: \<nu>
