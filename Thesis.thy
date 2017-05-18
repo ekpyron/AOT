@@ -446,7 +446,7 @@ It is important to note that the language distinguishes between two types of bas
 namely (non-propositional) \emph{formulas} that \emph{may} contain encoding subformulas and
 \emph{propositional formulas} that \emph{may not} contain encoding subformulas. Only propositional
 formulas may be used in lambda expressions. The main reason for this distinction will be explained
-in the next section TODO: reference.
+in the section~\ref{russell-paradox}.
 
 Note that there is a case in which propositional formulas \emph{can} contain encoding
 expressions. This is due to the fact that \emph{subformula} is defined in such a way that
@@ -455,8 +455,8 @@ refer to definition (\ref{PM-df-subformula}) in @{cite PM}). Thereby @{text "F\<
 propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed lambda expression.
 On the other hand @{text "xF"} is not a propositional formula and therefore
 @{text "[\<lambda>x xF]"} not a well-formed lambda expression. This fact will become relevant in
-the discussion in TODO: reference, that describes a paradox in the presented formulation of
-the theory. (TODO: mention solvability already here?)
+the discussion in section~\ref{paradox}, that describes a paradox in the formulation of
+the theory in the draft of PLM at the time of writing. (TODO: mention solvability already here?)
 
 Furthermore the theory contains a designated relation constant @{text "E!"} to be read as
 \emph{being concrete}. Using this constant the distinction between ordinary and abstract objects
@@ -562,7 +562,7 @@ As outlined in the next chapter the hyperintensionality of the theory is a parti
 for the representation of the theory in a shallow embedding (TODO: reference).
 
 Furthermore it is important to note that the theory is only hyperintensional in exactly the sense
-described above. Propositonal reasoning is still governed by classical extensionality (TODO: be more precise).
+described above. Propositional reasoning is still governed by classical extensionality (TODO: be more precise).
 
 *}
   
@@ -679,8 +679,14 @@ text{*
 
   This paradox is prevented in the formulation of object theory by disallowing encoding
   subformulas in lambda expressions, so in particular @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} is not
-  part of the language. TODO: reference paradox section? TODO: reference the lambda expression section?
+  part of the language. However during the construction of the embedding it was discovered
+  that this restriction is not sufficient to prevent paradoxes in general. This is discussed
+  in section~\ref{paradox}. The solution used in the embedding is described in
+  section~\ref{lambda-expressions}.
 *}  
+
+subsection{* Hyperintensionality of Relations *}
+
   
 section{* Basic Concepts *}
 
@@ -1634,7 +1640,7 @@ context MetaSolver
 begin
 (*>*)
 
-section{* Proving Method @{method[names_short = true] meta_solver} *}
+section{* Proving Method meta\_solver *}
  
 text{* \label{meta_solver} *}
   
@@ -1987,10 +1993,10 @@ text{*
   that the unmodified version requires for a description to denote, the description (that has type @{type \<kappa>})
   denotes an object of type @{type \<nu>} and thereby (\ref{PM-cqt}.1) can be applied using the substitution of identicals.
 
-  Future work may want to reconsider the reformulation for the axioms, especially considering the most
+  Future work may want to reconsider the reformulation of the axioms, especially considering the most
   recent developments described in TODO: reference. At the time of writing the fact that due to the
   type restrictions of the embedding, the reformulated version of the axioms is \emph{derivable} from
-  the original version must suffice.
+  the original version the reformulation is a reasonable compromise.
 
   \begin{remark}
     A formulation of the axioms as in PLM could be possible using the concept of domain restricted
@@ -2505,8 +2511,9 @@ text{*
   \begin{center}
     @{theory_text "apply (PLM_subst_method \"\<lambda>x . \<lparr>A!,x\<^sup>P\<rparr>\" \"\<lambda>x . (\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>))\""}
   \end{center}
-  This will result in the following two new proving goals:
-  @{term "\<forall>x v. [\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"} and @{term "[\<^bold>\<exists>x. \<lparr>A!,x\<^sup>P\<rparr> in v]"}.
+  This will result in the new proving goals:
+  \mbox{@{term "\<forall>x v. [\<lparr>A!,x\<^sup>P\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr> in v]"}} and \mbox{@{term "[\<^bold>\<exists>x. \<lparr>A!,x\<^sup>P\<rparr> in v]"}}, as
+  desired.
 
 *}  
 
@@ -2542,6 +2549,17 @@ text{*
 end (* context PLM*)
 (*>*)
 
+chapter{* Results and Discussion *}
+
+section{* Corrections *}
+
+section{* Paradox *}
+  
+text{*
+  \label{paradox}
+*}
+  
+chapter{* Technical Issues *}
   
 (*<*)
 end
