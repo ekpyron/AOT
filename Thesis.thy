@@ -148,14 +148,14 @@ syntax. Variable symbols of the target logic for instance would be represented a
 the background logic and a proposition would be considered semantically valid if it holds for
 all possible denotations an interpretation function can assign to these variables.
 
-While this approach will work for most target logics, it has several drawbacks. There are likely
+While this approach will work for most target logics, it has several drawbacks. It is likely that there are
 principles that are shared between the target logic and the background logic, such as @{text "\<alpha>"}-conversion
 for @{text "\<lambda>"}-expressions or the equivalence of terms with renamed variables in general. In a deep
-embedding these principles have to be explicitly shown to hold for the syntactic representation
+embedding these principles usually have to be explicitly shown to hold for the syntactic representation
 of the target logic, which is usually connected with significant complexity. Furthermore if the
 framework used for the background logic allows automated reasoning, the degree of automation that
 can be achieved in the embedded logic is limited, as any reasoning in the target logic will have
-to consider the syntactical translation process that will usually be complex.
+to consider the translation process to the background logic that will usually be complex.
 
 A \emph{shallow} embedding uses a different approach based on the idea that most contemporary
 logical systems are semantically characterized by the means of set theory. A shallow embedding
@@ -178,9 +178,9 @@ stated in the background logic, which makes the construction of models for the s
 the degree of automation that can be retained.
 
 The shallow semantical embedding of modal logic was the basis for the analysis of
-G\"odel's onthological argument and has shown great potential as a universal tool for logical embeddings
-while retaining the existing infrastructure for automation as for example present in a framework like
-Isabelle/HOL. (TODO: more application examples)
+G\"odel's onthological argument and the general concept has shown great potential as a universal
+tool for logical embeddings while retaining the existing infrastructure for automation as for
+example present in a framework like Isabelle/HOL. (TODO: more application examples)
 
 *}
 
@@ -195,7 +195,7 @@ In particular they argue that the Theory of Abstract Objects, which is founded i
 theory, can not be properly characterized in functional type theory.
 
 This has led to the question whether a shallow semantical embedding of the Theory of Abstract Objects
-in a functional logical framework as Isabelle/HOL is at all possible, which is the core question
+in a functional logical framework like Isabelle/HOL is at all possible, which is the core question
 the work presented here attempts to examine and partially answer.
 
 One of their main arguments is that unrestricted @{text "\<lambda>"}-expressions as present in functional type
@@ -322,8 +322,8 @@ thought about by the reader of this paragraph}. This shows that the Theory of Ab
 the means to reason about processes of human thought in a much broader sense than classical logic
 would allow.
 
-It turns out that by the means of the concepts of abstract objects and encoding the Theory of
-Abstract Objects can be used to represent and reason about a large variety of concepts that
+It turns out that by the means of abstract objects and encoding the Theory of Abstract Objects
+  can be used to represent and reason about a large variety of concepts that
 regularly occur in philosophy, mathematics or linguistics.
 
 In \cite{MallyTheory} the principal objectives of the theory are summerized as follows:
@@ -396,7 +396,7 @@ text{*
 
   For example the Leibnizian concept of an (ordinary) individual @{text "u"} can be 
   defined as \emph{the (unique) abstract object that encodes all properties that @{text "u"} exemplifies},
-  formally: @{text "\<iota>x A!x & \<forall>F (xF \<equiv> Fu)"}
+  formally: \mbox{@{text "\<iota>x A!x & \<forall>F (xF \<equiv> Fu)"}}
   
   Other interesting examples include possible worlds, Platonic Forms or even basic logical objects
   like truth values. Here it is important to note that the theory allows it to formulate
@@ -422,8 +422,8 @@ In the following an informal description of the important aspects of the languag
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
-A compact description of the language can be given in Backus-Naur Form (BNF)@{cite \<open>p. 170\<close> PM}.
-For this the following grammatical categories are used:
+A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>p. 170\<close> PM}}.
+The following grammatical categories are used:
 
 \begin{tabular}[h]{ll}
   @{text "\<delta>"}   & individual constants \\
@@ -594,13 +594,13 @@ the comprehension axiom of abstract objects. Properties on the other hand are no
 by sets of objects, which would lead to a violation of Cantor's theorem, but rather as the sets of
 \emph{urelements}. Urelements are partitioned into two groups, ordinary urelements
 (@{text "C"} in the illustration) and special urelements (@{text "S"} in the illustration).
-Ordinary urelements can serve as the denotations of the ordinary objects. Every abstract object on
+Ordinary urelements can serve as the denotations of ordinary objects. Every abstract object on
 the other hand has a special urelement as its proxy. Which properties an abstract object exemplifies
-now solely depends on its proxy. Now note that the map from abstract objects to special urelements is
+now solely depends on its proxy. However, the map from abstract objects to special urelements is
 not injective, so more than one abstract object can share the same proxy. This way a violation of
 Cantor's theorem is avoided. As a consequence there are abstract objects, that are
-exemplification-indistinguishable, though. Interestingly the existence of abstract objects
-that are exemplification-indistinguishable is a theorem the Theory of Abstract Objects, see
+exemplification-indistinguishable. Interestingly the existence of abstract objects
+that are exemplification-indistinguishable is a theorem of the Theory of Abstract Objects, see
 (\ref{PM-aclassical2})@{cite PM}.
 
 Note that although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
@@ -612,7 +612,7 @@ Since properties are represented as the power set of urelements, two properties 
 equal if they are exemplified by the same objects. This has no bearing on the soundness of the
 Aczel-model as a model for the Theory of Abstract Objects, but it has the consequence, that
 statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model, although they are not
-derivable from the axioms of object theory as explained in the last section.
+derivable from the axioms of object theory as explained in the previous section.
 
 For this reason an \emph{intensional} variant of the Aczel-model is developed and used as the
 basis of the embedding. The technicalities of this model are described in the next chapter.
@@ -943,7 +943,7 @@ subsection{* Connectives and Quantifiers *}
 text{*
   \label{connectives}
 
-  The reason to make truth values depend on the additional primitive type of \emph{states}
+  The reason for the dependency of truth values on the additional primitive type of \emph{states}
   is to achieve hyper-intensionality (see TODO: reference). The connectives and quantifiers are defined in such a
   way that they behave classically if evaluated for the designated actual state @{term "dj"},
   whereas their behavior is governed by uninterpreted constants in any other state.
@@ -1019,9 +1019,9 @@ text{*
 
 \begin{remark}
   For technical reasons Isabelle only allows @{text "\<lambda>"}-expressions for one-place relations
-  to use a nice binder notation. For two- and three-place relations the following notation
-  is used instead: \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<phi> x y))"}},
-  \mbox{@{term[eta_contract=false] "embedded_style (\<^bold>\<lambda>\<^sup>3 (\<lambda> x y z . \<phi> x y z))"}}.
+  to use a nice binder notation. Although better workarounds may be possible, for now the
+  issue is avoided by the use of the primitive @{text "\<lambda>"}-expressions of the background
+  logic in combination with the constants @{term "\<^bold>\<lambda>\<^sup>2"} and @{term "\<^bold>\<lambda>\<^sup>3"} as shown above.
 \end{remark}
 
   The representation of zero-place @{text "\<lambda>"}-expressions as the identity is straight-forward,
@@ -1050,7 +1050,7 @@ text{*
   lead to inconsistencies.
 
   Instead the embedding introduces the concept of \emph{proper maps}.
-  A map from individuals is defined to be proper if its truth evaluation for the actual state only
+  A map from individuals to propositions is defined to be proper if its truth evaluation for the actual state only
   depends on the urelement corresponding to the individual (see \ref{TAO_Embedding_Proper}):
 
   \begin{itemize}
@@ -1091,7 +1091,7 @@ text{*
   
     @{thm[display] valid_in.rep_eq[of v "embedded_style \<phi>"]}
   
-  This way the truth evaluation of a proposition only depends on the evaluation of its representation
+  This way the truth evaluation of a proposition only depends on the evaluation of its functional representative
   for the actual state @{term dj}. Remember that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
   evaluation \emph{does} depend on all states are formulas containing encoding expressions.
@@ -1199,7 +1199,7 @@ PLM & syntax in words & embedded logic & type \\
 Several subtleties have to be considered:
 
 \begin{itemize}
-  \item @{term "n"}-place relations are only represented up for \mbox{@{text "n \<le> 3"}}.
+  \item @{term "n"}-place relations are only represented for \mbox{@{text "n \<le> 3"}}.
         As the resulting language is already expressive enough to represent the most interesting
         parts of the theory and analog implementations for \mbox{@{text "n > 3"}} would be trivial
         to implement, this is considered to be sufficient.
@@ -1220,10 +1220,10 @@ Several subtleties have to be considered:
         are part of the embedded language. The definition of a general quantifier in the representation layer
         could for example be used to quantify over individual \emph{terms} (of type @{type \<kappa>}), whereas
         only quantifications ranging over individuals (of type @{type \<nu>}) are part of the language of PLM.
-        Once the semantics is introduced in section TODO:reference, a \emph{type class} is introduced
-        that is defined by the semantics of all quantification and instantiated for all variable types.
+        Once the semantics is introduced in section~\ref{semantics}, a \emph{type class} is introduced
+        that is characterized by the semantics of all quantification and instantiated for all variable types.
         This way a general binder that can be used for all variable types can be defined. The details
-        of this approach are explained in section TODO: reference.
+        of this approach are explained in section~\ref{general-quantifier}.
 \end{itemize}
 
 The syntax used for stating that a proposition is semantically valid is the following:
