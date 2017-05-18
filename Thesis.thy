@@ -379,10 +379,10 @@ text{*
 
   The following are the two most important principles of the theory:
 
-  \begin{center}
-    @{text "\<exists>x(A!x & \<forall>F(xF \<equiv> \<Phi>))"}\\
-    @{text "x = y \<equiv> \<box>\<forall>F(xF \<equiv> yF)"}
-  \end{center}
+  \begin{itemize}
+    \item @{text "\<exists>x(A!x & \<forall>F(xF \<equiv> \<Phi>))"}
+    \item @{text "x = y \<equiv> \<box>\<forall>F(xF \<equiv> yF)"}
+  \end{itemize}
 
   The first statement asserts that for every condition on properties @{text "\<Phi>"} there exists
   an abstract object that encodes exactly those properties satisfying @{text "\<Phi>"}, whereas the
@@ -462,10 +462,10 @@ Furthermore the theory contains a designated relation constant @{text "E!"} to b
 \emph{being concrete}. Using this constant the distinction between ordinary and abstract objects
 is defined as follows:
 
-  \begin{center}
-    @{text "O! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<diamond>E!x]"}\\
-    @{text "A! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<not>\<^bold>\<diamond>E!x]"}
-  \end{center}
+  \begin{itemize}
+    \item @{text "O! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<diamond>E!x]"}
+    \item @{text "A! =\<^sub>d\<^sub>f [\<lambda>x \<^bold>\<not>\<^bold>\<diamond>E!x]"}
+  \end{itemize}
 
 So ordinary objects are possibly concrete, whereas abstract objects cannot possibly be concrete.
 
@@ -509,11 +509,11 @@ as dedicated axioms for encoding. A full accounting of the axioms in their repre
 embedding is found in section~\ref{axioms}. For the original axioms refer to @{cite \<open>chap. 8\<close> PM}.
 At this point the axioms of encoding are the most relevant, namely:
 
-  \begin{center}
-    @{text "xF \<rightarrow> \<box>xF"}\\
-    @{text "O!x \<rightarrow> \<not>\<exists>F xF"}\\
-    @{text "\<exists>x (A!x & \<forall>F (xF \<equiv> \<phi>))"}, provided x doesn't occur free in @{text "\<phi>"}\\
-  \end{center}
+  \begin{itemize}
+    \item @{text "xF \<rightarrow> \<box>xF"}
+    \item @{text "O!x \<rightarrow> \<not>\<exists>F xF"}
+    \item @{text "\<exists>x (A!x & \<forall>F (xF \<equiv> \<phi>))"},\\ provided x doesn't occur free in @{text "\<phi>"}
+  \end{itemize}
 
 So encoding is modally rigid, ordinary objects do not encode properties and
 most importantly the comprehension axiom for abstract objects that was already mentioned above:
@@ -681,7 +681,6 @@ text{*
 
 subsection{* Hyperintensionality of Relations *}
 
-  
 section{* Basic Concepts *}
 
 text{*
@@ -692,15 +691,68 @@ is that Kripke semantics is well understood and there are extensive results abou
 (TODO: reference).
 
 For the Theory of Abstract Object the situation is different. Although it is believed that
-Aczel-models are sound, section~\ref{aczel-model} already established that in the traditional
-Aczel-model theorems are true, that are not derivable from the axioms of object theory.
+Aczel-models are sound, section~\ref{aczel-model} already established that even a modal version
+of the traditional Aczel-model is extensional and therefore theorems are true in it,
+that are not derivable from the axioms of object theory.
 
-Although in the following a variant of an Aczel-model is constructed that preserves the
-hyperintensionality of the theory at least to some degree, it is still known that there are
-true theorems in this model that are not derivable from the axioms of object theory. TODO: reference later section.
+*}
+
+subsection{* Hyperintensional Aczel-model *}
+  
+text{*
+
+\label{hyper-aczel-model}
+
+As mentioned in section~\ref{aczel-model} it is straightforward to extend
+the traditional (non-modal) Aczel-model to a modal version by introducing
+primitive possible worlds following the Kripke semantics for a modal S5 logic.
+
+Relations in the resulting Aczel-model are, however, still \emph{extensional}.
+Two relations that are necessarily exemplified by the same objects are equal. 
+The Aczel-model that is used as the basis for the embedding therefore introduces
+\emph{states} as another primitive besides possible worlds. Truth values are now
+represented as ternary functions from states and possible worlds to booleans,
+relations as functions from urelements, states and possible worlds to booleans.
+
+Abstract objects are still defined as sets of one-place relations and the division
+of urelements into ordinary urelements and special urelements, that serve as proxies
+for abstract objects is retained as well. Consequently encoding is still defined
+as set membership of a relation in an abstract object and exemplification still defined
+as function application of the relation to the urelement corresponding to an individual.
+
+The semantical truth evaluation of a proposition in a given possible world, is defined
+to its evaluation for a designated \emph{actual state} and the possible world.
+
+Logical connectives are defined to behave classically in the \emph{actual state}, but
+have undefined behavior in any other state.
+
+The reason for this construction becomes apparent if one considers the definition of
+the identity of relations: relations are considered identical if they are \emph{encoded}
+by the same abstract objects. Encoding now depends on the behavior of the relation in
+all states. Now two relations can still necessarily be \emph{exemplified} by the
+same objects in the actual state, but still not be identical, since they have different
+behavior in other states. Therefore hyperintensionality of relations is achieved.
+
+The dependency on states is not limited to relations, but introduced to all propositions,
+connectives and quantifiers to allow the definition of @{text "\<lambda>"}-expressions 
+in section~\ref{lambda-expressions}.
+
+The implementational details will be explained throughout section~\ref{representation-layer}.
+
+TODO: improve this section.
+*}
+
+subsection{* Layered Structure *}
+  
+text{*
+
+Although the constructed variant of the Aczel-model preserves the hyperintensionality of the
+theory at least to some degree, it is still known that there are true theorems in this model
+that are not derivable from the axioms of object theory. TODO: reference later section.
 
 Given this lack of a model with a well-understood degree of completeness, the embedding uses
-a different approach. The embedding is divided into several \emph{layers} as follows:
+a different approach than other semantical embeddings, namely the embedding is divided into
+several \emph{layers} as follows:
 
 \begin{itemize}
   \item The first layer represents the primitives of PLM using a hyper-intensional variant of the
@@ -745,9 +797,7 @@ whereas Isabelle/HOL employs functional reasoning some formulations have to be a
 and there may still be some reservations about the accuracy of the representation of the axiom system.
 This issue is addressed in section (TODO: reference).
 
-The next sections will now describe the technical details of the embedding, whereas
-the discussion about the theoretical concept including the underlying model will
-follow in the next chapter. (TODO: reverse this?)
+The next sections will now describe the technical details of the embedding.
 
 *}
 
@@ -755,9 +805,12 @@ section{* The Representation Layer *}
   
 text{*
 
-The first layer of the embedding (see \ref{TAO_Embedding}) implements a version
-of the Aczel-model and builds a representation of the language of PLM in the logic of Isabelle/HOL.
-This process is outlined step by step throughout this section.
+\label{representation-layer}
+
+The first layer of the embedding (see \ref{TAO_Embedding}) implements the variant
+of the Aczel-model described in section~\ref{hyper-aczel-model} and builds a representation
+of the language of PLM in the logic of Isabelle/HOL. This process is outlined step by step
+throughout this section.
 
 *}
   
@@ -768,8 +821,7 @@ The following primitive types are the basis of the embedding (see \ref{TAO_Embed
 
 \begin{itemize}
   \item Type @{type i} represents possible worlds in the Kripke semantics.
-  \item Type @{type j} represents \emph{states} that are used for different interpretations
-        of relations and connectives to achieve a hyper-intensional logic (see below TODO: reference).
+  \item Type @{type j} represents \emph{states} as decribed in section~\ref{hyper-aczel-model}.
   \item Type @{type bool} represents meta-logical truth values (@{text "True"} or @{text "False"})
         and is inherited from Isabelle/HOL.
   \item Type @{type \<omega>} represents ordinary urelements.
@@ -849,9 +901,12 @@ object.
 
 In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e. individual variables
 \emph{and} definite descriptions. To use an individual variable (of type @{type \<nu>}) as in place of
-an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced (see \ref{TAO_Embedding_IndividualTerms}):
+an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced
+(see \ref{TAO_Embedding_IndividualTerms}):
 
-@{thm[display] \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_meta_eq]}
+\begin{center}
+  @{thm \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_meta_eq]}
+\end{center}
 
 The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
 logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
@@ -859,7 +914,9 @@ and to always denote the same object as the individual variable @{term "x"}.
 
 It is now possible to define definite descriptions as follows:
 
-@{thm[display] that.rep_eq[where x=\<phi>, THEN embedded_meta_eq]}
+\begin{center}
+  @{thm that.rep_eq[where x=\<phi>, THEN embedded_meta_eq]}
+\end{center}
 
 If the propriety condition of a definite description @{prop "\<exists>!x. \<phi> x dj dw"} holds,
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
@@ -870,9 +927,10 @@ the term is represented by @{term "None"}.
 
 The following meta-logical functions are defined to aid in handling individual terms:
 
-@{thm[display] proper.rep_eq}
-
-@{thm[display] rep.rep_eq}
+\begin{itemize}
+  \item @{thm[display] proper.rep_eq}
+  \item @{thm[display] rep.rep_eq}
+\end{itemize}
 
 @{term "the"} maps an object of type @{typ "'a option"} that is of the form @{term "Some x"} to
 @{term "x"} and is undefined for @{term "None"}. For an object of type @{type \<kappa>} the expression
@@ -883,6 +941,7 @@ the expression @{term "rep x"} evaluates to the individual of type @{type \<nu>}
 subsection{* Mapping from Individuals to Urelements *}
 
 text{*
+
 To map abstract objects to urelements (for which relations can be evaluated), a constant
 @{term \<alpha>\<sigma>} of type @{typeof \<alpha>\<sigma>} is introduced, which maps abstract objects (of type @{type \<alpha>})
 to special urelements (of type @{type \<sigma>}), see \ref{TAO_Embedding_AbstractObjectsToSpecialUrelements}.
@@ -892,16 +951,25 @@ individual objects, the constant @{term \<alpha>\<sigma>} is axiomatized to be s
 
 Now the mapping @{term "\<nu>\<upsilon>"} of type @{typeof "\<nu>\<upsilon>"} can be defined as follows:
 
-@{thm[display] \<nu>\<upsilon>_def[atomize]}
+\begin{center}
+@{thm \<nu>\<upsilon>_def[atomize]}
+\end{center}
 
 To clarify the syntax note that this is equivalent to the following:
 
-@{lemma[display] "(\<forall> x . \<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x) \<and> (\<forall> x . \<nu>\<upsilon> (\<alpha>\<nu> x) = \<sigma>\<upsilon> (\<alpha>\<sigma> x))" by (simp add: \<nu>\<upsilon>_def)}
+\begin{center}
+@{lemma "(\<forall> x . \<nu>\<upsilon> (\<omega>\<nu> x) = \<omega>\<upsilon> x) \<and> (\<forall> x . \<nu>\<upsilon> (\<alpha>\<nu> x) = \<sigma>\<upsilon> (\<alpha>\<sigma> x))" by (simp add: \<nu>\<upsilon>_def)}
+\end{center}
 
 So ordinary objects are simply converted to an urelements by the type constructor
 @{term "\<omega>\<upsilon>"} for ordinary urelements, whereas for abstract objects the corresponding
 special urelement under @{text "\<alpha>\<sigma>"} is converted to an urelement by the type constructor
 @{term "\<sigma>\<upsilon>"} for special urelements.
+
+\begin{remark}
+  Note that it may make sense to let the mapping from individuals to urelements depend
+  on states. This is discussed in more detail in section TODO: reference.
+\end{remark}
 
 *}
 
@@ -926,7 +994,9 @@ subsection{* Encoding *}
 text{*
   Encoding can now be defined as follows (see \ref{TAO_Embedding_Encoding}):
 
+  \begin{center}
   @{thm enc.rep_eq[of x F, THEN embedded_meta_eq]}
+  \end{center}
 
   That is for a given state @{term s} and a given possible world @{term w} it holds that
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
@@ -943,9 +1013,8 @@ subsection{* Connectives and Quantifiers *}
 text{*
   \label{connectives}
 
-  The reason for the dependency of truth values on the additional primitive type of \emph{states}
-  is to achieve hyper-intensionality (see TODO: reference). The connectives and quantifiers are defined in such a
-  way that they behave classically if evaluated for the designated actual state @{term "dj"},
+  Following the model described in section~\ref{hyper-aczel-model} the connectives and quantifiers
+  are defined in such a way that they behave classically if evaluated for the designated actual state @{term "dj"},
   whereas their behavior is governed by uninterpreted constants in any other state.
 
   For this purpose the following uninterpreted constants are introduced (see \ref{TAO_Embedding_Connectives}):
@@ -1007,7 +1076,7 @@ text{*
 
   The bound variables of the @{text "\<lambda>"}-expressions of the embedded logic are individual
   variables, whereas relations are represented as functions acting on urelements.
-  Therefore the definition of the @{text "\<lambda>"}-expressions of the embedded logic is non trivial.
+  Therefore the definition of the @{text "\<lambda>"}-expressions of the embedded logic is non-trivial.
   The embedding defines them as follows (see \ref{TAO_Embedding_Lambda}):
 
   \begin{itemize}
@@ -1036,13 +1105,17 @@ text{*
   The result of the evaluation of a @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u},
   a state @{term s} and a possible world @{term w}) is given by the following equation:
 
+  \begin{center}
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) u s w = (\<exists> x . \<nu>\<upsilon> x = u \<and> eval\<o> (embedded_style (\<phi> x)) s w)"
     by (simp add: embedded_style_def meta_defs meta_aux)}
+  \end{center}
 
   Note that @{term "\<nu>\<upsilon>"} is bijective for ordinary objects and therefore:
 
+  \begin{center}
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) (\<omega>\<upsilon> u) s w = eval\<o> (embedded_style (\<phi>) (\<omega>\<nu> u)) s w"
     by (simp add: embedded_style_def meta_defs meta_aux, metis \<nu>.exhaust \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.inject(1) no_\<alpha>\<omega>)}
+  \end{center}
 
   However in general @{term "\<nu>\<upsilon>"} can map several abstract objects to the same special urelement,
   so an analog statement for abstract objects does not hold for arbitrary @{term "\<phi>"}. As described
@@ -1061,8 +1134,10 @@ text{*
 
   Now by the definition of proper maps the evaluation of @{text "\<lambda>"}-expressions behaves as expected:
 
+  \begin{center}
   @{lemma "IsProperInX \<phi> \<longleftrightarrow> (\<forall> w x . eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> (x\<^sup>P))) (\<nu>\<upsilon> x) dj w = eval\<o> (embedded_style (\<phi> (x\<^sup>P))) dj w)"
     by (auto simp: embedded_style_def meta_defs meta_aux IsProperInX_def)}
+  \end{center}
 
   \begin{remark}
     Note that the above equation does not quantify over all states, but is only true for the actual state @{term "dj"}.
@@ -1089,8 +1164,10 @@ text{*
   to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
   Semantic validity is defined as follows (see \ref{TAO_Embedding_Validity}):
   
-    @{thm[display] valid_in.rep_eq[of v "embedded_style \<phi>"]}
-  
+  \begin{center}
+    @{thm valid_in.rep_eq[of v "embedded_style \<phi>"]}
+  \end{center}
+
   This way the truth evaluation of a proposition only depends on the evaluation of its functional representative
   for the actual state @{term dj}. Remember that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
@@ -1143,7 +1220,9 @@ text{*
 
   Concreteness can now be defined as a one-place relation (see \ref{TAO_Embedding_Concreteness}):
 
-  @{thm[display] Concrete.rep_eq[THEN embedded_meta_eq]}
+  \begin{center}
+  @{thm Concrete.rep_eq[THEN embedded_meta_eq]}
+  \end{center}
 
   The equivalence of the axioms stated in the meta-logic and the notion of concreteness in Principia
   can now be verified (see \ref{TAO_SanityTests_MetaAxioms}):
@@ -1326,10 +1405,7 @@ The exemplification extension of a @{text "0"}-place relation is its evaluation 
 given possible world. The exemplification extension of @{text "n"}-place relations \mbox{(@{text "n \<ge> 1"})}
 in a possible world is the set of all (tuples of) \emph{individuals} that are mapped to an
 \emph{urelement} for which the relation evaluates to true for the given possible world and the
-actual state. This is in accordance with the constructed Aczel-model TODO: reference.
-
-The fact that all exemplification extensions only depend on the evaluation of the respective relation
-in the actual state goes along with the concepts described in section TODO: reference.
+actual state. This is in accordance with the constructed Aczel-model (see~\ref{hyper-aczel-model}.
 
 It is important to note that the concept of exemplification extensions as maps to sets of \emph{individuals}
 is independent of the underlying model and in particular does not need the concept of \emph{urelements}
@@ -1341,7 +1417,7 @@ Similarly to the exemplification extensions for one-place relations an \emph{enc
 is defined as follows (see~\ref{TAO_Semantics_Semantics_Encoding_Extension}):
 
 \begin{center}
-  @{thm[display] en_def[expand1, of F]}
+  @{thm en_def[expand1, of F]}
 \end{center}
 
 The encoding extension of a relation is defined as the set of all abstract objects that contain
@@ -1361,7 +1437,7 @@ it suffices to consider the case of one-place relations, for which the truth con
 as follows (see~\ref{TAO_Semantics_Semantics_Exemplification}):
 
 \begin{center}
-  @{thm[display] T1_1[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+  @{thm T1_1[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
 \end{center}
 
 The relation term @{term "embedded_style \<Pi>"} is exemplified by an individual term @{term "embedded_style \<kappa>"} in a possible world
@@ -1373,7 +1449,7 @@ The truth condition for encoding formulas is defined in a similar manner as
 (see~\ref{TAO_Semantics_Semantics_Encoding}):
 
 \begin{center}
-  @{thm[display] T2[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
+  @{thm T2[of w "embedded_style \<Pi>" "embedded_style \<kappa>"]}
 \end{center}
 
 The only difference to exemplification formulas is that the encoding extension does not depend
@@ -1600,9 +1676,9 @@ text{*
   \end{itemize}
 
   Furthermore the general all quantifier is supplemented by an existence quantifier as follows:
-  \begin{center}
-    @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq]}
-  \end{center}
+  \begin{itemize}
+    \item @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq]}
+  \end{itemize}
 *}
 
 subsection{* Identity *}
@@ -1667,7 +1743,7 @@ text{*
 
   For example an implication formula can be deconstructed as follows:
   \begin{center}
-    @{thm[display] ImplS[of v \<phi> \<psi>]}
+    @{thm ImplS[of v \<phi> \<psi>]}
   \end{center}
 
   Whereas the basic proving methods available in Isabelle cannot immediately prove
@@ -1688,7 +1764,7 @@ text{*
   resolve exemplification and encoding formulas to their semantic truth conditions as well,
   e.g. (see~\ref{TAO_MetaSolver_Encoding}):
   \begin{center}
-    @{thm[display] Exe1E[of v F x]}
+    @{thm Exe1E[of v F x]}
   \end{center}
 
   This way a large set of formulas can be decomposed to semantic expressions that can be automatically
@@ -1777,7 +1853,7 @@ text{*
   the type class (see~\ref{TAO_Identifiable_Class}):
 
   \begin{center}
-    @{thm[display] identifiable_class.l_identity[of v \<alpha> \<beta> \<phi>]}
+    @{thm identifiable_class.l_identity[of v \<alpha> \<beta> \<phi>]}
   \end{center}
 
   Using the fact that in the last section it was already derived, that the defined identity
@@ -1798,14 +1874,14 @@ text{*
   justified to define an identity for @{type \<nu>} as allows:
 
   \begin{center}
-    @{thm[display] identity_\<nu>_def[expand2, of x y, THEN embedded_eq]}
+    @{thm identity_\<nu>_def[expand2, of x y, THEN embedded_eq]}
   \end{center}
 
   This way type @{type \<nu>} is equipped with both the general all quantifier and the general identity
   relation and unique existence can be defined for all variable types as expected:
 
   \begin{center}
-    @{thm[display] exists_unique_def[expand1, of \<phi>, THEN embedded_eq]}
+    @{thm exists_unique_def[expand1, of \<phi>, THEN embedded_eq]}
   \end{center}
 
   Another subtlety has to be considered: at times it is necessary to expand the definitions
@@ -1842,14 +1918,14 @@ text{*
   stated relative to a specific possible world, but using the following definition
   (see~\ref{TAO_Axioms}):
   \begin{center}
-    @{thm[display] axiom_def[expand1, of \<phi>]}
+    @{thm axiom_def[expand1, of \<phi>]}
   \end{center}
 
   Axioms are unconditionally true in all possible worlds. The only exceptions are
   \emph{necessitation-averse}, resp. \emph{modally fragile} axioms (currently there
   is only one such axiom). Such axioms are stated using the following definition:
   \begin{center}
-    @{thm[display] actual_validity_def[expand1, of \<phi>]}
+    @{thm actual_validity_def[expand1, of \<phi>]}
   \end{center}
 
   \begin{remark}
@@ -2127,8 +2203,8 @@ text{*
     \item @{thm lambda_predicates_4_3} \hfill{(\ref{PM-lambda-predicates}.4)}
   \end{itemize}
 
-  Note that the first axiom - alpha-conversion - could be omitted entirely, since the fact
-  that lambda-expressions are modelled using functions with bound variables and alpha-conversion
+  Note that the first axiom - @{text "\<alpha>"}-conversion - could be omitted entirely, since the fact
+  that lambda-expressions are modelled using functions with bound variables and @{text "\<alpha>"}-conversion
   is part of the logic of Isabelle/HOL, it already holds implicitly.
 
   Further note that the notion of \emph{proper maps} is used as a necessary precondition for
@@ -2371,7 +2447,7 @@ text{*
   Naively one could try to express this in the functional setting as follows:
 
   \begin{center}
-    @{term[display] "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v]) \<Longrightarrow> [\<phi> \<psi> in v] \<longleftrightarrow> [\<phi> \<chi> in v]"}
+    @{term "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v]) \<Longrightarrow> [\<phi> \<psi> in v] \<longleftrightarrow> [\<phi> \<chi> in v]"}
   \end{center}
 
   However this statement would \emph{not} be derivable. The issue is connected to the restriction
@@ -2421,7 +2497,7 @@ text{*
   First of all the following definition is introduced:
 
   \begin{center}
-    @{thm[display] Substable_def[expand2, of cond \<phi>]}
+    @{thm Substable_def[expand2, of cond \<phi>]}
   \end{center}
 
   Given a condition @{term "cond"} a function @{term "embedded_style \<phi>"}
@@ -2449,7 +2525,7 @@ text{*
   and assumes the following:
 
   \begin{center}
-    @{thm[display] Substable_class.rule_sub_nec[of \<phi> \<psi> \<chi> \<Theta> v]}
+    @{thm Substable_class.rule_sub_nec[of \<phi> \<psi> \<chi> \<Theta> v]}
   \end{center}
 
   If @{term "embedded_style \<phi>"} is @{term "Substable"} (as per the definition above) under the
@@ -2461,14 +2537,14 @@ text{*
   the following definition of @{term "Substable_Cond"}:
 
   \begin{center}
-    @{thm[display] Substable_Cond_\<o>_def[expand2, of \<psi> \<chi>]}
+    @{thm Substable_Cond_\<o>_def[expand2, of \<psi> \<chi>]}
   \end{center}
 
   Furthermore the type class is instantiated for \emph{functions} from an arbitrary type to
   a type of the class @{class Substable} with the following definition of @{term "Substable_Cond"}:
 
   \begin{center}
-    @{thm[display] Substable_Cond_fun_def[expand2, of \<psi> \<chi>]}
+    @{thm Substable_Cond_fun_def[expand2, of \<psi> \<chi>]}
   \end{center}
 
   This construction now allows substitutions in all cases required by the original formulation in PLM.
