@@ -1,7 +1,8 @@
 (*<*)
 theory Thesis
-imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests "~~/src/HOL/Library/LaTeXsugar"
-        "~~/src/HOL/Library/OptionalSugar"
+imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests TAO_99_Paradox
+    "~~/src/HOL/Library/LaTeXsugar"
+    "~~/src/HOL/Library/OptionalSugar"
 begin
 (*>*)
 
@@ -2643,7 +2644,7 @@ text{*
   
 section{* Corrections *}
 
-section{* Discovery of a Paradox *}
+section{* A Paradox in PLM *}
 
 text{*
   \label{paradox}
@@ -2651,29 +2652,68 @@ text{*
   During the analysis of the constructed embedding it was discovered,
   that the formulation of the theory in PLM allowed paradoxical constructions.
 
-  In this section the discovered paradox is first described in the language of
-  PLM, after which the process of its discovery and the role the embedding has played
-  in it will be explained in detail.
+  This section first describes the process that led to the discovery of the paradox and
+  the role the embedding played in it, after which the construction of the paradox is
+  outlined in the language of PLM.
 
-  Note that the paradox has since been confirmed by Edward Zalta and a vivid discussion
+  Note that the paradox has since been confirmed by Edward Zalta\footnote{Edward Zalta decided to
+  refer to the paradox as \emph{Kirchner's paradox} in the future} and a vivid discussion
   about the repercussions and possible solutions has developed. At the time of writing
   it has become clear that there are several options to recover from the paradox while
   in essence retaining the full set of theorems of PLM. So far no final decision has been
   reached about which option will be implemented in future versions of PLM.
 *}
 
-subsection{* Description using the Language of PLM *}
+subsection{* Discovery of the Paradox *}
+  
+text{*
+  The discovery of the paradox originates in the analysis of the representation of
+  @{text "\<lambda>"}-expressions in the embedding. The syntactic distinction between propositional and
+  non-propositional formulas of PLM is replaced by the concept of \emph{proper maps}\footnote{Prior
+  to the discussion that followed the discovery of the paradox \emph{proper maps} were called
+  \emph{propositional maps} in the embedding; the term \emph{proper maps} is based on the concept of
+  \emph{proper @{text "\<lambda>"}-expressions} that may be part of future versions of PLM to avoid the paradox.
+  TODO: change this?} as described in section~\ref{lambda-expressions}.
+
+  The idea behind this replacement was that, although it allows more @{text "\<lambda>"}-expressions
+  than PLM, every @{text "\<lambda>"}-expressions of PLM would become a @{text "\<lambda>"}-expression of the
+  embedding. While verifying this concept, it was discovered, that @{text "\<lambda>"}-expressions of
+  the form \mbox{@{text "[\<lambda>y F\<iota>x(y[\<lambda>z Rxz])]"}} in which the bound variable @{text "y"} occurs in
+  an encoding formula inside the matrix of a definite description, were part of PLM, but their
+  matrix was \emph{not} a proper map in the embedding and therefore @{text "\<beta>"}-conversion
+  was not derivable for these terms.
+
+  In the attempt to proof that @{text "\<beta>"}-conversion would in fact follow for these expressions
+  in the embedding in Isabelle, it first became clear, that this is not the case without a restriction
+  of the Aczel-model. Namely without some kind of restriction of the map from abstract objects to urelements,
+  @{text "\<beta>"}-conversion would not be derivable for these cases.
+
+  In order to better understand how the embedding could accommodate these circumstances, the
+  consequences of allowing @{text "\<beta>"}-conversion in the mentioned cases \emph{by assumption}
+  were further studied in the embedding which lead to the first proof of inconsistency
+  (see~\ref{TAO_Paradox_original-paradox}. Since the meta-logic was not used in the proof, it was
+  possible to reconstruct an equivalent proof in the language of PLM, which then served as the
+  basis of further discussions with Edward Zalta.
+
+  Since then the issue leading to the paradox was identified as the \emph{description backdoor}
+  (see~\ref{TAO_Paradox_description_backdoor}) that can be used to construct a variety of
+  paradoxical cases, e.g. the paradox mentioned in section~\ref{russell-paradox} can be reconstructed.
+  This refined version of the paradox is used in the inconsistency proof in \ref{TAO_Paradox_russell-paradox}
+  and the following reconstruction in the language of PLM.
+*}
+
+subsection{* Construction using the Language of PLM *}
   
 text{*
 
   Object theory distinguishes between propositional and
   non-propositional formulas. Propositional formulas are not allowed to
-  contain encoding subformulas, so for example @{text "\<exists>F xF"} is not
+  contain encoding subformulas, so for example \mbox{@{text "\<exists>F xF"}} is not
   propositional. Only propositional formulas can be the matrix of a
-  @{text "\<lambda>"}-expression, so @{text "[\<lambda>x \<exists>F xF]"} is not a valid term of
+  @{text "\<lambda>"}-expression, so \mbox{@{text "[\<lambda>x \<exists>F xF]"}} is not a valid term of
   the theory - it is excluded syntactically.
 
-  The reason for this is that considering @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} a valid, denoting
+  The reason for this is that considering \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} a valid, denoting
   @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
   paradox as described in section~\ref{russell-paradox}.
 
@@ -2685,19 +2725,19 @@ text{*
 
   The problem is the \emph{description backdoor}. The syntactical definition
   of propositional formulas does allow expressions of the following form:
-  @{text "[\<lambda>y F\<iota>x\<psi>]"} where @{text "\<psi>"} does not have to be propositional itself,
+  \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}} where @{text "\<psi>"} does not have to be propositional itself,
   but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
   by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
   \emph{may} contain encoding subformulas itself, and @{text "F\<iota>x\<psi>"} is still considered to be a
   propositional formula.
 
-  This was deemed to be no problem and for cases like @{text "[\<lambda>y F\<iota>x(xG)]"} as
+  This was deemed to be no problem and for cases like \mbox{@{text "[\<lambda>y F\<iota>x(xG)]"}} as
   they are mentioned in PLM this is indeed true.
 
   It had not been considered that @{text "y"} may appear within the matrix of
   such a description and more so, it may appear in a encoding formula
   within the matrix of such a description, for example 
-  @{text "[\<lambda>y F\<iota>x(xG & yG)]"} is still considered a propositional formula. At least
+  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still considered a propositional formula. At least
   it had not been considered that this is a problem, but:
 
   This way the following construction is possible:
@@ -2717,10 +2757,19 @@ text{*
     @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>^x_y"}
   \end{equation}
 
+  \begin{remark}
+    Using a modally-strict proof only the following is derivable:\\
+    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>^x_y"}}\\
+    For the construction of the paradox, the modally fragile statement
+    is sufficient, though. Note, however, that it is also possible
+    to construct similar paradoxical cases without appealing to
+    any modally-fragile axioms or theorems.
+  \end{remark}
+
   This effectively undermines the intention of restricting @{text "\<lambda>"}-expressions
   to only propositional formulas:
 
-  Although @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} is not part of the language, it is possible to
+  Although \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} is not part of the language, it is possible to
   formulate the following instead:
 
   \begin{equation}\tag{3}
@@ -2728,20 +2777,34 @@ text{*
   \end{equation}
 
   If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
-  exactly the way that @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} would do, if it were part of the
-  language (i.e. the result of @{text "\<beta>"}-reduction for @{text "[\<lambda>x \<exists>F xF & \<not>Fx]"} would be
+  exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would do, if it were part of the
+  language (i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
   the same as the right hand side of 2 when applied to 3). So the @{text "\<lambda>"}-expression
   in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
-
 *}
-  
-subsection{* Discovery of the Paradox *}
-  
+
+subsection{* Possible Solutions *}
+
 text{*
-  The discovery of the paradox originates in the analysis of the representation of
-  @{text "\<lambda>"}-expressions in the embedding. The syntactic distinction between propositional and
-  non-propositional formulas of PLM is replaced by the concept of \emph{proper maps} as described
-  in section~\ref{lambda-expressions}. 
+  Fortunately no theorems were derived in PLM so far, that actually depend on problematic
+  @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
+  paradox without losing any theorems. At the time of writing it seems likely that
+  a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory in
+  one way or another, and only \emph{proper} @{text "\<lambda>"}-expressions will be forced to have
+  denotations and allow @{text "\<beta>"}-conversion. Problematic @{text "\<lambda>"}-expressions that would
+  leed to paradoxes, would not be considered \emph{proper}. Several options are available to define
+  the propriety of \emph{@{text "\<lambda>"}-expressions}.
+
+  As a consequence the purely syntactical distinction between propositional
+  and non-propositional formulas is no longer sufficient to guarantee
+  that any relation term has a denotation. The embedding of the theory supports
+  the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
+  could replace this distinction entirely yielding a much broader set of relations.
+  The philosophical implications of such a radical modification of the theory
+  have not yet been analysed entirely, though, and at the time of writing
+  it is an open question whether such a modification may be implemented in
+  future versions of PLM.
+
 *}
   
 chapter{* Technical Issues *}

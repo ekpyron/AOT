@@ -16,6 +16,7 @@ session "TAO" = "HOL" +
 	TAO_10_PossibleWorlds
 	TAO_98_ArtificialTheorems
 	TAO_99_SanityTests
+	TAO_99_Paradox
   document_files
     "root.tex"
 
@@ -61,6 +62,7 @@ session "Thesis" = "HOL" +
 	TAO_10_PossibleWorlds
 	TAO_98_ArtificialTheorems
 	TAO_99_SanityTests
+	TAO_99_Paradox
 	Thesis
   document_files (in thesis)
     "root.tex"
