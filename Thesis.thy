@@ -621,7 +621,7 @@ basis of the embedding. The technicalities of this model are described in the ne
   
 chapter{* The Embedding *}
 
-section{* Background *}
+section{* The Framework Isabelle/HOL *}
 
 text{*
 The background theory for the embedding is Isabelle/HOL, that provides a higher order logic
@@ -1734,7 +1734,9 @@ text{*
   
   \begin{remark}
     The Eisbach package even allows to construct more complex proving methods that involve
-    pattern matching. This is utilized in the construction of a substitution method in section TODO: reference details
+    pattern matching. This is for example utilized in the construction of a substitution method as
+    described in section~\ref{substitution-method}.
+    TODO: reference details
   \end{remark}
 
   The idea is to construct a simple resolution prover that allows it to deconstruct complex
@@ -1747,9 +1749,9 @@ text{*
   \end{center}
 
   Whereas the basic proving methods available in Isabelle cannot immediately prove
-  \mbox{@{lemma "[\<phi> \<^bold>\<rightarrow> \<phi> in v]" by (simp add: ImplS)}} without any facts about the definitions of validity and implication,
-  they \emph{can} prove \mbox{@{lemma "[\<phi> in v] \<longrightarrow> [\<phi> in v]" by simp}} directly as an instance of
-  \mbox{@{lemma "p \<longrightarrow> p" by simp}}.
+  \mbox{@{lemma "[\<phi> \<^bold>\<rightarrow> \<phi> in v]" by (simp add: ImplS)}} without any facts about the definitions of
+  validity and implication, they \emph{can} prove \mbox{@{lemma "[\<phi> in v] \<longrightarrow> [\<phi> in v]" by simp}}
+  directly as an instance of \mbox{@{lemma "p \<longrightarrow> p" by simp}}.
 *}
   
 subsection{* Implementation *}
@@ -1815,8 +1817,8 @@ text{*
   important to precisely determine for which purposes it is valid to use the constructed
   @{method meta_solver}.
 
-  The main application of the method in the embedding is its use in the derivation of the axiom system as described in
-  section TODO: reference. Furthermore the @{method meta_solver} can aid in examining the
+  The main application of the method in the embedding is its use in the derivation of the axiom
+  system as described in section~\ref{axioms}. Furthermore the @{method meta_solver} can aid in examining the
   meta-logical properties of the embedding. Care has been taken that the meta-solver only employs
   \emph{reversable} transformations, thereby it is for example justified to use it to simplify a statement
   before employing a tool like @{theory_text "nitpick"} in order to look for counter-models for a statement.
@@ -2081,13 +2083,20 @@ text{*
   is defined as an inductive predicate with the following introduction rules:
 
   \begin{itemize}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x,DUMMY\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,DUMMY,x\<rparr>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
-    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lbrace>x,F\<rbrace>)" by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,x,DUMMY,DUMMY\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,x,DUMMY\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lparr>F,DUMMY,DUMMY,x\<rparr>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}
+    \item @{lemma[eta_contract=false] "SimpleExOrEnc (\<lambda>x. embedded_style \<lbrace>x,F\<rbrace>)"
+            by (simp add: SimpleExOrEnc.intros embedded_style_def)}              
   \end{itemize}
 
   This corresponds exactly to the restriction of @{term "embedded_style \<psi>"} to an exemplification
@@ -2564,6 +2573,8 @@ subsubsection{* Proving Methods *}
 
 text{*
 
+  \label{substitution-method}
+
   Although the construction above covers exactly the cases in which PLM allows substitutions, it does
   not yet have a form that allows it to conveniently \emph{apply} the rule of substitution. In order
   to apply the rule, it first has to be established that a formula can be decomposed into a
@@ -2611,11 +2622,10 @@ text{*
   from the deductive system of PLM.
 *}
 
-subsection{* Automation and Interactivity in the Embedding *}
-  
-text{*
-  
-*}  
+subsection{* Artificial Theorems *}
+
+subsection{* Sanity Tests *}
+
 
 subsection{* Summery *}
   
@@ -2635,8 +2645,9 @@ section{* Differences between the Embedding and PLM *}
   
 text{*
   Although the embedding attempts to represent the language and logic of PLM as precisely
-  as possible, it is important to note that there are certain differences between PLM and
-  its representation in Isabelle/HOL.
+  as possible, it is important to note that there remain differences between PLM and
+  its representation in Isabelle/HOL. The main differences are discussed in the following
+  sections.
 *}
   
 subsection{* Terms and Variables *}

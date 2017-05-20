@@ -1,4 +1,4 @@
-\documentclass[a4paper,enabledeprecatedfontcommands]{scrreprt}
+\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on]{scrreprt}
 \usepackage{isabelle,isabellesym}
 \usepackage{url}
 \usepackage{xr}
@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \usepackage{epigraph}
+\usepackage[ngerman,english]{babel}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 \setcounter{secnumdepth}{3}
@@ -78,6 +79,10 @@ Master's thesis at the institute of mathematics at Freie Universit\"at Berlin
 
     \large{\textbf{Daniel Kirchner}}
 
+	\vspace{0.25cm}
+
+	\small{Matrikelnummer: 4387161}
+
     \vspace{2cm}
 
     \large{\textbf{
@@ -89,6 +94,9 @@ PD Dr. Christoph Benzm\"uller
     \large{Berlin, \today}
 \end{center}
 \end{titlepage}
+
+\cleardoublepage
+
 \begin{abstract}
 	We present an embedding of the second order fragment of the Theory of Abstract Objects as described in Edward Zalta's
   upcoming work Principia Logico-Metaphysica (PLM\cite{PM}) in the automated reasoning framework Isabelle/HOL. The Theory of Abstract
@@ -115,7 +123,12 @@ PD Dr. Christoph Benzm\"uller
   Thereby our work could provide a significant contribution to the
   development of a proper grounding for object theory.
 \end{abstract}
+
+\cleardoublepage
+
 \tableofcontents
+
+\cleardoublepage
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
@@ -146,6 +159,27 @@ PD Dr. Christoph Benzm\"uller
 % optional bibliography
 \bibliographystyle{abbrv}
 \bibliography{root}
+
+\cleardoublepage
+
+\chapter*{Eidesstattliche Erkl\"arung}
+\selectlanguage{ngerman}
+
+Hiermit versichere ich, dass ich die vorliegende Arbeit selbstst\"andig
+verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel
+benutzt habe.
+
+Alle Ausf\"uhrungen, die w\"ortlich oder inhaltlich aus fremden Quellen
+\"ubernommen sind, habe ich als solche kenntlich gemacht.
+
+Diese Arbeit wurde in gleicher oder \"ahnlicher Form noch bei keiner
+anderen Universit\"at als Pr\"ufungsleistung eingereicht und ist auch
+noch nicht ver\"offentlicht.
+
+\vspace{50pt}
+\noindent\hfill\rule{5cm}{.4pt}\par
+\noindent Berlin, \today   \hfill Daniel Kirchner
+
 
 \end{document}
 
