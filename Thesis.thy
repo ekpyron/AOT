@@ -1940,6 +1940,8 @@ text{*
 subsection{* Axioms as Schemata *}
   
 text{*
+  \label{axiom-schemata}
+
   The axioms in PLM are meant as axiom schemata. They are stated using variables that range over
   and can therefore be instantiated for any formula and term (potentially satisfying explicitly stated
   restrictions). Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
@@ -2308,6 +2310,8 @@ text{*
 subsection{* Modally Strict Proofs *}
   
 text{*
+  \label{PLM-modally-strict}
+
   PLM distinguishes between two sets of theorems, the set of theorems, that are derivable from
   the complete axiom system, and the set of theorems, that have \emph{modally strict} proofs.
 
@@ -2315,7 +2319,7 @@ text{*
   of actuality described in section~\ref{axioms-actuality}).
 
   Although it is challenging to completely reproduce this distinction in the embedding
-  (see TODO: reference), the following schema can provide a reasonable representation:
+  (see~\ref{differences-modally-strict}), the following schema can provide a reasonable representation:
 
   Modally strict theorems are stated to be true for an \emph{arbitrary} semantic possible world
   in the embedding as: \mbox{@{term "[\<phi> in v]"}}
@@ -2330,7 +2334,13 @@ text{*
 
   This way necessary axioms, as well as modally fragile axioms can be used in the proofs. However
   it is not possible to infer from a modally fragile theorem that the same statement holds as a
-  modally strict axiom.  
+  modally strict axiom.
+
+  It is important to note that the set of modally-strict theorems in PLM is in fact a \emph{subset}
+  of the theorems of the form \mbox{@{term "[\<phi> in v]"}} that are semantically true in the embedding.
+  However, the rules introduced in PLM are stated in such a way that only this subset is in fact
+  derivable without falling back to the semantics or the meta-logic. This is discussed in more detail
+  in section~\ref{differences-modally-strict}.
 *}
 
 subsection{* Fundamental Metarules of PLM *}
@@ -2625,6 +2635,9 @@ chapter{* Discussion and Results *}
 section{* Differences between the Embedding and PLM *}
   
 text{*
+  Although the embedding attempts to represent the language and logic of PLM as precisely
+  as possible, it is important to note that there are certain differences between PLM and
+  its representation in Isabelle/HOL.
 *}
   
 subsection{* Terms and Variables *}
@@ -2635,14 +2648,76 @@ text{*
 subsection{* Propositional Formulas and $\lambda$-Expressions *}
   
 text{*
+
 *}
   
-subsection{* Modally-strict Proofs *}
+subsection{* Modally-strict Proofs and the Converse of RN *}
+
+(*<*)
+context PLM
+begin
+(*>*)
   
 text{*
+
+\label{differences-modally-strict}
+
+As already mentioned in section~\ref{PLM-modally-strict}, modally-strict theorems
+in the embedding are stated in the form \mbox{@{term "[\<phi> in v]"}} for arbitrary @{term "v"}.
+On the other hand more statements of the form \mbox{@{term "[\<phi> in v]"}} are semantically
+true in the embedding, than would be derivable using modally-strict proofs in PLM.
+
+To understand this circumstance and the solution for this issue used in the embedding,
+the converse of the meta-rule RN has to be considered.
+
+In PLM the metarule RN states in essence that if there is a modally strict proof for @{text "\<phi>"},
+then @{text "\<box>\<phi>"} is derivable as a theorem. Therefore the converse of RN would be that if 
+@{text "\<box>\<phi>"} is derivable, then there is a modally strict proof for @{text "\<phi>"}.
+
+The discussion in remark (\ref{PM-abstraction-contingent})@{cite PM} shows that this is
+not true in PLM. However in the embedding the following is derivable from the semantics of
+the box operator:
+
+\begin{center}
+  @{lemma "[\<^bold>\<box>\<phi> in dw] \<Longrightarrow> (\<forall> v . [\<phi> in v])" by (simp add: Semantics.T6) }
+\end{center}
+
+So although the converse of RN is not true in PLM, an equivalent statement for theorems of
+the form \mbox{@{term "[\<phi> in v]"}} in the embedding can be derived from the semantics.
+
+The reason for this is that modally-strict theorems are in fact a subset of a larger class of
+theorems, namely the theorems that are \emph{necessarily true}. Semantically a statement of the form
+\mbox{@{term "[\<phi> in v]"}} in the embedding is derivable, whenever @{term "embedded_style \<phi>"}
+is a \emph{necessary theorem}.
+
+Modally-strict theorems in PLM on the other hand are defined as a proof-theoretic concept:
+modally-strict proofs are not allowed to use modally fragile axioms. Therefore they are solely derived
+from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}). PLM now proves the fact
+that a modally strict derivation of @{text "\<phi>"} implies that there is a derivation of @{text "\<box>\<phi>"}
+by induction on the the length of the proof. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
+gives an example of a case where the converse is false.
+
+The problem for the embedding is that there is no semantic characterization of a statement that allows
+to decide whether it is a necessary theorem or a modally-strict theorem. Therefore the embedding has
+to express modally-strict theorems as necessary theorems. As seen above for this set of theorems the
+converse of RN is in fact true, though.
+
+This still does not compromise the concept that any statement that is derived in \ref{TAO_PLM}
+is also derivable in PLM: the basis of this concept is that no proofs may rely on the meta-logic, but
+only the rules that are derived in PLM are allowed. To guarantee that no statement of the form
+\mbox{@{term "[\<phi> in v]"}} is derived that is \emph{not} a modally-strict theorem of PLM,
+the converse of RN is not stated as an admissible rule for these proofs.
+
+Unfortunately this has the consequence that the proving method @{method PLM_solver} cannot be
+equipped with an elimination rule for the box-operator, which significantly reduces its power
+as an automated proving method. Preserving the claim that theorems derived in the embedding
+are also theorems of PLM was considered to be more important, though.
+
 *}
-  
-section{* Corrections *}
+
+(*<*)
+end (* context PLM *)
+(*>*)
 
 section{* A Paradox in PLM *}
 
@@ -2786,14 +2861,14 @@ text{*
 subsection{* Possible Solutions *}
 
 text{*
-  Fortunately no theorems were derived in PLM so far, that actually depend on problematic
+  Fortunately no theorems were derived in PLM, that actually depend on problematic
   @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
   paradox without losing any theorems. At the time of writing it seems likely that
-  a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory in
-  one way or another, and only \emph{proper} @{text "\<lambda>"}-expressions will be forced to have
+  a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory (either explicitly
+  or implicitly), and only \emph{proper} @{text "\<lambda>"}-expressions will be forced to have
   denotations and allow @{text "\<beta>"}-conversion. Problematic @{text "\<lambda>"}-expressions that would
-  leed to paradoxes, would not be considered \emph{proper}. Several options are available to define
-  the propriety of \emph{@{text "\<lambda>"}-expressions}.
+  lead to paradoxes, would not be considered \emph{proper}. Several options are available to define
+  the propriety of \emph{@{text "\<lambda>"}-expressions} and adjust PLM in full detail.
 
   As a consequence the purely syntactical distinction between propositional
   and non-propositional formulas is no longer sufficient to guarantee
@@ -2806,6 +2881,9 @@ text{*
   future versions of PLM.
 
 *}
+
+section{* A Meta-Conjecture about Possible Worlds *}
+  
   
 chapter{* Technical Issues *}
   
