@@ -243,12 +243,11 @@ text{*
           technical structure of the embedding. This chapter references the
           Isabelle theory that can be found in the appendix.
   
-    \item The fourth chapter discusses the philosophical implications of the embedding
-          and its relation to the target theory of PLM. Furthermore it describes 
-          the meta-logical results achieved using the embedding and states interesting
-          open questions for future research.
+    \item The fourth chapter discusses the relation between the embedding and the target theory
+          of PLM and describes some of the results achieved using the embedding. Furthermore it
+          states some open questions for future research.
   
-    \item The last chapter consists of a technical discussion about some issues encountered
+    \item The last chapter consists of a technical discussion about some of the issues encountered
           during the construction of the embedding due to limitations of the logical framework
           of Isabelle/HOL and the solutions that were employed.
   \end{itemize}
@@ -2643,12 +2642,58 @@ text{*
 subsection{* Terms and Variables *}
 
 text{*
+
+  In PLM an individual term can be an individual variable, an individual constant or a definite
+  description. A large number of statements is formulated using specific variables. From such
+  a statement its universal generalization can be derived (using the rule GEN), which then can be
+  instantiated for any individual term, given that it denotes (\mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}).
+
+  As already mentioned in sections~\ref{individual-terms-and-descriptions} and~\ref{quantification-axioms}
+  the embedding uses a slightly different approach. In the embedding individual variables and
+  individual terms have different \emph{types} and an individual variable (of type @{type \<nu>})
+  has to be converted to an individual term (of type @{type \<kappa>}) using the decoration @{term "DUMMY\<^sup>P"},
+  so that it can be used for example in an exemplifcation formula (which is defined for terms of
+  type @{type \<kappa>}).
+
+  The technicalities of this approach and a discussion about the acuracy of this representation
+  were already given in the referenced sections, so at this point it suffices to summerize the
+  resulting differences between the embedding and PLM:
+
+  \begin{itemize}
+    \item The individual variables of PLM are represented as variables of type @{type \<nu>} in the embedding.
+    \item Individual constants can be represented by declaring a constant of type @{type \<nu>}.
+    \item Meta-level variables (like @{text "\<tau>"}) ranging over all individual terms
+          in PLM can be represented as variables of type @{type \<kappa>}.
+    \item Objects of type @{type \<nu>} have to be explicitly converted to objects of type @{type \<kappa>}
+          if they are to be used in a context that also allows individual terms.
+    \item The axioms of quantification are adjusted to go along with this representation
+          (see~\ref{quantification-axioms}).
+  \end{itemize}
+
+  In PLM the situation for relation variables, constants and terms is analog. However the
+  embedding uses the following simplification in order to avoid the additional complexity
+  introduced for individuals:
+
+  Since at the time of writing PLM unconditionally asserts \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
+  is for any relation term by an axiom, the embedding uses only one type (@{text "\<Pi>\<^sub>n"}) for each
+  arity of relations. Therefore no special type conversion between variables and terms is necessary
+  and every relation term can immediately be instantiated for a variable of type (@{text "\<Pi>\<^sub>n"}).
+  This hides the additional steps PLM employs for such instantiations (the generalization by GEN
+  followed by an instantiation using quantification theory). Since \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}} holds
+  unconditionally for relation terms, this simplification is justified.
+
+  Recent developments as described in section~\ref{paradox}, however, suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
+  will likely no longer hold unconditionally for every relation term in future versions of PLM, so
+  future versions of the embedding will have to include a distinction between relation terms and
+  relation variables in a similar way as it is already done for individuals.
+
 *}
   
 subsection{* Propositional Formulas and $\lambda$-Expressions *}
   
 text{*
-
+  The main difference between the embedding and PLM is the fact that the embedding does
+  not distinguish between propositional and non-propositional formulas. 
 *}
   
 subsection{* Modally-strict Proofs and the Converse of RN *}
