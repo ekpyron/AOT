@@ -2421,7 +2421,7 @@ text{*
   In PLM it is possible to derive statements involving the general identity symbol by case
   distinction: if such a statement is derivable for all types of terms in the language separately,
   it can be concluded that it is derivable in general. Such a case distinction cannot be directly
-  reproduced in the embedding, since no assumption can be made, that every instantiation of the
+  reproduced in the embedding, since it cannot be assumed, that every instantiation of the
   type class @{class identifiable} is in fact one of the types of terms of PLM.
 
   However, there is a simple way to still formulate such general statements. This is done by
