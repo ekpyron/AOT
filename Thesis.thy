@@ -173,7 +173,7 @@ directly represented using the negation and quantification of the background log
 the dependency on possible worlds).
 
 This way basic principles of the background logic (such as alpha conversion) can often be directly
-applied to the embedded logic and the equational, definitional nature of the representation preverses
+applied to the embedded logic and the equational, definitional nature of the representation preserves
 a larger degree of automation. Furthermore axioms in the embedded logic can often be equivalently
 stated in the background logic, which makes the construction of models for the system easier and again increases
 the degree of automation that can be retained.
@@ -1636,11 +1636,11 @@ text{*
   introducing the type class @{class quantifiable} that is equipped with a constant that is used
   as the general all quantification binder (see~\ref{TAO_Quantifiable_Class}).
   For this constant it can now be assumed that it satisfies the semantic properties of all
-  quantification: @{thm quantifiable_T8[of w \<psi>]}.
+  quantification: \mbox{@{thm quantifiable_T8[of w \<psi>]}}.
 
   Since it was already shown in the last section that all variable types satisfy this property,
   the type class can immediately be instantiated for the types @{type \<nu>}, @{type \<Pi>\<^sub>0}, @{type \<Pi>\<^sub>1},
-  @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3} (see~\ref{TAO_Quantifiable_Instantiation}). The instantiation proofs
+  @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3} (see~\ref{TAO_Quantifiable_Instantiations}). The instantiation proofs
   only need to refer to the statements derived in the semantics section for the respective version
   of the quantifier and are thereby independent of the representation layer.
 
