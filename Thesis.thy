@@ -2896,12 +2896,12 @@ text{*
   theory the following is derivable:
 
   \begin{equation}\tag{2}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>^x_y"}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
   \end{equation}
 
   \begin{remark}
     Using a modally-strict proof only the following is derivable:\\
-    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>^x_y"}}\\
+    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
     For the construction of the paradox, the modally fragile statement
     is sufficient, though. Note, however, that it is also possible
     to construct similar paradoxical cases without appealing to
