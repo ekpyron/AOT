@@ -2961,6 +2961,12 @@ text{*
   TODO
 *}
 
+section{* Universal Reasoning using Shallow Semantical Embeddings in HOL *}
+
+text{*
+  TODO
+*}
+
 chapter{* Technical Issues *}
   
 text{*
