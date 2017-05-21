@@ -680,6 +680,10 @@ text{*
 *}  
 
 subsection{* Hyperintensionality of Relations *}
+  
+text{*
+  TODO
+*}
 
 section{* Basic Concepts *}
 
@@ -1667,7 +1671,8 @@ text{*
 subsection{* Connectives *}
 
 text{*
-  The remaining classical connectives are defined in the traditional manner (see~\ref{TAO_BasicDefinitions_DerivedConnectives}):
+  The remaining classical connectives are defined in the traditional manner
+  (see~\ref{TAO_BasicDefinitions_DerivedConnectives}):
   \begin{itemize}
     \item @{thm[display] conj_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
     \item @{thm[display] disj_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
@@ -1840,6 +1845,8 @@ end (* context MetaSolver *)
 section{* General Identity Relation *}
 
 text{*
+  \label{general-identity}
+
   As already mentioned in section~\ref{general-quantifier} similarly to the general quantification
   binder it is desirable to introduce a general identity relation.
 
@@ -2426,6 +2433,8 @@ end (* unnamed subcontext with MetaSolver interpretation *)
 subsection{* Additional Type Classes *}
   
 text{*
+  \label{PLM-type-classes}
+
   There is one further subtlety one may notice in the derivation of the deductive system.
   In PLM it is possible to derive statements involving the general identity symbol by case
   distinction: if such a statement is derivable for all types of terms in the language separately,
@@ -2704,7 +2713,9 @@ subsection{* Propositional Formulas and $\lambda$-Expressions *}
   
 text{*
   The main difference between the embedding and PLM is the fact that the embedding does
-  not distinguish between propositional and non-propositional formulas. 
+  not distinguish between propositional and non-propositional formulas.
+
+  TODO
 *}
   
 subsection{* Modally-strict Proofs and the Converse of RN *}
@@ -2940,14 +2951,152 @@ text{*
 
 section{* A Meta-Conjecture about Possible Worlds *}
   
+text{*
+  TODO
+*}
   
+section{* Relations vs. Functions *}
+
+text{*
+  TODO
+*}
+
 chapter{* Technical Issues *}
+  
+text{*
+  Although the presented embedding shows that the generic proof assistant Isabelle/HOL
+  offers a lot of flexibility in expressing even a very complex and challenging theory
+  as the Theory of Abstract Objects, it has some limitations that required compromises
+  in the formulation of the theory.
+
+  In this chapter some of these limitations and their consequences for the embedding
+  are discussed. Future versions of Isabelle may allow a clearer implementation, especially
+  of the layered approach of the embedding.
+  
+*}
   
 section{* Limitations of Type Classes and Locales *}
 
-section{* Case Distinctions by Type *}
+text{*
+  Isabelle provides a powerful tool for abstract reasoning called @{theory_text locale}.
+  Locales are used for \emph{parametric} reasoning. Type classes as already described 
+  briefly in section~\ref{general-quantifier} and further mentioned in sections~\ref{general-identity}
+  and~\ref{PLM-type-classes} are in fact special cases of locales that are additionally
+  connected to Isabelle's primitive type system.
 
-section{* Structural Induction *}
+  The definition of a locale defines a set of constants that can use arbitrary type variables
+  (type classes on the other hand are restricted to only one type variable). Furthermore
+  assumptions about these constants can be postulated that can be used in the reasoning within
+  the locale. Similarly to the instantiation of a type class a locale can be \emph{interpreted}
+  for specific definitions of the introduced constants, for which it has to be proven that they
+  satisfy the postulated assumptions.
+
+  Thereby it is possible to reason about abstract structures that are solely characterized by a specific
+  set of assumptions. Given that it can be shown that these assumptions are satisfied for a concrete
+  case (i.e. a specific definition for the constants using specific types in place of the used type
+  variables), an interpretation of the locale allows the use of all theorems shown
+  for the abstract case in the concrete application.
+
+  Therefore in principle locales would be a perfect fit for the layered structure of the embedding:
+  If the representation of the formal semantics and the axiom system could both be formulated
+  as locales, it could first be shown that the axiom system is a \emph{sublocale} of the formal
+  semantics, i.e. every set of constants that satisfies the requirements of the formal semantics
+  also satisfies the requirements of the axiom system, and further the formal semantics could
+  be interpreted for the concrete model structure.
+
+  Since the reasoning within a locale cannot use further assumptions that are only satisfied
+  by a specific interpretation, this way the universality of the reasoning based on the axiom
+  system could be formally guaranteed - no proof that is solely based on the axiom locale
+  could use any meta-logical statement tied to the underlying representation layer and
+  model structure.
+
+  However, a major issue arises when trying to formulate the axiom system as a locale.
+  The axioms of quantification and the substitution of identicals are restricted
+  to only hold for specific sets of types. This already makes it impossible to introduce a general
+  binder for all-quantification or a general identity symbol. A constant for identity
+  would have to be introduced with a specific type. Although this type could use type
+  variables, e.g. @{typ "'a\<Rightarrow>'a\<Rightarrow>'\<o>"}, the type variable @{typ "'a"} would be fixed
+  throughout the locale.
+
+  Several solutions to this problem could be considered: identity could be introduced as
+  a polymorphic constant \emph{outside the locale} and the locale would assume some
+  properties of this constant for specific type variables. Before interpreting the
+  locale the polymorphic constant could then be \emph{overloaded} for concrete types
+  in order to be able to satisfy the assumptions. However, this way it would still be
+  impossible to prove a general statement about identity: every statement would have
+  to be restricted to a specific type, because in general no assumptions about the
+  properties of identity could be made.
+
+  Another solution would be to refrain from using general quantifiers and identity relations
+  altogether, but to introduce separate binders and identity for the type of individuals and
+  each relation type. This would, however, add a significant amount of notational complexity
+  to the embedding and would require to duplicate all statements that hold for quantification
+  and identity in general for every specific type. For this reason this option was not explored
+  further.
+
+  It could also be considered to introduce the axioms of quantification and identity separately
+  from the axiom locale in a type class. An interpretation of the complete axiom system would
+  then have to interpret the axiom locale, as well as instantiate the respective type classes.
+  Since type classes can only use one type variable, this would make it impossible to use a type
+  variable for truth values in the definition of the respective type classes, though.
+
+  Several other concepts were considered during the construction of the embedding,
+  but no solution was found that would both accurately represent the axiom system and
+  still be notationally convenient. A complete account of the considered options would
+  go beyond the scope of this discussion.
+
+  The most natural extension of Isabelle's locale system that would solve the described
+  issues, would be the ability to introduce polymorphic constants in a locale that
+  can be restricted to a type class (resp. a \emph{sort}). The type class could potentially even
+  be introduced simultaneously with the locale. However, such a construction is currently not possible
+  in Isabelle and as of yet it is unknown whether the internal type system of Isabelle
+  would allow such an extension in general.
+*}
+  
+section{* Case Distinctions by Type *}
+  
+text{*
+  Although a general all-quantifier and identity relation can be approximated using type classes
+  as described in sections~\ref{general-quantifier} and~\ref{general-identity}, in fact this
+  construction is conceptually different from the intention of PLM. The identity relation is
+  not actually meant to be determined by some set of properties, but by their definition
+  for specific concrete types.
+
+  However, currently Isabelle does not allow the restriction of a type variable in a statement
+  to a specific set of types. Type variables can only be restricted to specific \emph{sorts},
+  so effectively to type classes. As mentioned in section~\ref{PLM-type-classes} this means
+  that statements for example about the general identity relation that depend on the specific
+  definitions of identity for the concrete types, cannot be proven as in PLM by case distinction
+  on types, but another type class has to be introduced that \emph{assumes} the statement, which
+  then has to be instantiated for the concrete types.
+
+  Although the solution using type classes works for the embedding, it would be more natural
+  to restrict such statements to the specific sets of types (for this for example each type
+  could be its own sort) and then to have a induction method that allows to prove the statement
+  for the concrete types separately. Again as of yet it is unknown whether Isabelle could be
+  extended in such a way given the limitations of its internal type system.
+*}
+
+section{* Structural Induction and Proof-Theoretic Reasoning *}
+
+text{*
+  As mentioned in section~\ref{PLM-metarules} some of the meta-rules that PLM can \emph{derive}
+  by induction on the length of a derivation, e.g. the deduction theorem
+  \mbox{@{thm PLM.deduction_theorem[of v \<phi> \<psi>]}}, have to be proven using the semantics instead
+  in the embedding.
+
+  While this is not considered a major problem, it would be interesting to investigate, whether
+  some construction in Isabelle would in fact allow proof-theoretic reasoning similar to the
+  proofs in PLM. This is related to the issue of accurately representing the concept of
+  \emph{modally-strict proofs} as described in sections~\ref{PLM-modally-strict}
+  and~\ref{differences-modally-strict}.
+*}
+  
+chapter{* Summery *}
+  
+text{*
+  TODO
+*}
   
 (*<*)
 end
