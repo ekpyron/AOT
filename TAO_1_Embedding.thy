@@ -136,13 +136,13 @@ text{*
 subsection{* Connectives and Quantifiers *}
 text{* \label{TAO_Embedding_Connectives} *}
 
-consts I_NOT :: "(j\<Rightarrow>i\<Rightarrow>bool)\<Rightarrow>(j\<Rightarrow>i\<Rightarrow>bool)"
-consts I_IMPL :: "(j\<Rightarrow>i\<Rightarrow>bool)\<Rightarrow>(j\<Rightarrow>i\<Rightarrow>bool)\<Rightarrow>(j\<Rightarrow>i\<Rightarrow>bool)"
+consts I_NOT :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>i\<Rightarrow>bool"
+consts I_IMPL :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)"
 
 lift_definition not :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<not>_" [54] 70) is
-  "\<lambda> p s w . s = dj \<and> \<not>p dj w \<or> s \<noteq> dj \<and> (I_NOT p s w)" .
+  "\<lambda> p s w . s = dj \<and> \<not>p dj w \<or> s \<noteq> dj \<and> (I_NOT s (p s) w)" .
 lift_definition impl :: "\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl "\<^bold>\<rightarrow>" 51) is
-  "\<lambda> p q s w . s = dj \<and> (p dj w \<longrightarrow> q dj w) \<or> s \<noteq> dj \<and> (I_IMPL p q s w)" .
+  "\<lambda> p q s w . s = dj \<and> (p dj w \<longrightarrow> q dj w) \<or> s \<noteq> dj \<and> (I_IMPL s (p s) (q s) w)" .
 lift_definition forall\<^sub>\<nu> :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<nu>" [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<nu> . (\<phi> x) s w" .
 lift_definition forall\<^sub>0 :: "(\<Pi>\<^sub>0\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>0" [8] 9) is
