@@ -12,8 +12,6 @@ text{*
   Some examples of theorems that can be derived from the meta-logic, but which
   are (presumably) not derivable from the deductive system PLM itself.
 \end{remark}
-
-TODO: add theorem about missing state dependence of @{text "\<nu>\<upsilon>"}.
 *}
 
 locale ArtificialTheorems
@@ -57,7 +55,7 @@ text{*
 
 text{*
 \begin{remark}
-  These statements can also be translated to statements in the embedded logic.
+  These statements can be translated to statements in the embedded logic.
 \end{remark}
 *}
 
@@ -98,10 +96,30 @@ text{*
     "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P, F\<rbrace>) in v]"
     using lambda_ex_emb by simp
 
-  lemma lambda_desc:
-    "[\<lparr>(\<^bold>\<lambda> x . \<lparr>F,\<^bold>\<iota>z . \<phi> z x\<rparr>), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lparr>F,\<^bold>\<iota>z . \<phi> z y\<rparr>) in v]"
-    using lambda_ex_emb by simp
+text{*
+\begin{remark}
+  The following theorem is a consequence of the constructed Aczel-model, but not
+  part of PLM. Separate research on possible modifications of the embedding suggest
+  that this artificial theorem can be avoided by introducing a dependency on states
+  for the mapping from abstract objects to special urelements.
+\end{remark}
+*}
 
+  lemma lambda_rel_extensional:
+    assumes "[\<^bold>\<forall>F . \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,b\<^sup>P\<rparr> in v]"
+    shows "(\<^bold>\<lambda>x. \<lparr>R,x\<^sup>P,a\<^sup>P\<rparr>) = (\<^bold>\<lambda>x . \<lparr>R,x\<^sup>P, b\<^sup>P\<rparr>)"
+  proof -
+    interpret MetaSolver .
+    obtain F where F_def: "F = make\<Pi>\<^sub>1 (\<lambda> u s w . u = \<nu>\<upsilon> a)" by auto
+    have "[\<lparr>F, a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F, b\<^sup>P\<rparr> in v]" using assms by (rule AllE)
+    moreover have "[\<lparr>F, a\<^sup>P\<rparr> in v]"
+      unfolding F_def by (simp add: meta_defs meta_aux)
+    ultimately have "[\<lparr>F, b\<^sup>P\<rparr> in v]" using EquivE by auto
+    hence "\<nu>\<upsilon> a = \<nu>\<upsilon> b" using F_def by (simp add: meta_defs meta_aux)
+    thus ?thesis by (simp add: meta_defs meta_aux)
+  qed
+
+      
 end
 
 (*<*)

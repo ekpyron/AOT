@@ -215,10 +215,6 @@ text{*
 subsection{* Lambda Expressions in the Meta-Logic *}
 text{* \label{TAO_SanityTests_MetaLambda} *}
 
-  lemma lambda_meta:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x),x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> eval\<o> (\<phi> y) dj v)"
-    unfolding meta_defs \<nu>\<upsilon>_def apply transfer using \<nu>\<upsilon>_def by auto
-  
   lemma lambda_interpret_1:
   assumes "[a \<^bold>= b in v]"
   shows "(\<^bold>\<lambda>x. \<lparr>R,x\<^sup>P,a\<rparr>) = (\<^bold>\<lambda>x . \<lparr>R,x\<^sup>P, b\<rparr>)"

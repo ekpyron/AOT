@@ -1,4 +1,4 @@
-\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on]{scrreprt}
+\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on,twoside=true]{scrreprt}
 \usepackage{isabelle,isabellesym}
 \usepackage{url}
 \usepackage{xr}
@@ -12,7 +12,8 @@
 \usepackage[ngerman,english]{babel}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
-\setcounter{secnumdepth}{3}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
 
 \externaldocument[PM-]{external}
 
@@ -141,6 +142,7 @@ PD Dr. Christoph Benzm\"uller
 \newgeometry{margin=1in}
 
 \appendix
+\setcounter{secnumdepth}{3}
 \chapter{Isabelle Theory}
 \input{TAO_1_Embedding}
 \input{TAO_2_Semantics}
