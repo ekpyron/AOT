@@ -1872,15 +1872,15 @@ text{*
 
   Since now general quantification and general identity are available, it seems reasonable to
   define the unique existence quantifier that involves both quantification and identity. To that
-  end a derived type class that is introduced that is the combination of the @{class quantifiable}
+  end a derived type class is introduced that is the combination of the @{class quantifiable}
   and the @{class identifiable} classes (since both general quantification and identity have to be
-  available).Although this is straightforward for the relation types, this reveals a subtlety
+  available). Although this is straightforward for the relation types, this reveals a subtlety
   involving the distinction between individuals of type @{type \<nu>} and individual terms of type @{type \<kappa>}:
   The type @{type \<nu>} belongs to the class @{class quantifiable}, the type @{type \<kappa>} on the other hand
   does not: no quantification over individual \emph{terms} (that may not denote) was defined.
   On the other hand the class @{class identifiable} was only instantiated for the type @{type \<kappa>},
   but not for the type @{type \<nu>}. This issue can be solved by noticing that it is straightforward and
-  justified to define an identity for @{type \<nu>} as allows:
+  justified to define an identity for @{type \<nu>} as follows:
 
   \begin{center}
     @{thm identity_\<nu>_def[expand2, of x y, THEN embedded_eq]}
