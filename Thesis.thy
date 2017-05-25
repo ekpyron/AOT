@@ -93,17 +93,13 @@ text{*
 \epigraph{Calculemus!}{\textit{Leibniz}}
 *}
   
-section{* Universal Logical Reasoning *}
+section{* Universal Logical Reasoning\footnote{This introductory section is based on the description of the topic in @{cite UniversalReasoning}.} *}
 
 text{*
 
-\begin{TODO}
-  Add references throughout the section.
-\end{TODO}
-
 The concept of understanding rational argumentation and reasoning using formal logical systems
-has a long tradition and can already be found in the study of syllogistic arguments by Aristotle.
-Since then a large variety of formal systems has evolved, each using different syntactical
+has a long tradition and can already be found in the study of syllogistic arguments by
+Aristotle. Since then a large variety of formal systems has evolved, each using different syntactical
 and semantical structures to capture specific aspects of logical reasoning (e.g. propositional logic,
 first-order/higher-order logic, modal logic, free logic, etc.). This diversity of formal systems
 gives rise to the question, whether a \emph{universal} logic can be devised, that would be capable
@@ -115,27 +111,22 @@ The idea of a universal logical framework is very prominent in the works of Gott
 able to express metaphysical, scientific and mathematical concepts. Based thereupon he envisioned 
 the \emph{calculus ratiocinator}, a universal logical calculus with which the truth of statements
 formulated in the characteristica universalis could be decided purely by formal calculation and thereby
-in an automated fashion, an idea that became famous under the slogan \emph{Calculemus!}.
+in an automated fashion, an idea that became famous under the slogan: \emph{Calculemus!}
 
 Nowadays with the rise of powerful computer systems such a universal logical framework could have
-repercussions throughout the sciences (TODO: change this?) and may be a vital part of
-machine-computer interaction in the future. Leibniz' ideas have inspired
-recent efforts to use functional higher-order logic (HOL) as such a universal logical language
-and to represent various logical systems by the use of \emph{shallow semantical embeddings}
-(TODO: reference \url{https://arxiv.org/abs/1703.09620}).
+repercussions throughout the sciences and may be a vital part of machine-computer interaction in the
+future. Leibniz' ideas have inspired recent efforts to use functional higher-order logic (HOL) as
+such a universal logical language and to represent various logical systems by the use of
+\emph{shallow semantical embeddings}@{cite UniversalReasoning}.
 
 Notably this approach received attention due to the formalisation, validation and analysis
-of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller (TODO: reference),
+of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller@{cite GoedelGod},
 for which higher-order modal logic was embedded in the computerized logic framework Isabelle/HOL.
 *}
 
 section{* Shallow Semantical Embeddings in HOL *}
 
 text{*
-\begin{TODO}
-  Think about terminology: background logic, target logic, embedded logic.
-\end{TODO}
-
 A semantic embedding of a target logical system defines the syntactical elements of the target language
 in a background logic (e.g. in a framework like Isabelle/HOL) based on their semantics.
 This way the background logic can be used to argue about the semantic truth of syntactic statements
@@ -179,9 +170,10 @@ stated in the background logic, which makes the construction of models for the s
 the degree of automation that can be retained.
 
 The shallow semantical embedding of modal logic was the basis for the analysis of
-G\"odel's onthological argument and the general concept has shown great potential as a universal
+G\"odel's onthological argument@{cite GoedelGod} and the general concept has shown great potential as a universal
 tool for logical embeddings while retaining the existing infrastructure for automation as for
-example present in a framework like Isabelle/HOL. (TODO: more application examples)
+example present in a framework like Isabelle/HOL\footnote{See @{cite UniversalReasoning} for an
+overview and an description of the ambitions of the approach.}.
 
 *}
 
@@ -191,7 +183,7 @@ section{* Relational Type Theory vs. Functional Type Theory *}
 text{*
 The universality of this approach has since been challenged by Paul Oppenheimer and Edward Zalta
 who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
-Considerations}(@{cite rtt}) that relational type theory is more general than functional type theory.
+Considerations}@{cite rtt} that relational type theory is more general than functional type theory.
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
 theory, can not be properly characterized in functional type theory.
 
@@ -203,7 +195,11 @@ One of their main arguments is that unrestricted @{text "\<lambda>"}-expressions
 theory lead to an inconsistency when combined with one of the axioms of the theory and indeed it
 has been shown for early attempts on embedding the theory that despite significant efforts
 to avoid the aforementioned inconsistency by excluding problematic @{text "\<lambda>"}-expressions in the embedded
-logic, it could still be reproduced using an appropriate construction in the background logic.
+logic, it could still be reproduced using an appropriate construction in the background logic\footnote{
+Early attempts of an embedding by Christoph Benzm\"uller (see \url{https://github.com/cbenzmueller/PrincipiaMetaphysica})
+were discussed in his university lecture \emph{Computational Metaphysics} (FU Berlin, SS2016) and the proof of
+their inconsistency in the author's final project for the course inspired the continued research
+in this master's thesis.}.
 
 The solution presented here circumvents this problem by identifying @{text "\<lambda>"}-expressions as one element of the
 target language that behaves differently than their counterparts in the background logic and
@@ -213,13 +209,13 @@ semantics that is inspired by the \emph{Aczel-model} of the target theory (see \
 and avoids prior inconsistencies. The mentioned issue and the employed solution is discussed in
 more detail in section \ref{challenges}.
 
+\pagebreak
 *}
 
 section{* Overview of the following Chapters *}
 
 text{*
   The following chapters are structured as follows:
-
   \begin{itemize}
     \item The second chapter gives an overview of the motivation and structure of
           the target theory of the embedding, the Theory of Abstract Objects. It also
@@ -241,7 +237,7 @@ text{*
 
   This entire document is generated from an Isabelle theory file and thereby in particular
   all formal statements in the third chapter are well-formed terms, resp. verified valid theorems
-  in the constructed embedding unless the contrary is explicitly stated.
+  in the constructed embedding unless the contrary is stated explicitly.
 *}
 
 chapter{* The Theory of Abstract Objects *}
@@ -270,7 +266,9 @@ pattern.}\cite{MallyTheory}
 
 So what is the fundamental distinction between abstract and concrete objects? The analysis
 in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
-predication that is based on the ideas of Ernst Mally (TODO: reference, maybe again just \cite{MallyTheory}).
+predication that is based on the ideas of Ernst Mally\footnote{The introduction to the theory
+in this and the next section is based on the documentation of the theory in @{cite MallyTheory}.
+Further references include @{cite PM}, @{cite zalta1988intensional}, @{cite zalta1983abstract}.}.
 Whereas objects that are concrete (the Theory of Abstract Objects calls them \emph{ordinary objects})
 are characterized by the classical mode of predication, i.e. \emph{exemplification},
 a second mode of predication is introduced that is reserved for abstract objects. This new mode of
@@ -313,7 +311,6 @@ It turns out that by the means of abstract objects and encoding  the Theory of A
 regularly occur in philosophy, mathematics or linguistics.
 
 In \cite{MallyTheory} the principal objectives of the theory are summerized as follows:
-
 \begin{itemize}
   \item To describe the logic underlying (scientific) thought and reasoning by extending
         classical propositional, predicate, and modal logic.
@@ -335,15 +332,15 @@ In \cite{MallyTheory} the principal objectives of the theory are summerized as f
 \end{itemize}
 
 The Theory of Abstract Objects has therefore the ambition and the potential to serve as a foundational
-theory of metaphysics as well as mathematics and can provide a simple unified axiomatic framework to reason
-about a huge variety of concepts throughout the sciences. This makes the attempt to represent the
+theory of metaphysics as well as mathematics and can provide a simple unified axiomatic framework that
+allows reasoning about a huge variety of concepts throughout the sciences. This makes the attempt to represent the
 theory using the universal reasoning approach of shallow semantical embeddings outlined in the previous
 chapter particularly challenging and at the same time rewarding, if successful.
 
 A successful implementation of
 the theory that allows it to utilize the existing sophisticated infrastructure for automated reasoning 
 present in a framework like Isabelle/HOL would not only strongly support the applicability of shallow
-semantical embeddings as a universal reasoning tool, but could also serve as the basis for spreading
+semantical embeddings as a universal reasoning tool, but could also aid in spreading
 the utilization of the theory itself as a foundational theory for various scientific fields by
 enabling convenient interactive and automated reasoning in a verified framework.
 
@@ -361,7 +358,7 @@ text{*
   some of the basic concepts of the theory are presented in advance to provide
   further motivation for the formalism.
 
-  The following are the two most important principles of the theory:
+  The following are the two most important principles of the theory@{cite MallyTheory}:
 
   \begin{itemize}
     \item @{text "\<exists>x(A!x & \<forall>F(xF \<equiv> \<phi>))"}
@@ -406,8 +403,8 @@ In the following an informal description of the important aspects of the languag
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
-A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>p. 170\<close> PM}}.
-The following grammatical categories are used:
+A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>p. 170\<close> PM}},
+as shown in figure~\ref{BNF}, in which the following grammatical categories are used:
 
 \begin{tabular}[h]{ll}
   @{text "\<delta>"}   & individual constants \\
@@ -422,9 +419,12 @@ The following grammatical categories are used:
   @{text "\<tau>"}   & terms
 \end{tabular}
 
-The syntax of the target theory can now be described as BNF grammar\cite[ibid.]{PM}:
-
-\includegraphics{BNF.pdf}
+\begin{figure}[!h]
+  \caption{BNF grammar of the language of PLM\cite[p. 170]{PM}}
+  \centering
+  \includegraphics{BNF.pdf}
+  \label{BNF}
+\end{figure}
 
 It is important to note that the language distinguishes between two types of basic formulas,
 namely (non-propositional) \emph{formulas} that \emph{may} contain encoding subformulas and
@@ -433,9 +433,9 @@ formulas may be used in @{text "\<lambda>"}-expressions. The main reason for thi
 in section~\ref{russell-paradox}.
 
 Note that there is a case in which propositional formulas \emph{can} contain encoding
-expressions. This is due to the fact that \emph{subformula} is defined in such a way that
-@{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"} (for a formal definition of subformula
-refer to definition (\ref{PM-df-subformula}) in @{cite PM}). Thereby @{text "F\<iota>x(xQ)"} is a
+expressions. This is due to the fact that \emph{subformula} is defined in such a
+way\footnote{For a formal definition of subformula refer to definition (\ref{PM-df-subformula}) in @{cite PM}.} that
+@{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"}. Thereby @{text "F\<iota>x(xQ)"} is a
 propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed @{text "\<lambda>"}-expression.
 On the other hand @{text "xF"} is not a propositional formula and therefore
 @{text "[\<lambda>x xF]"} not a well-formed @{text "\<lambda>"}-expression. This fact will become relevant in
@@ -568,8 +568,8 @@ by Peter Aczel who proposed the model structure illustrated in figure~\ref{aczel
 \footnote{In fact to our knowledge Dana Scott proposed a first model for the theory before Peter Aczel
 that we believe is a special case of an Aczel model with only one \emph{special urelement}.}.
 
-\begin{figure}[h]
-  \caption{Illustration of the Aczel-Model}
+\begin{figure}[!h]
+  \caption{Illustration of the Aczel-Model, courtesy of Edward Zalta}
   \includegraphics[width=\textwidth]{aczel-model.pdf}
   \label{aczel-model-graphic}
 \end{figure}
@@ -676,7 +676,7 @@ text{*
 The introduction mentioned that shallow semantical embeddings were used to successfully represent
 different varieties of modal logic by implementing them using Kripke semantics. The advantage here
 is that Kripke semantics is well understood and there are extensive results about its completeness
-(TODO: reference).
+that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}.
 
 For the Theory of Abstract Objects the situation is different. Although it is believed that
 Aczel-models are sound, section~\ref{aczel-model} already established that even a modal version
@@ -1005,7 +1005,10 @@ text{*
 
   Following the model described in section~\ref{hyper-aczel-model} the connectives and quantifiers
   are defined in such a way that they behave classically if evaluated for the designated actual state @{term "dj"},
-  whereas their behavior is governed by uninterpreted constants in any other state.
+  whereas their behavior is governed by uninterpreted constants in any other state\footnote{Early attempts
+  in using an intuitionistic version of connectives and quantifiers based on \cite{DOttaviano2012} were
+  found to be insufficient to capture the full hyperintensionality of PLM, but served as inspiration
+  for the current construction.}.
 
   For this purpose the following uninterpreted constants are introduced (see \ref{TAO_Embedding_Connectives}):
   \begin{itemize}
@@ -2616,7 +2619,7 @@ text{*
 
 *}  
 
-subsubsection{* Summery *}
+subsubsection{* Conclusion *}
 
 text{*
   Although an adequate representation of the rule of substitution in the functional setting
@@ -2636,6 +2639,10 @@ text{*
   Despite the presented challenges it was possible to derive a full representation of
   the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM} without sacrificing the
   layered structure of the embedding.
+
+  Although compromises affecting the degree of automation had to be made, the resulting
+  representation can conveniently be used for the interactive construction of complex proofs
+  while retaining the support of the automation facilities of Isabelle/HOL.
 *}
 
 (*<*)
@@ -2707,6 +2714,10 @@ text{*
   and @{term "b"} are mapped to the same urelement in the \emph{actual state}. Since
   they can still be mapped to different urelements in different states, the derived equality
   no longer holds.
+
+  This extension of the embedding increases the complexity of the representation
+  layer slightly, but its preliminary analysis suggests that it presents no further issues, so
+  future research and future versions of the embedding may want to include such a modification.
 *}
   
 (*<*)
@@ -2911,7 +2922,9 @@ text{*
   holds unconditionally for all @{text "\<lambda>"}-expressions. In the embedding on the other hand
   @{text "\<beta>"}-conversion fails to hold in general, thereby preserving the consistency of the system.
 
-  Therefore the embedding only derives @{text "\<beta>"}-conversion for a 
+  With the definition of \emph{proper maps} (see~\ref{lambda-expressions}), the embedding
+  constructs a necessary and sufficient condition on functions that may serve as matrix of
+  a @{text "\<lambda>"}-expression while allowing @{text "\<beta>"}-conversion.
 *}
   
 

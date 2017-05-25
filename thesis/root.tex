@@ -9,7 +9,9 @@
 \usepackage{epigraph}
 \usepackage{tabularx}
 \usepackage{array}
+\usepackage[stable]{footmisc}
 \usepackage[ngerman,english]{babel}
+\usepackage[all]{nowidow}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 \setcounter{secnumdepth}{2}
@@ -52,8 +54,8 @@
 \renewcommand{\isastyleminor}{\isastyle}
 
 % theorem environments
-\newtheorem{remark}{Remark}
-\numberwithin{remark}{chapter}
+\newtheorem*{remark}{Remark}
+% \numberwithin{remark}{chapter}
 \newtheorem{TODO}{TODO}
 \numberwithin{TODO}{chapter}
 \numberwithin{equation}{section}
@@ -116,7 +118,7 @@ PD Dr. Christoph Benzm\"uller
 
   Our work thereby supports the concept of shallow semantical embeddings of
   logical systems in HOL as a universal tool for logical reasoning as
-  promoted by Christoph Benzm\"uller (TODO: reference).
+  promoted by Christoph Benzm\"uller\cite{UniversalReasoning}.
 
   The most notable result of the presented work is the discovery of a previously
   unknown paradox in the formulation of the Theory of Abstract Objects at the
