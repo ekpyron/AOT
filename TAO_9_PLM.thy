@@ -845,7 +845,6 @@ begin
 subsection{* Quantification *}
 text{* \label{TAO_PLM_Quantification} *}
 
-  --{* TODO: think about the distinction in PM here *}
   lemma rule_ui[PLM,PLM_elim,PLM_dest]:
     "[\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v] \<Longrightarrow> [\<phi> \<beta> in v]"
     by (meson cqt_1[axiom_instance, deduction])
@@ -4193,12 +4192,6 @@ begin
     "[(y\<^sup>P) \<^bold>= (\<^bold>\<iota>x . x \<^bold>= y) in v]"
     using descriptions[axiom_instance,equiv_rl]
           id_act_3[equiv_sym] "\<^bold>\<forall>I" by fast
-
-  text{* \begin{TODO}
-            More discussion/thought about eta conversion and the strength of the 
-            axiom @{text "lambda_predicates_3_*"} which immediately implies the
-            following very general lemmas.
-         \end{TODO} *}
 
   lemma eta_conversion_lemma_1[PLM]:
     "[(\<^bold>\<lambda> x . \<lparr>F,x\<^sup>P\<rparr>) \<^bold>= F in v]"

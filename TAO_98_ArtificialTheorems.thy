@@ -10,7 +10,7 @@ text{* \label{TAO_ArtificialTheorems} *}
 text{*
 \begin{remark}
   Some examples of theorems that can be derived from the meta-logic, but which
-  are (presumably) not derivable from the deductive system PLM itself.
+  are not derivable from the deductive system PLM itself.
 \end{remark}
 *}
 

@@ -107,31 +107,29 @@ text{* \label{TAO_Axioms_Quantification} *}
 
 text{*
 \begin{remark}
-  The axioms of quantification differ slightly from the axioms in Principia Metaphysica.
+  The axioms of quantification differ from the axioms in Principia Metaphysica.
   The differences can be justified, though.
   \begin{itemize}
     \item  
       Axiom @{text "cqt_2"} is omitted, as the embedding does not distinguish between terms
-      and variables. Instead it is combined with @{text "cqt_1"}, in which the corresponding
-      condition is omitted, and with @{text "cqt_5"} in its modified form @{text "cqt_5_mod"}.
+      and variables for relations. Instead it is combined with @{text "cqt_1"}, in which the
+      corresponding condition is omitted, and with @{text "cqt_5"} in its modified form
+      @{text "cqt_5_mod"}.
     \item
-      Note that the all quantifier for individuals only ranges over the datatype @{text "\<nu>"},
+      Note that the all quantifier for individuals only ranges over type @{text "\<nu>"},
       which is always a denoting term and not a definite description in the embedding.
     \item
       The case of definite descriptions is handled separately in axiom @{text "cqt_1_\<kappa>"}:
-      If a formula on datatype @{text "\<kappa>"} holds for all denoting terms (@{text "\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)"})
-      then the formula holds for an individual @{text "\<phi> \<alpha>"}, if @{text "\<alpha>"} denotes, i.e.
-      @{text "\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>"}.
+      If a formula involving an object of type @{text "\<kappa>"} holds for all denoting terms
+      (@{text "\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)"}) then the formula holds for an individual term @{text "\<phi> \<alpha>"},
+      if @{text "\<alpha>"} denotes, i.e. @{text "\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>"}.
     \item
       Although axiom @{text "cqt_5"} can be stated without modification, it is not a suitable
-      formulation for the embedding. Therefore the seemingly stronger version @{text "cqt_5_mod"}
+      formulation for the embedding. Instead the seemingly stronger version @{text "cqt_5_mod"}
       is stated as well. On a closer look, though, @{text "cqt_5_mod"} immediately follows from
       the original @{text "cqt_5"} together with the omitted @{text "cqt_2"}.
   \end{itemize}
 \end{remark}
-\begin{TODO}
-  Reformulate the above more precisely.
-\end{TODO}
 *}
 
   lemma cqt_1[axiom]:
@@ -184,7 +182,7 @@ text{*
 
   lemma cqt_5_mod[axiom]:
     assumes "SimpleExOrEnc \<psi>"
-    shows "[[\<psi> \<tau> \<^bold>\<rightarrow> (\<^bold>\<exists>  \<alpha> . (\<alpha>\<^sup>P) \<^bold>= \<tau>)]]"
+    shows "[[\<psi> \<tau> \<^bold>\<rightarrow> (\<^bold>\<exists> \<alpha> . (\<alpha>\<^sup>P) \<^bold>= \<tau>)]]"
     proof -
       have "\<forall> w . ([(\<psi> \<tau>) in w] \<longrightarrow> (\<exists> o\<^sub>1 . Some o\<^sub>1 = d\<^sub>\<kappa> \<tau>))"
         using assms apply induct by (meta_solver;metis)+

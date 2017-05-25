@@ -2463,8 +2463,6 @@ text{*
 
 subsection{* The Rule of Substitution *}
 
-subsubsection{* The Issue *}
-  
 text{*
   A challenge in the derivation of the deductive system that is worth to examine in
   detail is the \emph{rule of substitution}.  The rule is stated in PLM as follows

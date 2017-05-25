@@ -11,7 +11,7 @@ text{*
 \begin{remark}
   @{text "meta_solver"} is a resolution prover that translates
   expressions in the embedded logic to expressions in the meta-logic,
-  resp. semantic expressions as far as possible.
+  resp. semantic expressions.
   The rules for connectives, quantifiers, exemplification
   and encoding are easy to prove.
   Futhermore rules for the defined identities are derived using more verbose proofs.
