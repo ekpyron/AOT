@@ -147,7 +147,7 @@ embedding these principles usually have to be explicitly shown to hold for the s
 of the target logic, which is usually connected with significant complexity. Furthermore if the
 framework used for the background logic allows automated reasoning, the degree of automation that
 can be achieved in the embedded logic is limited, as any reasoning in the target logic will have
-to consider the translation process to the background logic that will usually be complex.
+to consider the meta-logical evaluation process in the background logic that will usually be complex.
 
 A \emph{shallow} embedding uses a different approach based on the idea that most contemporary
 logical systems are semantically characterized by the means of set theory. A shallow embedding
@@ -207,7 +207,7 @@ consequently by representing @{text "\<lambda>"}-expressions of the target logic
 kind of @{text "\<lambda>"}-expressions. This forces @{text "\<lambda>"}-expressions in the embedded logic to have a particular
 semantics that is inspired by the \emph{Aczel-model} of the target theory (see \ref{aczel-model})
 and avoids prior inconsistencies. The mentioned issue and the employed solution is discussed in
-more detail in section \ref{challenges}.
+more detail in sections~\ref{russell-paradox} and~\ref{lambda-expressions}.
 
 \pagebreak
 *}
@@ -395,7 +395,7 @@ section{* The Language of PLM *}
   
 text{*
 The target of the embedding is the second order fragment of object theory as described
-in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico Metaphysica} (PLM) @{cite PM}.
+in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico-Metaphysica} (PLM)@{cite PM}.
 The logical foundation of the theory uses a second-order modal logic (without primitive identity)
 formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
 of predication besides the traditional \emph{exemplification}.
@@ -465,10 +465,10 @@ Instead the language uses \emph{defined} identities as follows:
   zero-place relations & @{text "F\<^sup>0 = G\<^sup>0 =\<^sub>d\<^sub>f [\<lambda>y F\<^sup>0] = [\<lambda>y G\<^sup>0]"}
 \end{tabular}
 
-The identity for @{text "n"}-place relations with @{text "n \<ge> 2"} is defined in terms of the
+The identity for @{text "n"}-place relations for @{text "n \<ge> 2"} is defined in terms of the
 identity of one-place relations, see (\ref{PM-p-identity})@{cite PM} for the full details.
 
-The identity for ordinary objects follows Leibniz's law of the identity of indiscernibles:
+The identity for ordinary objects follows Leibniz' law of the identity of indiscernibles:
 Two ordinary objects that necessarily exemplify the same properties are identical.
 Abstract objects, however, are only identical if they necessarily \emph{encode} the same
 properties. As mentioned in the previous section this goes along with the concept of
@@ -508,7 +508,7 @@ those properties, that satisfy @{text "\<phi>"}.
 
 *}
 
-section{* Hyperintensionality *}
+section{* Hyperintensionality of Relations *}
   
 text{*
 
@@ -543,11 +543,14 @@ Of course the theory can be extended in such a way that these properties are equ
 introducing a new axiom that requires that they are necessarily encoded by the same abstract objects.
 Without additional axioms, however, it is not provable that above properties are equal.
 
-As outlined in the next chapter the hyperintensionality of the theory is a particular challenge
-for the representation of the theory in a shallow embedding (TODO: reference).
+It is important to note that the theory is only hyperintensional in exactly the described sense
+(i.e. relations are intensional entities). Propositional reasoning is still governed by classical
+extensionality. For example properties that are necessarily exemplified by the same objects can be
+substituted for each other in an exemplification formula, the law of the excluded middle can be
+used in propositional reasoning, etc.
 
-Furthermore it is important to note that the theory is only hyperintensional in exactly the sense
-described above. Propositional reasoning is still governed by classical extensionality (TODO: be more precise).
+The Theory of Abstract Objects is an \emph{extensional} theory of \emph{intensional}
+entities\mbox{@{cite \<open>(\ref{PM-prop-equiv})\<close> PM}}.
 
 *}
   
@@ -562,11 +565,11 @@ exists an abstract object, hence there exists an injective map from the power se
 to the set of abstract objects. On the other hand for an object @{text "y"} the term
 \mbox{@{text "[\<lambda>x Rxy]"}} constitutes a property. If for distinct objects these properties were always
 distinct, this would result in a violation of Cantor's theorem, since this would mean that
-there is an injective map from the power set of properties to the set of properties. So the question
-is, does the Theory of Abstract Objects as constructed above have a model? An answer was provided
-by Peter Aczel who proposed the model structure illustrated in figure~\ref{aczel-model-graphic}
-\footnote{In fact to our knowledge Dana Scott proposed a first model for the theory before Peter Aczel
-that we believe is a special case of an Aczel model with only one \emph{special urelement}.}.
+there is an injective map from the power set of properties to the set of properties. So does the
+Theory of Abstract Objects as constructed above have a model? An answer to this question was provided
+by Peter Aczel\footnote{In fact to our knowledge Dana Scott proposed a first model for the theory before Peter Aczel
+that we believe is a special case of an Aczel-model with only one \emph{special urelement}.}
+who proposed the model structure illustrated in figure~\ref{aczel-model-graphic}.
 
 \begin{figure}[!h]
   \caption{Illustration of the Aczel-Model, courtesy of Edward Zalta}
@@ -574,7 +577,7 @@ that we believe is a special case of an Aczel model with only one \emph{special 
   \label{aczel-model-graphic}
 \end{figure}
 
-In an Aczel model abstract objects are represented by sets of properties. This of course validates
+In the Aczel-model abstract objects are represented by sets of properties. This of course validates
 the comprehension axiom of abstract objects. Properties on the other hand are not naively represented
 by sets of objects, which would lead to a violation of Cantor's theorem, but rather as the sets of
 \emph{urelements}. Urelements are partitioned into two groups, ordinary urelements
@@ -584,22 +587,22 @@ the other hand has a special urelement as its proxy. Which properties an abstrac
 solely depends on its proxy. However, the map from abstract objects to special urelements is
 not injective; more than one abstract object can share the same proxy. This way a violation of
 Cantor's theorem is avoided. As a consequence there are abstract objects, that are
-exemplification-indistinguishable. Interestingly the existence of abstract objects
+cannot be distinguished by the properties they exemplify. Interestingly the existence of abstract objects
 that are exemplification-indistinguishable is a theorem of PLM, see (\ref{PM-aclassical2})@{cite PM}.
 
 Note that although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
 the extension to a modal version is straightforward by introducing primitive possible worlds
 as in the Kripke semantics of modal logic.
 
-Also note that the Aczel-model in figure~\ref{aczel-model-graphic} is \emph{extensional}.
-Since properties are represented as the power set of urelements, two properties are in fact
-equal if they are exemplified by the same objects. This has no bearing on the soundness of the
-Aczel-model as a model for the Theory of Abstract Objects, but it has the consequence, that
-statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model, although they are not
-derivable from the axioms of object theory as explained in the previous section.
+Further note that relations in the Aczel-model are \emph{extensional}. Since properties are represented as the
+power set of urelements, two properties are in fact equal if they are exemplified by the same objects.
+This has no bearing on the soundness of the Aczel-model as a model for the Theory of Abstract Objects,
+but it has the consequence, that statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model,
+although they are not derivable from the axioms of object theory as explained in the previous section.
 
 For this reason an \emph{intensional} variant of the Aczel-model is developed and used as the
-basis of the embedding. The technicalities of this model are described in the next chapter.
+basis of the embedding. The technicalities of this model are described in the next chapter
+(see~\ref{hyper-aczel-model}).
 
 *}
   
@@ -608,26 +611,29 @@ chapter{* The Embedding *}
 section{* The Framework Isabelle/HOL *}
 
 text{*
-The background theory for the embedding is Isabelle/HOL, that provides a higher order logic
-that serves as meta-logic. For a short overview of the extents of the background theory
-see \cite{WhatsInMain}.
+The embedding is implemented in Isabelle/HOL, that provides a functional higher-order logic
+that serves as meta-logic. An introduction to Isabelle/HOL can be found in @{cite Isabelle}\footnote{
+An updated version is available at \url{http://isabelle.in.tum.de/doc/tutorial.pdf} or in the
+documentation of the current Isabelle release, see \url{http://isabelle.in.tum.de/}.}. For a general
+introduction to HOL and its automatization refer to @{cite B5}.
 
-TODO: what more to say about Isabelle/HOL?
+The Isabelle theory containing the embedding is included in the appendix and documented in this chapter.
+Throughout the chapter there will be references to the various sections of the appendix.
 
-TODO: overview section? Reorder the sections?
+This document itself is generated from a separate Isabelle theory that imports the complete
+embedding. The terms and theorems discussed throughout the chapter (starting from~\ref{representation-layer})
+are well-formed terms or valid theorems in the embedding, unless the contrary is stated explicitly. Furthermore
+the \emph{pretty printing} facility of Isabelle's document generation has been utilized to
+make it easier to distinguish between the embedded logic and the meta-logic: all expressions
+that belong to the embedded logic are printed in blue color throughout the chapter.
 
-TODO: explain color distinction between embedded and meta-logic somewhere.
+For technical reasons this color coding could not be used for the raw Isabelle theory in the
+appendix. Still note the use of bold print for the quantifiers and connectives of the embedded
+logic.
 
 *}
   
-section{* Challenges *}
-
-text{*
-\label{challenges}
-TODO: russell style paradox; hyperintensionality revisited; relations vs. functions revisited; general complexity, etc.
-*}
-
-subsection{* A Russell-style Paradox *}
+section{* A Russell-style Paradox *}
 
 text{*
   \label{russell-paradox}
@@ -663,12 +669,6 @@ text{*
   section~\ref{lambda-expressions}.
 *}  
 
-subsection{* Hyperintensionality of Relations *}
-  
-text{*
-  TODO
-*}
-
 section{* Basic Concepts *}
 
 text{*
@@ -698,17 +698,17 @@ primitive possible worlds following the Kripke semantics for a modal S5 logic.
 Relations in the resulting Aczel-model are, however, still \emph{extensional}.
 Two relations that are necessarily exemplified by the same objects are equal. 
 The Aczel-model that is used as the basis for the embedding therefore introduces
-\emph{states} as another primitive besides possible worlds. Truth values are now
+\emph{states} as another primitive besides possible worlds. Truth values are
 represented as ternary functions from states and possible worlds to booleans,
 relations as functions from urelements, states and possible worlds to booleans.
 
 Abstract objects are still defined as sets of one-place relations and the division
 of urelements into ordinary urelements and special urelements, that serve as proxies
-for abstract objects is retained as well. Consequently encoding is still defined
+for abstract objects, is retained as well. Consequently encoding is still defined
 as set membership of a relation in an abstract object and exemplification still defined
 as function application of the relation to the urelement corresponding to an individual.
 
-The semantical truth evaluation of a proposition in a given possible world, is defined
+The semantic truth evaluation of a proposition in a given possible world is defined
 to its evaluation for a designated \emph{actual state} and the possible world.
 
 Logical connectives are defined to behave classically in the \emph{actual state}, but
@@ -716,18 +716,22 @@ have undefined behavior in any other state.
 
 The reason for this construction becomes apparent if one considers the definition of
 the identity of relations: relations are considered identical if they are \emph{encoded}
-by the same abstract objects. Encoding now depends on the behavior of the relation in
-all states. Two relations can still necessarily be \emph{exemplified} by the
+by the same abstract objects. In the constructed model encoding depends on the behavior of
+a relation in all states. Two relations can still necessarily be \emph{exemplified} by the
 same objects in the actual state, but still not be identical, since they can have different
 behavior in other states. Therefore hyperintensionality of relations is achieved.
 
-The dependency on states is not limited to relations, but introduced to all propositions,
-connectives and quantifiers to allow the definition of @{text "\<lambda>"}-expressions 
-in section~\ref{lambda-expressions}.
+The dependency on states is not limited to relations, but introduced to propositions,
+connectives and quantifiers as well to allow the definition of @{text "\<lambda>"}-expressions 
+in section~\ref{lambda-expressions}. Since the behavior of logical connectives is
+not required to be classical in states other than the actual state, hyperintensionality
+is thereby retained for @{text "\<lambda>"}-expressions.
 
-The implementational details will be explained throughout section~\ref{representation-layer}.
+However, as the semantic truth of a proposition solely depends on its evaluation for the designated
+actual state, in which the logical connectives are defined to behave classically, the reasoning about
+propositions is still classical, as desired.
 
-TODO: improve this section.
+The technical details of the implementation are described in section~\ref{representation-layer}.
 *}
 
 subsection{* Layered Structure *}
@@ -736,15 +740,15 @@ text{*
 
 Although the constructed variant of the Aczel-model preserves the hyperintensionality of the
 theory at least to some degree, it is still known that there are true theorems in this model
-that are not derivable from the axioms of object theory. TODO: reference later section.
+that are not derivable from the axioms of object theory (see~\ref{artificial-theorems}).
 
 Given this lack of a model with a well-understood degree of completeness, the embedding uses
 a different approach than other semantical embeddings, namely the embedding is divided into
 several \emph{layers} as follows:
 
 \begin{itemize}
-  \item The first layer represents the primitives of PLM using a hyper-intensional variant of the
-        Aczel-model.
+  \item The first layer represents the primitives of PLM using a the described hyperintensional
+        variant of the Aczel-model.
   \item In a second layer the objects of the embedded logic constructed in the first layer are
         considered as primitives and some of their semantic properties are derived using the
         background logic as meta-logic.
@@ -757,18 +761,18 @@ several \emph{layers} as follows:
         first two layers.
 \end{itemize}
 
-The reasoning behind this approach is the following:
+The rationale behind this approach is the following:
 The first layer provides a representation of the embedded logic that is provably consistent.
 Only minimal axiomatization is necessary, whereas the main construction is purely definitional.
-Since the subsequent layers don't contain any additional axiomatization (the axiom system in layer three
+Since the subsequent layers don't contain any additional axiomatization (the axiom system in the third layer
 is \emph{derived}) their consistency is thereby guaranteed as well.
 
 The second layer tries to abstract from the details of the representation by implementing an
 approximation of the preliminary formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
-us with a preliminary version.}. The long time goal would be to arrive at the representation
-of a complete semantics in this layer, that would be sufficient to derive the axiom system in the
-next layer and which any specific model structure would have to satisfy. Unfortunately this could not
-be achieved so far, but it was possible to lay some foundations for future work.
+us with a preliminary version of the corresponding unpublished chapter of PLM.}. The long time goal
+would be to arrive at the representation of a complete semantics in this layer, that would be sufficient
+to derive the axiom system in the next layer and which any specific model structure would have to satisfy.
+Unfortunately this could not be achieved so far, but it was possible to lay some foundations for future work.
 
 At the moment full abstraction from the representation layer is only achieved after deriving the axiom
 system in the third layer. Still it can be reasoned that in any model of object theory the axiom system
@@ -1214,14 +1218,12 @@ text{*
   \end{itemize}
 
   Concreteness can now be defined as a one-place relation:
-
   \begin{center}
   @{thm Concrete.rep_eq[THEN embedded_meta_eq]}
   \end{center}
 
   The equivalence of the axioms stated in the meta-logic and the notion of concreteness in Principia
   can be verified (see~\ref{TAO_SanityTests_MetaAxioms}):
-
   \begin{itemize}
     \item @{thm[display] SanityTests.OrdAxiomCheck[rename_abs x v y u z z]}
     \item @{thm[display] SanityTests.AbsAxiomCheck[rename_abs x v y u z z]}
@@ -1386,8 +1388,8 @@ text{*
 Semantic truth conditions for exemplification formulas are defined using \emph{exemplification extensions}.
 Exemplification extensions are functions relative to
 semantic possible worlds that map objects in the domain of @{text "n"}-place relations to meta-logical truth
-conditions in the case @{text "n = 0"} and sets of @{text "n"}-tuples of objects in the domain
-of individuals in the case @{text "n \<ge> 1"}. Formally they are defined as follows
+conditions in the case \mbox{@{text "n = 0"}} and sets of @{text "n"}-tuples of objects in the domain
+of individuals in the case \mbox{@{text "n \<ge> 1"}}. Formally they are defined as follows
 (see~\ref{TAO_Semantics_Semantics_Exemplification_Extensions}):
 
 \begin{itemize}
@@ -2657,6 +2659,9 @@ begin
 (*>*)
   
 text{*
+
+  \label{artificial-theorems}
+
   Although the layered approach of the embedding provides the means to derive theorems
   independently of the representation layer and model structure that serve as the basis
   of the embedding, it is interesting to consider some examples of theorems that are
