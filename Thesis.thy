@@ -786,8 +786,8 @@ this does not have an impact on the universality of the subsequent reasoning.
 
 There remains one issue, though. Since the logic of PLM is formulated in relational type theory,
 whereas Isabelle/HOL employs functional reasoning some formulations have to be adjusted to be representable
-and therefore there may still be some reservations about the accuracy of the representation of the axiom system.
-This issue is addressed in section (TODO: reference).
+and therefore there may still be some reservations about the accuracy of the representation of the axiom
+system\footnote{See for example the discussion in section~\ref{quantification-axioms}.}.
 
 The technical details of the constructed embedding are described in the following sections.
 
