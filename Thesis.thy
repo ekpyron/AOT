@@ -268,7 +268,7 @@ So what is the fundamental distinction between abstract and concrete objects? Th
 in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
 predication that is based on the ideas of Ernst Mally\footnote{The introduction to the theory
 in this and the next section is based on the documentation of the theory in @{cite MallyTheory}.
-Further references include @{cite PM}, @{cite zalta1988intensional}, @{cite zalta1983abstract}.}.
+Further references about the topic include @{cite PM}, @{cite zalta1988intensional}, @{cite zalta1983abstract}.}.
 Whereas objects that are concrete (the Theory of Abstract Objects calls them \emph{ordinary objects})
 are characterized by the classical mode of predication, i.e. \emph{exemplification},
 a second mode of predication is introduced that is reserved for abstract objects. This new mode of
