@@ -859,7 +859,7 @@ Based on the primitive types above the following types are defined (see \ref{TAO
         i.e. every set of one-place relations constitutes an object of type @{type \<alpha>}. This type
         represents abstract objects.
   \item Type @{type \<nu>} is defined as @{datatype \<nu>}. This type represents individuals and can
-        be either an ordinary urelement @{type \<omega>} or an abstract object @{type \<alpha>} (with the
+        be either an ordinary urelement of type @{type \<omega>} or an abstract object of type @{type \<alpha>} (with the
         respective type constructors @{term \<omega>\<nu>} and @{term \<alpha>\<nu>}).
   \item Type @{type \<kappa>} is defined as the set of all objects of type @{typ "\<nu> option"} and
         represents individual terms. The type @{typ "'a option"} is part of Isabelle/HOL and
@@ -885,8 +885,11 @@ Based on the primitive types above the following types are defined (see \ref{TAO
   abstract type @{type \<o>} to be stated directly for its representation type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}
   using the syntax @{theory_text "lift_definition"}.
 
-  In the remainder of this document the morphisms are omitted and definitions are stated
-  directly for the representation types.
+  For the sake of readability in the documentation of the embedding the morphisms are omitted
+  and definitions are stated directly for the representation types\footnote{The omission of the
+  morphisms is achieved using custom \emph{pretty printing} rules for the document generation
+  facility of Isabelle. The full technical details without these minor omissions can be found in the
+  raw Isabelle theory in the appendix.}.
 \end{remark}
 
 *}
@@ -896,15 +899,14 @@ subsection{* Individual Terms and Definite Descriptions *}
 text{*
 \label{individual-terms-and-descriptions}
 
-There are two basic types of individual terms in PLM: definite descriptions and individual variables.
-For any logically proper definite description there is an individual variable that denotes
-the same object. A definite description is logically proper if its matrix is true for a unique
-object.
+There are two basic types of individual terms in PLM: definite descriptions and individual variables
+(and constants). Every logically proper definite description denotes an individual. A definite
+description is logically proper if its matrix is true for a unique individual.
 
-In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e. individual variables
-\emph{and} definite descriptions. To use an individual variable (of type @{type \<nu>}) in place of
-an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\<^sup>P)"} is introduced
-(see \ref{TAO_Embedding_IndividualTerms}):
+In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e. individual variables,
+constants \emph{and} definite descriptions. To use an individual (i.e. a variable or constant
+of type @{type \<nu>}) in place of an individual term of type @{type \<kappa>} the decoration
+@{term "embedded_style (DUMMY\<^sup>P)"} is introduced (see~\ref{TAO_Embedding_IndividualTerms}):
 
 \begin{center}
   @{thm \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_meta_eq]}
@@ -912,7 +914,7 @@ an object of type @{type \<kappa>} the decoration @{term "embedded_style (DUMMY\
 
 The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
 logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
-and to always denote the same object as the individual variable @{term "x"}.
+and to denote the individual @{term "x"}.
 
 Definite descriptions are defined as follows:
 
@@ -1004,10 +1006,11 @@ text{*
 
   That is for a given state @{term s} and a given possible world @{term w} it holds that
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
-  the representative individual variable of @{term x} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
-  some abstract object @{term \<alpha>} and @{term F} is contained in @{term \<alpha>} (remember that
-  abstract objects are defined to be sets of one-place relations). Also note that encoding
-  is a represented as a function of possible worlds and states to ensure type-correctness,
+  the denoted individual @{term x} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
+  some object @{term \<alpha>} (i.e. it is an abstract object) and @{term F} is contained in @{term \<alpha>}
+  (remember that abstract objects are defined to be sets of one-place relations).
+
+  Note that encoding is represented as a function of states and possible worlds to ensure type-correctness,
   but its evaluation does not depend on either. On the other hand whether @{term F} is contained
   in @{term \<alpha>} does depend on the behavior of @{term F} in \emph{all} states.
 *}
@@ -1047,15 +1050,15 @@ text{*
     \item @{thm[display] actual.rep_eq[of p, THEN embedded_meta_eq]}
   \end{itemize}
 
-  Note in particular that the definition of negation and implication behaves
+  Note in particular that negation and implication behave
   classically if evaluated for the actual state @{term "s = dj"}, but
-  is governed by the uninterpreted constants @{term I_NOT} and @{term I_IMPL} for
+  are governed by the uninterpreted constants @{term I_NOT} and @{term I_IMPL} for
   @{term "s \<noteq> dj"}:
 
   \begin{itemize}
   \item @{lemma[display] "s = dj \<Longrightarrow> eval\<o> (embedded_style (\<^bold>\<not>p)) s w = (\<not>eval\<o> (embedded_style (p)) s w)"
           by (unfold embedded_style_def, transfer, auto)}
-  \item @{lemma "s \<noteq> dj \<longrightarrow> eval\<o> (embedded_style (\<^bold>\<not>p)) s w = (I_NOT s (eval\<o> (embedded_style (p)) s) w)"
+  \item @{lemma "s \<noteq> dj \<Longrightarrow> eval\<o> (embedded_style (\<^bold>\<not>p)) s w = (I_NOT s (eval\<o> (embedded_style (p)) s) w)"
           by (unfold embedded_style_def, transfer, auto)}
   \item @{lemma[display] "s = dj \<Longrightarrow> eval\<o> (embedded_style (p \<^bold>\<rightarrow> q)) s w = (eval\<o> (embedded_style p) s w \<longrightarrow> eval\<o> (embedded_style q) s w)"
           by (unfold embedded_style_def, transfer, auto)}
@@ -1151,7 +1154,8 @@ text{*
   \end{center}
 
   \begin{remark}
-    Note that the above equation does not quantify over all states, but is only true for the actual state @{term "dj"}.
+    Note that the right-hand side of the equation above does not quantify over all states,
+    but is only true for the actual state @{term "dj"}.
     This is sufficient given that truth evaluation only depends on the actual state
     and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see~\ref{semantics-lambda}).
   \end{remark}
@@ -1187,7 +1191,7 @@ text{*
     layer, following the syntax used in the preliminary formal semantics of PLM.
     The syntax @{term "[p in v]"} that is easier to use in Isabelle due to bracketing the expression
     is only introduced after the semantics is derived in \ref{TAO_Semantics_Validity}.
-    For simplicity only the latter syntax is used in this document.
+    For simplicity only the latter syntax is used in this documentation.
   \end{remark}
 *}
 
@@ -1196,7 +1200,7 @@ subsection{* Concreteness *}
 text{*
   \label{concreteness}
 
-  Principia defines concreteness as a one-place relation constant. For the embedding care has to
+  PLM defines concreteness as a one-place relation constant. For the embedding care has to
   be taken that concreteness actually matches the primitive distinction between ordinary and
   abstract objects. The following requirements have to be satisfied by the introduced notion of
   concreteness:
@@ -1232,14 +1236,6 @@ text{*
   @{thm Concrete.rep_eq[THEN embedded_meta_eq]}
   \end{center}
 
-  The equivalence of the axioms stated in the meta-logic and the notion of concreteness in Principia
-  can be verified (see~\ref{TAO_SanityTests_MetaAxioms}):
-  \begin{itemize}
-    \item @{thm[display] SanityTests.OrdAxiomCheck[rename_abs x v y u z z]}
-    \item @{thm[display] SanityTests.AbsAxiomCheck[rename_abs x v y u z z]}
-    \item @{thm[display] SanityTests.PossiblyContingentObjectExistsCheck}
-    \item @{thm[display] SanityTests.PossiblyNoContingentObjectExistsCheck}
-  \end{itemize}
 *}
 
 subsection{* The Syntax of the Embedded Logic*}
@@ -1299,13 +1295,13 @@ Several subtleties have to be considered:
         quantifications and @{text "\<lambda>"}-expressions above, can contain \emph{free} variables. If
         such a term occurs within the scope of a variable binding operator, free occurrences of
         the variable are considered to be \emph{bound} by the operator. In the embedding this concept
-        is replaced by considering @{term "\<phi>"} to be a \emph{function} and using the native concept
-        of binding operators in Isabelle to convert this function to a term with bound variables.
+        is replaced by considering @{term "\<phi>"} to be a \emph{function} acting on the bound variables
+        and using the native concept of binding operators in Isabelle.
   \item The representation layer of the embedding defines a separate quantifier for every type of
-        variable in PLM. This is done to assure that only quantifications ranging over these types
+        variable in PLM. This is done to assure that only quantification ranging over these types
         are part of the embedded language. The definition of a general quantifier in the representation layer
         could for example be used to quantify over individual \emph{terms} (of type @{type \<kappa>}), whereas
-        only quantifications ranging over individuals (of type @{type \<nu>}) are part of the language of PLM.
+        only quantification ranging over individuals (of type @{type \<nu>}) are part of the language of PLM.
         Once the semantics is introduced in section~\ref{semantics}, a \emph{type class} is introduced
         that is characterized by the semantics of quantification and instantiated for all variable types.
         This way a general binder that can be used for all variable types can be defined. The details
@@ -2734,7 +2730,7 @@ text{*
   Since the main construction of the embedding is definitional and only a minimal set of meta-logical
   axioms is used, this is expected.
 
-  Furthermore the hyperintensionality of the constructed model can be verified for some simple
+  The hyperintensionality of the constructed model can be verified for some simple
   example cases. The following statements have counter-models (see~\ref{TAO_SanityTests_Intensionality}):
 
   \begin{itemize}
@@ -2742,9 +2738,21 @@ text{*
     \item @{term "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"}
   \end{itemize}
 
-  Furthermore the meta-logical axioms can be justified (see~\ref{TAO_SanityTests_MetaAxioms})
-  and some further desirable properties can be verified for the embedding (see~\ref{TAO_SanityTests_MetaRelations}
-  and~\ref{TAO_SanityTests_MetaLambda}).
+  Furthermore the meta-logical axioms stated in section~\ref{concreteness} can be justified
+  (see~\ref{TAO_SanityTests_MetaAxioms}):
+  \begin{itemize}
+    \item @{thm[display] SanityTests.OrdAxiomCheck[rename_abs x v y u z z]}
+    \item @{thm[display] SanityTests.AbsAxiomCheck[rename_abs x v y u z z]}
+    \item @{thm[display] SanityTests.PossiblyContingentObjectExistsCheck}
+    \item @{thm[display] SanityTests.PossiblyNoContingentObjectExistsCheck}
+  \end{itemize}
+
+  The first axiom is equivalent to the fact that concreteness matches the domains of ordinary, resp.
+  abstract objects, whereas the second and third axiom corresponds to the conjuncts of
+  axiom~(\ref{PM-qml}.4)@{cite PM}.
+
+  Additionally some further desirable meta-logical properties of the embedding are verified
+  in~\ref{TAO_SanityTests_MetaRelations} and~\ref{TAO_SanityTests_MetaLambda}.
 *}
 
 

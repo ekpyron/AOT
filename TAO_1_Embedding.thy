@@ -122,7 +122,7 @@ subsection{* Encoding *}
 text{* \label{TAO_Embedding_Encoding} *}
 
 lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\<lbrace>_,_\<rbrace>") is
-  "\<lambda> x F w s . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
+  "\<lambda> x F s w . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
 
 text{*
 \begin{remark}
