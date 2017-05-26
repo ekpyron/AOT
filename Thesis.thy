@@ -188,7 +188,7 @@ In particular they argue that the Theory of Abstract Objects, which is founded i
 theory, can not be properly characterized in functional type theory.
 
 This has led to the question whether a shallow semantical embedding of the Theory of Abstract Objects
-in a functional logical framework like Isabelle/HOL is at all possible, which is the core question
+in a functional logic framework like Isabelle/HOL is at all possible, which is the core question
 the work presented here attempts to examine and partially answer.
 
 One of their main arguments is that unrestricted @{text "\<lambda>"}-expressions as present in functional type
@@ -262,13 +262,14 @@ and complex abstract objects. \textelp{} The theory of abstract objects attempts
 these objects within a systematic and axiomatic framework. \textelp{We can} think of abstract
 objects as possible and actual property-patterns. \textelp{} Our theory of abstract
 objects will \emph{objectify} or \emph{reify} the group of properties satisfying \textins{such a}
-pattern.}\cite{MallyTheory}
+pattern.}\cite{MallyTheory}\footnote{The introduction to the theory
+in this and the next section is based on the documentation of the theory in @{cite MallyTheory}, which
+is paraphrased and summarized throughout the sections. Further references about the topic include @{cite PM},
+@{cite zalta1988intensional}, @{cite zalta1983abstract}.}
 
 So what is the fundamental distinction between abstract and concrete objects? The analysis
 in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
-predication that is based on the ideas of Ernst Mally\footnote{The introduction to the theory
-in this and the next section is based on the documentation of the theory in @{cite MallyTheory}.
-Further references about the topic include @{cite PM}, @{cite zalta1988intensional}, @{cite zalta1983abstract}.}.
+predication that is based on the ideas of Ernst Mally.
 Whereas objects that are concrete (the Theory of Abstract Objects calls them \emph{ordinary objects})
 are characterized by the classical mode of predication, i.e. \emph{exemplification},
 a second mode of predication is introduced that is reserved for abstract objects. This new mode of
@@ -491,7 +492,7 @@ an actuality operator, axioms for definite descriptions that go along with Russe
 of descriptions, the substitution of identicals as per the defined identity, @{text "\<alpha>"}-,
 @{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
 as dedicated axioms for encoding. A full accounting of the axioms in their representation in the
-embedding is found in section~\ref{axioms}. For the original axioms refer to @{cite \<open>chap. 8\<close> PM}.
+embedding is found in section~\ref{axioms}. For the original axioms refer to @{cite \<open>Chap. 8\<close> PM}.
 At this point the axioms of encoding are the most relevant, namely:
 
   \begin{itemize}
@@ -515,11 +516,11 @@ text{*
 \label{hyperintensionality}
 
 An interesting property of the Theory of Abstract Objects results from the definition
-of identity of one-place relations. Recall that two properties are defined to be identical
+of identity for one-place relations. Recall that two properties are defined to be identical
 if and only if they are \emph{encoded} by the same (abstract) objects. The theory imposes no
 restrictions whatsoever on which properties an abstract object encodes.
 Let for example @{text "F"} be the property \emph{being the morning star} and @{text "G"} be the
-property \emph{being the evening star}. Now since the morning star and the evening star are
+property \emph{being the evening star}. Since the morning star and the evening star are
 actually both the planet Venus, every object that \emph{exemplifies} @{text "F"} will also
 \emph{exemplify} @{text "G"} and vice-versa: @{text "\<box>\<forall>x Fx \<equiv> Gx"}. However the concept of being
 the morning star is different from the concept of being the evening star. The Theory of Abstract
@@ -586,7 +587,7 @@ Ordinary urelements can serve as the denotations of ordinary objects. Every abst
 the other hand has a special urelement as its proxy. Which properties an abstract object exemplifies
 solely depends on its proxy. However, the map from abstract objects to special urelements is
 not injective; more than one abstract object can share the same proxy. This way a violation of
-Cantor's theorem is avoided. As a consequence there are abstract objects, that are
+Cantor's theorem is avoided. As a consequence there are abstract objects, that
 cannot be distinguished by the properties they exemplify. Interestingly the existence of abstract objects
 that are exemplification-indistinguishable is a theorem of PLM, see (\ref{PM-aclassical2})@{cite PM}.
 
@@ -618,10 +619,10 @@ documentation of the current Isabelle release, see \url{http://isabelle.in.tum.d
 introduction to HOL and its automatization refer to @{cite B5}.
 
 The Isabelle theory containing the embedding is included in the appendix and documented in this chapter.
-Throughout the chapter there will be references to the various sections of the appendix.
+Throughout the chapter references to the various sections of the appendix can be found.
 
 This document itself is generated from a separate Isabelle theory that imports the complete
-embedding. The terms and theorems discussed throughout the chapter (starting from~\ref{representation-layer})
+embedding. The terms and theorems discussed throughout this chapter (starting from~\ref{representation-layer})
 are well-formed terms or valid theorems in the embedding, unless the contrary is stated explicitly. Furthermore
 the \emph{pretty printing} facility of Isabelle's document generation has been utilized to
 make it easier to distinguish between the embedded logic and the meta-logic: all expressions
@@ -681,7 +682,13 @@ that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}
 For the Theory of Abstract Objects the situation is different. Although it is believed that
 Aczel-models are sound, section~\ref{aczel-model} already established that even a modal version
 of the traditional Aczel-model is extensional and therefore theorems are true in it,
-that are not derivable from the axioms of object theory.
+that are not derivable from the axioms of object theory. On the other hand the last section
+showed that care has to be taken to ensure the consistency of an embedding of the theory in
+functional logic.
+
+For this reason the embedding first constructs a hyperintensional version of the Aczel-model
+as a consistent basis and then abstracts away from its technicalities using a layered reasoning
+approach. These concepts are described in more detail in the following sections.
 
 *}
 
