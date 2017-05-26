@@ -969,7 +969,7 @@ special urelement under @{text "\<alpha>\<sigma>"} is converted to an urelement 
 
 \begin{remark}
   Note that future versions of the embedding may introduce a dependency of the mapping from individuals
-  to urelements on states. This is discussed in more detail in section TODO: reference.
+  to urelements on states (see~\ref{artificial-theorems}).
 \end{remark}
 
 *}
@@ -1149,8 +1149,8 @@ text{*
 
   \begin{remark}
     Note that the above equation does not quantify over all states, but is only true for the actual state @{term "dj"}.
-    This is sufficient given that truth evaluation only depends on the actual state (see TODO: reference)
-    and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see TODO: reference).
+    This is sufficient given that truth evaluation only depends on the actual state
+    and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see~\ref{semantics-lambda}).
   \end{remark}
 
   The concept behind this is that maps that contain encoding formulas in its argument are in general
@@ -1298,7 +1298,6 @@ Several subtleties have to be considered:
         the variable are considered to be \emph{bound} by the operator. In the embedding this concept
         is replaced by considering @{term "\<phi>"} to be a \emph{function} and using the native concept
         of binding operators in Isabelle to convert this function to a term with bound variables.
-        This concept is discussed in more detail in section TODO: reference.
   \item The representation layer of the embedding defines a separate quantifier for every type of
         variable in PLM. This is done to assure that only quantifications ranging over these types
         are part of the embedded language. The definition of a general quantifier in the representation layer
@@ -1320,10 +1319,6 @@ therefore stating the expression as a lemma will implicitly be a quantified stat
 propositions @{term "embedded_style \<phi>"} and all possible worlds @{term "v"} (unless
 @{term "embedded_style \<phi>"} was explicitly declared as a constant in the global scope).
 
-TODO: talk about scopes?
-
-TODO: constants vs. variables.
-
 *}
 
 (*<*)
@@ -1340,7 +1335,6 @@ The second layer of the embedding (see~\ref{TAO_Semantics}) abstracts away from 
 of the representation layer and states the truth conditions for formulas of the embedded logic
 in a similar way as the (at the time of writing unpublished) preliminary semantics of object theory.
 
-TODO: repeat more statements from the appendix throughout the section?
 *}
 
 subsection{* Domains and Denotation Functions *}
@@ -1483,9 +1477,6 @@ The truth condition of the modal box operator @{term "embedded_style (\<^bold>\<
 possible worlds, shows that modality follows a S5 logic. A formula involving the actuality operator @{term "embedded_style (\<^bold>\<A>\<psi>)"}
 is defined to be semantically true, if and only if @{term "embedded_style \<psi>"} is true in the designated actual world.
 
-Once more it is important to note that all introduced truth conditions do \emph{not} depend
-on the actual state following the ideas of section TODO: reference.
-
 *}
 
 subsection{* Denotation of Definite Descriptions *}
@@ -1514,13 +1505,15 @@ or in an encoding expression. Given the above truth conditions it becomes clear,
 the presence of non-denoting terms does \emph{not} mean that there are formulas without
 truth conditions: Since exemplification and encoding formulas are defined to be true \emph{only if}
 the contained individual term has a denotation, such formulas are @{term "False"} for non-denoting
-individual terms (TODO: reference Russell's analysis).
+individual terms.
 
 *}
 
 subsection{* Denotation of $\lambda$-Expressions *}
 
 text{*
+
+\label{semantics-lambda}
 
 The most complex part of the semantical abstraction is the definition of denotations for @{text "\<lambda>"}-expressions.
 The preliminary formal semantics of PLM is split into several cases and uses a special class of
@@ -1699,8 +1692,6 @@ text{*
     \item @{thm[display] basic_identity\<^sub>2_def[expand2, of F G, rename_abs x, THEN embedded_eq]}
     \item @{thm basic_identity\<^sub>3_def[expand2, of F G, rename_abs x y, THEN embedded_eq]}
   \end{itemize}
-
-  TODO: reformatting/line breaks in the list somehow.
 
   Similarly to the general all quantifier it makes sense to introduce a general identity
   relation for all types of terms (@{type \<kappa>}, @{type \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2}, @{typ \<Pi>\<^sub>3}).
@@ -2031,8 +2022,6 @@ text{*
   \begin{itemize}
     \item @{thm l_identity} \hfill{(\ref{PM-l-identity})}
   \end{itemize}
-
-  TODO: discussion
 *}
 
 subsection{* Axioms of Quantification *}
@@ -2823,7 +2812,7 @@ text{*
   properties of identity could be made.
 
   Another solution would be to refrain from using general quantifiers and identity relations
-  altogether, but to introduce separate binders and identity for the type of individuals and
+  altogether, but to introduce separate binders and identity symbols for the type of individuals and
   each relation type. This would, however, add a significant amount of notational complexity
   to the embedding and would require to duplicate all statements that hold for quantification
   and identity in general for every specific type. For this reason this option was not explored
@@ -2866,10 +2855,10 @@ text{*
   then has to be instantiated for the concrete types.
 
   Although the solution using type classes works for the embedding, it would be more natural
-  to restrict such statements to the specific sets of types (for this for example each type
-  could be its own sort) and then to have a induction method that allows to prove the statement
-  for the concrete types separately. Again as of yet it is unknown whether Isabelle could be
-  extended in such a way given the limitations of its internal type system.
+  to restrict such statements to the specific sets of types and to have an induction method
+  that allows to prove the statement for the concrete types separately. Again as of yet it is
+  unknown whether Isabelle could be extended in such a way given the limitations of its internal
+  type system.
 *}
 
 section{* Structural Induction and Proof-Theoretic Reasoning *}
