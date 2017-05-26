@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests TAO_99_Paradox
+imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests TAO_99_Paradox TAO_10_PossibleWorlds
     "~~/src/HOL/Library/LaTeXsugar"
     "~~/src/HOL/Library/OptionalSugar"
 begin
@@ -778,7 +778,7 @@ Since the subsequent layers don't contain any additional axiomatization (the axi
 is \emph{derived}) their consistency is thereby guaranteed as well.
 
 The second layer tries to abstract from the details of the representation by implementing an
-approximation of the preliminary formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
+approximation of the formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
 us with a preliminary version of the corresponding unpublished chapter of PLM.}. The long time goal
 would be to arrive at the representation of a complete semantics in this layer, that would be sufficient
 to derive the axiom system in the next layer and which any specific model structure would have to satisfy.
@@ -1188,7 +1188,7 @@ text{*
 
   \begin{remark}
     The Isabelle Theory in the appendix defines the syntax @{text "v \<Turnstile> p"} in the representation
-    layer, following the syntax used in the preliminary formal semantics of PLM.
+    layer, following the syntax used in the formal semantics of PLM.
     The syntax @{term "[p in v]"} that is easier to use in Isabelle due to bracketing the expression
     is only introduced after the semantics is derived in \ref{TAO_Semantics_Validity}.
     For simplicity only the latter syntax is used in this documentation.
@@ -1332,7 +1332,7 @@ text{*
 
 The second layer of the embedding (see~\ref{TAO_Semantics}) abstracts away from the technicalities
 of the representation layer and states the truth conditions for formulas of the embedded logic
-in a similar way as the (at the time of writing unpublished) preliminary semantics of object theory.
+in a similar way as the (at the time of writing unpublished) semantics of object theory.
 
 *}
 
@@ -1345,11 +1345,11 @@ as primitive types and assigned semantic domains: @{type R\<^sub>\<kappa>}, @{ty
 @{typ R\<^sub>2} and @{typ R\<^sub>3} (see~\ref{TAO_Semantics_Semantics_Domains}).
 
 For the embedding the definition of these semantic domains is trivial, since the abstract types of
-the representation layer are already modeled using a representation set. Therefore the semantic domains
+the representation layer are already modeled using representation sets. Therefore the semantic domains
 for each type can simply be defined as the type of its representatives.
 
-As a next step denotation functions are defined that assign each abstract type its semantic denotation
-(see~\ref{TAO_Semantics_Semantics_Denotations}).
+As a next step denotation functions are defined that assign semantic denotations to the objects of each
+abstract type (see~\ref{TAO_Semantics_Semantics_Denotations}).
 Note that the formal semantics of PLM does not a priori assume that every term has a denotation, therefore
 the denotation functions are represented as functions that map to the @{text "option"} type of the
 respective domain. This way they can either map a term to @{term "Some x"}, if the term denotes
@@ -1367,11 +1367,11 @@ worlds @{typ W} and the primitive actual world @{term "dw"} as the semantical ac
 \begin{remark}
 Although the definitions for semantical domains and denotations seem trivial, conceptually
 the abstract types of the representation layer now have the role of primitive types. Although for
-simplicity the last section regarded the type @{type \<o>} as synonym of @{typ "j\<Rightarrow>i\<Rightarrow>bool"}, it was
-introduced as a distinct type for which the set of all functions of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} merely
+simplicity the last section regarded the type @{type \<o>} as synonym of \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}, it was
+introduced as a distinct type for which the set of all functions of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} merely
 serves as the underlying set of representatives. An object of type @{type \<o>} cannot directly be
-substituted for a variable of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. To do so it first has to be mapped to its
-representative of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} by the use of the morphism @{term "eval\<o>"} that was introduced
+substituted for a variable of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}. To do so it first has to be mapped to its
+representative of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} by the use of the morphism @{term "eval\<o>"} that was introduced
 in the type definition and omitted in the last section for the sake of readability. Therefore although
 the definitions of the semantic domains and denotation functions may seem trivial, the domains are
 different types than the corresponding abstract type and the denotation functions are functions between
@@ -1515,7 +1515,7 @@ text{*
 \label{semantics-lambda}
 
 The most complex part of the semantical abstraction is the definition of denotations for @{text "\<lambda>"}-expressions.
-The preliminary formal semantics of PLM is split into several cases and uses a special class of
+The formal semantics of PLM is split into several cases and uses a special class of
 \emph{Hilbert-Ackermann @{text "\<epsilon>"}-terms} that are challenging to represent. Therefore a simplified
 formulation of the denotation criteria is used. Moreover the denotations of @{text "\<lambda>"}-expressions are
 coupled to syntactical conditions. This fact is represented using the notion of \emph{proper maps}
@@ -1543,7 +1543,8 @@ the truth condition of the @{text "\<lambda>"}-expression being exemplified by s
 is the same as the truth condition of the matrix of the term for the denoted individual.
 Therefore it is clear that the precondition that @{term "embedded_style \<phi>"} is a proper map
 is necessary and sufficient.
-Given this consideration the case for @{text "0"}-place relations is again straightforward.
+Given this consideration the case for @{text "0"}-place relations is straightforward and
+the cases for \mbox{@{text "n \<ge> 2"}} are analog to the case \mbox{@{text "n = 1"}}.
 
 *}
 
@@ -1560,7 +1561,7 @@ text{*
   \begin{enumerate}
     \item All relations denote, e.g. @{thm[display] propex\<^sub>1[of "embedded_style F"]}
     \item An individual term of the form @{term "embedded_style (x\<^sup>P)"} denotes @{term "x"}:
-          @{lemma[display] "d\<^sub>\<kappa> (embedded_style (x\<^sup>P)) = Some (embedded_style x)"
+          @{lemma[display] "d\<^sub>\<kappa> (embedded_style (x\<^sup>P)) = Some x"
             by (simp add: embedded_style_def d\<^sub>\<kappa>_proper)}
     \item Every ordinary object is contained in the extension of the concreteness property for some
           possible world:
@@ -1579,7 +1580,8 @@ text{*
   Especially the statements 5 and 6 are only derivable due to the specific construction of
   the representation layer: since the semantical domains were defined as the representation sets
   of the respective type of term and denotations were defined canonically, objects that have the
-  same denotation are identical as objects of their abstract type.
+  same denotation are identical as objects of their abstract type. 3 and 4 are necessary to connect
+  concreteness with the underlying distinction between ordinary and abstract objects in the model.
 *}
 
 subsection{* Proper Maps *}
@@ -1632,7 +1634,7 @@ text{*
   In the case of general all quantification for the embedding this concept can be utilized by
   introducing the type class @{class quantifiable} that is equipped with a constant that is used
   as the general all quantification binder (see~\ref{TAO_Quantifiable_Class}).
-  For this constant it can now be assumed that it satisfies the semantic properties of all
+  For this constant it can now be assumed that it satisfies the semantic property of all
   quantification: \mbox{@{thm quantifiable_T8[of w \<psi>]}}.
 
   Since it was already shown in the last section that the specific all quantifier for each
@@ -1641,11 +1643,18 @@ text{*
   The instantiation proofs only need to refer to the statements derived in the semantics section for the respective version
   of the quantifier and are thereby independent of the representation layer.
 
-  From this point onward therefore the general all quantifier can be used and the type specific
-  versions of the quantifiers are no longer needed. This is true even if a quantification is meant
-  to only range over objects of a particular type: In this case the desired type
-  (if it can not implicitly be deduced from the context) can be stated explicitly while still using
-  the general quantifier.
+  From this point onward therefore the general all quantifier replace the type specific
+  quantifiers. This is true even if a quantification is meant   to only range over objects of a
+  particular type: In this case the desired type (if it can not implicitly be deduced from the
+  context) can be stated explicitly while still using the general quantifier.
+
+  \begin{remark}
+    Technically it would be possible to instantiate the type class @{class quantifiable} for
+    any other type that satisfies the semantic criterion, thereby compromising the restriction
+    of the all-quantifier to the primitive types of PLM. However, this is not done in the
+    embedding and therefore the introduction of a general quantifier using a type class is
+    considered a reasonable compromise.
+  \end{remark}
 
 *}
 
@@ -1715,18 +1724,18 @@ subsection{* Concept *}
 text{*
 
   Since the semantics in section~\ref{semantics} constructed a first abstraction layer on top of the
-  representation layer that focuses on a single kind of model and is connected with specific technicalities,
-  it makes sense to revisit the general concept of the layered structure of the embedding.
+  representation layer (that focuses on a specific model structure), it makes sense to revisit the
+  general concept of the layered structure of the embedding.
 
-  The idea behind this approach is that the reasoning in subsequent layers should - as far as possible - only
-  rely on the previous layer. Automated reasoning in this way, however, can be cumbersome, since
+  The idea behind this structure is that the reasoning in subsequent layers should - as far as possible - only
+  rely on the previous layer. Automated reasoning in this context, however, can be cumbersome, since
   automated proving tools have to be restricted to only consider a specific subset of the theorems that are
   present in the global context. While this is possible it is still an interesting question whether the process
   of automated reasoning in the layered approach can be made easier.
 
   To that end the embedding facilitates the possibility of defining custom proving methods that
   the Isabelle package \emph{Eisbach} provides. This package allows it to conveniently
-  define a new proving method that is based on the systematic application of existing methods.
+  define new proving methods that are based on the systematic application of existing methods.
   
   \begin{remark}
     The Eisbach package even allows to construct more complex proving methods that involve
@@ -1847,9 +1856,9 @@ text{*
   binder it is desirable to introduce a general identity relation.
 
   Since the identity of PLM is not directly characterized by semantic truth conditions, but instead
-  introduced using specific complex formulas in the embedded logic for each type of terms,
-  another property shared by the specific definitions of identity that can reasonably be used as the
-  condition of a type class has to be found.
+  \emph{defined} using specific complex formulas in the embedded logic for each type of terms,
+  some other property has to be found that is shared by the specific definitions of identity and
+  can reasonably be used as the condition of a type class.
 
   A natural choice for such a condition is based on the axiom of the substitution of identicals
   (see~\ref{axioms-identity}). The axiom states that if two objects are identical (in the sense of the defined
@@ -1867,7 +1876,7 @@ text{*
   @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2}, @{type \<Pi>\<^sub>3} (see~\ref{TAO_Identifiable_Instantiation}).
 
   Since now general quantification and general identity are available, an additional quantifier
-  for unique existence can be introduces (such a quantifier involves both quantification and identity).
+  for unique existence can be introduced (such a quantifier involves both quantification and identity).
   To that end a derived type class is introduced that is the combination of the @{class quantifiable}
   and the @{class identifiable} classes. Although this is straightforward for the relation types,
   this reveals a subtlety involving the distinction between individuals of type @{type \<nu>} and
@@ -1911,15 +1920,15 @@ section{* The Axiom System of PLM *}
 text{*
   \label{axioms}
 
-  The last step in abstracting away from the representation layer used as the basis
-  of the embedding is the derivation of the axiom system of PLM. Conceptionally the
+  The last step in abstracting away from the representation layer is the derivation of the
+  axiom system of PLM. Conceptionally the
   derivation of the axioms is the last moment in which it is deemed admissible to rely
   on the meta-logical properties of the underlying model structure. Future work may even
   restrict this further to only allow the use of the properties of the semantics in the
   proofs (if this is found to be possible).
 
   To be able to distinguish between the axioms and other statements and theorems in the
-  embedded logic they are stated using a dedicated syntax. To that end axioms are not
+  embedded logic they are stated using a dedicated syntax. Axioms are not
   stated relative to a specific possible world, but using the following definition
   (see~\ref{TAO_Axioms}):
   \begin{center}
@@ -1946,12 +1955,12 @@ subsection{* Axioms as Schemata *}
 text{*
   \label{axiom-schemata}
 
-  The axioms in PLM are meant as axiom schemata. They are stated using variables that range over
+  The axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
   and can therefore be instantiated for any formula and term (potentially satisfying explicitly stated
   restrictions). Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
   the actualization of the schema and the necessitation of the schema is also an axiom.
-  The modally fragile Axiom~\ref{PM-logic-actual} is the only exception to this:
+  The modally fragile Axiom~\ref{PM-logic-actual} is the only exception:
   Its necessitations are not axioms as well.
 
   Since in Isabelle/HOL free variables in a theorem already range over all terms of the same type
@@ -1992,7 +2001,7 @@ text{*
   be taken regarding their representation in the functional setting of Isabelle/HOL.
   Therefore in the following the complete axiom system is listed and discussed in
   detail where necessary. Additionally each axiom is associated with the numbering in
-  the current draft of PLM @{cite PM}.
+  the current draft of PLM@{cite PM}.
 *}
   
 subsection{* Axioms for Negations and Conditionals *}
@@ -2285,7 +2294,7 @@ subsection{* Summery *}
   
 text{*
   Although the formulation of some of the axioms has to be adjusted to work in the environment of
-  functional type theory it is possible to arrive at a formulation that faithfully represents
+  functional type theory, it is possible to arrive at a formulation that faithfully represents
   the original axiom system of PLM. Future work may attempt to further align the representation
   with PLM and compare the extents of both systems in more detail.
 
@@ -2313,8 +2322,8 @@ section{* The Deductive System PLM *}
   
 text{*
   The derivation of the deductive system PLM from the constructed axiom system constitutes
-  a major part of the Isabelle Theory in the appendix (see~\ref{TAO_PLM}). Its extent over
-  over one-hundred pages makes it infeasible to discuss every aspect in full detail here.
+  a major part of the Isabelle Theory in the appendix (see~\ref{TAO_PLM}). Its extent of
+  over one hundred pages makes it infeasible to discuss every aspect in full detail here.
 
   Nevertheless it is worthwhile to have a look at the mechanics of the derivation and to
   highlight some interesting concepts.
@@ -2373,7 +2382,7 @@ text{*
 
   \begin{itemize}
     \item @{thm rule_gen[of v \<phi>]} \hfill{(\ref{PM-rule-gen})}
-    \item @{thm RN_2[of \<phi> \<psi> v]} \hfill{(\ref{PM-RN})}
+    \item @{thm RN_2[rename_abs w, of \<phi> \<psi> v]} \hfill{(\ref{PM-RN})}
   \end{itemize}
 
   Although in PLM these rules are derived by structural induction on the complexity of
@@ -2391,9 +2400,9 @@ text{*
   PLM is completely derived from the axiom system and the primitive rule of inference (modus ponens).
 
 *}
-  
-subsection{* PLM Solver *}
 
+subsection{* PLM Solver *}
+  
 (*<*)
 context
 begin
@@ -2589,7 +2598,7 @@ text{*
   use cases. This problem is mitigated by the introduction of proving methods, that are convenient
   to use. The main method is called @{method PLM_subst_method}.
 
-  This method uses a combination of pattern matching and automatic rule application, to provide
+  This method uses a combination of pattern matching and automatic rule application to provide
   a convenient way to apply the rule of substitution in practice.
 
   For example assume the current proof objective is @{term "[\<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"}. Now it is possible to
@@ -2628,6 +2637,49 @@ text{*
   from the deductive system of PLM.
 *}
 
+subsection{* An Example Proof *}
+
+text{*
+  To illustrate how the derivation of theorems in the embedding works in practice,
+  consider the following example\footnote{Since the whole proof is stated as raw Isabelle code,
+  unfortunately no color-coding can be applied.}:
+*}
+  lemma "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) \<^bold>\<rightarrow> ((\<^bold>\<not>\<^bold>\<box>\<phi>) \<^bold>\<equiv> (\<^bold>\<box>(\<^bold>\<not>\<phi>))) in v]"
+  proof (rule CP)
+    assume "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v]"
+    hence "[(\<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<phi>)) \<^bold>\<equiv> \<^bold>\<box>\<phi> in v]"
+      by (metis sc_eq_box_box_1 diamond_def vdash_properties_10)
+    thus "[((\<^bold>\<not>\<^bold>\<box>\<phi>) \<^bold>\<equiv> (\<^bold>\<box>(\<^bold>\<not>\<phi>))) in v]"
+      by (meson CP "\<^bold>\<equiv>I" "\<^bold>\<equiv>E" "\<^bold>\<not>\<^bold>\<not>I" "\<^bold>\<not>\<^bold>\<not>E")
+  qed
+text{*
+  Since the statement is an implication it is derived using a \emph{conditional proof}.
+  To that end the proof statement already applies the initial rule @{theory_text CP}.
+
+  The proof objective inside the proof body is now \mbox{@{term "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v] \<Longrightarrow> [\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}},
+  so \mbox{@{term "[\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}} has to be shown under the assumption \mbox{@{term "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v]"}}.
+  Therefore the first step is to assume \mbox{@{term "[\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}}.
+
+  The second statement can now be automatically derived using the previously proven theorem
+  @{theory_text sc_eq_box_box_1}, the definition of the diamond operator and a deduction
+  rule. The final proof objective follows from a combination of introduction and elimination
+  rules.
+
+  Note that the automated reasoning tool @{theory_text sledgehammer} can find proofs for
+  the second and final statement automatically. It can even automatically find a proof
+  for the entire theorem resulting in the following proof: 
+*}
+  
+  lemma "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) \<^bold>\<rightarrow> ((\<^bold>\<not>\<^bold>\<box>\<phi>) \<^bold>\<equiv> (\<^bold>\<box>(\<^bold>\<not>\<phi>))) in v]"
+    by (metis "\<^bold>\<equiv>I" CP "\<^bold>\<equiv>E"(1) "\<^bold>\<equiv>E"(2) raa_cor_1 sc_eq_box_box_1 diamond_def)
+
+text{*
+  So it can be seen that the embedding can be used to interactively prove statements
+  with the support of automated reasoning tools and often even complete proofs
+  for complex statements can be found automatically. The dependencies of a proof are
+  given explicitly in the proof statement.
+*}
+
 subsection{* Summery *}
   
 text{*
@@ -2656,9 +2708,9 @@ text{*
   \label{artificial-theorems}
 
   Although the layered approach of the embedding provides the means to derive theorems
-  independently of the representation layer and model structure that serve as the basis
-  of the embedding, it is interesting to consider some examples of theorems that are
-  \emph{not} part of PLM, but can be derived in the embedding using the meta-logic.
+  independently of the representation layer and model structure, it is interesting to consider
+  some examples of theorems that are \emph{not} part of PLM, but can be derived in the
+  embedding using the meta-logic.
 
   The following statements involve @{text "\<lambda>"}-expressions that contain encoding subformulas
   and are consequently not part of PLM (see~\ref{TAO_ArtificialTheorems}):
@@ -2702,8 +2754,8 @@ text{*
   The reason for this theorem to hold is that the condition on @{term "a"} and @{term "b"}
   forces the embedding to map both objects to the same urelement. By the definition of
   exemplification the presented @{text "\<lambda>"}-expressions only depend on this urelement,
-  therefore they are forced to be equal. Neither the deductive system of PLM nor the
-  preliminary formal semantics require this equality.
+  therefore they are forced to be equal. Neither the deductive system of PLM nor its formal
+  semantics require this equality.
 
   Separate research suggests that this artificial theorem can be avoided by extending the
   embedding in the following way: the mapping from abstract objects to special urelements
@@ -2765,7 +2817,7 @@ text{*
   in the formulation of the theory.
 
   In this chapter some of these limitations and their consequences for the embedding
-  are discussed. Future versions of Isabelle may allow a clearer implementation, especially
+  are discussed. Future versions of Isabelle may allow a clearer implementation especially
   of the layered approach of the embedding.
   
 *}
@@ -2889,28 +2941,19 @@ text{*
   
 chapter{* Discussion and Results *}
 
-section{* A Paradox in PLM *}
-
+section{* Differences between the Embedding and PLM *}
+  
 text{*
-  \label{paradox}
-
-  During the analysis of the constructed embedding it was discovered,
-  that the formulation of the theory in PLM at the time of writing
-  allowed paradoxical constructions.
-
-  This section first describes the process that led to the discovery of the paradox and
-  the role the embedding played in it, after which the construction of the paradox is
-  outlined in the language of PLM.
-
-  The paradox has since been confirmed by Edward Zalta and a vivid discussion
-  about the repercussions and possible solutions has developed. At the time of writing
-  it has become clear that there are several options to recover from the paradox while
-  in essence retaining the full set of theorems of PLM. So far no final decision has been
-  reached about which option will be implemented in future versions of PLM.
+  Although the embedding attempts to represent the language and logic of PLM as precisely
+  as possible, it is important to note that there remain differences between PLM and
+  its representation in Isabelle/HOL. Some of the known differences are discussed in the following
+  sections. A complete analysis of the precise relation between PLM and the embedding unfortunately
+  goes beyond the scope of this thesis, but constitutes a highly interesting and relevant topic for
+  future research.
 *}
 
-subsection{* Propositional Formulas and $\lambda$-Expressions *}
-  
+subsection{* Proper Maps and $\lambda$-Expressions *}
+
 text{*
   \label{differences-lambda}
 
@@ -2923,8 +2966,8 @@ text{*
   syntactic distinction and to devise a semantic criterion that can be used as a replacement
   for the syntactic restriction.
 
-  The identified issue that is addressed by the syntactic restriction in PLM is described
-  in section~\ref{russell-paradox}: Allowing non-propositional formulas in
+  The identified issue, that is addressed by the syntactic restriction in PLM, is described
+  in section~\ref{russell-paradox}: Allowing non-propositional formulas in @{text "\<beta>"}-convertible
   @{text "\<lambda>"}-expressions without restriction leads to paradoxes.
 
   Since the embedding is known to be consistent, the issue presents itself in a slightly
@@ -2935,162 +2978,27 @@ text{*
   With the definition of \emph{proper maps} (see~\ref{lambda-expressions}), the embedding
   constructs a necessary and sufficient condition on functions that may serve as matrix of
   a @{text "\<lambda>"}-expression while allowing @{text "\<beta>"}-conversion.
-*}
-  
 
-subsection{* Discovery of the Paradox *}
-  
-text{*
-  The discovery of the paradox originates in the analysis of the representation of
-  @{text "\<lambda>"}-expressions in the embedding. The syntactic distinction between propositional and
-  non-propositional formulas of PLM is replaced by the concept of \emph{proper maps}\footnote{Prior
-  to the discussion that followed the discovery of the paradox \emph{proper maps} were called
-  \emph{propositional maps} in the embedding; the term \emph{proper maps} is based on the concept of
-  \emph{proper @{text "\<lambda>"}-expressions} that may be part of future versions of PLM to avoid the paradox.}
-  as described in section~\ref{lambda-expressions}.
+  The idea of this concept was that every @{text "\<lambda>"}-expression that is syntactically well-formed
+  in PLM would have a proper map as its matrix. Two subtleties have to be considered, though:
 
-  The idea behind this replacement is, that although it allows more @{text "\<lambda>"}-expressions
-  than PLM, every @{text "\<lambda>"}-expressions of PLM is a @{text "\<lambda>"}-expression of the
-  embedding. While verifying this concept, it was discovered, that @{text "\<lambda>"}-expressions of
-  the form \mbox{@{text "[\<lambda>y F\<iota>x(y[\<lambda>z Rxz])]"}} in which the bound variable @{text "y"} occurs in
-  an encoding formula inside the matrix of a definite description, were part of PLM, but their
-  matrix was \emph{not} a proper map in the embedding and therefore @{text "\<beta>"}-conversion
-  was not derivable for these terms.
+  It was discovered that there are @{text "\<lambda>"}-expressions that are part of PLM, whose matrix
+  does not correspond to a proper map in the embedding. The analysis of this issue led to the
+  discovery of a paradox in the formulation of PLM and is discussed in more detail in
+  section~\ref{paradox}. As a consequence these cases will not constitute proper
+  @{text "\<lambda>"}-expressions in future versions of PLM.
 
-  In the attempt to proof that @{text "\<beta>"}-conversion would in fact follow for these expressions
-  in the embedding in Isabelle, it first became clear, that this is not the case without a restriction
-  of the Aczel-model. Namely without some kind of restriction of the map from abstract objects to urelements,
-  @{text "\<beta>"}-conversion would not be derivable for these cases.
+  The remaining subtlety is the fact that there are proper maps, that do not correspond to
+  propositional formulas. Some examples have already been mentioned in section~\ref{artificial-theorems}.
+  Therefore the embedding contains more proper, @{text "\<beta>"}-convertible
+  @{text "\<lambda>"}-expressions than PLM. This effectively means that the theory constructed in the
+  embedding is more general than the theory in PLM.
 
-  In order to better understand how the embedding could accommodate these circumstances, the
-  consequences of allowing @{text "\<beta>"}-conversion in the mentioned cases \emph{by assumption}
-  were further studied in the embedding which lead to the first proof of inconsistency
-  (see~\ref{TAO_Paradox_original-paradox}. Since the meta-logic was not used in the proof, it was
-  possible to reconstruct an equivalent proof in the language of PLM, which then served as the
-  basis of further discussions with Edward Zalta.
-
-  Since then the issue leading to the paradox was identified as the \emph{description backdoor}
-  (see~\ref{TAO_Paradox_description_backdoor}) that can be used to construct a variety of
-  paradoxical cases, e.g. the paradox mentioned in section~\ref{russell-paradox} can be reconstructed.
-  This refined version of the paradox is used in the inconsistency proof in \ref{TAO_Paradox_russell-paradox}
-  and the following reconstruction in the language of PLM.
-*}
-
-subsection{* Construction using the Language of PLM *}
-  
-text{*
-
-  Object theory distinguishes between propositional and
-  non-propositional formulas. Propositional formulas are not allowed to
-  contain encoding subformulas, so for example \mbox{@{text "\<exists>F xF"}} is not
-  propositional. Only propositional formulas can be the matrix of a
-  @{text "\<lambda>"}-expression, so \mbox{@{text "[\<lambda>x \<exists>F xF]"}} is not a valid term of
-  the theory - it is excluded syntactically.
-
-  The reason for this is that considering \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} a valid, denoting
-  @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
-  paradox as described in section~\ref{russell-paradox}.
-
-  Now the idea was that not allowing non-propositional formulas in
-  @{text "\<lambda>"}-expressions would be sufficient to exclude \emph{all} cases that lead to
-  inconsistencies.
-
-  During the construction of the embedding this was shown to be incorrect, though.
-
-  The problem is the \emph{description backdoor}. The syntactical definition
-  of propositional formulas does allow expressions of the following form:
-  \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}} where @{text "\<psi>"} does not have to be propositional itself,
-  but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
-  by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
-  \emph{may} contain encoding subformulas itself, and @{text "F\<iota>x\<psi>"} is still considered to be a
-  propositional formula.
-
-  This was deemed to be no problem and for cases like \mbox{@{text "[\<lambda>y F\<iota>x(xG)]"}} as
-  they are mentioned in PLM this is indeed true.
-
-  It had not been considered that @{text "y"} may appear within the matrix of
-  such a description and more so, it may appear in a encoding formula
-  within the matrix of such a description, for example 
-  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still considered a propositional formula. At least
-  it had not been considered that this is a problem, but:
-
-  This way the following construction is possible:
-
-  \begin{equation}\tag{1}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
-  \end{equation}
-
-  Here @{text "\<psi>"} can be an arbitrary non-propositional formula in which @{text "x"} and @{text "y"}
-  may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
-  @{text "\<beta>"}-conversion holds.
-
-  Now it is possible to show that by @{text "\<beta>"}-conversion and description
-  theory the following is derivable:
-
-  \begin{equation}\tag{2}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
-  \end{equation}
-
-  \begin{remark}
-    Using a modally-strict proof only the following is derivable:\\
-    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
-    For the construction of the paradox, the modally fragile statement
-    is sufficient, though. Note, however, that it is also possible
-    to construct similar paradoxical cases without appealing to
-    any modally-fragile axioms or theorems.
-  \end{remark}
-
-  This effectively undermines the intention of restricting @{text "\<lambda>"}-expressions
-  to only propositional formulas:
-
-  Although \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} is not part of the language, it is possible to
-  formulate the following instead:
-
-  \begin{equation}\tag{3}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
-  \end{equation}
-
-  If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
-  exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would do, if it were part of the
-  language (i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
-  the same as the right hand side of 2 when applied to 3). So the @{text "\<lambda>"}-expression
-  in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
-*}
-
-subsection{* Possible Solutions *}
-
-text{*
-  Fortunately no theorems were derived in PLM, that actually depend on problematic
-  @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
-  paradox without losing any theorems. At the time of writing it seems likely that
-  a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory and only
-  \emph{proper} @{text "\<lambda>"}-expressions will be forced to have denotations and allow @{text "\<beta>"}-conversion.
-  Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, would not be considered \emph{proper}.
-  Several options are available to define the propriety of \emph{@{text "\<lambda>"}-expressions}
-  and adjust PLM in detail.
-
-  As a consequence the purely syntactical distinction between propositional
-  and non-propositional formulas is no longer sufficient to guarantee
-  that any relation term has a denotation. The embedding of the theory supports
-  the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
-  could replace this distinction entirely yielding a much broader set of relations.
-  The philosophical implications of such a radical modification of the theory
-  have not yet been analysed entirely, though, and at the time of writing
-  it is an open question whether such a modification may be implemented in
-  future versions of PLM.
+  TODO: continue discussion
 
 *}
 
-  
-  
-section{* Differences between the Embedding and PLM *}
-  
-text{*
-  Although the embedding attempts to represent the language and logic of PLM as precisely
-  as possible, it is important to note that there remain differences between PLM and
-  its representation in Isabelle/HOL. The main differences are discussed in the following
-  sections.
-*}
+
   
 subsection{* Terms and Variables *}
 
@@ -3105,11 +3013,11 @@ text{*
   the embedding uses a slightly different approach. In the embedding individual variables and
   individual terms have different \emph{types} and an individual variable (of type @{type \<nu>})
   has to be converted to an individual term (of type @{type \<kappa>}) using the decoration @{term "embedded_style (DUMMY\<^sup>P)"},
-  so that it can be used for example in an exemplifcation formula (which is defined for terms of
+  so that it can be used for example in an exemplification formula (which is defined for terms of
   type @{type \<kappa>}).
 
-  The technicalities of this approach and a discussion about the acuracy of this representation
-  were already given in the referenced sections, so at this point it suffices to summerize the
+  The technicalities of this approach and a discussion about the accuracy of this representation
+  were already given in the referenced sections, so at this point it suffices to summarize the
   resulting differences between the embedding and PLM:
 
   \begin{itemize}
@@ -3118,7 +3026,7 @@ text{*
     \item Meta-level variables (like @{text "\<tau>"}) ranging over all individual terms
           in PLM can be represented as variables of type @{type \<kappa>}.
     \item Objects of type @{type \<nu>} have to be explicitly converted to objects of type @{type \<kappa>}
-          if they are to be used in a context that also allows individual terms.
+          if they are to be used in a context that allows general individual terms.
     \item The axioms of quantification are adjusted to go along with this representation
           (see~\ref{quantification-axioms}).
   \end{itemize}
@@ -3135,7 +3043,7 @@ text{*
   followed by an instantiation using quantification theory). Since \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}} holds
   unconditionally for relation terms, this simplification is justified.
 
-  Recent developments as described in section~\ref{paradox}, however, suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
+  The recent developments described in section~\ref{paradox}, however, suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
   will likely no longer hold unconditionally for every relation term in future versions of PLM, so
   future versions of the embedding will have to include a distinction between relation terms and
   relation variables in a similar way as it is already done for individuals.
@@ -3206,6 +3114,176 @@ are also theorems of PLM was considered to be more important, though.
 
 *}
 
+
+section{* A Paradox in PLM *}
+
+text{*
+  \label{paradox}
+
+  During the analysis of the constructed embedding it was discovered,
+  that the formulation of the theory in PLM at the time of writing
+  allowed paradoxical constructions.
+
+  This section first describes the process that led to the discovery of the paradox and
+  the role the embedding played in it, after which the construction of the paradox is
+  outlined in the language of PLM.
+
+  The paradox has since been confirmed by Edward Zalta and a vivid discussion
+  about the repercussions and possible solutions has developed. At the time of writing
+  it has become clear that there are several options to recover from the paradox while
+  in essence retaining the full set of theorems of PLM. So far no final decision has been
+  reached about which option will be implemented in future versions of PLM.
+*}
+
+subsection{* Discovery of the Paradox *}
+  
+text{*
+  The discovery of the paradox originates in the analysis of the concept of \emph{proper maps}
+  in the embedding and its relation to propositional formulas allowed in the matrix of
+  @{text "\<lambda>"}-expressions in PLM (see~\ref{differences-lambda}).
+
+  While verifying the concept, that the matrix of every @{text "\<lambda>"}-expression allowed in PLM
+  corresponds to a proper map in the embedding, it was discovered, that @{text "\<lambda>"}-expressions of
+  the form \mbox{@{text "[\<lambda>y F\<iota>x(y[\<lambda>z Rxz])]"}} in which the bound variable @{text "y"} occurs in
+  an encoding formula inside the matrix of a definite description, were part of PLM, but their
+  matrix was \emph{not} a proper map in the embedding and therefore @{text "\<beta>"}-conversion
+  was not derivable for these terms.
+
+  In the attempt to proof that @{text "\<beta>"}-conversion would in fact follow for these expressions
+  in the embedding as well, it first became clear, that this is not the case without a restriction
+  of the Aczel-model. Namely without some kind of restriction of the map from abstract objects to urelements,
+  @{text "\<beta>"}-conversion would not be derivable for these cases.
+
+  In order to better understand how the embedding could accommodate these circumstances, the
+  consequences of allowing @{text "\<beta>"}-conversion in the mentioned cases \emph{by assumption}
+  were further studied in the embedding which led to the first proof of inconsistency
+  (see~\ref{TAO_Paradox_original-paradox}):
+
+  \begin{center}
+    @{lemma "(\<And>G \<phi>. IsProperInX (\<lambda>x. embedded_style \<lparr>G,\<^bold>\<iota>y. \<phi> y x\<rparr>)) \<Longrightarrow> False"
+      by (unfold embedded_style_def, simp, insert Paradox.original_paradox, simp)}
+  \end{center}
+
+  Under the assumption that @{term "(\<lambda>x. embedded_style \<lparr>G,\<^bold>\<iota>y. \<phi> y x\<rparr>)"} is a proper map for
+  arbitrary @{term "embedded_style G"} and @{term "embedded_style \<phi>"},
+  @{term "False"} is derivable in the embedding. However @{text "\<lambda>"}-expressions with the
+  equivalent of such maps as matrix were in fact part of PLM.
+
+  Since the meta-logic was not used in the proof, it was possible to reconstruct an equivalent proof
+  in the language of PLM, which then served as the basis for further discussions with Edward Zalta.
+
+  Since then the issue leading to the paradox was identified as the \emph{description backdoor}
+  (see~\ref{TAO_Paradox_description_backdoor}) that can be used to construct a variety of
+  paradoxical cases, e.g. the paradox mentioned in section~\ref{russell-paradox} can be reconstructed.
+  This refined version of the paradox is used in the inconsistency proof in \ref{TAO_Paradox_russell-paradox}
+  and reconstructed in the language of PLM in the next section, while repeating the general situation
+  leading to the paradox without referring to the particularities of the embedding.
+*}
+
+subsection{* Construction using the Language of PLM *}
+  
+text{*
+
+  Object theory distinguishes between propositional and
+  non-propositional formulas. Propositional formulas are not allowed to
+  contain encoding subformulas, so for example \mbox{@{text "\<exists>F xF"}} is not
+  propositional. Only propositional formulas can be the matrix of a
+  @{text "\<lambda>"}-expression, so \mbox{@{text "[\<lambda>x \<exists>F xF]"}} is not a valid term of
+  the theory - it is excluded syntactically.
+
+  The reason for this is that considering \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} a valid, denoting
+  @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
+  paradox as described in section~\ref{russell-paradox}.
+
+  The idea was that not allowing non-propositional formulas in
+  @{text "\<lambda>"}-expressions would be sufficient to exclude \emph{all} cases that lead to
+  inconsistencies. This was shown to be incorrect, though.
+
+  The problem is the \emph{description backdoor}. The syntactical definition
+  of propositional formulas does allow expressions of the following form:
+  \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}} where @{text "\<psi>"} does not have to be propositional itself,
+  but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
+  by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
+  \emph{may} contain encoding subformulas itself, and @{text "F\<iota>x\<psi>"} is still considered to be a
+  propositional formula.
+
+  This was deemed to be no problem and for cases like \mbox{@{text "[\<lambda>y F\<iota>x(xG)]"}} as
+  they are mentioned in PLM this is indeed true.
+
+  It had not been considered that @{text "y"} may appear within the matrix of
+  such a description and more so, it may appear in an encoding formula
+  within the matrix of such a description, for example 
+  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still considered a propositional formula. At least
+  it had not been considered that this is a problem, but:
+
+  This way the following construction is possible:
+
+  \begin{equation}\tag{1}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
+  \end{equation}
+
+  Here @{text "\<psi>"} can be an arbitrary non-propositional formula in which @{text "x"} and @{text "y"}
+  may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
+  @{text "\<beta>"}-conversion holds.
+
+  Now it is possible to show that by @{text "\<beta>"}-conversion and description
+  theory the following is derivable:
+
+  \begin{equation}\tag{2}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
+  \end{equation}
+
+  \begin{remark}
+    Using a modally-strict proof only the following is derivable:\\
+    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
+    For the construction of the paradox, the modally fragile statement
+    is sufficient, though. Note, however, that it is also possible
+    to construct similar paradoxical cases without appealing to
+    any modally-fragile axioms or theorems.
+  \end{remark}
+
+  This effectively undermines the intention of restricting @{text "\<lambda>"}-expressions
+  to only propositional formulas:
+
+  Although \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} is not part of the language, it is possible to
+  formulate the following instead:
+
+  \begin{equation}\tag{3}
+    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
+  \end{equation}
+
+  If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
+  exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would do, if it were part of the
+  language (i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
+  the same as the right hand side of 2 when applied to 3). So the @{text "\<lambda>"}-expression
+  in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
+*}
+
+subsection{* Possible Solutions *}
+
+text{*
+  Fortunately no theorems were derived in PLM, that actually depend on problematic
+  @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
+  paradox without losing any theorems. At the time of writing it seems likely that
+  a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory and only
+  \emph{proper} @{text "\<lambda>"}-expressions will be forced to have denotations and allow @{text "\<beta>"}-conversion.
+  Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, would not be considered \emph{proper}.
+  Several options are available to define the propriety of \emph{@{text "\<lambda>"}-expressions}
+  and adjust PLM in detail.
+
+  As a consequence the purely syntactical distinction between propositional
+  and non-propositional formulas is no longer sufficient to guarantee
+  that every relation term has a denotation. The embedding of the theory supports
+  the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
+  could replace this distinction entirely yielding a much broader set of relations.
+  The philosophical implications of such a radical modification of the theory
+  have not yet been analysed entirely, though, and at the time of writing
+  it is an open question whether such a modification may be implemented in
+  future versions of PLM.
+
+*}
+
+
 (*<*)
 end (* context PLM *)
 (*>*)
@@ -3213,9 +3291,55 @@ end (* context PLM *)
 
 section{* A Meta-Conjecture about Possible Worlds *}
   
+(*<*)
+context PossibleWorlds
+begin
+(*>*)
+  
 text{*
-  TODO
+  A conversation between Bruno Woltzenlogel Paleo and Edward Zalta about the Theory
+  of Abstract Objects led to the following meta-conjecture:
+
+  \textquote{
+      For every syntactic possible world \emph{w}, there exists a semantic
+      point \emph{p} which is the denotation of \emph{w}.
+  }\footnote{This formulation originates in the resulting e-mail correspondence between
+  Bruno Woltzenlogel Paleo and Christoph Benzm\"uller.}
+
+  Since the embedding constructs a representation of the semantics of PLM, it was
+  possible to formally analyse the relationship between syntactic and semantic possible worlds
+  and arrive at the following theorems (see~\ref{TAO_PossibleWorlds}):
+
+  \begin{itemize}
+    \item @{thm SemanticPossibleWorldForSyntacticPossibleWorlds[of w]}
+    \item @{thm SyntacticPossibleWorldForSemanticPossibleWorlds[of w]}
+  \end{itemize}
+
+  The first statement shows that for every \emph{syntactic} possible world @{term "embedded_style x"}
+  there is a \emph{semantic} possible world @{term "v"}, such that a proposition is syntactically
+  true in @{term "embedded_style x"}, if and only if it is semantically true in @{term "v"}.
+
+  The second statement shows that for every \emph{semantic} possible world @{term "v"} there
+  is a \emph{syntactic} possible world @{term "embedded_style x"}, such that a proposition is semantically
+  true in @{term "v"}, if and only if it is \emph{syntactically} true in @{term "embedded_style x"}.
+
+  This result extends the following theorems already derived syntactically in PLM (@{text "w"} is restricted
+  to only range over syntactic possible worlds):
+  \begin{itemize}
+    \item @{text "\<diamond>p \<equiv> \<exists>w(w \<Turnstile> p)"} \hfill{(\ref{PM-fund}.1)}
+    \item @{text "\<box>p \<equiv> \<forall>w(w \<Turnstile> p)"} \hfill{(\ref{PM-fund}.2)}
+  \end{itemize}
+
+  Whereas the syntactic statements of PLM already show the relation between the modal operators
+  and syntactic possible worlds, the semantic statements derived in the embedding show that
+  there is in fact a natural bijection between syntactic and semantic possible worlds.
+
 *}
+
+(*<*)
+end (* context PossibleWorlds *)
+(*>*)
+
   
 section{* Relations vs. Functions *}
 

@@ -336,7 +336,7 @@ text{*
       by (rule existential)
   qed
       
-  lemma
+  lemma original_paradox:
     assumes is_propositional: "(\<And>G \<phi>. IsProperInX (\<lambda>x. \<lparr>G,\<^bold>\<iota>y. \<phi> y x\<rparr>))"
     shows "False"
   proof -

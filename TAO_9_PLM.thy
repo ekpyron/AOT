@@ -38,6 +38,7 @@ text{* \label{TAO_PLM_Axioms} *}
 
   interpretation Axioms .
   declare axiom[PLM]
+  declare conn_defs[PLM]
 
 subsection{* (Modally Strict) Proofs and Derivations *}
 text{* \label{TAO_PLM_ProofsAndDerivations} *}
