@@ -706,7 +706,7 @@ Relations in the resulting Aczel-model are, however, still \emph{extensional}.
 Two relations that are necessarily exemplified by the same objects are equal. 
 The Aczel-model that is used as the basis for the embedding therefore introduces
 \emph{states} as another primitive besides possible worlds. Truth values are
-represented as ternary functions from states and possible worlds to booleans,
+represented as ternary functions from states and possible worlds to booleans;
 relations as functions from urelements, states and possible worlds to booleans.
 
 Abstract objects are still defined as sets of one-place relations and the division
@@ -716,27 +716,30 @@ as set membership of a relation in an abstract object and exemplification still 
 as function application of the relation to the urelement corresponding to an individual.
 
 The semantic truth evaluation of a proposition in a given possible world is defined
-to its evaluation for a designated \emph{actual state} and the possible world.
+as its evaluation for a designated \emph{actual state} and the possible world.
 
 Logical connectives are defined to behave classically in the \emph{actual state}, but
-have undefined behavior in any other state.
+have undefined behavior in other states.
 
 The reason for this construction becomes apparent if one considers the definition of
 the identity of relations: relations are considered identical if they are \emph{encoded}
 by the same abstract objects. In the constructed model encoding depends on the behavior of
-a relation in all states. Two relations can still necessarily be \emph{exemplified} by the
-same objects in the actual state, but still not be identical, since they can have different
-behavior in other states. Therefore hyperintensionality of relations is achieved.
+a relation in all states. Two relations can necessarily be \emph{exemplified} by the
+same objects in the actual state, but still not be identical, since they can differ
+in other states. Therefore hyperintensionality of relations is achieved.
 
 The dependency on states is not limited to relations, but introduced to propositions,
-connectives and quantifiers as well to allow the definition of @{text "\<lambda>"}-expressions 
-in section~\ref{lambda-expressions}. Since the behavior of logical connectives is
-not required to be classical in states other than the actual state, hyperintensionality
-is thereby retained for @{text "\<lambda>"}-expressions.
+connectives and quantifiers as well, although the semantic truth conditions of formulas
+only depend on the evaluation for the actual state. The reason for this is to be able to define
+@{text "\<lambda>"}-expressions (see section~\ref{lambda-expressions}) and to extend the
+hyperintensionality of relations to them. Since the behavior of logical connectives is undefined
+in states other than the actual state, the behavior of @{text "\<lambda>"}-expressions - although classical
+in the actual state - remains undefined for different states.
 
-However, as the semantic truth of a proposition solely depends on its evaluation for the designated
+In summery, since the semantic truth of a proposition solely depends on its evaluation for the designated
 actual state, in which the logical connectives are defined to behave classically, the reasoning about
-propositions is still classical, as desired.
+propositions remains classical, as desired. On the other hand the additional dependency on states allows
+a representation of the hyperintensionality of relations.
 
 The technical details of the implementation are described in section~\ref{representation-layer}.
 *}
@@ -754,8 +757,8 @@ a different approach than other semantical embeddings, namely the embedding is d
 several \emph{layers} as follows:
 
 \begin{itemize}
-  \item The first layer represents the primitives of PLM using a the described hyperintensional
-        variant of the Aczel-model.
+  \item The first layer represents the primitives of PLM using the described hyperintensional
+        and modal variant of the Aczel-model.
   \item In a second layer the objects of the embedded logic constructed in the first layer are
         considered as primitives and some of their semantic properties are derived using the
         background logic as meta-logic.
@@ -764,7 +767,7 @@ several \emph{layers} as follows:
   \item Based on the third layer the deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM}
         is derived solely using the axiom system of the third layer and the meta-rules stated
         in PLM. The meta-logic and the properties of the representation layer are explicitly
-        not used in any proofs. Thereby the reasoning in the third layer is independent of the
+        not used in any proofs. Thereby the reasoning in this last layer is independent of the
         first two layers.
 \end{itemize}
 
