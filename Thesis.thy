@@ -1156,7 +1156,7 @@ text{*
 
   \begin{remark}
     Note that the right-hand side of the equation above does not quantify over all states,
-    but is only true for the actual state @{term "dj"}.
+    but is restricted to the actual state @{term "dj"}.
     This is sufficient given that truth evaluation only depends on the actual state
     and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see~\ref{semantics-lambda}).
   \end{remark}
@@ -1185,12 +1185,13 @@ text{*
   This way the truth evaluation of a proposition only depends on the evaluation of its functional representative
   for the actual state @{term dj}. Recall that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
-  evaluation \emph{does} depend on all states are formulas containing encoding expressions.
+  evaluation \emph{does} depend on all states are formulas containing encoding expressions and only
+  in the sense that an encoding expression depends on the behavior of the contained relation in all states.
 
   \begin{remark}
-    The Isabelle Theory in the appendix defines the syntax @{text "v \<Turnstile> p"} in the representation
+    The Isabelle Theory in the appendix defines the syntax \mbox{@{text "v \<Turnstile> p"}} in the representation
     layer, following the syntax used in the formal semantics of PLM.
-    The syntax @{term "[p in v]"} that is easier to use in Isabelle due to bracketing the expression
+    The syntax \mbox{@{term "[p in v]"}} that is easier to use in Isabelle due to bracketing the expression
     is only introduced after the semantics is derived in \ref{TAO_Semantics_Validity}.
     For simplicity only the latter syntax is used in this documentation.
   \end{remark}
@@ -1234,8 +1235,11 @@ text{*
 
   Concreteness can now be defined as a one-place relation:
   \begin{center}
-  @{thm Concrete.rep_eq[THEN embedded_meta_eq]}
+    @{thm Concrete.rep_eq[THEN embedded_meta_eq]}
   \end{center}
+
+  Whether an ordinary object is concrete is governed by the introduced constant, whereas
+  abstract objects are never concrete.
 
 *}
 
@@ -1245,9 +1249,10 @@ subsection{* The Syntax of the Embedded Logic*}
 text{*
 
 The embedding aims to provide a readable syntax for the embedded logic that is as close as possible
-to the syntax of PLM, that can be easily understood and that clearly distinguishes between the embedded
+to the syntax of PLM and clearly distinguishes between the embedded
 logic and the meta-logic. Some concessions have to be made due to the limitations of definable syntax
-in Isabelle, though.
+in Isabelle, though. Moreover exemplification and encoding have to use a dedicated syntax in order
+to be distinguishable from function application.
 
 The syntax for the basic formulas of PLM used in the embedding is summarized in the
 following table:
@@ -1259,6 +1264,8 @@ PLM & syntax in words & embedded logic & type \\
 @{text "\<phi>"} & it holds that @{text "\<phi>"} & @{term "embedded_style (\<phi>)"} & @{type \<o>} \\
 @{text "\<not>\<phi>"} & not @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<not>\<phi>)"} & @{type \<o>}  \\
 @{text "\<phi> \<rightarrow> \<psi>"} & @{text "\<phi>"} implies @{text "\<psi>"} & @{term "embedded_style (\<phi> \<^bold>\<rightarrow> \<psi>)"} & @{type \<o>}  \\
+@{text "\<box>\<phi>"} & necessarily @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<box>\<phi>)"} & @{type \<o>}  \\
+@{text "\<A>\<phi>"} & actually @{text "\<phi>"} & @{term "embedded_style (\<^bold>\<A>\<phi>)"} & @{type \<o>}  \\
 @{text "\<Pi>\<upsilon>"} & @{text "\<upsilon>"} (an individual term) exemplifies @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,\<upsilon>\<rparr>"} & @{type \<o>}  \\
 @{text "\<Pi>x"} & @{text "x"} (an individual variable) exemplifies @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,x\<^sup>P\<rparr>"} & @{type \<o>}  \\
 @{text "\<Pi>\<upsilon>\<^sub>1\<upsilon>\<^sub>2"} & @{text "\<upsilon>\<^sub>1"} and @{text "\<upsilon>\<^sub>2"} exemplify @{text "\<Pi>"} & @{term "embedded_style \<lparr>\<Pi>,\<upsilon>\<^sub>1,\<upsilon>\<^sub>2\<rparr>"} & @{type \<o>}  \\
@@ -1280,7 +1287,6 @@ PLM & syntax in words & embedded logic & type \\
 \end{center}
 
 Several subtleties have to be considered:
-
 \begin{itemize}
   \item @{term "n"}-place relations are only represented for \mbox{@{text "n \<le> 3"}}.
         As the resulting language is already expressive enough to represent the most interesting
