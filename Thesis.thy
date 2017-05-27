@@ -2086,7 +2086,7 @@ text{*
 
   \begin{remark}
     A formulation of the axioms as in PLM could be possible using the concept of domain restricted
-    quantification as employed in embedding free logics (TODO: reference) to define a restricted
+    quantification as employed in embedding free logics (see~@{cite FreeLogic}) to define a restricted
     quantification over the type @{type \<kappa>}. This would require some non-trivial restructuring of
     the embedding, though.
   \end{remark}
@@ -2356,7 +2356,7 @@ text{*
 
   This way necessary axioms, as well as modally fragile axioms can be used in the proofs. However
   it is not possible to infer from a modally fragile theorem that the same statement holds as a
-  modally strict axiom.
+  modally strict theorem
 
   It is important to note that the set of modally-strict theorems in PLM is in fact a \emph{subset}
   of the theorems of the form \mbox{@{term "[\<phi> in v]"}} that are semantically true in the embedding.
@@ -2981,7 +2981,7 @@ text{*
   future research.
 *}
 
-subsection{* Proper Maps and $\lambda$-Expressions *}
+subsection{* Propositional Formulas and $\lambda$-Expressions *}
 
 text{*
   \label{differences-lambda}
@@ -3048,8 +3048,7 @@ text{*
   the embedding uses a slightly different approach. In the embedding individual variables and
   individual terms have different \emph{types} and an individual variable (of type @{type \<nu>})
   has to be converted to an individual term (of type @{type \<kappa>}) using the decoration @{term "embedded_style (DUMMY\<^sup>P)"},
-  so that it can be used for example in an exemplification formula (which is defined for terms of
-  type @{type \<kappa>}).
+  so that it can be used for example in an exemplification formula (which is defined for the type @{type \<kappa>}).
 
   The technicalities of this approach and a discussion about the accuracy of this representation
   were already given in the referenced sections, so at this point it suffices to summarize the
@@ -3071,9 +3070,9 @@ text{*
   introduced for individuals:
 
   Since at the time of writing PLM unconditionally asserts \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
-  is for any relation term by an axiom, the embedding uses only one type (@{text "\<Pi>\<^sub>n"}) for each
+  is for any relation term by an axiom, the embedding uses only one type @{text "\<Pi>\<^sub>n"} for each
   arity of relations. Therefore no special type conversion between variables and terms is necessary
-  and every relation term can immediately be instantiated for a variable of type (@{text "\<Pi>\<^sub>n"}).
+  and every relation term can immediately be instantiated for a variable of type @{text "\<Pi>\<^sub>n"}.
   This hides the additional steps PLM employs for such instantiations (the generalization by GEN
   followed by an instantiation using quantification theory). Since \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}} holds
   unconditionally for relation terms, this simplification is justified.
@@ -3128,13 +3127,13 @@ Modally-strict theorems in PLM on the other hand are defined as a proof-theoreti
 modally-strict proofs are not allowed to use modally fragile axioms. Therefore they are solely derived
 from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}). PLM now proves the fact
 that a modally strict derivation of @{text "\<phi>"} implies that there is a derivation of @{text "\<box>\<phi>"}
-by induction on the the length of the proof. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
-gives an example of a case where the converse is false.
+by induction on the length of the proof. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
+gives an example of a case in which the converse is false.
 
 The problem for the embedding is that there is no semantic characterization of a statement that allows
 to decide whether it is a necessary theorem or a modally-strict theorem. Therefore the embedding has
 to express modally-strict theorems as necessary theorems. As seen above for this set of theorems the
-converse of RN is in fact true, though.
+converse of RN is in fact true.
 
 This still does not compromise the concept that any statement that is derived in \ref{TAO_PLM}
 is also derivable in PLM: the basis of this concept is that no proofs may rely on the meta-logic, but
@@ -3144,8 +3143,8 @@ the converse of RN is not stated as an admissible rule for these proofs.
 
 Unfortunately this has the consequence that the proving method @{method PLM_solver} cannot be
 equipped with a reversible elimination rule for the box-operator, which significantly reduces its power
-as an automated proving method. Preserving the claim that theorems derived in the embedding
-are also theorems of PLM was considered to be more important, though.
+as an automated proving method. However, preserving the claim that theorems derived in the embedding
+are also theorems of PLM was considered to be more important.
 
 *}
 
@@ -3291,7 +3290,7 @@ text{*
   exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would, if it were part of the
   language, i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
   the same as the right hand side of 2 when applied to 3. Therefore the @{text "\<lambda>"}-expression
-  in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
+  in 3 can be used to reproduce the paradox described in section~\ref{russell-paradox}.
 *}
 
 subsection{* Possible Solutions *}
@@ -3369,6 +3368,8 @@ text{*
   and syntactic possible worlds, the semantic statements derived in the embedding show that
   there is in fact a natural bijection between syntactic and semantic possible worlds.
 
+  This example shows that a semantical embedding allows a detailed analysis of the semantical
+  properties of a theory and to arrive at interesting meta-logical results.
 *}
 
 (*<*)
@@ -3384,10 +3385,7 @@ text{*
 
   As a result a theory was constructed in Isabelle/HOL that - although its soundness
   is yet to be formally verified - is most likely able to represent and verify all reasoning
-  in the target theory\footnote{Note that the target theory for the embedding
-  is the second-order fragment of object theory. An embedding of the full type-theoretic
-  version of object theory will have to face additional challenges and its feasibility has
-  to be studied in separate research.}. A formal analysis of the soundness of the embedding
+  in the target theory. A formal analysis of the soundness of the embedding
   is unfortunately not possible at this time, since the theory of PLM first has to be adjusted
   to prevent the discovered paradox. Depending on the precise modifications of PLM the embedding
   will have to be adjusted accordingly, after which the question of its formal soundness can
@@ -3497,7 +3495,7 @@ text{*
 \end{remark}
 
   In summery it can be concluded that a representation of object theory in functional type theory
-  seems feasible, although it is connected with significant complexity (i.e. the introduction of
+  is feasible, although it is connected with significant complexity (i.e. the introduction of
   additional primitive types and the usage of concepts of free logic). On the other hand, whether
   this result contradicts the philosophical claim that relations are more fundamental than functions,
   is still debatable considering the fact that the proposed construction has to introduce new
@@ -3507,7 +3505,7 @@ text{*
   has been considered and the full type-theoretic version of the theory may present further challenges.
 *}
 
-section{* Universal Reasoning using Shallow Semantical Embeddings in HOL *}
+section{* Conclusion *}
 
 text{*
   The presented work shows that shallow semantical embeddings in HOL have the potential to represent
@@ -3519,9 +3517,9 @@ text{*
 
   Not only could the embedding uncover a previously unknown paradox in the formulation of its target
   theory, but it could contribute to the understanding of the relation between functional and
-  relational type-theory and provide further insights into the general structure of the target theory,
+  relational type theory and provide further insights into the general structure of the target theory,
   its semantics and possible models. It can even show that a consistent extension of the theory
-  is possible that could increase its expressibility.
+  seems possible that could increase its expressibility.
 
   The presented work introduces novel concepts that can benefit future endeavors of semantical
   embeddings in general: a layered structure allows the representation of a target theory without

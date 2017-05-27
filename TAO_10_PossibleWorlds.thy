@@ -162,7 +162,7 @@ text{* \label{TAO_PossibleWorlds_SyntacticSemantic} *}
 
   theorem SemanticPossibleWorldForSyntacticPossibleWorlds:
     "\<forall> x . [PossibleWorld (x\<^sup>P) in w] \<longrightarrow>
-     (\<exists> v . \<forall> p . [p in v] \<longleftrightarrow> [(x\<^sup>P \<^bold>\<Turnstile> p) in w])"
+     (\<exists> v . \<forall> p . [(x\<^sup>P \<^bold>\<Turnstile> p) in w] \<longleftrightarrow> [p in v])"
     proof
       fix x
       {
@@ -233,7 +233,7 @@ text{* \label{TAO_PossibleWorlds_SyntacticSemantic} *}
           by blast
       }
       thus "[PossibleWorld (x\<^sup>P) in w] \<longrightarrow>
-            (\<exists>v. \<forall> p . [p in v] \<longleftrightarrow> [(x\<^sup>P) \<^bold>\<Turnstile> p in w])"
+            (\<exists>v. \<forall> p . [(x\<^sup>P) \<^bold>\<Turnstile> p in w] \<longleftrightarrow> [p in v])"
         by blast
     qed
 
