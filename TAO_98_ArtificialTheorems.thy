@@ -50,7 +50,7 @@ text{*
     by (simp add: meta_defs meta_aux)
 
   lemma lambda_ex:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> y in v])"
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> (y\<^sup>P) in v])"
     by (simp add: meta_defs meta_aux)
 
 text{*
@@ -60,22 +60,22 @@ text{*
 *}
 
   lemma lambda_ex_emb:
-    "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> y) in v]"
+    "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P)) in v]"
     proof(rule MetaSolver.EquivI)
       interpret MetaSolver .
       {
-        assume "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v]"
-        then obtain y where "\<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> y in v]"
+        assume "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> in v]"
+        then obtain y where "\<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> (y\<^sup>P) in v]"
           using lambda_ex by blast
         moreover hence "[(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) in v]"
           apply - apply meta_solver
           by (simp add: Semantics.d\<^sub>\<kappa>_proper Semantics.ex1_def)
-        ultimately have "[\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> y in v]"
+        ultimately have "[\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
           using ExIRule ConjI by fast
       }
       moreover {
-        assume "[\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> y in v]"
-        then obtain y where y_def: "[(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> y in v]"
+        assume "[\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
+        then obtain y where y_def: "[(\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
           by (rule ExERule)
         hence "\<And> F . [\<lparr>F,x\<^sup>P\<rparr> in v] = [\<lparr>F,y\<^sup>P\<rparr> in v]"
           apply - apply (drule ConjE) apply (drule conjunct1)
@@ -83,19 +83,48 @@ text{*
         hence "[\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u),x\<^sup>P\<rparr> in v]
              = [\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u),y\<^sup>P\<rparr> in v]" by auto
         hence "\<nu>\<upsilon> y = \<nu>\<upsilon> x" by (simp add: meta_defs meta_aux)
-        moreover have "[\<phi> y in v]" using y_def ConjE by blast
-        ultimately have "[\<lparr>(\<^bold>\<lambda> x . \<phi> x), x\<^sup>P\<rparr> in v]"
+        moreover have "[\<phi> (y\<^sup>P) in v]" using y_def ConjE by blast
+        ultimately have "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> in v]"
           using lambda_ex by blast
       }
-      ultimately show "[\<lparr>\<^bold>\<lambda>x. \<phi> x,x\<^sup>P\<rparr> in v]
-          = [\<^bold>\<exists>y. (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> y in v]"
+      ultimately show "[\<lparr>\<^bold>\<lambda>x. \<phi> (x\<^sup>P),x\<^sup>P\<rparr> in v]
+          = [\<^bold>\<exists>y. (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
         by auto
     qed
 
   lemma lambda_enc_emb:
     "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P, F\<rbrace>) in v]"
-    using lambda_ex_emb by simp
+    using lambda_ex_emb by fast
 
+text{*
+\begin{remark}
+  In the case of proper maps, the generalized @{text "\<beta>"}-conversion reduces to
+  classical @{text "\<beta>"}-conversion.
+\end{remark}
+*}
+
+  lemma proper_beta:
+    assumes "IsProperInX \<phi>"
+    shows "[(\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P)) \<^bold>\<equiv> \<phi> (x\<^sup>P) in v]"
+  proof (rule MetaSolver.EquivI; rule)
+    interpret MetaSolver .
+    assume "[\<^bold>\<exists>y. (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
+    then obtain y where y_def: "[(\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]" by (rule ExERule)
+    hence "[\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u), x\<^sup>P\<rparr> in v] = [\<lparr>make\<Pi>\<^sub>1 (\<lambda> u s w . \<nu>\<upsilon> y = u), y\<^sup>P\<rparr> in v]"
+      using EquivS AllE ConjE by blast
+    hence "\<nu>\<upsilon> y = \<nu>\<upsilon> x" by (simp add: meta_defs meta_aux)
+    thus "[\<phi> (x\<^sup>P) in v]"
+      using y_def[THEN ConjE[THEN conjunct2]]
+            assms IsProperInX.rep_eq valid_in.rep_eq
+      by blast
+  next
+    interpret MetaSolver .
+    assume "[\<phi> (x\<^sup>P) in v]"
+    moreover have "[\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,x\<^sup>P\<rparr> in v]" apply meta_solver by blast
+    ultimately show "[\<^bold>\<exists>y. (\<^bold>\<forall>F. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P) in v]"
+      by (meson ConjI ExI)
+  qed
+      
 text{*
 \begin{remark}
   The following theorem is a consequence of the constructed Aczel-model, but not

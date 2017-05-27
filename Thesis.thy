@@ -1830,7 +1830,7 @@ text{*
   The main application of the method in the embedding is its use in the derivation of the axiom
   system as described in section~\ref{axioms}. Furthermore the @{method meta_solver} can aid in examining the
   meta-logical properties of the embedding. Care has been taken that the meta-solver only employs
-  \emph{reversable} transformations, thereby it is for example justified to use it to simplify a statement
+  \emph{reversible} transformations, thereby it is for example justified to use it to simplify a statement
   before employing a tool like @{theory_text "nitpick"} in order to look for counter-models for a statement.
 
   However it is \emph{not} justified to assume that a theorem that can be proven with the aid of the
@@ -2711,24 +2711,30 @@ text{*
   independently of the representation layer and model structure, it is interesting to consider
   some examples of theorems that are \emph{not} part of PLM, but can be derived in the
   embedding using the meta-logic.
+*}
 
-  The following statements involve @{text "\<lambda>"}-expressions that contain encoding subformulas
-  and are consequently not part of PLM (see~\ref{TAO_ArtificialTheorems}):
+subsection{* Non-Standard $\lambda$-Expressions *}
+  
+text{*
+  \label{artificial-theorems-lambda}
 
-  \begin{itemize}
-    \item @{thm lambda_enc_1[of v F y]}
-    \item @{thm lambda_enc_2[of v F y x]}
-  \end{itemize}
+  The following statement involves a @{text "\<lambda>"}-expressions that contains encoding subformulas
+  and is consequently not part of PLM (see~\ref{TAO_ArtificialTheorems}):
 
-  In these cases traditional @{text "\<beta>"}-conversion still holds, since the @{text "\<lambda>"}-expressions
-  does not contain encoding expressions involving their bound variable. On the other hand the
-  following is \emph{not} a theorem in the embedding (the tool @{theory_text nitpick} can find a counter-model):
+  \begin{center}
+    @{thm lambda_enc_2[of v F y x]}
+  \end{center}
+
+  In this case traditional @{text "\<beta>"}-conversion still holds, since the @{text "\<lambda>"}-expression
+  does not contain encoding expressions involving their bound variable\footnote{Consequently the
+  matrix is a \emph{proper map}.}. On the other hand the following is \emph{not} a theorem in
+  the embedding (the tool @{theory_text nitpick} can find a counter-model):
 
   \begin{center}
     @{term "[(\<lparr>\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>, x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<lbrace>x\<^sup>P, F\<rbrace>) in v]"}
   \end{center}
 
-  However the following generalized versions of @{text "\<beta>"}-conversion are theorems in the embedding:
+  Instead the following generalized versions of @{text "\<beta>"}-conversion are theorems in the embedding:
 
   \begin{itemize}
     \item @{thm lambda_enc_4[of v F z]}
@@ -2742,9 +2748,29 @@ text{*
     \item @{thm lambda_ex_emb[of v \<phi> z]}
   \end{itemize}
 
-  The implications of the fact that these theorems are derivable in the meta-logic
-  is discussed in more detail in section~\ref{differences-lambda}.
+  Especially the second statement shows that in general @{text "\<lambda>"}-expressions
+  in the embedding have a \emph{non-standard} semantics. As a special case, however,
+  the behavior of @{text "\<lambda>"}-expressions \emph{is} classical if restricted to
+  proper maps:
 
+  \begin{center}
+    @{thm proper_beta[of \<phi> v x]}
+  \end{center}
+
+  It is important to note that as a consequence of the generalized @{text "\<beta>"}-conversion
+  there are theorems in the embedding involving @{text "\<lambda>"}-expressions
+  that \emph{do} contain encoding subformulas in the bound variable, e.g.:
+  
+  \begin{center}
+    @{thm lambda_enc_1[of v F y]}
+  \end{center}
+  
+  A further discussion about this topic is found in section~\ref{differences-lambda}.
+*}
+
+subsection{* Consequences of the Aczel-model *}
+
+text{*
   Independently the following theorem is a consequence of the constructed Aczel-model:
 
   \begin{center}
@@ -2768,8 +2794,11 @@ text{*
   This extension of the embedding increases the complexity of the representation
   layer slightly, but its preliminary analysis suggests that it presents no further issues, so
   future research and future versions of the embedding may want to include such a modification.
+
+  Note that there may still be further theorems that depend on the particular model structure
+  that are yet to be discovered.
 *}
-  
+
 (*<*)
 end (* context ArtificialTheorems *)
 (*>*)
@@ -2972,8 +3001,10 @@ text{*
 
   Since the embedding is known to be consistent, the issue presents itself in a slightly
   different fashion: the paradox is constructed under the assumption that @{text "\<beta>"}-conversion
-  holds unconditionally for all @{text "\<lambda>"}-expressions. In the embedding on the other hand
-  @{text "\<beta>"}-conversion fails to hold in general, thereby preserving the consistency of the system.
+  holds unconditionally for all @{text "\<lambda>"}-expressions. In the embedding on the other hand in
+  general @{text "\<lambda>"}-expressions have a \emph{non-standard} semantics and @{text "\<beta>"}-conversion
+  only follows as a special case (see~\ref{artificial-theorems-lambda}).
+  Thereby the consistency of the system is preserved.
 
   With the definition of \emph{proper maps} (see~\ref{lambda-expressions}), the embedding
   constructs a necessary and sufficient condition on functions that may serve as matrix of
@@ -2989,7 +3020,7 @@ text{*
   @{text "\<lambda>"}-expressions in future versions of PLM.
 
   The remaining subtlety is the fact that there are proper maps, that do not correspond to
-  propositional formulas. Some examples have already been mentioned in section~\ref{artificial-theorems}.
+  propositional formulas. Some examples have already been mentioned in section~\ref{artificial-theorems-lambda}.
   Therefore the embedding contains more proper, @{text "\<beta>"}-convertible
   @{text "\<lambda>"}-expressions than PLM. This effectively means that the theory constructed in the
   embedding is more general than the theory in PLM.
@@ -3112,7 +3143,7 @@ only the rules that are derived in PLM are allowed. To guarantee that no stateme
 the converse of RN is not stated as an admissible rule for these proofs.
 
 Unfortunately this has the consequence that the proving method @{method PLM_solver} cannot be
-equipped with an elimination rule for the box-operator, which significantly reduces its power
+equipped with a reversible elimination rule for the box-operator, which significantly reduces its power
 as an automated proving method. Preserving the claim that theorems derived in the embedding
 are also theorems of PLM was considered to be more important, though.
 
@@ -3208,7 +3239,7 @@ text{*
   \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}} where @{text "\<psi>"} does not have to be propositional itself,
   but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
   by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
-  \emph{may} contain encoding subformulas itself, and @{text "F\<iota>x\<psi>"} is still considered to be a
+  \emph{may} contain encoding subformulas itself and @{text "F\<iota>x\<psi>"} is still considered to be a
   propositional formula.
 
   This was deemed to be no problem and for cases like \mbox{@{text "[\<lambda>y F\<iota>x(xG)]"}} as
@@ -3217,13 +3248,13 @@ text{*
   It had not been considered that @{text "y"} may appear within the matrix of
   such a description and more so, it may appear in an encoding formula
   within the matrix of such a description, for example 
-  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still considered a propositional formula. At least
+  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still a propositional formula. At least
   it had not been considered that this is a problem, but:
 
   This way the following construction is possible:
 
   \begin{equation}\tag{1}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
+    @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
   \end{equation}
 
   Here @{text "\<psi>"} can be an arbitrary non-propositional formula in which @{text "x"} and @{text "y"}
@@ -3234,12 +3265,12 @@ text{*
   theory the following is derivable:
 
   \begin{equation}\tag{2}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
+    @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
   \end{equation}
 
   \begin{remark}
     Using a modally-strict proof only the following is derivable:\\
-    \mbox{@{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
+    \mbox{@{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
     For the construction of the paradox, the modally fragile statement
     is sufficient, though. Note, however, that it is also possible
     to construct similar paradoxical cases without appealing to
@@ -3253,13 +3284,13 @@ text{*
   formulate the following instead:
 
   \begin{equation}\tag{3}
-    @{text "[\<lambda>y [\<lambda>p \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
+    @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
   \end{equation}
 
   If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
-  exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would do, if it were part of the
-  language (i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
-  the same as the right hand side of 2 when applied to 3). So the @{text "\<lambda>"}-expression
+  exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would, if it were part of the
+  language, i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
+  the same as the right hand side of 2 when applied to 3. Therefore the @{text "\<lambda>"}-expression
   in 3 can be used to reproduce the paradox mentioned in section~\ref{russell-paradox}.
 *}
 
@@ -3344,12 +3375,6 @@ text{*
 end (* context PossibleWorlds *)
 (*>*)
 
-section{* Universal Reasoning using Shallow Semantical Embeddings in HOL *}
-
-text{*
-  
-*}
-  
 section{* Functional Object Theory *}
   
 text{*
@@ -3393,10 +3418,10 @@ text{*
   Independently of the relation between the embedding and the target system, a byproduct
   of the embedding is a working functional variant of object theory that deserves to be studied in
   it own right. To that end future research may want to drop the layered structure of the embedding and
-  dismiss all constructions that solely served to restrict reasoning in the embedding in order to
+  dismiss all constructions that solely serve to restrict reasoning in the embedding in order to
   more closely reproduce the language of PLM. Automated reasoning in the resulting theory will be
-  significantly more powerful.
-
+  significantly more powerful and the interesting properties of the original theory, that result
+  from the introduction of abstract objects and encoding, can still be preserved.
 *}
 
 section{* Relations vs. Functions *}
@@ -3423,7 +3448,7 @@ text{*
   type theory in @{cite rtt}, is in fact not sufficient for a representation of object theory.
 
   It is interesting to note that the embedding does not share several of the properties of
-  the representative functional type theory constructed in @{cite \<open>pp.9-12\<close> rtt}:
+  the representative functional type theory constructed in @{cite \<open>pp. 9-12\<close> rtt}:
 
   \begin{itemize}
     \item Relations are \emph{not} represented as functions from individuals to truth values.
@@ -3451,11 +3476,11 @@ text{*
   logics can help@{cite FreeLogic}. The function @{text "\<Lambda>\<^sub>n"} can map functions of type
   \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
   represent invalid (resp. non-existing) relations. The functions used to represent
-  encoding and exemplification can then be defined to map to an object of type @{text "\<o>"}
+  encoding and exemplification can be defined to map to an object of type @{text "\<o>"}
   that represents invalid propositions if the involved relation is invalid.
 
   In @{cite \<open>pp. 30-31\<close> rtt} it is argued that using a free logic and letting non-propositional
-  formulas not denote is not an option, since it prevents classical reasoning for non-propositional
+  formulas fail to denote is not an option, since it prevents classical reasoning for non-propositional
   formulas. Although this is true for the case of a simple functional type theory, it does not apply
   to the theory constructed above: since only objects of type @{text "R\<^sub>n"} may fail to denote,
   non-propositional reasoning is unaffected by the introduction of the free logic.
@@ -3468,26 +3493,48 @@ text{*
   (see~\ref{differences-lambda}). However, it is likely that future versions of the embedding
   will be able to utilize the concepts described in @{cite FreeLogic} to replace this construction
   by a free logic implementation that will more closely reflect the concepts of propositional formulas
-  and @{text "\<lambda>"}-expressions of object theory.
+  and @{text "\<lambda>"}-expressions present in object theory.
 \end{remark}
 
   In summery it can be concluded that a representation of object theory in functional type theory
   seems feasible, although it is connected with significant complexity (i.e. the introduction of
   additional primitive types and the usage of concepts of free logic). On the other hand, whether
-  relations or functions are more fundamental, is still debatable considering the fact that
-  the proposed construction has to introduce new primitive types for relations\footnote{Note, however,
-  that the embedding can represent relations as function types acting on urelements following the Aczel-model}
-  and the construction is complex in general. Further it has to be noted that so far only the second
-  order fragment of object theory has been considered and the full type-theoretic version of the theory may
-  present further challenges.
+  this result contradicts the philosophical claim that relations are more fundamental than functions,
+  is still debatable considering the fact that the proposed construction has to introduce new
+  primitive types for relations\footnote{Note, however, that the embedding can represent relations
+  as functions acting on urelements following the Aczel-model.} and the construction is complex in
+  general. Further it has to be noted that so far only the second order fragment of object theory
+  has been considered and the full type-theoretic version of the theory may present further challenges.
 *}
 
-section{* Conclusion *}
+section{* Universal Reasoning using Shallow Semantical Embeddings in HOL *}
 
 text{*
-  
-*}
+  The presented work shows that shallow semantical embeddings in HOL have the potential to represent
+  even highly complex theories that originate in a fundamentally different tradition of logical
+  reasoning (e.g. relational instead of functional type theory). The presented embedding represents
+  the most ambitious project in this area so far; therefore it comes at no surprise that it faces
+  unique challenges. Although further research is necessary to arrive at a comprehensive analysis of
+  its implications, the presented embedding can already clearly show the merits of the approach.
 
+  Not only could the embedding uncover a previously unknown paradox in the formulation of its target
+  theory, but it could contribute to the understanding of the relation between functional and
+  relational type-theory and provide further insights into the general structure of the target theory,
+  its semantics and possible models. It can even show that a consistent extension of the theory
+  is possible that could increase its expressibility.
+
+  The presented work introduces novel concepts that can benefit future endeavors of semantical
+  embeddings in general: a layered structure allows the representation of a target theory without
+  extensive prior results about its model structure and provides the means to comprehensively
+  study potential models. Custom proving methods may benefit automated reasoning in an embedded
+  logic and provide the means to reproduce even complex deductive rules of the target system
+  in a user-friendly manner.
+
+  The fact that the embedding can construct a verified environment that allows it to conveniently
+  prove and verify theorems in the target logic while retaining the support of automated
+  reasoning tools, shows the great potential of semantical embeddings in providing the means
+  for a productive interaction between humans and computer systems.
+*}
   
 (*<*)
 end
