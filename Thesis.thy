@@ -1395,7 +1395,7 @@ text{*
 Semantic truth conditions for exemplification formulas are defined using \emph{exemplification extensions}.
 Exemplification extensions are functions relative to
 semantic possible worlds that map objects in the domain of @{text "n"}-place relations to meta-logical truth
-conditions in the case \mbox{@{text "n = 0"}} and sets of @{text "n"}-tuples of objects in the domain
+values in the case \mbox{@{text "n = 0"}} and sets of @{text "n"}-tuples of objects in the domain
 of individuals in the case \mbox{@{text "n \<ge> 1"}}. Formally they are defined as follows
 (see~\ref{TAO_Semantics_Semantics_Exemplification_Extensions}):
 
@@ -1434,7 +1434,7 @@ subsection{* Truth Conditons of Formulas *}
 
 text{*
 
-On the basis of the semantical definitions above it is now possible to define truth conditions
+Based on the definitions above it is now possible to define truth conditions
 for the atomic formulas of the language.
 
 For exemplification formulas of @{text "n"}-place relations
@@ -1460,7 +1460,7 @@ The truth condition for encoding formulas is defined in a similar manner
 The only difference to exemplification formulas is that the encoding extension does not depend
 on the possible world @{term "w"}.
 
-The definitions of truth conditions for complex formulas are straightforward
+The truth conditions for complex formulas are straightforward
 (see~\ref{TAO_Semantics_Semantics_Complex_Formulas}):
 
 \begin{itemize}
@@ -1510,7 +1510,7 @@ The only positions in which such a term could occur in a complex formula is in a
 or in an encoding expression. Given the above truth conditions it becomes clear, that
 the presence of non-denoting terms does \emph{not} mean that there are formulas without
 truth conditions: Since exemplification and encoding formulas are defined to be true \emph{only if}
-the contained individual term has a denotation, such formulas are @{term "False"} for non-denoting
+the contained individual terms have denotations, such formulas are @{term "False"} for non-denoting
 individual terms.
 
 *}
@@ -1561,8 +1561,7 @@ text{*
 
   The formal semantics of PLM imposes several further restrictions some of which are derived as
   auxiliary lemmas. Furthermore some auxiliary statements that are specific to the underlying
-  representation layer are proven. Future work may try to refrain from this second kind
-  of statements.
+  representation layer are proven.
 
   The following auxiliary statements are derived (see~\ref{TAO_Semantics_Semantics_Auxiliary_Lemmata}):
   \begin{enumerate}
@@ -1584,10 +1583,10 @@ text{*
           @{thm[display] d\<^sub>\<kappa>_inject[of "o\<^sub>1" "embedded_style x" "embedded_style y"]}
   \end{enumerate}
 
-  Especially the statements 5 and 6 are only derivable due to the specific construction of
-  the representation layer: since the semantical domains were defined as the representation sets
-  of the respective type of term and denotations were defined canonically, objects that have the
-  same denotation are identical as objects of their abstract type. 3 and 4 are necessary to connect
+  Especially statements 5 and 6 are only derivable due to the specific construction of
+  the representation layer: since the semantic domains were defined as the representation sets
+  of the respective abstract types and denotations were defined canonically, objects that have the
+  same denotation are identical as objects of the abstract type. 3 and 4 are necessary to connect
   concreteness with the underlying distinction between ordinary and abstract objects in the model.
 *}
 
@@ -1607,8 +1606,12 @@ text{*
   The rules themselves rely on the power of the \emph{unifier} of Isabelle/HOL: Any map acting
   on individuals that can be expressed by another map that solely acts on exemplification expressions
   involving the individuals, is shown to be proper. This effectively means that all maps whose arguments
-  only appear in exemplification expressions are proper. For a discussion about the relation between
+  only appear in exemplification expressions are proper. Using the provided introduction rules
+  Isabelle's unifier can derive the propriety of such maps automatically.
+
+  For a discussion about the relation between
   this concept and admissible @{text "\<lambda>"}-expressions in PLM see section~\ref{differences-lambda}.
+
 *}
 
 (*<*)
