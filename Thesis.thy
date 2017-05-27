@@ -1635,11 +1635,11 @@ text{*
   the requirements of the type class, so initially statements involving types restricted
   to a type class can not be applied to any specific type.
 
-  To allow this the type class has to be \emph{instantiated} for the desired type. This is done
-  by first providing a definition of the constants of the type class that is specific to the
-  respective type and then providing proofs for each assumption made by the type class given the
-  particular type and the provided definitions. Once this is done any statement that was proven for
-  the general type class can be applied to this type.
+  To allow that the type class has to be \emph{instantiated} for the desired type. This is done
+  by first providing definitions for the constants of the type class specific to the
+  respective type. Then each assumption made by the type class has to be proven given the
+  particular type and the provided definitions. After that any statement that was proven for
+  the type class can be applied to the instantiated type.
 
   In the case of general all quantification for the embedding this concept can be utilized by
   introducing the type class @{class quantifiable} that is equipped with a constant that is used
@@ -1653,8 +1653,8 @@ text{*
   The instantiation proofs only need to refer to the statements derived in the semantics section for the respective version
   of the quantifier and are thereby independent of the representation layer.
 
-  From this point onward therefore the general all quantifier replace the type specific
-  quantifiers. This is true even if a quantification is meant   to only range over objects of a
+  From this point onward therefore the general all quantifier can completely replace the type specific
+  quantifiers. This is true even if a quantification is meant to only range over objects of a
   particular type: In this case the desired type (if it can not implicitly be deduced from the
   context) can be stated explicitly while still using the general quantifier.
 
