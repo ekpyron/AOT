@@ -1290,8 +1290,8 @@ Several subtleties have to be considered:
 \begin{itemize}
   \item @{term "n"}-place relations are only represented for \mbox{@{text "n \<le> 3"}}.
         As the resulting language is already expressive enough to represent the most interesting
-        parts of the theory and analog implementations for \mbox{@{text "n > 3"}} would be trivial
-        to implement, this is considered to be sufficient. Future work may attempt to construct a general
+        parts of the theory and it would be trivial to add analog implementations for
+        \mbox{@{text "n > 3"}}, this is considered to be sufficient. Future work may attempt to construct a general
         representation for @{text "n"}-place relations for arbitrary @{text "n"}.
   \item There is a distinction between individual terms and variables. This circumstance
         was already mentioned in section~\ref{individual-terms-and-descriptions}: an individual term
@@ -1308,8 +1308,8 @@ Several subtleties have to be considered:
         variable in PLM. This is done to assure that only quantification ranging over these types
         are part of the embedded language. The definition of a general quantifier in the representation layer
         could for example be used to quantify over individual \emph{terms} (of type @{type \<kappa>}), whereas
-        only quantification ranging over individuals (of type @{type \<nu>}) are part of the language of PLM.
-        Once the semantics is introduced in section~\ref{semantics}, a \emph{type class} is introduced
+        only quantification ranging over individuals (of type @{type \<nu>}) is part of the language of PLM.
+        After the semantics is introduced in section~\ref{semantics}, a \emph{type class} is constructed
         that is characterized by the semantics of quantification and instantiated for all variable types.
         This way a general binder that can be used for all variable types can be defined. The details
         of this approach are explained in section~\ref{general-quantifier}.
@@ -1372,7 +1372,7 @@ worlds @{typ W} and the primitive actual world @{term "dw"} as the semantical ac
 @{term "w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
 
 \begin{remark}
-Although the definitions for semantical domains and denotations seem trivial, conceptually
+Although the definitions for semantical domains and denotations seem redundant, conceptually
 the abstract types of the representation layer now have the role of primitive types. Although for
 simplicity the last section regarded the type @{type \<o>} as synonym of \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}, it was
 introduced as a distinct type for which the set of all functions of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} merely
@@ -1380,7 +1380,7 @@ serves as the underlying set of representatives. An object of type @{type \<o>} 
 substituted for a variable of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}. To do so it first has to be mapped to its
 representative of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} by the use of the morphism @{term "eval\<o>"} that was introduced
 in the type definition and omitted in the last section for the sake of readability. Therefore although
-the definitions of the semantic domains and denotation functions may seem trivial, the domains are
+the definitions of the semantic domains and denotation functions may seem superfluous, the domains are
 different types than the corresponding abstract type and the denotation functions are functions between
 distinct types (note the use of @{theory_text "lift_definition"} rather than @{theory_text "definition"} 
 for the denotation functions in~\ref{TAO_Semantics_Semantics_Denotations} that allows to define
