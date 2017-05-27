@@ -527,7 +527,7 @@ the morning star is different from the concept of being the evening star. The Th
 Object therefore does not prohibit the existence of an abstract object that \emph{encodes} @{text "F"},
 but does \emph{not} encode @{text "G"}. Therefore by the definition of identity for properties
 it does \emph{not} hold that @{text "F = G"}. As a matter of fact the Theory of Abstract Object
-does not force @{text "F = G"} for any @{text "F"} or @{text "G"}. It rather stipulates what needs
+does not force @{text "F = G"} for any @{text "F"} and @{text "G"}. It rather stipulates what needs
 to be proven, if @{text "F = G"} is to be established, namely that they are necessarily encoded by
 the same objects. Therefore if two properties \emph{should} be equal in some context an axiom has to be added
 to the theory that allows it to prove that both properties are encoded by the same abstract objects.
@@ -561,16 +561,17 @@ text{*
 \label{aczel-model}
 
 When thinking about a model for the theory one will quickly notice the following problem:
-The comprehension axiom for abstract objects implies that for each set of properties there
-exists an abstract object, hence there exists an injective map from the power set of properties
-to the set of abstract objects. On the other hand for an object @{text "y"} the term
-\mbox{@{text "[\<lambda>x Rxy]"}} constitutes a property. If for distinct objects these properties were always
-distinct, this would result in a violation of Cantor's theorem, since this would mean that
-there is an injective map from the power set of properties to the set of properties. So does the
-Theory of Abstract Objects as constructed above have a model? An answer to this question was provided
-by Peter Aczel\footnote{In fact to our knowledge Dana Scott proposed a first model for the theory before Peter Aczel
-that we believe is a special case of an Aczel-model with only one \emph{special urelement}.}
-who proposed the model structure illustrated in figure~\ref{aczel-model-graphic}.
+The comprehension axiom for abstract objects implies that for each set of properties there exists
+an abstract object encoding exactly those properties. Considering the definition of identity there therefore
+exists an injective map from the power set of properties to the set of abstract objects.
+On the other hand for an object @{text "y"} the term \mbox{@{text "[\<lambda>x Rxy]"}} constitutes a property.
+If for distinct objects these properties were distinct, this would result in a violation of
+Cantor's theorem, since this would mean that there is an injective map from the power set of properties
+to the set of properties. So does the Theory of Abstract Objects as constructed above have a model?
+An answer to this question was provided by Peter Aczel\footnote{In fact to our knowledge Dana Scott
+proposed a first model for the theory before Peter Aczel that we believe is a special case of an
+Aczel-model with only one \emph{special urelement}.} who proposed the model structure illustrated
+in figure~\ref{aczel-model-graphic}.
 
 \begin{figure}[!h]
   \caption{Illustration of the Aczel-Model, courtesy of Edward Zalta}
@@ -642,7 +643,7 @@ text{*
   One of the major challenges of an implementation of the Theory of Abstract Objects in functional
   logic is the fact that a naive representation of the @{text "\<lambda>"}-expressions of the theory using the
   unrestricted, @{text "\<beta>"}-convertible @{text "\<lambda>"}-expressions of functional logic results in the following
-  paradox (see @{cite \<open>p. 24-25\<close> rtt}):
+  paradox (see @{cite \<open>pp. 24-25\<close> rtt}):
 
   Assume @{text "[\<lambda>x \<exists>F (xF & \<not>Fx)]"} were a valid @{text "\<lambda>"}-expression denoting a relation.
   Now the comprehension axiom of abstract objects requires the following:
@@ -765,8 +766,8 @@ several \emph{layers} as follows:
   \item The third layer derives the axiom system of PLM mostly using the semantics of the second
         layer and partly using the meta-logic directly.
   \item Based on the third layer the deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM}
-        is derived solely using the axiom system of the third layer and the meta-rules stated
-        in PLM. The meta-logic and the properties of the representation layer are explicitly
+        is derived solely using the axiom system of the third layer and the fundamental meta-rules
+        stated in PLM. The meta-logic and the properties of the representation layer are explicitly
         not used in any proofs. Thereby the reasoning in this last layer is independent of the
         first two layers.
 \end{itemize}
@@ -1006,7 +1007,7 @@ text{*
 
   That is for a given state @{term s} and a given possible world @{term w} it holds that
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
-  the denoted individual @{term x} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
+  the denoted individual @{term "rep x"} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
   some object @{term \<alpha>} (i.e. it is an abstract object) and @{term F} is contained in @{term \<alpha>}
   (remember that abstract objects are defined to be sets of one-place relations).
 
