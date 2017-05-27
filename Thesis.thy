@@ -2994,8 +2994,12 @@ text{*
   @{text "\<lambda>"}-expressions than PLM. This effectively means that the theory constructed in the
   embedding is more general than the theory in PLM.
 
-  TODO: continue discussion
-
+  Consequently future research may on the one hand investigate available options to restrict
+  the embedding further in order to arrive at a smaller set of relations that is in correspondence
+  with PLM. On the other hand the embedding suggests that it is consistently possible to extend the theory
+  of PLM by allowing a larger set of relations. Therefore it would be interesting to further analyse
+  the philosophical implications of such an extension and to investigate the question, which
+  new interesting theorems can be derived in such an extended theory.
 *}
 
 
@@ -3340,18 +3344,150 @@ text{*
 end (* context PossibleWorlds *)
 (*>*)
 
-  
-section{* Relations vs. Functions *}
-
-text{*
-  TODO
-*}
-
 section{* Universal Reasoning using Shallow Semantical Embeddings in HOL *}
 
 text{*
-  TODO
+  
 *}
+  
+section{* Functional Object Theory *}
+  
+text{*
+  The first and foremost goal of the presented work was to show that the second order fragment of
+  the Theory of Abstract Object as described in PLM can be represented in functional
+  higher-order logic using a shallow semantical embedding.
+
+  As a result a theory was constructed in Isabelle/HOL that - although its soundness
+  is yet to be formally verified - is most likely able to represent and verify all reasoning
+  in the target theory\footnote{Note that the target theory for the embedding
+  is the second-order fragment of object theory. An embedding of the full type-theoretic
+  version of object theory will have to face additional challenges and its feasibility has
+  to be studied in separate research.}. A formal analysis of the soundness of the embedding
+  is unfortunately not possible at this time, since the theory of PLM first has to be adjusted
+  to prevent the discovered paradox. Depending on the precise modifications of PLM the embedding
+  will have to be adjusted accordingly, after which the question of its formal soundness can
+  be revisited.
+
+  The embedding goes to great lengths to construct a restricted environment, in which it is possible
+  to derive new theorems that can easily be translated back to the reference system of PLM.
+  The fact that the construction of the paradox described in section~\ref{paradox} could be reproduced
+  in the target logic, strongly indicates the merits and success of this approach.
+
+  What the embedding in its current form is not able to achieve, however, is completeness with respect
+  to the theory of PLM: using the meta-logic theorems can be derived in the embedding, that are not
+  derivable using the deductive system of PLM.
+
+  For this reason future research may want to address the following questions:
+
+  \begin{itemize}
+    \item Can the representation layer of the embedding be further restricted in such a way, that only
+          theorems of PLM are derivable?
+    \item If not, can the embedding be restricted in such a way, that all derivable theorems
+          that are not part of PLM can be identified syntactically (resp. are not syntactically
+          well-formed in PLM)?
+    \item Is there an extension of the formal system constructed in PLM, for which the embedding
+          is in fact complete, i.e. every theorem derivable in the embedding is a theorem in the
+          extended system?
+  \end{itemize}
+
+  Independently of the relation between the embedding and the target system, a byproduct
+  of the embedding is a working functional variant of object theory that deserves to be studied in
+  it own right. To that end future research may want to drop the layered structure of the embedding and
+  dismiss all constructions that solely served to restrict reasoning in the embedding in order to
+  more closely reproduce the language of PLM. Automated reasoning in the resulting theory will be
+  significantly more powerful.
+
+*}
+
+section{* Relations vs. Functions *}
+
+text{*
+  As mentioned in the introduction, Openheimer and Zalta argue in @{cite rtt} that
+  relational type theory is more fundamental than functional type theory. One of their
+  main arguments is that the Theory of Abstract Objects is not representable in functional
+  type theory. Although there remain open questions and there may still be reservations about
+  the accuracy of the representation constructed in the presented embedding, its initial success
+  suggests that the topic has to be examined more closely.
+
+  First of all it is important to note that the result in @{cite rtt} is actually supported
+  by the presented work in the following sense: it is impossible to represent the Theory of
+  Abstract Objects by representing its @{text "\<lambda>"}-expressions as primitive @{text "\<lambda>"}-expressions
+  in functional logic. Furthermore the embedding supports the argument that exemplification
+  cannot be represented classically as function application, while at the same time introducing
+  encoding as a second mode of predication.
+
+  This already establishes that the traditional approach to translate relational type theory
+  to functional type theory in fact fails for the Theory of Abstract Object. Furthermore the
+  embedding suggests that a simple version of functional type theory that only involves two
+  primitive types (for individuals and propositions), as used as a representative functional
+  type theory in @{cite rtt}, is in fact not sufficient for a representation of object theory.
+
+  It is interesting to note that the embedding does not share several of the properties of
+  the representative functional type theory constructed in @{cite \<open>pp.9-12\<close> rtt}:
+
+  \begin{itemize}
+    \item Relations are \emph{not} represented as functions from individuals to truth values.
+    \item Exemplification is \emph{not} represented as simple function application.
+    \item The @{text "\<lambda>"}-expressions of object theory are \emph{not} represented as
+          primitive @{text "\<lambda>"}-expressions.
+  \end{itemize}
+
+  To illustrate the general schema that the embedding uses instead, assume
+  that there is an additional primitive type for each arity of relations @{text "R\<^sub>n"}.
+  Let further @{text "\<iota>"} be the type of individuals and @{text "\<o>"} be the type of propositions.
+  The general construct is now the following:
+
+  \begin{itemize}
+    \item Exemplification (of an @{text "n"}-place relation) is a function of type \mbox{@{text "R\<^sub>n\<Rightarrow>\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}}.
+    \item Encoding is a function of type \mbox{@{text "\<iota>\<Rightarrow>R\<^sub>1\<Rightarrow>\<o>"}}.
+    \item To represent @{text "\<lambda>"}-expressions functions @{text "\<Lambda>\<^sub>n"} of type \mbox{@{text "(\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>)\<Rightarrow>R\<^sub>n"}} are introduced.
+          The @{text "\<lambda>"}-expression \mbox{@{text "[\<lambda>x\<^sub>1\<dots>x\<^sub>n \<phi>]"}} of object theory is represented as
+          \mbox{@{text "\<Lambda>\<^sub>n[\<lambda>x\<^sub>1\<dots>x\<^sub>n \<phi>]"}}.
+  \end{itemize}
+
+  Interestingly one issue still remains that is in fact reflected in the constructed
+  embedding as well: Not all functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to
+  denote relations. However, in the proposed construction a concept used in the embedding of free
+  logics can help@{cite FreeLogic}. The function @{text "\<Lambda>\<^sub>n"} can map functions of type
+  \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
+  represent invalid (resp. non-existing) relations. The functions used to represent
+  encoding and exemplification can then be defined to map to an object of type @{text "\<o>"}
+  that represents invalid propositions if the involved relation is invalid.
+
+  In @{cite \<open>pp. 30-31\<close> rtt} it is argued that using a free logic and letting non-propositional
+  formulas not denote is not an option, since it prevents classical reasoning for non-propositional
+  formulas. Although this is true for the case of a simple functional type theory, it does not apply
+  to the theory constructed above: since only objects of type @{text "R\<^sub>n"} may fail to denote,
+  non-propositional reasoning is unaffected by the introduction of the free logic.
+
+\begin{remark}
+  Although the constructed functional type theory is based on the general structure of the
+  presented embedding, instead of introducing concepts of free logic @{text "\<lambda>"}-expressions
+  involving non-propositional formulas are assigned \emph{non-standard} denotations,
+  i.e. they do denote, but @{text "\<beta>"}-conversion does only hold under certain conditions
+  (see~\ref{differences-lambda}). However, it is likely that future versions of the embedding
+  will be able to utilize the concepts described in @{cite FreeLogic} to replace this construction
+  by a free logic implementation that will more closely reflect the concepts of propositional formulas
+  and @{text "\<lambda>"}-expressions of object theory.
+\end{remark}
+
+  In summery it can be concluded that a representation of object theory in functional type theory
+  seems feasible, although it is connected with significant complexity (i.e. the introduction of
+  additional primitive types and the usage of concepts of free logic). On the other hand, whether
+  relations or functions are more fundamental, is still debatable considering the fact that
+  the proposed construction has to introduce new primitive types for relations\footnote{Note, however,
+  that the embedding can represent relations as function types acting on urelements following the Aczel-model}
+  and the construction is complex in general. Further it has to be noted that so far only the second
+  order fragment of object theory has been considered and the full type-theoretic version of the theory may
+  present further challenges.
+*}
+
+section{* Conclusion *}
+
+text{*
+  
+*}
+
   
 (*<*)
 end
