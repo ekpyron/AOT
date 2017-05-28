@@ -1946,7 +1946,7 @@ text{*
   \end{center}
 
   Axioms are unconditionally true in all possible worlds. The only exceptions are
-  \emph{necessitation-averse}, resp. \emph{modally fragile} axioms\footnote{Currently PLM uses
+  \emph{necessitation-averse}, resp. \emph{modally-fragile} axioms\footnote{Currently PLM uses
   only one such axiom, see~\ref{axioms-actuality}.}. Such axioms are stated using the following definition:
   \begin{center}
     @{thm actual_validity_def[expand1, of \<phi>]}
@@ -1970,7 +1970,7 @@ text{*
   restrictions). Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
   the actualization of the schema and the necessitation of the schema is also an axiom.
-  The modally fragile Axiom~\ref{PM-logic-actual} is the only exception:
+  The modally-fragile Axiom~\ref{PM-logic-actual} is the only exception:
   Its necessitations are not axioms as well.
 
   Since in Isabelle/HOL free variables in a theorem already range over all terms of the same type
@@ -1984,7 +1984,7 @@ text{*
     \item @{thm[display] closures_necessitation[of \<phi>]}
   \end{itemize}
 
-  For modally fragile axioms only the following rules are introduced:
+  For modally-fragile axioms only the following rules are introduced:
 
   \begin{itemize}
     \item @{thm[display] necessitation_averse_axiom_instance[of \<phi>]}
@@ -2345,9 +2345,9 @@ text{*
   \label{PLM-modally-strict}
 
   PLM distinguishes between two sets of theorems, the set of theorems, that are derivable from
-  the complete axiom system, and the set of theorems, that have \emph{modally strict} proofs.
+  the complete axiom system, and the set of theorems, that have \emph{modally-strict} proofs.
 
-  A modally strict proof is a proof that does not use modally fragile axioms (namely the axiom
+  A modally-strict proof is a proof that does not use modally-fragile axioms (namely the axiom
   of actuality described in section~\ref{axioms-actuality}).
 
   Although it is challenging to completely reproduce this distinction in the embedding
@@ -2357,16 +2357,16 @@ text{*
   in the embedding as: \mbox{@{term "[\<phi> in v]"}}
 
   Here the variable @{term "v"} implicitly ranges over \emph{any} semantic possible world of
-  type @{type i}, including the designated actual world @{term "dw"}. Since modally fragile axioms
+  type @{type i}, including the designated actual world @{term "dw"}. Since modally-fragile axioms
   only hold in @{term "dw"}, they therefore cannot be used to prove a statement formulated
   this way, as desired.
 
-  Non-modally strict theorems on the other hand are stated to be true only for the designated
+  Non-modally-strict theorems on the other hand are stated to be true only for the designated
   actual world: \mbox{@{term "[\<phi> in dw]"}}
 
-  This way necessary axioms, as well as modally fragile axioms can be used in the proofs. However
-  it is not possible to infer from a modally fragile theorem that the same statement holds as a
-  modally strict theorem
+  This way necessary axioms, as well as modally-fragile axioms can be used in the proofs. However
+  it is not possible to infer from a modally-fragile theorem that the same statement holds as a
+  modally-strict theorem.
 
   It is important to note that the set of modally-strict theorems in PLM is in fact a \emph{subset}
   of the theorems of the form \mbox{@{term "[\<phi> in v]"}} that are semantically true in the embedding.
@@ -2984,11 +2984,12 @@ section{* Differences between the Embedding and PLM *}
   
 text{*
   Although the embedding attempts to represent the language and logic of PLM as precisely
-  as possible, it is important to note that there remain differences between PLM and
-  its representation in Isabelle/HOL. Some of the known differences are discussed in the following
-  sections. A complete analysis of the precise relation between PLM and the embedding unfortunately
-  goes beyond the scope of this thesis, but constitutes a highly interesting and relevant topic for
-  future research.
+  as possible, there remain some differences between PLM and its representation in Isabelle/HOL.
+  Some of the known differences are discussed in the following sections.
+  A complete analysis of the precise relation between PLM and the embedding unfortunately
+  goes beyond the scope of this thesis and will only be possible after PLM has recovered
+  from the discovered paradox (see~\ref{paradox}). Such an analysis will be a highly
+  interesting and relevant topic for future research.
 *}
 
 subsection{* Propositional Formulas and $\lambda$-Expressions *}
@@ -3005,14 +3006,14 @@ text{*
   syntactic distinction and to devise a semantic criterion that can be used as a replacement
   for the syntactic restriction.
 
-  The identified issue, that is addressed by the syntactic restriction in PLM, is described
+  The identified issue, that is addressed by the distinction in PLM, is described
   in section~\ref{russell-paradox}: Allowing non-propositional formulas in @{text "\<beta>"}-convertible
   @{text "\<lambda>"}-expressions without restriction leads to paradoxes.
 
   Since the embedding is known to be consistent, the issue presents itself in a slightly
   different fashion: the paradox is constructed under the assumption that @{text "\<beta>"}-conversion
   holds unconditionally for all @{text "\<lambda>"}-expressions. In the embedding on the other hand in
-  general @{text "\<lambda>"}-expressions have a \emph{non-standard} semantics and @{text "\<beta>"}-conversion
+  general @{text "\<lambda>"}-expressions have a \emph{non-standard} semantic and @{text "\<beta>"}-conversion
   only follows as a special case (see~\ref{artificial-theorems-lambda}).
   Thereby the consistency of the system is preserved.
 
@@ -3020,8 +3021,8 @@ text{*
   constructs a necessary and sufficient condition on functions that may serve as matrix of
   a @{text "\<lambda>"}-expression while allowing @{text "\<beta>"}-conversion.
 
-  The idea of this concept was that every @{text "\<lambda>"}-expression that is syntactically well-formed
-  in PLM would have a proper map as its matrix. Two subtleties have to be considered, though:
+  The idea is that every @{text "\<lambda>"}-expression that is syntactically well-formed
+  in PLM should have a proper map as its matrix. Two subtleties have to be considered, though:
 
   It was discovered that there are @{text "\<lambda>"}-expressions that are part of PLM, whose matrix
   does not correspond to a proper map in the embedding. The analysis of this issue led to the
@@ -3031,20 +3032,18 @@ text{*
 
   The remaining subtlety is the fact that there are proper maps, that do not correspond to
   propositional formulas. Some examples have already been mentioned in section~\ref{artificial-theorems-lambda}.
-  Therefore the embedding contains more proper, @{text "\<beta>"}-convertible
-  @{text "\<lambda>"}-expressions than PLM. This effectively means that the theory constructed in the
-  embedding is more general than the theory in PLM.
+  Therefore the embedding suggests that the theory of PLM can be consistently extended to include
+  a larger set of proper, @{text "\<beta>"}-convertible @{text "\<lambda>"}-expressions. Since the set of
+  relations of PLM already has to be adjusted to prevent the discovered paradox, such an extension presents
+  a viable option.
 
-  Consequently future research may on the one hand investigate available options to restrict
-  the embedding further in order to arrive at a smaller set of relations that is in correspondence
-  with PLM. On the other hand the embedding suggests that it is consistently possible to extend the theory
-  of PLM by allowing a larger set of relations. Therefore it would be interesting to further analyse
-  the philosophical implications of such an extension and to investigate the question, which
-  new interesting theorems can be derived in such an extended theory.
+  Once PLM has recovered from the paradox, future research can consider available
+  options to align the set of relations present in the embedding with the resulting set of
+  relations of the new version of PLM.
 *}
 
 
-  
+
 subsection{* Terms and Variables *}
 
 text{*
@@ -3055,10 +3054,8 @@ text{*
   instantiated for any individual term, given that it denotes (\mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}).
 
   As already mentioned in sections~\ref{individual-terms-and-descriptions} and~\ref{quantification-axioms}
-  the embedding uses a slightly different approach. In the embedding individual variables and
-  individual terms have different \emph{types} and an individual variable (of type @{type \<nu>})
-  has to be converted to an individual term (of type @{type \<kappa>}) using the decoration @{term "embedded_style (DUMMY\<^sup>P)"},
-  so that it can for example be used in an exemplification formula (which is defined for the type @{type \<kappa>}).
+  the embedding uses a slightly different approach: In the embedding individuals and
+  individual terms have different \emph{types}.
 
   The technicalities of this approach and a discussion about the accuracy of this representation
   were already given in the referenced sections, so at this point it suffices to summarize the
@@ -3070,7 +3067,8 @@ text{*
     \item Meta-level variables (like @{text "\<tau>"}) ranging over all individual terms
           in PLM can be represented as variables of type @{type \<kappa>}.
     \item Objects of type @{type \<nu>} have to be explicitly converted to objects of type @{type \<kappa>}
-          if they are to be used in a context that allows general individual terms.
+          using the decoration @{term "embedded_style (DUMMY\<^sup>P)"}, if they are to be used in a context
+          that allows general individual terms.
     \item The axioms of quantification are adjusted to go along with this representation
           (see~\ref{quantification-axioms}).
   \end{itemize}
@@ -3112,10 +3110,10 @@ However, the set of modally-strict theorems in PLM corresponds to only a subset
 of the theorems that are semantically true in arbitrary (semantic) possible worlds.
 
 Modally-strict theorems in PLM are defined using a proof-theoretic concept:
-modally-strict proofs are not allowed to use modally fragile axioms. They are solely derived
+modally-strict proofs are not allowed to use modally-fragile axioms. They are solely derived
 from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}).
 
-The metarule RN states in essence that if there is a modally strict proof for @{text "\<phi>"},
+The metarule RN states in essence that if there is a modally-strict proof for @{text "\<phi>"},
 then @{text "\<box>\<phi>"} is derivable as a theorem. PLM proves this fact by induction on the length
 of the derivation. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
 gives an example of a case in which the converse is false: if @{text "\<box>\<phi>"} is derivable as a
@@ -3169,7 +3167,7 @@ text{*
   outlined in the language of PLM.
 
   The paradox has since been confirmed by Edward Zalta and a vivid discussion
-  about the repercussions and possible solutions has developed. At the time of writing
+  about its repercussions and possible solutions has developed. At the time of writing
   it has become clear that there are several options to recover from the paradox while
   in essence retaining the full set of theorems of PLM. So far no final decision has been
   reached about which option will be implemented in future versions of PLM.
@@ -3179,24 +3177,23 @@ subsection{* Discovery of the Paradox *}
   
 text{*
   The discovery of the paradox originates in the analysis of the concept of \emph{proper maps}
-  in the embedding and its relation to propositional formulas allowed in the matrix of
-  @{text "\<lambda>"}-expressions in PLM (see~\ref{differences-lambda}).
+  in the embedding and its relation to propositional formulas in PLM, which are the only formulas
+  PLM allows as the matrix of @{text "\<lambda>"}-expressions (see~\ref{differences-lambda}).
 
-  While verifying the concept, that the matrix of every @{text "\<lambda>"}-expression allowed in PLM
+  While verifying the conjecture, that the matrix of every @{text "\<lambda>"}-expression allowed in PLM
   corresponds to a proper map in the embedding, it was discovered, that @{text "\<lambda>"}-expressions of
   the form \mbox{@{text "[\<lambda>y F\<iota>x(y[\<lambda>z Rxz])]"}} in which the bound variable @{text "y"} occurs in
   an encoding formula inside the matrix of a definite description, were part of PLM, but their
   matrix was \emph{not} a proper map in the embedding and therefore @{text "\<beta>"}-conversion
   was not derivable for these terms.
 
-  In the attempt to proof that @{text "\<beta>"}-conversion would in fact follow for these expressions
-  in the embedding as well, it first became clear, that this is not the case without a restriction
-  of the Aczel-model. Namely without some kind of restriction of the map from abstract objects to urelements,
-  @{text "\<beta>"}-conversion would not be derivable for these cases.
+  Further analysis showed that a modification of the embedding that would allow @{text "\<beta>"}-conversion
+  for such expressions, would have to involve a restriction of the Aczel-model (in particular of the map
+  from abstract objects to urelements).
 
-  In order to better understand how the embedding could accommodate these circumstances, the
+  In order to understand how the Aczel-model could be adequately restricted, the
   consequences of allowing @{text "\<beta>"}-conversion in the mentioned cases \emph{by assumption}
-  were further studied in the embedding which led to the first proof of inconsistency
+  were studied in the embedding. This led to the first proof of inconsistency
   (see~\ref{TAO_Paradox_original-paradox}):
 
   \begin{center}
@@ -3209,15 +3206,17 @@ text{*
   @{term "False"} is derivable in the embedding. However @{text "\<lambda>"}-expressions with the
   equivalent of such maps as matrix were in fact part of PLM.
 
-  Since the meta-logic was not used in the proof, it was possible to reconstruct an equivalent proof
-  in the language of PLM, which then served as the basis for further discussions with Edward Zalta.
+  Since the inconsistency can be derived without relying on the meta-logic,
+  it was immediately possible to translate the proof back to the language of PLM.
+  The resulting formulation then served as the basis for further
+  discussions with Edward Zalta.
 
   Since then the issue leading to the paradox was identified as the \emph{description backdoor}
   (see~\ref{TAO_Paradox_description_backdoor}) that can be used to construct a variety of
-  paradoxical cases, e.g. the paradox mentioned in section~\ref{russell-paradox} can be reconstructed.
+  paradoxical cases, e.g. the paradox described in section~\ref{russell-paradox} can be reconstructed.
   This refined version of the paradox is used in the inconsistency proof in \ref{TAO_Paradox_russell-paradox}
-  and reconstructed in the language of PLM in the next section, while repeating the general situation
-  leading to the paradox without referring to the particularities of the embedding.
+  and is outlined in the language of PLM in the next section. The general situation
+  leading to the paradox is repeated without referring to the particularities of the embedding.
 *}
 
 subsection{* Construction using the Language of PLM *}
@@ -3235,28 +3234,23 @@ text{*
   @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
   paradox as described in section~\ref{russell-paradox}.
 
-  The idea was that not allowing non-propositional formulas in
-  @{text "\<lambda>"}-expressions would be sufficient to exclude \emph{all} cases that lead to
+  The idea was that excluding non-propositional formulas in
+  @{text "\<lambda>"}-expressions would be sufficient to prevent such
   inconsistencies. This was shown to be incorrect, though.
 
-  The problem is the \emph{description backdoor}. The syntactical definition
-  of propositional formulas does allow expressions of the following form:
-  \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}} where @{text "\<psi>"} does not have to be propositional itself,
-  but can be \emph{any} formula. This is due to the definition of \emph{subformula}:
-  by this definition @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"}
-  \emph{may} contain encoding subformulas itself and @{text "F\<iota>x\<psi>"} is still considered to be a
-  propositional formula.
+  The problem is the \emph{description backdoor}. The term \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}}
+  is well-formed, even if @{text "\<psi>"} is \emph{not} propositional. This is due to the definition
+  of \emph{subformula}: @{text "\<psi>"} is \emph{not} a subformula of @{text "F\<iota>x\<psi>"}, so @{text "\<psi>"} \emph{may} contain
+  encoding subformulas itself and @{text "F\<iota>x\<psi>"} is still a propositional formula.
 
   This was deemed to be no problem and for cases like \mbox{@{text "[\<lambda>y F\<iota>x(xG)]"}} as
-  they are mentioned in PLM this is indeed true.
+  they are mentioned and used in PLM this is indeed true.
 
   It had not been considered that @{text "y"} may appear within the matrix of
-  such a description and more so, it may appear in an encoding formula
-  within the matrix of such a description, for example 
-  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still a propositional formula. At least
-  it had not been considered that this is a problem, but:
+  such a description and more so, it may appear in an encoding expression, for example 
+  \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still a propositional formula.
 
-  This way the following construction is possible:
+  Therefore the following construction is possible:
 
   \begin{equation}\tag{1}
     @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
@@ -3266,7 +3260,7 @@ text{*
   may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
   @{text "\<beta>"}-conversion holds.
 
-  Now it is possible to show that by @{text "\<beta>"}-conversion and description
+  It is possible to show that by @{text "\<beta>"}-conversion and description
   theory the following is derivable:
 
   \begin{equation}\tag{2}
@@ -3276,8 +3270,8 @@ text{*
   \begin{remark}
     Using a modally-strict proof only the following is derivable:\\
     \mbox{@{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
-    For the construction of the paradox, the modally fragile statement
-    is sufficient, though. Note, however, that it is also possible
+    For the construction of the paradox, the modally-fragile statement
+    is sufficient. Note, however, that it is possible
     to construct similar paradoxical cases without appealing to
     any modally-fragile axioms or theorems.
   \end{remark}
@@ -3302,12 +3296,12 @@ text{*
 subsection{* Possible Solutions *}
 
 text{*
-  Fortunately no theorems were derived in PLM, that actually depend on problematic
+  Fortunately no theorems were derived in PLM, that actually use problematic
   @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
   paradox without losing any theorems. At the time of writing it seems likely that
   a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory and only
   \emph{proper} @{text "\<lambda>"}-expressions will be forced to have denotations and allow @{text "\<beta>"}-conversion.
-  Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, would not be considered \emph{proper}.
+  Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, will not be considered \emph{proper}.
   Several options are available to define the propriety of \emph{@{text "\<lambda>"}-expressions}
   and adjust PLM in detail.
 
