@@ -2370,7 +2370,7 @@ text{*
 
   It is important to note that the set of modally-strict theorems in PLM is in fact a \emph{subset}
   of the theorems of the form \mbox{@{term "[\<phi> in v]"}} that are semantically true in the embedding.
-  However, the rules introduced in PLM are stated in such a way that only this subset is in fact
+  However, since only the rules of PLM are introduced in the embedding only this subset is in fact
   derivable without falling back to the semantics or the meta-logic. This is discussed in more detail
   in section~\ref{differences-modally-strict}.
 *}
@@ -3058,7 +3058,7 @@ text{*
   the embedding uses a slightly different approach. In the embedding individual variables and
   individual terms have different \emph{types} and an individual variable (of type @{type \<nu>})
   has to be converted to an individual term (of type @{type \<kappa>}) using the decoration @{term "embedded_style (DUMMY\<^sup>P)"},
-  so that it can be used for example in an exemplification formula (which is defined for the type @{type \<kappa>}).
+  so that it can for example be used in an exemplification formula (which is defined for the type @{type \<kappa>}).
 
   The technicalities of this approach and a discussion about the accuracy of this representation
   were already given in the referenced sections, so at this point it suffices to summarize the
@@ -3088,10 +3088,11 @@ text{*
   unconditionally for relation terms, this simplification is justified.
 
   The recent developments described in section~\ref{paradox}, however, suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
-  will likely no longer hold unconditionally for every relation term in future versions of PLM, so
-  future versions of the embedding will have to include a distinction between relation terms and
-  relation variables in a similar way as it is already done for individuals.
-
+  will likely no longer hold unconditionally for every relation term in future versions of PLM.
+  Therefore future versions of the embedding will have to include a distinction between relation
+  terms and relation variables in a similar way as it is already done for individuals. An alternative
+  approach that could result in a more elegant representation would be to implement concepts of free
+  logic based on the research in @{cite FreeLogic} for both individuals and relations.
 *}
 
 subsection{* Modally-strict Proofs and the Converse of RN *}
@@ -3105,20 +3106,22 @@ text{*
 
 \label{differences-modally-strict}
 
-As already mentioned in section~\ref{PLM-modally-strict}, modally-strict theorems
+As described in section~\ref{PLM-modally-strict} modally-strict theorems
 in the embedding are stated in the form \mbox{@{term "[\<phi> in v]"}} for arbitrary @{term "v"}.
-On the other hand more statements of the form \mbox{@{term "[\<phi> in v]"}} are semantically
-true in the embedding, than would be derivable using modally-strict proofs in PLM.
+However, the set of modally-strict theorems in PLM corresponds to only a subset
+of the theorems that are semantically true in arbitrary (semantic) possible worlds.
 
-To understand this circumstance and the solution for this issue used in the embedding,
-the converse of the meta-rule RN has to be considered.
+Modally-strict theorems in PLM are defined using a proof-theoretic concept:
+modally-strict proofs are not allowed to use modally fragile axioms. They are solely derived
+from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}).
 
-In PLM the metarule RN states in essence that if there is a modally strict proof for @{text "\<phi>"},
-then @{text "\<box>\<phi>"} is derivable as a theorem. Therefore the converse of RN would be that if 
-@{text "\<box>\<phi>"} is derivable, then there is a modally strict proof for @{text "\<phi>"}.
+The metarule RN states in essence that if there is a modally strict proof for @{text "\<phi>"},
+then @{text "\<box>\<phi>"} is derivable as a theorem. PLM proves this fact by induction on the length
+of the derivation. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
+gives an example of a case in which the converse is false: if @{text "\<box>\<phi>"} is derivable as a
+theorem, this does not imply that there is a modally-strict proof for @{text "\<phi>"}.
 
-The discussion in remark (\ref{PM-abstraction-contingent})@{cite PM} shows that this is
-not true in PLM. However in the embedding the following is derivable from the semantics of
+However, in the embedding the following is derivable from the semantics of
 the box operator:
 
 \begin{center}
@@ -3128,34 +3131,27 @@ the box operator:
 So although the converse of RN is not true in PLM, an equivalent statement for theorems of
 the form \mbox{@{term "[\<phi> in v]"}} in the embedding can be derived from the semantics.
 
-The reason for this is that modally-strict theorems are in fact a subset of a larger class of
-theorems, namely the theorems that are \emph{necessarily true}. Semantically a statement of the form
-\mbox{@{term "[\<phi> in v]"}} in the embedding is derivable, whenever @{term "embedded_style \<phi>"}
-is a \emph{necessary theorem}.
+The modally-strict theorems of PLM are a subset of a larger class of theorems, namely the theorems
+that are \emph{necessarily true}. Semantically a statement of the form \mbox{@{term "[\<phi> in v]"}}
+in the embedding is derivable, whenever @{term "embedded_style \<phi>"} is a \emph{necessary theorem}.
 
-Modally-strict theorems in PLM on the other hand are defined as a proof-theoretic concept:
-modally-strict proofs are not allowed to use modally fragile axioms. Therefore they are solely derived
-from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}). PLM now proves the fact
-that a modally strict derivation of @{text "\<phi>"} implies that there is a derivation of @{text "\<box>\<phi>"}
-by induction on the length of the proof. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
-gives an example of a case in which the converse is false.
+Unfortunately there is no semantic criterion that allows to decide whether a statement is a necessary
+theorem or a modally-strict theorem. Therefore the embedding has to express modally-strict theorems
+as necessary theorems, for which the converse of RN is in fact true.
 
-The problem for the embedding is that there is no semantic characterization of a statement that allows
-to decide whether it is a necessary theorem or a modally-strict theorem. Therefore the embedding has
-to express modally-strict theorems as necessary theorems. As seen above for this set of theorems the
-converse of RN is in fact true.
-
-This still does not compromise the concept that any statement that is derived in \ref{TAO_PLM}
-is also derivable in PLM: the basis of this concept is that no proofs may rely on the meta-logic, but
-only the rules that are derived in PLM are allowed. To guarantee that no statement of the form
-\mbox{@{term "[\<phi> in v]"}} is derived that is \emph{not} a modally-strict theorem of PLM,
-the converse of RN is not stated as an admissible rule for these proofs.
+This still does not compromise the claim that any statement that is derived in \ref{TAO_PLM}
+is also derivable in PLM: the basis for this claim is that no proofs in this layer may rely on the
+meta-logic, but only the fundamental meta-rules of PLM are allowed to derive theorems from the axioms.
+Since the converse of RN is neither a fundamental meta-rule of PLM, nor derivable without using
+the semantics, it is not stated as an admissible rule for these proofs. Thereby it is guaranteed
+that no statement of the form \mbox{@{term "[\<phi> in v]"}} is derived that is not a modally-strict
+theorem of PLM.
 
 Unfortunately this has the consequence that the proving method @{method PLM_solver} cannot be
-equipped with a reversible elimination rule for the box-operator, which significantly reduces its power
-as an automated proving method. However, preserving the claim that theorems derived in the embedding
-are also theorems of PLM was considered to be more important.
-
+equipped with a reversible elimination rule for the box operator, which reduces its power
+as a proving method. However, preserving the claim that theorems derived in the embedding
+are also theorems of PLM even when restricting to modally-strict theorems was given preference
+over an increased level of automation.
 *}
 
 
@@ -3393,35 +3389,17 @@ text{*
   the Theory of Abstract Object as described in PLM can be represented in functional
   higher-order logic using a shallow semantical embedding.
 
-  As a result a theory was constructed in Isabelle/HOL that - although its soundness
+  As a result a theory was constructed in Isabelle/HOL that - although its faithfulness
   is yet to be formally verified - is most likely able to represent and verify all reasoning
-  in the target theory. A formal analysis of the soundness of the embedding
+  in the target theory. A formal analysis of the faithfulness of the embedding
   is unfortunately not possible at this time, since the theory of PLM first has to be adjusted
   to prevent the discovered paradox. Depending on the precise modifications of PLM the embedding
-  will have to be adjusted accordingly, after which the question of its formal soundness can
-  be revisited.
+  will have to be adjusted accordingly, after which the question can be revisited.
 
   The embedding goes to great lengths to construct a restricted environment, in which it is possible
   to derive new theorems that can easily be translated back to the reference system of PLM.
   The fact that the construction of the paradox described in section~\ref{paradox} could be reproduced
   in the target logic, strongly indicates the merits and success of this approach.
-
-  What the embedding in its current form is not able to achieve, however, is completeness with respect
-  to the theory of PLM: using the meta-logic theorems can be derived in the embedding, that are not
-  derivable using the deductive system of PLM.
-
-  For this reason future research may want to address the following questions:
-
-  \begin{itemize}
-    \item Can the representation layer of the embedding be further restricted in such a way, that only
-          theorems of PLM are derivable?
-    \item If not, can the embedding be restricted in such a way, that all derivable theorems
-          that are not part of PLM can be identified syntactically (resp. are not syntactically
-          well-formed in PLM)?
-    \item Is there an extension of the formal system constructed in PLM, for which the embedding
-          is in fact complete, i.e. every theorem derivable in the embedding is a theorem in the
-          extended system?
-  \end{itemize}
 
   Independently of the relation between the embedding and the target system, a byproduct
   of the embedding is a working functional variant of object theory that deserves to be studied in
@@ -3435,31 +3413,28 @@ text{*
 section{* Relations vs. Functions *}
 
 text{*
-  As mentioned in the introduction, Openheimer and Zalta argue in @{cite rtt} that
-  relational type theory is more fundamental than functional type theory. One of their
-  main arguments is that the Theory of Abstract Objects is not representable in functional
-  type theory. Although there remain open questions and there may still be reservations about
-  the accuracy of the representation constructed in the presented embedding, its initial success
-  suggests that the topic has to be examined more closely.
+  As mentioned in the introduction, Openheimer and Zalta argue that relational type theory is more
+  fundamental than functional type theory (see @{cite rtt}). One of their main arguments is that the
+  Theory of Abstract Objects is not representable in functional type theory.
+  The success of the presented embedding, however, suggests that the topic has to be
+  examined more closely.
 
-  First of all it is important to note that the result in @{cite rtt} is actually supported
-  by the presented work in the following sense: it is impossible to represent the Theory of
-  Abstract Objects by representing its @{text "\<lambda>"}-expressions as primitive @{text "\<lambda>"}-expressions
-  in functional logic. Furthermore the embedding supports the argument that exemplification
-  cannot be represented classically as function application, while at the same time introducing
-  encoding as a second mode of predication.
+  Their result is supported by the presented work in the following sense: it is impossible to
+  represent the Theory of Abstract Objects by representing its @{text "\<lambda>"}-expressions as
+  primitive @{text "\<lambda>"}-expressions in functional logic. Furthermore exemplification cannot
+  be represented classically as function application, while at the same time introducing encoding
+  as a second mode of predication.
 
-  This already establishes that the traditional approach to translate relational type theory
-  to functional type theory in fact fails for the Theory of Abstract Object. Furthermore the
-  embedding suggests that a simple version of functional type theory that only involves two
-  primitive types (for individuals and propositions), as used as a representative functional
-  type theory in @{cite rtt}, is in fact not sufficient for a representation of object theory.
+  This already establishes that the traditional approach of translating relational type theory
+  to functional type theory in fact fails for the Theory of Abstract Object. A simple version of
+  functional type theory, that only involves two primitive types (for individuals and propositions),
+  is insufficient for a representation of the theory.
 
-  It is interesting to note that the embedding does not share several of the properties of
+  Consequently the embedding does not share several of the properties of
   the representative functional type theory constructed in @{cite \<open>pp. 9-12\<close> rtt}:
 
   \begin{itemize}
-    \item Relations are \emph{not} represented as functions from individuals to truth values.
+    \item Relations are \emph{not} represented as functions from individuals to propositions.
     \item Exemplification is \emph{not} represented as simple function application.
     \item The @{text "\<lambda>"}-expressions of object theory are \emph{not} represented as
           primitive @{text "\<lambda>"}-expressions.
@@ -3478,41 +3453,45 @@ text{*
           \mbox{@{text "\<Lambda>\<^sub>n[\<lambda>x\<^sub>1\<dots>x\<^sub>n \<phi>]"}}.
   \end{itemize}
 
-  Interestingly one issue still remains that is in fact reflected in the constructed
-  embedding as well: Not all functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to
+  Not all functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to
   denote relations. However, in the proposed construction a concept used in the embedding of free
-  logics can help@{cite FreeLogic}. The function @{text "\<Lambda>\<^sub>n"} can map functions of type
-  \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
-  represent invalid (resp. non-existing) relations. The functions used to represent
-  encoding and exemplification can be defined to map to an object of type @{text "\<o>"}
-  that represents invalid propositions if the involved relation is invalid.
+  logic can help\footnote{See the embedding of free logic constructed in @{cite FreeLogic}.}.
+  The function @{text "\<Lambda>\<^sub>n"} can map functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not
+  correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
+  represent invalid (resp. non-existing) relations. For invalid relations the functions used
+  to represent encoding and exemplification can be defined to map to an object of type @{text "\<o>"}
+  that represents invalid propositions.
 
-  In @{cite \<open>pp. 30-31\<close> rtt} it is argued that using a free logic and letting non-propositional
+  Oppenheimer and Zalta argue that using a free logic and letting non-propositional
   formulas fail to denote is not an option, since it prevents classical reasoning for non-propositional
-  formulas. Although this is true for the case of a simple functional type theory, it does not apply
-  to the theory constructed above: since only objects of type @{text "R\<^sub>n"} may fail to denote,
-  non-propositional reasoning is unaffected by the introduction of the free logic.
+  formulas\footnote{See @{cite \<open>pp. 30-31\<close> rtt}.}. Although this is true for the case of a simple
+  functional type theory, it does not apply to the constructed theory: since only objects of
+  type @{text "R\<^sub>n"} may fail to denote, non-propositional reasoning is unaffected.
+
+  Furthermore the embedding has shown that an intensional interpretation of the constructed theory
+  can preserve the hyperintensionality of relations in @{text "\<lambda>"}-expressions.
 
 \begin{remark}
   Although the constructed functional type theory is based on the general structure of the
   presented embedding, instead of introducing concepts of free logic @{text "\<lambda>"}-expressions
   involving non-propositional formulas are assigned \emph{non-standard} denotations,
   i.e. they do denote, but @{text "\<beta>"}-conversion does only hold under certain conditions
-  (see~\ref{differences-lambda}). However, it is likely that future versions of the embedding
-  will be able to utilize the concepts described in @{cite FreeLogic} to replace this construction
+  (see~\ref{differences-lambda}). Although this concept has merits as well, future versions of the embedding
+  may instead utilize the concepts described in @{cite FreeLogic} to replace this construction
   by a free logic implementation that will more closely reflect the concepts of propositional formulas
   and @{text "\<lambda>"}-expressions present in object theory.
 \end{remark}
 
   In summery it can be concluded that a representation of object theory in functional type theory
   is feasible, although it is connected with significant complexity (i.e. the introduction of
-  additional primitive types and the usage of concepts of free logic). On the other hand, whether
-  this result contradicts the philosophical claim that relations are more fundamental than functions,
-  is still debatable considering the fact that the proposed construction has to introduce new
-  primitive types for relations\footnote{Note, however, that the embedding can represent relations
-  as functions acting on urelements following the Aczel-model.} and the construction is complex in
-  general. Further it has to be noted that so far only the second order fragment of object theory
-  has been considered and the full type-theoretic version of the theory may present further challenges.
+  additional primitive types and the usage of concepts of intensional and free logic).
+  On the other hand, whether this result contradicts the philosophical claim that relations are
+  more fundamental than functions, is still debatable considering the fact that the proposed
+  construction has to introduce new primitive types for relations\footnote{Note, however,
+  that the embedding can represent relations as functions acting on urelements following the
+  Aczel-model.} and the construction is complex in general. Further it has to be noted that so
+  far only the second order fragment of object theory has been considered and the full
+  type-theoretic version of the theory may present further challenges.
 *}
 
 section{* Conclusion *}
