@@ -1105,10 +1105,8 @@ text{*
   logic in combination with the constants @{term "\<^bold>\<lambda>\<^sup>2"} and @{term "\<^bold>\<lambda>\<^sup>3"} as shown above.
 \end{remark}
 
-  The representation of zero-place @{text "\<lambda>"}-expressions as the identity is straight-forward\footnote{Although
-  this representation is technically straight-forward, see section~\ref{differences-lambda}
-  for a further discussion of the implications of this representation and the way it differs from
-  the zero-place relations of PLM.}; the representation of n-place @{text "\<lambda>"}-expressions for \mbox{@{text "n \<ge> 1"}}
+  The representation of zero-place @{text "\<lambda>"}-expressions as the identity is straight-forward;
+  the representation of n-place @{text "\<lambda>"}-expressions for \mbox{@{text "n \<ge> 1"}}
   is illustrated for the case \mbox{@{text "n = 1"}}:
 
   The matrix of the @{text "\<lambda>"}-expression @{term "embedded_style \<phi>"} is a function from individuals
@@ -1671,19 +1669,18 @@ text{*
 section{* Derived Language Elements *}
 
 text{*
-  The language of the embedded logic constructed so far is limited to the minimal set of
-  primitive elements, e.g. only negation and implication are present and no notion of identity
-  has been introduced so far.
+  The language of the embedded logic constructed so far is limited to a minimal set of
+  primitive elements. This section introduces further derived language elements that are
+  defined directly in the embedded logic.
 
-  Since section~\ref{semantics} has established the semantic properties of these basic elements of
-  the language, it now makes sense to extend the language by introducing some basic definitions
-  that can be expressed directly in the embedded logic.
+  Notably identity is not part of the primitive language, but introduced as a \emph{defined}
+  concept.
 *}
 
 subsection{* Connectives *}
 
 text{*
-  The remaining classical connectives are defined in the traditional manner
+  The remaining classical connectives and the modal diamond operator are defined in the traditional manner
   (see~\ref{TAO_BasicDefinitions_DerivedConnectives}):
   \begin{itemize}
     \item @{thm[display] conj_def[expand2, THEN embedded_eq, of \<phi> \<psi>]}
@@ -1692,7 +1689,7 @@ text{*
     \item @{thm[display] diamond_def[expand1, THEN embedded_eq, of \<phi>]}
   \end{itemize}
 
-  Furthermore the general all quantifier is supplemented by an existence quantifier as follows:
+  Furthermore the general all quantifier is supplemented by an existential quantifier as follows:
   \begin{itemize}
     \item @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq, rename_abs \<alpha>]}
   \end{itemize}
@@ -1701,7 +1698,7 @@ text{*
 subsection{* Identity *}
   
 text{*
-  More importantly the definitions for identity are stated for each type of variable
+  The definitions for identity are stated separately for each type of term
   (see~\ref{TAO_BasicDefinitions_Identity}):
 
   \begin{itemize}
@@ -1709,15 +1706,16 @@ text{*
     \item @{thm[display] basic_identity\<^sub>1_def[expand2, of F G, rename_abs x, THEN embedded_eq]}
     \item @{thm[display] basic_identity\<^sub>2_def[expand2, of F G, rename_abs x, THEN embedded_eq]}
     \item @{thm basic_identity\<^sub>3_def[expand2, of F G, rename_abs x y, THEN embedded_eq]}
+    \item @{thm basic_identity\<^sub>0_def[expand2, of p q, rename_abs x x, THEN embedded_eq]}
   \end{itemize}
 
   Similarly to the general all quantifier it makes sense to introduce a general identity
   relation for all types of terms (@{type \<kappa>}, @{type \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2}, @{typ \<Pi>\<^sub>3}).
-  In contrast to all quantification this is more challenging, though, since there is no
-  semantic criterion that characterizes the identity for all these types. Therefore a general
-  identity symbol will only be introduced after the next section, since it will then be possible
-  to formulate and prove a reasonable property shared by the identity of all types of terms.
-
+  However, whereas all quantification is characterized by a semantic criterion that can
+  be generalized in a type class, identity is defined independently for each type. Therefore a general
+  identity symbol will only be introduced in section~\ref{general-identity},
+  since it will then be possible to formulate and prove a reasonable property shared
+  by the identity of all types of terms.
 *}
 
 (*<*)
@@ -1733,23 +1731,22 @@ subsection{* Concept *}
   
 text{*
 
-  Since the semantics in section~\ref{semantics} constructed a first abstraction layer on top of the
-  representation layer (that focuses on a specific model structure), it makes sense to revisit the
-  general concept of the layered structure of the embedding.
+  Since the semantics in section~\ref{semantics} constructed a first abstraction on top of the
+  representation layer, it makes sense to revisit the general concept of the layered structure
+  of the embedding.
 
   The idea behind this structure is that the reasoning in subsequent layers should - as far as possible - only
-  rely on the previous layer. Automated reasoning in this context, however, can be cumbersome, since
-  automated proving tools have to be restricted to only consider a specific subset of the theorems that are
-  present in the global context. While this is possible it is still an interesting question whether the process
+  rely on the previous layer. Such a restriction to a specific subset of the facts that are valid in the global context
+  can be cumbersome for automated reasoning. While it is possible to restrict automated reasoning tools
+  to only consider specific sets of facts, it is still an interesting question whether the process
   of automated reasoning in the layered approach can be made easier.
 
-  To that end the embedding facilitates the possibility of defining custom proving methods that
-  the Isabelle package \emph{Eisbach} provides. This package allows it to conveniently
+  To that end the embedding utilizes the Isabelle package \emph{Eisbach}. This package allows it to conveniently
   define new proving methods that are based on the systematic application of existing methods.
   
   \begin{remark}
-    The Eisbach package even allows to construct more complex proving methods that involve
-    pattern matching. This is for example utilized in the construction of a substitution method as
+    The Eisbach package even allows the construction of more complex proving methods that involve
+    pattern matching. This functionality is utilized in the construction of a substitution method as
     described in section~\ref{substitution-method}.
   \end{remark}
 
@@ -1775,8 +1772,8 @@ text{*
   that repeatedly applies rules like the above in order to translate a formula in the embedded logic
   to a meta-logical statement involving simpler formulas.
 
-  The statement of appropriate introduction, elimination and substitution rules for the logical
-  connectives and quantifiers is straightforward, but beyond that the concept can be used to
+  The formulation of appropriate introduction, elimination and substitution rules for the logical
+  connectives and quantifiers is straightforward. Beyond that the concept can be used to
   resolve exemplification and encoding formulas to their semantic truth conditions as well,
   e.g. (see~\ref{TAO_MetaSolver_Encoding}):
   \begin{center}

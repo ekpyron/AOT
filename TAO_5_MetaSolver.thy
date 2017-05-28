@@ -321,11 +321,11 @@ subsubsection{* Ordinary Objects *}
 text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
 
   lemma Eq\<^sub>EI[meta_intro]:
-    assumes "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
+    assumes "\<exists> o\<^sub>1 o\<^sub>2. Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2"
     shows "[x \<^bold>=\<^sub>E y in v]"
     proof -
-      obtain o\<^sub>1 X o\<^sub>2 where 1:
-        "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
+      obtain o\<^sub>1 o\<^sub>2 where 1:
+        "Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2"
         using assms by auto
       obtain r where 2:
         "Some r = d\<^sub>2 basic_identity\<^sub>E"
@@ -340,7 +340,7 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
         qed
       moreover have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
         by show_proper
-      ultimately have "(o\<^sub>1, o\<^sub>2) \<in> ex2 r v"
+      ultimately have "(\<omega>\<nu> o\<^sub>1, \<omega>\<nu> o\<^sub>2) \<in> ex2 r v"
         using D5_2 1 2
         unfolding basic_identity\<^sub>E_def by fast
       thus "[x \<^bold>=\<^sub>E y in v]"
@@ -350,27 +350,27 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
     qed
   lemma Eq\<^sub>EE[meta_elim]:
     assumes "[x \<^bold>=\<^sub>E y in v]"
-    shows "\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X"
+    shows "\<exists> o\<^sub>1 o\<^sub>2. Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y \<and> o\<^sub>1 = o\<^sub>2"
   proof -
     have "IsProperInXY (\<lambda> x y . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>))"
       by show_proper
     hence 1: "[\<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>) in v]"
       using assms unfolding basic_identity\<^sub>E_def basic_identity\<^sub>E_infix_def
       using D4_2 T1_2 D5_2 by meson
-    hence 2: "\<exists> o\<^sub>1 o\<^sub>2 X Y . Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> X
-                         \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>2 = \<omega>\<nu> Y"
+    hence 2: "\<exists> o\<^sub>1 o\<^sub>2 . Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x
+                     \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y"
       apply (subst (asm) ConjS)
       apply (subst (asm) ConjS)
       using OrdE by auto
-    then obtain o\<^sub>1 o\<^sub>2 X Y where 3:
-      "Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 = \<omega>\<nu> X \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y \<and> o\<^sub>2 = \<omega>\<nu> Y"
+    then obtain o\<^sub>1 o\<^sub>2 where 3:
+      "Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y"
       by auto
-    have "\<exists> r . Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
+    have "\<exists> r . Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some (\<omega>\<nu> o\<^sub>1)))"
       using propex\<^sub>1 by auto
     then obtain r where 4:
-      "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some o\<^sub>1))"
+      "Some r = d\<^sub>1 (\<^bold>\<lambda> z . make\<o> (\<lambda> w s . d\<^sub>\<kappa> (z\<^sup>P) = Some (\<omega>\<nu> o\<^sub>1)))"
       by auto
-    hence 5: "r = (\<lambda>u s w. \<exists> x . \<nu>\<upsilon> x = u \<and> Some x = Some o\<^sub>1)"
+    hence 5: "r = (\<lambda>u s w. \<exists> x . \<nu>\<upsilon> x = u \<and> Some x = Some (\<omega>\<nu> o\<^sub>1))"
       unfolding lambdabinder1_def d\<^sub>1_def d\<^sub>\<kappa>_proper
       apply transfer
       by simp
@@ -378,22 +378,21 @@ text{* \label{TAO_MetaSolver_Identity_Ordinary} *}
       using 1 using ConjE by blast
     hence 6: "\<forall> v F . [\<lparr>F,x\<rparr> in v] \<longleftrightarrow> [\<lparr>F,y\<rparr> in v]"
       using BoxE EquivE AllE by fast
-    hence 7: "\<forall> v . (o\<^sub>1 \<in> ex1 r v) = (o\<^sub>2 \<in> ex1 r v)"
+    hence "\<forall> v . ((\<omega>\<nu> o\<^sub>1) \<in> ex1 r v) = ((\<omega>\<nu> o\<^sub>2) \<in> ex1 r v)"
       using 2 4 unfolding valid_in_def
       by (metis "3" "6" d\<^sub>1.rep_eq d\<^sub>\<kappa>_inject d\<^sub>\<kappa>_proper ex1_def eval\<o>_inverse exe1.rep_eq
           mem_Collect_eq option.sel rep_proper_id \<nu>\<kappa>_proper valid_in.abs_eq)
-    have "o\<^sub>1 \<in> ex1 r v"
-      using 5 3 unfolding ex1_def by (simp add: meta_aux)
-    hence "o\<^sub>2 \<in> ex1 r v"
-      using 7 by auto
-    hence "o\<^sub>1 = o\<^sub>2"
-      unfolding ex1_def 5 using 3 by (auto simp: meta_aux)
+    moreover have "(\<omega>\<nu> o\<^sub>1) \<in> ex1 r v"
+      unfolding 5 ex1_def by simp
+    ultimately have "(\<omega>\<nu> o\<^sub>2) \<in> ex1 r v"
+      by auto
+    hence "o\<^sub>1 = o\<^sub>2" unfolding 5 ex1_def by (auto simp: meta_aux)
     thus ?thesis
       using 3 by auto
   qed
   lemma Eq\<^sub>ES[meta_subst]:
-    "[x \<^bold>=\<^sub>E y in v] = (\<exists> o\<^sub>1 X o\<^sub>2. Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> Some o\<^sub>2 = d\<^sub>\<kappa> y
-                                \<and> o\<^sub>1 = o\<^sub>2 \<and> o\<^sub>1 = \<omega>\<nu> X)"
+    "[x \<^bold>=\<^sub>E y in v] = (\<exists> o\<^sub>1 o\<^sub>2. Some (\<omega>\<nu> o\<^sub>1) = d\<^sub>\<kappa> x \<and> Some (\<omega>\<nu> o\<^sub>2) = d\<^sub>\<kappa> y
+                                \<and> o\<^sub>1 = o\<^sub>2)"
     using Eq\<^sub>EI Eq\<^sub>EE by blast
 
 subsubsection{* Individuals *}
