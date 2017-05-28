@@ -395,7 +395,7 @@ text{*
 section{* The Language of PLM *}
   
 text{*
-The target of the embedding is the second order fragment of object theory as described
+The target of the embedding is the second-order fragment of object theory as described
 in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico-Metaphysica} (PLM)@{cite PM}.
 The logical foundation of the theory uses a second-order modal logic (without primitive identity)
 formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
@@ -3347,7 +3347,7 @@ end (* context PossibleWorlds *)
 section{* Functional Object Theory *}
   
 text{*
-  The first and foremost goal of the presented work was to show that the second order fragment of
+  The first and foremost goal of the presented work was to show that the second-order fragment of
   the Theory of Abstract Object as described in PLM can be represented in functional
   higher-order logic using a shallow semantical embedding.
 
@@ -3452,7 +3452,7 @@ text{*
   construction has to introduce new primitive types for relations\footnote{Note, however,
   that the embedding can represent relations as functions acting on urelements following the
   Aczel-model.} and the construction is complex in general. Further it has to be noted that so
-  far only the second order fragment of object theory has been considered and the full
+  far only the second-order fragment of object theory has been considered and the full
   type-theoretic version of the theory may present further challenges.
 *}
 
@@ -3462,9 +3462,7 @@ text{*
   The presented work shows that shallow semantical embeddings in HOL have the potential to represent
   even highly complex theories that originate in a fundamentally different tradition of logical
   reasoning (e.g. relational instead of functional type theory). The presented embedding represents
-  the most ambitious project in this area so far; therefore it comes at no surprise that it faces
-  unique challenges. Although further research is necessary to arrive at a comprehensive analysis of
-  its implications, the presented embedding can already clearly show the merits of the approach.
+  the most ambitious project in this area so far and its success clearly shows the merits of the approach.
 
   Not only could the embedding uncover a previously unknown paradox in the formulation of its target
   theory, but it could contribute to the understanding of the relation between functional and
@@ -3483,6 +3481,7 @@ text{*
   prove and verify theorems in the target logic while retaining the support of automated
   reasoning tools, shows the great potential of semantical embeddings in providing the means
   for a productive interaction between humans and computer systems.
+
 *}
   
 (*<*)
