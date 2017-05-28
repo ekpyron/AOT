@@ -2224,30 +2224,29 @@ text{*
     \item @{thm lambda_predicates_4_3} \hfill{(\ref{PM-lambda-predicates}.4)}
   \end{itemize}
 
-  Note that the first axiom - @{text "\<alpha>"}-conversion - could be omitted entirely, since the fact
-  that lambda-expressions are modelled using functions with bound variables and @{text "\<alpha>"}-conversion
+  The first axiom - @{text "\<alpha>"}-conversion - could be omitted entirely. Since
+  lambda-expressions are modelled using functions with bound variables and @{text "\<alpha>"}-conversion
   is part of the logic of Isabelle/HOL, it already holds implicitly.
 
-  Further note that the notion of \emph{proper maps} is used as a necessary precondition for
-  @{text "\<beta>"}-conversion, as explained in section~\ref{lambda-expressions}.
+  As explained in section~\ref{lambda-expressions} @{text "\<beta>"}-conversion has to be restricted
+  to \emph{proper maps}. In PLM this restriction is implicit due to the fact that
+  @{text "\<lambda>"}-expressions are only well-formed if their matrix is a propositional formula.
 
-  Lastly note that the formulation of the last class of axioms
+  The formulation of the last class of axioms
   ((\ref{PM-lambda-predicates}.4), @{term "\<iota>"}-conversion)
-  has to be adjusted to be representable in the functional setting:
-  
-  The original axiom is stated as follows in the syntax of PLM:
+  has to be adjusted to be representable in the functional setting. The original axiom is stated as follows in PLM:
   \begin{center}
     @{text "\<A>(\<phi> \<equiv> \<psi>) \<rightarrow> ([\<lambda>x\<^sub>1\<cdots>x\<^sub>n \<chi>\<^sup>*] = [\<lambda>x\<^sub>1\<cdots>x\<^sub>n \<chi>\<^sup>*']"}
   \end{center}
-  Here @{text "\<chi>\<^sup>*'"} is required to be the result of substituting  @{text "\<iota>x\<psi>"} for zero or more occurrences of @{text "\<iota>x\<phi>"}
+  @{text "\<chi>\<^sup>*'"} is required to be the result of substituting  @{text "\<iota>x\<psi>"} for zero or more occurrences of @{text "\<iota>x\<phi>"}
   in @{text "\<chi>\<^sup>*"}. In the functional setting @{term "embedded_style \<chi>"} can be represented
   as function from individual terms of type @{type \<kappa>} to propositions of type @{type \<o>}.
-  Thereby substituting @{text "\<iota>x\<psi>"} for occurences of @{text "\<iota>x\<phi>"} can be expressed as
+  Thereby substituting @{text "\<iota>x\<psi>"} for occurrences of @{text "\<iota>x\<phi>"} can be expressed by
   comparing the function application of @{term "embedded_style \<chi>"} to @{term "embedded_style (\<^bold>\<iota>x. \<phi> x)"}
-  with that to @{term "embedded_style (\<^bold>\<iota>x. \<psi> x)"}.
+  with the function application of @{term "embedded_style \<chi>"} to @{term "embedded_style (\<^bold>\<iota>x. \<psi> x)"}.
 
-  Now since @{term "embedded_style \<phi>"} and @{term "embedded_style \<psi>"} are again functions (this time
-  from individuals of type @{type \<nu>} to type @{type \<o>}) the precondition has to be reformulated
+  Since in this representation @{term "embedded_style \<phi>"} and @{term "embedded_style \<psi>"} are functions as well
+  (from type @{type \<nu>} to type @{type \<o>}) the precondition has to be reformulated
   to hold for the application of @{term "embedded_style \<phi>"} and @{term "embedded_style \<psi>"} to
   an arbitrary individual @{term "embedded_style x"} to capture the concept of @{text "\<A>(\<phi> \<equiv> \<psi>)"} in PLM, where @{text "\<phi>"}
   and @{text "\<psi>"} may contain @{text "x"} as a free variable.
@@ -2264,9 +2263,9 @@ text{*
     \item @{thm A_objects} \hfill{(\ref{PM-A-objects})}
   \end{itemize}
 
-  Whereas the first statement (encoding is modally rigid) is a direct consequence of the semantics
+  Whereas the first statement, \emph{encoding is modally rigid}, is a direct consequence of the semantics
   (recall that the encoding extension of a property was not relativized to possible worlds; see
-   section~\ref{semantics}), the second axiom (ordinary objects do not encode) is only derivable
+   section~\ref{semantics}), the second axiom, \emph{ordinary objects do not encode}, is only derivable
   by expanding the definition of the encoding extension and the meta-logical distinction
   between ordinary and abstract objects.
 
@@ -2274,34 +2273,30 @@ text{*
   depends on the meta-logic and follows from the definition of abstract objects as the power set
   of relations and the representation of encoding as set membership.
 
-  It is again a requirement of the representation in the functional setting that
-  @{term "embedded_style \<phi>"} in the comprehension axiom is a function and the condition
-  it imposes on @{term "embedded_style F"} is expressed as its application to @{term "embedded_style F"}.
-  The formulation in PLM on the other hand has to explicitly exclude a free occurence of @{text "x"}
-  in @{text "\<phi>"}. In the functional setting this is not necessary, since the only way the condition
-  @{term "embedded_style \<phi>"} imposes could depend on the @{term "embedded_style x"} bound by the
-  existential quantifier would be that @{term "embedded_style x"} was given to the function @{term "embedded_style \<phi>"}
-  as an argument\footnote{For that to be possible @{term "embedded_style \<phi>"} would of course also need to have a different
-  type as a function.}.
+  Furthermore in the functional setting @{term "embedded_style \<phi>"} has to be represented as a function
+  and the condition it imposes on @{term "embedded_style F"} is expressed as its application to @{term "embedded_style F"}.
+  The formulation in PLM on the other hand has to explicitly exclude a free occurrence of @{text "x"}
+  in @{text "\<phi>"}. In the functional setting this is not necessary. Since @{term "embedded_style x"}
+  is bound by the existential quantifier and not explicitly given to @{term "embedded_style \<phi>"} 
+  as an argument, the condition @{term "embedded_style \<phi>"} imposes on @{term "embedded_style F"}
+  cannot depend on @{term "embedded_style x"} by construction.
 
 *}
 
 subsection{* Summery *}
   
 text{*
-  Although the formulation of some of the axioms has to be adjusted to work in the environment of
-  functional type theory, it is possible to arrive at a formulation that faithfully represents
-  the original axiom system of PLM. Future work may attempt to further align the representation
-  with PLM and compare the extents of both systems in more detail.
+  Although some of the axioms have to be adjusted to be representable in the functional environment,
+  it is possible to arrive at a formulation that faithfully represents the original axiom system of PLM.
 
   Furthermore a large part of the axioms can be derived independently of the technicalities of
-  the representation layer by only depending on the representation of the semantics described in
+  the representation layer with proofs that only depend on the representation of the semantics described in
   section~\ref{semantics}. Future work may explore possible options to further minimize the dependency
   on the underlying model structure.
 
-  To verify that the axiom system is a good representation of the reference system, as a next step the
+  To verify that the axiom system faithfully represents the reference system, as a next step the
   deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
-  formulation of the axioms without falling back to the meta-logic.
+  formulation of the axioms without falling back to the meta-logic or the semantics.
 *}
 
 (*<*)
@@ -2318,7 +2313,7 @@ section{* The Deductive System PLM *}
   
 text{*
   The derivation of the deductive system PLM from the constructed axiom system constitutes
-  a major part of the Isabelle Theory in the appendix (see~\ref{TAO_PLM}). Its extent of
+  a major part of the Isabelle theory in the appendix (see~\ref{TAO_PLM}). Its extent of
   over one hundred pages makes it infeasible to discuss every aspect in full detail here.
 
   Nevertheless it is worthwhile to have a look at the mechanics of the derivation and to
