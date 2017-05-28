@@ -1723,11 +1723,11 @@ context MetaSolver
 begin
 (*>*)
 
-section{* Proving Method meta\_solver *}
+section{* The Proving Method meta\_solver *}
  
 text{* \label{meta_solver} *}
   
-subsection{* Concept *}
+subsection{* General Concept *}
   
 text{*
 
@@ -1735,11 +1735,11 @@ text{*
   representation layer, it makes sense to revisit the general concept of the layered structure
   of the embedding.
 
-  The idea behind this structure is that the reasoning in subsequent layers should - as far as possible - only
-  rely on the previous layer. Such a restriction to a specific subset of the facts that are valid in the global context
-  can be cumbersome for automated reasoning. While it is possible to restrict automated reasoning tools
-  to only consider specific sets of facts, it is still an interesting question whether the process
-  of automated reasoning in the layered approach can be made easier.
+  The idea behind this structure is that reasoning in subsequent layers should - as far as possible - only
+  rely on the previous layer. However, the restriction of proofs to a specific subset of the facts
+  that are valid in the global context can be cumbersome for automated reasoning. While it is possible
+  to restrict automated reasoning tools to only consider specific sets of facts, it is still an
+  interesting question whether the process of automated reasoning in the layered approach can be made easier.
 
   To that end the embedding utilizes the Isabelle package \emph{Eisbach}. This package allows it to conveniently
   define new proving methods that are based on the systematic application of existing methods.
@@ -1751,7 +1751,7 @@ text{*
   \end{remark}
 
   The idea is to construct a simple resolution prover that can deconstruct complex
-  formulas of the embedded logic to simpler formulas that are connected by some relation in the meta-logic
+  formulas of the embedded logic to simpler formulas that are connected by a relation in the meta-logic
   as required by the semantics.
 
   For example an implication formula can be deconstructed as follows:
@@ -1769,27 +1769,25 @@ subsection{* Implementation *}
 
 text{*
   Following this idea the method @{method meta_solver} is introduced (see~\ref{TAO_MetaSolver})
-  that repeatedly applies rules like the above in order to translate a formula in the embedded logic
-  to a meta-logical statement involving simpler formulas.
+  that repeatedly applies rules like the above in order to translate complex formulas of the embedded logic
+  to meta-logical statements involving simpler formulas.
 
   The formulation of appropriate introduction, elimination and substitution rules for the logical
   connectives and quantifiers is straightforward. Beyond that the concept can be used to
   resolve exemplification and encoding formulas to their semantic truth conditions as well,
   e.g. (see~\ref{TAO_MetaSolver_Encoding}):
   \begin{center}
-    @{thm Exe1E[of v F x]}
+    @{thm Exe1S[of v F x]}
   \end{center}
 
   This way a large set of formulas can be decomposed to semantic expressions that can be automatically
   proven without having to rely on the meta-logical definitions directly.
 
-  As mentioned before the concept of a strict separation between the layers is not yet achieved by
-  the embedding. In particular the @{method meta_solver} is equipped with rules about
-  being abstract and ordinary and most importantly about the defined identity that depend on the
-  specific structure of the representation layer and are not solely derivable from the semantics.
+  Additionally the @{method meta_solver} is equipped with rules for
+  being abstract and ordinary and for the defined identity.
 
   Notably the representation layer has the property that the defined identities are equivalent to
-  the identity in the meta-logic. Formally the following statements are true and defined as rules
+  the identity in the meta-logic. Formally the following statements are true and derived as rules
   for the @{method meta_solver}:
 
   \begin{itemize}
@@ -1801,21 +1799,24 @@ text{*
     \item @{thm[display] Eq\<^sub>0S[of v "embedded_style F" "embedded_style G"]}
   \end{itemize}
 
-  The proofs for these statements (see~\ref{TAO_MetaSolver_Identity}) are complex and do not
+  The proofs for these facts (see~\ref{TAO_MetaSolver_Identity}) are complex and do not
   solely rely on the properties of the formal semantics of PLM.
 
-  Although future work may try to forgo these statements or to replace them with statements that
-  are in fact based on the formal semantics alone, the fact that they are true in the constructed
-  embedding has a distinct advantage: since identical terms in the sense of PLM are identical in
-  the meta-logic, proving the axiom of substitution (see~\ref{axioms-identity}) is trivial.
+  The fact that they are derivable has a distinct advantage: since identical terms
+  in the sense of PLM are identical in the meta-logic, proving the axiom of
+  substitution (see~\ref{axioms-identity}) is trivial.
+  A derivation that is solely based on the semantics on the other hand, would require a complex
+  induction proof. For this reason it is considered a reasonable compromise to include these statements
+  as admissible rules for the @{method meta_solver}. However, future work may attempt to enforce
+  the separation of layers more strictly and consequently abstain from these rules.
 
   \begin{remark}
     Instead of introducing a custom proving method using the Eisbach package, a similar
     effect could be achieved by instead supplying the derived introduction, elimination and substitution
     rules directly to one of the existing proving methods like @{method auto} or @{method clarsimp}.
     In practice, however, we found that the custom @{method meta_solver} produces more reliable
-    results, especially in the case that a proving objective cannot be solved by the supplied rules
-    completely. Moreover the construction of a custom proving method may serve as a proof of concept
+    results, especially in the case that a proving objective cannot be solved completely by the supplied rules.
+    Moreover the constructed custom proving method may serve as a proof of concept
     and inspire the development of further more complex proving methods that go beyond a simple
     resolution prover in the future.
   \end{remark}
@@ -1834,19 +1835,20 @@ text{*
   important to precisely determine for which purposes it is valid to use the constructed
   @{method meta_solver}.
 
-  The main application of the method in the embedding is its use in the derivation of the axiom
+  The main application of the method in the embedding is to support the derivation of the axiom
   system as described in section~\ref{axioms}. Furthermore the @{method meta_solver} can aid in examining the
-  meta-logical properties of the embedding. Care has been taken that the meta-solver only employs
-  \emph{reversible} transformations, thereby it is for example justified to use it to simplify a statement
-  before employing a tool like @{theory_text "nitpick"} in order to look for counter-models for a statement.
+  meta-logical properties of the embedding. The @{method meta_solver} is only supplied with rules that
+  are \emph{reversible}. Thereby it is justified to use it to simplify a statement
+  before employing a tool like @{theory_text "nitpick"} in order to look for models or
+  counter-models for a statement.
 
   However it is \emph{not} justified to assume that a theorem that can be proven with the aid of the
-  @{method meta_solver} method can be considered to be derivable in the formal system of PLM, since
-  the result still depends on the specific structure of the representation layer. Note, however,
-  that the concept of the @{method meta_solver} inspired another proving method that is
+  @{method meta_solver} method is derivable in the formal system of PLM, since
+  the result still depends on the specific structure of the representation layer. However,
+  based on the concept of the @{method meta_solver} another proving method is
   introduced in section~\ref{PLM-solver}, namely the @{method PLM_solver}. This proving method
   only employs rules that are derivable from the formal system of PLM itself. Thereby this method
-  \emph{can} be used in proves without sacrificing the universality of the result.
+  \emph{can} be used in proofs without sacrificing the universality of the result.
 *}
 
 (*<*)
@@ -1863,15 +1865,15 @@ text{*
   binder it is desirable to introduce a general identity relation.
 
   Since the identity of PLM is not directly characterized by semantic truth conditions, but instead
-  \emph{defined} using specific complex formulas in the embedded logic for each type of terms,
-  some other property has to be found that is shared by the specific definitions of identity and
-  can reasonably be used as the condition of a type class.
+  \emph{defined} using specific complex formulas in the embedded logic for each type of term,
+  some other property has to be found that is shared by the respective definitions can reasonably
+  be used as the condition of a type class.
 
-  A natural choice for such a condition is based on the axiom of the substitution of identicals
+  A natural choice for such a condition is the axiom of the substitution of identicals
   (see~\ref{axioms-identity}). The axiom states that if two objects are identical (in the sense of the defined
   identity of PLM), then a formula involving the first object implies the formula resulting from
   substituting the second object for the first object. This inspires the following condition for
-  the type class (see~\ref{TAO_Identifiable_Class}):
+  the type class @{class identifiable} (see~\ref{TAO_Identifiable_Class}):
 
   \begin{center}
     @{thm identifiable_class.l_identity[of v \<alpha> \<beta> \<phi>]}
@@ -1935,26 +1937,18 @@ text{*
   proofs (if this is found to be possible).
 
   To be able to distinguish between the axioms and other statements and theorems in the
-  embedded logic they are stated using a dedicated syntax. Axioms are not
-  stated relative to a specific possible world, but using the following definition
-  (see~\ref{TAO_Axioms}):
+  embedded logic they are stated using a dedicated syntax (see~\ref{TAO_Axioms}):
   \begin{center}
     @{thm axiom_def[expand1, of \<phi>]}
   \end{center}
 
   Axioms are unconditionally true in all possible worlds. The only exceptions are
   \emph{necessitation-averse}, resp. \emph{modally-fragile} axioms\footnote{Currently PLM uses
-  only one such axiom, see~\ref{axioms-actuality}.}. Such axioms are stated using the following definition:
+  only one such axiom, see~\ref{axioms-actuality}.}. Such axioms are stated using the following syntax:
   \begin{center}
     @{thm actual_validity_def[expand1, of \<phi>]}
   \end{center}
 
-  \begin{remark}
-    Additionally a proving method @{method axiom_meta_solver} is introduced, that
-    unfolds the definitions above, then applies the meta-solver method and if possible resolves
-    the proof objective automatically.
-  \end{remark}
-  
 *}
   
 subsection{* Axioms as Schemata *}
@@ -1963,12 +1957,11 @@ text{*
   \label{axiom-schemata}
 
   The axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
-  and can therefore be instantiated for any formula and term (potentially satisfying explicitly stated
-  restrictions). Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
+  and can therefore be instantiated for any formula and term.
+  Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
-  the actualization of the schema and the necessitation of the schema is also an axiom.
-  The modally-fragile Axiom~\ref{PM-logic-actual} is the only exception:
-  Its necessitations are not axioms as well.
+  the actualization of the schema and (except for modally-fragile axioms) the necessitation of the
+  schema is also an axiom.
 
   Since in Isabelle/HOL free variables in a theorem already range over all terms of the same type
   no special measures have to be taken to allow instantiations for arbitrary terms. The concept of
@@ -2003,9 +1996,13 @@ text{*
 subsection{* Derivation of the Axioms *}
 
 text{*
+  To simplify the derivation of the axioms a proving method @{method axiom_meta_solver} is introduced, that
+  unfolds the dedicated syntax, then applies the meta-solver and if possible resolves
+  the proof objective automatically.
+
   Most of the axioms can be derived by the @{method axiom_meta_solver} directly.
-  Some axioms, however, require more verbose proofs or special attention has to
-  be taken regarding their representation in the functional setting of Isabelle/HOL.
+  Some axioms, however, require more verbose proofs or their representation in the functional
+  setting of Isabelle/HOL requires special attention.
   Therefore in the following the complete axiom system is listed and discussed in
   detail where necessary. Additionally each axiom is associated with the numbering in
   the current draft of PLM@{cite PM}.
@@ -2072,9 +2069,8 @@ text{*
 
   Thereby the restriction of (\ref{PM-cqt}.2) does not apply, since @{term "\<tau>"} cannot be a
   definite description by construction. Since (\ref{PM-cqt}.2) would therefore hold in general,
-  the additional restriction of (\ref{PM-cqt}.1) can be dropped - again since a quantifier is used in the
-  formulation, the problematic case of definite descriptions (which would have type @{type \<kappa>})
-  is excluded already.
+  the additional restriction of (\ref{PM-cqt}.1) can be dropped - since a quantifier is used in the
+  formulation, the problematic case of definite descriptions is excluded already.
 
   Now the modification of (\ref{PM-cqt}.5) can be explained: Since (\ref{PM-cqt}.2) already
   implies the right hand side for every term except definite
@@ -2087,16 +2083,9 @@ text{*
   denotes an object of type @{type \<nu>} and thereby (\ref{PM-cqt}.1) can be applied using the substitution of identicals.
 
   Future work may want to reconsider the reformulation of the axioms, especially considering the most
-  recent developments described in section~\ref{paradox}. At the time of writing the fact that due to the
-  type restrictions of the embedding, the reformulated version of the axioms is \emph{derivable} from
-  the original version the reformulation is a reasonable compromise.
-
-  \begin{remark}
-    A formulation of the axioms as in PLM could be possible using the concept of domain restricted
-    quantification as employed in embedding free logics (see~@{cite FreeLogic}) to define a restricted
-    quantification over the type @{type \<kappa>}. This would require some non-trivial restructuring of
-    the embedding, though.
-  \end{remark}
+  recent developments described in section~\ref{paradox}. At the time of writing the reformulation is
+  considered a reasonable compromise, since due to the type restrictions of the embedding the reformulated
+  version of the axioms is \emph{derivable} from the original version.
 
   The predicate @{term "SimpleExOrEnc"} used as the precondition for (\ref{PM-cqt}.5)
   is defined as an inductive predicate with the following introduction rules:
