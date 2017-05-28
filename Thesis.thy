@@ -2312,9 +2312,9 @@ begin
 section{* The Deductive System PLM *}
   
 text{*
-  The derivation of the deductive system PLM from the constructed axiom system constitutes
+  The derivation of the deductive system PLM (@{cite \<open>Chap. 9\<close> PM}) from the axiom system constitutes
   a major part of the Isabelle theory in the appendix (see~\ref{TAO_PLM}). Its extent of
-  over one hundred pages makes it infeasible to discuss every aspect in full detail here.
+  over one hundred pages makes it infeasible to discuss every aspect in full detail.
 
   Nevertheless it is worthwhile to have a look at the mechanics of the derivation and to
   highlight some interesting concepts.
@@ -2325,34 +2325,28 @@ subsection{* Modally Strict Proofs *}
 text{*
   \label{PLM-modally-strict}
 
-  PLM distinguishes between two sets of theorems, the set of theorems, that are derivable from
-  the complete axiom system, and the set of theorems, that have \emph{modally-strict} proofs.
+  PLM distinguishes between two sets of theorems: the theorems, that are derivable from
+  the complete axiom system including the modally-fragile axiom,
+  and the set of theorems, that have \emph{modally-strict} proofs.
 
-  A modally-strict proof is a proof that does not use modally-fragile axioms (namely the axiom
-  of actuality described in section~\ref{axioms-actuality}).
+  A proof is modally-strict, if it does not depend on any modally-fragile axiom.
 
-  Although it is challenging to completely reproduce this distinction in the embedding
-  (see~\ref{differences-modally-strict}), the following schema results in a reasonable representation:
+  In the embedding modally-strict theorems are stated to be true for an \emph{arbitrary} semantic
+  possible world: \mbox{@{term "[\<phi> in v]"}}
 
-  Modally strict theorems are stated to be true for an \emph{arbitrary} semantic possible world
-  in the embedding as: \mbox{@{term "[\<phi> in v]"}}
-
-  Here the variable @{term "v"} implicitly ranges over \emph{any} semantic possible world of
+  Here the variable @{term "v"} implicitly ranges over all semantic possible worlds of
   type @{type i}, including the designated actual world @{term "dw"}. Since modally-fragile axioms
   only hold in @{term "dw"}, they therefore cannot be used to prove a statement formulated
   this way, as desired.
 
-  Non-modally-strict theorems on the other hand are stated to be true only for the designated
+  Modally-fragile theorems on the other hand are stated to be true only for the designated
   actual world: \mbox{@{term "[\<phi> in dw]"}}
 
-  This way necessary axioms, as well as modally-fragile axioms can be used in the proofs. However
+  This way necessary axioms, as well as modally-fragile axioms can be used in their proofs. However
   it is not possible to infer from a modally-fragile theorem that the same statement holds as a
   modally-strict theorem.
 
-  It is important to note that the set of modally-strict theorems in PLM is in fact a \emph{subset}
-  of the theorems of the form \mbox{@{term "[\<phi> in v]"}} that are semantically true in the embedding.
-  However, since only the rules of PLM are introduced in the embedding only this subset is in fact
-  derivable without falling back to the semantics or the meta-logic. This is discussed in more detail
+  This representation of modally-strict and modally-fragile theorems is discussed in more detail
   in section~\ref{differences-modally-strict}.
 *}
 
@@ -2376,8 +2370,8 @@ text{*
     \item @{thm RN_2[rename_abs w, of \<phi> \<psi> v]} \hfill{(\ref{PM-RN})}
   \end{itemize}
 
-  Although in PLM these rules are derived by structural induction on the complexity of
-  a formula, unfortunately this proving mechanism cannot be reproduced in Isabelle. However,
+  Although in PLM these rules can be derived by structural induction on the length of
+  a derivation, this proving mechanism cannot be reproduced in Isabelle. However,
   the rules are direct consequences of the semantics described in section~\ref{semantics}.
   The same is true for the deduction rule (see~\ref{TAO_PLM_NegationsAndConditionals}):
 
@@ -2385,10 +2379,10 @@ text{*
     \item @{thm deduction_theorem[of v \<phi> \<psi>]} \hfill{(\ref{PM-deduction-theorem})}
   \end{itemize}
 
-  As a consequence this rule is derived from the semantics of the implication as well.
+  As a consequence this rule is derived from the semantics as well.
   
   These rules are the \emph{only} exceptions to the concept that the deductive system of
-  PLM is completely derived from the axiom system and the primitive rule of inference (modus ponens).
+  PLM is completely derived from the axiom system and the primitive rule of inference, modus ponens.
 
 *}
 
@@ -2406,23 +2400,16 @@ text{*
   method is introduced, namely the @{method PLM_solver} (see~\ref{TAO_PLM_Solver}).
 
   This proving method is initially not equipped with any rules. Throughout the derivation of the
-  deductive system of PLM, appropriate rules of PLM are added to its set of rules.
-  Furthermore at several instances further rules become trivially \emph{derivable} from the
-  statements of PLM proven so far. Such rules are added to the @{method PLM_solver} as well.
+  deductive system, whenever an appropriate rule is derived as part of PLM directly or becomes
+  trivially derivable from the proven theorems, it is added to the @{method PLM_solver}.
 
-  Additionally the @{method PLM_solver} can instantiate any rule of the deductive system PLM proven
-  so far as well as any axiom, if this allows to resolve a proving objective.
+  Additionally the @{method PLM_solver} can instantiate any theorem of the deductive system PLM 
+  as well as any axiom, if doing so resolves the current proving goal.
 
   By its construction the @{method PLM_solver} has the property, that it can \emph{only} prove
   statements that are derivable from the deductive system PLM. Thereby it is safe to use to aid
-  in any proof throughout the section. As a matter of fact a lot of the simple tautological statements
-  derived in the beginning of @{cite \<open>Chap. 9\<close> PM} can be proven completely automatically using this method.
-
-  Unfortunately some rules that would make the solving method more powerful and would make it more
-  helpful in the derivation of more complex theorems, are \emph{not} derivable from the deductive
-  system itself (and consequently are \emph{not} added to the set of admissible rules). Namely
-  one example is the converse of the rule RN. This circumstance is discussed in more detail in
-  section~\ref{differences-modally-strict}.
+  in any proof throughout the section. In practice it can automatically prove a variety of simple
+  statements and aid in more complex proofs throughout the derivation of the deductive system.
 
 *}
 (*<*)
@@ -2434,7 +2421,6 @@ subsection{* Additional Type Classes *}
 text{*
   \label{PLM-type-classes}
 
-  There is one further subtlety one may notice in the derivation of the deductive system.
   In PLM it is possible to derive statements involving the general identity symbol by case
   distinction: if such a statement is derivable for all types of terms in the language separately,
   it can be concluded that it is derivable for the identity symbol in general. Such a case distinction
@@ -2452,8 +2438,8 @@ text{*
   \end{itemize}
 
   Since these statements can be derived \emph{separately} for the types @{type \<nu>}, @{type \<Pi>\<^sub>0},
-  @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3}, the type class @{class id_eq} can now trivially be
-  instantiated for each of these types.
+  @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3}, the type class @{class id_eq} can be instantiated
+  for each of these types.
 *}
 
 subsection{* The Rule of Substitution *}
@@ -2469,27 +2455,25 @@ text{*
     then if @{text "\<Gamma> \<turnstile> \<phi>"}, then @{text "\<Gamma> \<turnstile> \<phi>'"}. [Variant: If @{text "\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>"}, then @{text "\<phi> \<turnstile> \<phi>'"}]
   \end{addmargin}
 
-  Naively one could try to express this in the functional setting as follows:
+  A naive representation of the rule would be the following:
 
   \begin{center}
     @{term "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v]) \<Longrightarrow> [\<phi> \<psi> in v] \<longleftrightarrow> [\<phi> \<chi> in v]"}
   \end{center}
 
-  However this statement would \emph{not} be derivable. The issue is connected to the restriction
-  of @{term "\<psi>"} being a \emph{subformula} of @{text "\<phi>"} in PLM. The formulation above would allow
-  the substitution for \emph{any function} @{term "embedded_style \<phi>"} from formulas to formulas.
+  However this statement is \emph{not} derivable. The issue is connected to the restriction
+  of @{term "\<psi>"} to be a \emph{subformula} of @{text "\<phi>"} in PLM. The formulation above would allow
+  the rule to be instantiated for \emph{any function} @{term "embedded_style \<phi>"} from formulas to formulas.
 
   Formulas in the embedding have type @{type \<o>} which is internally represented by functions of the
-  type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. Reasoning is only defined to be classically in the designated actual state
-  @{term "dj"}, though. In the formulation above nothing would prevent @{term "embedded_style \<phi>"}
-  from being a function with the following internal representation:
+  type @{typ "j\<Rightarrow>i\<Rightarrow>bool"}. Therefore the formulation above could be instantiated with a function
+  @{term "embedded_style \<phi>"} that has the following internal representation:
   \mbox{@{term "\<lambda> \<psi> . make\<o>(\<lambda> s w .  \<forall> s . eval\<o> (embedded_style \<psi>) s w)"}}
 
   So nothing prevents @{term "embedded_style \<phi>"} from evaluating its argument for a state
   different from the designated actual state @{term "dj"}. The condition @{term "(\<And>v. [\<psi> \<^bold>\<equiv> \<chi> in v])"}
   on the other hand only requires @{term "embedded_style \<psi>"} and @{term "embedded_style \<chi>"} to be
-  equivalent in all possible worlds particularly in the \emph{actual state} - no statement about
-  other states is implied.
+  (necessarily) equivalent in the \emph{actual state} - no statement about other states is implied.
 
   Another issue arises if one considers one of the example cases of legitimate uses of the rule
   of substitution in PLM (see~@{cite \<open>(\ref{PM-rule-sub-nec})\<close> PM}):
@@ -2498,16 +2482,18 @@ text{*
     If @{text "\<turnstile> \<exists>x A!x"} and @{text "\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x"}, then @{text "\<turnstile> \<exists>x \<not>\<diamond>E!x"}.
   \end{addmargin}
 
-  This does not follow from the naive formulation above. Since @{text "x"} is \emph{bound} by
+  This would not follow from the naive formulation above, even if it were derivable.
+  Since @{text "x"} is \emph{bound} by
   the existential quantifier, in the functional representation @{term "embedded_style \<phi>"}
-  has to have a different type: to be applicable in this example @{term "embedded_style \<phi>"}
-  has to be \mbox{@{term[eta_contract=false] "(embedded_style \<phi>) = (\<lambda> \<psi> . embedded_style (\<^bold>\<exists> x . \<psi> x))"}},
-  whereas @{term "embedded_style \<psi>"} and @{term "embedded_style \<chi>"} themselves have to be functions as follows:
+  has to have a different type. In the example @{term "embedded_style \<phi>"}
+  has to be \mbox{@{term[eta_contract=false] "(\<lambda> \<psi> . embedded_style (\<^bold>\<exists> x :: \<nu> . \<psi> x))"}} which is of
+  type @{typeof "(\<lambda> \<psi> . embedded_style (\<^bold>\<exists> x :: \<nu> . \<psi> x))"}. @{term "embedded_style \<psi>"} and
+  @{term "embedded_style \<chi>"} have to be functions as well:
   \mbox{@{term[eta_contract=false] "(embedded_style \<psi>) = (\<lambda> x . embedded_style \<lparr>A!,x\<rparr>)"}} and
   \mbox{@{term[eta_contract=false] "(embedded_style \<chi>) = (\<lambda> x . embedded_style (\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>))"}}.
-  Furthermore now the equivalence condition has to be \mbox{@{term "\<And> x v. [\<psi> x \<^bold>\<equiv> \<chi> x in v]"}}.
-  This is analog to the fact that @{text "x"}
-  is a free variable in the condition @{text "\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x"} in PLM.
+  Consequently the equivalence condition for this case has to be reformulated to
+  \mbox{@{term "\<And> x v. [\<psi> x \<^bold>\<equiv> \<chi> x in v]"}}\footnote{This is analog to the fact that @{text "x"}
+  is a free variable in the condition @{text "\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x"} in PLM.}.
 
   
 *}
@@ -2516,10 +2502,10 @@ subsubsection{* Solution *}
 
 text{*
 
-  The embedding employs a solution that is complex, but can successfully address the issues 
-  described above.
+  The embedding employs a solution that is complex, but can successfully address the described
+  issues.
 
-  First of all the following definition is introduced:
+  The following definition is introduced (see~\ref{TAO_PLM_Necessity}):
 
   \begin{center}
     @{thm Substable_def[expand2, of cond \<phi>]}
@@ -2527,8 +2513,10 @@ text{*
 
   Given a condition @{term "cond"} a function @{term "embedded_style \<phi>"}
   is considered @{term "Substable"}, if and only if for all @{term "embedded_style \<psi>"}
-  and  @{term "embedded_style \<chi>"} (which may have an arbitrary type) it follows in each
-  possible world @{term "v"} that \mbox{@{term "[\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"}}.
+  and  @{term "embedded_style \<chi>"} that satisfy @{term "cond"} it follows in each
+  possible world @{term "v"} that \mbox{@{term "[\<phi> \<psi> \<^bold>\<equiv> \<phi> \<chi> in v]"}}\footnote{@{term "embedded_style \<psi>"}
+  and  @{term "embedded_style \<chi>"} can have an arbitrary type. @{term "embedded_style \<phi>"} is a function
+  from this type to formulas.}.
 
   Now several introduction rules for this property are derived. The idea is to capture the
   notion of \emph{subformula} in PLM. A few examples are:
@@ -2542,9 +2530,9 @@ text{*
             by (simp add: embedded_style_def Substable_intro_impl)}
   \end{itemize}
 
-  These rules can be derived from the rules proven in PLM.
+  These rules can be derived using theorems of PLM.
 
-  Now as mentioned above in the functional setting substitution has to be allowed not only for formulas,
+  As illustrated above in the functional setting substitution has to be allowed not only for formulas,
   but also for \emph{functions} to formulas. To that end the type class @{class Substable} is introduced
   that fixes a condition @{term "Substable_Cond"} to be used as @{term "cond"} in the definition above
   and assumes the following:
@@ -2558,7 +2546,7 @@ text{*
   and @{term "embedded_style \<chi>"} satisfy the fixed condition @{term "Substable_Cond"}, then everything
   that is true for @{term "[\<phi> \<psi> in v]"} is also true for @{term "[\<phi> \<chi> in v]"}.
 
-  Now as a base case this type class is \emph{instantiated} for the type of formulas @{type \<o>} with
+  As a base case this type class is \emph{instantiated} for the type of formulas @{type \<o>} with
   the following definition of @{term "Substable_Cond"}:
 
   \begin{center}
@@ -2571,8 +2559,6 @@ text{*
   \begin{center}
     @{thm Substable_Cond_fun_def[expand2, of \<psi> \<chi>]}
   \end{center}
-
-  This construction now allows substitutions in all cases required by the original formulation in PLM.
 *}
   
 subsubsection{* Proving Methods *}
@@ -2586,20 +2572,22 @@ text{*
   to apply the rule, it first has to be established that a formula can be decomposed into a
   function with the substituents as arguments and it further has to be shown that this function
   satisfies the appropriate @{term "Substable"} condition. This complexity prevents any reasonable
-  use cases. This problem is mitigated by the introduction of proving methods, that are convenient
-  to use. The main method is called @{method PLM_subst_method}.
+  use cases. This problem is mitigated by the introduction of proving methods.
+  The main method is called @{method PLM_subst_method}.
 
   This method uses a combination of pattern matching and automatic rule application to provide
   a convenient way to apply the rule of substitution in practice.
 
   For example assume the current proof objective is @{term "[\<^bold>\<not>\<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"}. Now it is possible to
-  apply the @{method PLM_subst_method} method as follows:
+  apply @{method PLM_subst_method} as follows:
   \begin{center}
     @{theory_text "apply (PLM_subst_method \"\<lparr>A!,x\<rparr>\" \"(\<^bold>\<not>(\<^bold>\<diamond>\<lparr>E!,x\<rparr>))\""}
   \end{center}
-  This will now automatically analyze the current proof goal, look for an appropriate choice of
-  a function @{term "embedded_style \<phi>"}, apply the substitution rule and resolve the substitutability
-  claim about @{term "embedded_style \<phi>"}. Consequently it can resolve the current proof objective
+  The method automatically analyzes the current proving goal, uses pattern matching to find an
+  appropriate choice for a function @{term "embedded_style \<phi>"}, applies the substitution rule and
+  resolves the substitutability claim about @{term "embedded_style \<phi>"}.
+
+  Consequently it can resolve the current proof objective
   by producing two new proving goals: @{term "\<forall>v. [\<lparr>A!,x\<rparr> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr> in v]"} and @{term "[\<^bold>\<not>\<lparr>A!,x\<rparr> in v]"},
   as expected. The complexity of the construction above is hidden away entirely.
 
@@ -2649,16 +2637,16 @@ text{*
 
   The proof objective inside the proof body is now \mbox{@{term "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v] \<Longrightarrow> [\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}},
   so \mbox{@{term "[\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}} has to be shown under the assumption \mbox{@{term "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v]"}}.
-  Therefore the first step is to assume \mbox{@{term "[\<^bold>\<not>\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<box>\<^bold>\<not>\<phi> in v]"}}.
+  Therefore the first step is to assume \mbox{@{term "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) in v]"}}.
 
   The second statement can now be automatically derived using the previously proven theorem
   @{theory_text sc_eq_box_box_1}, the definition of the diamond operator and a deduction
   rule. The final proof objective follows from a combination of introduction and elimination
   rules.
 
-  Note that the automated reasoning tool @{theory_text sledgehammer} can find proofs for
+  The automated reasoning tool @{theory_text sledgehammer} can find proofs for
   the second and final statement automatically. It can even automatically find a proof
-  for the entire theorem resulting in the following proof: 
+  for the entire theorem resulting in the following one-line proof:
 *}
   
   lemma "[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>) \<^bold>\<rightarrow> ((\<^bold>\<not>\<^bold>\<box>\<phi>) \<^bold>\<equiv> (\<^bold>\<box>(\<^bold>\<not>\<phi>))) in v]"
@@ -2674,9 +2662,8 @@ text{*
 subsection{* Summery *}
   
 text{*
-  Despite the presented challenges it was possible to derive a full representation of
-  the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM} without sacrificing the
-  layered structure of the embedding.
+  A full representation of the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM}, could
+  be derived without sacrificing the layered structure of the embedding.
 
   Although compromises affecting the degree of automation had to be made, the resulting
   representation can conveniently be used for the interactive construction of complex proofs
@@ -2698,8 +2685,8 @@ text{*
 
   \label{artificial-theorems}
 
-  Although the layered approach of the embedding provides the means to derive theorems
-  independently of the representation layer and model structure, it is interesting to consider
+  The layered approach of the embedding provides the means to derive theorems
+  independently of the representation layer and model structure. It is still interesting to consider
   some examples of theorems that are \emph{not} part of PLM, but can be derived in the
   embedding using the meta-logic.
 *}
@@ -2741,14 +2728,15 @@ text{*
 
   Especially the second statement shows that in general @{text "\<lambda>"}-expressions
   in the embedding have a \emph{non-standard} semantics. As a special case, however,
-  the behavior of @{text "\<lambda>"}-expressions \emph{is} classical if restricted to
-  proper maps:
+  the behavior of @{text "\<lambda>"}-expressions is classical if restricted to
+  proper maps, which is due to the following theorem\footnote{Note that for propositional formulas
+  an equivalent statement is derivable in PLM as well.}:
 
   \begin{center}
     @{thm proper_beta[of \<phi> v x]}
   \end{center}
 
-  It is important to note that as a consequence of the generalized @{text "\<beta>"}-conversion
+  As a consequence of the generalized @{text "\<beta>"}-conversion
   there are theorems in the embedding involving @{text "\<lambda>"}-expressions
   that \emph{do} contain encoding subformulas in the bound variable, e.g.:
   
@@ -2776,18 +2764,15 @@ text{*
 
   Separate research suggests that this artificial theorem can be avoided by extending the
   embedding in the following way: the mapping from abstract objects to special urelements
-  constructed in section~\ref{individuals-to-urelements} can be modified to depend on a
-  \emph{state}. This way the condition used in the theorem only implies that @{term "a"}
+  constructed in section~\ref{individuals-to-urelements} can be modified to depend on states.
+  This way the condition used in the theorem only implies that @{term "a"}
   and @{term "b"} are mapped to the same urelement in the \emph{actual state}. Since
   they can still be mapped to different urelements in different states, the derived equality
-  no longer holds.
+  no longer follows.
 
   This extension of the embedding increases the complexity of the representation
   layer slightly, but its preliminary analysis suggests that it presents no further issues, so
   future research and future versions of the embedding may want to include such a modification.
-
-  Note that there may still be further theorems that depend on the particular model structure
-  that are yet to be discovered.
 *}
 
 (*<*)
@@ -2820,15 +2805,17 @@ text{*
   \end{itemize}
 
   The first axiom is equivalent to the fact that concreteness matches the domains of ordinary, resp.
-  abstract objects, whereas the second and third axiom corresponds to the conjuncts of
+  abstract objects, whereas the second and third axiom correspond to the conjuncts of
   axiom~(\ref{PM-qml}.4)@{cite PM}.
 
+\begin{remark}
   Additionally some further desirable meta-logical properties of the embedding are verified
   in~\ref{TAO_SanityTests_MetaRelations} and~\ref{TAO_SanityTests_MetaLambda}.
+\end{remark}
 *}
 
 
-chapter{* Technical Issues *}
+chapter{* Technical Limitations of Isabelle/HOL *}
   
 text{*
   Although the presented embedding shows that the generic proof assistant Isabelle/HOL
