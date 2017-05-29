@@ -1297,7 +1297,7 @@ Several subtleties have to be considered:
         and using the native concept of binding operators in Isabelle.
   \item The representation layer of the embedding defines a separate quantifier for every type of
         variable in PLM. This is done to assure that only quantification ranging over these types
-        are part of the embedded language. The definition of a general quantifier in the representation layer
+        is part of the embedded language. The definition of a general quantifier in the representation layer
         could for example be used to quantify over individual \emph{terms} (of type @{type \<kappa>}), whereas
         only quantification ranging over individuals (of type @{type \<nu>}) is part of the language of PLM.
         After the semantics is introduced in section~\ref{semantics}, a \emph{type class} is constructed
@@ -1314,7 +1314,8 @@ The syntax used for stating that a proposition is semantically valid is the foll
 Here @{term "embedded_style \<phi>"} and @{term "v"} are free variables (in the meta-logic),
 therefore stating the expression as a lemma will implicitly be a quantified statement over all
 propositions @{term "embedded_style \<phi>"} and all possible worlds @{term "v"} (unless
-@{term "embedded_style \<phi>"} was explicitly declared as a constant in the global scope).
+@{term "embedded_style \<phi>"} or @{term "v"} are explicitly restricted in the current scope
+or globally declared as constants).
 
 \vfill
 \pagebreak
@@ -1325,7 +1326,7 @@ context Semantics
 begin
 (*>*)
 
-section{* Semantical Abstraction *}
+section{* Semantic Abstraction *}
   
 text{*
 \label{semantics}
@@ -1350,7 +1351,7 @@ for each type can simply be defined as the type of its representatives.
 
 As a next step denotation functions are defined that assign semantic denotations to the objects of each
 abstract type (see~\ref{TAO_Semantics_Semantics_Denotations}).
-The formal semantics of PLM does not a priori assume that every term has a denotation, therefore
+The formal semantics of PLM does not a priori assume that every term has a denotation. Therefore,
 the denotation functions are represented as functions that map to the @{text "option"} type of the
 respective domain. This way they can either map a term to @{term "Some x"}, if the term denotes
 @{term "x"}, or to @{term "None"}, if the term does not denote.
@@ -1360,12 +1361,12 @@ In the embedding all relation terms always denote, therefore the denotation func
 Individual terms on the other hand are already represented by an @{text "option"} type,
 so the denotation function @{term "d\<^sub>\<kappa>"} can be defined as the identity.
 
-Moreover the primitive type of possible worlds @{type i} is used as the semantical domain of possible
-worlds @{typ W} and the primitive actual world @{term "dw"} as the semantical actual world
+Moreover the primitive type of possible worlds @{type i} is used as the semantic domain of possible
+worlds @{typ W} and the primitive actual world @{term "dw"} as the semantic actual world
 @{term "w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
 
 \begin{remark}
-Although the definitions for semantical domains and denotations seem redundant, conceptually
+Although the definitions for semantic domains and denotations seem redundant, conceptually
 the abstract types of the representation layer now have the role of primitive types. Although for
 simplicity the last section regarded the type @{type \<o>} as synonym of \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}, it was
 introduced as a distinct type for which the set of all functions of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} merely
@@ -1513,7 +1514,7 @@ text{*
 
 \label{semantics-lambda}
 
-The most complex part of the semantical abstraction is the definition of denotations for @{text "\<lambda>"}-expressions.
+The most complex part of the semantic abstraction is the definition of denotations for @{text "\<lambda>"}-expressions.
 The formal semantics of PLM is split into several cases and uses a special class of
 \emph{Hilbert-Ackermann @{text "\<epsilon>"}-terms} that are challenging to represent. Therefore a simplified
 formulation of the denotation criteria is used. Moreover the denotations of @{text "\<lambda>"}-expressions are
@@ -1645,7 +1646,7 @@ text{*
   The instantiation proofs only need to refer to the statements derived in the semantics section for the respective version
   of the quantifier and are thereby independent of the representation layer.
 
-  From this point onward therefore the general all-quantifier can completely replace the type specific
+  From this point onward the general all-quantifier can completely replace the type specific
   quantifiers. This is true even if a quantification is meant to only range over objects of a
   particular type: In this case the desired type (if it can not implicitly be deduced from the
   context) can be stated explicitly while still using the general quantifier.
@@ -1683,7 +1684,7 @@ text{*
     \item @{thm[display] diamond_def[expand1, THEN embedded_eq, of \<phi>]}
   \end{itemize}
 
-  Furthermore the general all-quantifier is supplemented by an existential quantifier as follows:
+  Furthermore, the general all-quantifier is supplemented by an existential quantifier as follows:
   \begin{itemize}
     \item @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq, rename_abs \<alpha>]}
   \end{itemize}
@@ -1954,7 +1955,7 @@ text{*
 
   The axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
   and can therefore be instantiated for any formula and term.
-  Furthermore PLM introduces the notion of \emph{closures}. Effectively this means
+  Furthermore PLM introduces the notion of \emph{closures} (see~@{cite \<open>(\ref{PM-closures})\<close> PM}). Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
   the actualization of the schema and (except for modally-fragile axioms) the necessitation of the
   schema is also an axiom.
@@ -2041,47 +2042,55 @@ text{*
   PLM, as follows (see~\ref{TAO_Axioms_Quantification}):
 
   \begin{itemize}
-    \item @{thm cqt_1} \hfill{(\ref{PM-cqt}.1)}
-    \item @{thm cqt_1_\<kappa>} \hfill{(\ref{PM-cqt}.1)}
+    \item @{thm cqt_1[of \<phi> \<tau>]} \hfill{(\ref{PM-cqt}.1a)}
+    \item @{thm cqt_1_\<kappa>[of \<phi> \<tau>]} \hfill{(\ref{PM-cqt}.1b)}
     \item @{thm cqt_3} \hfill{(\ref{PM-cqt}.3)}
     \item @{thm cqt_4} \hfill{(\ref{PM-cqt}.4)}
-    \item @{thm cqt_5} \hfill{(\ref{PM-cqt}.5)}
-    \item @{thm cqt_5_mod} \hfill{(\ref{PM-cqt}.5)}
+    \item @{thm cqt_5[of \<psi> \<phi>, rename_abs x \<nu> x]} \hfill{(\ref{PM-cqt}.5a)}
+    \item @{thm cqt_5_mod[of \<psi> \<tau>, rename_abs \<nu>]} \hfill{(\ref{PM-cqt}.5b)}
   \end{itemize}
 
-  The direct translation of the axioms of PLM would be the following:
+  The original axioms in PLM\footnote{Note that the axioms
+  will in all likelihood be adjusted in future versions of PLM in order to prevent the paradox
+  described in section~\ref{paradox}.} are the following:
 
   \begin{itemize}
-    \item @{term "[[(\<^bold>\<forall> \<alpha> . \<phi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<tau>) \<^bold>\<rightarrow> \<phi> \<tau>)]]"} \hfill{(\ref{PM-cqt}.1)}
-    \item @{term "[[\<^bold>\<exists> \<beta> . \<beta> \<^bold>= \<tau>]]"} \hfill{(\ref{PM-cqt}.2)}
-    \item @{thm cqt_3} \hfill{(\ref{PM-cqt}.3)}
-    \item @{thm cqt_4} \hfill{(\ref{PM-cqt}.4)}
-    \item @{thm cqt_5} \hfill{(\ref{PM-cqt}.5)}
+    \item @{text "\<forall>\<alpha>\<phi> \<rightarrow> (\<exists>\<beta>(\<beta> = \<tau>) \<rightarrow> \<phi>\<^sup>\<tau>\<^sub>\<alpha>)"} \hfill{(\ref{PM-cqt}.1)}
+    \item @{text "\<exists>\<beta>(\<beta> = \<tau>)"}, provided @{text "\<tau>"} is not a description and @{text "\<beta>"} doesn't occur free in @{text "\<tau>"}.\hfill{(\ref{PM-cqt}.2)}
+    \item @{text "\<forall>\<alpha>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<forall>\<alpha> \<phi> \<rightarrow> \<forall>\<alpha> \<psi>)"} \hfill{(\ref{PM-cqt}.3)}
+    \item @{text "\<phi> \<rightarrow> (\<forall>\<alpha> \<phi>)"}, provided @{text "\<alpha>"} doesn't occur free in @{text "\<phi>"} \hfill{(\ref{PM-cqt}.4)}
+    \item @{text "\<psi>\<^sup>\<iota>\<^sup>x\<^sup>\<phi>\<^sub>\<mu> \<rightarrow> \<exists>\<nu> (\<nu> = \<iota>x\<phi>)"}, provided (a) @{text "\<psi>"} is either an exemplification formula @{text "\<Pi>\<^sup>n\<kappa>\<^sub>1\<dots>\<kappa>\<^sub>n"} (@{text "n \<ge> 1"})
+          or an encoding formula @{text "\<kappa>\<^sub>1\<Pi>\<^sup>1"}, (b) @{text "\<mu>"} is an individual variable that occurs in @{text "\<psi>"}
+          and only as one or more of the @{text "\<kappa>\<^sub>i"} (@{text "1 \<le> i \<le> n"}), and (c) @{text "\<nu>"} is any individual variable
+          that doesn't occur free in @{text "\<phi>"}.\hfill{(\ref{PM-cqt}.5)}
   \end{itemize}
 
-  Axiom~(\ref{PM-cqt}.2) is furthermore restricted to @{term "\<tau>"} not being a definite description.
   In the embedding definite descriptions have the type @{type \<kappa>} that is different from the
-  type for individuals @{type \<nu>} and quantification is only defined for @{type \<nu>}, not for @{type \<kappa>}.
+  type for individuals @{type \<nu>}. Quantification is only defined for @{type \<nu>}, not for @{type \<kappa>}.
 
-  Thereby the restriction of (\ref{PM-cqt}.2) does not apply, since @{term "\<tau>"} cannot be a
-  definite description by construction. Since (\ref{PM-cqt}.2) would therefore hold in general,
-  the additional restriction of (\ref{PM-cqt}.1) can be dropped - since a quantifier is used in the
-  formulation, the problematic case of definite descriptions is excluded already.
+  Therefore, the restriction of (\ref{PM-cqt}.2) does not apply, since the type restriction of
+  quantification ensures that @{term "\<tau>"} cannot be a definite description.
+  Consequently the inner precondition of (\ref{PM-cqt}.1)
+  can be dropped in (\ref{PM-cqt}.1a) - since a quantifier is used in the
+  formulation, the problematic case of definite descriptions is excluded and the dropped
+  precondition would always hold.
 
-  Now the modification of (\ref{PM-cqt}.5) can be explained: Since (\ref{PM-cqt}.2) already
-  implies the right hand side for every term except definite
-  descriptions, (\ref{PM-cqt}.5) can be stated for general terms
-  instead of stating it specifically for definite descriptions.
+  The second formulation (\ref{PM-cqt}.1b) for definite descriptions involves the type
+  conversion @{term "embedded_style (DUMMY\<^sup>P)"} and keeps the inner precondition (since descriptions
+  may not denote).
 
-  What is left to be considered is how (\ref{PM-cqt}.1) can be applied to definite
-  descriptions in the embedding. The modified version of (\ref{PM-cqt}.5) states that under the same condition
-  that the unmodified version requires for a description to denote, the description (that has type @{type \<kappa>})
-  denotes an object of type @{type \<nu>} and thereby (\ref{PM-cqt}.1) can be applied using the substitution of identicals.
+  (\ref{PM-cqt}.5b) can be stated as a generalization of (\ref{PM-cqt}.5a) to general individual
+  terms, since (\ref{PM-cqt}.2) already implies its right hand side for every term except descriptions.
+
+  Consequently (\ref{PM-cqt}.1b) and (\ref{PM-cqt}.5b) can replace the original axioms
+  (\ref{PM-cqt}.1) and (\ref{PM-cqt}.5) for individual terms.
+  For individual variables and constants as well as relations the simplified formulation
+  (\ref{PM-cqt}.1a) can be used instead.
 
   Future work may want to reconsider the reformulation of the axioms, especially considering the most
   recent developments described in section~\ref{paradox}. At the time of writing the reformulation is
   considered a reasonable compromise, since due to the type restrictions of the embedding the reformulated
-  version of the axioms is \emph{derivable} from the original version.
+  version of the axioms is an equivalent representation of the original axioms.
 
   The predicate @{term "SimpleExOrEnc"} used as the precondition for (\ref{PM-cqt}.5)
   is defined as an inductive predicate with the following introduction rules:
