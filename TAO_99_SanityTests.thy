@@ -212,7 +212,7 @@ text{*
     by (metis (no_types) MetaSolver.Eq\<^sub>1S assms identity_\<Pi>\<^sub>1_def
                          mat_eq_is_eq_dj mat_eq_is_eq_if_eq_forall_j)
 
-subsection{* Lambda Expressions in the Meta-Logic *}
+subsection{* Lambda Expressions *}
 text{* \label{TAO_SanityTests_MetaLambda} *}
 
   lemma lambda_interpret_1:

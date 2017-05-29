@@ -604,6 +604,10 @@ basis of the embedding. The technicalities of this model are described in the ne
   
 chapter{* The Embedding *}
 
+text{*
+  \label{embedding}
+*}
+  
 section{* The Framework Isabelle/HOL *}
 
 text{*
@@ -2183,7 +2187,7 @@ text{*
 subsection{* Axioms of Descriptions *}
 
 text{*
-  There is only one axiom dedicated to descriptions only (note, however, that descriptions play
+  There is only one axiom dedicated to descriptions (note, however, that descriptions play
   a role in the axioms of quantification). The statement is the following (see~\ref{TAO_Axioms_Descriptions}):
 
   \begin{itemize}
@@ -2229,7 +2233,7 @@ text{*
     \item @{thm lambda_predicates_4_3} \hfill{(\ref{PM-lambda-predicates}.4)}
   \end{itemize}
 
-  The first axiom - @{text "\<alpha>"}-conversion - could be omitted entirely. Since
+  The first axiom, @{text "\<alpha>"}-conversion, could be omitted entirely. Since
   lambda-expressions are modelled using functions with bound variables and @{text "\<alpha>"}-conversion
   is part of the logic of Isabelle/HOL, it already holds implicitly.
 
@@ -2260,7 +2264,7 @@ text{*
 subsection{* Axioms of Encoding *}
   
 text{*
-  The last class of axioms is comprised of the axioms of encoding (see~\ref{TAO_Axioms_Encoding}):
+  The last class of axioms deals with encoding (see~\ref{TAO_Axioms_Encoding}):
 
   \begin{itemize}
     \item @{thm encoding} \hfill{(\ref{PM-encoding})}
@@ -2275,8 +2279,8 @@ text{*
   between ordinary and abstract objects.
 
   Similarly the comprehension axiom for abstract objects
-  depends on the meta-logic and follows from the definition of abstract objects as the power set
-  of relations and the representation of encoding as set membership.
+  depends on the model structure and follows from the representation of abstract objects as sets
+  of one-place relations and the definition of encoding as set membership.
 
   Furthermore in the functional setting @{term "embedded_style \<phi>"} has to be represented as a function
   and the condition it imposes on @{term "embedded_style F"} is expressed as its application to @{term "embedded_style F"}.
@@ -2292,16 +2296,16 @@ subsection{* Summary *}
   
 text{*
   Although some of the axioms have to be adjusted to be representable in the functional environment,
-  it is possible to arrive at a formulation that faithfully represents the original axiom system of PLM.
+  the resulting formulation faithfully represents the original axiom system of PLM.
 
   Furthermore a large part of the axioms can be derived independently of the technicalities of
   the representation layer with proofs that only depend on the representation of the semantics described in
-  section~\ref{semantics}. Future work may explore possible options to further minimize the dependency
+  section~\ref{semantics}. Future work may explore available options to further minimize the dependency
   on the underlying model structure.
 
-  To verify that the axiom system faithfully represents the reference system, as a next step the
+  To verify that the axiom system faithfully represents the reference system, the
   deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
-  formulation of the axioms without falling back to the meta-logic or the semantics.
+  formulation of the axioms without falling back to the model structure or the semantics (see~\ref{TAO_PLM}).
 
 \pagebreak
 *}
@@ -2334,11 +2338,11 @@ text{*
 
   PLM distinguishes between two sets of theorems: the theorems, that are derivable from
   the complete axiom system including the modally-fragile axiom,
-  and the set of theorems, that have \emph{modally-strict} proofs.
+  and the set of theorems, that have \emph{modally-strict} proofs (see~@{cite \<open>(\ref{PM-theoremhood})\<close> PM}).
 
-  A proof is modally-strict, if it does not depend on any modally-fragile axiom.
+  A proof is modally-strict, if it does not depend on any modally-fragile axioms.
 
-  In the embedding modally-strict theorems are stated to be true for an \emph{arbitrary} semantic
+  In the embedding modally-strict theorems are stated to be true for an arbitrary semantic
   possible world: \mbox{@{term "[\<phi> in v]"}}
 
   Here the variable @{term "v"} implicitly ranges over all semantic possible worlds of
@@ -2368,7 +2372,7 @@ text{*
     \item @{thm modus_ponens[of v \<phi> \<psi>]} \hfill{(\ref{PM-modus-ponens})}
   \end{itemize}
 
-  In the embedding this rule is a direct consequence of the semantics of the implication.
+  This rule is a direct consequence of the semantics of the implication.
 
   Additionally two fundamental Metarules are derived in PLM, \emph{GEN} and \emph{RN} (see~\ref{TAO_PLM_GEN_RN}):
 
@@ -2386,7 +2390,7 @@ text{*
     \item @{thm deduction_theorem[of v \<phi> \<psi>]} \hfill{(\ref{PM-deduction-theorem})}
   \end{itemize}
 
-  As a consequence this rule is derived from the semantics as well.
+  Consequently this rule is derived from the semantics as well.
   
   These rules are the \emph{only} exceptions to the concept that the deductive system of
   PLM is derived solely from the axiom system without relying on the previous layers of the
@@ -2432,7 +2436,7 @@ text{*
   In PLM it is possible to derive statements involving the general identity symbol by case
   distinction: if such a statement is derivable for all types of terms in the language separately,
   it can be concluded that it is derivable for the identity symbol in general. Such a case distinction
-  cannot be directly reproduced in the embedding, since it cannot be assumed, that every instantiation of the
+  cannot be directly reproduced in the embedding, since it cannot be assumed that every instantiation of the
   type class @{class identifiable} is in fact one of the types of terms of PLM.
 
   However, there is a simple way to still formulate such general statements. This is done by
@@ -2616,7 +2620,7 @@ text{*
   Although an adequate representation of the rule of substitution in the functional setting
   is challenging, the above construction allows a convenient use of the rule. Moreover it is
   important to note that despite the complexity of the representation no assumptions about
-  the meta-logic or the underlying model structure were made. The construction is completely
+  the underlying model structure were made. The construction is completely
   derivable from the rules of PLM itself, so the devised rule is safe to use without
   compromising the provability claim of the layered structure of the embedding.
 
@@ -2670,7 +2674,7 @@ subsection{* Summary *}
   
 text{*
   A full representation of the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM}, could
-  be derived without sacrificing the layered structure of the embedding.
+  be derived without violating the layered structure of the embedding.
 
   Although compromises affecting the degree of automation had to be made, the resulting
   representation can conveniently be used for the interactive construction of complex proofs
@@ -2695,7 +2699,7 @@ text{*
   The layered approach of the embedding provides the means to derive theorems
   independently of the representation layer and model structure. It is still interesting to consider
   some examples of theorems that are \emph{not} part of PLM, but can be derived in the
-  embedding using the meta-logic.
+  embedding using its meta-logical properties.
 *}
 
 subsection{* Non-Standard $\lambda$-Expressions *}
@@ -2719,7 +2723,7 @@ text{*
     @{term "[(\<lparr>\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>, x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<lbrace>x\<^sup>P, F\<rbrace>) in v]"}
   \end{center}
 
-  Instead the following generalized versions of @{text "\<beta>"}-conversion are theorems in the embedding:
+  Instead the following generalized versions of @{text "\<beta>"}-conversion are theorems:
 
   \begin{itemize}
     \item @{thm lambda_enc_4[of v F z]}
@@ -2733,7 +2737,7 @@ text{*
     \item @{thm lambda_ex_emb[of v \<phi> z]}
   \end{itemize}
 
-  Especially the second statement shows that in general @{text "\<lambda>"}-expressions
+  The second statement shows that in general @{text "\<lambda>"}-expressions
   in the embedding have a \emph{non-standard} semantics. As a special case, however,
   the behavior of @{text "\<lambda>"}-expressions is classical if restricted to
   proper maps, which is due to the following theorem\footnote{Note that for propositional formulas
@@ -2769,7 +2773,7 @@ text{*
   therefore they are forced to be equal. Neither the deductive system of PLM nor its formal
   semantics require this equality.
 
-  Separate research suggests that this artificial theorem can be avoided by extending the
+  Initial research suggests that this artificial theorem can be avoided by extending the
   embedding in the following way: the mapping from abstract objects to special urelements
   constructed in section~\ref{individuals-to-urelements} can be modified to depend on states.
   This way the condition used in the theorem only implies that @{term "a"}
@@ -2779,7 +2783,7 @@ text{*
 
   This extension of the embedding increases the complexity of the representation
   layer slightly, but its preliminary analysis suggests that it presents no further issues, so
-  future research and future versions of the embedding may want to include such a modification.
+  future versions of the embedding will in all likelihood include such a modification.
 *}
 
 (*<*)
@@ -2840,22 +2844,21 @@ section{* Limitations of Type Classes and Locales *}
 
 text{*
   Isabelle provides a powerful tool for abstract reasoning called @{theory_text locale}.
-  Locales are used for \emph{parametric} reasoning. Type classes as already described 
+  Locales are used for \emph{parametric} reasoning. Type classes, as already described 
   briefly in section~\ref{general-quantifier} and further mentioned in sections~\ref{general-identity}
-  and~\ref{PLM-type-classes} are in fact special cases of locales that are additionally
-  connected to Isabelle's primitive type system.
+  and~\ref{PLM-type-classes}, are in fact special cases of locales that are additionally
+  connected to Isabelle's internal type system.
 
-  The definition of a locale defines a set of constants that can use arbitrary type variables
-  (type classes on the other hand are restricted to only one type variable). Furthermore
-  assumptions about these constants can be postulated that can be used in the reasoning within
-  the locale. Similarly to the instantiation of a type class a locale can be \emph{interpreted}
-  for specific definitions of the introduced constants, for which it has to be proven that they
-  satisfy the postulated assumptions.
+  The definition of a locale defines a set of constants that can use arbitrary type variables\footnote{Type
+  classes on the other hand are restricted to only one type variable.}. Assumptions about
+  these constants can be postulated that can be used in the reasoning within the context of
+  the locale. Similarly to the instantiation of a type class, a locale can be \emph{interpreted}
+  for specific definitions of the introduced constants, if it can be proven that the postulated assumptions
+  are satisfied for the interpretation.
 
   Thereby it is possible to reason about abstract structures that are solely characterized by a specific
   set of assumptions. Given that it can be shown that these assumptions are satisfied for a concrete
-  case (i.e. a specific definition for the constants using specific types in place of the used type
-  variables), an interpretation of the locale allows the use of all theorems shown
+  case, an interpretation of the locale allows the use of all theorems shown
   for the abstract case in the concrete application.
 
   Therefore in principle locales would be a perfect fit for the layered structure of the embedding:
@@ -2863,18 +2866,20 @@ text{*
   as locales, it could first be shown that the axiom system is a \emph{sublocale} of the formal
   semantics, i.e. every set of constants that satisfies the requirements of the formal semantics
   also satisfies the requirements of the axiom system, and further the formal semantics could
-  be interpreted for the concrete model structure.
+  be interpreted for a concrete model structure.
 
   Since the reasoning within a locale cannot use further assumptions that are only satisfied
   by a specific interpretation, this way the universality of the reasoning based on the axiom
   system could be formally guaranteed - no proof that is solely based on the axiom locale
   could use any meta-logical statement tied to the underlying representation layer and
-  model structure.
+  model structure\footnote{Although the construction of chapter~\ref{embedding} provides the means
+  for universal reasoning that is independent of a model as well, it depends on \emph{fair use} of
+  the provided layer structure.}.
 
   However, a major issue arises when trying to formulate the axiom system as a locale.
   The axioms of quantification and the substitution of identicals are restricted
   to only hold for specific sets of types. This already makes it impossible to introduce a general
-  binder for all-quantification or a general identity symbol. A constant for identity
+  binder for all-quantification or a general identity symbol. A constant for the identity relation
   would have to be introduced with a specific type. Although this type could use type
   variables, e.g. @{typ "'a\<Rightarrow>'a\<Rightarrow>'\<o>"}, the type variable @{typ "'a"} would be fixed
   throughout the locale.
@@ -2883,28 +2888,28 @@ text{*
   a polymorphic constant \emph{outside the locale} and the locale would assume some
   properties of this constant for specific type variables. Before interpreting the
   locale the polymorphic constant could then be \emph{overloaded} for concrete types
-  in order to be able to satisfy the assumptions. However, this way it would still be
+  in order to be able to satisfy the assumptions. However, it would still be
   impossible to prove a general statement about identity: every statement would have
   to be restricted to a specific type, because in general no assumptions about the
   properties of identity could be made.
 
   Another solution would be to refrain from using general quantifiers and identity relations
   altogether, but to introduce separate binders and identity symbols for the type of individuals and
-  each relation type. This would, however, add a significant amount of notational complexity
-  to the embedding and would require to duplicate all statements that hold for quantification
-  and identity in general for every specific type. For this reason this option was not explored
-  further.
+  each relation type. However, this would add a significant amount of notational complexity
+  and would require to duplicate all statements that hold for quantification
+  and identity in general for every specific type. Statements ranging over multiple types
+  would even have to be stated for every possible combination of types separately.
 
   It could also be considered to introduce the axioms of quantification and identity separately
   from the axiom locale in a type class. An interpretation of the complete axiom system would
   then have to interpret the axiom locale, as well as instantiate the respective type classes.
   Since type classes can only use one type variable, this would make it impossible to use a type
-  variable for truth values in the definition of the respective type classes, though.
+  variable for truth values in the definition of the respective type classes, though. Consequently
+  it is unclear how appropriate assumptions for such type classes could be formulated.
 
   Several other concepts were considered during the construction of the embedding,
   but no solution was found that would both accurately represent the axiom system and
-  still be notationally convenient. A complete account of the considered options would
-  go beyond the scope of this discussion.
+  still be notationally convenient.
 
   The most natural extension of Isabelle's locale system that would solve the described
   issues, would be the ability to introduce polymorphic constants in a locale that
@@ -2917,25 +2922,21 @@ text{*
 section{* Case Distinctions by Type *}
   
 text{*
-  Although a general all-quantifier and identity relation can be approximated using type classes
-  as described in sections~\ref{general-quantifier} and~\ref{general-identity}, in fact this
-  construction is conceptually different from the intention of PLM. The identity relation is
-  not actually meant to be determined by some set of properties, but by their definition
-  for specific concrete types.
+  Although a general all-quantifier and identity relation can be represented using type classes
+  as described in sections~\ref{general-quantifier} and~\ref{general-identity}, this
+  construction differs from the concept used in PLM. The identity relation of PLM is
+  not determined by some set of properties, but by its definition for the specific concrete types.
 
-  However, currently Isabelle does not allow the restriction of a type variable in a statement
+  Isabelle does not allow the restriction of a type variable in a statement
   to a specific set of types. Type variables can only be restricted to specific \emph{sorts},
   so effectively to type classes. As mentioned in section~\ref{PLM-type-classes} this means
-  that statements for example about the general identity relation that depend on the specific
+  that statements about the general identity relation that depend on the specific
   definitions of identity for the concrete types, cannot be proven as in PLM by case distinction
   on types, but another type class has to be introduced that \emph{assumes} the statement, which
   then has to be instantiated for the concrete types.
 
-  Although the solution using type classes works for the embedding, it would be more natural
-  to restrict such statements to the specific sets of types and to have an induction method
-  that allows to prove the statement for the concrete types separately. Again as of yet it is
-  unknown whether Isabelle could be extended in such a way given the limitations of its internal
-  type system.
+  Although this construction involves some technical overhead, the solution is elegant and provides
+  a flexible representation for such general statements.
 *}
 
 section{* Structural Induction and Proof-Theoretic Reasoning *}
@@ -2948,11 +2949,11 @@ text{*
 
   While this is not considered a major problem, it would be interesting to investigate, whether
   some construction in Isabelle would in fact allow proof-theoretic reasoning similar to the
-  proofs in PLM. This is related to the issue of accurately representing the concept of
+  proofs in PLM. A related topic is the representing of the concept of
   \emph{modally-strict proofs} as described in sections~\ref{PLM-modally-strict}
   and~\ref{differences-modally-strict}.
-*} 
-  
+*}
+
 chapter{* Discussion and Results *}
 
 section{* Differences between the Embedding and PLM *}
@@ -2975,7 +2976,7 @@ text{*
   The main difference between the embedding and PLM is the fact that the embedding does
   not distinguish between propositional and non-propositional formulas.
 
-  This purely syntactical distinction is challenging to reproduce in a shallow embedding that
+  This purely syntactic distinction is challenging to reproduce in a shallow embedding that
   does not introduce the complete term structure of the embedded language directly.
   Instead the embedding attempts to analyze the semantic reason for the
   syntactic distinction and to devise a semantic criterion that can be used as a replacement
@@ -2988,7 +2989,7 @@ text{*
   Since the embedding is known to be consistent, the issue presents itself in a slightly
   different fashion: the paradox is constructed under the assumption that @{text "\<beta>"}-conversion
   holds unconditionally for all @{text "\<lambda>"}-expressions. In the embedding on the other hand in
-  general @{text "\<lambda>"}-expressions have a \emph{non-standard} semantic and @{text "\<beta>"}-conversion
+  general @{text "\<lambda>"}-expressions have a \emph{non-standard} semantics and @{text "\<beta>"}-conversion
   only follows as a special case (see~\ref{artificial-theorems-lambda}).
   Thereby the consistency of the system is preserved.
 
@@ -3024,9 +3025,10 @@ subsection{* Terms and Variables *}
 text{*
 
   In PLM an individual term can be an individual variable, an individual constant or a definite
-  description. A large number of statements is formulated using specific variables. From such
-  a statement its universal generalization can be derived (using the rule GEN), which then can be
-  instantiated for any individual term, given that it denotes (\mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}).
+  description. A large number of statements is formulated using specific object-language variables instead
+  of metavariables ranging over arbitrary terms. From such a statement its universal generalization
+  can be derived using the rule GEN,  which then can be instantiated for any individual term,
+  given that it denotes (\mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}).
 
   As already mentioned in sections~\ref{individual-terms-and-descriptions} and~\ref{quantification-axioms}
   the embedding uses a slightly different approach: In the embedding individuals and
@@ -3038,7 +3040,7 @@ text{*
 
   \begin{itemize}
     \item The individual variables of PLM are represented as variables of type @{type \<nu>} in the embedding.
-    \item Individual constants can be represented by declaring a constant of type @{type \<nu>}.
+    \item Individual constants can be represented by declaring constants of type @{type \<nu>}.
     \item Meta-level variables (like @{text "\<tau>"}) ranging over all individual terms
           in PLM can be represented as variables of type @{type \<kappa>}.
     \item Objects of type @{type \<nu>} have to be explicitly converted to objects of type @{type \<kappa>}
@@ -3048,12 +3050,12 @@ text{*
           (see~\ref{quantification-axioms}).
   \end{itemize}
 
-  In PLM the situation for relation variables, constants and terms is analog. However the
+  In PLM the situation for relation variables, constants and terms is analog. However, the
   embedding uses the following simplification in order to avoid the additional complexity
   introduced for individuals:
 
   Since at the time of writing PLM unconditionally asserts \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
-  is for any relation term by an axiom, the embedding uses only one type @{text "\<Pi>\<^sub>n"} for each
+  for any relation term by an axiom, the embedding uses only one type @{text "\<Pi>\<^sub>n"} for each
   arity of relations. Therefore no special type conversion between variables and terms is necessary
   and every relation term can immediately be instantiated for a variable of type @{text "\<Pi>\<^sub>n"}.
   This hides the additional steps PLM employs for such instantiations (the generalization by GEN
@@ -3080,9 +3082,8 @@ text{*
 \label{differences-modally-strict}
 
 As described in section~\ref{PLM-modally-strict} modally-strict theorems
-in the embedding are stated in the form \mbox{@{term "[\<phi> in v]"}} for arbitrary @{term "v"}.
-However, the set of modally-strict theorems in PLM corresponds to only a subset
-of the theorems that are semantically true in arbitrary (semantic) possible worlds.
+in the embedding are stated in the form \mbox{@{term "[\<phi> in v]"}}, so they are stated
+to be semantically true for an arbitrary possible world @{term "v"}.
 
 Modally-strict theorems in PLM are defined using a proof-theoretic concept:
 modally-strict proofs are not allowed to use modally-fragile axioms. They are solely derived
@@ -3114,7 +3115,8 @@ as necessary theorems, for which the converse of RN is in fact true.
 
 This still does not compromise the claim that any statement that is derived in \ref{TAO_PLM}
 is also derivable in PLM: the basis for this claim is that no proofs in this layer may rely on the
-meta-logic, but only the fundamental meta-rules of PLM are allowed to derive theorems from the axioms.
+meta-logical properties of the embedding, but only the fundamental meta-rules of PLM are allowed
+to derive theorems from the axioms.
 Since the converse of RN is neither a fundamental meta-rule of PLM, nor derivable without using
 the semantics, it is not stated as an admissible rule for these proofs. Thereby it is guaranteed
 that no statement of the form \mbox{@{term "[\<phi> in v]"}} is derived that is not a modally-strict
@@ -3155,7 +3157,7 @@ text{*
   in the embedding and its relation to propositional formulas in PLM, which are the only formulas
   PLM allows as the matrix of @{text "\<lambda>"}-expressions (see~\ref{differences-lambda}).
 
-  While verifying the conjecture, that the matrix of every @{text "\<lambda>"}-expression allowed in PLM
+  While trying to verify the conjecture, that the matrix of every @{text "\<lambda>"}-expression allowed in PLM
   corresponds to a proper map in the embedding, it was discovered, that @{text "\<lambda>"}-expressions of
   the form \mbox{@{text "[\<lambda>y F\<iota>x(y[\<lambda>z Rxz])]"}} in which the bound variable @{text "y"} occurs in
   an encoding formula inside the matrix of a definite description, were part of PLM, but their
@@ -3181,8 +3183,8 @@ text{*
   @{term "False"} is derivable in the embedding. However @{text "\<lambda>"}-expressions with the
   equivalent of such maps as matrix were in fact part of PLM.
 
-  Since the inconsistency can be derived without relying on the meta-logic,
-  it was immediately possible to translate the proof back to the language of PLM.
+  Since the inconsistency can be derived without relying on the meta-logical properties of
+  the embedding, it was immediately possible to translate the proof back to the language of PLM.
   The resulting formulation then served as the basis for further
   discussions with Edward Zalta.
 
@@ -3209,8 +3211,8 @@ text{*
   @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
   paradox as described in section~\ref{russell-paradox}.
 
-  The idea was that excluding non-propositional formulas in
-  @{text "\<lambda>"}-expressions would be sufficient to prevent such
+  excluding non-propositional formulas in
+  @{text "\<lambda>"}-expressions was believed to be sufficient to prevent such
   inconsistencies. This was shown to be incorrect, though.
 
   The problem is the \emph{description backdoor}. The term \mbox{@{text "[\<lambda>y F\<iota>x\<psi>]"}}
@@ -3235,8 +3237,7 @@ text{*
   may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
   @{text "\<beta>"}-conversion holds.
 
-  It is possible to show that by @{text "\<beta>"}-conversion and description
-  theory the following is derivable:
+  By @{text "\<beta>"}-conversion and description theory the following is derivable:
 
   \begin{equation}\tag{2}
     @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<psi>\<^sup>x\<^sub>y"}
@@ -3277,13 +3278,13 @@ text{*
   \emph{proper} @{text "\<lambda>"}-expressions will be forced to have denotations and allow @{text "\<beta>"}-conversion.
   Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, will not be considered \emph{proper}.
   Several options are available to define the propriety of \emph{@{text "\<lambda>"}-expressions}
-  and adjust PLM in detail.
+  and to adjust PLM in detail.
 
   As a consequence the purely syntactical distinction between propositional
   and non-propositional formulas is no longer sufficient to guarantee
-  that every relation term has a denotation. The embedding of the theory supports
-  the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
-  could replace this distinction entirely yielding a much broader set of relations.
+  that every relation term has a denotation. The embedding of the theory shows
+  that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
+  can consistently replace this distinction entirely yielding a broader set of relations.
   The philosophical implications of such a radical modification of the theory
   have not yet been analyzed entirely though, and at the time of writing
   it is an open question whether such a modification may be implemented in
@@ -3421,8 +3422,10 @@ text{*
           \mbox{@{text "\<Lambda>\<^sub>n[\<lambda>x\<^sub>1\<dots>x\<^sub>n \<phi>]"}}.
   \end{itemize}
 
-  Not all functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to
-  denote relations. However, in the proposed construction a concept used in the embedding of free
+  The Theory of Abstract Objects restricts the matrix of @{text "\<lambda>"}-expressions to propositional formulas, so not all functions of type
+  \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to denote relations. However, since in classical functional
+  type theory functions are total, @{text "\<Lambda>\<^sub>n"} has to map all these functions to some object of type
+  @{text "R\<^sub>n"}. To solve this problem concepts used in the embedding of free
   logic can help\footnote{See the embedding of free logic constructed in @{cite FreeLogic}.}.
   The function @{text "\<Lambda>\<^sub>n"} can map functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not
   correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
@@ -3460,6 +3463,8 @@ text{*
   Aczel-model.} and the construction is complex in general. Further it has to be noted that so
   far only the second-order fragment of object theory has been considered and the full
   type-theoretic version of the theory may present further challenges.
+
+\pagebreak
 *}
 
 section{* Conclusion *}
@@ -3474,13 +3479,13 @@ text{*
   theory, but it could contribute to the understanding of the relation between functional and
   relational type theory and provide further insights into the general structure of the target theory,
   its semantics and possible models. It can even show that a consistent extension of the theory
-  seems possible that could increase its expressibility.
+  is possible that can increase its expressibility.
 
   The presented work introduces novel concepts that can benefit future endeavors of semantical
   embeddings in general: a layered structure allows the representation of a target theory without
   extensive prior results about its model structure and provides the means to comprehensively
-  study potential models. Custom proving methods may benefit automated reasoning in an embedded
-  logic and provide the means to reproduce even complex deductive rules of the target system
+  study potential models. Custom proving methods can benefit automated reasoning in an embedded
+  logic and provide the means to reproduce even complex deductive rules of a target system
   in a user-friendly manner.
 
   The fact that the embedding can construct a verified environment which allows to conveniently
