@@ -17,7 +17,7 @@ Under the additional assumption that expressions of the form
 the theory becomes inconsistent.
 *}
 
-subsection{* Auxiliary Lemmata *}
+subsection{* Auxiliary Lemmas *}
 
   lemma exe_impl_exists:
     "[\<lparr>(\<^bold>\<lambda>x . \<^bold>\<forall> p . p \<^bold>\<rightarrow> p), \<^bold>\<iota>y . \<phi> y x\<rparr> \<^bold>\<equiv> (\<^bold>\<exists>!y . \<^bold>\<A>\<phi> y x) in v]"

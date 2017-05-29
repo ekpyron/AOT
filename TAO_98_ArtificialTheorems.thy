@@ -9,7 +9,7 @@ text{* \label{TAO_ArtificialTheorems} *}
 
 text{*
 \begin{remark}
-  Some examples of theorems that can be derived from the meta-logic, but which
+  Some examples of theorems that can be derived from the model structure, but which
   are not derivable from the deductive system PLM itself.
 \end{remark}
 *}
@@ -28,8 +28,8 @@ begin
 text{*
 \begin{remark}
   The following is \emph{not} a theorem and nitpick can
-  find a countermodel. This is expected and important because,
-  if this were a theorem, the theory would become inconsistent.
+  find a countermodel. This is expected and important.
+  If this were a theorem, the theory would become inconsistent.
 \end{remark}
 *}
 

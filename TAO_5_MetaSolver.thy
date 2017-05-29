@@ -13,9 +13,9 @@ text{*
   expressions in the embedded logic to expressions in the meta-logic,
   resp. semantic expressions.
   The rules for connectives, quantifiers, exemplification
-  and encoding are easy to prove.
-  Futhermore rules for the defined identities are derived using more verbose proofs.
-  By design the defined identities in the embedded logic coincide with the
+  and encoding are straightforward.
+  Furthermore, rules for the defined identities are derived.
+  The defined identities in the embedded logic coincide with the
   meta-logical equality.
 \end{remark}
 *}

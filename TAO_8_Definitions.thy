@@ -7,8 +7,6 @@ begin
 section{* Definitions *}
 text{* \label{TAO_Definitions} *}
 
-text{* Various definitions needed throughout PLM. *}
-
 subsection{* Property Negations *}
 
 consts propnot :: "'a\<Rightarrow>'a" ("_\<^sup>-" [90] 90)

@@ -126,10 +126,9 @@ lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\
 
 text{*
 \begin{remark}
-  An encoding formula can again only be true if the individual term is logically proper.
+  An encoding formula can only be true if the individual term is logically proper.
   Furthermore ordinary objects never encode, whereas abstract objects encode
-  a property if and only if the property is contained in it as per
-  the Aczel Model.
+  a property if and only if the property is contained in it.
 \end{remark}
 *}
 
@@ -186,7 +185,7 @@ lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Ri
 lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
   "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<nu>\<upsilon> z = r \<and> \<phi> x y z s w" .
 
-subsection{* Proper Maps from Individual Terms to Propositions *}
+subsection{* Proper Maps *}
 text{* \label{TAO_Embedding_Proper} *}
 
 text{*
@@ -194,8 +193,8 @@ text{*
   The embedding introduces the notion of \emph{proper} maps from
   individual terms to propositions.
 
-  Such a map is proper if and only for all proper individual terms its truth evaluation in the
-  actual state only depends on the urelement corresponding to the individual the term denotes.
+  Such a map is proper if and only if for all proper individual terms its truth evaluation in the
+  actual state only depends on the urelements corresponding to the individuals the terms denote.
 
   Proper maps are exactly those maps that - when used in a lambda-expression - unconditionally
   allow beta-reduction.
@@ -249,8 +248,8 @@ axiomatization where
 
 text{*
 \begin{remark}
-  In order to define concreteness, care has to be taken that the defined
-  notion of concreteness coincides with the meta-logical distinction between
+  Care has to be taken that the defined notion of concreteness
+  coincides with the meta-logical distinction between
   abstract objects and ordinary objects. Furthermore the axioms about
   concreteness have to be satisfied. This is achieved by introducing an
   uninterpreted constant @{term "ConcreteInWorld"} that determines whether
@@ -275,11 +274,6 @@ text{*
 subsection{* Collection of Meta-Definitions *}
 text{* \label{TAO_Embedding_meta_defs} *}
 
-text{*
-  The meta-logical definitions are collected with the
-  theorem attribute @{text "meta_defs"}.
-*}
-
 named_theorems meta_defs
 
 declare not_def[meta_defs] impl_def[meta_defs] forall\<^sub>\<nu>_def[meta_defs]
@@ -298,12 +292,6 @@ declare [[unify_search_bound = 40]] (* prevent unification bound errors *)
 
 subsection{* Auxiliary Lemmata *}
 text{* \label{TAO_Embedding_Aux} *}
-
-text{*
-Some auxiliary lemmata are proven to make reasoning in the
-meta-logic easier. These auxiliary lemmata are collected
-using the theorem attribute @{text "meta_aux"}.
-*}
   
 named_theorems meta_aux
 

@@ -185,7 +185,7 @@ begin
   lemma D6[semantics]: "(\<And> w r . Some r = d\<^sub>0 (\<^bold>\<lambda>\<^sup>0 \<phi>) \<longrightarrow> ex0 r w = (w \<Turnstile> \<phi>))"
     by (auto simp: meta_defs meta_aux semantics_defs)
 
-  subsubsection{* Auxiliary Lemmata *}
+  subsubsection{* Auxiliary Lemmas *}
   text{* \label{TAO_Semantics_Semantics_Auxiliary_Lemmata} *}
 
   lemma propex\<^sub>0: "\<exists> r . Some r = d\<^sub>0 F"
@@ -227,8 +227,7 @@ text{* \label{TAO_Semantics_Proper} *}
 
 text{*
 \begin{remark}
-  Introduction rules for proper maps are derived. In particular
-  every map whose argument only occurs in exemplification
+  Every map whose argument only occurs in exemplification
   expressions is proper.
 \end{remark}
 *}
@@ -349,11 +348,6 @@ lemma IsProperInXYZ_intro[IsProper_intros]:
   by (auto simp: meta_defs meta_aux)    
 
 method show_proper = (fast intro: IsProper_intros)
-
-text{*
-  The proving method @{method show_proper} is defined and is used in the subsequent
-  theory whenever it is necessary to show that a map is proper.
-*}
 
 subsection{* Validity Syntax *}
 text{* \label{TAO_Semantics_Validity} *}

@@ -20,14 +20,10 @@ text{*
 subsection{* Type Class *}
 text{* \label{TAO_Quantifiable_Class} *}
 
-text{* Type class for quantifiable types: *}
-
 class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>" [8] 9)
   assumes quantifiable_T8: "(w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
 begin
 end
-
-text{* Semantics for the general all quantifier: *}
 
 lemma (in Semantics) T8: shows "(w \<Turnstile> \<^bold>\<forall> x . \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
   using quantifiable_T8 .

@@ -4,13 +4,13 @@ imports TAO_6_Identifiable
 begin
 (*>*)
 
-section{* The Axioms of Principia Metaphysica *}
+section{* The Axioms of PLM *}
 text{* \label{TAO_Axioms} *}
 
 text{*
 \begin{remark}
-  The axioms of PM can now be derived from the Semantics
-  and the meta-logic.
+  The axioms of PLM can now be derived from the Semantics
+  and the model structure.
 \end{remark}
 *}
 
@@ -28,11 +28,8 @@ begin
 
 text{*
 \begin{remark}
-  The special syntax @{text "[[_]]"} is introduced for axioms. This allows to formulate
-  special rules resembling the concepts of closures in PM. To simplify the instantiation
-  of axioms later, special attributes are introduced to automatically resolve the
-  special axiom syntax.
-  Necessitation averse axioms are stated with the syntax for actual validity @{text "[_]"}.
+  The special syntax @{text "[[_]]"} is introduced for stating the axioms.
+  Modally-fragile axioms are stated with the syntax for actual validity @{text "[_]"}.
 \end{remark}
 *}
 
@@ -43,6 +40,13 @@ text{*
 
 subsection{* Closures *}
 text{* \label{TAO_Axioms_Closures} *}
+
+  text{*
+\begin{remark}
+  Rules resembling the concepts of closures in PLM are derived. Theorem attributes are introduced
+  to aid in the instantiation of the axioms.
+\end{remark}
+*}
 
   lemma axiom_instance[axiom]: "[[\<phi>]] \<Longrightarrow> [\<phi> in v]"
     unfolding axiom_def by simp
@@ -104,33 +108,6 @@ text{* \label{TAO_Axioms_Identity} *}
 
 subsection{* Axioms of Quantification *}
 text{* \label{TAO_Axioms_Quantification} *}
-
-text{*
-\begin{remark}
-  The axioms of quantification differ from the axioms in Principia Metaphysica.
-  The differences can be justified, though.
-  \begin{itemize}
-    \item  
-      Axiom @{text "cqt_2"} is omitted, as the embedding does not distinguish between terms
-      and variables for relations. Instead it is combined with @{text "cqt_1"}, in which the
-      corresponding condition is omitted, and with @{text "cqt_5"} in its modified form
-      @{text "cqt_5_mod"}.
-    \item
-      Note that the all quantifier for individuals only ranges over type @{text "\<nu>"},
-      which is always a denoting term and not a definite description in the embedding.
-    \item
-      The case of definite descriptions is handled separately in axiom @{text "cqt_1_\<kappa>"}:
-      If a formula involving an object of type @{text "\<kappa>"} holds for all denoting terms
-      (@{text "\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)"}) then the formula holds for an individual term @{text "\<phi> \<alpha>"},
-      if @{text "\<alpha>"} denotes, i.e. @{text "\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>"}.
-    \item
-      Although axiom @{text "cqt_5"} can be stated without modification, it is not a suitable
-      formulation for the embedding. Instead the seemingly stronger version @{text "cqt_5_mod"}
-      is stated as well. On a closer look, though, @{text "cqt_5_mod"} immediately follows from
-      the original @{text "cqt_5"} together with the omitted @{text "cqt_2"}.
-  \end{itemize}
-\end{remark}
-*}
 
   lemma cqt_1[axiom]:
     "[[(\<^bold>\<forall> \<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>]]"
@@ -194,14 +171,6 @@ text{*
 
 subsection{* Axioms of Actuality *}
 text{* \label{TAO_Axioms_Actuality} *}
-
-text{*
-\begin{remark}
-  The necessitation averse axiom of actuality is stated to be actually true;
-  for the statement as a proper axiom (for which necessitation would be allowed)
-  nitpick can find a counter-model as desired.
-\end{remark}
-*}
 
   lemma logic_actual[axiom]: "[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]"
     by axiom_meta_solver

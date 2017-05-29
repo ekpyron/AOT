@@ -23,7 +23,7 @@ text{* \label{TAO_PossibleWorlds_Definitions} *}
   definition PossibleWorld where
     "PossibleWorld x \<equiv> Situation x \<^bold>& \<^bold>\<diamond>(\<^bold>\<forall> p . x\<^bold>\<Sigma>p \<^bold>\<equiv> p)"
 
-subsection{* Auxiliary Lemmata *}
+subsection{* Auxiliary Lemmas *}
 text{* \label{TAO_PossibleWorlds_Aux} *}
 
   lemma possit_sit_1:

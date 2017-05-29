@@ -172,10 +172,10 @@ text{* \label{TAO_PLM_NegationsAndConditionals} *}
 
 text{*
 \begin{remark}
-  The classical introduction and elimination rules are proven
-  earlier than in PM. The statements proven so far are sufficient
-  for the proofs and using these rules Isabelle can prove the
-  tautologies automatically.
+  In contrast to PLM the classical introduction and elimination rules are proven
+  before the tautologies. The statements proven so far are sufficient
+  for the proofs and using the derived rules the tautologies can be derived
+  automatically.
 \end{remark}
 *}
 
@@ -493,11 +493,6 @@ text{*
 subsection{* Identity *}
 text{* \label{TAO_PLM_Identity} *}
 
-  text{* \begin{remark}
-          For the following proofs first the definitions for the respective identities have to be
-          expanded. They are defined directly in the embedded logic, though, so the proofs are still
-          independent of the meta-logic.
-         \end{remark} *}
   lemma id_eq_prop_prop_1[PLM]:
     "[(F::\<Pi>\<^sub>1) \<^bold>= F in v]"
     unfolding identity_defs by PLM_solver 

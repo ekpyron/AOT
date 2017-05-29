@@ -12,8 +12,9 @@ text{*
   In order to define a general identity symbol that can act
   on all types of terms a type class is introduced
   which assumes the substitution property which
-  is needed to state the axioms later.
-  This type class is then instantiated for all applicable types.
+  is needed to derive the corresponding axiom.
+  This type class is instantiated for all relation types, individual terms
+  and individuals.
 \end{remark}
 *}
 
@@ -119,9 +120,9 @@ text{* \label{TAO_Identifiable_Definitions} *}
 
 text{*
 \begin{remark}
-  The basic definitions of identity used the type specific quantifiers
-  and identities. We now introduce equivalent definitions that
-  use the general identity and general quantifiers.
+  The basic definitions of identity use type specific quantifiers
+  and identity symbols. Equivalent definitions that
+  use the general identity symbol and general quantifiers are provided.
 \end{remark}
 *}
 
