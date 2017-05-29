@@ -138,7 +138,7 @@ target language is represented as a syntactical object and then the background l
 evaluate a syntactic expression by quantifying over all models that can be associated with the
 syntax. Variable symbols of the target logic for instance would be represented as constants in
 the background logic and a proposition would be considered semantically valid if it holds for
-all possible denotations an interpretation function can assign to these variables.
+all possible denotations an interpretation function can assign to them.
 
 While this approach will work for most target logics, it has several drawbacks. It is likely that there are
 principles that are shared between the target logic and the background logic, such as @{text "\<alpha>"}-conversion
@@ -170,7 +170,7 @@ stated in the background logic, which makes the construction of models for the s
 the degree of automation that can be retained.
 
 The shallow semantical embedding of modal logic was the basis for the analysis of
-G\"odel's onthological argument@{cite GoedelGod} and the general concept has shown great potential as a universal
+G\"odel's ontological argument@{cite GoedelGod} and the general concept has shown great potential as a universal
 tool for logical embeddings while retaining the existing infrastructure for automation as for
 example present in a framework like Isabelle/HOL\footnote{See @{cite UniversalReasoning} for an
 overview and an description of the ambitions of the approach.}.
@@ -311,7 +311,7 @@ It turns out that by the means of abstract objects and encoding  the Theory of A
   can be used to represent and reason about a large variety of concepts that
 regularly occur in philosophy, mathematics or linguistics.
 
-In \cite{MallyTheory} the principal objectives of the theory are summerized as follows:
+In \cite{MallyTheory} the principal objectives of the theory are summarized as follows:
 \begin{itemize}
   \item To describe the logic underlying (scientific) thought and reasoning by extending
         classical propositional, predicate, and modal logic.
@@ -345,11 +345,6 @@ semantical embeddings as a universal reasoning tool, but could also aid in sprea
 the utilization of the theory itself as a foundational theory for various scientific fields by
 enabling convenient interactive and automated reasoning in a verified framework.
 
-Although the embedding revealed certain challenges in this approach and there remain open questions
-for example about the precise relationship between the embedding and the target theory or its soundness
-and completeness, it is safe to say that it represents a significant step towards achieving this
-goal. 
-
 *}
 
 section{* Basic Principles *}
@@ -359,7 +354,7 @@ text{*
   some of the basic concepts of the theory are presented in advance to provide
   further motivation for the formalism.
 
-  The following are the two most important principles of the theory@{cite MallyTheory}:
+  The following are the two most important principles of the theory (see~@{cite MallyTheory}):
 
   \begin{itemize}
     \item @{text "\<exists>x(A!x & \<forall>F(xF \<equiv> \<phi>))"}
@@ -374,16 +369,16 @@ text{*
   Together these two principles clarify the notion of abstract objects as the reification
   of property patterns: Any set of properties is objectified as a distinct abstract object.
 
-  Note that these principles already allow it to postulate interesting abstract objects.
+  Using these principles it is already possible to postulate interesting abstract objects.
 
   For example the Leibnizian concept of an (ordinary) individual @{text "u"} can be 
   defined as \emph{the (unique) abstract object that encodes all properties that @{text "u"} exemplifies},
   formally: \mbox{@{text "\<iota>x A!x & \<forall>F (xF \<equiv> Fu)"}}
   
   Other interesting examples include possible worlds, Platonic Forms or even basic logical objects
-  like truth values. Here it is important to note that the theory allows it to formulate
-  a purely \emph{syntactic} definition of objects like possible worlds and truth values and
-  from these syntactic definitions it can be \emph{derived} that there are two truth values
+  like truth values. The theory allows it to formulate purely \emph{syntactic} definitions of
+  objects like possible worlds and truth values and
+  from these definitions it can be \emph{derived} that there are two truth values
   or that the application of the modal box operator to a proposition is equivalent to the proposition
   being true in all possible worlds (where \emph{being true in a possible world} is again defined
   syntactically).
@@ -427,7 +422,7 @@ as shown in figure~\ref{BNF}, in which the following grammatical categories are 
   \label{BNF}
 \end{figure}
 
-It is important to note that the language distinguishes between two types of basic formulas,
+The language distinguishes between two types of basic formulas,
 namely (non-propositional) \emph{formulas} that \emph{may} contain encoding subformulas and
 \emph{propositional formulas} that \emph{may not} contain encoding subformulas. Only propositional
 formulas may be used in @{text "\<lambda>"}-expressions. The main reason for this distinction will be explained
@@ -435,10 +430,10 @@ in section~\ref{russell-paradox}.
 
 Note that there is a case in which propositional formulas \emph{can} contain encoding
 expressions. This is due to the fact that \emph{subformula} is defined in such a
-way\footnote{For a formal definition of subformula refer to definition (\ref{PM-df-subformula}) in @{cite PM}.} that
-@{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"}. Thereby @{text "F\<iota>x(xQ)"} is a
-propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed @{text "\<lambda>"}-expression.
-On the other hand @{text "xF"} is not a propositional formula and therefore
+way that @{text "xQ"} is \emph{not} a subformula of @{text "\<iota>x(xQ)"}\footnote{For
+a formal definition of subformula refer to definition (\ref{PM-df-subformula}) in @{cite PM}.}.
+Thereby @{text "F\<iota>x(xQ)"} is a propositional formula and @{text "[\<lambda>y F\<iota>x(xQ)]"} a well-formed
+@{text "\<lambda>"}-expression. On the other hand @{text "xF"} is not a propositional formula and therefore
 @{text "[\<lambda>x xF]"} not a well-formed @{text "\<lambda>"}-expression. This fact will become relevant in
 the discussion in section~\ref{paradox}, that describes a paradox in the formulation of
 the theory in the draft of PLM at the time of writing\footnote{At the time of writing several
@@ -456,8 +451,8 @@ is defined as follows:
 
 So ordinary objects are possibly concrete, whereas abstract objects cannot possibly be concrete.
 
-It is important to note that the language does not contain the identity as primitive.
-Instead the language uses \emph{defined} identities as follows:
+The language does not contain a primitive identity, but
+\emph{defines} an identity for each type of term as follows:
 
 \begin{tabular}{lc}
   ordinary objects & @{text "x =\<^sub>E y =\<^sub>d\<^sub>f O!x & O!y & \<box>(\<forall>F Fx \<equiv> Fy)"}\\
@@ -532,20 +527,19 @@ to be proven, if @{text "F = G"} is to be established, namely that they are nece
 the same objects. Therefore if two properties \emph{should} be equal in some context an axiom has to be added
 to the theory that allows it to prove that both properties are encoded by the same abstract objects.
 
-To understand the extent of this \emph{hyperintensionality} of the theory consider that the
-following are \emph{not} necessarily equal in object theory:
+The fact that the following relation terms do \emph{not} necessarily denote the same relations illustrates
+the extent of this \emph{hyperintensionality}:
 
 \begin{center}
     @{text "[\<lambda>y p \<or> \<not>p]"} and @{text "[\<lambda>y q \<or> \<not>q]"}\\
     @{text "[\<lambda>y p & q]"} and @{text "[\<lambda>y q & p]"}
 \end{center}
 
-Of course the theory can be extended in such a way that these properties are equal, namely by
-introducing a new axiom that requires that they are necessarily encoded by the same abstract objects.
-Without additional axioms, however, it is not provable that above properties are equal.
+Of course the theory can be extended in such a way that these properties are equal -
+without additional axioms, however, their equality is not derivable.
 
-It is important to note that the theory is only hyperintensional in exactly the described sense
-(i.e. relations are intensional entities). Propositional reasoning is still governed by classical
+Although the relations of object theory are hyperintensional entities,
+propositional reasoning is still governed by classical
 extensionality. For example properties that are necessarily exemplified by the same objects can be
 substituted for each other in an exemplification formula, the law of the excluded middle can be
 used in propositional reasoning, etc.
@@ -592,14 +586,13 @@ Cantor's theorem is avoided. As a consequence there are abstract objects, that
 cannot be distinguished by the properties they exemplify. Interestingly the existence of abstract objects
 that are exemplification-indistinguishable is a theorem of PLM, see (\ref{PM-aclassical2})@{cite PM}.
 
-Note that although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
+Although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
 the extension to a modal version is straightforward by introducing primitive possible worlds
 as in the Kripke semantics of modal logic.
 
 Further note that relations in the Aczel-model are \emph{extensional}. Since properties are represented as the
 power set of urelements, two properties are in fact equal if they are exemplified by the same objects.
-This has no bearing on the soundness of the Aczel-model as a model for the Theory of Abstract Objects,
-but it has the consequence, that statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model,
+Consequently statements like @{text "[\<lambda> p \<or> \<not>p] = [\<lambda> q \<or> \<not>q]"} are true in the model,
 although they are not derivable from the axioms of object theory as explained in the previous section.
 
 For this reason an \emph{intensional} variant of the Aczel-model is developed and used as the
@@ -680,12 +673,11 @@ different varieties of modal logic by implementing them using Kripke semantics. 
 is that Kripke semantics is well understood and there are extensive results about its completeness
 that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}.
 
-For the Theory of Abstract Objects the situation is different. Although it is believed that
-Aczel-models are sound, section~\ref{aczel-model} already established that even a modal version
-of the traditional Aczel-model is extensional and therefore theorems are true in it,
-that are not derivable from the axioms of object theory. On the other hand the last section
-showed that care has to be taken to ensure the consistency of an embedding of the theory in
-functional logic.
+For the Theory of Abstract Objects the situation is different. Section~\ref{aczel-model} already
+established that even a modal version of the traditional Aczel-model is extensional and therefore
+theorems are true in it, that are not derivable from the axioms of object theory.
+On the other hand the last section showed that care has to be taken to ensure the consistency of
+an embedding of the theory in functional logic.
 
 For this reason the embedding first constructs a hyperintensional version of the Aczel-model
 as a consistent basis and then abstracts away from its technicalities using a layered reasoning
@@ -737,7 +729,7 @@ hyperintensionality of relations to them. Since the behavior of logical connecti
 in states other than the actual state, the behavior of @{text "\<lambda>"}-expressions - although classical
 in the actual state - remains undefined for different states.
 
-In summery, since the semantic truth of a proposition solely depends on its evaluation for the designated
+In summary, since the semantic truth of a proposition solely depends on its evaluation for the designated
 actual state, in which the logical connectives are defined to behave classically, the reasoning about
 propositions remains classical, as desired. On the other hand the additional dependency on states allows
 a representation of the hyperintensionality of relations.
@@ -753,7 +745,7 @@ Although the constructed variant of the Aczel-model preserves the hyperintension
 theory at least to some degree, it is still known that there are true theorems in this model
 that are not derivable from the axioms of object theory (see~\ref{artificial-theorems}).
 
-Given this lack of a model with a well-understood degree of completeness, the embedding uses
+Given this lack of a model with a well-understood degree of soundness and completeness, the embedding uses
 a different approach than other semantical embeddings, namely the embedding is divided into
 several \emph{layers} as follows:
 
@@ -778,7 +770,7 @@ Only minimal axiomatization is necessary, whereas the main construction is purel
 Since the subsequent layers don't contain any additional axiomatization (the axiom system in the third layer
 is \emph{derived}) their consistency is thereby guaranteed as well.
 
-The second layer tries to abstract from the details of the representation by implementing an
+The second layer tries to abstract away from the details of the representation by implementing an
 approximation of the formal semantics of PLM\footnote{Our thanks to Edward Zalta for supplying
 us with a preliminary version of the corresponding unpublished chapter of PLM.}. The long time goal
 would be to arrive at the representation of a complete semantics in this layer, that would be sufficient
@@ -790,15 +782,10 @@ system in the third layer. Still it can be reasoned that in any model of object 
 has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and the
 model structure directly the derivation of the deductive system PLM is universal. The only
 exceptions are the primitive meta-rules of PLM: modus ponens, RN (necessitation) and
-GEN (universal generalisation), as well as the deduction rule. These rules do not follow from the axiom system
+GEN (universal generalization), as well as the deduction rule. These rules do not follow from the axiom system
 itself, but are derived from the semantics in the second layer (see~\ref{PLM-metarules}).
 Still as the corresponding semantical rules will again have to be derivable for \emph{any} model,
 this does not have an impact on the universality of the subsequent reasoning.
-
-There remains one issue, though. Since the logic of PLM is formulated in relational type theory,
-whereas Isabelle/HOL employs functional reasoning some formulations have to be adjusted to be representable
-and therefore there may still be some reservations about the accuracy of the representation of the axiom
-system\footnote{See for example the discussion in section~\ref{quantification-axioms}.}.
 
 The technical details of the constructed embedding are described in the following sections.
 
@@ -824,7 +811,7 @@ The following primitive types are the basis of the embedding (see \ref{TAO_Embed
 
 \begin{itemize}
   \item Type @{type i} represents possible worlds in the Kripke semantics.
-  \item Type @{type j} represents \emph{states} as decribed in section~\ref{hyper-aczel-model}.
+  \item Type @{type j} represents \emph{states} as described in section~\ref{hyper-aczel-model}.
   \item Type @{type bool} represents meta-logical truth values (@{text "True"} or @{text "False"})
         and is inherited from Isabelle/HOL.
   \item Type @{type \<omega>} represents ordinary urelements.
@@ -974,7 +961,7 @@ special urelement under @{text "\<alpha>\<sigma>"} is converted to an urelement 
 @{term "\<sigma>\<upsilon>"} for special urelements.
 
 \begin{remark}
-  Note that future versions of the embedding may introduce a dependency of the mapping from individuals
+  Future versions of the embedding may introduce a dependency of the mapping from individuals
   to urelements on states (see~\ref{artificial-theorems}).
 \end{remark}
 
@@ -1009,9 +996,9 @@ text{*
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
   the denoted individual @{term "rep x"} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
   some object @{term \<alpha>} (i.e. it is an abstract object) and @{term F} is contained in @{term \<alpha>}
-  (remember that abstract objects are defined to be sets of one-place relations).
+  (recall that abstract objects are defined to be sets of one-place relations).
 
-  Note that encoding is represented as a function of states and possible worlds to ensure type-correctness,
+  Encoding is represented as a function of states and possible worlds to ensure type-correctness,
   but its evaluation does not depend on either. On the other hand whether @{term F} is contained
   in @{term \<alpha>} does depend on the behavior of @{term F} in \emph{all} states.
 *}
@@ -1114,7 +1101,7 @@ text{*
   One-place relations are represented as functions of type @{typ "\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool"}, though,
   where @{type \<upsilon>} is the type of urelements.
 
-  The result of the evaluation of a @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelment @{term u},
+  The result of the evaluation of a @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelement @{term u},
   a state @{term s} and a possible world @{term w}) is given by the following equation:
 
   \begin{center}
@@ -1122,7 +1109,8 @@ text{*
     by (simp add: embedded_style_def meta_defs meta_aux)}
   \end{center}
 
-  Note that @{term "\<nu>\<upsilon>"} is bijective for ordinary objects and therefore:
+  If restricted to ordinary objects, the definition can be simplified, since @{term "\<nu>\<upsilon>"} is bijective
+  on the set of ordinary objects:
 
   \begin{center}
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) (\<omega>\<upsilon> u) s w = eval\<o> (embedded_style (\<phi>) (\<omega>\<nu> u)) s w"
@@ -1136,7 +1124,7 @@ text{*
 
   Instead the embedding introduces the concept of \emph{proper maps}.
   A map from individuals to propositions is defined to be proper if its truth evaluation for the actual state only
-  depends on the urelement corresponding to the individual (see \ref{TAO_Embedding_Proper}):
+  depends on the urelements corresponding to the individuals (see \ref{TAO_Embedding_Proper}):
 
   \begin{itemize}
     \item @{thm[display] IsProperInX.rep_eq[of \<phi>]}
@@ -1153,18 +1141,18 @@ text{*
   \end{center}
 
   \begin{remark}
-    Note that the right-hand side of the equation above does not quantify over all states,
+    The right-hand side of the equation above does not quantify over all states,
     but is restricted to the actual state @{term "dj"}.
     This is sufficient given that truth evaluation only depends on the actual state
     and goes along with the desired semantics of @{text "\<lambda>"}-expressions (see~\ref{semantics-lambda}).
   \end{remark}
 
-  The concept behind this is that maps that contain encoding formulas in its argument are in general
-  not proper and thereby the paradox mentioned in section~\ref{russell-paradox} is avoided.
+  Maps that contain encoding formulas in their arguments are in general
+  not proper and thereby the paradox mentioned in section~\ref{russell-paradox} is prevented.
 
   In fact proper maps are the most general kind of functions that may appear in a lambda-expression,
   such that @{text "\<beta>"}-conversion holds. In what way proper maps correspond to the formulas that PLM
-  allows as the matrix of a @{text "\<lambda>"}-expression is a complex question and discussed seperately in
+  allows as the matrix of a @{text "\<lambda>"}-expression is a complex question and discussed separately in
   section~\ref{differences-lambda}.
 *}
  
@@ -1172,16 +1160,15 @@ text{*
 subsection{* Validity *}
 
 text{*
-  A formula is considered semantically valid for a possible world @{term v} if it evaluates
-  to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
   Semantic validity is defined as follows (see \ref{TAO_Embedding_Validity}):
   
   \begin{center}
     @{thm valid_in.rep_eq[of v "embedded_style \<phi>"]}
   \end{center}
 
-  This way the truth evaluation of a proposition only depends on the evaluation of its functional representative
-  for the actual state @{term dj}. Recall that for the actual state the connectives and quantifiers
+  A formula is considered semantically valid for a possible world @{term v} if it evaluates
+  to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
+  Recall that for the actual state the connectives and quantifiers
   are defined to behave classically. In fact the only formulas of the embedded logic whose truth
   evaluation \emph{does} depend on all states are formulas containing encoding expressions and only
   in the sense that an encoding expression depends on the behavior of the contained relation in all states.
@@ -1350,12 +1337,12 @@ as primitive types and assigned semantic domains: @{type R\<^sub>\<kappa>}, @{ty
 @{typ R\<^sub>2} and @{typ R\<^sub>3} (see~\ref{TAO_Semantics_Semantics_Domains}).
 
 For the embedding the definition of these semantic domains is trivial, since the abstract types of
-the representation layer are already modeled using representation sets. Therefore the semantic domains
+the representation layer are already modeled using representation sets. Therefore the semantic domain
 for each type can simply be defined as the type of its representatives.
 
 As a next step denotation functions are defined that assign semantic denotations to the objects of each
 abstract type (see~\ref{TAO_Semantics_Semantics_Denotations}).
-Note that the formal semantics of PLM does not a priori assume that every term has a denotation, therefore
+The formal semantics of PLM does not a priori assume that every term has a denotation, therefore
 the denotation functions are represented as functions that map to the @{text "option"} type of the
 respective domain. This way they can either map a term to @{term "Some x"}, if the term denotes
 @{term "x"}, or to @{term "None"}, if the term does not denote.
@@ -1410,11 +1397,10 @@ in a possible world is the set of all (tuples of) \emph{individuals} that are ma
 \emph{urelement} for which the relation evaluates to true for the given possible world and the
 actual state. This is in accordance with the constructed Aczel-model (see~\ref{hyper-aczel-model}).
 
-It is important to note that the concept of exemplification extensions as maps to sets of \emph{individuals}
-is independent of the underlying model and in particular does not need the concept of \emph{urelements}
-as they are present in an Aczel-model. The definition of truth conditions by the use of
-exemplification extensions is therefore an abstraction away from the technicalities
-of the representation layer.
+Exemplification extensions as maps to sets of \emph{individuals} are independent of the underlying
+model and in particular do not require the concept of \emph{urelements} as they are present in an
+Aczel-model. Their use in the definition of truth conditions for exemplification formulas below
+is therefore an abstraction away from the technicalities of the representation layer.
 
 Similarly to the exemplification extension for one-place relations an \emph{encoding extension}
 is defined as follows (see~\ref{TAO_Semantics_Semantics_Encoding_Extension}):
@@ -1428,7 +1414,7 @@ the relation. Since encoding is modally rigid the encoding extension does not ne
 for possible worlds.
 *}
 
-subsection{* Truth Conditons of Formulas *}
+subsection{* Truth Conditions of Formulas *}
 
 text{*
 
@@ -1622,8 +1608,8 @@ text{*
   \label{general-quantifier}
 
   Since the last section established the semantic truth conditions of the specific versions of the
-  all quantifier for all variable types of PLM, it is now possible to define a binding symbol for general
-  all quantification.
+  all-quantifier for all variable types of PLM, it is now possible to define a binding symbol for general
+  all-quantification.
 
   This is done using the concept of \emph{type classes} in Isabelle/HOL. Type classes define
   constants that depend on a \emph{type variable} and state assumptions about this constant.
@@ -1639,19 +1625,19 @@ text{*
   particular type and the provided definitions. After that any statement that was proven for
   the type class can be applied to the instantiated type.
 
-  In the case of general all quantification for the embedding this concept can be utilized by
+  In the case of general all-quantification for the embedding this concept can be utilized by
   introducing the type class @{class quantifiable} that is equipped with a constant that is used
-  as the general all quantification binder (see~\ref{TAO_Quantifiable_Class}).
+  as the general all-quantification binder (see~\ref{TAO_Quantifiable_Class}).
   For this constant it can now be assumed that it satisfies the semantic property of all
   quantification: \mbox{@{thm quantifiable_T8[of w \<psi>]}}.
 
-  Since it was already shown in the last section that the specific all quantifier for each
+  Since it was already shown in the last section that the specific all-quantifier for each
   variable type satisfies this property, the type class can immediately be instantiated for the
   types @{type \<nu>}, @{type \<Pi>\<^sub>0}, @{type \<Pi>\<^sub>1}, @{type \<Pi>\<^sub>2} and @{type \<Pi>\<^sub>3} (see~\ref{TAO_Quantifiable_Instantiations}).
   The instantiation proofs only need to refer to the statements derived in the semantics section for the respective version
   of the quantifier and are thereby independent of the representation layer.
 
-  From this point onward therefore the general all quantifier can completely replace the type specific
+  From this point onward therefore the general all-quantifier can completely replace the type specific
   quantifiers. This is true even if a quantification is meant to only range over objects of a
   particular type: In this case the desired type (if it can not implicitly be deduced from the
   context) can be stated explicitly while still using the general quantifier.
@@ -1689,7 +1675,7 @@ text{*
     \item @{thm[display] diamond_def[expand1, THEN embedded_eq, of \<phi>]}
   \end{itemize}
 
-  Furthermore the general all quantifier is supplemented by an existential quantifier as follows:
+  Furthermore the general all-quantifier is supplemented by an existential quantifier as follows:
   \begin{itemize}
     \item @{thm[display] exists_def[expand1, of \<phi>, THEN embedded_eq, rename_abs \<alpha>]}
   \end{itemize}
@@ -1709,9 +1695,9 @@ text{*
     \item @{thm basic_identity\<^sub>0_def[expand2, of p q, rename_abs x x, THEN embedded_eq]}
   \end{itemize}
 
-  Similarly to the general all quantifier it makes sense to introduce a general identity
+  Similarly to the general all-quantifier it makes sense to introduce a general identity
   relation for all types of terms (@{type \<kappa>}, @{type \<o>} resp. @{typ \<Pi>\<^sub>0}, @{typ \<Pi>\<^sub>1}, @{typ \<Pi>\<^sub>2}, @{typ \<Pi>\<^sub>3}).
-  However, whereas all quantification is characterized by a semantic criterion that can
+  However, whereas all-quantification is characterized by a semantic criterion that can
   be generalized in a type class, identity is defined independently for each type. Therefore a general
   identity symbol will only be introduced in section~\ref{general-identity},
   since it will then be possible to formulate and prove a reasonable property shared
@@ -1816,8 +1802,8 @@ text{*
     rules directly to one of the existing proving methods like @{method auto} or @{method clarsimp}.
     In practice, however, we found that the custom @{method meta_solver} produces more reliable
     results, especially in the case that a proving objective cannot be solved completely by the supplied rules.
-    Moreover the constructed custom proving method may serve as a proof of concept
-    and inspire the development of further more complex proving methods that go beyond a simple
+    Moreover the constructed custom proving method serves as a proof of concept
+    and may inspire the development of further more complex proving methods that go beyond a simple
     resolution prover in the future.
   \end{remark}
 *}
@@ -1866,7 +1852,7 @@ text{*
 
   Since the identity of PLM is not directly characterized by semantic truth conditions, but instead
   \emph{defined} using specific complex formulas in the embedded logic for each type of term,
-  some other property has to be found that is shared by the respective definitions can reasonably
+  some other property has to be found that is shared by the respective definitions and can reasonably
   be used as the condition of a type class.
 
   A natural choice for such a condition is the axiom of the substitution of identicals
@@ -1900,7 +1886,7 @@ text{*
     @{thm identity_\<nu>_def[expand2, of x y, THEN embedded_eq]}
   \end{center}
 
-  This way type @{type \<nu>} is equipped with both the general all quantifier and the general identity
+  This way type @{type \<nu>} is equipped with both the general all-quantifier and the general identity
   relation and unique existence can be defined for all variable types as expected:
 
   \begin{center}
@@ -2382,7 +2368,8 @@ text{*
   As a consequence this rule is derived from the semantics as well.
   
   These rules are the \emph{only} exceptions to the concept that the deductive system of
-  PLM is completely derived from the axiom system and the primitive rule of inference, modus ponens.
+  PLM is derived solely from the axiom system without relying on the previous layers of the
+  embedding.
 
 *}
 
@@ -2704,7 +2691,7 @@ text{*
   \end{center}
 
   In this case traditional @{text "\<beta>"}-conversion still holds, since the @{text "\<lambda>"}-expression
-  does not contain encoding expressions involving their bound variable\footnote{Consequently the
+  does not contain encoding expressions involving its bound variable\footnote{Consequently the
   matrix is a \emph{proper map}.}. On the other hand the following is \emph{not} a theorem in
   the embedding (the tool @{theory_text nitpick} can find a counter-model):
 
@@ -2744,7 +2731,7 @@ text{*
     @{thm lambda_enc_1[of v F y]}
   \end{center}
   
-  A further discussion about this topic is found in section~\ref{differences-lambda}.
+  This topic is discussed in more detail in section~\ref{differences-lambda}.
 *}
 
 subsection{* Consequences of the Aczel-model *}
@@ -2970,7 +2957,7 @@ text{*
 
   This purely syntactical distinction is challenging to reproduce in a shallow embedding that
   does not introduce the complete term structure of the embedded language directly.
-  Instead the embedding attempts to analyse the semantic reason for the
+  Instead the embedding attempts to analyze the semantic reason for the
   syntactic distinction and to devise a semantic criterion that can be used as a replacement
   for the syntactic restriction.
 
@@ -3239,9 +3226,8 @@ text{*
     Using a modally-strict proof only the following is derivable:\\
     \mbox{@{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]x \<equiv> \<A>\<psi>\<^sup>x\<^sub>y"}}\\
     For the construction of the paradox, the modally-fragile statement
-    is sufficient. Note, however, that it is possible
-    to construct similar paradoxical cases without appealing to
-    any modally-fragile axioms or theorems.
+    is sufficient. However, it is possible to construct similar paradoxical cases
+    without appealing to any modally-fragile axioms or theorems as well.
   \end{remark}
 
   This effectively undermines the intention of restricting @{text "\<lambda>"}-expressions
@@ -3279,7 +3265,7 @@ text{*
   the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
   could replace this distinction entirely yielding a much broader set of relations.
   The philosophical implications of such a radical modification of the theory
-  have not yet been analysed entirely, though, and at the time of writing
+  have not yet been analyzed entirely, though, and at the time of writing
   it is an open question whether such a modification may be implemented in
   future versions of PLM.
 
@@ -3309,7 +3295,7 @@ text{*
   Bruno Woltzenlogel Paleo and Christoph Benzm\"uller.}
 
   Since the embedding constructs a representation of the semantics of PLM, it was
-  possible to formally analyse the relationship between syntactic and semantic possible worlds
+  possible to formally analyze the relationship between syntactic and semantic possible worlds
   and arrive at the following theorems (see~\ref{TAO_PossibleWorlds}):
 
   \begin{itemize}
@@ -3444,7 +3430,7 @@ text{*
   and @{text "\<lambda>"}-expressions present in object theory.
 \end{remark}
 
-  In summery it can be concluded that a representation of object theory in functional type theory
+  In summary it can be concluded that a representation of object theory in functional type theory
   is feasible, although it is connected with significant complexity (i.e. the introduction of
   additional primitive types and the usage of concepts of intensional and free logic).
   On the other hand, whether this result contradicts the philosophical claim that relations are
