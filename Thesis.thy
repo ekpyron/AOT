@@ -119,7 +119,7 @@ future. Leibniz' ideas have inspired recent efforts to use functional higher-ord
 such a universal logical language and to represent various logical systems by the use of
 \emph{shallow semantical embeddings}@{cite UniversalReasoning}.
 
-Notably this approach received attention due to the formalisation, validation and analysis
+Notably this approach received attention due to the formalization, validation and analysis
 of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller@{cite GoedelGod},
 for which higher-order modal logic was embedded in the computerized logic framework Isabelle/HOL.
 *}
@@ -1294,7 +1294,7 @@ Several subtleties have to be considered:
         Statements in PLM that use individual variables are represented using the decoration
         @{term "embedded_style (DUMMY\<^sup>P)"}.
   \item In PLM conceptually a general term @{term "\<phi>"}, as it occurs in definite descriptions,
-        quantifications and @{text "\<lambda>"}-expressions above, can contain \emph{free} variables. If
+        quantification formulas and @{text "\<lambda>"}-expressions above, can contain \emph{free} variables. If
         such a term occurs within the scope of a variable binding operator, free occurrences of
         the variable are considered to be \emph{bound} by the operator. In the embedding this concept
         is replaced by considering @{term "\<phi>"} to be a \emph{function} acting on the bound variables
@@ -2234,7 +2234,7 @@ text{*
   \end{itemize}
 
   The first axiom, @{text "\<alpha>"}-conversion, could be omitted entirely. Since
-  lambda-expressions are modelled using functions with bound variables and @{text "\<alpha>"}-conversion
+  lambda-expressions are modeled using functions with bound variables and @{text "\<alpha>"}-conversion
   is part of the logic of Isabelle/HOL, it already holds implicitly.
 
   As explained in section~\ref{lambda-expressions} @{text "\<beta>"}-conversion has to be restricted
@@ -3382,7 +3382,7 @@ text{*
 section{* Relations vs. Functions *}
 
 text{*
-  As mentioned in the introduction, Openheimer and Zalta argue that relational type theory is more
+  As mentioned in the introduction, Oppenheimer and Zalta argue that relational type theory is more
   fundamental than functional type theory (see @{cite rtt}). One of their main arguments is that the
   Theory of Abstract Objects is not representable in functional type theory.
   The success of the presented embedding, however, suggests that the topic has to be
