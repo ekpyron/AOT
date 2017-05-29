@@ -3481,6 +3481,12 @@ text{*
   its semantics and possible models. It can even show that a consistent extension of the theory
   is possible that can increase its expressibility.
 
+  For the field of mathematics an analysis of chapters 14 and 15 of PLM, that construct
+  natural numbers and theoretical mathematical objects and relations in object theory,
+  is of particular interest. The embedding can be a significant aid in the study of these chapters, since the
+  properties of the derived objects and relations can immediately be analyzed and verified using the extensive library for abstract
+  mathematical reasoning already present in Isabelle/HOL as a reference.
+
   The presented work introduces novel concepts that can benefit future endeavors of semantical
   embeddings in general: a layered structure allows the representation of a target theory without
   extensive prior results about its model structure and provides the means to comprehensively
@@ -3489,10 +3495,9 @@ text{*
   in a user-friendly manner.
 
   The fact that the embedding can construct a verified environment which allows to conveniently
-  prove and verify theorems in the target logic while retaining the support of automated
+  prove and verify theorems in the complex target system while retaining the support of automated
   reasoning tools, shows the great potential of semantical embeddings in providing the means
   for a productive interaction between humans and computer systems.
-
 *}
   
 (*<*)
