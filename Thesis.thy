@@ -114,7 +114,7 @@ formulated in the characteristica universalis could be decided purely by formal 
 in an automated fashion, an idea that became famous under the slogan: \emph{Calculemus!}
 
 Nowadays with the rise of powerful computer systems such a universal logical framework could have
-repercussions throughout the sciences and may be a vital part of machine-computer interaction in the
+repercussions throughout the sciences and may be a vital part of human-machine interaction in the
 future. Leibniz' ideas have inspired recent efforts to use functional higher-order logic (HOL) as
 such a universal logical language and to represent various logical systems by the use of
 \emph{shallow semantical embeddings}@{cite UniversalReasoning}.
@@ -127,14 +127,14 @@ for which higher-order modal logic was embedded in the computerized logic framew
 section{* Shallow Semantical Embeddings in HOL *}
 
 text{*
-A semantic embedding of a target logical system defines the syntactical elements of the target language
+A semantic embedding of a target logical system defines the syntactic elements of the target language
 in a background logic (e.g. in a framework like Isabelle/HOL) based on their semantics.
-This way the background logic can be used to argue about the semantic truth of syntactic statements
+This way the background logic can be used as meta-logic to argue about the semantic truth of syntactic statements
 in the embedded logic.
 
-A \emph{deep} embedding represents the complete syntactical structure of the target language
+A \emph{deep} embedding represents the complete syntactic structure of the target language
 separately from the background logic, i.e. every term, variable symbol, connective, etc. of the
-target language is represented as a syntactical object and then the background logic is used to
+target language is represented as a syntactic object and then the background logic is used to
 evaluate a syntactic expression by quantifying over all models that can be associated with the
 syntax. Variable symbols of the target logic for instance would be represented as constants in
 the background logic and a proposition would be considered semantically valid if it holds for
@@ -147,25 +147,25 @@ embedding these principles usually have to be explicitly shown to hold for the s
 of the target logic, which is usually connected with significant complexity. Furthermore if the
 framework used for the background logic allows automated reasoning, the degree of automation that
 can be achieved in the embedded logic is limited, as any reasoning in the target logic will have
-to consider the meta-logical evaluation process in the background logic that will usually be complex.
+to consider the meta-logical evaluation process in the background logic which will usually be complex.
 
 A \emph{shallow} embedding uses a different approach based on the idea that most contemporary
 logical systems are semantically characterized by the means of set theory. A shallow embedding
-defines primitive syntactical objects of the target language such as variables or propositions
+defines primitive syntactic objects of the target language such as variables or propositions
 using a set theoretic representation. For example propositions in a modal logic can be represented
 as functions from possible worlds to truth values in a non-modal logic.
 
-The shallow embedding aims to equationally define only the syntactical elements of the target logic
+The shallow embedding aims to equationally define only the syntactic elements of the target logic
 that are not already present in the background logic or whose semantics behaves differently than in
 the background logic, while preserving as much of the logical structure of the background logic
 as possible. The modal box operator for example can be represented as a quantification over all
-possible worlds satisfying an accessibility relation, while negation and quantification can be
+possible worlds, satisfying an accessibility relation, while negation and quantification can be
 directly represented using the negation and quantification of the background logic (preserving
 the dependency on possible worlds).
 
 This way basic principles of the background logic (such as alpha conversion) can often be directly
 applied to the embedded logic and the equational, definitional nature of the representation preserves
-a larger degree of automation. Furthermore axioms in the embedded logic can often be equivalently
+a larger degree of automation. Furthermore, axioms in the embedded logic can often be equivalently
 stated in the background logic, which makes the construction of models for the system easier and again increases
 the degree of automation that can be retained.
 
@@ -185,7 +185,7 @@ The universality of this approach has since been challenged by Paul Oppenheimer 
 who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
 Considerations}@{cite rtt} that relational type theory is more general than functional type theory.
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
-theory, can not be properly characterized in functional type theory.
+theory, cannot be properly characterized in functional type theory.
 
 This has led to the question whether a shallow semantical embedding of the Theory of Abstract Objects
 in a functional logic framework like Isabelle/HOL is at all possible, which is the core question
@@ -227,8 +227,8 @@ text{*
           Isabelle theory that can be found in the appendix.
   
     \item The fourth chapter consists of a technical discussion about some of the issues encountered
-          during the construction of the embedding due to limitations of the logical framework
-          of Isabelle/HOL and the solutions that were employed.
+          during the construction of the embedding due to limitations of the logic framework
+          Isabelle/HOL and the solutions that were employed.
   
     \item The last chapter discusses the relation between the embedding and the target theory
           of PLM and describes some of the results achieved using the embedding. Furthermore it
@@ -339,7 +339,7 @@ theory using the universal reasoning approach of shallow semantical embeddings o
 chapter particularly challenging and at the same time rewarding, if successful.
 
 A successful implementation of
-the theory that allows it to utilize the existing sophisticated infrastructure for automated reasoning 
+the theory which allows to utilize the existing sophisticated infrastructure for automated reasoning 
 present in a framework like Isabelle/HOL would not only strongly support the applicability of shallow
 semantical embeddings as a universal reasoning tool, but could also aid in spreading
 the utilization of the theory itself as a foundational theory for various scientific fields by
@@ -350,7 +350,7 @@ enabling convenient interactive and automated reasoning in a verified framework.
 section{* Basic Principles *}
 
 text{*
-  Although the formal language of the theory is introduced only in the next section,
+  Although the formal language of the theory is introduced in the next section,
   some of the basic concepts of the theory are presented in advance to provide
   further motivation for the formalism.
 
@@ -376,7 +376,7 @@ text{*
   formally: \mbox{@{text "\<iota>x A!x & \<forall>F (xF \<equiv> Fu)"}}
   
   Other interesting examples include possible worlds, Platonic Forms or even basic logical objects
-  like truth values. The theory allows it to formulate purely \emph{syntactic} definitions of
+  like truth values. The theory allows to formulate purely \emph{syntactic} definitions of
   objects like possible worlds and truth values and
   from these definitions it can be \emph{derived} that there are two truth values
   or that the application of the modal box operator to a proposition is equivalent to the proposition
@@ -399,7 +399,7 @@ In the following an informal description of the important aspects of the languag
 for a detailed and fully formal description and the type-theoretic background refer to the respective
 chapters of PLM@{cite PM}.
 
-A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>p. 170\<close> PM}},
+A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>Definition (6)\<close> PM}},
 as shown in figure~\ref{BNF}, in which the following grammatical categories are used:
 
 \begin{tabular}[h]{ll}
@@ -469,12 +469,13 @@ Two ordinary objects that necessarily exemplify the same properties are identica
 Abstract objects, however, are only identical if they necessarily \emph{encode} the same
 properties. As mentioned in the previous section this goes along with the concept of
 abstract objects as the reification of property patterns.
+
 Notably the identity for properties has a different definition than one would expect from
 classical logic. Classically two properties are considered identical if and only if they
 necessarily are \emph{exemplified} by the same objects. The Theory of Abstract Objects, however,
 defines two properties to be identical if and only if they are necessarily \emph{encoded} by
 the same (abstract) objects. This has some interesting consequences that will be described
-in more detail in section \ref{hyperintensionality} that describes the \emph{hyperintensionality}
+in more detail in section \ref{hyperintensionality} which describes the \emph{hyperintensionality}
 of relations in the theory.
 *}
 
@@ -482,7 +483,7 @@ section{* The Axioms *}
   
 text{*
 
-Based on the language above an axiom system is defined that constructs a S5 modal logic with
+Based on the language above, an axiom system is defined that constructs a S5 modal logic with
 an actuality operator, axioms for definite descriptions that go along with Russell's analysis
 of descriptions, the substitution of identicals as per the defined identity, @{text "\<alpha>"}-,
 @{text "\<beta>"}-, @{text "\<eta>"}- and a special @{text "\<iota>"}-conversion for @{text "\<lambda>"}-expressions, as well
@@ -519,13 +520,13 @@ property \emph{being the evening star}. Since the morning star and the evening s
 actually both the planet Venus, every object that \emph{exemplifies} @{text "F"} will also
 \emph{exemplify} @{text "G"} and vice-versa: @{text "\<box>\<forall>x Fx \<equiv> Gx"}. However the concept of being
 the morning star is different from the concept of being the evening star. The Theory of Abstract
-Object therefore does not prohibit the existence of an abstract object that \emph{encodes} @{text "F"},
+Objects therefore does not prohibit the existence of an abstract object that \emph{encodes} @{text "F"},
 but does \emph{not} encode @{text "G"}. Therefore by the definition of identity for properties
-it does \emph{not} hold that @{text "F = G"}. As a matter of fact the Theory of Abstract Object
+it does \emph{not} hold that @{text "F = G"}. As a matter of fact the Theory of Abstract Objects
 does not force @{text "F = G"} for any @{text "F"} and @{text "G"}. It rather stipulates what needs
 to be proven, if @{text "F = G"} is to be established, namely that they are necessarily encoded by
 the same objects. Therefore if two properties \emph{should} be equal in some context an axiom has to be added
-to the theory that allows it to prove that both properties are encoded by the same abstract objects.
+to the theory that allows to prove that both properties are encoded by the same abstract objects.
 
 The fact that the following relation terms do \emph{not} necessarily denote the same relations illustrates
 the extent of this \emph{hyperintensionality}:
@@ -535,8 +536,8 @@ the extent of this \emph{hyperintensionality}:
     @{text "[\<lambda>y p & q]"} and @{text "[\<lambda>y q & p]"}
 \end{center}
 
-Of course the theory can be extended in such a way that these properties are equal -
-without additional axioms, however, their equality is not derivable.
+Of course the theory can be extended in such a way that these properties are equal.
+However, without additional axioms their equality is not derivable.
 
 Although the relations of object theory are hyperintensional entities,
 propositional reasoning is still governed by classical
@@ -580,7 +581,7 @@ by sets of objects, which would lead to a violation of Cantor's theorem, but rat
 (@{text "C"} in the illustration) and special urelements (@{text "S"} in the illustration).
 Ordinary urelements can serve as the denotations of ordinary objects. Every abstract object on
 the other hand has a special urelement as its proxy. Which properties an abstract object exemplifies
-solely depends on its proxy. However, the map from abstract objects to special urelements is
+depends solely on its proxy. However, the map from abstract objects to special urelements is
 not injective; more than one abstract object can share the same proxy. This way a violation of
 Cantor's theorem is avoided. As a consequence there are abstract objects, that
 cannot be distinguished by the properties they exemplify. Interestingly the existence of abstract objects
@@ -759,10 +760,10 @@ several \emph{layers} as follows:
         considered as primitives and some of their semantic properties are derived using the
         background logic as meta-logic.
   \item The third layer derives the axiom system of PLM mostly using the semantics of the second
-        layer and partly using the meta-logic directly.
+        layer and partly using the model structure directly.
   \item Based on the third layer the deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM}
         is derived solely using the axiom system of the third layer and the fundamental meta-rules
-        stated in PLM. The meta-logic and the properties of the representation layer are explicitly
+        stated in PLM. The model structure and the constructed semantics are explicitly
         not used in any proofs. Thereby the reasoning in this last layer is independent of the
         first two layers.
 \end{itemize}
@@ -782,8 +783,8 @@ Unfortunately this could not be achieved so far, but it was possible to lay some
 
 At the moment full abstraction from the representation layer is only achieved after deriving the axiom
 system in the third layer. Still it can be reasoned that in any model of object theory the axiom system
-has to be derivable and therefore by disallowing all further proofs to rely on the meta-logic and the
-model structure directly the derivation of the deductive system PLM is universal. The only
+has to be derivable and therefore by disallowing all further proofs to rely on the representation
+layer and model structure directly the derivation of the deductive system PLM is universal. The only
 exceptions are the primitive meta-rules of PLM: modus ponens, RN (necessitation) and
 GEN (universal generalization), as well as the deduction rule. These rules do not follow from the axiom system
 itself, but are derived from the semantics in the second layer (see~\ref{PLM-metarules}).
@@ -832,7 +833,7 @@ Based on the primitive types above the following types are defined (see \ref{TAO
 
 \begin{itemize}
   \item Type @{type \<o>} is defined as the set of all functions of type @{typ "j\<Rightarrow>i\<Rightarrow>bool"} and
-        represents truth values in the embedded logic.
+        represents propositions in the embedded logic.
   \item Type @{type \<upsilon>} is defined as @{datatype \<upsilon>}. This type represents urelements and an object
         of this type can be either an ordinary or a special urelement (with the respective type
         constructors @{term \<omega>\<upsilon>} and @{term \<sigma>\<upsilon>}).
@@ -917,7 +918,7 @@ If the propriety condition of a definite description @{prop "\<exists>!x. \<phi>
 i.e. \emph{there exists a unique @{term "x"}, such that @{term "\<phi> x"} holds for the actual state and
 the actual world}, the term \mbox{@{term "embedded_style (\<^bold>\<iota>x . \<phi> x)"}} evaluates to @{term "Some (THE x . \<phi> x dj dw)"}.
 Isabelle's @{theory_text THE} operator evaluates to the unique object, for which the given condition holds,
-if there is a unique such object, and is undefined otherwise. If the propriety condition does not hold,
+if there is such a unique object, and is undefined otherwise. If the propriety condition does not hold,
 the term evaluates to @{term "None"}.
 
 The following meta-logical functions are defined to aid in handling individual terms:
@@ -1734,7 +1735,7 @@ text{*
   to restrict automated reasoning tools to only consider specific sets of facts, it is still an
   interesting question whether the process of automated reasoning in the layered approach can be made easier.
 
-  To that end the embedding utilizes the Isabelle package \emph{Eisbach}. This package allows it to conveniently
+  To that end the embedding utilizes the Isabelle package \emph{Eisbach}. This package allows to conveniently
   define new proving methods that are based on the systematic application of existing methods.
   
   \begin{remark}
@@ -2278,7 +2279,7 @@ text{*
 
 *}
 
-subsection{* Summery *}
+subsection{* Summary *}
   
 text{*
   Although some of the axioms have to be adjusted to be representable in the functional environment,
@@ -2566,7 +2567,7 @@ text{*
   \label{substitution-method}
 
   Although the construction above covers exactly the cases in which PLM allows substitutions, it does
-  not yet have a form that allows it to conveniently \emph{apply} the rule of substitution. In order
+  not yet have a form that allows to conveniently \emph{apply} the rule of substitution. In order
   to apply the rule, it first has to be established that a formula can be decomposed into a
   function with the substituents as arguments and it further has to be shown that this function
   satisfies the appropriate @{term "Substable"} condition. This complexity prevents any reasonable
@@ -2656,7 +2657,7 @@ text{*
   for complex statements can be found automatically.
 *}
 
-subsection{* Summery *}
+subsection{* Summary *}
   
 text{*
   A full representation of the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM}, could
@@ -2989,7 +2990,7 @@ text{*
   The idea is that every @{text "\<lambda>"}-expression that is syntactically well-formed
   in PLM should have a proper map as its matrix. Two subtleties have to be considered, though:
 
-  It was discovered that there are @{text "\<lambda>"}-expressions that are part of PLM, whose matrix
+  It was discovered that there are @{text "\<lambda>"}-expressions which are part of PLM, whose matrix
   does not correspond to a proper map in the embedding. The analysis of this issue led to the
   discovery of a paradox in the formulation of PLM and is discussed in more detail in
   section~\ref{paradox}. As a consequence these cases will not constitute proper
@@ -3050,10 +3051,10 @@ text{*
   followed by an instantiation using quantification theory). Since \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}} holds
   unconditionally for relation terms, this simplification is justified.
 
-  The recent developments described in section~\ref{paradox}, however, suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
-  will likely no longer hold unconditionally for every relation term in future versions of PLM.
-  Therefore future versions of the embedding will have to include a distinction between relation
-  terms and relation variables in a similar way as it is already done for individuals. An alternative
+  However, the recent developments described in section~\ref{paradox} suggest that \mbox{@{text "\<exists>\<beta> \<beta> = \<tau>"}}
+  will in all likelihood no longer hold unconditionally for every relation term in future versions of PLM.
+  Therefore, future versions of the embedding will have to include a distinction between relation
+  terms and relation variables in a similar way as is already done for individuals. An alternative
   approach that could result in a more elegant representation would be to implement concepts of free
   logic based on the research in @{cite FreeLogic} for both individuals and relations.
 *}
@@ -3099,7 +3100,7 @@ that are \emph{necessarily true}. Semantically a statement of the form \mbox{@{t
 in the embedding is derivable, whenever @{term "embedded_style \<phi>"} is a \emph{necessary theorem}.
 
 Unfortunately there is no semantic criterion that allows to decide whether a statement is a necessary
-theorem or a modally-strict theorem. Therefore the embedding has to express modally-strict theorems
+theorem or a modally-strict theorem. Therefore, the embedding has to express modally-strict theorems
 as necessary theorems, for which the converse of RN is in fact true.
 
 This still does not compromise the claim that any statement that is derived in \ref{TAO_PLM}
@@ -3123,7 +3124,7 @@ section{* A Paradox in PLM *}
 text{*
   \label{paradox}
 
-  During the analysis of the constructed embedding it was discovered,
+  During the analysis of the constructed embedding it was discovered
   that the formulation of the theory in PLM at the time of writing
   allowed paradoxical constructions.
 
@@ -3152,7 +3153,7 @@ text{*
   matrix was \emph{not} a proper map in the embedding and therefore @{text "\<beta>"}-conversion
   was not derivable for these terms.
 
-  Further analysis showed that a modification of the embedding that would allow @{text "\<beta>"}-conversion
+  Further analysis showed that a modification of the embedding which would allow @{text "\<beta>"}-conversion
   for such expressions, would have to involve a restriction of the Aczel-model (in particular of the map
   from abstract objects to urelements).
 
@@ -3215,7 +3216,7 @@ text{*
   such a description and more so, it may appear in an encoding expression, for example 
   \mbox{@{text "[\<lambda>y F\<iota>x(xG & yG)]"}} is still a propositional formula.
 
-  Therefore the following construction is possible:
+  Therefore, the following construction is possible:
 
   \begin{equation}\tag{1}
     @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & \<psi>)]"}
@@ -3253,7 +3254,7 @@ text{*
   If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
   exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would, if it were part of the
   language, i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
-  the same as the right hand side of 2 when applied to 3. Therefore the @{text "\<lambda>"}-expression
+  the same as the right hand side of 2 when applied to 3. Therefore, the @{text "\<lambda>"}-expression
   in 3 can be used to reproduce the paradox described in section~\ref{russell-paradox}.
 *}
 
@@ -3261,8 +3262,8 @@ subsection{* Possible Solutions *}
 
 text{*
   Fortunately no theorems were derived in PLM, that actually use problematic
-  @{text "\<lambda>"}-expressions as described above. Therefore it is possible to recover from the
-  paradox without losing any theorems. At the time of writing it seems likely that
+  @{text "\<lambda>"}-expressions as described above. Therefore, it is possible to recover from the
+  paradox without losing any theorems. At the time of writing, it seems likely that
   a concept of \emph{proper} @{text "\<lambda>"}-expressions will be introduced to the theory and only
   \emph{proper} @{text "\<lambda>"}-expressions will be forced to have denotations and allow @{text "\<beta>"}-conversion.
   Problematic @{text "\<lambda>"}-expressions that would lead to paradoxes, will not be considered \emph{proper}.
@@ -3275,7 +3276,7 @@ text{*
   the idea that an adequate definition of \emph{proper @{text "\<lambda>"}-expressions}
   could replace this distinction entirely yielding a much broader set of relations.
   The philosophical implications of such a radical modification of the theory
-  have not yet been analyzed entirely, though, and at the time of writing
+  have not yet been analyzed entirely though, and at the time of writing
   it is an open question whether such a modification may be implemented in
   future versions of PLM.
 
@@ -3344,7 +3345,7 @@ section{* Functional Object Theory *}
   
 text{*
   The first and foremost goal of the presented work was to show that the second-order fragment of
-  the Theory of Abstract Object as described in PLM can be represented in functional
+  the Theory of Abstract Objects as described in PLM can be represented in functional
   higher-order logic using a shallow semantical embedding.
 
   As a result a theory was constructed in Isabelle/HOL that - although its faithfulness
@@ -3361,7 +3362,7 @@ text{*
 
   Independently of the relation between the embedding and the target system, a byproduct
   of the embedding is a working functional variant of object theory that deserves to be studied in
-  it own right. To that end future research may want to drop the layered structure of the embedding and
+  its own right. To that end future research may want to drop the layered structure of the embedding and
   dismiss all constructions that solely serve to restrict reasoning in the embedding in order to
   more closely reproduce the language of PLM. Automated reasoning in the resulting theory will be
   significantly more powerful and the interesting properties of the original theory, that result
@@ -3379,7 +3380,7 @@ text{*
 
   Their result is supported by the presented work in the following sense: it is impossible to
   represent the Theory of Abstract Objects by representing its @{text "\<lambda>"}-expressions as
-  primitive @{text "\<lambda>"}-expressions in functional logic. Furthermore exemplification cannot
+  primitive @{text "\<lambda>"}-expressions in functional logic. Furthermore, exemplification cannot
   be represented classically as function application, while at the same time introducing encoding
   as a second mode of predication.
 
@@ -3398,7 +3399,7 @@ text{*
           primitive @{text "\<lambda>"}-expressions.
   \end{itemize}
 
-  To illustrate the general schema that the embedding uses instead, assume
+  To illustrate the general schema that the embedding uses instead assume
   that there is an additional primitive type for each arity of relations @{text "R\<^sub>n"}.
   Let further @{text "\<iota>"} be the type of individuals and @{text "\<o>"} be the type of propositions.
   The general construct is now the following:
@@ -3473,7 +3474,7 @@ text{*
   logic and provide the means to reproduce even complex deductive rules of the target system
   in a user-friendly manner.
 
-  The fact that the embedding can construct a verified environment that allows it to conveniently
+  The fact that the embedding can construct a verified environment which allows to conveniently
   prove and verify theorems in the target logic while retaining the support of automated
   reasoning tools, shows the great potential of semantical embeddings in providing the means
   for a productive interaction between humans and computer systems.
