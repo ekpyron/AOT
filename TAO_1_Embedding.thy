@@ -4,7 +4,7 @@ imports Main
 begin
 (*>*)
 
-section{* Embedding *}
+section{* Representation Layer *}
 text{* \label{TAO_Embedding} *}
 
 subsection{* Primitives *}

@@ -2922,18 +2922,18 @@ text{*
 section{* Case Distinctions by Type *}
   
 text{*
-  Although a general all-quantifier and identity relation can be represented using type classes
+  Although a general identity relation can be represented using type classes
   as described in sections~\ref{general-quantifier} and~\ref{general-identity}, this
   construction differs from the concept used in PLM. The identity relation of PLM is
   not determined by some set of properties, but by its definition for the specific concrete types.
 
   Isabelle does not allow the restriction of a type variable in a statement
   to a specific set of types. Type variables can only be restricted to specific \emph{sorts},
-  so effectively to type classes. As mentioned in section~\ref{PLM-type-classes} this means
-  that statements about the general identity relation that depend on the specific
-  definitions of identity for the concrete types, cannot be proven as in PLM by case distinction
-  on types, but another type class has to be introduced that \emph{assumes} the statement, which
-  then has to be instantiated for the concrete types.
+  so effectively to type classes. As mentioned in section~\ref{PLM-type-classes}, this means
+  that statements about the general identity relation, that depend on the specific
+  definitions for the concrete types, cannot be proven as in PLM by case distinction
+  on types. Instead additional type classes have to be introduced that \emph{assume} the statements
+  and then have to be instantiated for the concrete types.
 
   Although this construction involves some technical overhead, the solution is elegant and provides
   a flexible representation for such general statements.
@@ -2942,16 +2942,16 @@ text{*
 section{* Structural Induction and Proof-Theoretic Reasoning *}
 
 text{*
-  As mentioned in section~\ref{PLM-metarules} some of the meta-rules that PLM can \emph{derive}
-  by induction on the length of a derivation, e.g. the deduction theorem
-  \mbox{@{thm PLM.deduction_theorem[of v \<phi> \<psi>]}}, have to be proven using the semantics instead
-  in the embedding.
+  As mentioned in section~\ref{PLM-metarules}, some of the meta-rules that PLM can derive
+  by induction on the length of a derivation, have to be proven using the semantics instead
+  in the embedding, e.g. the deduction theorem
+  \mbox{@{thm PLM.deduction_theorem[of v \<phi> \<psi>]}}.
 
-  While this is not considered a major problem, it would be interesting to investigate, whether
-  some construction in Isabelle would in fact allow proof-theoretic reasoning similar to the
-  proofs in PLM. A related topic is the representing of the concept of
-  \emph{modally-strict proofs} as described in sections~\ref{PLM-modally-strict}
-  and~\ref{differences-modally-strict}.
+  While the derivation of these fundamental rules using the semantics is justified,
+  it would be interesting to investigate whether the proof-theoretic reasoning
+  PLM uses in these cases can be reproduced in Isabelle/HOL. A related topic is
+  the representation of the concept of \emph{modally-strict proofs} as described
+  in sections~\ref{PLM-modally-strict} and~\ref{differences-modally-strict}.
 *}
 
 chapter{* Discussion and Results *}
