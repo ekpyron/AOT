@@ -670,8 +670,8 @@ text{*
 
 The introduction mentioned that shallow semantical embeddings were used to successfully represent
 different varieties of modal logic by implementing them using Kripke semantics. The advantage here
-is that Kripke semantics is well understood and there are extensive results about its completeness
-that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}.
+is that Kripke semantics is well understood and there are extensive results about its soundness and
+completeness that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}.
 
 For the Theory of Abstract Objects the situation is different. Section~\ref{aczel-model} already
 established that even a modal version of the traditional Aczel-model is extensional and therefore
@@ -680,8 +680,10 @@ On the other hand the last section showed that care has to be taken to ensure th
 an embedding of the theory in functional logic.
 
 For this reason the embedding first constructs a hyperintensional version of the Aczel-model
-as a consistent basis and then abstracts away from its technicalities using a layered reasoning
-approach. These concepts are described in more detail in the following sections.
+that serves as a provably consistent basis for the theory. Then several abstraction layers
+are implemented on top of the model structure in order to enable reasoning that is independent
+of the particular representation. These concepts are described in more
+detail in the following sections.
 
 *}
 
@@ -704,9 +706,10 @@ relations as functions from urelements, states and possible worlds to booleans.
 
 Abstract objects are still defined as sets of one-place relations and the division
 of urelements into ordinary urelements and special urelements, that serve as proxies
-for abstract objects, is retained as well. Consequently encoding is still defined
-as set membership of a relation in an abstract object and exemplification still defined
-as function application of the relation to the urelement corresponding to an individual.
+for abstract objects, is retained as well. Consequently encoding can still be defined
+as set membership of a relation in an abstract object. Exemplification is defined
+as function application of a relation to the urelement corresponding to an individual,
+a state and a possible world.
 
 The semantic truth evaluation of a proposition in a given possible world is defined
 as its evaluation for a designated \emph{actual state} and the possible world.
@@ -741,8 +744,8 @@ subsection{* Layered Structure *}
   
 text{*
 
-Although the constructed variant of the Aczel-model preserves the hyperintensionality of the
-theory at least to some degree, it is still known that there are true theorems in this model
+Although the constructed variant of the Aczel-model preserves the hyperintensionality of relations
+in the theory, it is still known that there are true theorems in this model
 that are not derivable from the axioms of object theory (see~\ref{artificial-theorems}).
 
 Given this lack of a model with a well-understood degree of soundness and completeness, the embedding uses
@@ -788,7 +791,7 @@ Still as the corresponding semantical rules will again have to be derivable for 
 this does not have an impact on the universality of the subsequent reasoning.
 
 The technical details of the constructed embedding are described in the following sections.
-
+\pagebreak
 *}
 
 section{* The Representation Layer *}
@@ -1271,6 +1274,8 @@ PLM & syntax in words & embedded logic & type \\
 \end{tabular}
 \end{center}
 
+\pagebreak
+
 Several subtleties have to be considered:
 \begin{itemize}
   \item @{term "n"}-place relations are only represented for \mbox{@{text "n \<le> 3"}}.
@@ -1310,6 +1315,8 @@ therefore stating the expression as a lemma will implicitly be a quantified stat
 propositions @{term "embedded_style \<phi>"} and all possible worlds @{term "v"} (unless
 @{term "embedded_style \<phi>"} was explicitly declared as a constant in the global scope).
 
+\vfill
+\pagebreak
 *}
 
 (*<*)
@@ -1903,6 +1910,8 @@ text{*
   the general identity can from this point onward completely replace the type-specific identity
   symbols.
 
+\pagebreak
+
 *}
   
 (*<*)
@@ -2283,6 +2292,8 @@ text{*
   To verify that the axiom system faithfully represents the reference system, as a next step the
   deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
   formulation of the axioms without falling back to the meta-logic or the semantics.
+
+\pagebreak
 *}
 
 (*<*)
@@ -2642,8 +2653,7 @@ text{*
 text{*
   So it can be seen that the embedding can be used to interactively prove statements
   with the support of automated reasoning tools and often even complete proofs
-  for complex statements can be found automatically. The dependencies of a proof are
-  given explicitly in the proof statement.
+  for complex statements can be found automatically.
 *}
 
 subsection{* Summery *}
