@@ -4,17 +4,17 @@ imports TAO_1_Embedding "~~/src/HOL/Eisbach/Eisbach"
 begin
 (*>*)
 
-section{* Semantics *}
+section{* Semantic Abstraction *}
 text{* \label{TAO_Semantics} *}
 
-subsection{* Definition *}
+subsection{* Semantics *}
 text{* \label{TAO_Semantics_Semantics} *}
 
 locale Semantics
 begin
   named_theorems semantics
 
-  subsubsection{* Semantical Domains *}
+  subsubsection{* Semantic Domains *}
   text{* \label{TAO_Semantics_Semantics_Domains} *}
   type_synonym R\<^sub>\<kappa> = "\<nu>"
   type_synonym R\<^sub>0 = "j\<Rightarrow>i\<Rightarrow>bool"
@@ -55,7 +55,7 @@ begin
     where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> make\<Pi>\<^sub>1 (\<lambda> x . F x) \<in> y
                                        | _ \<Rightarrow> False }"
 
-  subsubsection{* Collection of Semantical Definitions *}
+  subsubsection{* Collection of Semantic Definitions *}
   text{* \label{TAO_Semantics_Semantics_Definitions} *}
 
   named_theorems semantics_defs
@@ -227,7 +227,7 @@ text{* \label{TAO_Semantics_Proper} *}
 
 text{*
 \begin{remark}
-  Every map whose argument only occurs in exemplification
+  Every map whose arguments only occur in exemplification
   expressions is proper.
 \end{remark}
 *}

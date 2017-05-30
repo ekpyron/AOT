@@ -50,54 +50,23 @@ setup_lifting type_definition_\<Pi>\<^sub>3
 subsection{* Individual Terms and Definite Descriptions *}
 text{* \label{TAO_Embedding_IndividualTerms} *}
 
-text{*
-\begin{remark}
-  Individual terms can be definite descriptions which may not denote.
-  Therefore the type for individual terms @{type "\<kappa>"} is defined as
-  @{typ "\<nu> option"}. Individuals are represented by @{term "Some x"}
-  for an individual @{term "x"} of type @{type \<nu>}, whereas non-denoting
-  individual terms are represented by @{term "None"}.
-  Note that relation terms on the other hand always denote,
-  so there is no need for a similar distinction between relation terms and
-  relations.
-\end{remark}
-*}
-
 lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
 lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "op\<noteq> None" .
 lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
-
-text{*
-\begin{remark}
-  Individual terms can be explicitly marked to only range over
-  logically proper objects (e.g. @{term "x\<^sup>P"}). Their logical propriety
-  and (in case they are logically proper) the represented individual can
-  be extracted from the internal representation as @{typ "\<nu> option"}.
-\end{remark}
-*}
-
 
 lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
   "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw)
          then Some (THE x . (\<phi> x) dj dw)
          else None" .
 
-text{*
-\begin{remark}
-  Definite descriptions map conditions on individuals to individual terms.
-  If no unique object satisfying the condition exists (and therefore the definite
-  description is not logically proper), the individual term is set to @{term "None"}.
-\end{remark}
-*}
-
-subsection{* Mapping from objects to urelements *}
+subsection{* Mapping from Individuals to Urelements *}
 text{* \label{TAO_Embedding_AbstractObjectsToSpecialUrelements} *}
 
 consts \<alpha>\<sigma> :: "\<alpha>\<Rightarrow>\<sigma>"
 axiomatization where \<alpha>\<sigma>_surj: "surj \<alpha>\<sigma>"
 definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsilon> \<equiv> case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>)"
 
-subsection{* Exemplification of n-place relations. *}
+subsection{* Exemplification of n-place-Relations. *}
 text{* \label{TAO_Embedding_Exemplification} *}
 
 lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is id .
@@ -110,27 +79,11 @@ lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<
 "\<lambda> F x y z s w . (proper x) \<and> (proper y) \<and> (proper z) \<and>
    F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) s w" .
 
-text{*
-\begin{remark}
-  An exemplification formula can only be true if all individual terms are logically proper.
-  Furthermore exemplification depends on the urelement corresponding to
-  the individual, not the individual itself.
-\end{remark}
-*}
-
 subsection{* Encoding *}
 text{* \label{TAO_Embedding_Encoding} *}
 
 lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\<lbrace>_,_\<rbrace>") is
   "\<lambda> x F s w . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
-
-text{*
-\begin{remark}
-  An encoding formula can only be true if the individual term is logically proper.
-  Furthermore ordinary objects never encode, whereas abstract objects encode
-  a property if and only if the property is contained in it.
-\end{remark}
-*}
 
 subsection{* Connectives and Quantifiers *}
 text{* \label{TAO_Embedding_Connectives} *}
@@ -196,7 +149,7 @@ text{*
   Such a map is proper if and only if for all proper individual terms its truth evaluation in the
   actual state only depends on the urelements corresponding to the individuals the terms denote.
 
-  Proper maps are exactly those maps that - when used in a lambda-expression - unconditionally
+  Proper maps are exactly those maps that - when used as matrix of a lambda-expression - unconditionally
   allow beta-reduction.
 \end{remark}
 *}

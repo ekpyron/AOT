@@ -1177,9 +1177,9 @@ text{*
   A formula is considered semantically valid for a possible world @{term v} if it evaluates
   to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
   Recall that for the actual state the connectives and quantifiers
-  are defined to behave classically. In fact the only formulas of the embedded logic whose truth
-  evaluation \emph{does} depend on all states are formulas containing encoding expressions and only
-  in the sense that an encoding expression depends on the behavior of the contained relation in all states.
+  are defined to behave classically. The only formulas of the embedded logic whose semantic truth
+  evaluation depends on all states are encoding formulas and only in the sense
+  that the truth of an encoding formula depends on the behavior of the contained relation in all states.
 
   \begin{remark}
     The Isabelle Theory in the appendix defines the syntax \mbox{@{text "v \<Turnstile> p"}} in the representation
