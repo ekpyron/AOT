@@ -615,7 +615,7 @@ The embedding is implemented in Isabelle/HOL, that provides a functional higher-
 that serves as meta-logic. An introduction to Isabelle/HOL can be found in @{cite Isabelle}\footnote{
 An updated version is available at \url{http://isabelle.in.tum.de/doc/tutorial.pdf} or in the
 documentation of the current Isabelle release, see \url{http://isabelle.in.tum.de/}.}. For a general
-introduction to HOL and its automatization refer to @{cite B5}.
+introduction to HOL and its automation refer to @{cite B5}.
 
 The Isabelle theory containing the embedding is included in the appendix and documented in this chapter.
 Throughout the chapter references to the various sections of the appendix can be found.
