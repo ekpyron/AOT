@@ -3399,7 +3399,7 @@ text{*
   functional type theory, that only involves two primitive types (for individuals and propositions),
   is insufficient for a representation of the theory.
 
-  Consequently the embedding does not share several of the properties of
+  The embedding does not share several of the properties of
   the representative functional type theory constructed in @{cite \<open>pp. 9-12\<close> rtt}:
 
   \begin{itemize}
@@ -3410,7 +3410,7 @@ text{*
   \end{itemize}
 
   To illustrate the general schema that the embedding uses instead assume
-  that there is an additional primitive type for each arity of relations @{text "R\<^sub>n"}.
+  that there is a primitive type for each arity of relations @{text "R\<^sub>n"}.
   Let further @{text "\<iota>"} be the type of individuals and @{text "\<o>"} be the type of propositions.
   The general construct is now the following:
 
@@ -3422,11 +3422,11 @@ text{*
           \mbox{@{text "\<Lambda>\<^sub>n[\<lambda>x\<^sub>1\<dots>x\<^sub>n \<phi>]"}}.
   \end{itemize}
 
-  The Theory of Abstract Objects restricts the matrix of @{text "\<lambda>"}-expressions to propositional formulas, so not all functions of type
-  \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to denote relations. However, since in classical functional
-  type theory functions are total, @{text "\<Lambda>\<^sub>n"} has to map all these functions to some object of type
-  @{text "R\<^sub>n"}. To solve this problem concepts used in the embedding of free
-  logic can help\footnote{See the embedding of free logic constructed in @{cite FreeLogic}.}.
+  The Theory of Abstract Objects restricts the matrix of @{text "\<lambda>"}-expressions to propositional
+  formulas, so not all functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} are supposed to denote relations.
+  However, since in classical functional type theory functions are total, @{text "\<Lambda>\<^sub>n"} has to map
+  all these functions to some object of type @{text "R\<^sub>n"}. To solve this problem concepts used in
+  the embedding of free logic can help\footnote{See the embedding of free logic constructed in @{cite FreeLogic}.}.
   The function @{text "\<Lambda>\<^sub>n"} can map functions of type \mbox{@{text "\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>"}} that do not
   correspond to propositional formulas to objects of type @{text "R\<^sub>n"} that
   represent invalid (resp. non-existing) relations. For invalid relations the functions used
@@ -3439,19 +3439,21 @@ text{*
   functional type theory, it does not apply to the constructed theory: since only objects of
   type @{text "R\<^sub>n"} may fail to denote, non-propositional reasoning is unaffected.
 
-  Furthermore the embedding has shown that an intensional interpretation of the constructed theory
-  can preserve the hyperintensionality of relations in @{text "\<lambda>"}-expressions.
-
 \begin{remark}
   Although the constructed functional type theory is based on the general structure of the
-  presented embedding, instead of introducing concepts of free logic @{text "\<lambda>"}-expressions
+  presented embedding, instead of introducing concepts of free logic, @{text "\<lambda>"}-expressions
   involving non-propositional formulas are assigned \emph{non-standard} denotations,
-  i.e. they do denote, but @{text "\<beta>"}-conversion does only hold under certain conditions
+  i.e. they do denote, but @{text "\<beta>"}-conversion only holds under certain conditions
   (see~\ref{differences-lambda}). Although this concept has merits as well, future versions of the embedding
   may instead utilize the concepts described in @{cite FreeLogic} to replace this construction
   by a free logic implementation that will more closely reflect the concepts of propositional formulas
-  and @{text "\<lambda>"}-expressions present in object theory.
+  and @{text "\<lambda>"}-expressions in object theory.
 \end{remark}
+
+
+  The constructed theory can represent the relations and @{text "\<lambda>"}-expressions of object theory.
+  Furthermore, the embedding has shown that an adequate intensional interpretation of propositions can be used to
+  preserve the desired hyperintensionality of relations in @{text "\<lambda>"}-expressions.
 
   In summary it can be concluded that a representation of object theory in functional type theory
   is feasible, although it is connected with significant complexity (i.e. the introduction of
