@@ -263,7 +263,7 @@ these objects within a systematic and axiomatic framework. \textelp{We can} thin
 objects as possible and actual property-patterns. \textelp{} Our theory of abstract
 objects will \emph{objectify} or \emph{reify} the group of properties satisfying \textins{such a}
 pattern.}\cite{MallyTheory}\footnote{The introduction to the theory
-in this and the next section is based on the documentation of the theory in @{cite MallyTheory}, which
+in this and the next section is based on the documentation of the theory in @{cite MallyTheory} and @{cite MallyDistinction}, which
 is paraphrased and summarized throughout the sections. Further references about the topic include @{cite PM},
 @{cite zalta1988intensional}, @{cite zalta1983abstract}.}
 
@@ -292,7 +292,7 @@ To clarify the difference between the two concepts note that any object either e
 or its negation. The same is not true for encoding. For example it is not determinate whether 
 Sherlock Holmes has a mole on his left foot. Therefore the abstract object Sherlock Holmes neither
 encodes the property of having a mole on his left foot, nor the property of not having a mole on
-his left foot.
+his left foot\footnote{see @{cite MallyDistinction}}.
 
 The theory even allows for an abstract object to encode properties that no object
 could possibly exemplify and reason about them, for example the quadratic circle. In classical logic
@@ -676,7 +676,7 @@ text{*
 The introduction mentioned that shallow semantical embeddings were used to successfully represent
 different varieties of modal logic by implementing them using Kripke semantics. The advantage here
 is that Kripke semantics is well understood and there are extensive results about its soundness and
-completeness that can be utilized in the analysis of semantical embeddings@{cite ModalLogics}.
+completeness that can be utilized in the analysis of semantical embeddings (see~@{cite ModalLogics}).
 
 For the Theory of Abstract Objects the situation is different. Section~\ref{aczel-model} already
 established that even a modal version of the traditional Aczel-model is extensional and therefore
@@ -897,18 +897,18 @@ text{*
 
 There are two basic types of individual terms in PLM: definite descriptions and individual variables
 (and constants). Every logically proper definite description denotes an individual. A definite
-description is logically proper if its matrix is true for a unique individual.
+description is logically proper if its matrix is (actually) true for a unique individual.
 
 In the embedding the type @{type \<kappa>} encompasses all individual terms, i.e. individual variables,
-constants \emph{and} definite descriptions. To use an individual (i.e. a variable or constant
-of type @{type \<nu>}) in place of an individual term of type @{type \<kappa>} the decoration
-@{term "embedded_style (DUMMY\<^sup>P)"} is introduced (see~\ref{TAO_Embedding_IndividualTerms}):
+constants \emph{and} definite descriptions. An individual (i.e. a variable or constant
+of type @{type \<nu>}) can be used in place of an individual term of type @{type \<kappa>} via the decoration
+@{term "embedded_style (DUMMY\<^sup>P)"} (see~\ref{TAO_Embedding_IndividualTerms}):
 
 \begin{center}
   @{thm \<nu>\<kappa>.rep_eq[where x=x, THEN embedded_meta_eq]}
 \end{center}
 
-The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is now marked to always be
+The expression @{term "embedded_style (x\<^sup>P)"} (of type @{typeof "x\<^sup>P"}) is marked to be
 logically proper (it can only be substituted by objects that are internally of the form @{term "Some x"})
 and to denote the individual @{term "x"}.
 
@@ -964,9 +964,9 @@ To clarify the syntax note that this is equivalent to the following:
 \end{center}
 
 So ordinary objects are simply converted to an urelements by the type constructor
-@{term "\<omega>\<upsilon>"} for ordinary urelements, whereas for abstract objects the corresponding
+@{term "\<omega>\<upsilon>"}, whereas for abstract objects the corresponding
 special urelement under @{text "\<alpha>\<sigma>"} is converted to an urelement using the type constructor
-@{term "\<sigma>\<upsilon>"} for special urelements.
+@{term "\<sigma>\<upsilon>"}.
 
 \begin{remark}
   Future versions of the embedding may introduce a dependency of the mapping from individuals
@@ -983,6 +983,7 @@ text{*
   for @{text "n \<ge> 1"} is defined to be true, if all individual terms are logically proper and
   the function application of the relation to the urelements corresponding to the individuals
   yields true for a given possible world and state (see \ref{TAO_Embedding_Exemplification}):
+\pagebreak
   \begin{itemize}
     \item @{thm[display] exe0.rep_eq[where x=p, THEN embedded_meta_eq]}
     \item @{thm[display] exe1.rep_eq[where x=F and xa=x, THEN embedded_meta_eq]}
@@ -1000,7 +1001,7 @@ text{*
   @{thm enc.rep_eq[of x F, THEN embedded_meta_eq]}
   \end{center}
 
-  That is for a given state @{term s} and a given possible world @{term w} it holds that
+  For a given state @{term s} and a given possible world @{term w} it holds that
   an individual term @{term x} encodes @{term F}, if @{term x} is logically proper,
   the denoted individual @{term "rep x"} is of the form @{term "\<alpha>\<nu> \<alpha>"} for
   some object @{term \<alpha>} (i.e. it is an abstract object) and @{term F} is contained in @{term \<alpha>}
@@ -1109,8 +1110,9 @@ text{*
   One-place relations are represented as functions of type @{typ "\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool"} though,
   where @{type \<upsilon>} is the type of urelements.
 
-  The result of the evaluation of a @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} for an urelement @{term u},
-  a state @{term s} and a possible world @{term w} is given by the following equation:
+  The @{text "\<lambda>"}-expression @{term "embedded_style (\<^bold>\<lambda>x. \<phi> x)"} evaluates to @{term "True"} for an urelement @{term u},
+  a state @{term s} and a world @{term w}, if there is an individual @{term "embedded_style x"} in the preimage
+  of @{term "u"} under @{term "\<nu>\<upsilon>"} and it holds that \mbox{@{term "eval\<o> (embedded_style (\<phi> x)) s w"}}.
 
   \begin{center}
   @{lemma "eval\<Pi>\<^sub>1 (embedded_style (\<^bold>\<lambda>x . \<phi> x)) u s w = (\<exists> x . \<nu>\<upsilon> x = u \<and> eval\<o> (embedded_style (\<phi> x)) s w)"
@@ -1176,10 +1178,6 @@ text{*
 
   A formula is considered semantically valid for a possible world @{term v} if it evaluates
   to @{term True} for the actual state @{term dj} and the given possible world @{term v}.
-  Recall that for the actual state the connectives and quantifiers
-  are defined to behave classically. The only formulas of the embedded logic whose semantic truth
-  evaluation depends on all states are encoding formulas and only in the sense
-  that the truth of an encoding formula depends on the behavior of the contained relation in all states.
 
   \begin{remark}
     The Isabelle Theory in the appendix defines the syntax \mbox{@{text "v \<Turnstile> p"}} in the representation
@@ -1288,16 +1286,16 @@ Several subtleties have to be considered:
         parts of the theory and it would be trivial to add analog implementations for
         \mbox{@{text "n > 3"}}, this is considered to be sufficient. Future work may attempt to construct a general
         representation for @{text "n"}-place relations for arbitrary @{text "n"}.
-  \item There is a distinction between individual terms and variables. This circumstance
-        was already mentioned in section~\ref{individual-terms-and-descriptions}: an individual term
-        in PLM can either be an individual variable (or constant) or a definite description.
-        Statements in PLM that use individual variables are represented using the decoration
-        @{term "embedded_style (DUMMY\<^sup>P)"}.
-  \item In PLM conceptually a general term @{term "\<phi>"}, as it occurs in definite descriptions,
+  \item Individual terms (that can be descriptions) and individual variables, resp. constants have
+        different types. Exemplification and encoding is defined for individual terms of type @{type \<kappa>}.
+        Individual variables (i.e. variables of type @{type \<nu>}) or individual constants
+        (i.e. constants of type @{type \<nu>}) can be converted to type @{type \<kappa>} using the
+        decoration~@{term "embedded_style (DUMMY\<^sup>P)"}.
+  \item In PLM a general term @{term "\<phi>"}, as it occurs in definite descriptions,
         quantification formulas and @{text "\<lambda>"}-expressions above, can contain \emph{free} variables. If
         such a term occurs within the scope of a variable binding operator, free occurrences of
         the variable are considered to be \emph{bound} by the operator. In the embedding this concept
-        is replaced by considering @{term "\<phi>"} to be a \emph{function} acting on the bound variables
+        is replaced by representing @{term "embedded_style \<phi>"} as a \emph{function} acting on the bound variables
         and using the native concept of binding operators in Isabelle.
   \item The representation layer of the embedding defines a separate quantifier for every type of
         variable in PLM. This is done to assure that only quantification ranging over these types
@@ -1315,8 +1313,8 @@ The syntax used for stating that a proposition is semantically valid is the foll
     @{term "[\<phi> in v]"}
 \end{center}
 
-Here @{term "embedded_style \<phi>"} and @{term "v"} are free variables (in the meta-logic),
-therefore stating the expression as a lemma will implicitly be a quantified statement over all
+Here @{term "embedded_style \<phi>"} and @{term "v"} are free variables (in the meta-logic).
+Therefore, stating the expression above as a lemma will implicitly be a quantified statement over all
 propositions @{term "embedded_style \<phi>"} and all possible worlds @{term "v"} (unless
 @{term "embedded_style \<phi>"} or @{term "v"} are explicitly restricted in the current scope
 or globally declared as constants).
@@ -1370,7 +1368,7 @@ worlds @{typ W} and the primitive actual world @{term "dw"} as the semantic actu
 @{term "w\<^sub>0"} (see~\ref{TAO_Semantics_Semantics_Actual_World}).
 
 \begin{remark}
-Although the definitions for semantic domains and denotations seem redundant, conceptually
+Although the definitions for semantic domains and denotations may seem redundant, conceptually
 the abstract types of the representation layer now have the role of primitive types. Although for
 simplicity the last section regarded the type @{type \<o>} as synonym of \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}}, it was
 introduced as a distinct type for which the set of all functions of type \mbox{@{typ "j\<Rightarrow>i\<Rightarrow>bool"}} merely
@@ -1406,11 +1404,11 @@ of individuals in the case \mbox{@{text "n \<ge> 1"}}. Formally they are defined
 
 The exemplification extension of a @{text "0"}-place relation is its evaluation for the actual state and the
 given possible world. The exemplification extension of @{text "n"}-place relations \mbox{(@{text "n \<ge> 1"})}
-in a possible world is the set of all (tuples of) \emph{individuals} that are mapped to an
-\emph{urelement} for which the relation evaluates to true for the given possible world and the
+in a possible world is the set of all (tuples of) \emph{individuals} that are mapped to
+\emph{urelements} for which the relation evaluates to true for the given possible world and the
 actual state. This is in accordance with the constructed Aczel-model (see~\ref{hyper-aczel-model}).
 
-Exemplification extensions as maps to sets of \emph{individuals} are independent of the underlying
+Conceptually, exemplification extensions as maps to sets of \emph{individuals} are independent of the underlying
 model and in particular do not require the concept of \emph{urelements} as they are present in an
 Aczel-model. Their use in the definition of truth conditions for exemplification formulas below
 is therefore an abstraction away from the technicalities of the representation layer.
@@ -2877,16 +2875,16 @@ text{*
   the provided layer structure.}.
 
   However, a major issue arises when trying to formulate the axiom system as a locale.
-  The axioms of quantification and the substitution of identicals are restricted
-  to only hold for specific sets of types. This already makes it impossible to introduce a general
-  binder for all-quantification or a general identity symbol. A constant for the identity relation
-  would have to be introduced with a specific type. Although this type could use type
-  variables, e.g. @{typ "'a\<Rightarrow>'a\<Rightarrow>'\<o>"}, the type variable @{typ "'a"} would be fixed
-  throughout the locale.
+  Constants in a locale have to be introduced with a fixed type.
+  Although this type can use type variables, e.g. @{typ "'a\<Rightarrow>'a\<Rightarrow>'\<o>"},
+  the type variable @{typ "'a"} is fixed throughout the locale. This makes it impossible
+  to introduce a general binder for all-quantification or a general identity symbol in a single axiom
+  locale that could be used for the statement of the axioms of quantification and the substitution
+  of identicals.
 
-  Several solutions to this problem could be considered: identity could be introduced as
-  a polymorphic constant \emph{outside the locale} and the locale would assume some
-  properties of this constant for specific type variables. Before interpreting the
+  Several solutions to this problem could be considered: the identity relation could be
+  introduced as a polymorphic constant \emph{outside the locale} and the locale could assume some
+  properties for this constant for specific type variables. Before interpreting the
   locale the polymorphic constant could then be \emph{overloaded} for concrete types
   in order to be able to satisfy the assumptions. However, it would still be
   impossible to prove a general statement about identity: every statement would have
@@ -2906,6 +2904,7 @@ text{*
   Since type classes can only use one type variable, this would make it impossible to use a type
   variable for truth values in the definition of the respective type classes, though. Consequently
   it is unclear how appropriate assumptions for such type classes could be formulated.
+  Using separate locales instead of type classes would be connected with different issues.
 
   Several other concepts were considered during the construction of the embedding,
   but no solution was found that would both accurately represent the axiom system and
@@ -3091,7 +3090,7 @@ from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}).
 
 The metarule RN states in essence that if there is a modally-strict proof for @{text "\<phi>"},
 then @{text "\<box>\<phi>"} is derivable as a theorem. PLM proves this fact by induction on the length
-of the derivation. However, remark (\ref{PM-abstraction-contingent})@{cite PM}
+of the derivation. Remark (\ref{PM-abstraction-contingent})@{cite PM}
 gives an example of a case in which the converse is false: if @{text "\<box>\<phi>"} is derivable as a
 theorem, this does not imply that there is a modally-strict proof for @{text "\<phi>"}.
 
@@ -3211,7 +3210,7 @@ text{*
   @{text "\<lambda>"}-expression for which @{text "\<beta>"}-conversion holds would result in a
   paradox as described in section~\ref{russell-paradox}.
 
-  excluding non-propositional formulas in
+  Excluding non-propositional formulas in
   @{text "\<lambda>"}-expressions was believed to be sufficient to prevent such
   inconsistencies. This was shown to be incorrect, though.
 
@@ -3234,7 +3233,7 @@ text{*
   \end{equation}
 
   Here @{text "\<psi>"} can be an arbitrary non-propositional formula in which @{text "x"} and @{text "y"}
-  may be free and 1 is still a valid, denoting @{text "\<lambda>"}-expression for which
+  may be free and (1) is still a valid, denoting @{text "\<lambda>"}-expression for which
   @{text "\<beta>"}-conversion holds.
 
   By @{text "\<beta>"}-conversion and description theory the following is derivable:
@@ -3261,11 +3260,11 @@ text{*
     @{text "[\<lambda>y [\<lambda>z \<forall>p(p\<rightarrow>p)]\<iota>x(x = y & (\<exists>F yF & \<not>Fy))]"}
   \end{equation}
 
-  If one considers 2 now, one can see that this @{text "\<lambda>"}-expressions behaves
+  If one considers (2) now, one can see that this @{text "\<lambda>"}-expressions behaves
   exactly the way that \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would, if it were part of the
   language, i.e. the result of @{text "\<beta>"}-reduction for \mbox{@{text "[\<lambda>x \<exists>F xF & \<not>Fx]"}} would be
-  the same as the right hand side of 2 when applied to 3. Therefore, the @{text "\<lambda>"}-expression
-  in 3 can be used to reproduce the paradox described in section~\ref{russell-paradox}.
+  the same as the right hand side of (2) when applied to (3). Therefore, the @{text "\<lambda>"}-expression
+  in (3) can be used to reproduce the paradox described in section~\ref{russell-paradox}.
 *}
 
 subsection{* Possible Solutions *}
@@ -3389,13 +3388,13 @@ text{*
   examined more closely.
 
   Their result is supported by the presented work in the following sense: it is impossible to
-  represent the Theory of Abstract Objects by representing its @{text "\<lambda>"}-expressions as
+  represent the Theory of Abstract Objects by representing its @{text "\<lambda>"}-expressions directly as
   primitive @{text "\<lambda>"}-expressions in functional logic. Furthermore, exemplification cannot
   be represented classically as function application, while at the same time introducing encoding
   as a second mode of predication.
 
   This already establishes that the traditional approach of translating relational type theory
-  to functional type theory in fact fails for the Theory of Abstract Object. A simple version of
+  to functional type theory in fact fails for the Theory of Abstract Objects. A simple version of
   functional type theory, that only involves two primitive types (for individuals and propositions),
   is insufficient for a representation of the theory.
 
@@ -3451,12 +3450,13 @@ text{*
 \end{remark}
 
 
-  The constructed theory can represent the relations and @{text "\<lambda>"}-expressions of object theory.
-  Furthermore, the embedding has shown that an adequate intensional interpretation of propositions can be used to
+  The constructed theory can represent the relations and @{text "\<lambda>"}-expressions of object theory,
+  as well as exemplification and encoding. Furthermore, the embedding shows that it has a model and
+  that an adequate intensional interpretation of propositions can be used to
   preserve the desired hyperintensionality of relations in @{text "\<lambda>"}-expressions.
 
   In summary it can be concluded that a representation of object theory in functional type theory
-  is feasible, although it is connected with significant complexity (i.e. the introduction of
+  is feasible, although it is connected with a fair amount of complexity (i.e. the introduction of
   additional primitive types and the usage of concepts of intensional and free logic).
   On the other hand, whether this result contradicts the philosophical claim that relations are
   more fundamental than functions, is still debatable considering the fact that the proposed
