@@ -4581,7 +4581,6 @@ text{* \label{TAO_PLM_Objects} *}
         by (rule "\<^bold>\<exists>E")
       hence 1: "[\<^bold>\<A>(\<phi> \<alpha>) \<^bold>& \<^bold>\<A>(\<^bold>\<forall>\<beta>. \<phi> \<beta> \<^bold>\<rightarrow> \<beta> \<^bold>= \<alpha>) in v]"
         using Act_Basic_2[equiv_lr] by blast
-        find_theorems "\<^bold>\<A>(?p \<^bold>= ?q)"
       have 2: "[\<^bold>\<forall>\<beta>. \<^bold>\<A>(\<phi> \<beta> \<^bold>\<rightarrow> \<beta> \<^bold>= \<alpha>) in v]"
         using 1[conj2] logic_actual_nec_3[axiom_instance, equiv_lr] by blast
       {

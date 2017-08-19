@@ -277,8 +277,8 @@ predication is called \emph{encoding} and formally written as @{text "xF"} (@{te
 \emph{encodes} @{text "F"}) in contrast to @{text "Fx"} (@{text "x"} \emph{exemplifies} @{text "F"}).
 
 Mally informally introduces this second mode of predication in order to represent sentences about
-fictional objects. In his thinking only concrete objects, that for example have a fixed spatiotemporal
-location, a body and shape, etc., can \emph{exemplify} their properties and are characterized
+fictional objects. In his thinking, concrete objects, that for example have a fixed spatiotemporal
+location, a body and shape, etc., only \emph{exemplify} their properties and are characterized
 by the properties they exemplify. Sentences about fictional objects such as \textquote{Sherlock Holmes
 is a detective} have a different meaning. Stating that \textquote{Sherlock Holmes is a detective} 
 does not imply that there is some concrete object that is Sherlock Holmes and this object exemplifies
@@ -560,7 +560,7 @@ The comprehension axiom for abstract objects implies that for each set of proper
 an abstract object encoding exactly those properties. Considering the definition of identity there therefore
 exists an injective map from the power set of properties to the set of abstract objects.
 On the other hand for an object @{text "y"} the term \mbox{@{text "[\<lambda>x Rxy]"}} constitutes a property.
-If for distinct objects these properties were distinct, this would result in a violation of
+If for distinct abstract objects these properties were distinct, this would result in a violation of
 Cantor's theorem, since this would mean that there is an injective map from the power set of properties
 to the set of properties. So does the Theory of Abstract Objects as constructed above have a model?
 An answer to this question was provided by Peter Aczel\footnote{In fact to our knowledge Dana Scott
@@ -1200,7 +1200,7 @@ text{*
   \begin{itemize}
     \item Ordinary objects are possibly concrete. In the meta-logic this means that for every
           ordinary object there exists at least one possible world, in which the object is concrete.
-    \item Abstract objects are never concrete.
+    \item Abstract objects are not possibly concrete.
   \end{itemize}
 
   An additional requirement is enforced by axiom (\ref{PM-qml}.4)\cite{PM}, see~\ref{axioms-necessity}.
@@ -1955,7 +1955,7 @@ subsection{* Axioms as Schemata *}
 text{*
   \label{axiom-schemata}
 
-  The axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
+  Most of the axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
   and can therefore be instantiated for any formula and term.
   Furthermore PLM introduces the notion of \emph{closures} (see~@{cite \<open>(\ref{PM-closures})\<close> PM}). Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
