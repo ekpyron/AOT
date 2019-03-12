@@ -19,8 +19,6 @@ begin
   type_synonym R\<^sub>\<kappa> = "\<nu>"
   type_synonym R\<^sub>0 = "j\<Rightarrow>i\<Rightarrow>bool"
   type_synonym R\<^sub>1 = "\<upsilon>\<Rightarrow>R\<^sub>0"
-  type_synonym R\<^sub>2 = "\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>R\<^sub>0"
-  type_synonym R\<^sub>3 = "\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>R\<^sub>0"
   type_synonym W = i
 
   subsubsection{* Denotation Functions *}
@@ -29,12 +27,6 @@ begin
   lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is id .
   lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
   lift_definition d\<^sub>1 :: "\<Pi>\<^sub>1\<Rightarrow>R\<^sub>1 option" is Some .
-  lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
-  lift_definition d\<^sub>3 :: "\<Pi>\<^sub>3\<Rightarrow>R\<^sub>3 option" is Some .
-
-  subsubsection{* Actual World *}
-  text{* \label{TAO_Semantics_Semantics_Actual_World} *}
-  definition w\<^sub>0 where "w\<^sub>0 \<equiv> dw"
 
   subsubsection{* Exemplification Extensions *}
   text{* \label{TAO_Semantics_Semantics_Exemplification_Extensions} *}
@@ -43,10 +35,6 @@ begin
     where "ex0 \<equiv> \<lambda> F . F dj"
   definition ex1 :: "R\<^sub>1\<Rightarrow>W\<Rightarrow>(R\<^sub>\<kappa> set)"
     where "ex1 \<equiv> \<lambda> F w . { x . F (\<nu>\<upsilon> x) dj w }"
-  definition ex2 :: "R\<^sub>2\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
-    where "ex2 \<equiv> \<lambda> F w . { (x,y) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) dj w }"
-  definition ex3 :: "R\<^sub>3\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
-    where "ex3 \<equiv> \<lambda> F w . { (x,y,z) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) dj w }"
 
   subsubsection{* Encoding Extensions *}
   text{* \label{TAO_Semantics_Semantics_Encoding_Extension} *}
@@ -58,7 +46,20 @@ begin
   subsubsection{* Collection of Semantic Definitions *}
   text{* \label{TAO_Semantics_Semantics_Definitions} *}
 
-  named_theorems semantics_defs
+  type_synonym R\<^sub>2 = "\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>R\<^sub>0"
+  type_synonym R\<^sub>3 = "\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>R\<^sub>0"
+  lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
+  lift_definition d\<^sub>3 :: "\<Pi>\<^sub>3\<Rightarrow>R\<^sub>3 option" is Some .
+
+  subsubsection{* Actual World *}
+  text{* \label{TAO_Semantics_Semantics_Actual_World} *}
+  definition w\<^sub>0 where "w\<^sub>0 \<equiv> dw"
+  definition ex2 :: "R\<^sub>2\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
+    where "ex2 \<equiv> \<lambda> F w . { (x,y) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) dj w }"
+  definition ex3 :: "R\<^sub>3\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
+    where "ex3 \<equiv> \<lambda> F w . { (x,y,z) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) dj w }"
+
+named_theorems semantics_defs
   declare d\<^sub>0_def[semantics_defs] d\<^sub>1_def[semantics_defs]
           d\<^sub>2_def[semantics_defs] d\<^sub>3_def[semantics_defs]
           ex0_def[semantics_defs] ex1_def[semantics_defs]

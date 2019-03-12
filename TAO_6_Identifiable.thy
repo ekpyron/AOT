@@ -133,24 +133,24 @@ lemma identity\<^sub>E_def[identity_defs]:
 lemma identity\<^sub>E_infix_def[identity_defs]:
   "x \<^bold>=\<^sub>E y \<equiv> \<lparr>basic_identity\<^sub>E,x,y\<rparr>" using basic_identity\<^sub>E_infix_def .
 lemma identity\<^sub>\<kappa>_def[identity_defs]:
-  "op \<^bold>= \<equiv> \<lambda>x y. x \<^bold>=\<^sub>E y \<^bold>\<or> \<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>)"
+  "identity \<equiv> \<lambda>x y. x \<^bold>=\<^sub>E y \<^bold>\<or> \<lparr>A!,x\<rparr> \<^bold>& \<lparr>A!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>y,F\<rbrace>)"
   unfolding identity_\<kappa>_def basic_identity\<^sub>\<kappa>_def forall_\<Pi>\<^sub>1_def by simp
 lemma identity\<^sub>\<nu>_def[identity_defs]:
-  "op \<^bold>= \<equiv> \<lambda>x y. (x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P) \<^bold>\<or> \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>y\<^sup>P,F\<rbrace>)"
+  "identity \<equiv> \<lambda>x y. (x\<^sup>P) \<^bold>=\<^sub>E (y\<^sup>P) \<^bold>\<or> \<lparr>A!,x\<^sup>P\<rparr> \<^bold>& \<lparr>A!,y\<^sup>P\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>y\<^sup>P,F\<rbrace>)"
   unfolding identity_\<nu>_def identity\<^sub>\<kappa>_def by simp
 lemma identity\<^sub>1_def[identity_defs]:
-  "op \<^bold>= \<equiv> \<lambda>F G. \<^bold>\<box>(\<^bold>\<forall> x . \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,G\<rbrace>)"
+  "identity \<equiv> \<lambda>F G. \<^bold>\<box>(\<^bold>\<forall> x . \<lbrace>x\<^sup>P,F\<rbrace> \<^bold>\<equiv> \<lbrace>x\<^sup>P,G\<rbrace>)"
   unfolding identity_\<Pi>\<^sub>1_def basic_identity\<^sub>1_def forall_\<nu>_def by simp
 lemma identity\<^sub>2_def[identity_defs]:
-  "op \<^bold>= \<equiv> \<lambda>F G. \<^bold>\<forall> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>)
+  "identity \<equiv> \<lambda>F G. \<^bold>\<forall> x. (\<^bold>\<lambda>y. \<lparr>F,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,x\<^sup>P,y\<^sup>P\<rparr>)
                     \<^bold>& (\<^bold>\<lambda>y. \<lparr>F,y\<^sup>P,x\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>y. \<lparr>G,y\<^sup>P,x\<^sup>P\<rparr>)"
   unfolding identity_\<Pi>\<^sub>2_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>2_def forall_\<nu>_def by simp
 lemma identity\<^sub>3_def[identity_defs]:
-  "op \<^bold>= \<equiv> \<lambda>F G. \<^bold>\<forall> x y. (\<^bold>\<lambda>z. \<lparr>F,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>z. \<lparr>G,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>)
+  "identity \<equiv> \<lambda>F G. \<^bold>\<forall> x y. (\<^bold>\<lambda>z. \<lparr>F,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>z. \<lparr>G,z\<^sup>P,x\<^sup>P,y\<^sup>P\<rparr>)
                       \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,z\<^sup>P,y\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,z\<^sup>P,y\<^sup>P\<rparr>)
                       \<^bold>& (\<^bold>\<lambda>z. \<lparr>F,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>) \<^bold>= (\<^bold>\<lambda>z. \<lparr>G,x\<^sup>P,y\<^sup>P,z\<^sup>P\<rparr>)"
   unfolding identity_\<Pi>\<^sub>3_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>3_def forall_\<nu>_def by simp
-lemma identity\<^sub>\<o>_def[identity_defs]: "op \<^bold>= \<equiv> \<lambda>F G. (\<^bold>\<lambda>y. F) \<^bold>= (\<^bold>\<lambda>y. G)"
+lemma identity\<^sub>\<o>_def[identity_defs]: "identity \<equiv> \<lambda>F G. (\<^bold>\<lambda>y. F) \<^bold>= (\<^bold>\<lambda>y. G)"
   unfolding identity_\<o>_def identity_\<Pi>\<^sub>1_def basic_identity\<^sub>0_def by simp
 
 (*<*)

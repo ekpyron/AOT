@@ -10,36 +10,36 @@ text{* \label{TAO_Embedding} *}
 subsection{* Primitives *}
 text{* \label{TAO_Embedding_Primitives} *}
 
-typedecl i --{* possible worlds *}
-typedecl j --{* states *}
+typedecl i text{* possible worlds *}
+typedecl j text{* states *}
 
-consts dw :: i --{* actual world *}
-consts dj :: j --{* actual state *}
+consts dw :: i text{* actual world *}
+consts dj :: j text{* actual state *}
 
-typedecl \<omega> --{* ordinary objects *}
-typedecl \<sigma> --{* special urelements *}
-datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> --{* urelements *}
+typedecl \<omega> text{* ordinary objects *}
+typedecl \<sigma> text{* special urelements *}
+datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> text{* urelements *}
 
 subsection{* Derived Types *}
 text{* \label{TAO_Embedding_Derived_Types} *}
 
 typedef \<o> = "UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<o> make\<o> .. --{* truth values *}
+  morphisms eval\<o> make\<o> .. text{* truth values *}
 
-type_synonym \<Pi>\<^sub>0 = \<o> --{* zero place relations *}
+type_synonym \<Pi>\<^sub>0 = \<o> text{* zero place relations *}
 typedef \<Pi>\<^sub>1 = "UNIV::(\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>1 make\<Pi>\<^sub>1 .. --{* one place relations *}
+  morphisms eval\<Pi>\<^sub>1 make\<Pi>\<^sub>1 .. text{* one place relations *}
 typedef \<Pi>\<^sub>2 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>2 make\<Pi>\<^sub>2 .. --{* two place relations *}
+  morphisms eval\<Pi>\<^sub>2 make\<Pi>\<^sub>2 .. text{* two place relations *}
 typedef \<Pi>\<^sub>3 = "UNIV::(\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) set"
-  morphisms eval\<Pi>\<^sub>3 make\<Pi>\<^sub>3 .. --{* three place relations *}
+  morphisms eval\<Pi>\<^sub>3 make\<Pi>\<^sub>3 .. text{* three place relations *}
 
-type_synonym \<alpha> = "\<Pi>\<^sub>1 set" --{* abstract objects *}
+type_synonym \<alpha> = "\<Pi>\<^sub>1 set" text{* abstract objects *}
 
-datatype \<nu> = \<omega>\<nu> \<omega> | \<alpha>\<nu> \<alpha> --{* individuals *}
+datatype \<nu> = \<omega>\<nu> \<omega> | \<alpha>\<nu> \<alpha> text{* individuals *}
 
 typedef \<kappa> = "UNIV::(\<nu> option) set"
-  morphisms eval\<kappa> make\<kappa> .. --{* individual terms *}
+  morphisms eval\<kappa> make\<kappa> .. text{* individual terms *}
 
 setup_lifting type_definition_\<o>
 setup_lifting type_definition_\<kappa>
@@ -51,7 +51,7 @@ subsection{* Individual Terms and Definite Descriptions *}
 text{* \label{TAO_Embedding_IndividualTerms} *}
 
 lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
-lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "op\<noteq> None" .
+lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "\<lambda> x . x \<noteq> None" .
 lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
 
 lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is

@@ -37,7 +37,7 @@ text{*
     "[(\<lparr>\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>, x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<lbrace>x\<^sup>P, F\<rbrace>) in v]"
     apply (simp add: meta_defs meta_aux conn_defs forall_\<Pi>\<^sub>1_def)
     nitpick[user_axioms, expect=genuine]
-    oops --{* countermodel by nitpick *}
+    oops text{* countermodel by nitpick *}
 
 text{*
 \begin{remark}

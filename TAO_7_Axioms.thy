@@ -112,6 +112,14 @@ text{* \label{TAO_Axioms_Quantification} *}
   lemma cqt_1[axiom]:
     "[[(\<^bold>\<forall> \<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>]]"
     by axiom_meta_solver
+  lemma cqt_3[axiom]:
+    "[[(\<^bold>\<forall>\<alpha>. \<phi> \<alpha> \<^bold>\<rightarrow> \<psi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<forall>\<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<psi> \<alpha>))]]"
+    by axiom_meta_solver
+  lemma cqt_4[axiom]:
+    "[[\<phi> \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<phi>)]]"
+    by axiom_meta_solver
+
+
   lemma cqt_1_\<kappa>[axiom]:
     "[[(\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>)]]"
     proof -
@@ -129,14 +137,8 @@ text{* \label{TAO_Axioms_Quantification} *}
       thus "[[(\<^bold>\<forall> \<alpha>. \<phi> (\<alpha>\<^sup>P)) \<^bold>\<rightarrow> ((\<^bold>\<exists> \<beta> . (\<beta>\<^sup>P) \<^bold>= \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>)]]"
         unfolding axiom_def using ImplI by blast
     qed
-  lemma cqt_3[axiom]:
-    "[[(\<^bold>\<forall>\<alpha>. \<phi> \<alpha> \<^bold>\<rightarrow> \<psi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<forall>\<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<psi> \<alpha>))]]"
-    by axiom_meta_solver
-  lemma cqt_4[axiom]:
-    "[[\<phi> \<^bold>\<rightarrow> (\<^bold>\<forall>\<alpha>. \<phi>)]]"
-    by axiom_meta_solver
 
-  inductive SimpleExOrEnc
+inductive SimpleExOrEnc
     where "SimpleExOrEnc (\<lambda> x . \<lparr>F,x\<rparr>)"
         | "SimpleExOrEnc (\<lambda> x . \<lparr>F,x,y\<rparr>)"
         | "SimpleExOrEnc (\<lambda> x . \<lparr>F,y,x\<rparr>)"
@@ -176,7 +178,7 @@ text{* \label{TAO_Axioms_Actuality} *}
     by axiom_meta_solver
   lemma "[[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]]"
     nitpick[user_axioms, expect = genuine, card = 1, card i = 2]
-    oops --{* Counter-model by nitpick *}
+    oops text{* Counter-model by nitpick *}
 
   lemma logic_actual_nec_1[axiom]:
     "[[\<^bold>\<A>\<^bold>\<not>\<phi> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<A>\<phi>]]"
