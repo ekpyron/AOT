@@ -11,12 +11,12 @@ lemma extended_prop: "[v \<Turnstile> \<^bold>\<exists> p . \<^bold>\<box>(\<lpa
 (* In AOT's language: \<Pi>\<down> \<equiv> \<exists>x x\<Pi> *)
 lemma "[v \<Turnstile> \<Pi>\<^bold>\<down> \<^bold>\<equiv> (\<^bold>\<exists>x . \<lbrace>x,\<Pi>\<rbrace>)]"
   (* sledgehammer *)
-  using AOT_iffI exists_relation_def by blast
+  using AOT_iffS equivalent_by_definition_def exists_relation_def by blast
 
 (* In AOT's language: \<Pi>\<down> \<equiv> \<exists>x\<exists>y xy\<Pi> *)
 lemma "[v \<Turnstile> \<Pi>\<^bold>\<down> \<^bold>\<equiv> (\<^bold>\<exists>x y . \<lbrace>x,y,\<Pi>\<rbrace>)]"
   (* sledgehammer *)
-  by (simp add: AOT_iffS exists_relation2_def)
+  using AOT_iffI equivalent_by_definition_def exists_relation2_def by blast
 
 lemma General_Property_Existence:
   (* In AOT's language: \<box>\<forall>x\<forall>y (\<forall>F (Fx \<equiv> Fy) \<rightarrow> \<phi> \<equiv> \<phi>\<^sup>y\<^sub>x) \<rightarrow> [\<lambda>x \<phi>]\<down>  *)
