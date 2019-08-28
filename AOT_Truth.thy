@@ -189,6 +189,22 @@ lemma AOT_nec_falseE[AOT_meta_elim_safe]:
   assumes "[v \<Turnstile> AOT_nec_false]" shows "False"
   using assms apply transfer by simp
 
+lemma AOT_nec_falseS[AOT_meta_simp]:
+  "[v \<Turnstile> AOT_nec_false] = False"
+  using AOT_nec_falseE by auto
+
+lemma AOT_nec_trueS[AOT_meta_simp]:
+  "[v \<Turnstile> AOT_nec_true] = True"
+  by (simp add: AOT_nec_trueI)
+
+lemma AOT_nec_false_not_true[AOT_meta_simp]:
+  "(AOT_nec_false = AOT_nec_true) = False"
+  using AOT_nec_falseE AOT_nec_trueI by auto
+
+lemma AOT_nec_true_not_false[AOT_meta_simp]:
+  "(AOT_nec_true = AOT_nec_false) = False"
+  using AOT_nec_falseE AOT_nec_trueI by auto
+
 method AOT_meta_blast = (blast intro!: AOT_meta_intro_safe elim!: AOT_meta_elim_safe intro: AOT_meta_intro elim: AOT_meta_elim)
 method AOT_meta_fast = (fast intro!: AOT_meta_intro_safe elim!: AOT_meta_elim_safe intro: AOT_meta_intro elim: AOT_meta_elim)
 method AOT_meta_slow = (slow intro!: AOT_meta_intro_safe elim!: AOT_meta_elim_safe intro: AOT_meta_intro elim: AOT_meta_elim)

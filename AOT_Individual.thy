@@ -3,9 +3,9 @@ theory AOT_Individual
 begin
 
 class AOT_Individual = AOT_Term +
-  fixes AOT_enc :: "'a::AOT_Term \<Rightarrow> 'a relation \<Rightarrow> \<o>"
+  fixes AOT_enc :: "'a::AOT_Term \<Rightarrow> <'a> \<Rightarrow> \<o>"
     and AOT_universal_encoder :: 'a
-    and AOT_relation_identity :: "'a relation \<Rightarrow> 'a relation \<Rightarrow> \<o>" (infixl "\<^bold>=\<^sub>r" 63)
+    and AOT_relation_identity :: "<'a> \<Rightarrow> <'a> \<Rightarrow> \<o>" (infixl "\<^bold>=\<^sub>r" 63)
     and AOT_proj_enc :: "'a \<Rightarrow> ('a\<Rightarrow>\<o>) \<Rightarrow> \<o>"
   assumes AOT_universal_encoder_exists: "[v \<Turnstile> AOT_universal_encoder\<^bold>\<down>]"
       and AOT_universal_encoder: "[v \<Turnstile> F\<^bold>\<down>] \<Longrightarrow> [v \<Turnstile> AOT_enc AOT_universal_encoder F]"
@@ -25,20 +25,20 @@ translations
   "\<lbrace>x, F\<rbrace>" \<rightleftharpoons> "CONST AOT_enc x F"
 
 class AOT_UnaryIndividual = AOT_Individual +
-  fixes AOT_concrete :: "'a::AOT_Term relation" ("E!")
+  fixes AOT_concrete :: "<'a::AOT_Term>" ("E!")
   assumes AOT_concrete_exists[AOT_lambda_exists_intros]: "[v \<Turnstile> E!\<^bold>\<down>]"
       and AOT_meta_nocoder: "[v \<Turnstile> \<lparr>E!,x\<rparr>] \<Longrightarrow> \<not>[v \<Turnstile> \<lbrace>x,F\<rbrace>]"
       and AOT_meta_ordinary_exists: "\<exists> x v . [v \<Turnstile> \<lparr>E!,x\<rparr>]"
       and AOT_meta_A_objects: "\<And>\<phi> v . [v \<Turnstile> \<^bold>\<exists> x . \<lparr>[\<^bold>\<lambda>y . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,y\<rparr>], x\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<phi> F)]"
 (*      and AOT_unary_relation_identity: "[v \<Turnstile> (F :: 'a relation) \<^bold>=\<^sub>r G] = [v \<Turnstile> F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> x . \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>x,G\<rbrace>)]"*)
-      and AOT_unary_relation_identity: "((F :: 'a relation) \<^bold>=\<^sub>r G) = (F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> x . \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>x,G\<rbrace>))"
+      and AOT_unary_relation_identity: "((F :: <'a>) \<^bold>=\<^sub>r G) = (F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> x . \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>x,G\<rbrace>))"
 (*      and AOT_contingent_old: "[v \<Turnstile> \<^bold>\<diamond>(\<^bold>\<exists>x . \<lparr>E!,x\<rparr> \<^bold>& \<^bold>\<diamond>\<^bold>\<not>\<lparr>E!,x\<rparr>) \<^bold>& \<^bold>\<diamond>\<^bold>\<not>(\<^bold>\<exists> x . \<lparr>E!,x\<rparr> \<^bold>& \<^bold>\<diamond>\<^bold>\<not>\<lparr>E!,x\<rparr>)]" *)
       and AOT_contingent: "[v \<Turnstile> \<^bold>\<diamond>(\<^bold>\<exists>x . \<lparr>E!,x\<rparr> \<^bold>& \<^bold>\<not>\<^bold>\<A>\<lparr>E!,x\<rparr>)]"
       and AOT_unary_proj_enc: "AOT_proj_enc x \<phi> = AOT_enc x [\<^bold>\<lambda>z . \<phi> z]"
 begin
-  definition AOT_Ordinary :: "('a) relation" ("O!") where
+  definition AOT_Ordinary :: "<'a>" ("O!") where
     "AOT_Ordinary \<equiv> [\<^bold>\<lambda> y . \<^bold>\<diamond>\<lparr>E!,y\<rparr>]"
-  definition AOT_Abstract :: "('a) relation" ("A!") where
+  definition AOT_Abstract :: "<'a>" ("A!") where
     "AOT_Abstract \<equiv> [\<^bold>\<lambda> y . \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,y\<rparr>]"
 end
 
@@ -101,11 +101,11 @@ lemma AOT_lambda_exists_simple_def2: assumes "[v \<Turnstile> (Abs_relation \<ph
 
 instantiation prod :: (AOT_UnaryIndividual, AOT_Individual) AOT_Individual
 begin
-  definition AOT_enc_prod :: "'a\<times>'b \<Rightarrow> (('a\<times>'b) relation) \<Rightarrow> \<o>" where
+  definition AOT_enc_prod :: "'a\<times>'b \<Rightarrow> <'a\<times>'b> \<Rightarrow> \<o>" where
     "AOT_enc_prod \<equiv> \<lambda> (a,b) F . F\<^bold>\<down> \<^bold>& \<lbrace>a, [\<^bold>\<lambda>y . \<lparr>F,y,b\<rparr>]\<rbrace> \<^bold>& AOT_proj_enc b (\<lambda>y . \<lparr>F,a,y\<rparr>)"
   definition AOT_universal_encoder_prod :: "'a\<times>'b" where
     "AOT_universal_encoder_prod \<equiv> (AOT_universal_encoder, AOT_universal_encoder)"
-  definition AOT_relation_identity_prod :: "('a\<times>'b) relation \<Rightarrow> ('a\<times>'b) relation \<Rightarrow> \<o>" where
+  definition AOT_relation_identity_prod :: "<'a\<times>'b> \<Rightarrow> <'a\<times>'b> \<Rightarrow> \<o>" where
     "AOT_relation_identity_prod \<equiv> \<lambda> F G . F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>&
       (\<^bold>\<forall> y . [\<^bold>\<lambda>z . \<lparr>F,z,y\<rparr>] \<^bold>=\<^sub>r [\<^bold>\<lambda>z . \<lparr>G,z,y\<rparr>]) \<^bold>&
       (\<^bold>\<forall> y . [\<^bold>\<lambda>z . \<lparr>F,y,z\<rparr>] \<^bold>=\<^sub>r [\<^bold>\<lambda>z . \<lparr>G,y,z\<rparr>])"
@@ -117,7 +117,7 @@ instance proof
     unfolding AOT_universal_encoder_prod_def
     by (metis AOT_equiv_existsS AOT_equiv_prodI AOT_universal_encoder_exists fst_conv snd_conv)
 next
-  fix F :: "('a\<times>'b) relation" and v :: i
+  fix F :: "<'a\<times>'b>" and v :: i
   assume F_ex: "[v \<Turnstile> F\<^bold>\<down>]"
   {
     fix y :: 'b
@@ -145,7 +145,7 @@ next
           AOT_universal_encoder_exists[where 'a='b] apply simp
     by (simp add: AOT_conjS AOT_proj_enc_universal F_ex)
 next
-  fix F G :: "('a\<times>'b) relation" and v :: i
+  fix F G :: "<'a\<times>'b>" and v :: i
   {
     assume "[v \<Turnstile> F \<^bold>=\<^sub>r G]"
     hence 0: "[v \<Turnstile> F\<^bold>\<down>] \<and> [v \<Turnstile> G\<^bold>\<down>] \<and> (\<forall> y . [v \<Turnstile> y\<^bold>\<down>] \<longrightarrow> [v \<Turnstile> [\<^bold>\<lambda>z. \<lparr>F, (z, y)\<rparr>] \<^bold>=\<^sub>r [\<^bold>\<lambda>z. \<lparr>G, (z, y)\<rparr>]])
@@ -160,16 +160,16 @@ next
       hence "[\<^bold>\<lambda>z. \<lparr>F, (z, y)\<rparr>] = [\<^bold>\<lambda>z. \<lparr>G, (z, y)\<rparr>]"
         by (simp add: 1)
       hence 2: "\<And> x . Rep_relation [\<^bold>\<lambda>z. \<lparr>F, (z, y)\<rparr>] x = Rep_relation [\<^bold>\<lambda>z. \<lparr>G, (z, y)\<rparr>] x" by auto
-      have "\<And> (F :: ('a\<times>'b) relation) (x :: 'a) (ya :: 'a) (v :: i) . [v \<Turnstile> x \<^bold>~ ya] \<Longrightarrow> \<lparr>F, (x, y)\<rparr> = \<lparr>F, (ya, y)\<rparr>"
+      have "\<And> (F :: <'a\<times>'b>) (x :: 'a) (ya :: 'a) (v :: i) . [v \<Turnstile> x \<^bold>~ ya] \<Longrightarrow> \<lparr>F, (x, y)\<rparr> = \<lparr>F, (ya, y)\<rparr>"
       proof -
-        fix F :: "('a\<times>'b) relation" and x ya :: 'a and v :: i
+        fix F :: "<'a\<times>'b>" and x ya :: 'a and v :: i
         assume "[v \<Turnstile> x \<^bold>~ ya]"
         hence "[v \<Turnstile> (x,y) \<^bold>~ (ya,y)]" using y_ex
           using AOT_equiv_existsS AOT_equiv_prodI AOT_logical_existsE AOT_logical_existsI by fastforce
         thus "\<lparr>F, (x, y)\<rparr> = \<lparr>F, (ya, y)\<rparr>"
           using AOT_exe_trans2 by blast
       qed
-      hence 3: "\<And> F :: ('a\<times>'b) relation . [v \<Turnstile> (Abs_relation (\<lambda> z . \<lparr>F, (z,y)\<rparr>))\<^bold>\<down>]"
+      hence 3: "\<And> F :: <'a\<times>'b> . [v \<Turnstile> (Abs_relation (\<lambda> z . \<lparr>F, (z,y)\<rparr>))\<^bold>\<down>]"
         apply - apply (rule AOT_exists_relI)
          apply (simp add: Abs_relation_inverse)+
         by (meson AOT_exe_def AOT_exists_prodE1 AOT_logical_existsS)
@@ -199,12 +199,12 @@ next
   }
   ultimately show "[v \<Turnstile> F \<^bold>=\<^sub>r G] = ([v \<Turnstile> F \<^bold>\<down>] \<and> [v \<Turnstile> G\<^bold>\<down>] \<and> F = G)" by argo
 next
-  fix v :: i and x :: "'a\<times>'b" and F :: "('a\<times>'b) relation"
+  fix v :: i and x :: "'a\<times>'b" and F :: "<'a\<times>'b>"
   show "[v \<Turnstile> \<lbrace>x, F\<rbrace>] = (\<forall>v. [v \<Turnstile> \<lbrace>x, F\<rbrace>])"
     unfolding AOT_enc_prod_def apply (induct x) apply simp
     by (meson AOT_conjS AOT_enc_rigid AOT_proj_enc_nec AOT_logical_existsS)
 next
-  fix v :: i and x :: "'a\<times>'b" and F :: "('a\<times>'b) relation"
+  fix v :: i and x :: "'a\<times>'b" and F :: "<'a\<times>'b>"
   show "[v \<Turnstile> \<lbrace>x, F\<rbrace>] \<Longrightarrow> [v \<Turnstile> x\<^bold>\<down>] \<and> [v \<Turnstile> F\<^bold>\<down>]"
     unfolding AOT_enc_prod_def apply (induct x)
     unfolding AOT_meta_equiv_prod_def apply simp
@@ -308,10 +308,10 @@ declare AOT_enc_prod_def[AOT_meta_simp] AOT_unary_proj_enc[AOT_meta_simp] AOT_pr
 
 instantiation unit :: AOT_Individual
 begin
-definition AOT_enc_unit :: "unit \<Rightarrow> unit relation \<Rightarrow> \<o>" where
+definition AOT_enc_unit :: "unit \<Rightarrow> <unit> \<Rightarrow> \<o>" where
   "AOT_enc_unit \<equiv> (\<lambda> () p . AOT_nec_true)"
 definition AOT_universal_encoder_unit :: "unit" where "AOT_universal_encoder_unit \<equiv> ()"
-definition AOT_relation_identity_unit :: "unit relation \<Rightarrow> unit relation \<Rightarrow> \<o>" where
+definition AOT_relation_identity_unit :: "<unit> \<Rightarrow> <unit> \<Rightarrow> \<o>" where
   "AOT_relation_identity_unit \<equiv> (\<lambda> p q . Abs_\<o> (\<lambda> s w . p = q))"
 definition AOT_proj_enc_unit :: "unit \<Rightarrow> (unit \<Rightarrow> \<o>) \<Rightarrow> \<o>" where
   "AOT_proj_enc_unit \<equiv> (\<lambda> () \<phi> . AOT_nec_true)"
@@ -321,7 +321,7 @@ instance proof
     apply (rule AOT_logical_existsI)
     by (simp add: AOT_term_equiv_unitI)
 next
-  fix v :: i and F :: "unit relation"
+  fix v :: i and F :: "<unit>"
   assume "[v \<Turnstile> F\<^bold>\<down>]"
   have 1: "\<And> x . (case x of () \<Rightarrow> (\<lambda>p. AOT_nec_true)) = (\<lambda>p. AOT_nec_true)"
     by (simp add: case_unit_Unity)
@@ -329,7 +329,7 @@ next
     unfolding AOT_enc_unit_def AOT_universal_encoder_unit_def apply (subst 1)
     unfolding AOT_nec_true_def AOT_valid_in_def by (simp add: Abs_\<o>_inverse)
 next
-  fix v :: i and F G :: "unit relation"
+  fix v :: i and F G :: "<unit>"
   have F_ex: "[v \<Turnstile> F\<^bold>\<down>]" apply (rule AOT_logical_existsI)
     by (metis (full_types) AOT_meta_equiv_part_equivp AOT_meta_equiv_relation.rep_eq old.unit.exhaust part_equivp_def)
   have G_ex: "[v \<Turnstile> G\<^bold>\<down>]" apply (rule AOT_logical_existsI)
@@ -338,13 +338,13 @@ next
     unfolding AOT_relation_identity_unit_def apply (simp add: F_ex G_ex)
     unfolding AOT_valid_in_def by (simp add: Abs_\<o>_inverse)
 next
-  fix v :: i and x :: unit and F :: "unit relation"
+  fix v :: i and x :: unit and F :: "<unit>"
   have 1: "(case x of () \<Rightarrow> (\<lambda>p. AOT_nec_true)) = (\<lambda>p. AOT_nec_true)"
     by (simp add: case_unit_Unity)
   show "[v \<Turnstile> \<lbrace>x, F\<rbrace>] = (\<forall>v. [v \<Turnstile> \<lbrace>x, F\<rbrace>])" unfolding AOT_enc_unit_def apply (subst 1)+
     unfolding AOT_valid_in_def AOT_nec_true_def by (simp add: Abs_\<o>_inverse)
 next
-  fix v :: i and x :: unit and F :: "unit relation"
+  fix v :: i and x :: unit and F :: "<unit>"
   assume "[v \<Turnstile> \<lbrace>x, F\<rbrace>]"
   have F_ex: "[v \<Turnstile> F\<^bold>\<down>]" apply (rule AOT_logical_existsI)
     by (metis (full_types) AOT_meta_equiv_part_equivp AOT_meta_equiv_relation.rep_eq old.unit.exhaust part_equivp_def)

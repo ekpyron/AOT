@@ -20,7 +20,7 @@ qed
 
 lemma AOT_non_exist_non_eq: "\<not>[v \<Turnstile> x\<^bold>\<down>] \<or> \<not>[v \<Turnstile> y\<^bold>\<down>] \<Longrightarrow> \<not>[v \<Turnstile> x \<^bold>= y]" using AOT_eq_exist by blast
 
-definition AOT_identity\<^sub>E :: "('a::AOT_UnaryIndividual\<times>'a) relation" where
+definition AOT_identity\<^sub>E :: "<'a::AOT_UnaryIndividual\<times>'a>" where
   "AOT_identity\<^sub>E \<equiv> [\<^bold>\<lambda> (x,y) . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F. \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)]"
 
 lemma AOT_identity\<^sub>E_exists[AOT_lambda_exists_intros]: "[v \<Turnstile> AOT_identity\<^sub>E\<^bold>\<down>]"
@@ -32,10 +32,10 @@ definition AOT_identity\<^sub>E_infix :: "'a::AOT_UnaryIndividual \<Rightarrow> 
 
 instantiation relation :: (AOT_Individual) AOT_Identity
 begin
-definition AOT_identity_relation :: "('a relation) \<Rightarrow> ('a relation) \<Rightarrow> \<o>" where
+definition AOT_identity_relation :: "<'a> \<Rightarrow> <'a> \<Rightarrow> \<o>" where
   "AOT_identity_relation \<equiv> \<lambda> F G . F \<^bold>=\<^sub>r G"
 instance proof
-  fix v :: i and F G :: "'a relation" and \<phi> :: "('a relation) \<Rightarrow> \<o>"
+  fix v :: i and F G :: "<'a>" and \<phi> :: "<'a> \<Rightarrow> \<o>"
   assume "[v \<Turnstile> F \<^bold>= G]"
   hence F_ex: "[v \<Turnstile> F\<^bold>\<down>]"
     and G_ex: "[v \<Turnstile> G\<^bold>\<down>]"
@@ -45,13 +45,13 @@ instance proof
   moreover assume "[v \<Turnstile> \<phi> F]"
   ultimately show "[v \<Turnstile> \<phi> G]" by auto
 next
-  fix v :: i and F G :: "'a relation"
+  fix v :: i and F G :: "<'a>"
   assume "[v \<Turnstile> F \<^bold>= G]"
   thus "[v \<Turnstile> F\<^bold>\<down>] \<and> [v \<Turnstile> G\<^bold>\<down>]"
     unfolding AOT_identity_relation_def
     by (auto simp: AOT_relation_identity AOT_valid_in.abs_eq)
 next
-  fix v and x :: "'a relation"
+  fix v and x :: "<'a>"
   assume "[v \<Turnstile> x\<^bold>\<down>]"
   thus "[v \<Turnstile> \<^bold>\<box>(x \<^bold>= x)]"
     by (metis AOT_Identity.AOT_identity_relation_def AOT_boxI AOT_exists_necI AOT_relation_identity)

@@ -1,61 +1,48 @@
 theory AOT_Axioms
-  imports AOT_Kappa
+  imports AOT_MetaDefs
 begin
 
-section{* Meta-Definitions *}
+named_theorems Axioms
 
-definition equivalent_by_definition :: "\<o>\<Rightarrow>\<o>\<Rightarrow>bool" (infixl "\<equiv>\<^sub>d\<^sub>f" 3) where
-  [AOT_meta_simp]: "\<phi> \<equiv>\<^sub>d\<^sub>f \<psi> \<equiv> (\<forall> v . [v \<Turnstile> \<phi>] \<longleftrightarrow> [v \<Turnstile> \<psi>])"
+section\<open> Definitions \<close>
 
-lemma equivalent_by_definitionI[AOT_meta_intro]:
-  assumes "\<And> v. [v \<Turnstile> \<phi>] \<longleftrightarrow> [v \<Turnstile> \<psi>]"
-  shows "\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>"
-  by (simp add: assms equivalent_by_definition_def)
-
-lemma equivalent_by_definitionE[AOT_meta_elim]:
-  assumes "\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>"
-  shows "[v \<Turnstile> \<phi>] \<longleftrightarrow> [v \<Turnstile> \<psi>]"
-  using assms equivalent_by_definition_def by auto
-
-section{* Definitions *}
-
-lemma conj_def: "\<phi> \<^bold>& \<psi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>(\<phi> \<^bold>\<rightarrow> \<^bold>\<not>\<psi>)"
+lemma conj_def[Axioms]: "\<phi> \<^bold>& \<psi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>(\<phi> \<^bold>\<rightarrow> \<^bold>\<not>\<psi>)"
   by AOT_meta_auto
-lemma disj_def: "\<phi> \<^bold>\<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>\<phi> \<^bold>\<rightarrow> \<psi>"
+lemma disj_def[Axioms]: "\<phi> \<^bold>\<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>\<phi> \<^bold>\<rightarrow> \<psi>"
   by AOT_meta_auto
-lemma iff_def: "\<phi> \<^bold>\<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f ((\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>& (\<psi> \<^bold>\<rightarrow> \<phi>))"
+lemma iff_def[Axioms]: "\<phi> \<^bold>\<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f ((\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>& (\<psi> \<^bold>\<rightarrow> \<phi>))"
   by AOT_meta_auto
-lemma ex_def: "(\<^bold>\<exists> \<alpha> . \<phi> \<alpha>) \<equiv>\<^sub>d\<^sub>f (\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<phi> \<alpha>))"
+lemma ex_def[Axioms]: "(\<^bold>\<exists> \<alpha> . \<phi> \<alpha>) \<equiv>\<^sub>d\<^sub>f (\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<phi> \<alpha>))"
   by AOT_meta_auto
-lemma dia_def: "\<^bold>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>(\<^bold>\<box>\<^bold>\<not>\<phi>)"
+lemma dia_def[Axioms]: "\<^bold>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<^bold>\<not>(\<^bold>\<box>\<^bold>\<not>\<phi>)"
   by AOT_meta_auto
 
-lemma exists_individual_def: "\<kappa>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f (\<^bold>\<exists> \<Omega> . \<lparr>\<Omega>, \<kappa>\<rparr>)"
+lemma exists_individual_def[Axioms]: "\<kappa>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f (\<^bold>\<exists> \<Omega> . \<lparr>\<Omega>, \<kappa>\<rparr>)"
   by (metis AOT_ex_def AOT_logical_exists_def ex_def)
-lemma exists_relation_def: "\<Pi>\<^bold>\<down>  \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu> . \<lbrace>\<nu>,\<Pi>\<rbrace>"
+lemma exists_relation_def[Axioms]: "\<Pi>\<^bold>\<down>  \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu> . \<lbrace>\<nu>,\<Pi>\<rbrace>"
   by (meson AOT_enc_impl_exists AOT_exS AOT_universal_encoder equivalent_by_definition_def)
-lemma exists_relation2_def: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<Pi>\<rbrace>"
+lemma exists_relation2_def[Axioms]: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<Pi>\<rbrace>"
   apply (rule equivalent_by_definitionI)
   apply rule
   using AOT_universal_encoder[where 'a="'a\<times>'a"] unfolding AOT_universal_encoder_prod_def
    apply - apply (rule_tac x="AOT_universal_encoder" in AOT_exI, simp add: AOT_universal_encoder_exists)+
   apply (metis AOT_universal_encoder AOT_universal_encoder_prod_def)
   by (meson AOT_enc_impl_exists AOT_exS)
-lemma exists_relation3_def: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<Pi>\<rbrace>"
+lemma exists_relation3_def[Axioms]: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<Pi>\<rbrace>"
   apply (rule equivalent_by_definitionI)
   apply rule
   using AOT_universal_encoder[where 'a="'a\<times>'a\<times>'a"] unfolding AOT_universal_encoder_prod_def
    apply - apply (rule_tac x="AOT_universal_encoder" in AOT_exI, simp add: AOT_universal_encoder_exists)+
   apply (metis AOT_universal_encoder AOT_universal_encoder_prod_def)
   by (meson AOT_enc_impl_exists AOT_exS)
-lemma exists_relation4_def: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 \<nu>\<^sub>4 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4,\<Pi>\<rbrace>"
+lemma exists_relation4_def[Axioms]: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 \<nu>\<^sub>4 . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4,\<Pi>\<rbrace>"
   apply (rule equivalent_by_definitionI)
   apply rule
   using AOT_universal_encoder[where 'a="'a\<times>'a\<times>'a\<times>'a"] unfolding AOT_universal_encoder_prod_def
    apply - apply (rule_tac x="AOT_universal_encoder" in AOT_exI, simp add: AOT_universal_encoder_exists)+
    apply (metis AOT_universal_encoder AOT_universal_encoder_prod_def)
   by (meson AOT_enc_impl_exists AOT_exS)
-lemma exists_relation5_def: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 \<nu>\<^sub>4 \<nu>\<^sub>5  . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4,\<nu>\<^sub>5,\<Pi>\<rbrace>"
+lemma exists_relation5_def[Axioms]: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bold>\<exists> \<nu>\<^sub>1 \<nu>\<^sub>2 \<nu>\<^sub>3 \<nu>\<^sub>4 \<nu>\<^sub>5  . \<lbrace>\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4,\<nu>\<^sub>5,\<Pi>\<rbrace>"
   apply (rule equivalent_by_definitionI)
   apply rule
   using AOT_universal_encoder[where 'a="'a\<times>'a\<times>'a\<times>'a\<times>'a"] unfolding AOT_universal_encoder_prod_def
@@ -63,18 +50,20 @@ lemma exists_relation5_def: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f \<^bo
    apply (metis AOT_universal_encoder AOT_universal_encoder_prod_def)
   by (meson AOT_enc_impl_exists AOT_exS)
 
-lemma exists_relation0_def: "(\<Pi>::unit relation)\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f [\<^bold>\<lambda> y . \<lparr>\<Pi>\<rparr>]\<^bold>\<down>"
+lemma exists_relation0_def[Axioms]: "(\<Pi>::unit relation)\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f [\<^bold>\<lambda> y . \<lparr>\<Pi>\<rparr>]\<^bold>\<down>"
   apply (rule equivalent_by_definitionI)
   apply rule
    apply (rule AOT_lambda_existsI) apply simp
   by (simp add: AOT_exists_relI AOT_logical_existsI AOT_meta_equiv_unit_def)
 
-lemma Ordinary_def: "O! = [\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>]"
-  by (simp add: AOT_Ordinary_def)
-lemma Abstract_def: "A! = [\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>]"
-  by (simp add: AOT_Abstract_def)
+lemma Ordinary_def: "O! =\<^sub>d\<^sub>f [\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>]"
+  by (simp add: AOT_Ordinary_def AOT_equal_defI)
 
-lemma identity\<^sub>E_def: "AOT_identity\<^sub>E = [\<^bold>\<lambda> (x,y) . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)]"
+lemma Abstract_def: "A! =\<^sub>d\<^sub>f [\<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<rparr>]"
+  by (simp add: AOT_Abstract_def AOT_equal_defI)
+
+lemma identity\<^sub>E_def: "AOT_identity\<^sub>E =\<^sub>d\<^sub>f [\<^bold>\<lambda> (x,y) . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)]"
+  apply (rule AOT_equal_defI)
   unfolding AOT_identity\<^sub>E_def by simp
 
 lemma identity\<^sub>E_infix_def: "(\<kappa> \<^bold>=\<^sub>E \<kappa>') = \<lparr>[\<^bold>\<lambda> (x,y) . \<lparr>O!,x\<rparr> \<^bold>& \<lparr>O!,y\<rparr> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> F . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>F,y\<rparr>)], \<kappa>, \<kappa>'\<rparr>"
@@ -100,7 +89,7 @@ lemma identity\<Pi>3_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>
 lemma identity\<Pi>0_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& [\<^bold>\<lambda>x . \<lparr>\<Pi>\<rparr>] \<^bold>= [\<^bold>\<lambda>x . \<lparr>\<Pi>'\<rparr>]"
   by (simp add: AOT_identity\<^sub>0 equivalent_by_definition_def)
 
-section{* Axioms *}
+section\<open> Axioms \<close>
 
 lemma ax44_1: "[v \<Turnstile> \<phi> \<^bold>\<rightarrow> (\<psi> \<^bold>\<rightarrow> \<phi>)]" by AOT_meta_auto
 lemma ax44_2: "[v \<Turnstile> (\<phi> \<^bold>\<rightarrow> (\<psi> \<^bold>\<rightarrow> \<chi>)) \<^bold>\<rightarrow> ((\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<rightarrow> (\<phi> \<^bold>\<rightarrow> \<chi>))]" by AOT_meta_auto
@@ -109,6 +98,44 @@ lemma ax44_3: "[v \<Turnstile> (\<^bold>\<not>\<phi> \<^bold>\<rightarrow> \<^bo
 lemma ax45_1: "[v \<Turnstile> (\<^bold>\<forall> \<alpha> . \<phi> \<alpha>) \<^bold>\<rightarrow> (\<tau>\<^bold>\<down> \<^bold>\<rightarrow> \<phi> \<tau>)]" by AOT_meta_auto
 lemma ax45_2: "[v \<Turnstile> \<langle>\<tau>\<rangle>\<^bold>\<down>]" by AOT_meta_auto
 lemma ax45_2: "[v \<Turnstile> \<tau>\<^bold>\<down>]" oops (* TODO: verify that this works for all description-free lambda expressions without encoding subformulas *)
+
+lemma ax45_2_lambda_prop_denotes: "[v \<Turnstile> [\<^bold>\<lambda>x. \<psi>]\<^bold>\<down>]"
+  by (simp add: AOT_lambda_existsI)
+lemma ax45_2_lambda_exe_denotes: "[v \<Turnstile> [\<^bold>\<lambda>x. \<lparr>\<langle>F\<rangle>,x\<rparr>]\<^bold>\<down>]"
+  by (simp add: AOT_exe_trans2 AOT_lambda_existsI)
+lemma ax45_2_lambda_exe_denotes1: "[v \<Turnstile> [\<^bold>\<lambda>x. \<lparr>\<langle>F\<rangle>,x,\<langle>y\<rangle>\<rparr>]\<^bold>\<down>]"
+  apply (rule AOT_lambda_existsI)
+  by (metis AOT_equiv_existsE AOT_equiv_prodI AOT_equiv_sym AOT_exeS AOT_exe_trans AOT_exists_prodE2 fst_conv snd_conv)
+lemma ax45_2_lambda_exe_denotes2: "[v \<Turnstile> [\<^bold>\<lambda>x. \<lparr>\<langle>F\<rangle>,\<langle>y\<rangle>,x\<rparr>]\<^bold>\<down>]"
+  apply (rule AOT_lambda_existsI)
+  by (metis AOT_equiv_existsE AOT_equiv_prodI AOT_equiv_sym AOT_exeS AOT_exe_trans AOT_exists_prodE1 fst_conv snd_conv)
+lemma ax45_2_lambda_neg_denotes:
+  assumes "[v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<^bold>\<not>(\<phi> x)]\<^bold>\<down>]"
+  by (simp add: assms AOT_lambda_not_exists)
+lemma ax45_2_lambda_impl_denotes:
+  assumes "[v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x]\<^bold>\<down>]" and "[v \<Turnstile> [\<^bold>\<lambda>x. \<psi> x]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x \<^bold>\<rightarrow> \<psi> x]\<^bold>\<down>]"
+  by (simp add: assms AOT_lambda_impl_exists)
+lemma ax45_2_lambda_box_denotes:
+  assumes "[v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<^bold>\<box>(\<phi> x)]\<^bold>\<down>]"
+  by (simp add: assms AOT_lambda_box_exists)
+lemma ax45_2_lambda_actual_denotes:
+  assumes "[v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<^bold>\<A>(\<phi> x)]\<^bold>\<down>]"
+  by (simp add: assms AOT_lambda_actual_exists)
+lemma ax45_2_lambda_all_denotes:
+  assumes "[v \<Turnstile> \<^bold>\<forall>y. [\<^bold>\<lambda>x. \<phi> x y]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<^bold>\<forall>y. \<phi> x y]\<^bold>\<down>]"
+  using AOT_allS AOT_lambda_all_exists assms by fastforce
+lemma ax45_2_lambda_all_denotes_alt:
+  assumes "\<And>y. [v \<Turnstile> [\<^bold>\<lambda>x. \<phi> x \<langle>y\<rangle>]\<^bold>\<down>]"
+  shows "[v \<Turnstile> [\<^bold>\<lambda>x. \<^bold>\<forall>y. \<phi> x y]\<^bold>\<down>]"
+  using ax45_2_lambda_all_denotes[OF AOT_meta_var_allI[of v "\<lambda> y . [\<^bold>\<lambda>x. \<phi> x y]\<^bold>\<down>", OF assms]]
+  by blast
+
+
 lemma ax45_3: "[v \<Turnstile> (\<^bold>\<forall> \<alpha> . \<phi> \<alpha> \<^bold>\<rightarrow> \<psi> \<alpha>) \<^bold>\<rightarrow> ((\<^bold>\<forall> \<alpha> . \<phi> \<alpha>) \<^bold>\<rightarrow> (\<^bold>\<forall> \<alpha> . \<psi> \<alpha>))]" by AOT_meta_auto
 lemma ax45_4: "[v \<Turnstile> \<phi> \<^bold>\<rightarrow> (\<^bold>\<forall> \<alpha> . \<phi>)]" by AOT_meta_auto
 lemma ax45_5_1: "[v \<Turnstile> (\<lparr>\<Pi>, \<kappa>\<rparr> \<^bold>\<or> \<lbrace>\<kappa>, \<Pi>\<rbrace>) \<^bold>\<rightarrow> (\<Pi>\<^bold>\<down> \<^bold>& \<kappa>\<^bold>\<down>)]"
@@ -155,16 +182,46 @@ lemma ax53_3: "[v \<Turnstile> [\<^bold>\<lambda>x . \<lparr>\<langle>F\<rangle>
 lemma ax54_1: "[v \<Turnstile> ([\<^bold>\<lambda>y . \<phi> y]\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall> y . \<phi> y \<^bold>\<equiv> \<psi> y)) \<^bold>\<rightarrow> [\<^bold>\<lambda>y . \<psi> y]\<^bold>\<down>]"
   apply AOT_meta_simp using AOT_lambda_equiv_exists by blast
 
-abbreviation AOT_lambda0 ("[\<^bold>\<lambda> _]") where "[\<^bold>\<lambda> \<phi>] \<equiv> [\<^bold>\<lambda>(). \<phi>]"
-
 lemma ax54_2: "[v \<Turnstile> [\<^bold>\<lambda> \<lparr>\<phi>\<rparr>]\<^bold>\<down> \<^bold>\<equiv> \<phi>\<^bold>\<down>]"
   by (simp add: AOT_enc_impl_exists AOT_enc_unit_def AOT_iffS AOT_nec_trueI)
 
-lemma ax54_3_stronger: "[v \<Turnstile> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]" (* TODO: sort out type correctness for \<o>; note: this is stronger than the actual axiom *)
+lemma ax54_3_stronger: "[v \<Turnstile> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]" (* TODO: note: this is stronger than the actual axiom *)
   by (simp add: AOT_lambda_existsI)
 lemma ax54_3: "[v \<Turnstile> [\<^bold>\<lambda> \<phi> x]\<^bold>\<down> \<^bold>\<rightarrow> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]"
   using AOT_implS ax54_3_stronger by blast
-(* Missing: Rigidification! *)
+
+lemma ax55_1: "Rigid(F) \<equiv>\<^sub>d\<^sub>f F\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F,x\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>F,x\<rparr>)"
+  by (simp add: AOT_Rigid_def equivalent_by_definitionI)
+lemma ax55_2: "Rigidifies(F,G) \<equiv>\<^sub>d\<^sub>f Rigid(F) \<^bold>& (\<^bold>\<forall> x . \<lparr>F,x\<rparr> \<^bold>\<equiv> \<lparr>G,x\<rparr>)"
+  by (simp add: AOT_Rigidifies_def equivalent_by_definitionI)
+
+(* TODO: simplify proof *)
+lemma ax56: "[v \<Turnstile> \<^bold>\<exists>F . Rigidifies(F,\<langle>G\<rangle>)]"
+  apply AOT_meta_simp
+  apply (rule_tac x="Abs_relation (\<lambda> x . if [v \<Turnstile> \<lparr>\<langle>G\<rangle>,x\<rparr>] then AOT_nec_true else AOT_nec_false)" in exI)
+  apply (rule conjI)
+   apply (rule AOT_logical_existsI)
+  unfolding AOT_meta_equiv_relation_def
+   apply (simp add: Abs_relation_inverse)
+   apply (metis AOT_equivI AOT_exe_def AOT_exe_trans2 AOT_nec_falseE)
+  unfolding AOT_Rigidifies_def AOT_Rigid_def
+  apply AOT_meta_auto
+  using AOT_equivE3 AOT_exists_necI apply blast
+  apply (metis (full_types) AOT_exeS AOT_exe_trans2)
+  using AOT_equivE2 AOT_exists_necI apply blast
+  apply (simp add: AOT_exeE3 AOT_exeI AOT_exe_trans2)
+  apply (meson AOT_exists_necI)
+  using AOT_equivE3 AOT_exists_necI apply blast
+  apply (metis AOT_exeE3 AOT_exeI AOT_exe_trans2)
+  using AOT_equivE2 AOT_exists_necI apply blast
+  apply (simp add: AOT_exeE3 AOT_exeI AOT_exe_trans2)
+  apply (meson AOT_exists_necI)
+  using AOT_equivE3 AOT_logical_existsS apply blast
+  apply (metis AOT_exeE3 AOT_exeI AOT_exe_trans2)
+  using AOT_equivE2 AOT_exists_necI apply blast
+  apply (simp add: AOT_exeE3 AOT_exeI AOT_exe_trans2)
+  by (meson AOT_exists_necI)
+
 lemma ax57_2: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>\<rparr>]\<rbrace>
                                               \<^bold>& \<lbrace>\<langle>x\<^sub>2\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,y\<rparr>]\<rbrace>]"
   by AOT_meta_auto
@@ -198,6 +255,6 @@ lemma ax59: "[v \<Turnstile> \<lparr>O!,\<langle>x\<rangle>\<rparr> \<^bold>\<ri
   by blast
 
 lemma ax60: "[v \<Turnstile> \<^bold>\<exists> x . (\<lparr>A!,x\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<phi> F))]"
-  by (simp add: AOT_meta_A_objects Abstract_def)
+  by (simp add: AOT_Abstract_def AOT_meta_A_objects)
 
 end

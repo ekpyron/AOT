@@ -2,18 +2,21 @@ theory AOT_Relation
   imports AOT_Term
 begin
 
-typedef 'a relation = "UNIV::('a::AOT_Term\<Rightarrow>\<o>) set" ..
+typedef 'a relation ("<_>") = "UNIV::('a::AOT_Term\<Rightarrow>\<o>) set"  ..
 setup_lifting type_definition_relation
+
+declare Abs_relation_inverse[AOT_meta_simp]
+declare Rep_relation_inverse[AOT_meta_simp]
 
 instantiation relation :: (AOT_Term) AOT_Term
 begin
-  lift_definition AOT_meta_equiv_relation :: "('a relation)\<Rightarrow>('a relation)\<Rightarrow>bool" is
+  lift_definition AOT_meta_equiv_relation :: "<'a> \<Rightarrow> <'a> \<Rightarrow> bool" is
     "\<lambda> F G . (\<forall> x y . AOT_meta_equiv x y \<longrightarrow> F x = G y)
            \<and> (\<forall> x . AOT_meta_equiv x x \<or> (F x = AOT_nec_false \<and> G x = AOT_nec_false))" .
 instance proof
-  show "part_equivp (AOT_meta_equiv :: ('a relation)\<Rightarrow>('a relation)\<Rightarrow>bool)"
+  show "part_equivp (AOT_meta_equiv :: <'a> \<Rightarrow> <'a> \<Rightarrow>bool)"
   proof (rule part_equivpI)
-    obtain F :: "'a relation" where F_def: "F = Abs_relation (\<lambda> x . AOT_nec_false)" by blast
+    obtain F :: "<'a>" where F_def: "F = Abs_relation (\<lambda> x . AOT_nec_false)" by blast
     have "\<forall> x y . AOT_meta_equiv x y \<longrightarrow> (Rep_relation F) x = (Rep_relation F) y"
       unfolding F_def by (simp add: Abs_relation_inverse)
     moreover have "\<forall> x v . AOT_meta_equiv x x \<or> (Rep_relation F) x = AOT_nec_false"
@@ -22,25 +25,25 @@ instance proof
       unfolding AOT_meta_equiv_relation_def
       by auto
   next
-    show "symp (AOT_meta_equiv :: ('a relation)\<Rightarrow>('a relation)\<Rightarrow>bool)"
+    show "symp (AOT_meta_equiv :: <'a> \<Rightarrow> <'a> \<Rightarrow>bool)"
       unfolding AOT_meta_equiv_relation_def symp_def
       using AOT_meta_equiv_part_equivp part_equivp_symp apply simp
       by fastforce
   next
-    show "transp (AOT_meta_equiv :: ('a relation)\<Rightarrow>('a relation)\<Rightarrow>bool)"
+    show "transp (AOT_meta_equiv :: <'a> \<Rightarrow> <'a> \<Rightarrow>bool)"
       unfolding AOT_meta_equiv_relation_def transp_def apply simp
       by (meson AOT_meta_equiv_part_equivp part_equivp_symp part_equivp_transp)
   qed
 qed
 end
 
-definition AOT_exe :: "('a::AOT_Term relation) \<Rightarrow> 'a \<Rightarrow> \<o>" where
+definition AOT_exe :: "<'a::AOT_Term> \<Rightarrow> 'a \<Rightarrow> \<o>" where
   "AOT_exe \<equiv> (\<lambda> F x . if (AOT_meta_equiv F F \<and> AOT_meta_equiv x x) then (Rep_relation F) x else AOT_nec_false)"
 
 
 nonterminal exe_args
 syntax
-  AOT_exe :: "('a::AOT_Term relation) \<Rightarrow> exe_args \<Rightarrow> 'b" ("\<lparr>_,/ _\<rparr>")
+  AOT_exe :: "<'a::AOT_Term> \<Rightarrow> exe_args \<Rightarrow> 'b" ("\<lparr>_,/ _\<rparr>")
   "" :: "'a::AOT_Term \<Rightarrow> exe_args" ("_")
   Pair :: "'a::AOT_Term \<Rightarrow> exe_args \<Rightarrow> exe_args" ("_,/ _")
 translations
@@ -269,11 +272,11 @@ proof -
 qed
 
 
-lift_definition AOT_lambda :: "('a::AOT_Term\<Rightarrow>\<o>) \<Rightarrow> 'a relation" is
+lift_definition AOT_lambda :: "('a::AOT_Term\<Rightarrow>\<o>) \<Rightarrow> <'a>" is
   "\<lambda> \<phi> x . if (\<forall>v . [v \<Turnstile> x\<^bold>\<down>]) then Abs_\<o> (\<lambda> s w . s = dj \<and> Rep_\<o> (\<phi> x) s w \<or> (s \<noteq> dj \<and> (\<forall> y . [dw \<Turnstile> x \<^bold>~ y] \<longrightarrow> Rep_\<o> (\<phi> y) s w))) else AOT_nec_false" .
 
 syntax
-  AOT_lambda :: "[pttrn, \<o>]\<Rightarrow>'a::AOT_Term relation" ("(3[\<^bold>\<lambda>_/. _])")
+  AOT_lambda :: "[pttrn, \<o>] \<Rightarrow> <'a::AOT_Term>" ("(3[\<^bold>\<lambda>_/. _])")
 translations
   "[\<^bold>\<lambda>x. b]" \<rightleftharpoons> "CONST AOT_lambda (\<lambda> x . b)"
 
@@ -519,6 +522,8 @@ lemma AOT_beta2:
   shows "[v \<Turnstile> \<lparr>[\<^bold>\<lambda>x . \<phi> x], x\<rparr>]" using assms
   using AOT_exeI AOT_lambda_applyI by blast
 
-abbreviation AOT_exe0 :: "unit relation \<Rightarrow> \<o>" ("\<lparr>_\<rparr>") where "\<lparr>p\<rparr> \<equiv> \<lparr>p,()\<rparr>"
+abbreviation AOT_exe0 :: "<unit> \<Rightarrow> \<o>" ("\<lparr>_\<rparr>") where "\<lparr>p\<rparr> \<equiv> \<lparr>p,()\<rparr>"
+abbreviation AOT_lambda0 ("[\<^bold>\<lambda> _]") where "[\<^bold>\<lambda> \<phi>] \<equiv> [\<^bold>\<lambda>(). \<phi>]"
+
 
 end

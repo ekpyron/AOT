@@ -47,7 +47,7 @@ axiomatization ConcreteInWorld :: "\<omega>\<Rightarrow>i\<Rightarrow>bool"
   where OrdinaryObjectsConcrete: "\<forall> x . \<exists> w . ConcreteInWorld x w"
     and PossiblyContingentObjectExists: "\<exists> x v . ConcreteInWorld x v \<and> \<not>ConcreteInWorld x dw"
 
-lift_definition d\<Pi>' :: "\<kappa> relation \<Rightarrow> (\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool)" is
+lift_definition d\<Pi>' :: "<\<kappa>> \<Rightarrow> (\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool)" is
   "\<lambda> F u s w . \<exists> x . \<kappa>\<upsilon> x = Some u \<and> Rep_\<o> (Rep_relation (F) x) s w" .
 
 lemma d\<Pi>'_prop_Aux: "\<exists>x. (\<exists>z. x = Some z \<and> \<nu>\<upsilon> z = u)"
@@ -72,13 +72,14 @@ lemma d\<Pi>'_prop: "\<exists> F . [dw \<Turnstile> F\<^bold>\<down>] \<and> r =
   using d\<Pi>'_prop_Aux apply simp
   by fastforce
 
-definition d\<Pi> :: "\<kappa> relation \<Rightarrow> (\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) option" where
+definition d\<Pi> :: "<\<kappa>> \<Rightarrow> (\<upsilon>\<Rightarrow>j\<Rightarrow>i\<Rightarrow>bool) option" where
   "d\<Pi> \<equiv> (\<lambda> F . if [dw \<Turnstile> F\<^bold>\<down>] then Some (d\<Pi>' F) else None)"
 
 lemma d\<Pi>_id:
   assumes "[v \<Turnstile> F\<^bold>\<down>]" and "[v \<Turnstile> G\<^bold>\<down>]" and "d\<Pi>' F = d\<Pi>' G"
   shows "F = G"
 proof -
+  fix w
   {
     fix u :: \<upsilon> and s :: j and w :: i
     have "(\<exists>x. \<kappa>\<upsilon> x = Some u \<and> Rep_\<o> (Rep_relation F x) s w) = (\<exists>x. \<kappa>\<upsilon> x = Some u \<and> Rep_\<o> (Rep_relation G x) s w)"
@@ -123,11 +124,11 @@ qed
 
 instantiation \<kappa> :: "AOT_Individual"
 begin
-lift_definition AOT_enc_\<kappa> :: "\<kappa> \<Rightarrow> (\<kappa> relation) \<Rightarrow> \<o>" is
+lift_definition AOT_enc_\<kappa> :: "\<kappa> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>" is
   "\<lambda> x F s w . (\<exists> a r . x = Some (\<alpha>\<nu> a) \<and> (d\<Pi> F) = Some r \<and> r \<in> a)" .
 lift_definition AOT_universal_encoder_\<kappa> :: "\<kappa>" is
   "Some (\<alpha>\<nu> UNIV)" .
-definition AOT_relation_identity_\<kappa> :: "\<kappa> relation \<Rightarrow> \<kappa> relation \<Rightarrow> \<o>" where
+definition AOT_relation_identity_\<kappa> :: "<\<kappa>> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>" where
   "AOT_relation_identity_\<kappa> \<equiv> (\<lambda> F G . F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>x. \<lbrace>x,F\<rbrace> \<^bold>\<equiv> \<lbrace>x,G\<rbrace>))"
 definition AOT_proj_enc_\<kappa> :: "\<kappa> \<Rightarrow> (\<kappa> \<Rightarrow> \<o>) \<Rightarrow> \<o>" where
   "AOT_proj_enc_\<kappa> \<equiv> \<lambda> x \<phi> . \<lbrace>x,[\<^bold>\<lambda>y . \<phi> y]\<rbrace>"
@@ -156,12 +157,12 @@ instance proof
     unfolding AOT_universal_encoder_\<kappa>_def AOT_meta_equiv_\<kappa>_def
     apply transfer by simp
 next
-  fix v :: i and F :: "\<kappa> relation"
+  fix v :: i and F :: "<\<kappa>>"
   assume "[v \<Turnstile> F\<^bold>\<down>]"
   thus "[v \<Turnstile> \<lbrace>AOT_universal_encoder, F\<rbrace>]"
     using universal_encoder_\<kappa> by auto
 next
-  fix v :: i and F G :: "\<kappa> relation"
+  fix v :: i and F G :: "<\<kappa>>"
   {
     obtain x where x_def: "x = Abs_\<kappa> (Some (\<alpha>\<nu> { H . H = d\<Pi>' F}))" by auto
     have x_ex: "[v \<Turnstile> x\<^bold>\<down>]" apply (rule AOT_logical_existsI) unfolding AOT_meta_equiv_\<kappa>_def x_def
@@ -191,7 +192,7 @@ next
   }
   ultimately show "[v \<Turnstile> F \<^bold>=\<^sub>r G] = ([v \<Turnstile> F\<^bold>\<down>] \<and> [v \<Turnstile> G\<^bold>\<down>] \<and> F = G)" by auto
 next
-  fix v :: i and x :: \<kappa> and F :: "\<kappa> relation"
+  fix v :: i and x :: \<kappa> and F :: "<\<kappa>>"
   show "[v \<Turnstile> \<lbrace>x, F\<rbrace>] = (\<forall>v. [v \<Turnstile> \<lbrace>x, F\<rbrace>])"
     unfolding AOT_enc_\<kappa>_def apply transfer by simp
 next
@@ -223,9 +224,9 @@ end
 
 instantiation \<kappa> :: "AOT_UnaryIndividual"
 begin
-definition AOT_concrete_\<kappa> :: "\<kappa> relation" where
+definition AOT_concrete_\<kappa> :: "<\<kappa>>" where
   "AOT_concrete_\<kappa> \<equiv> Abs_relation (\<lambda> x . Abs_\<o> (\<lambda>s w . \<exists> u . \<kappa>\<upsilon> x = Some (\<omega>\<upsilon> u) \<and> ConcreteInWorld u w))"
-lemma \<kappa>_Concrete_exists: shows "[v \<Turnstile> (E! :: \<kappa> relation)\<^bold>\<down>]"
+lemma \<kappa>_Concrete_exists: shows "[v \<Turnstile> (E! :: <\<kappa>>)\<^bold>\<down>]"
     apply (rule AOT_exists_relI)
     unfolding AOT_concrete_\<kappa>_def apply (simp add: Abs_relation_inverse)
     apply (drule AOT_equivE) unfolding AOT_meta_equiv_\<kappa>_def
@@ -235,9 +236,9 @@ lemma \<kappa>_Concrete_exists: shows "[v \<Turnstile> (E! :: \<kappa> relation)
     by (meson AOT_meta_equiv_\<kappa>_def)
 instance proof
   fix v
-  show "[v \<Turnstile> (E! :: \<kappa> relation)\<^bold>\<down>]" using \<kappa>_Concrete_exists by auto
+  show "[v \<Turnstile> (E! :: <\<kappa>>)\<^bold>\<down>]" using \<kappa>_Concrete_exists by auto
 next
-  fix v :: i and x :: \<kappa> and F :: "\<kappa> relation"
+  fix v :: i and x :: \<kappa> and F :: "<\<kappa>>"
   assume "[v \<Turnstile> \<lparr>E!, x\<rparr>]"
   hence "\<exists>u. \<kappa>\<upsilon> x = Some (\<omega>\<upsilon> u) \<and> ConcreteInWorld u v"
     unfolding AOT_concrete_\<kappa>_def
@@ -257,7 +258,7 @@ next
     apply (simp add: Abs_relation_inverse) apply transfer by simp
   thus "\<exists> (x :: \<kappa>) v . [v \<Turnstile> \<lparr>E!, x\<rparr>]" by blast
 next
-  fix \<phi> :: "\<kappa> relation \<Rightarrow> \<o>" and v
+  fix \<phi> :: "<\<kappa>> \<Rightarrow> \<o>" and v
   obtain a where a_def: "a = Abs_\<kappa> (Some (\<alpha>\<nu> { H . \<forall> F . d\<Pi> F = Some H \<longrightarrow> [v \<Turnstile> \<phi> F]}))" by auto
   have a_ex: "[v \<Turnstile> a\<^bold>\<down>]"
     apply (rule AOT_logical_existsI) unfolding a_def AOT_meta_equiv_\<kappa>_def
@@ -278,7 +279,7 @@ next
     by (metis AOT_logical_existsS d\<Pi>_def d\<Pi>_id option.distinct(1) option.sel)
   ultimately show "[v \<Turnstile> \<^bold>\<exists>x. \<lparr>[\<^bold>\<lambda>y. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!, y\<rparr>], x\<rparr> \<^bold>& (\<^bold>\<forall>F. \<lbrace>x, F\<rbrace> \<^bold>\<equiv> \<phi> F)]" by AOT_meta_auto
 next
-  fix v :: i and F G :: "\<kappa> relation"
+  fix v :: i and F G :: "<\<kappa>>"
   show "(F \<^bold>=\<^sub>r G) = (F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>x. \<lbrace>x, F\<rbrace> \<^bold>\<equiv> \<lbrace>x, G\<rbrace>))"
     unfolding AOT_relation_identity_\<kappa>_def by blast
 (*  show "[v \<Turnstile> F \<^bold>=\<^sub>r G] = [v \<Turnstile> F\<^bold>\<down> \<^bold>& G\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>x. \<lbrace>x, F\<rbrace> \<^bold>\<equiv> \<lbrace>x, G\<rbrace>)]"
