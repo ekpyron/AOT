@@ -120,4 +120,77 @@ next
 qed
 end
 
+lemma AOT_projection_identity1:
+  assumes "\<Pi> \<approx> \<Pi>" and "\<Pi>' \<approx> \<Pi>'" and "\<And> \<kappa> . \<kappa> \<approx> \<kappa> \<Longrightarrow> [\<^bold>\<lambda> x . \<lparr>\<Pi>,x,\<kappa>\<rparr>] = [\<^bold>\<lambda> x . \<lparr>\<Pi>',x,\<kappa>\<rparr>]"
+  shows "\<Pi> = \<Pi>'"
+proof -
+  obtain F where \<Pi>_def: "\<Pi> = drel F" using assms(1) AOT_equiv_rel.elims(2) by blast
+  obtain G where \<Pi>'_def: "\<Pi>' = drel G" using assms(2) AOT_equiv_rel.elims(2) by blast
+  {
+    fix u :: "('a \<times> 'b) \<upsilon>"
+    obtain \<kappa> where \<kappa>_prop: "\<kappa> \<approx> \<kappa> \<and> u = abs_\<upsilon> \<kappa>" by (metis Quotient3_\<upsilon> Quotient3_def)
+    have fst_\<kappa>_denotes: "fst \<kappa> \<approx> fst \<kappa>" and snd_\<kappa>_denotes: "snd \<kappa> \<approx> snd \<kappa>"
+      using \<kappa>_prop by (induct \<kappa>) (auto simp: AOT_equiv_prod_def)
+    hence "\<forall>x y v. x \<approx> y \<longrightarrow> [v \<Turnstile> \<lparr>drel F, (x, snd \<kappa>)\<rparr>] = [v \<Turnstile> \<lparr>drel F, (y, snd \<kappa>)\<rparr>]"
+      and "\<forall>x y v. x \<approx> y \<longrightarrow> [v \<Turnstile> \<lparr>drel G, (x, snd \<kappa>)\<rparr>] = [v \<Turnstile> \<lparr>drel G, (y, snd \<kappa>)\<rparr>]"
+      by (metis (no_types, lifting) AOT_equiv_prod_def AOT_equiv_rel.simps(1) AOT_exeE1
+                                    AOT_lambda_denotesE AOT_meta_eta old.prod.case)+
+    moreover have "[\<^bold>\<lambda> x . \<lparr>\<Pi>,x,snd \<kappa>\<rparr>] = [\<^bold>\<lambda> x . \<lparr>\<Pi>',x,snd \<kappa>\<rparr>]"
+      using assms(3)[OF snd_\<kappa>_denotes] unfolding AOT_equiv_prod_def by (induct \<kappa>) auto
+    ultimately have "drel (\<lambda>u. \<lparr>drel F, (rep_\<upsilon> u, snd \<kappa>)\<rparr>) = drel (\<lambda>u. \<lparr>drel G, (rep_\<upsilon> u, snd \<kappa>)\<rparr>)"
+      unfolding \<Pi>_def \<Pi>'_def AOT_lambda_def by simp
+    hence "\<lparr>drel F, (rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>)\<rparr> = \<lparr>drel G, (rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>)\<rparr>"
+      by (metis rel.inject(1))
+    moreover have "rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)) \<approx> fst \<kappa>"
+      by (simp add: AOT_abs_\<upsilon>_inverse AOT_denotesS fst_\<kappa>_denotes)
+    moreover have "(rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>) \<approx> (fst \<kappa>, snd \<kappa>)"
+      using calculation snd_\<kappa>_denotes unfolding AOT_equiv_prod_def by blast
+    moreover have "(abs_\<upsilon> (rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>)) = (abs_\<upsilon> (fst \<kappa>, snd \<kappa>))"
+      using calculation Quotient3_rel_abs[OF Quotient3_\<upsilon>] by blast
+    moreover have "(rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>) \<approx> (rep_\<upsilon> (abs_\<upsilon> (fst \<kappa>)), snd \<kappa>)"
+      using calculation by (metis (full_types) Quotient3_\<upsilon> Quotient3_def)
+    ultimately have "F (abs_\<upsilon> (fst \<kappa>, snd \<kappa>)) = G (abs_\<upsilon> (fst \<kappa>, snd \<kappa>))"
+      using AOT_exe.simps(1) by metis
+    hence "F u = G u" using \<kappa>_prop by auto
+  }
+  hence "F = G" by blast
+  thus "\<Pi> = \<Pi>'" unfolding \<Pi>_def \<Pi>'_def by blast
+qed
+
+lemma AOT_projection_identity2:
+  assumes "\<Pi> \<approx> \<Pi>" and "\<Pi>' \<approx> \<Pi>'" and "\<And> \<kappa> . \<kappa> \<approx> \<kappa> \<Longrightarrow> [\<^bold>\<lambda> x . \<lparr>\<Pi>, \<kappa>, x\<rparr>] = [\<^bold>\<lambda> x . \<lparr>\<Pi>', \<kappa>, x\<rparr>]"
+  shows "\<Pi> = \<Pi>'"
+proof -
+  obtain F where \<Pi>_def: "\<Pi> = drel F" using assms(1) AOT_equiv_rel.elims(2) by blast
+  obtain G where \<Pi>'_def: "\<Pi>' = drel G" using assms(2) AOT_equiv_rel.elims(2) by blast
+  {
+    fix u :: "('a \<times> 'b) \<upsilon>"
+    obtain \<kappa> where \<kappa>_prop: "\<kappa> \<approx> \<kappa> \<and> u = abs_\<upsilon> \<kappa>" by (metis Quotient3_\<upsilon> Quotient3_def)
+    have fst_\<kappa>_denotes: "fst \<kappa> \<approx> fst \<kappa>" and snd_\<kappa>_denotes: "snd \<kappa> \<approx> snd \<kappa>"
+      using \<kappa>_prop by (induct \<kappa>) (auto simp: AOT_equiv_prod_def)
+    hence "\<forall>x y v. x \<approx> y \<longrightarrow> [v \<Turnstile> \<lparr>drel F, (fst \<kappa>, x)\<rparr>] = [v \<Turnstile> \<lparr>drel F, (fst \<kappa>, y)\<rparr>]"
+      and "\<forall>x y v. x \<approx> y \<longrightarrow> [v \<Turnstile> \<lparr>drel G, (fst \<kappa>, x)\<rparr>] = [v \<Turnstile> \<lparr>drel G, (fst \<kappa>, y)\<rparr>]"
+      by (metis (no_types, lifting) AOT_equiv_prod_def AOT_equiv_rel.simps(1) AOT_exeE1
+                                    AOT_lambda_denotesE AOT_meta_eta old.prod.case)+
+    moreover have "[\<^bold>\<lambda> x . \<lparr>\<Pi>,fst \<kappa>, x\<rparr>] = [\<^bold>\<lambda> x . \<lparr>\<Pi>',fst \<kappa>, x\<rparr>]"
+      using assms(3)[OF fst_\<kappa>_denotes] unfolding AOT_equiv_prod_def by (induct \<kappa>) auto
+    ultimately have "drel (\<lambda>u. \<lparr>drel F, (fst \<kappa>, rep_\<upsilon> u)\<rparr>) = drel (\<lambda>u. \<lparr>drel G, (fst \<kappa>, rep_\<upsilon> u)\<rparr>)"
+      unfolding \<Pi>_def \<Pi>'_def AOT_lambda_def by simp
+    hence "\<lparr>drel F, (fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>)))\<rparr> = \<lparr>drel G, (fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>)))\<rparr>"
+      by (metis rel.inject(1))
+    moreover have "rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>)) \<approx> snd \<kappa>"
+      by (simp add: AOT_abs_\<upsilon>_inverse AOT_denotesS snd_\<kappa>_denotes)
+    moreover have "(fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>))) \<approx> (fst \<kappa>, snd \<kappa>)"
+      using calculation fst_\<kappa>_denotes unfolding AOT_equiv_prod_def by blast
+    moreover have "(abs_\<upsilon> (fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>)))) = (abs_\<upsilon> (fst \<kappa>, snd \<kappa>))"
+      using calculation Quotient3_rel_abs[OF Quotient3_\<upsilon>] by blast
+    moreover have "(fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>))) \<approx> (fst \<kappa>, rep_\<upsilon> (abs_\<upsilon> (snd \<kappa>)))"
+      using calculation by (metis (full_types) Quotient3_\<upsilon> Quotient3_def)
+    ultimately have "F (abs_\<upsilon> (fst \<kappa>, snd \<kappa>)) = G (abs_\<upsilon> (fst \<kappa>, snd \<kappa>))"
+      using AOT_exe.simps(1) by metis
+    hence "F u = G u" using \<kappa>_prop by auto
+  }
+  thus "\<Pi> = \<Pi>'" unfolding \<Pi>_def \<Pi>'_def by blast
+qed
+
 end

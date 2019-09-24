@@ -65,6 +65,9 @@ syntax
 translations
   "[\<^bold>\<lambda>x. b]" \<rightleftharpoons> "CONST AOT_lambda (\<lambda> x . b)"
 
+definition AOT_lambda0 :: "\<o> \<Rightarrow> \<o>" ("[\<^bold>\<lambda> _]")where
+  [AOT_meta, AOT_meta_simp]: "AOT_lambda0 \<equiv> \<lambda> x. x"
+
 lemma AOT_lambda_denotesE[AOT_meta]:
   assumes "[w \<Turnstile> [\<^bold>\<lambda> x. \<phi> x]\<^bold>\<down>]"
   shows "x \<approx> y \<Longrightarrow> [v \<Turnstile> \<phi> x] = [v \<Turnstile> \<phi> y]"
@@ -180,5 +183,13 @@ proof -
     by (rule rel.simps(1)[THEN iffD2]; rule ext)
        (metis (full_types) AOT_exe.simps(1) Quotient3_\<upsilon> Quotient3_def)
 qed
+
+
+lemma AOT_lambda_prod1_denotesI[AOT_meta]: "\<Pi> \<approx> \<Pi> \<Longrightarrow> \<nu> \<approx> \<nu> \<Longrightarrow> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<mu>, \<nu>)\<rparr>] \<approx> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<mu>, \<nu>)\<rparr>]"
+  by (rule AOT_lambda_denotesI[unfolded AOT_denotesS])
+     (metis (no_types, lifting) AOT_equiv_prod_def AOT_exeE1 AOT_lambda_denotesE AOT_meta_eta old.prod.case)
+lemma AOT_lambda_prod2_denotesI[AOT_meta]: "\<Pi> \<approx> \<Pi> \<Longrightarrow> \<nu> \<approx> \<nu> \<Longrightarrow> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<nu>, \<mu>)\<rparr>] \<approx> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<nu>, \<mu>)\<rparr>]"
+  by (rule AOT_lambda_denotesI[unfolded AOT_denotesS])
+     (metis (no_types, lifting) AOT_equiv_prod_def AOT_exeE1 AOT_lambda_denotesE AOT_meta_eta old.prod.case)
 
 end

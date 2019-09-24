@@ -39,15 +39,10 @@ lemma exists_relation3_def[Axioms]: "\<Pi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub
   using exists_relation_def[where 'a="'a\<times>'b\<times>'c", THEN equivalent_by_definitionE]
   by (auto simp: AOT_meta_simp)
 
-(*
-TODO:
-
-lemma exists_relation0_def[Axioms]: "(\<Pi>::unit relation)\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f [\<^bold>\<lambda> y . \<lparr>\<Pi>\<rparr>]\<^bold>\<down>"
-  apply (rule equivalent_by_definitionI)
-  apply rule
-   apply (rule AOT_lambda_existsI) apply simp
-  by (simp add: AOT_exists_relI AOT_logical_existsI AOT_meta_equiv_unit_def)
-*)
+lemma exists_relation0_def[Axioms]: "\<phi>\<^bold>\<down> \<equiv>\<^sub>d\<^sub>f [\<^bold>\<lambda> y . \<phi>]\<^bold>\<down>"
+  by (rule equivalent_by_definitionI)
+     (auto simp: AOT_lambda_denotes_propI AOT_denotesS AOT_equiv_\<o>_def
+                 AOT_equiv_rel.simps(1) AOT_lambda_def)
 
 lemma Ordinary_def: "O! =\<^sub>d\<^sub>f [\<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<rparr>]"
   apply (rule AOT_equal_defI)
@@ -76,11 +71,9 @@ lemma identity\<kappa>_def: "(\<kappa>::'a::\<kappa>) \<^bold>= \<kappa>' \<equi
 
 lemma identity\<Pi>1_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>\<nu> :: 'a :: \<kappa>. \<lbrace>\<nu>,\<Pi>\<rbrace> \<^bold>\<equiv> \<lbrace>\<nu>,\<Pi>'\<rbrace>)"
   by (rule equivalent_by_definitionI) (simp add: AOT_meta_simp AOT_meta_relation_identity)+
+lemma identity\<Pi>2_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& (\<^bold>\<forall>\<nu> . [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<mu>,\<nu>\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<mu>,\<nu>\<rparr>] \<^bold>& [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<nu>,\<mu>\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<nu>,\<mu>\<rparr>])"
+  by (rule equivalent_by_definitionI) (auto simp: AOT_meta_simp AOT_projection_identity1 AOT_lambda_prod1_denotesI AOT_lambda_prod2_denotesI)
 (*
-lemma identity\<Pi>2_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& (\<^bold>\<forall>\<nu> . [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<mu>,\<nu>\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<mu>,\<nu>\<rparr>]
-                                                                  \<^bold>& [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<nu>,\<mu>\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<nu>,\<mu>\<rparr>])"
-  unfolding AOT_identity_relation_def AOT_relation_identity_prod_def apply (AOT_meta_simp)
-  by blast
 
 lemma identity\<Pi>3_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& (\<^bold>\<forall>\<nu>\<^sub>1 \<nu>\<^sub>2 . [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<mu>,\<nu>\<^sub>1,\<nu>\<^sub>2\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<mu>,\<nu>\<^sub>1,\<nu>\<^sub>2\<rparr>]
                                                       \<^bold>& [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>,\<nu>\<^sub>1,\<mu>,\<nu>\<^sub>2\<rparr>] \<^bold>= [\<^bold>\<lambda>\<mu> . \<lparr>\<Pi>',\<nu>\<^sub>1,\<mu>,\<nu>\<^sub>2\<rparr>]
@@ -89,9 +82,10 @@ lemma identity\<Pi>3_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>
            apply (simp add: AOT_exists_prodI)
   oops
 
-lemma identity\<Pi>0_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& [\<^bold>\<lambda>x . \<lparr>\<Pi>\<rparr>] \<^bold>= [\<^bold>\<lambda>x . \<lparr>\<Pi>'\<rparr>]"
-  by (simp add: AOT_identity\<^sub>0 equivalent_by_definition_def)
 *)
+
+lemma identity\<Pi>0_def: "\<Pi> \<^bold>= \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<^bold>\<down> \<^bold>& \<Pi>'\<^bold>\<down> \<^bold>& [\<^bold>\<lambda>x . \<Pi>] \<^bold>= [\<^bold>\<lambda>x . \<Pi>']"
+  by (rule equivalent_by_definitionI; simp add: AOT_meta_simp AOT_lambda_def) meson
 
 section\<open> Axioms \<close>
 
@@ -198,15 +192,14 @@ lemma ax54_1: "[v \<Turnstile> ([\<^bold>\<lambda>y . \<phi> y]\<^bold>\<down> \
   apply auto
   using AOT_lambda_denotesI AOT_lambda_denotesE AOT_meta_equiv_indistinguishable
   by (metis (full_types))
-(*
-lemma ax54_2: "[v \<Turnstile> [\<^bold>\<lambda> \<lparr>\<phi>\<rparr>]\<^bold>\<down> \<^bold>\<equiv> \<phi>\<^bold>\<down>]"
-  by (simp add: AOT_enc_impl_exists AOT_enc_unit_def AOT_iffS AOT_nec_trueI)
 
-lemma ax54_3_stronger: "[v \<Turnstile> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]" (* TODO: note: this is stronger than the actual axiom *)
-  by (simp add: AOT_lambda_existsI)
+lemma ax54_2: "[v \<Turnstile> [\<^bold>\<lambda> \<phi>]\<^bold>\<down> \<^bold>\<equiv> \<phi>\<^bold>\<down>]"
+  by (simp add: AOT_meta_simp)
+
+lemma ax54_3_stronger[AOT_meta]: "[v \<Turnstile> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]" (* TODO: note: this is stronger than the actual axiom *)
+  by (simp add: AOT_meta_simp AOT_equiv_\<o>_def)
 lemma ax54_3: "[v \<Turnstile> [\<^bold>\<lambda> \<phi> x]\<^bold>\<down> \<^bold>\<rightarrow> [\<^bold>\<lambda> \<^bold>\<forall>x . \<phi> x]\<^bold>\<down>]"
-  using AOT_implS ax54_3_stronger by blast
-*)
+  by (simp add: AOT_meta_simp AOT_equiv_\<o>_def)
 
 lemma ax55_1: "Rigid(F) \<equiv>\<^sub>d\<^sub>f F\<^bold>\<down> \<^bold>& \<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F,x\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>F,x\<rparr>)"
   by (simp add: AOT_Rigid_def equivalent_by_definitionI)
@@ -226,14 +219,14 @@ lemma ax56: "[v \<Turnstile> \<^bold>\<exists>F . Rigidifies(F,\<langle>G\<rangl
   apply (rule AOT_lambda_denotesI; metis AOT_exeE1 AOT_proposition_choice AOT_meta_equiv_indistinguishable)
   by (auto simp: AOT_meta_simp)
 
-(*
-lemma ax57_2: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>\<rparr>]\<rbrace>
+lemma ax57_2: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a::\<kappa>,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>\<rparr>]\<rbrace>
                                               \<^bold>& \<lbrace>\<langle>x\<^sub>2\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,y\<rparr>]\<rbrace>]"
-  by AOT_meta_auto
-lemma ax57_3: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a,\<langle>x\<^sub>3\<rangle>::'a,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>,\<langle>x\<^sub>3\<rangle>\<rparr>]\<rbrace>
+  by (simp add: AOT_meta_simp AOT_var_equiv)
+lemma ax57_3: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a::\<kappa>,\<langle>x\<^sub>3\<rangle>::'a::\<kappa>,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>,\<langle>x\<^sub>3\<rangle>\<rparr>]\<rbrace>
                                                       \<^bold>& \<lbrace>\<langle>x\<^sub>2\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,y,\<langle>x\<^sub>3\<rangle>\<rparr>]\<rbrace>
                                                       \<^bold>& \<lbrace>\<langle>x\<^sub>3\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,\<langle>x\<^sub>2\<rangle>,y\<rparr>]\<rbrace>]"
-  by AOT_meta_auto
+  apply (auto simp: AOT_meta_simp AOT_var_equiv) oops
+(*
 lemma ax57_4: "[v \<Turnstile> \<lbrace>\<langle>x\<^sub>1\<rangle>::'a::\<kappa>,\<langle>x\<^sub>2\<rangle>::'a,\<langle>x\<^sub>3\<rangle>::'a,\<langle>x\<^sub>4\<rangle>::'a,\<langle>F\<rangle>\<rbrace> \<^bold>\<equiv> \<lbrace>\<langle>x\<^sub>1\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,y,\<langle>x\<^sub>2\<rangle>,\<langle>x\<^sub>3\<rangle>,\<langle>x\<^sub>4\<rangle>\<rparr>]\<rbrace>
                                                               \<^bold>& \<lbrace>\<langle>x\<^sub>2\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,y,\<langle>x\<^sub>3\<rangle>,\<langle>x\<^sub>4\<rangle>\<rparr>]\<rbrace>
                                                               \<^bold>& \<lbrace>\<langle>x\<^sub>3\<rangle>,[\<^bold>\<lambda>y . \<lparr>\<langle>F\<rangle>,\<langle>x\<^sub>1\<rangle>,\<langle>x\<^sub>2\<rangle>,y,\<langle>x\<^sub>4\<rangle>\<rparr>]\<rbrace>

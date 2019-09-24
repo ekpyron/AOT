@@ -26,10 +26,10 @@ next
 qed
 end
 
-instantiation unit :: AOT_Term
+instantiation \<o> :: AOT_Term
 begin
-definition AOT_equiv_unit :: "unit \<Rightarrow> unit \<Rightarrow> bool" where "AOT_equiv_unit _ _ \<equiv> True"
-instance by standard (simp add: part_equivp_def AOT_equiv_unit_def)
+definition AOT_equiv_\<o> :: "[\<o>, \<o>] \<Rightarrow> bool" where "AOT_equiv_\<o> \<equiv> (=)"
+instance by standard (simp add: AOT_equiv_\<o>_def equivp_implies_part_equivp identity_equivp)
 end
 
 

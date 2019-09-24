@@ -255,12 +255,12 @@ next
     assume "\<forall>(\<kappa>::\<kappa>) v::i. \<kappa> \<approx> \<kappa> \<longrightarrow> [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>'\<rbrace>]"
     hence "[v \<Turnstile> \<lbrace>?\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>?\<kappa>, \<Pi>'\<rbrace>]"
       using AOT_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) by blast
-    hence "(\<lambda>u. G (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some u))) = (\<lambda>u. F (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some u)))"
+    hence "(\<lambda>u. G (\<upsilon>_\<kappa>\<upsilon> u)) = (\<lambda>u. F (\<upsilon>_\<kappa>\<upsilon> u))"
       by (simp add: AOT_meta_simp \<Pi>_def \<Pi>'_def)
-    hence "(G (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some u))) = (F (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some u)))" for u
+    hence "(G (\<upsilon>_\<kappa>\<upsilon> u)) = (F (\<upsilon>_\<kappa>\<upsilon> u))" for u
       by meson
     hence "(G (abs_\<upsilon> u)) = (F (abs_\<upsilon> u))" for u
-      by (metis \<kappa>\<upsilon>_\<upsilon>_inverse \<upsilon>_\<kappa>\<upsilon>_def)
+      by (metis \<kappa>\<upsilon>_\<upsilon>_inverse)
     hence "(G u) = (F u)" for u by (metis \<kappa>\<upsilon>_\<upsilon>_inverse \<upsilon>_\<kappa>\<upsilon>_def)
     hence "G = F" by blast
     hence "\<Pi> = \<Pi>'" by (simp add: \<Pi>'_def \<Pi>_def)
@@ -311,5 +311,8 @@ next
   thus "(\<forall>\<Pi> v. [v \<Turnstile> \<lbrace>\<kappa>\<^sub>1, drel \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>\<kappa>\<^sub>2, drel \<Pi>\<rbrace>]) = (\<kappa>\<^sub>1 = \<kappa>\<^sub>2)"
     unfolding \<kappa>\<^sub>1_def \<kappa>\<^sub>2_def by (auto simp: AOT_meta_simp)
 qed
+
+(* Verify that there's still a model. *)
+lemma "True" nitpick[user_axioms, satisfy] oops
 
 end
