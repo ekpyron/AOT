@@ -65,6 +65,11 @@ syntax
 translations
   "[\<^bold>\<lambda>x. b]" \<rightleftharpoons> "CONST AOT_lambda (\<lambda> x . b)"
 
+lemma AOT_denoting_lambda_simp[AOT_meta_simp]:
+  assumes "\<And> x y v . x \<approx> y \<Longrightarrow> [v \<Turnstile> \<phi> x] = [v \<Turnstile> \<phi> y]"
+  shows "[\<^bold>\<lambda>y . \<phi> y] = drel (\<lambda> u . \<phi> (rep_\<upsilon> u))"
+  using assms unfolding AOT_lambda_def by auto
+
 definition AOT_lambda0 :: "\<o> \<Rightarrow> \<o>" ("[\<^bold>\<lambda> _]")where
   [AOT_meta, AOT_meta_simp]: "AOT_lambda0 \<equiv> \<lambda> x. x"
 
@@ -97,6 +102,9 @@ lemma AOT_lambda_denotes_negI[AOT_meta, AOT_lambda_denotes_intros]:
   by (rule AOT_lambda_denotesI) (auto simp: AOT_meta_simp assms[THEN AOT_lambda_denotesE])
 lemma AOT_lambda_denotes_boxI[AOT_meta, AOT_lambda_denotes_intros]:
   assumes "[v \<Turnstile> [\<^bold>\<lambda> x . \<phi> x]\<^bold>\<down>]" shows "[v \<Turnstile> [\<^bold>\<lambda>x . \<^bold>\<box>\<phi> x]\<^bold>\<down>]"
+  by (rule AOT_lambda_denotesI) (auto simp: AOT_meta_simp assms[THEN AOT_lambda_denotesE])
+lemma AOT_lambda_denotes_actI[AOT_meta, AOT_lambda_denotes_intros]:
+  assumes "[v \<Turnstile> [\<^bold>\<lambda> x . \<phi> x]\<^bold>\<down>]" shows "[v \<Turnstile> [\<^bold>\<lambda>x . \<^bold>\<A>\<phi> x]\<^bold>\<down>]"
   by (rule AOT_lambda_denotesI) (auto simp: AOT_meta_simp assms[THEN AOT_lambda_denotesE])
 lemma AOT_lambda_denotes_diaI[AOT_meta, AOT_lambda_denotes_intros]:
   assumes "[v \<Turnstile> [\<^bold>\<lambda> x . \<phi> x]\<^bold>\<down>]" shows "[v \<Turnstile> [\<^bold>\<lambda>x . \<^bold>\<diamond>\<phi> x]\<^bold>\<down>]"
@@ -169,6 +177,11 @@ next
     using assm[THEN conjunct1] by (simp add: AOT_meta_simp AOT_equiv_part_equivp part_equivp_symp)
 qed
 
+lemma AOT_meta_equiv_indistinguishableI[AOT_meta]:
+  assumes "(\<kappa>\<^sub>1 \<approx> \<kappa>\<^sub>2)" and "\<Pi> \<approx> \<Pi>"
+  shows "[v \<Turnstile> \<lparr>\<Pi>, \<kappa>\<^sub>1\<rparr>] = [v \<Turnstile> \<lparr>\<Pi>, \<kappa>\<^sub>2\<rparr>]"
+  using assms AOT_meta_equiv_indistinguishable AOT_exeE1 by blast
+
 lemma AOT_meta_eta[AOT_meta]: assumes "\<Pi> \<approx> \<Pi>" shows "[\<^bold>\<lambda> x . \<lparr>\<Pi>, x\<rparr>] = \<Pi>"
 proof -
   have "[dw \<Turnstile> [\<^bold>\<lambda> x. \<lparr>\<Pi>, x\<rparr>]\<^bold>\<down>]" by (simp add: AOT_lambda_denotes_exeI)
@@ -191,5 +204,16 @@ lemma AOT_lambda_prod1_denotesI[AOT_meta]: "\<Pi> \<approx> \<Pi> \<Longrightarr
 lemma AOT_lambda_prod2_denotesI[AOT_meta]: "\<Pi> \<approx> \<Pi> \<Longrightarrow> \<nu> \<approx> \<nu> \<Longrightarrow> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<nu>, \<mu>)\<rparr>] \<approx> [\<^bold>\<lambda>\<mu>. \<lparr>\<Pi>, (\<nu>, \<mu>)\<rparr>]"
   by (rule AOT_lambda_denotesI[unfolded AOT_denotesS])
      (metis (no_types, lifting) AOT_equiv_prod_def AOT_exeE1 AOT_lambda_denotesE AOT_meta_eta old.prod.case)
+
+lemma AOT_rel_var_induct[AOT_meta]:
+  assumes "\<And> F . \<phi> (drel F)"
+  shows "\<phi> \<langle>\<Pi>\<rangle>"
+  using assms by (metis AOT_equiv_rel.elims(2) AOT_var_equiv)
+
+lemma AOT_lambda_exe_simp[AOT_meta]:
+  assumes "\<And> x y . x \<approx> y \<Longrightarrow> A x \<approx> A y"
+  shows "[\<^bold>\<lambda>y. \<lparr>drel F, A y\<rparr>] = drel (\<lambda>u. F (abs_\<upsilon> (A (rep_\<upsilon> u))))"
+  by (subst AOT_denoting_lambda_simp; (rule AOT_meta_equiv_indistinguishableI)?)
+     (auto simp: AOT_equiv_rel.simps(1) AOT_exe.simps(1) assms rep_\<upsilon>)
 
 end

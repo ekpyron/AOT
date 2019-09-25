@@ -49,27 +49,33 @@ lemma AOT_identity\<^sub>E_denotes: "[v \<Turnstile> AOT_identity\<^sub>E\<^bold
 
 definition AOT_identity\<^sub>E_infix (infixl "\<^bold>=\<^sub>E" 64) where "(\<kappa> \<^bold>=\<^sub>E \<kappa>') \<equiv> \<lparr>AOT_identity\<^sub>E, \<kappa>, \<kappa>'\<rparr>"
 
+lemma Aux: "[\<^bold>\<lambda>(x,y). \<phi> x y] = [\<^bold>\<lambda>x. case x of (x,y) \<Rightarrow> \<phi> x y]"
+  by (simp add: case_prod_beta')
+
 lemma identity\<^sub>E_equivE:
   assumes "[v \<Turnstile> \<kappa>\<^sub>1 \<^bold>=\<^sub>E \<kappa>\<^sub>2]"
   shows "\<kappa>\<^sub>1 \<approx> \<kappa>\<^sub>2" and "[v \<Turnstile> \<lparr>O!, \<kappa>\<^sub>1\<rparr>]" and "[v \<Turnstile> \<lparr>O!, \<kappa>\<^sub>2\<rparr>]"
-  using assms unfolding AOT_identity\<^sub>E_infix_def AOT_identity\<^sub>E_def
-  using AOT_meta_beta[OF AOT_identity\<^sub>E_denotes[unfolded AOT_identity\<^sub>E_def], OF assms[unfolded AOT_identity\<^sub>E_infix_def AOT_identity\<^sub>E_def, THEN AOT_exeE2]]
-  apply auto
-  apply (simp add: AOT_conjS AOT_boxS AOT_iffS AOT_allS)
-    apply (meson AOT_denotesS AOT_exeE2 AOT_meta_equiv_indistinguishable)
-  by (auto simp: AOT_conjS)
+  using AOT_meta_beta[OF AOT_identity\<^sub>E_denotes[unfolded AOT_identity\<^sub>E_def],
+                      OF assms[unfolded AOT_identity\<^sub>E_infix_def AOT_identity\<^sub>E_def, THEN AOT_exeE2],
+                      THEN iffD1, OF assms[unfolded AOT_identity\<^sub>E_infix_def AOT_identity\<^sub>E_def],
+                      simplified]
+  by (auto simp: AOT_conjS AOT_boxS AOT_iffS AOT_allS)
+     (meson AOT_denotesS AOT_exeE2 AOT_meta_equiv_indistinguishable)
 lemma identity\<^sub>E_equivI:
   assumes "\<kappa>\<^sub>1 \<approx> \<kappa>\<^sub>2" and "[v \<Turnstile> \<lparr>O!, \<kappa>\<^sub>1\<rparr>]" and "[v \<Turnstile> \<lparr>O!, \<kappa>\<^sub>2\<rparr>]"
   shows "[v \<Turnstile> \<kappa>\<^sub>1 \<^bold>=\<^sub>E \<kappa>\<^sub>2]"
   unfolding AOT_identity\<^sub>E_infix_def AOT_identity\<^sub>E_def
-  apply (rule AOT_meta_beta[THEN iffD2])
-  using AOT_identity\<^sub>E_denotes[unfolded AOT_identity\<^sub>E_def] apply blast
-  using assms(1)
-   apply (metis (no_types, lifting) AOT_denotesS AOT_equiv_prod_def case_prod_conv AOT_meta_equiv_indistinguishable)
-  apply (simp add: AOT_conjS AOT_boxS AOT_iffS AOT_allS)
-  using AOT_meta_equiv_indistinguishable[THEN iffD1, OF assms(1)]
-  using AOT_exeE1 assms(2) assms(3) by blast
+  by (rule AOT_meta_beta[OF AOT_identity\<^sub>E_denotes[unfolded AOT_identity\<^sub>E_def], of v "(\<kappa>\<^sub>1,\<kappa>\<^sub>2)",
+                         simplified, THEN iffD2])
+     (auto simp: AOT_meta_simp AOT_meta_equiv_indistinguishable[THEN iffD1, OF assms(1)]
+                 assms(2) assms(3))
 
 class \<kappa> = AOT_UnaryIndividual
+
+bundle AOT_induct
+begin
+declare AOT_var_induct[induct type]
+declare AOT_rel_var_induct[induct type]
+end
 
 end

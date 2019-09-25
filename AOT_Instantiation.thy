@@ -59,7 +59,6 @@ qed
 end
 
 definition \<kappa>\<upsilon>_\<upsilon> where [AOT_meta_simp]: "\<kappa>\<upsilon>_\<upsilon> \<equiv> \<lambda> u . the (\<kappa>\<upsilon> (rep_\<upsilon> u))"
-
 definition \<upsilon>_\<kappa>\<upsilon> where [AOT_meta_simp]: "\<upsilon>_\<kappa>\<upsilon> \<equiv> \<lambda> u . abs_\<upsilon> (SOME x . \<kappa>\<upsilon> x = Some u)"
 
 lemma \<upsilon>_\<kappa>\<upsilon>_inverse[AOT_meta, AOT_meta_simp]: "\<kappa>\<upsilon>_\<upsilon> (\<upsilon>_\<kappa>\<upsilon> x) = x"
@@ -95,8 +94,7 @@ definition AOT_dconcrete_\<kappa> where
 definition AOT_concrete_\<kappa> :: "<\<kappa>>" where
   [AOT_meta, AOT_meta_simp]: "AOT_concrete_\<kappa> \<equiv> drel AOT_dconcrete_\<kappa>"
 instance proof
-  fix v
-  show "[v \<Turnstile> (E!::<\<kappa>>)\<^bold>\<down>]"
+  show "[v \<Turnstile> (E!::<\<kappa>>)\<^bold>\<down>]" for v
     unfolding AOT_concrete_\<kappa>_def
     by (simp add: AOT_meta_simp)
 qed
@@ -122,34 +120,16 @@ lemma AOT_ordinary_concrete: "\<exists> w . [w \<Turnstile> \<lparr>E!, \<nu>\<k
 
 instantiation \<kappa> :: AOT_Individual
 begin
-function AOT_enc_\<kappa> :: "\<kappa> \<Rightarrow> \<kappa> rel \<Rightarrow> \<o>" where
-  [AOT_meta_simp]: "AOT_enc_\<kappa> (\<nu>\<kappa> (\<alpha>\<nu> x)) (drel F) = (\<epsilon>\<^sub>\<o> v . (\<lambda> u . F (\<upsilon>_\<kappa>\<upsilon> u)) \<in> x)"
-| [AOT_meta_simp]: "AOT_enc_\<kappa> (\<nu>\<kappa> (\<omega>\<nu> x)) (drel F) = \<bottom>(((\<nu>\<kappa> (\<omega>\<nu> x)),drel F))"
-| [AOT_meta_simp]: "AOT_enc_\<kappa> \<kappa> (nullrel F) = \<bottom>((\<kappa>,nullrel F))"
-| [AOT_meta_simp]: "AOT_enc_\<kappa> (null\<kappa> \<kappa>) F = \<bottom>((null\<kappa> \<kappa>,F))"
-  by (metis \<kappa>.exhaust \<nu>.exhaust rel.exhaust surj_pair) auto
+function AOT_meta_enc_\<kappa> :: "\<kappa> \<Rightarrow> (\<kappa> AOT_Term.\<upsilon> \<Rightarrow> \<o>) \<Rightarrow> bool" where
+  [AOT_meta_simp]: "AOT_meta_enc_\<kappa> (\<nu>\<kappa> (\<alpha>\<nu> x)) \<phi> = ((\<lambda> u . \<phi> (\<upsilon>_\<kappa>\<upsilon> u)) \<in> x)"
+| [AOT_meta_simp]: "AOT_meta_enc_\<kappa> (\<nu>\<kappa> (\<omega>\<nu> x)) \<phi> = False"
+| [AOT_meta_simp]: "AOT_meta_enc_\<kappa> (null\<kappa> \<kappa>) \<phi> = False"
+  by (metis \<kappa>.exhaust \<nu>.exhaust surj_pair) auto
 termination using "termination" by blast
-declare AOT_enc_\<kappa>.simps[simp del] (* TODO rest of stuff *)
+declare AOT_meta_enc_\<kappa>.simps[simp del] (* TODO rest of stuff *)
 instance proof
-  fix v :: i and \<kappa> :: \<kappa> and \<Pi> :: "<\<kappa>>"
-  assume 0: "[v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>]"
-  then obtain a where \<kappa>_def: "\<kappa> = \<nu>\<kappa> (\<alpha>\<nu> a)"
-    by (induct rule: AOT_enc_\<kappa>.induct) (auto simp: AOT_meta_simp)
-  hence "\<kappa> \<approx> \<kappa>" by (simp add: AOT_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1))
-  moreover have "\<Pi> \<approx> \<Pi>" using 0 unfolding \<kappa>_def 
-    by (induct \<Pi>) (simp add: AOT_meta_simp)+
-  ultimately show "\<kappa> \<approx> \<kappa> \<and> \<Pi> \<approx> \<Pi>" by blast
-next
-  fix v w :: i and \<Pi> :: "<\<kappa>>" and \<kappa> :: \<kappa>
-  show "[v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>] \<Longrightarrow> [w \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>]"
-    by (induct rule: AOT_enc_\<kappa>.induct) (auto simp: AOT_meta_simp)
-next
-  fix \<Pi> :: "<\<kappa>>" and v :: i
-  assume "\<Pi> \<approx> \<Pi>"
-  then obtain F where \<Pi>_def: "\<Pi> = drel F" using AOT_equiv_rel.elims(2) by blast
-  show "\<exists> \<kappa>. [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>]" unfolding \<Pi>_def
-    by (rule_tac x="\<nu>\<kappa> (\<alpha>\<nu> UNIV)" in exI)
-       (simp add: AOT_meta_simp)
+  show "\<exists> \<kappa> :: \<kappa> . \<kappa> \<approx> \<kappa> \<and> AOT_meta_enc \<kappa> \<phi>" for \<phi>
+    by (rule_tac x="\<nu>\<kappa> (\<alpha>\<nu> UNIV)" in exI) (auto simp: AOT_meta_simp)
 qed
 end
 
@@ -165,14 +145,12 @@ definition AOT_that_\<kappa> :: "(\<kappa> \<Rightarrow> \<o>) \<Rightarrow> \<k
     null\<kappa> (null\<kappa>_choice \<phi>)"
 
 instance proof
-  fix \<kappa> :: \<kappa> and w v :: i and \<Pi> :: "<\<kappa>>"
-  assume "\<kappa> \<approx> \<kappa>"
-  moreover assume "[w \<Turnstile> \<lparr>E!, \<kappa>\<rparr>]"
+  fix \<kappa> :: \<kappa> and w v :: i and \<phi> :: "\<kappa> AOT_Term.\<upsilon> \<Rightarrow> \<o>"
+  assume "[w \<Turnstile> \<lparr>E!, \<kappa>\<rparr>]"
+  moreover hence "\<kappa> \<approx> \<kappa>" using AOT_denotesS AOT_exeE2 by blast
   ultimately obtain o\<^sub>1 where \<kappa>_def: "\<kappa> = \<nu>\<kappa> (\<omega>\<nu> o\<^sub>1)"
     using AOT_concrete_ordinary by blast
-  show "\<not> [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>]"
-    unfolding \<kappa>_def
-    by (induct \<Pi>) (auto simp : AOT_meta_simp)
+  show "\<not> AOT_meta_enc \<kappa> \<phi>" by (auto simp: \<kappa>_def AOT_meta_simp)
 next
   obtain x :: \<omega> and v :: i where
     "\<not> AOT_meta_concrete x dw \<and> AOT_meta_concrete x v"
@@ -184,24 +162,20 @@ next
 next
   fix v \<phi>
   {
-    fix \<Pi> :: "<\<kappa>>"
-    assume "\<Pi> \<approx> \<Pi>"
-    then obtain F where \<Pi>_def: "\<Pi> = drel F"
-      using AOT_equiv_rel.elims(2) by blast
-    have "(\<lambda>u. F (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some (the (\<kappa>\<upsilon> (rep_\<upsilon> u)))))) = F"
+    fix \<psi> :: "\<kappa> AOT_Term.\<upsilon> \<Rightarrow> \<o>"
+    have "(\<lambda>u. \<psi> (abs_\<upsilon> (SOME x. \<kappa>\<upsilon> x = Some (the (\<kappa>\<upsilon> (rep_\<upsilon> u)))))) = \<psi>"
       by (rule ext) (metis \<kappa>\<upsilon>_\<upsilon>_def \<kappa>\<upsilon>_\<upsilon>_inverse \<upsilon>_\<kappa>\<upsilon>_def)
-    hence "[v \<Turnstile> \<lbrace>\<nu>\<kappa> (\<alpha>\<nu> {r. [v \<Turnstile> \<phi> (drel (\<lambda>u. r (the (\<kappa>\<upsilon> (rep_\<upsilon> u)))))]}), \<Pi>\<rbrace>] = [v \<Turnstile> \<phi> \<Pi>]"
-      unfolding \<Pi>_def
+    hence "AOT_meta_enc (\<nu>\<kappa> (\<alpha>\<nu> {r. [v \<Turnstile> \<phi> (\<lambda>u. r (\<kappa>\<upsilon>_\<upsilon> u))]})) \<psi> = [v \<Turnstile> \<phi> \<psi>]"
       by (simp add: AOT_meta_simp)
   } note 0 = this
-  show "\<exists> \<kappa> :: \<kappa> . [v \<Turnstile> \<lparr>A!,\<kappa>\<rparr>] \<and> (\<forall>\<Pi>. \<Pi> \<approx> \<Pi> \<longrightarrow> [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<phi> \<Pi>])"
-    apply (rule_tac x="\<nu>\<kappa> (\<alpha>\<nu> { r . [v \<Turnstile> \<phi> (drel (\<lambda> u . r (\<kappa>\<upsilon>_\<upsilon> u)))] })" in exI; rule conjI)
+  show "\<exists> \<kappa> :: \<kappa> . [v \<Turnstile> \<lparr>A!,\<kappa>\<rparr>] \<and> (\<forall>F. AOT_meta_enc \<kappa> F = [v \<Turnstile> \<phi> F])"
+    apply (rule_tac x="\<nu>\<kappa> (\<alpha>\<nu> { r . [v \<Turnstile> \<phi> (\<lambda> u . r (\<kappa>\<upsilon>_\<upsilon> u))] })" in exI; rule conjI)
     unfolding AOT_abstract_def
      apply (rule AOT_meta_beta[OF AOT_abstract_denotes[unfolded AOT_abstract_def], THEN iffD2])
       apply (simp add: AOT_meta_simp)
       apply (simp add: AOT_notS AOT_diaS AOT_boxS)
     using AOT_concrete_ordinary AOT_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) apply blast
-    by (simp add: AOT_meta_simp 0)
+    using 0 by blast
 next
   fix \<phi> :: "\<kappa> \<Rightarrow> \<o>" and \<kappa> :: \<kappa> and v :: i
   assume "\<kappa> \<approx> \<kappa>"
@@ -246,27 +220,23 @@ next
   ultimately show "[v \<Turnstile> \<kappa> \<^bold>= (\<^bold>\<iota>x::\<kappa>. \<phi> x)] = (\<forall>\<kappa>'::\<kappa>. \<kappa>' \<approx> \<kappa>' \<longrightarrow> [dw \<Turnstile> \<phi> \<kappa>'] = [v \<Turnstile> \<kappa>' \<^bold>= \<kappa>])"
     by blast
 next
-  fix \<Pi> \<Pi>' :: "<\<kappa>>" and v :: i
-  assume "\<Pi> \<approx> \<Pi>" and "\<Pi>' \<approx> \<Pi>'"
-  then obtain F and G where \<Pi>_def: "\<Pi> = drel F" and \<Pi>'_def: "\<Pi>' = drel G"
-    by (meson AOT_equiv_rel.elims(2))
+  fix F G :: "\<kappa> AOT_Term.\<upsilon> \<Rightarrow> \<o>" and v :: i
   {
     let ?\<kappa> = "\<nu>\<kappa> (\<alpha>\<nu> { (\<lambda> u . F (\<upsilon>_\<kappa>\<upsilon> u)) })"
-    assume "\<forall>(\<kappa>::\<kappa>) v::i. \<kappa> \<approx> \<kappa> \<longrightarrow> [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>'\<rbrace>]"
-    hence "[v \<Turnstile> \<lbrace>?\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>?\<kappa>, \<Pi>'\<rbrace>]"
+    assume "\<forall>\<kappa>::\<kappa> . \<kappa> \<approx> \<kappa> \<longrightarrow> AOT_meta_enc \<kappa> F = AOT_meta_enc \<kappa> G"
+    hence "AOT_meta_enc ?\<kappa> F = AOT_meta_enc ?\<kappa> G"
       using AOT_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) by blast
     hence "(\<lambda>u. G (\<upsilon>_\<kappa>\<upsilon> u)) = (\<lambda>u. F (\<upsilon>_\<kappa>\<upsilon> u))"
-      by (simp add: AOT_meta_simp \<Pi>_def \<Pi>'_def)
+      by (simp add: AOT_meta_simp)
     hence "(G (\<upsilon>_\<kappa>\<upsilon> u)) = (F (\<upsilon>_\<kappa>\<upsilon> u))" for u
       by meson
     hence "(G (abs_\<upsilon> u)) = (F (abs_\<upsilon> u))" for u
       by (metis \<kappa>\<upsilon>_\<upsilon>_inverse)
     hence "(G u) = (F u)" for u by (metis \<kappa>\<upsilon>_\<upsilon>_inverse \<upsilon>_\<kappa>\<upsilon>_def)
     hence "G = F" by blast
-    hence "\<Pi> = \<Pi>'" by (simp add: \<Pi>'_def \<Pi>_def)
   }
-  thus "(\<Pi> = \<Pi>') = (\<forall>(\<kappa>::\<kappa>) v::i. \<kappa> \<approx> \<kappa> \<longrightarrow> [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>\<kappa>, \<Pi>'\<rbrace>])"
-    unfolding \<Pi>_def \<Pi>'_def by auto
+  thus "(F = G) = (\<forall>\<kappa>::\<kappa>. \<kappa> \<approx> \<kappa> \<longrightarrow> AOT_meta_enc \<kappa> F = AOT_meta_enc \<kappa> G)"
+    by auto
 next
   fix \<kappa>\<^sub>1 \<kappa>\<^sub>2 :: \<kappa> and v :: i
   assume 0: "[v \<Turnstile> \<lparr>O!, \<kappa>\<^sub>1\<rparr>]"
@@ -308,11 +278,13 @@ next
     }
     hence "x\<^sub>1 = x\<^sub>2" by blast
   }
-  thus "(\<forall>\<Pi> v. [v \<Turnstile> \<lbrace>\<kappa>\<^sub>1, drel \<Pi>\<rbrace>] = [v \<Turnstile> \<lbrace>\<kappa>\<^sub>2, drel \<Pi>\<rbrace>]) = (\<kappa>\<^sub>1 = \<kappa>\<^sub>2)"
-    unfolding \<kappa>\<^sub>1_def \<kappa>\<^sub>2_def by (auto simp: AOT_meta_simp)
+  hence "(\<forall> \<phi> . AOT_meta_enc \<kappa>\<^sub>1 \<phi> = AOT_meta_enc \<kappa>\<^sub>2 \<phi>) = (\<kappa>\<^sub>1 = \<kappa>\<^sub>2)"
+    by (auto simp: AOT_meta_simp \<kappa>\<^sub>1_def \<kappa>\<^sub>2_def)
+  thus "(AOT_meta_enc \<kappa>\<^sub>1 = AOT_meta_enc \<kappa>\<^sub>2) = (\<kappa>\<^sub>1 = \<kappa>\<^sub>2)" by auto
 qed
 
 (* Verify that there's still a model. *)
-lemma "True" nitpick[user_axioms, satisfy] oops
+lemma "True" nitpick[user_axioms, satisfy, expect = genuine] oops
+lemma "False" nitpick[user_axioms, expect = genuine] oops
 
 end

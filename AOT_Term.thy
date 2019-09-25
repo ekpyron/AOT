@@ -26,6 +26,13 @@ next
 qed
 end
 
+lemma AOT_equiv_prodI[AOT_meta]:
+  assumes "x\<^sub>1 \<approx> y\<^sub>1"
+      and "x\<^sub>2 \<approx> y\<^sub>2"
+    shows "(x\<^sub>1, x\<^sub>2) \<approx> (y\<^sub>1, y\<^sub>2)"
+  using assms unfolding AOT_equiv_prod_def by blast
+
+
 instantiation \<o> :: AOT_Term
 begin
 definition AOT_equiv_\<o> :: "[\<o>, \<o>] \<Rightarrow> bool" where "AOT_equiv_\<o> \<equiv> (=)"
@@ -73,6 +80,19 @@ declare Quotient3_\<upsilon>[AOT_meta] Quotient_\<upsilon>[AOT_meta] Abs_\<upsil
   cr_\<upsilon>_def[AOT_meta] pcr_\<upsilon>_def[AOT_meta] rep_\<upsilon>_def[AOT_meta]
   typerep_\<upsilon>_def[AOT_meta]
 
+lemma rep_\<upsilon>_inverse[AOT_meta, AOT_meta_simp]: "abs_\<upsilon> (rep_\<upsilon> a) = a"
+  using Quotient3_def[THEN iffD1, OF Quotient3_\<upsilon>] by blast
+lemma rep_\<upsilon>[AOT_meta, AOT_meta_simp]: "rep_\<upsilon> u \<approx> rep_\<upsilon> u"
+  using Quotient3_def[THEN iffD1, OF Quotient3_\<upsilon>] by blast
+lemma equiv_abs_\<upsilon>[AOT_meta]: "r \<approx> s = (r \<approx> r \<and> s \<approx> s \<and> abs_\<upsilon> r = abs_\<upsilon> s)"
+  using Quotient3_def[THEN iffD1, OF Quotient3_\<upsilon>] by blast
+lemma abs_\<upsilon>_inject[AOT_meta]: assumes "r \<approx> s" shows "abs_\<upsilon> r = abs_\<upsilon> s"
+  using Quotient3_def[THEN iffD1, OF Quotient3_\<upsilon>] assms by blast
+lemma abs_\<upsilon>_equiv[AOT_meta]: assumes "abs_\<upsilon> r = abs_\<upsilon> s" and "r \<approx> r" and "s \<approx> s" shows "r \<approx> s"
+  using Quotient3_def[THEN iffD1, OF Quotient3_\<upsilon>] assms by blast
+lemma abs_\<upsilon>_inverse[AOT_meta]: "a \<approx> b \<Longrightarrow> rep_\<upsilon> (abs_\<upsilon> a) \<approx> b"
+  using rep_abs_rsp_left[OF Quotient3_\<upsilon>, of a b] .
+
 typedef 'a var = "{ x :: 'a :: AOT_Term . x \<approx> x }" 
   using AOT_equiv_part_equivp part_equivp_def by auto
 notation "Rep_var" ("\<langle>_\<rangle>")
@@ -86,5 +106,16 @@ lemma AOT_var_denotes[AOT_meta]: "[v \<Turnstile> \<langle>x\<rangle>\<^bold>\<d
 
 lemma AOT_var_equiv[AOT_meta]: "\<langle>x\<rangle> \<approx> \<langle>x\<rangle>"
   using Rep_var by blast
+
+lemma AOT_var_induct[AOT_meta]:
+  assumes "\<And> \<tau> . \<tau> \<approx> \<tau> \<Longrightarrow> \<phi> \<tau>"
+  shows "\<phi> \<langle>\<tau>\<rangle>"
+  using assms AOT_var_equiv by blast
+
+lemma abs_\<upsilon>_tuple[AOT_meta, AOT_meta_simp]:
+  assumes "A \<approx> A" and "B \<approx> B" and "C \<approx> C"
+  shows "abs_\<upsilon> (A, B, C) = (abs_\<upsilon> (A, rep_\<upsilon> (abs_\<upsilon> (B, C))))"
+  using assms
+  by (smt AOT_equiv_prodI AOT_var_equiv equiv_abs_\<upsilon> rep_\<upsilon> rep_\<upsilon>_inverse)
 
 end
