@@ -8,23 +8,29 @@ notation AOT_valid_in ("[_ \<^bold>\<Turnstile> _]")
 
 nonterminal \<phi>
 nonterminal \<nu>
-nonterminal identifiers
 nonterminal \<Pi>
+nonterminal \<Pi>0
 nonterminal \<tau>
-nonterminal formula
+nonterminal AOT_id
+nonterminal AOT_desc
+nonterminal AOT_ids
 
-syntax "" :: "\<Pi> \<Rightarrow> \<tau>" ("_")
-syntax "" :: "id_position \<Rightarrow> \<tau>" ("_")
+consts dummyRel :: "<'a>"
+
 
 syntax
+  "" :: "\<Pi> \<Rightarrow> \<tau>" ("_")
+  "" :: "\<Pi>0 \<Rightarrow> \<tau>" ("_")
+  "" :: "id_position \<Rightarrow> \<tau>" ("_")
+  "" :: "AOT_desc \<Rightarrow> \<tau>" ("_")
   AOT_valid_in :: "[i, \<phi>] \<Rightarrow> bool" ("[_ \<Turnstile> _]")
 
   "" :: "\<phi> \<Rightarrow> \<phi>" ("'(_')")
-  AOT_not :: "\<phi> \<Rightarrow> \<phi>" ("\<not>_" [40] 40)
-  AOT_not :: "\<phi> \<Rightarrow> \<phi>" ("~_" [40] 40)
+  AOT_not :: "\<phi> \<Rightarrow> \<phi>" ("\<not>_" [40] 70)
+  AOT_not :: "\<phi> \<Rightarrow> \<phi>" ("~_" [40] 70)
   AOT_imp :: "[\<phi>, \<phi>] \<Rightarrow> \<phi>" (infixl "\<rightarrow>" 8)
   AOT_box :: "\<phi> \<Rightarrow> \<phi>" ("\<box>_" [62] 63)
-  AOT_act :: "\<phi> \<Rightarrow> \<phi>" ("\<A>_" [64] 65)
+  AOT_act :: "\<phi> \<Rightarrow> \<phi>" ("\<^bold>\<A>_" [64] 65)
   AOT_dia :: "\<phi> \<Rightarrow> \<phi>" ("\<diamond>_" [62] 63)
   AOT_conj :: "[\<phi>, \<phi>] \<Rightarrow> \<phi>" (infixl "&" 35)
   AOT_conj :: "[\<phi>, \<phi>] \<Rightarrow> \<phi>" (infixl "\<and>" 35)
@@ -37,22 +43,27 @@ syntax
   AOT_id :: "[\<tau>, \<tau>] \<Rightarrow> \<phi>" (infixl "=" 63)
 
   "_AOT_lambda" :: "id_position \<Rightarrow> \<phi> \<Rightarrow> \<Pi>" ("[\<lambda>_ _]")
+  "AOT_lambda0" :: "\<phi> \<Rightarrow> \<Pi>0" ("[\<lambda>'(')  _]")
+  "" :: "\<Pi>0 \<Rightarrow> \<phi>" ("_" 900)
   "_AOT_lambda" :: "id_position \<Rightarrow> \<phi> \<Rightarrow> \<Pi>" ("[%_ _]")
 
-  "" :: "id_position => formula" ("_")
-  "_AOT_concat_formulas" :: "formula => formula \<Rightarrow> formula" ("__")
-  "_AOT_atomic_formula" :: "formula => \<phi>" ("_")
+  "_AOT_id" :: "id_position \<Rightarrow> AOT_id" ("_" 999)
+  "" :: "AOT_id \<Rightarrow> AOT_ids" ("_" 999)
+  "_AOT_ids" :: "AOT_id \<Rightarrow> AOT_ids \<Rightarrow> AOT_ids" ("__")
+  "" :: "AOT_desc \<Rightarrow> AOT_id" ("_")
+  "_AOT_desc" :: "id_position \<Rightarrow> \<phi> \<Rightarrow> AOT_desc" ("__")
+
+  "_AOT_formula_free" :: "id_position => AOT_ids \<Rightarrow> \<phi>" ("_'{free:_'}" 900)
+  "_AOT_atomic_formula" :: "AOT_ids => \<phi>" ("_" 900)
 
   "AOT_concrete" :: "\<Pi>" ("\<^bold>E!")
   "AOT_ordinary" :: "\<Pi>" ("\<^bold>O!")
   "AOT_abstract" :: "\<Pi>" ("\<^bold>A!")
+  "dummyRel" :: "\<Pi>" ("\<^bold>D!")
 
-  "_AOT_identifiers" :: "id_position \<Rightarrow> identifiers" ("_")
-  "_AOT_concat_identifiers" :: "identifiers \<Rightarrow> identifiers \<Rightarrow> identifiers" ("__" [2,3] 2)
-  "_AOT_desc" :: "identifiers \<Rightarrow> \<phi> \<Rightarrow> identifiers" ("_'(_')" [3,1] 4)
 syntax (input)
-  "AOT_exe" :: "\<Pi> \<Rightarrow> identifiers \<Rightarrow> \<phi>" ("__")
-  "AOT_enc" :: "identifiers \<Rightarrow> \<Pi> \<Rightarrow> \<phi>" ("__")
+  "AOT_exe" :: "\<Pi> \<Rightarrow> AOT_ids \<Rightarrow> \<phi>" ("__" [900,901] 800)
+  "AOT_enc" :: "AOT_ids \<Rightarrow> \<Pi> \<Rightarrow> \<phi>" ("__" [900,901] 800)
 
 parse_ast_translation\<open>
 let
@@ -72,15 +83,10 @@ fun constrainConst (name,pos) = Ast.Appl [Ast.Constant "_constrain", Ast.Constan
 
 fun unconstrain (Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) = (name, decode_pos pos)
 
-fun split_atomic_formula (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) =
-  Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |>
-  (fn (hd::nil) => Ast.mk_appl (Ast.Constant "_prop") [ast] | (syms as ((name,pos)::tail)) => Ast.Appl (
-    (Ast.Constant (if isRelation name then "_exe" else "_enc"))::(map constrain syms)
-  ))
-
 fun split_identifiers (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) =
-  Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |>
-  (Ast.mk_appl (Ast.Constant "_args")) o (map constrain)
+  Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |> (fn (syms as (hd::nil)) => Ast.mk_appl (Ast.Constant "_AOT_arg") [constrain hd]
+  | (syms) => syms |>
+  (Ast.mk_appl (Ast.Constant "_AOT_args")) o (map constrain))
 
 fun parse_lambda (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) matrix = (
   let
@@ -91,27 +97,31 @@ fun parse_lambda (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name,
   end
 )
 
+fun parse_atomic (ast as Ast.Appl ((Ast.Constant "_AOT_args")::args)) = (
+  if isRelation (fst (unconstrain (hd args)))
+  then Ast.mk_appl (Ast.Constant "_exe") args
+  else Ast.mk_appl (Ast.Constant "_enc") args
+) | parse_atomic (ast as Ast.Appl [(Ast.Constant "_AOT_arg"),arg]) = (arg)
+  | parse_atomic ast = (@{print} "Weird atomic"; ast)
+
 fun parse_quantifier const (bound) matrix = (Ast.Appl [const, Ast.Appl [ Ast.Constant "_abs", bound, matrix]])
 
 fun 
-  merge_identifiers (Ast.Appl (_::tail)) (Ast.Appl (_::tail')) = Ast.mk_appl (Ast.Constant "_args") (tail@tail')
+  merge_identifiers (Ast.Appl (hd::tail)) (Ast.Appl (hd'::tail')) = Ast.mk_appl (Ast.Constant "_AOT_args") (tail@tail')
+
+fun parse_desc (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) matrix =
+  Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |> List.rev |> (fn (syms as (hd::("\<iota>",pos)::tail)) =>
+  Ast.mk_appl (Ast.Constant "_AOT_args") (rev ((Ast.mk_appl (constrainConst ("AOT_that",pos)) [Ast.mk_appl (Ast.Constant "_abs") [(constrain hd),matrix]])::((map constrain) tail))))
 in
 [
-  ("_AOT_atomic_formula", (fn ctxt => fn [ast] => split_atomic_formula ast)),
-  ("_AOT_identifiers", (fn ctxt => fn [ast] => split_identifiers ast)),
-  ("_AOT_concat_identifiers", (fn ctxt => fn [ast,ast'] => merge_identifiers ast ast')),
+  ("_AOT_atomic_formula", (fn ctxt => fn [ast] => (@{print} ("atomic",ast); parse_atomic ast))),
+  ("_AOT_formula_free", (fn ctxt => fn [metavar, (Ast.Appl ((Ast.Constant c)::args))] => (Ast.mk_appl metavar args))),
+  ("_AOT_id", (fn ctxt => fn [ast] => split_identifiers ast)),
+  ("_AOT_ids", (fn ctxt => fn [ast,ast'] => merge_identifiers ast ast')),
   ("_AOT_lambda", (fn ctxt => fn [bound, matrix] => parse_lambda bound matrix)),
   ("_AOT_all", (fn ctxt => fn [bound, matrix] => parse_quantifier (Ast.Constant @{const_syntax AOT_all}) bound matrix)),
   ("_AOT_ex", (fn ctxt => fn [bound, matrix] => parse_quantifier (Ast.Constant @{const_syntax AOT_ex}) bound matrix)),
-  ("_AOT_desc", (fn ctxt => fn [Ast.Appl args, matrix] => (fn (hd::iota::tail) =>
-      let
-        val (iota, iotapos) = unconstrain iota
-      in
-        if iota = "\<iota>" then
-          Ast.Appl (rev ((Ast.mk_appl (constrainConst (@{const_syntax AOT_that}, iotapos)) [Ast.mk_appl (Ast.Constant "_abs") [hd, matrix]])::tail))
-        else
-          raise Fail "Parser error"
-      end ) (List.rev args)))
+  ("_AOT_desc", (fn ctxt => fn [ast, matrix] => parse_desc ast matrix))
 ]
 end
 \<close>
@@ -132,7 +142,8 @@ in
 [
   ("_exe", (fn ctxt => fn hd::tail => parse_exe hd tail)),
   ("_enc", (fn ctxt => List.rev #> (fn hd::tail => parse_enc (List.rev tail) hd))),
-  ("_args", (fn ctxt => fn terms => makePairs terms)),
+  ("_AOT_args", (fn ctxt => fn terms => makePairs terms)),
+  ("_AOT_arg", (fn ctxt => fn [trm] => trm)),
   ("_prop", (fn ctxt => fn [terms] => terms))
 ]
 end
@@ -146,22 +157,41 @@ end
 
 context
 begin
+private lemma "[v \<Turnstile> \<forall> x xyF] \<or> True" by simp
+private lemma "[v \<Turnstile> \<^bold>D! \<iota>a(p)b] \<or> True" by simp
+private lemma "[v \<Turnstile> U\<iota>x(p)] \<or> True" by simp
+private lemma "[v \<Turnstile> U'a\<iota>x(p)] \<or> True" by simp
+private lemma "[v \<Turnstile> U''\<iota>x(p)b] \<or> True" by simp
+private lemma "[v \<Turnstile> U'''a\<iota>x(p)b] \<or> True" by simp
+private lemma "[v \<Turnstile> \<^bold>E!\<iota>x(p)] \<or> True" by simp
+private lemma "[v \<Turnstile> \<^bold>D!a\<iota>x(p)] \<or> True" by simp
 private lemma "[v \<Turnstile> \<box>\<phi> \<rightarrow> p] = [v \<^bold>\<Turnstile> \<^bold>\<box>\<phi> \<^bold>\<rightarrow> p]" by simp
 private lemma "\<forall> x . [v \<Turnstile> \<box>p \<rightarrow> p \<equiv> z = x] = [v \<^bold>\<Turnstile> \<^bold>\<box>p \<^bold>\<rightarrow> (p \<^bold>\<equiv> z \<^bold>= x)]" by simp
 private lemma "[v \<Turnstile> \<Pi>\<down> \<rightarrow> \<Pi> = [\<lambda>xyz Fx'xyz]] = [v \<^bold>\<Turnstile> \<Pi>\<^bold>\<down> \<^bold>\<rightarrow> \<Pi> \<^bold>= [\<^bold>\<lambda>(x, y, z). \<lparr>F, (x', x, y, z)\<rparr>]]" by simp
 private lemma "[v \<Turnstile> \<Pi>a] = [v \<^bold>\<Turnstile> \<lparr>\<Pi>, a\<rparr>]" by simp
 private lemma "[v \<Turnstile>  [\<lambda>x Fx]y & y[\<lambda>x Fx] ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], y\<rparr> \<^bold>& \<lbrace>y, [\<^bold>\<lambda>x. \<lparr>F, x\<rparr>]\<rbrace>]" by simp
 private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ] = [v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a \<iota>q(Gq)q ) ] = [v \<Turnstile> ([\<lambda>x Fx] a \<iota>q(Gq)q ) ]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a \<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>] " by simp
+private lemma "[v \<Turnstile> (\<^bold>D! a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> (\<^bold>D! a\<iota>q(Gq)\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> (\<^bold>D! \<iota>q(Gq)a\<iota>q(Gq) ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (\<^bold>\<iota>q. \<lparr>G, q\<rparr>, a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
 private lemma "[v \<Turnstile> \<forall>x ~Fxy & xyG] = [v \<^bold>\<Turnstile> (\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F, (x, y)\<rparr>) \<^bold>& \<lbrace>(x, y), G\<rbrace>]" by simp
 private lemma "[v \<Turnstile> \<forall>x\<exists>y ~Fxy & xyxG] = [v \<^bold>\<Turnstile> (\<^bold>\<forall>x. \<^bold>\<exists>y. \<^bold>\<not>\<lparr>F, (x, y)\<rparr>) \<^bold>& \<lbrace>(x, y, x), G\<rbrace>]"  by simp
 private lemma "[v \<Turnstile> \<forall>x (~Fxy & xyG)] = [v \<^bold>\<Turnstile> \<^bold>\<forall>x. \<^bold>\<not>\<lparr>F, (x, y)\<rparr> \<^bold>& \<lbrace>(x, y), G\<rbrace>]" by simp
 private lemma "[v \<Turnstile> \<forall>G (~Fxy & xyG)] = [v \<^bold>\<Turnstile> \<^bold>\<forall>G. \<^bold>\<not>\<lparr>F, (x, y)\<rparr> \<^bold>& \<lbrace>(x, y), G\<rbrace>]" by simp
 private lemma "[v \<Turnstile> [\<lambda>xy Hyx]zz] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x, y). \<lparr>H, (y, x)\<rparr>], (z, z)\<rparr>]" by simp
-private lemma "[v \<Turnstile> \<^bold>A!x & \<^bold>O!y & x\<^bold>E!] = [v \<Turnstile> \<^bold>A!x & \<^bold>O!y & x\<^bold>E!]" by simp
-private lemma "[v \<Turnstile> Fxy\<iota>z(p)]" oops
+private lemma "[v \<Turnstile> \<^bold>A!x & \<^bold>O!y & x\<^bold>E!] = [v \<^bold>\<Turnstile> \<lparr>A!, x\<rparr> \<^bold>& \<lparr>O!, y\<rparr> \<^bold>& \<lbrace>x, E!\<rbrace>] " by simp
+private lemma "[v \<Turnstile> Fxy\<iota>z(p)] = [v \<^bold>\<Turnstile> \<lparr>F, (x, y, \<^bold>\<iota>z. p)\<rparr>]" by simp
+private lemma "[v \<Turnstile> F\<iota>z(p)y\<iota>z(p)] = [v \<^bold>\<Turnstile> \<lparr>F, (\<^bold>\<iota>z. p, y, \<^bold>\<iota>z. p)\<rparr>]" by simp
+
+private lemma "[v \<Turnstile> Fxy\<iota>z(\<phi>{free:z})] = [v \<^bold>\<Turnstile> \<lparr>F, (x, y, \<^bold>\<iota>z. \<phi> z)\<rparr>]" by simp
+private lemma "[v \<Turnstile> Fxy\<iota>z(\<phi>{free:zy})] = [v \<^bold>\<Turnstile> \<lparr>F, (x, y, \<^bold>\<iota>z. \<phi> z y)\<rparr>]" by simp
 end
+
+term "[v \<Turnstile> [\<lambda>() p] ]"
+
 
 end
