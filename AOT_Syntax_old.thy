@@ -1,4 +1,4 @@
-theory AOT_Syntax
+theory AOT_Syntax_old
   imports AOT_Axioms
   keywords "AOT_syntax" :: thy_decl
        and "AOT_no_syntax" :: thy_decl
