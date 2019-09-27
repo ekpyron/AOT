@@ -1,5 +1,5 @@
 theory AOT_Syntax_next
-  imports AOT_Axioms
+  imports AOT_Axioms AOT_Instantiation
 begin
 
 declare[[eta_contract = false]]
@@ -78,10 +78,27 @@ fun AOT_merge_identifiers ((fst as (x,_))::("\<^sub>",_)::(lst as (n,_))::tl) = 
  | AOT_merge_identifiers (x::tl) = x::AOT_merge_identifiers tl
  | AOT_merge_identifiers nil = nil
 
-fun constrain (name,pos) = Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable (Term_Position.encode pos)]
-fun constrainConst (name,pos) = Ast.Appl [Ast.Constant "_constrain", Ast.Constant name, Ast.Variable (Term_Position.encode pos)]
+fun constrainWithConst (ast,typ) = Ast.Appl [Ast.Constant "_constrain", ast, Ast.Constant typ]
 
-fun unconstrain (Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) = (name, decode_pos pos)
+fun constrainTyp name = let
+  val x = hd (Symbol.explode name)
+in
+  if x = "x" then
+    (fn ast => constrainWithConst (ast, @{type_syntax \<kappa>}))
+(*    (fn ast => constrainWithConst (Ast.Appl [Ast.Constant @{const_syntax Rep_var}, ast], @{type_syntax \<kappa>})) *)
+  else
+    I
+end
+
+fun constrainPos (name,pos) = (Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable (Term_Position.encode pos)])
+fun constrainPosConst (name,pos) = Ast.Appl [Ast.Constant "_constrain", Ast.Constant name, Ast.Variable (Term_Position.encode pos)]
+
+fun constrain (name,pos) = constrainTyp name (constrainPos (name,pos))
+
+fun unconstrain (Ast.Variable name) = name
+  | unconstrain (Ast.Appl [Ast.Constant _, ast]) = unconstrain ast
+  | unconstrain (Ast.Appl [Ast.Constant "_constrain", ast, Ast.Variable pos]) = (unconstrain ast)
+  | unconstrain (Ast.Appl [Ast.Constant "_constrain", ast, Ast.Constant typ]) = (unconstrain ast)
 
 fun split_identifiers (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) =
   Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |> (fn (syms as (hd::nil)) => Ast.mk_appl (Ast.Constant "_AOT_arg") [constrain hd]
@@ -90,15 +107,15 @@ fun split_identifiers (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable 
 
 fun parse_lambda (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) matrix = (
   let
-    fun makeAbs (hd :: nil) =  Ast.Appl [ Ast.Constant "_abs", constrain hd, matrix]
-      | makeAbs (hd :: tail) = Ast.Appl [Ast.Constant @{const_syntax case_prod}, Ast.Appl [ Ast.Constant "_abs", constrain hd, makeAbs tail]]
+    fun makeAbs (hd :: nil) =  Ast.Appl [ Ast.Constant "_abs", constrainPos hd, matrix]
+      | makeAbs (hd :: tail) = Ast.Appl [Ast.Constant @{const_syntax case_prod}, Ast.Appl [ Ast.Constant "_abs", constrainPos hd, makeAbs tail]]
   in
     Ast.Appl [Ast.Constant @{const_syntax AOT_lambda}, Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |> makeAbs]
   end
 )
 
 fun parse_atomic (ast as Ast.Appl ((Ast.Constant "_AOT_args")::args)) = (
-  if isRelation (fst (unconstrain (hd args)))
+  if isRelation (unconstrain (hd args))
   then Ast.mk_appl (Ast.Constant "_exe") args
   else Ast.mk_appl (Ast.Constant "_enc") args
 ) | parse_atomic (ast as Ast.Appl [(Ast.Constant "_AOT_arg"),arg]) = (arg)
@@ -111,7 +128,7 @@ fun
 
 fun parse_desc (ast as Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) matrix =
   Symbol_Pos.explode (name, decode_pos pos) |> AOT_merge_identifiers |> List.rev |> (fn (syms as (hd::("\<iota>",pos)::tail)) =>
-  Ast.mk_appl (Ast.Constant "_AOT_args") (rev ((Ast.mk_appl (constrainConst ("AOT_that",pos)) [Ast.mk_appl (Ast.Constant "_abs") [(constrain hd),matrix]])::((map constrain) tail))))
+  Ast.mk_appl (Ast.Constant "_AOT_args") (rev ((Ast.mk_appl (constrainPosConst ("AOT_that",pos)) [Ast.mk_appl (Ast.Constant "_abs") [(constrainPos hd),matrix]])::((map constrainPos) tail))))
 in
 [
   ("_AOT_atomic_formula", (fn ctxt => fn [ast] => (@{print} ("atomic",ast); parse_atomic ast))),
@@ -155,6 +172,7 @@ begin
   have "\<And> v \<phi>. [v \<Turnstile> \<box>\<phi> \<rightarrow> p] = [v \<^bold>\<Turnstile> \<^bold>\<box>\<phi> \<^bold>\<rightarrow> p]" by simp
 end
 
+declare[[show_sorts]]
 context
 begin
 private lemma "[v \<Turnstile> \<forall> x xyF] \<or> True" by simp
@@ -170,14 +188,14 @@ private lemma "\<forall> x . [v \<Turnstile> \<box>p \<rightarrow> p \<equiv> z 
 private lemma "[v \<Turnstile> \<Pi>\<down> \<rightarrow> \<Pi> = [\<lambda>xyz Fx'xyz]] = [v \<^bold>\<Turnstile> \<Pi>\<^bold>\<down> \<^bold>\<rightarrow> \<Pi> \<^bold>= [\<^bold>\<lambda>(x, y, z). \<lparr>F, (x', x, y, z)\<rparr>]]" by simp
 private lemma "[v \<Turnstile> \<Pi>a] = [v \<^bold>\<Turnstile> \<lparr>\<Pi>, a\<rparr>]" by simp
 private lemma "[v \<Turnstile>  [\<lambda>x Fx]y & y[\<lambda>x Fx] ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], y\<rparr> \<^bold>& \<lbrace>y, [\<^bold>\<lambda>x. \<lparr>F, x\<rparr>]\<rbrace>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>)\<rparr>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>] " by simp
+private lemma "[v \<Turnstile> ([\<lambda>xyz Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x,y,z). \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>xy Fx] a\<iota>q(Gq) ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x,y). \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>xyz Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x,y,z). \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>xyz Fx] a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x,y,z). \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>] " by simp
 private lemma "[v \<Turnstile> (\<^bold>D! a\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
 private lemma "[v \<Turnstile> (\<^bold>D! a\<iota>q(Gq)\<iota>q(Gq)q ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
 private lemma "[v \<Turnstile> (\<^bold>D! \<iota>q(Gq)a\<iota>q(Gq) ) ] = [v \<^bold>\<Turnstile> \<lparr>dummyRel, (\<^bold>\<iota>q. \<lparr>G, q\<rparr>, a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>)\<rparr>]" by simp
-private lemma "[v \<Turnstile> ([\<lambda>x Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>x. \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
+private lemma "[v \<Turnstile> ([\<lambda>xyz Fx] a\<iota>q(Gq) q ) ] = [v \<^bold>\<Turnstile> \<lparr>[\<^bold>\<lambda>(x,y,z). \<lparr>F, x\<rparr>], (a, \<^bold>\<iota>q. \<lparr>G, q\<rparr>, q)\<rparr>]" by simp
 private lemma "[v \<Turnstile> \<forall>x ~Fxy & xyG] = [v \<^bold>\<Turnstile> (\<^bold>\<forall>x. \<^bold>\<not>\<lparr>F, (x, y)\<rparr>) \<^bold>& \<lbrace>(x, y), G\<rbrace>]" by simp
 private lemma "[v \<Turnstile> \<forall>x\<exists>y ~Fxy & xyxG] = [v \<^bold>\<Turnstile> (\<^bold>\<forall>x. \<^bold>\<exists>y. \<^bold>\<not>\<lparr>F, (x, y)\<rparr>) \<^bold>& \<lbrace>(x, y, x), G\<rbrace>]"  by simp
 private lemma "[v \<Turnstile> \<forall>x (~Fxy & xyG)] = [v \<^bold>\<Turnstile> \<^bold>\<forall>x. \<^bold>\<not>\<lparr>F, (x, y)\<rparr> \<^bold>& \<lbrace>(x, y), G\<rbrace>]" by simp

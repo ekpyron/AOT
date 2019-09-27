@@ -282,6 +282,7 @@ next
     by (auto simp: AOT_meta_simp \<kappa>\<^sub>1_def \<kappa>\<^sub>2_def)
   thus "(AOT_meta_enc \<kappa>\<^sub>1 = AOT_meta_enc \<kappa>\<^sub>2) = (\<kappa>\<^sub>1 = \<kappa>\<^sub>2)" by auto
 qed
+end
 
 (* Verify that there's still a model. *)
 lemma "True" nitpick[user_axioms, satisfy, expect = genuine] oops
