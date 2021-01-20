@@ -126,15 +126,15 @@ AOT_theorem p_identity:
                  AOT_sem_forall AOT_sem_box AOT_sem_equiv)
 
 AOT_theorem p_identity_2_a:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [\<Pi>]zy\<^sub>2] = [\<lambda>z [\<Pi>']zy\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1z] = [\<lambda>z [\<Pi>']y\<^sub>1z])\<close>
+  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y([\<lambda>z [\<Pi>]zy] = [\<lambda>z [\<Pi>']zy] & [\<lambda>z [\<Pi>]yz] = [\<lambda>z [\<Pi>']yz])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem p_identity_2_b:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [\<Pi>]zy\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']zy\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2z])\<close>
+  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem p_identity_2_c:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3\<forall>y\<^sub>4([\<lambda>z [\<Pi>]zy\<^sub>2y\<^sub>3y\<^sub>4] = [\<lambda>z [\<Pi>']zy\<^sub>2y\<^sub>3y\<^sub>4] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>3y\<^sub>4] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>3y\<^sub>4] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2zy\<^sub>4] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2zy\<^sub>4] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
+  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 
