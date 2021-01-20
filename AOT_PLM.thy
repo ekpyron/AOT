@@ -555,8 +555,7 @@ AOT_theorem cqt_further_11: \<open>\<exists>\<alpha>\<exists>\<beta> \<phi>{\<al
 AOT_theorem log_prop_prop_1: \<open>[\<lambda> \<phi>]\<down>\<close>
   using cqt_2_lambda0 by auto
 
-(* TODO: type inference *)
-AOT_theorem log_prop_prop_2: \<open>\<phi>\<down>\<close> for \<phi> :: \<o>
+AOT_theorem log_prop_prop_2: \<open>\<phi>\<down>\<close>
   by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF existence_3]; rule cqt_2_lambda)
      (auto intro!: AOT_instance_of_cqt_2_intro)
 
@@ -568,57 +567,61 @@ proof -
     using cqt_1 "\<rightarrow>E" by blast
 qed
 
-AOT_theorem "t=t-proper_1_\<kappa>": \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>\<down>\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<kappa> = \<kappa>'\<close>
-  AOT_hence \<open>O!\<kappa> \<or> A!\<kappa>\<close>
-    by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF identity]])
-       (meson "\<rightarrow>I" "\<or>I"(1) "&E"(1))+
-  AOT_thus \<open>\<kappa>\<down>\<close>
-    by (rule "\<or>E"(1))
-       (metis cqt_5a "\<rightarrow>I" "\<rightarrow>E" "&E"(2))+
-qed
+(* TODO: replace this mechanism by a "proof by types" command *)
+class AOT_term_id = AOT_Term + assumes "t=t-proper_1"[AOT]: \<open>[v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>\<down>]\<close>
 
-AOT_theorem "t=t-proper_1_\<Pi>": \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>\<down>\<close> for \<Pi> :: \<open><'a::AOT_\<kappa>s>\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<Pi> = \<Pi>'\<close>
-  AOT_thus \<open>\<Pi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
-qed
-
-AOT_theorem "t=t-proper_1_\<phi>": \<open>\<guillemotleft>\<phi>::\<o>\<guillemotright> = \<psi> \<rightarrow> \<phi>\<down>\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<phi> = \<psi>\<close>
-  AOT_thus \<open>\<phi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
-qed
-
-class AOT_id = AOT_Term + assumes "t=t-proper_1": \<open>[v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>\<down>]\<close>
-
-instance AOT_\<kappa> \<subseteq> AOT_id
+instance AOT_\<kappa> \<subseteq> AOT_term_id
 proof
-  (* TODO: introduce AOT_fix_world instead of using AOT_modally_strict? *)
   AOT_modally_strict {
-    AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close> for \<tau> \<tau>' :: 'a
-      using "t=t-proper_1_\<kappa>" by blast
+    AOT_show \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>\<down>\<close> for \<kappa> \<kappa>' :: 'a (* TODO: how to get rid of the fixes, resp. the warning without the type? *)
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<kappa> = \<kappa>'\<close>
+      AOT_hence \<open>O!\<kappa> \<or> A!\<kappa>\<close>
+        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF identity]])
+           (meson "\<rightarrow>I" "\<or>I"(1) "&E"(1))+
+      AOT_thus \<open>\<kappa>\<down>\<close>
+        by (rule "\<or>E"(1))
+           (metis cqt_5a "\<rightarrow>I" "\<rightarrow>E" "&E"(2))+
+    qed
   }
 qed
 
-(* TODO think about generally introducing product definitions *)
-
-instance prod :: (AOT_\<kappa>, AOT_id) AOT_id
+instance rel :: (AOT_\<kappa>s) AOT_term_id
 proof
   AOT_modally_strict {
-    AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close> for \<tau> \<tau>' :: \<open>'a\<times>'b\<close>
-      by (meson AOT_sem_eq "\<rightarrow>I")
+    AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close> (* TODO: how to get rid of the fixes? *)
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<Pi> = \<Pi>'\<close>
+      AOT_thus \<open>\<Pi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
+    qed
   }
 qed
 
-instance rel :: (AOT_\<kappa>s) AOT_id
+instance \<o> :: AOT_term_id
 proof
   AOT_modally_strict {
-    AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close> for \<tau> \<tau>' :: \<open><'a>\<close>
-      using "t=t-proper_1_\<Pi>" by blast
+    fix \<phi> \<psi>
+    AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<phi>\<down>\<close>
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<phi> = \<psi>\<close>
+      AOT_thus \<open>\<phi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
+    qed
   }
 qed
+
+AOT_add_term_sort AOT_term_id
+
+notepad
+begin
+  AOT_modally_strict {
+    fix \<tau> \<tau>'
+    AOT_have \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close>
+      by (simp add: "t=t-proper_1")
+  }
+end
+
+AOT_theorem \<open>\<phi> = \<psi> \<rightarrow> \<phi>\<down>\<close>
+  by (simp add: "t=t-proper_1")
 
 
 end

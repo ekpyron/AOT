@@ -773,13 +773,7 @@ class AOT_\<kappa> = AOT_\<kappa>s + AOT_UnaryIndividualTerm + AOT_UnaryIndividu
 instance \<kappa> :: AOT_\<kappa> by standard
 instance prod :: (AOT_\<kappa>, AOT_\<kappa>s) AOT_\<kappa>s by standard
 
-AOT_register_variable_name \<open>x\<close> AOT_\<kappa> AOT_\<kappa>s
-AOT_register_variable_name \<open>y\<close> AOT_\<kappa> AOT_\<kappa>s
-AOT_register_variable_name \<open>z\<close> AOT_\<kappa> AOT_\<kappa>s
-AOT_register_variable_name \<open>\<nu>\<close> AOT_\<kappa> AOT_\<kappa>s
-AOT_register_variable_name \<open>\<mu>\<close> AOT_\<kappa> AOT_\<kappa>s
-
-AOT_register_metavariable_name \<open>\<kappa>\<close> AOT_\<kappa> AOT_\<kappa>s
+AOT_add_individual_sorts AOT_\<kappa> AOT_\<kappa>s
 
 
 (********* TODO: this is still a mess - simplify all this and make sure it's valid ********)
