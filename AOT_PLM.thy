@@ -40,7 +40,7 @@ AOT_theorem df_rules_formulas_2: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f 
 
 
 AOT_theorem df_rules_terms_1:
-  assumes \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
+  assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close>
   shows \<open>(\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}) & (\<not>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<not>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>)\<close>
   using assms by (simp add: AOT_sem_conj AOT_sem_imp AOT_sem_eq AOT_sem_not AOT_sem_denotes AOT_model_id_def) (* NOTE: semantics needed *)
 AOT_theorem df_rules_terms_2:
@@ -801,5 +801,156 @@ proof -
     using df_simplify_1 "&I" by blast
 qed
 
+AOT_theorem p_identity_thm2_3:
+  \<open>p = q \<equiv> [\<lambda>x p] = [\<lambda>x q]\<close>
+proof -
+  AOT_have \<open>p = q \<equiv> p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
+    using p_identity_3 df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+  moreover AOT_have \<open>p\<down>\<close> and \<open>q\<down>\<close>
+    by (auto simp: cqt_2_const_var)
+  ultimately show ?thesis
+    using df_simplify_1 "&I" by blast
+qed
+
+class AOT_Term_id_2 = AOT_Term_id + assumes id_eq_1: \<open>[v \<Turnstile> \<alpha> = \<alpha>]\<close>
+
+instance AOT_\<kappa> \<subseteq> AOT_Term_id_2
+proof
+  AOT_modally_strict {
+    fix x :: "'a AOT_var"
+    {
+      AOT_assume \<open>O!x\<close>
+      moreover AOT_have \<open>\<box>\<forall>F([F]x \<equiv> [F]x)\<close>
+        using RN GEN oth_class_taut_3_a by fast
+      ultimately AOT_have \<open>O!x & O!x & \<box>\<forall>F([F]x \<equiv> [F]x)\<close> using "&I" by simp
+    }
+    moreover {
+      AOT_assume \<open>A!x\<close>
+      moreover AOT_have \<open>\<box>\<forall>F(x[F] \<equiv> x[F])\<close>
+        using RN GEN oth_class_taut_3_a by fast
+      ultimately AOT_have \<open>A!x & A!x & \<box>\<forall>F(x[F] \<equiv> x[F])\<close> using "&I" by simp
+    }
+    ultimately AOT_have \<open>(O!x & O!x & \<box>\<forall>F([F]x \<equiv> [F]x)) \<or> (A!x & A!x & \<box>\<forall>F(x[F] \<equiv> x[F]))\<close>
+      using oa_exist_3 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_c raa_cor_1 by blast
+    AOT_thus \<open>x = x\<close>
+      using identity[THEN df_rules_formulas_2] "\<rightarrow>E" by blast
+  }
+qed
+
+instance rel :: (AOT_\<kappa>s) AOT_Term_id_2
+proof
+  AOT_modally_strict {
+    fix F :: "<'a> AOT_var"
+    AOT_have 0: \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
+      by (simp add: lambda_predicates_3)
+    AOT_have \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
+      by (rule cqt_2_lambda)
+         (auto intro: AOT_instance_of_cqt_2_intro)
+    AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = [\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n]\<close>
+      using lambda_predicates_1 "\<rightarrow>E" by blast
+    AOT_show \<open>F = F\<close> using "=E" 0 by force 
+  }
+qed
+
+instance \<o> :: AOT_Term_id_2
+proof
+  AOT_modally_strict {
+    fix p :: "\<o> AOT_var"
+    AOT_have 0: \<open>[\<lambda> p] = p\<close>
+      by (simp add: lambda_predicates_3_b)
+    AOT_have \<open>[\<lambda> p]\<down>\<close>
+      by (rule cqt_2_lambda0)
+    AOT_hence \<open>[\<lambda> p] = [\<lambda> p]\<close>
+      using lambda_predicates_1_b "\<rightarrow>E" by blast
+    AOT_show \<open>p = p\<close> using "=E" 0 by force
+  }
+qed
+
+AOT_add_term_sort AOT_Term_id_2
+
+(* TODO: Interestingly, this doesn't depend on id_eq_1 at all! *)
+AOT_theorem id_eq_2: \<open>\<alpha> = \<beta> \<rightarrow> \<beta> = \<alpha>\<close>
+(*  by (meson "rule=E" deduction_theorem) *)
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>\<alpha> = \<beta>\<close>
+  moreover AOT_hence \<open>\<beta> = \<beta>\<close> using "=E"[of v "\<lambda> \<tau> . \<guillemotleft>\<tau> = \<beta>\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
+  moreover AOT_have \<open>\<alpha> = \<alpha> \<rightarrow> \<alpha> = \<alpha>\<close> using if_p_then_p by blast
+  ultimately AOT_show \<open>\<beta> = \<alpha>\<close>
+    using "\<rightarrow>E" "\<rightarrow>I" "=E"[of v "\<lambda> \<tau> . \<guillemotleft>(\<tau> = \<tau>) \<rightarrow> (\<tau> = \<alpha>)\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
+qed
+
+AOT_theorem id_eq_3: \<open>\<alpha> = \<beta> & \<beta> = \<gamma> \<rightarrow> \<alpha> = \<gamma>\<close>
+  using "rule=E" "\<rightarrow>I" "&E" by blast
+
+AOT_theorem id_eq_4: \<open>\<alpha> = \<beta> \<equiv> \<forall>\<gamma> (\<alpha> = \<gamma> \<equiv> \<beta> = \<gamma>)\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<alpha> = \<beta>\<close>
+  AOT_hence 1: \<open>\<beta> = \<alpha>\<close> using id_eq_2 "\<rightarrow>E" by blast
+  AOT_show \<open>\<forall>\<gamma> (\<alpha> = \<gamma> \<equiv> \<beta> = \<gamma>)\<close>
+    by (rule GEN) (metis "\<equiv>I" "\<rightarrow>I" 0 "1" "rule=E")
+next
+  AOT_assume \<open>\<forall>\<gamma> (\<alpha> = \<gamma> \<equiv> \<beta> = \<gamma>)\<close>
+  AOT_hence \<open>\<alpha> = \<alpha> \<equiv> \<beta> = \<alpha>\<close> using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<alpha> = \<alpha> \<rightarrow> \<beta> = \<alpha>\<close> using "\<equiv>E"(1) "\<rightarrow>I" by blast
+  AOT_hence \<open>\<beta> = \<alpha>\<close> using id_eq_1 "\<rightarrow>E" by blast
+  AOT_thus \<open>\<alpha> = \<beta>\<close> using id_eq_2 "\<rightarrow>E" by blast
+qed
+
+AOT_theorem "rule=I_1": assumes \<open>\<tau>\<down>\<close> shows \<open>\<tau> = \<tau>\<close>
+proof -
+  AOT_have \<open>\<forall>\<alpha> (\<alpha> = \<alpha>)\<close>
+    by (rule GEN) (metis id_eq_1)
+  AOT_thus \<open>\<tau> = \<tau>\<close> using assms "\<forall>E" by blast
+qed
+
+AOT_theorem "rule=I_2": assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close> shows "[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]"
+proof -
+  AOT_have \<open>\<forall>\<alpha> (\<alpha> = \<alpha>)\<close>
+    by (rule GEN) (metis id_eq_1)
+  moreover AOT_have \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close> using assms by (rule cqt_2_lambda)
+  ultimately AOT_show \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<close> using assms "\<forall>E" by blast
+qed
+
+lemmas "=I" = "rule=I_1" id_eq_1 "rule=I_2"
+
+AOT_theorem rule_id_def_1:
+  assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close>
+  shows \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
+proof -
+  AOT_have \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
+    using df_rules_terms_1 assms(1) "&E" by blast
+  AOT_thus \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
+    using assms(2) "\<rightarrow>E" by blast
+qed
+
+AOT_theorem rule_id_def_1_b:
+  assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close>
+  shows \<open>\<tau> = \<sigma>\<close>
+proof -
+  AOT_have \<open>\<sigma>\<down> \<rightarrow> \<tau> = \<sigma>\<close>
+    using df_rules_terms_2 assms(1) "&E" by blast
+  AOT_thus \<open>\<tau> = \<sigma>\<close>
+    using assms(2) "\<rightarrow>E" by blast
+qed
+
+AOT_theorem rule_id_def_2_a:
+  fixes \<phi> :: \<open>'a::AOT_Term_id \<Rightarrow> \<o>\<close> (* TODO: how to avoid this *)
+  assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
+  shows \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
+proof -
+  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using rule_id_def_1 assms(1,2) by blast
+  AOT_thus \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "=E" by blast
+qed
+
+AOT_theorem rule_id_def_2_b:
+  fixes \<phi> :: \<open>'a::AOT_Term_id_2 \<Rightarrow> \<o>\<close> (* TODO: how to avoid this *)
+  assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
+  shows \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
+proof -
+  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using rule_id_def_1 assms(1,2) by blast
+  AOT_hence \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
+    using "=E" "=I"(1) "t=t-proper_1" "\<rightarrow>E" by fast
+  AOT_thus \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "=E" by blast
+qed
 
 end

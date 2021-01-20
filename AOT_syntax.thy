@@ -275,6 +275,8 @@ syntax "" :: \<open>desc \<Rightarrow> free_var\<close> ("_")
 syntax "" :: \<open>\<Pi> \<Rightarrow> free_var\<close> ("_")
 syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<phi>\<close> ("_'{_'}")
 syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<tau>\<close> ("_'{_'}")
+syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
+syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
 syntax "_AOT_term_var" :: \<open>id_position \<Rightarrow> free_var\<close> ("_")
 syntax "" :: \<open>any \<Rightarrow> free_var\<close> ("\<guillemotleft>_\<guillemotright>")
 syntax "" :: \<open>free_var \<Rightarrow> free_vars\<close> ("_")
@@ -291,21 +293,23 @@ fun parseVar unary ctxt [var as Const ("_constrain", _) $ Free (x,_) $ Free _] =
           | _ => raise Term.TERM ("Unknown variable prefix.", [var]))
   | parseVar _ _ var = raise Term.TERM ("Expected constrained free variable.", var)
 
-fun constrainTrm ctxt unary (Free (var, _)) = (fn trm =>
+fun constrainTrm ctxt forceMeta unary (Free (var, _)) = (fn trm =>
       case fetchTermConstraint ctxt var unary of SOME (meta,constraint) =>
-        if meta then
+        if forceMeta orelse meta then
           Const ("_constrain", dummyT) $ trm $ constraint
         else
           Const ("_constrain", dummyT) $ (Const (\<^const_syntax>\<open>AOT_term_of_var\<close>, dummyT) $ trm) $ constraint
       | _ => raise Term.TERM ("Unknown variable or metavariable prefix.", [trm]))
-  | constrainTrm _ _ (Bound _) = (fn var => var)
-  | constrainTrm _ _ trm = raise Term.TERM ("Expected free or bound variable.", [trm])
-fun processFrees ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (constrainTrm ctxt true (dropConstraints v) v)
-  | processFrees ctxt (Const ("_AOT_term_vars", _) $ v) = (constrainTrm ctxt false (dropConstraints v) v)
-  | processFrees _ (Const (\<^syntax_const>\<open>_AOT_verbatim\<close>, _) $ v) = v
-  | processFrees ctxt (x $ y) = processFrees ctxt x $ processFrees ctxt y
-  | processFrees ctxt (Abs (x,y,z)) = Abs (x,y,processFrees ctxt z)
-  | processFrees _ x = x
+  | constrainTrm _ _ _ (Bound _) = (fn var => var)
+  | constrainTrm _ _ _ trm = raise Term.TERM ("Expected free or bound variable.", [trm])
+fun processFreesForceMeta forceMeta ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (constrainTrm ctxt forceMeta true (dropConstraints v) v)
+  | processFreesForceMeta forceMeta ctxt (Const ("_AOT_term_vars", _) $ v) = (constrainTrm ctxt forceMeta false (dropConstraints v) v)
+  | processFreesForceMeta _ _ (Const (\<^syntax_const>\<open>_AOT_verbatim\<close>, _) $ v) = v
+  | processFreesForceMeta forceMeta ctxt (x $ y) = processFreesForceMeta forceMeta ctxt x $ processFreesForceMeta forceMeta ctxt y
+  | processFreesForceMeta forceMeta ctxt (Abs (x,y,z)) = Abs (x,y,processFreesForceMeta forceMeta ctxt z)
+  | processFreesForceMeta _ _ x = x
+val processFrees = processFreesForceMeta false
+val processFreesAlwaysMeta = processFreesForceMeta true
 \<close>
 
 (* TODO: move *)
@@ -413,8 +417,8 @@ parse_translation\<open>
 let
 fun parseIdDef ctxt [lhs, rhs] =
   let
-    val lhs = processFrees ctxt lhs
-    val rhs = processFrees ctxt rhs
+    val lhs = processFreesAlwaysMeta ctxt lhs
+    val rhs = processFreesAlwaysMeta ctxt rhs
     fun add_frees (Free _) frees = frees
       | add_frees (Const _) frees = frees
       | add_frees (Free _ $ args) frees = Term.add_frees args frees
