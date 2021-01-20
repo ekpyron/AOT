@@ -58,7 +58,7 @@ AOT_theorem oa_2: \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<
 AOT_theorem identity: \<open>\<kappa> = \<kappa>' \<equiv>\<^sub>d\<^sub>f ([O!]\<kappa> & [O!]\<kappa>' & \<box>\<forall>F ([F]\<kappa> \<equiv> [F]\<kappa>')) \<or> ([A!]\<kappa> & [A!]\<kappa>' & \<box>\<forall>F (\<kappa>[F] \<equiv> \<kappa>'[F]))\<close>
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ \<kappa> \<kappa>']
-  by (simp add: AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
+  by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
 
 (* TODO: remove, resp. move to later *)
 (*
@@ -223,6 +223,8 @@ AOT_theorem lambda_predicates_2: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x
   by induct (simp add: AOT_sem_denotes AOT_sem_equiv AOT_sem_imp AOT_sem_lambda_beta)
 AOT_theorem lambda_predicates_3: \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
   by induct (simp add: AOT_sem_denotes AOT_sem_lambda_eta AOT_sem_vars_denote)
+AOT_theorem lambda_predicates_3_b: \<open>[\<lambda> p] = p\<close>
+  by induct (simp add: AOT_sem_eq AOT_sem_lambda0)
 AOT_theorem safe_ext: \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
   using AOT_sem_lambda_coex 
   by (simp add: AOT_sem_imp AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box AOT_sem_forall) blast

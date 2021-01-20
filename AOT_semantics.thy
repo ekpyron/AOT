@@ -291,26 +291,12 @@ lemma AOT_sem_id_def0E3:
   using AOT_sem_id_def0E1[OF assms]
   by (simp add: AOT_sem_eq AOT_sem_denotes)
 
-AOT_define AOT_ordinary :: \<open>\<Pi>\<close> (\<open>O!\<close>) \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close>
-AOT_define AOT_abstract :: \<open>\<Pi>\<close> (\<open>A!\<close>) \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close>
-
 lemma AOT_sem_ordinary_def_denotes: \<open>[w \<Turnstile> [\<lambda>x \<diamond>E!x]\<down>]\<close>
   unfolding AOT_sem_denotes AOT_model_lambda_denotes
   by (auto simp: AOT_sem_dia AOT_model_concrete_equiv AOT_sem_concrete AOT_sem_denotes)
 lemma AOT_sem_abstract_def_denotes: \<open>[w \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<down>]\<close>
   unfolding AOT_sem_denotes AOT_model_lambda_denotes
   by (auto simp: AOT_sem_dia AOT_model_concrete_equiv AOT_sem_concrete AOT_sem_denotes AOT_sem_not)
-lemma AOT_sem_ordinary: "\<guillemotleft>O!\<guillemotright> = \<guillemotleft>[\<lambda>x \<diamond>E!x]\<guillemotright>"
-  using AOT_ordinary[THEN AOT_sem_id_def0E1, OF AOT_sem_ordinary_def_denotes]
-  by (auto simp: AOT_sem_eq)
-lemma AOT_sem_abstract: "\<guillemotleft>A!\<guillemotright> = \<guillemotleft>[\<lambda>x \<not>\<diamond>E!x]\<guillemotright>"
-  using AOT_abstract[THEN AOT_sem_id_def0E1, OF AOT_sem_abstract_def_denotes]
-  by (auto simp: AOT_sem_eq)
-lemma AOT_sem_ordinary_denotes: \<open>[w \<Turnstile> O!\<down>]\<close>
-  by (simp add: AOT_sem_ordinary AOT_sem_ordinary_def_denotes)
-lemma AOT_meta_abstract_denotes: \<open>[w \<Turnstile> A!\<down>]\<close>
-  by (simp add: AOT_sem_abstract AOT_sem_abstract_def_denotes)
-
 
 class AOT_Individual = 
   fixes AOT_sem_proj_id :: \<open>'a::AOT_IndividualTerm \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close>
@@ -511,8 +497,8 @@ class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
       and AOT_sem_unary_proj_enc: \<open>AOT_proj_enc x \<psi> = AOT_enc x \<guillemotleft>[\<lambda>z \<psi>{z}]\<guillemotright>\<close>
       and AOT_sem_nocoder: \<open>[v \<Turnstile> E!\<kappa>] \<Longrightarrow> \<not>[w \<Turnstile> \<guillemotleft>AOT_enc \<kappa> \<Pi>\<guillemotright>]\<close>
       and AOT_sem_ind_eq: \<open>([v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<kappa>'\<down>] \<and> \<kappa> = \<kappa>') =
-       (([v \<Turnstile> [O!]\<kappa>] \<and> [v \<Turnstile> [O!]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>']))
-      \<or> ([v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])))\<close>
+       (([v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>']))
+      \<or> ([v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])))\<close>
 
 instantiation \<kappa> :: AOT_Enc
 begin
@@ -592,15 +578,14 @@ next
   show \<open>[v \<Turnstile> E!\<kappa>] \<Longrightarrow> \<not> [w \<Turnstile> \<kappa>[\<Pi>]]\<close> for v w and \<kappa> :: \<kappa> and \<Pi>
     by (simp add: AOT_enc_\<kappa>_meta AOT_sem_concrete AOT_model_nocoder)
 next
-  let ?ordeq = \<open>\<lambda>v \<kappa> \<kappa>'. [v \<Turnstile> [O!]\<kappa>] \<and> [v \<Turnstile> [O!]\<kappa>'] \<and> (\<forall> v \<Pi> . AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>'])\<close>
-  let ?abseq = \<open>\<lambda>v \<kappa> \<kappa>'. [v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall> v \<Pi> . AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close>
+  let ?ordeq = \<open>\<lambda>v \<kappa> \<kappa>'. [v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>'])\<close>
+  let ?abseq = \<open>\<lambda>v \<kappa> \<kappa>'. [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close>
   fix v and \<kappa> \<kappa>' :: \<kappa>
   {
     assume 0: \<open>[v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<kappa>'\<down>] \<and> \<kappa> = \<kappa>'\<close>
     {
       assume \<open>is_\<omega>\<kappa> \<kappa>'\<close>
-      hence \<open>[v \<Turnstile> [O!]\<kappa>']\<close>
-        unfolding AOT_sem_ordinary
+      hence \<open>[v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>']\<close>
         apply (subst AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes, of v \<kappa>'])
          apply (simp add: "0")
         apply (simp add: AOT_sem_dia)
@@ -609,8 +594,7 @@ next
     }
     moreover {
       assume \<open>is_\<alpha>\<kappa> \<kappa>'\<close>
-      hence \<open>[v \<Turnstile> [A!]\<kappa>']\<close>
-        unfolding AOT_sem_abstract
+      hence \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>']\<close>
         apply (subst AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes, of v \<kappa>'])
          apply (simp add: "0")
         apply (simp add: AOT_sem_not AOT_sem_dia)
@@ -625,9 +609,7 @@ next
     hence \<kappa>_denotes: \<open>[v \<Turnstile> \<kappa>\<down>]\<close> and \<kappa>'_denotes: \<open>[v \<Turnstile> \<kappa>'\<down>]\<close> 
       by (simp add: AOT_sem_denotes AOT_sem_exe)+
     hence \<open>is_\<omega>\<kappa> \<kappa>\<close> and \<open>is_\<omega>\<kappa> \<kappa>'\<close>
-      using AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes, unfolded AOT_sem_ordinary[symmetric]]
-      unfolding AOT_sem_denotes
-      by (metis (full_types) AOT_sem_concrete AOT_model_concrete_\<kappa>.simps(2) AOT_model_denotes_\<kappa>_def AOT_sem_dia \<kappa>.exhaust_disc is_\<alpha>\<kappa>_def ordeq)+
+      by (metis AOT_model_concrete_\<kappa>.simps(2) AOT_model_denotes_\<kappa>_def AOT_sem_concrete AOT_sem_denotes AOT_sem_dia AOT_sem_lambda_beta AOT_sem_ordinary_def_denotes \<kappa>.collapse(2) \<kappa>.exhaust_disc ordeq)+
     have denotes: \<open>[v \<Turnstile> [\<lambda>z \<guillemotleft>\<epsilon>\<^sub>\<o> w . \<kappa>\<upsilon> z = \<kappa>\<upsilon> \<kappa>\<guillemotright>]\<down>]\<close>
       unfolding AOT_sem_denotes AOT_model_lambda_denotes
       by (simp add: AOT_model_term_equiv_\<kappa>_def)
@@ -642,8 +624,7 @@ next
     hence \<kappa>_denotes: \<open>[v \<Turnstile> \<kappa>\<down>]\<close> and \<kappa>'_denotes: \<open>[v \<Turnstile> \<kappa>'\<down>]\<close> 
       by (simp add: AOT_sem_denotes AOT_sem_exe)+
     hence \<open>\<not>is_\<omega>\<kappa> \<kappa>\<close> and \<open>\<not>is_\<omega>\<kappa> \<kappa>'\<close>
-      using AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes, unfolded AOT_sem_abstract[symmetric]]
-      by (metis (mono_tags, hide_lams) AOT_sem_concrete AOT_model_concrete_\<kappa>.simps(1) AOT_sem_dia AOT_sem_not \<kappa>.collapse(1) AOT_model_\<omega>_concrete_in_some_world \<open>[v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close>)+
+      by (metis AOT_model_\<omega>_concrete_in_some_world AOT_model_concrete_\<kappa>.simps(1) AOT_sem_concrete AOT_sem_dia AOT_sem_exe AOT_sem_lambda_beta AOT_sem_not \<kappa>.collapse(1) \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close>)+
     hence \<open>is_\<alpha>\<kappa> \<kappa>\<close> and \<open>is_\<alpha>\<kappa> \<kappa>'\<close>
       by (meson AOT_sem_denotes AOT_model_denotes_\<kappa>_def \<kappa>.exhaust_disc \<kappa>_denotes \<kappa>'_denotes)+
     then obtain x y where \<kappa>_def: "\<kappa> = \<alpha>\<kappa> x" and \<kappa>'_def: "\<kappa>' = \<alpha>\<kappa> y"
@@ -658,7 +639,7 @@ next
         apply (simp add: AOT_model_denotes_\<kappa>_def)
         by (metis (mono_tags) AOT_rel_equiv_def Quotient_def urrel_quotient)
       hence \<open>[v \<Turnstile> \<kappa>'[\<guillemotleft>urrel_to_rel r\<guillemotright>]]\<close>
-        using AOT_enc_\<kappa>_meta \<open>[v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close> by blast
+        using AOT_enc_\<kappa>_meta \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close> by blast
       hence \<open>r \<in> y\<close>
         unfolding \<kappa>'_def
         unfolding AOT_enc_\<kappa>_meta
@@ -676,7 +657,7 @@ next
         apply (simp add: AOT_model_denotes_\<kappa>_def)
         by (metis (mono_tags) AOT_rel_equiv_def Quotient_def urrel_quotient)
       hence \<open>[v \<Turnstile> \<kappa>[\<guillemotleft>urrel_to_rel r\<guillemotright>]]\<close>
-        using AOT_enc_\<kappa>_meta \<open>[v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close> by blast
+        using AOT_enc_\<kappa>_meta \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall>v \<Pi>. AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])\<close> by blast
       hence \<open>r \<in> x\<close>
         unfolding \<kappa>_def
         unfolding AOT_enc_\<kappa>_meta
@@ -689,8 +670,8 @@ next
       using \<kappa>'_def \<kappa>'_denotes \<kappa>_def by blast
   }
   ultimately show \<open>([v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<kappa>'\<down>] \<and> \<kappa> = \<kappa>') =
-       (([v \<Turnstile> [O!]\<kappa>] \<and> [v \<Turnstile> [O!]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>']))
-      \<or> ([v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])))\<close>
+       (([v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> [\<Pi>]\<kappa>] = [v \<Turnstile> [\<Pi>]\<kappa>']))
+      \<or> ([v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>] \<and> [v \<Turnstile> [\<lambda>x \<not>\<diamond>E!x]\<kappa>'] \<and> (\<forall> v \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]])))\<close>
     unfolding AOT_sem_denotes
     by auto
 qed
@@ -775,6 +756,19 @@ instance prod :: (AOT_\<kappa>, AOT_\<kappa>s) AOT_\<kappa>s by standard
 
 AOT_add_individual_sorts AOT_\<kappa> AOT_\<kappa>s
 
+AOT_define AOT_ordinary :: \<open>\<Pi>\<close> (\<open>O!\<close>) \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close>
+AOT_define AOT_abstract :: \<open>\<Pi>\<close> (\<open>A!\<close>) \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close>
+
+lemma AOT_sem_ordinary: "\<guillemotleft>O!\<guillemotright> = \<guillemotleft>[\<lambda>x \<diamond>E!x]\<guillemotright>"
+  using AOT_ordinary[THEN AOT_sem_id_def0E1, OF AOT_sem_ordinary_def_denotes]
+  by (auto simp: AOT_sem_eq)
+lemma AOT_sem_abstract: "\<guillemotleft>A!\<guillemotright> = \<guillemotleft>[\<lambda>x \<not>\<diamond>E!x]\<guillemotright>"
+  using AOT_abstract[THEN AOT_sem_id_def0E1, OF AOT_sem_abstract_def_denotes]
+  by (auto simp: AOT_sem_eq)
+lemma AOT_sem_ordinary_denotes: \<open>[w \<Turnstile> O!\<down>]\<close>
+  by (simp add: AOT_sem_ordinary AOT_sem_ordinary_def_denotes)
+lemma AOT_meta_abstract_denotes: \<open>[w \<Turnstile> A!\<down>]\<close>
+  by (simp add: AOT_sem_abstract AOT_sem_abstract_def_denotes)
 
 (********* TODO: this is still a mess - simplify all this and make sure it's valid ********)
 definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>) \<Rightarrow> bool\<close> where
