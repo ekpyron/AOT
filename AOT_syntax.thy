@@ -8,11 +8,21 @@ theory AOT_syntax
        and "AOT_Category_Term"
        and "AOT_add_individual_sorts" :: thy_decl
        and "AOT_add_term_sort" :: thy_decl
+     abbrevs "actually" = "\<^bold>\<A>"
+         and "neccessarily" = "\<box>"
+         and "possibly" = "\<diamond>"
+         and "the" = "\<^bold>\<iota>"
+         and "lambda" = "[\<lambda>]"
+         and "being such that" = "[\<lambda> ]"
+         and "forall" = "\<forall>"
+         and "exists" = "\<exists>"
+         and "equivalent" = "\<equiv>"
+         and "equal" = "="
+         and "by definition" = "\<^sub>d\<^sub>f"
+         and "denotes" = "\<down>"
 begin
 
-
 ML\<open>
-
 datatype AOT_TypeCategory = AOT_Individual | AOT_Relation | AOT_Proposition | AOT_Term
 val AOT_TypeCategory_ord = let
   fun AOT_TypeCategory_int AOT_Individual = 0
@@ -319,8 +329,13 @@ syntax "_AOT_prop" :: \<open>\<phi> \<Rightarrow> AOT_prop\<close> (\<open>_\<cl
        "_AOT_theorem" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>_\<close>)
        "_AOT_nec_theorem" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box>_\<close>)
        "_AOT_equiv_def" :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
+       "_AOT_axiom" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
+       "_AOT_act_axiom" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
+
+syntax "_AOT_axiom" :: "\<phi> \<Rightarrow> AOT_axiom" (\<open>_\<close>)
+syntax "_AOT_act_axiom" :: "\<phi> \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
 
 translations
   "_AOT_props a b" => "CONST Pure.conjunction a b"
@@ -348,6 +363,8 @@ in
         | _ => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ (processFrees ctxt x))
     in trm end),
   (\<^syntax_const>\<open>_AOT_theorem\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ @{const w\<^sub>0} $ (processFrees ctxt x))),
+  (\<^syntax_const>\<open>_AOT_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_axiom} $ (processFrees ctxt x))),
+  (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ (processFrees ctxt x))),
   (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, fn ctxt => fn [x] => let
     val trm = processFrees ctxt x
     val world = singleton (Variable.variant_frees ctxt [trm]) ("v", @{typ w})

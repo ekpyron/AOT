@@ -8,13 +8,13 @@ structure AOT_ProofData = Proof_Data
 fun AOT_note_theorems thms = Local_Theory.background_theory
   (Context.theory_map (fold AOT_Theorems.add_thm (map Drule.export_without_context (flat thms))))
 
-fun AOT_read_prop ctxt prop = (let
-    val ctxt' = Config.put Syntax.root @{nonterminal AOT_prop} ctxt
+fun AOT_read_prop nonterminal ctxt prop = (let
+    val ctxt' = Config.put Syntax.root nonterminal ctxt
     val trm = Syntax.parse_term ctxt' prop
     val typ = Term.fastype_of (Syntax.check_term ctxt' trm)
     val trm = if typ = @{typ prop} then trm else HOLogic.mk_Trueprop trm (* TODO: try to avoid *)
   in trm end)
-fun AOT_check_prop ctxt prop = AOT_read_prop ctxt prop |> Syntax.check_prop ctxt;
+fun AOT_check_prop nonterminal ctxt prop = AOT_read_prop nonterminal ctxt prop |> Syntax.check_prop ctxt;
 
 let
 fun close_form t = fold_rev (fn (s, T) => fn t => HOLogic.mk_all (s, T, t)) (Term.add_frees t []) t
@@ -152,7 +152,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     val thy' = Sign.add_consts [(bnd, @{typ 'a}, Mixfix.NoSyn)] (Proof_Context.theory_of ctxt)
     val thy' = Sign.add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
     (* Try to parse the definition using the temporary context. *)
-    val trm = AOT_check_prop (Proof_Context.init_global thy') defprop
+    val trm = AOT_check_prop @{nonterminal AOT_prop} (Proof_Context.init_global thy') defprop
     (* Extract lhs, rhs and the full definition from the parsed proposition and delegate. *)
     val (ctxt, thm) = case trm of (Const (\<^const_name>\<open>HOL.Trueprop\<close>, _) $ 
       (trm as Const (n, _) $ lhs $ rhs)) => 
@@ -272,7 +272,7 @@ fun declare_elem prep_var (Element.Fixes fixes) ctxt =
   | declare_elem _ (Element.Notes _) ctxt = ctxt
   | declare_elem _ (Element.Lazy_Notes _) ctxt = ctxt;
 
-fun prep_full_context_statement parse_prop raw_elems raw_stmt ctxt1 =
+fun prep_full_context_statement parse_prop prop_root elem_root raw_elems raw_stmt ctxt1 =
   let
 
     fun prep_elem raw_elem ctxt =
@@ -281,14 +281,14 @@ fun prep_full_context_statement parse_prop raw_elems raw_stmt ctxt1 =
           |> Context_Position.set_visible false
           |> declare_elem Proof_Context.read_var raw_elem
           |> Context_Position.restore_visible ctxt;
-        val elems' = parse_elem Syntax.parse_typ parse_prop ctxt' raw_elem;
+        val elems' = parse_elem Syntax.parse_typ (parse_prop elem_root) ctxt' raw_elem;
       in (elems', ctxt') end;
 
     val fors = fold_map Proof_Context.read_var [] ctxt1 |> fst;
     val ctxt2 = ctxt1 |> Proof_Context.add_fixes fors |> snd;
     val ctxt3 = ctxt2
 
-    fun prep_stmt elems ctxt = check_autofix elems (prepare_stmt parse_prop ctxt raw_stmt) ctxt;
+    fun prep_stmt elems ctxt = check_autofix elems (prepare_stmt (parse_prop prop_root) ctxt raw_stmt) ctxt;
 
     val ((elems', concl), ctxt4) = ctxt3
       |> fold_map prep_elem raw_elems
@@ -305,9 +305,9 @@ fun prep_full_context_statement parse_prop raw_elems raw_stmt ctxt1 =
   in (elems'', concl) end;
 in
 
-fun read_statement raw_elems raw_stmt ctxt =
+fun read_statement prop_root elem_root raw_elems raw_stmt ctxt =
   let
-    val (elems, concl) = prep_full_context_statement AOT_read_prop raw_elems raw_stmt ctxt;
+    val (elems, concl) = prep_full_context_statement AOT_read_prop prop_root elem_root raw_elems raw_stmt ctxt;
     val ctxt' = Proof_Context.set_stmt true ctxt
     val (elems, ctxt') = fold_map Element.activate elems ctxt'
     val _ = Proof_Context.restore_stmt ctxt ctxt'
@@ -337,18 +337,20 @@ fun mapStmt mapTerm _ (Element.Shows x) = Element.Shows (map (map (fn (trm, trms
   | mapStmt mapTerm mapTyp (Element.Obtains x) = Element.Obtains (map ((fn (x, y) => (map (fn (a,b,c) => (a, Option.map mapTyp b, c)) x, map mapTerm y)) |> apsnd) x)
 fun mapCtxt mapTerm mapTyp ctxtElem = Element.map_ctxt {attrib = I, binding = I, fact = I, pattern = mapTerm, term = mapTerm, typ = mapTyp} ctxtElem
 
-fun AOT_theorem_cmd modallyStrict long afterQed thmBinding assumptions shows int ctxt = (let
+fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding assumptions shows int ctxt = (let
   val ctxt = if modallyStrict then setupStrictWorld ctxt else setupWeakWorld ctxt
-  val (stmts,assumptions,ctxt) = read_statement assumptions shows ctxt
+  val (stmts,assumptions,ctxt) = read_statement (if axiom then (if modallyStrict then @{nonterminal "AOT_axiom"} else @{nonterminal "AOT_act_axiom"}) else @{nonterminal AOT_prop}) @{nonterminal AOT_prop} assumptions shows ctxt
 in Specification.theorem long "AOT_theorem" NONE afterQed thmBinding [] assumptions (Element.Shows stmts) int ctxt end)
 
-fun AOT_theorem spec modallyStrict descr =
+fun AOT_theorem spec axiom modallyStrict descr =
   Outer_Syntax.local_theory_to_proof' spec ("state " ^ descr)
     ((long_statement || short_statement) >> (fn (long, binding, elems, concl) =>
-      (AOT_theorem_cmd modallyStrict long AOT_note_theorems binding elems concl)));
+      (AOT_theorem_cmd axiom modallyStrict long AOT_note_theorems binding elems concl)));
 
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_theorem\<close> true "AOT modally-strict theorem";
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_theorem\<close> false "AOT modally-weak theorem"
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_theorem\<close> false true "AOT modally-strict theorem";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_theorem\<close> false false "AOT modally-weak theorem"
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_axiom\<close> true true "AOT modally-strict axiom";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_axiom\<close> true false "AOT modally-weak axiom"
 
 local
 val structured_statement =
@@ -357,7 +359,7 @@ val structured_statement =
 
 fun prep_stmt (fixes, assumes, shows) ctxt = let
   (* TODO: while this seems to work, this should probably not be parsed as theorem statement *)
-  val (concl, elems, _) = read_statement [Element.Fixes fixes, Element.Assumes assumes] (Element.Shows shows) ctxt
+  val (concl, elems, _) = read_statement @{nonterminal AOT_prop} @{nonterminal AOT_prop} [Element.Fixes fixes, Element.Assumes assumes] (Element.Shows shows) ctxt
   val (fixes, assumes) = (fn ([Element.Fixes fixes, Element.Assumes assumes]) => (fixes, assumes) | _ => raise Fail "Unexpected.") elems
   (* TODO: figure out how to deal with those lists *)
   fun mapAttr (a,[]) = (a,[])

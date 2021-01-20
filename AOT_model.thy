@@ -558,4 +558,13 @@ definition AOT_model_nondenoting :: \<open>'a::AOT_IncompleteTerm\<close> where
 lemma AOT_model_nondenoing: \<open>\<not>AOT_model_denotes (AOT_model_nondenoting)\<close>
   using someI_ex[OF AOT_model_nondenoting_ex] unfolding AOT_model_nondenoting_def by blast
 
+definition AOT_model_axiom where "AOT_model_axiom \<equiv> \<lambda> \<phi> . \<forall> v . AOT_model_valid_in v \<phi>"
+definition AOT_model_act_axiom where "AOT_model_act_axiom \<equiv> \<lambda> \<phi> . AOT_model_valid_in w\<^sub>0 \<phi>"
+
+lemma AOT_model_axiomI: assumes \<open>\<And>v . AOT_model_valid_in v \<phi>\<close> shows \<open>AOT_model_axiom \<phi>\<close>
+  unfolding AOT_model_axiom_def using assms ..
+
+lemma AOT_model_act_axiomI: assumes \<open>AOT_model_valid_in w\<^sub>0 \<phi>\<close> shows \<open>AOT_model_act_axiom \<phi>\<close>
+  unfolding AOT_model_act_axiom_def using assms .
+
 end

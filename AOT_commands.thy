@@ -4,6 +4,9 @@ theory AOT_commands
        and "AOT_theorem" :: thy_goal
        and "AOT_act_theorem" :: thy_goal
 
+       and "AOT_axiom" :: thy_goal
+       and "AOT_act_axiom" :: thy_goal
+
        and "AOT_assume" :: prf_asm % "proof"
        and "AOT_have" :: prf_goal % "proof"
        and "AOT_hence" :: prf_goal % "proof"
@@ -18,6 +21,8 @@ theory AOT_commands
 begin
 
 nonterminal AOT_prop
+nonterminal "AOT_axiom"
+nonterminal "AOT_act_axiom"
 ML_file AOT_commands.ML
 setup\<open>AOT_Theorems.setup\<close>
 setup\<open>AOT_no_atp.setup\<close>
