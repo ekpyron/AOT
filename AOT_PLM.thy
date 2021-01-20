@@ -568,9 +568,11 @@ proof -
 qed
 
 (* TODO: replace this mechanism by a "proof by types" command *)
-class AOT_term_id = AOT_Term + assumes "t=t-proper_1"[AOT]: \<open>[v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>\<down>]\<close>
+class AOT_Term_id = AOT_Term +
+  assumes "t=t-proper_1"[AOT]: \<open>[v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>\<down>]\<close>
+      and "t=t-proper_2"[AOT]: \<open>[v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>'\<down>]\<close>
 
-instance AOT_\<kappa> \<subseteq> AOT_term_id
+instance AOT_\<kappa> \<subseteq> AOT_Term_id
 proof
   AOT_modally_strict {
     AOT_show \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>\<down>\<close> for \<kappa> \<kappa>' :: 'a (* TODO: how to get rid of the fixes, resp. the warning without the type? *)
@@ -584,9 +586,22 @@ proof
            (metis cqt_5a "\<rightarrow>I" "\<rightarrow>E" "&E"(2))+
     qed
   }
+next
+  AOT_modally_strict {
+    AOT_show \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>'\<down>\<close> for \<kappa> \<kappa>' :: 'a
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<kappa> = \<kappa>'\<close>
+      AOT_hence \<open>O!\<kappa>' \<or> A!\<kappa>'\<close>
+        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF identity]])
+           (meson "\<rightarrow>I" "\<or>I" "&E")+
+      AOT_thus \<open>\<kappa>'\<down>\<close>
+        by (rule "\<or>E"(1))
+           (metis cqt_5a "\<rightarrow>I" "\<rightarrow>E" "&E"(2))+
+    qed
+  }
 qed
 
-instance rel :: (AOT_\<kappa>s) AOT_term_id
+instance rel :: (AOT_\<kappa>s) AOT_Term_id
 proof
   AOT_modally_strict {
     AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close> (* TODO: how to get rid of the fixes? *)
@@ -595,9 +610,17 @@ proof
       AOT_thus \<open>\<Pi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
     qed
   }
+next
+  AOT_modally_strict {
+    AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>'\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close> (* TODO: how to get rid of the fixes? *)
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<Pi> = \<Pi>'\<close>
+      AOT_thus \<open>\<Pi>'\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
+    qed
+  }
 qed
 
-instance \<o> :: AOT_term_id
+instance \<o> :: AOT_Term_id
 proof
   AOT_modally_strict {
     fix \<phi> \<psi>
@@ -607,21 +630,102 @@ proof
       AOT_thus \<open>\<phi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
     qed
   }
+next
+  AOT_modally_strict {
+    fix \<phi> \<psi>
+    AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<psi>\<down>\<close>
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<phi> = \<psi>\<close>
+      AOT_thus \<open>\<psi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
+    qed
+  }
 qed
 
-AOT_add_term_sort AOT_term_id
+(* TODO: this is the end of the "proof by types" and makes the results available on new theorems *)
+AOT_add_term_sort AOT_Term_id
 
-notepad
-begin
-  AOT_modally_strict {
-    fix \<tau> \<tau>'
-    AOT_have \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close>
-      by (simp add: "t=t-proper_1")
-  }
-end
+AOT_theorem id_rel_nec_equiv_1: \<open>\<Pi> = \<Pi>' \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume assumption: \<open>\<Pi> = \<Pi>'\<close>
+  AOT_hence \<open>\<Pi>\<down>\<close> and \<open>\<Pi>'\<down>\<close>
+    using "t=t-proper_1" "t=t-proper_2" MP by blast+
+  moreover AOT_have \<open>\<forall>F\<forall>G (F = G \<rightarrow> ((\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> [F]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)))\<close>
+    apply (rule GEN)+ using l_identity by force
+  ultimately AOT_have \<open>\<Pi> = \<Pi>' \<rightarrow> ((\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n))\<close>
+    using "\<forall>E"(1) by blast
+  AOT_hence \<open>(\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
+    using assumption "\<rightarrow>E" by blast
+  moreover AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>]x\<^sub>1...x\<^sub>n)\<close>
+    by (simp add: RN oth_class_taut_3_a universal_cor)
+  ultimately AOT_show \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
+    using "\<rightarrow>E" by blast
+qed
 
-AOT_theorem \<open>\<phi> = \<psi> \<rightarrow> \<phi>\<down>\<close>
-  by (simp add: "t=t-proper_1")
+AOT_theorem id_rel_nec_equiv_2: \<open>\<phi> = \<psi> \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume assumption: \<open>\<phi> = \<psi>\<close>
+  AOT_hence \<open>\<phi>\<down>\<close> and \<open>\<psi>\<down>\<close>
+    using "t=t-proper_1" "t=t-proper_2" MP by blast+
+  moreover AOT_have \<open>\<forall>p\<forall>q (p = q \<rightarrow> ((\<box>(p \<equiv> p) \<rightarrow> \<box>(p \<equiv> q))))\<close>
+    apply (rule GEN)+ using l_identity by force
+  ultimately AOT_have \<open>\<phi> = \<psi> \<rightarrow> (\<box>(\<phi> \<equiv> \<phi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
+    using "\<forall>E"(1) by blast
+  AOT_hence \<open>\<box>(\<phi> \<equiv> \<phi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
+    using assumption "\<rightarrow>E" by blast
+  moreover AOT_have \<open>\<box>(\<phi> \<equiv> \<phi>)\<close>
+    by (simp add: RN oth_class_taut_3_a universal_cor)
+  ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close>
+    using "\<rightarrow>E" by blast
+qed
+
+AOT_theorem "rule=E": assumes \<open>\<phi>{\<tau>}\<close> and \<open>\<tau> = \<sigma>\<close> shows \<open>\<phi>{\<sigma>}\<close>
+proof -
+  AOT_have \<open>\<tau>\<down>\<close> and \<open>\<sigma>\<down>\<close> using assms(2) "t=t-proper_1" "t=t-proper_2" "\<rightarrow>E" by blast+
+  moreover AOT_have \<open>\<forall>\<alpha>\<forall>\<beta>(\<alpha> = \<beta> \<rightarrow> (\<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>}))\<close>
+    apply (rule GEN)+ using l_identity by blast
+  ultimately AOT_have \<open>\<tau> = \<sigma> \<rightarrow> (\<phi>{\<tau>} \<rightarrow> \<phi>{\<sigma>})\<close>
+    using "\<forall>E"(1) by blast
+  AOT_thus \<open>\<phi>{\<sigma>}\<close> using assms "\<rightarrow>E" by blast
+qed
+lemmas "=E" = "rule=E"
+
+AOT_theorem propositions_lemma_1: \<open>[\<lambda> \<phi>] = \<phi>\<close>
+proof -
+  AOT_have \<open>\<phi>\<down>\<close> by (simp add: log_prop_prop_2)
+  moreover AOT_have \<open>\<forall>p [\<lambda> p] = p\<close> using lambda_predicates_3_b "\<forall>I" by fast
+  ultimately AOT_show \<open>[\<lambda> \<phi>] = \<phi>\<close>
+    using "\<forall>E" by blast
+qed
+
+AOT_theorem propositions_lemma_2: \<open>[\<lambda> \<phi>] \<equiv> \<phi>\<close>
+proof -
+  AOT_have \<open>[\<lambda> \<phi>] \<equiv> [\<lambda> \<phi>]\<close> by (simp add: oth_class_taut_3_a)
+  AOT_thus \<open>[\<lambda> \<phi>] \<equiv> \<phi>\<close> using propositions_lemma_1 "=E" by blast
+qed
+
+(* propositions_lemma_3 through propositions_lemma_5 do not apply *)
+
+AOT_theorem propositions_lemma_6: \<open>(\<phi> \<equiv> \<psi>) \<equiv> ([\<lambda> \<phi>] \<equiv> [\<lambda> \<psi>])\<close>
+  by (metis intro_elim_3_a intro_elim_3_e oth_class_taut_2_f propositions_lemma_2)
+
+(* dr_alphabetic_rules does not apply *)
+
+AOT_theorem oa_exist_1: \<open>O!\<down>\<close>
+proof -
+  AOT_have \<open>[\<lambda>x \<diamond>[E!]x]\<down>\<close>
+    by (rule cqt_2_lambda) (auto intro!: AOT_instance_of_cqt_2_intro) (* TODO: make this a proof method *)
+  AOT_hence 1: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_1, THEN "&E"(1)] "\<rightarrow>E" by blast
+  AOT_show \<open>O!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
+qed
+
+AOT_theorem oa_exist_2: \<open>A!\<down>\<close>
+proof -
+  AOT_have \<open>[\<lambda>x \<not>\<diamond>[E!]x]\<down>\<close>
+    by (rule cqt_2_lambda) (auto intro!: AOT_instance_of_cqt_2_intro) (* TODO: make this a proof method *)
+  AOT_hence 1: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_2, THEN "&E"(1)] "\<rightarrow>E" by blast
+  AOT_show \<open>A!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
+qed
+
 
 
 end
