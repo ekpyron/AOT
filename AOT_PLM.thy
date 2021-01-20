@@ -1208,4 +1208,51 @@ AOT_theorem act_cond: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<rightar
 AOT_theorem nec_imp_act: \<open>\<box>\<phi> \<rightarrow> \<^bold>\<A>\<phi>\<close>
   by (metis act_cond contraposition_1_b "\<equiv>E"(4) qml_2[THEN act_closure, axiom_inst] qml_act_2[axiom_inst] RAA(1) "\<rightarrow>E" "\<rightarrow>I")
 
+AOT_theorem act_conj_act_1: \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<rightarrow> \<phi>)\<close>
+  using "\<rightarrow>I" "\<equiv>E"(2) logic_actual_nec_2[axiom_inst] logic_actual_nec_4[axiom_inst] by blast
+
+AOT_theorem act_conj_act_2: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<^bold>\<A>\<phi>)\<close>
+  by (metis "\<rightarrow>I" "\<equiv>E"(2, 4) logic_actual_nec_2[axiom_inst] logic_actual_nec_4[axiom_inst] RAA(1))
+
+AOT_theorem act_conj_act_3: \<open>(\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>) \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>)\<close>
+proof -
+  AOT_have \<open>\<box>(\<phi> \<rightarrow> (\<psi> \<rightarrow> (\<phi> & \<psi>)))\<close>
+    by (rule RN) (fact con_dis_taut_5)
+  AOT_hence \<open>\<^bold>\<A>(\<phi> \<rightarrow> (\<psi> \<rightarrow> (\<phi> & \<psi>)))\<close>
+    using nec_imp_act "\<rightarrow>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>(\<psi> \<rightarrow> (\<phi> & \<psi>))\<close>
+    using act_cond "\<rightarrow>E" by blast
+  moreover AOT_have \<open>\<^bold>\<A>(\<psi> \<rightarrow> (\<phi> & \<psi>)) \<rightarrow> (\<^bold>\<A>\<psi> \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>))\<close>
+    by (fact act_cond)
+  ultimately AOT_have \<open>\<^bold>\<A>\<phi> \<rightarrow> (\<^bold>\<A>\<psi> \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>))\<close>
+    using "\<rightarrow>I" "\<rightarrow>E" by metis
+  AOT_thus \<open>(\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>) \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>)\<close>
+    by (metis oth_class_taut_7_b "\<rightarrow>E")
+qed
+
+AOT_theorem act_conj_act_4: \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
+proof -
+  AOT_have \<open>(\<^bold>\<A>(\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & \<^bold>\<A>(\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> \<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>))\<close>
+    by (fact act_conj_act_3)
+  moreover AOT_have \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & \<^bold>\<A>(\<phi> \<rightarrow> \<^bold>\<A>\<phi>)\<close>
+    using "&I" act_conj_act_1 act_conj_act_2 by simp
+  ultimately AOT_have \<zeta>: \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>))\<close>
+    using "\<rightarrow>E" by blast
+  (* TODO: PLM appeals to the closure of the definition theorem. Check how best to reproduce this
+           without the detour below. *)
+  AOT_modally_strict {
+    AOT_have \<open>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
+      by (simp add: AOT_equiv df_rules_formulas_2)
+  }
+  AOT_hence \<open>\<box>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+    by(rule RN)
+  AOT_hence \<open>\<^bold>\<A>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+    using nec_imp_act "\<rightarrow>E" by blast
+  AOT_hence \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
+    using act_cond "\<rightarrow>E" by blast
+  AOT_thus \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close> using \<zeta> "\<rightarrow>E" by blast
+qed
+
+(* continue at thereom (134) "closure-act" PDF page 152, numbered page 307 *)
+
 end
