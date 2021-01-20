@@ -63,6 +63,7 @@ fun AOT_TermSort_add sort thy = let
 (* TODO: do this or don't do this? Yes, if products are always instantiated, no otherwise *)
 (*    val thy = AOT_NaryIndividualSort_add sort thy *)
   in AOT_TermSort.map (fn oldSort => sort_merge thy (oldSort, sort)) thy end
+fun AOT_TermSort_local_get ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_TermSort.get thy, thy)) ctxt |> fst
 
 fun parseCategory "AOT_Individual" = AOT_Individual
   | parseCategory _ = raise Fail "Unexpected type category."
@@ -97,7 +98,6 @@ val _ =
   Outer_Syntax.local_theory \<^command_keyword>\<open>AOT_add_term_sort\<close> "Constrain the base sort for all terms."
     (Parse.sort >> add_term_sort);
 
-local
 fun term_of_sort S =
   let
     val class = Syntax.const o Lexicon.mark_class;
@@ -116,7 +116,6 @@ fun term_of (Type (a, Ts)) =
       Term.list_comb (Syntax.const (Lexicon.mark_type a), map term_of Ts)
   | term_of (t as TFree _) = raise Term.TYPE ("", [t], [])
   | term_of (TVar _) = raise Fail "";
-in
 fun fetchTermConstraint ctxt name unary =
   Local_Theory.raw_theory_result (fn thy => let
       fun getConstraint unary AOT_Individual = Const ("_dummy_ofsort", dummyT) $ term_of_sort (if unary then AOT_UnaryIndividualSort.get thy else AOT_NaryIndividualSort.get thy)
@@ -128,7 +127,6 @@ fun fetchTermConstraint ctxt name unary =
      ((Symtab.lookup o AOT_TermPrefix.get) thy (hd (Symbol.explode name))), thy)
     end
 ) ctxt |> fst
-end
 \<close>
 
 
@@ -435,7 +433,14 @@ fun parseIdDef ctxt [lhs, rhs] =
     val lhs_abs = mkabs lhs
     val rhs_abs = mkabs rhs
   in
-    Const (\<^const_name>\<open>AOT_model_id_def\<close>, dummyT) $ lhs_abs $ rhs_abs
+(* Type ("fun", [Type ("fun", [dummyT, dummyT]), Type ("fun", [Type ("fun", [dummyT, dummyT]), @{typ bool}])]) *)
+    (Const ("_constrain", dummyT) $
+     Const (\<^const_name>\<open>AOT_model_id_def\<close>, dummyT) $
+     (Const (\<^type_syntax>\<open>fun\<close>, dummyT) $
+        (Const (\<^type_syntax>\<open>fun\<close>, dummyT) $ Const (\<^type_syntax>\<open>dummy\<close>, dummyT) $ (Const ("_dummy_ofsort", dummyT) $ term_of_sort (AOT_TermSort_local_get ctxt))) $
+        (Const (\<^type_syntax>\<open>dummy\<close>, dummyT)))
+    )
+    $ lhs_abs $ rhs_abs
   end
 in
 [(\<^syntax_const>\<open>_AOT_id_def\<close>, parseIdDef)]

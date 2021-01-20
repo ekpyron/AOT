@@ -934,7 +934,6 @@ proof -
 qed
 
 AOT_theorem rule_id_def_2_a:
-  fixes \<phi> :: \<open>'a::AOT_Term_id \<Rightarrow> \<o>\<close> (* TODO: how to avoid this *)
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
   shows \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
 proof -
@@ -943,7 +942,6 @@ proof -
 qed
 
 AOT_theorem rule_id_def_2_b:
-  fixes \<phi> :: \<open>'a::AOT_Term_id_2 \<Rightarrow> \<o>\<close> (* TODO: how to avoid this *)
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
   shows \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
 proof -
