@@ -176,9 +176,25 @@ AOT_theorem cqt_4: \<open>\<phi> \<rightarrow> \<forall>\<alpha> \<phi>\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp)
 AOT_theorem cqt_5a: \<open>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
   by (simp add: AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp)
+AOT_theorem cqt_5a_1: \<open>[\<Pi>]\<kappa> \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
+  using cqt_5a by blast
+AOT_theorem cqt_5a_2: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
+AOT_theorem cqt_5a_3: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
+AOT_theorem cqt_5a_4: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
 AOT_theorem cqt_5b: \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
   using AOT_sem_enc_denotes
   by (auto simp: AOT_sem_conj AOT_sem_denotes AOT_sem_imp)
+AOT_theorem cqt_5b_1: \<open>\<kappa>[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
+  using cqt_5b by blast
+AOT_theorem cqt_5b_2: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
+AOT_theorem cqt_5b_3: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
+AOT_theorem cqt_5b_4: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
+  by (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
 
 AOT_theorem l_identity: \<open>\<alpha> = \<beta> \<rightarrow> (\<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>})\<close>
   by (simp add: AOT_sem_eq AOT_sem_imp)

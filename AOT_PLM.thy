@@ -870,6 +870,16 @@ AOT_add_term_sort AOT_Term_id_2
 
 (* TODO: Interestingly, this doesn't depend on id_eq_1 at all! *)
 AOT_theorem id_eq_2: \<open>\<alpha> = \<beta> \<rightarrow> \<beta> = \<alpha>\<close>
+(*
+  TODO: look at this proof generated using:
+        including AOT_no_atp sledgehammer[isar_proofs = true]
+proof -
+  have "(\<exists>\<phi>. [v \<Turnstile> ~\<beta> = \<alpha> \<rightarrow> ~\<phi>] \<and> [v \<Turnstile> \<alpha> = \<beta> \<rightarrow> \<phi>]) \<or> (\<exists>\<phi>. \<not> [v \<Turnstile> \<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>}])"
+    by meson
+  then show ?thesis
+    by (meson contraposition_2_a ded_thm_cor_1 deduction_theorem l_identity useful_tautologies_1)
+qed
+*)
 (*  by (meson "rule=E" deduction_theorem) *)
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<alpha> = \<beta>\<close>
@@ -941,6 +951,16 @@ proof -
   AOT_thus \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "=E" by blast
 qed
 
+AOT_theorem rule_id_def_2_a':
+  assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close> and \<open>\<phi>{\<tau>}\<close>
+  shows \<open>\<phi>{\<sigma>}\<close>
+proof -
+  AOT_have \<open>\<tau> = \<sigma>\<close> using rule_id_def_1_b assms(1,2) by blast
+  AOT_thus \<open>\<phi>{\<sigma>}\<close> using assms(3) "=E" by blast
+qed
+
+lemmas "=\<^sub>d\<^sub>fE" = rule_id_def_2_a rule_id_def_2_a'
+
 AOT_theorem rule_id_def_2_b:
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
   shows \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
@@ -950,5 +970,224 @@ proof -
     using "=E" "=I"(1) "t=t-proper_1" "\<rightarrow>E" by fast
   AOT_thus \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "=E" by blast
 qed
+
+AOT_theorem rule_id_def_2_b':
+  assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close> and \<open>\<phi>{\<sigma>}\<close>
+  shows \<open>\<phi>{\<tau>}\<close>
+proof -
+  AOT_have \<open>\<tau> = \<sigma>\<close> using rule_id_def_1_b assms(1,2) by blast
+  AOT_hence \<open>\<sigma> = \<tau>\<close>
+    using "=E" "=I"(1) "t=t-proper_1" "\<rightarrow>E" by fast
+  AOT_thus \<open>\<phi>{\<tau>}\<close> using assms(3) "=E" by blast
+qed
+
+lemmas "=\<^sub>d\<^sub>fI" = rule_id_def_2_b rule_id_def_2_b'
+
+AOT_theorem free_thms_1: \<open>\<tau>\<down> \<equiv> \<exists>\<beta> (\<beta> = \<tau>)\<close>
+  by (metis "\<exists>E" "rule=I_1" "t=t-proper_2" "\<rightarrow>I" "\<exists>I"(1) "\<equiv>I" "\<rightarrow>E")
+
+AOT_theorem free_thms_2: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<exists>\<beta> (\<beta> = \<tau>) \<rightarrow> \<phi>{\<tau>})\<close>
+  by (metis "\<exists>E" "rule=E" cqt_2_const_var "\<rightarrow>I" "\<forall>E"(1))
+
+AOT_theorem free_thms_3_a: \<open>\<exists>\<beta> (\<beta> = \<alpha>)\<close>
+  by (meson "\<exists>I"(2) id_eq_1)
+
+AOT_theorem free_thms_3_b: assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close> shows \<open>\<exists>\<beta> (\<beta> = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}])\<close>
+  by (meson "=I"(3) assms cqt_2_lambda existential_1)
+
+AOT_theorem free_thms_4_a: \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+  by (metis "rule=I_1" "&E"(1) "\<or>E"(1) cqt_5a cqt_5b "\<rightarrow>I" "\<exists>I"(1))
+
+(* TODO: this is a rather weird way to formulate this and we don't have tuple-existential-elimination
+         or tuple-equality-elimination in the theory... Splitting them is also a bit unfortunate, though.*)
+AOT_theorem free_thms_4_b: \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta>\<^sub>1...\<exists>\<beta>\<^sub>n (\<beta>\<^sub>1...\<beta>\<^sub>n = \<kappa>\<^sub>1...\<kappa>\<^sub>n)\<close>
+  by (metis "rule=I_1" "&E"(2) "\<or>E"(1) cqt_5a cqt_5b "\<rightarrow>I" "\<exists>I"(1))
+
+AOT_theorem free_thms_4_b_1_0: \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+  by (metis "rule=I_1" "&E"(1) "\<or>E"(1) cqt_5a cqt_5b "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_1_1: \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>)\<close>
+  by (metis "rule=I_1" "&E"(2) "\<or>E"(1) cqt_5a cqt_5b "\<rightarrow>I" "\<exists>I"(1))
+
+AOT_theorem free_thms_4_b_2_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+  by (metis "rule=I_1" "&E"(1) "\<or>E"(1) cqt_5a_2 cqt_5b_2 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_2_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_2 cqt_5b_2 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_2_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+  by (metis "rule=I_1" "&E"(2) "\<or>E"(1) cqt_5a_2 cqt_5b_2 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_3_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+  by (metis "rule=I_1" "&E"(1) "\<or>E"(1) cqt_5a_3 cqt_5b_3 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_3_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_3 cqt_5b_3 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_3_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_3 cqt_5b_3 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_3_3: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
+  by (metis "rule=I_1" "&E"(2) "\<or>E"(1) cqt_5a_3 cqt_5b_3 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_4_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+  by (metis "rule=I_1" "&E"(1) "\<or>E"(1) cqt_5a_4 cqt_5b_4 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_4_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_4 cqt_5b_4 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_4_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_4 cqt_5b_4 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_4_3: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
+  by (metis "rule=I_1" "&E" "\<or>E"(1) cqt_5a_4 cqt_5b_4 "\<rightarrow>I" "\<exists>I"(1))
+AOT_theorem free_thms_4_b_4_4: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>4)\<close>
+  by (metis "rule=I_1" "&E"(2) "\<or>E"(1) cqt_5a_4 cqt_5b_4 "\<rightarrow>I" "\<exists>I"(1))
+
+AOT_theorem ex_1_a: \<open>\<forall>\<alpha> \<alpha>\<down>\<close>
+  by (rule GEN) (fact cqt_2_const_var)
+AOT_theorem ex_1_b: \<open>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule GEN) (fact free_thms_3_a)
+
+AOT_theorem ex_2_a: \<open>\<box>\<alpha>\<down>\<close>
+  by (rule RN) (fact cqt_2_const_var)
+AOT_theorem ex_2_b: \<open>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (fact free_thms_3_a)
+
+AOT_theorem ex_3_a: \<open>\<box>\<forall>\<alpha> \<alpha>\<down>\<close>
+  by (rule RN) (fact ex_1_a)
+AOT_theorem ex_3_b: \<open>\<box>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (fact ex_1_b)
+
+AOT_theorem ex_4_a: \<open>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
+  by (rule GEN; rule RN) (fact cqt_2_const_var)
+AOT_theorem ex_4_b: \<open>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule GEN; rule RN) (fact free_thms_3_a)
+
+AOT_theorem ex_5_a: \<open>\<box>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
+  by (rule RN) (simp add: ex_4_a)
+AOT_theorem ex_5_b: \<open>\<box>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (simp add: ex_4_b)
+
+AOT_theorem "all-self=_1": \<open>\<box>\<forall>\<alpha>(\<alpha> = \<alpha>)\<close>
+  by (rule RN; rule GEN) (fact id_eq_1)
+AOT_theorem "all-self=_2": \<open>\<forall>\<alpha>\<box>(\<alpha> = \<alpha>)\<close>
+  by (rule GEN; rule RN) (fact id_eq_1)
+
+AOT_theorem id_nec_1: \<open>\<alpha> = \<beta> \<rightarrow> \<box>(\<alpha> = \<beta>)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<alpha> = \<beta>\<close>
+  moreover AOT_have \<open>\<box>(\<alpha> = \<alpha>)\<close>
+    by (rule RN) (fact id_eq_1)
+  ultimately AOT_show \<open>\<box>(\<alpha> = \<beta>)\<close> using "=E" by fast
+qed
+
+AOT_theorem id_nec_2: \<open>\<tau> = \<sigma> \<rightarrow> \<box>(\<tau> = \<sigma>)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume asm: \<open>\<tau> = \<sigma>\<close>
+  moreover AOT_have \<open>\<tau>\<down>\<close>
+    using calculation "t=t-proper_1" "\<rightarrow>E" by blast
+  moreover AOT_have \<open>\<box>(\<tau> = \<tau>)\<close>
+    using calculation "all-self=_2" "\<forall>E"(1) by blast
+  ultimately AOT_show \<open>\<box>(\<tau> = \<sigma>)\<close> using "=E" by fast
+qed
+
+AOT_theorem term_out_1: \<open>\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume asm: \<open>\<phi>{\<alpha>}\<close>
+  AOT_show \<open>\<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
+    by (rule_tac \<beta>=\<alpha> in "\<exists>I"(2); rule "&I")
+       (auto simp: id_eq_1 asm)
+next
+  AOT_assume 0: \<open>\<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
+  (* TODO: have another look at this instantiation. Ideally AOT_obtain would resolve directly to the existential
+           statement as proof obligation *)
+  AOT_obtain \<beta> where \<open>\<beta> = \<alpha> & \<phi>{\<beta>}\<close> using "instantiation"[rotated, OF 0] by blast
+  AOT_thus \<open>\<phi>{\<alpha>}\<close> using "&E" "=E" by blast
+qed
+
+AOT_theorem term_out_2: \<open>\<tau>\<down> \<rightarrow> (\<phi>{\<tau>} \<equiv> \<exists>\<alpha>(\<alpha> = \<tau> & \<phi>{\<alpha>}))\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<tau>\<down>\<close>
+  moreover AOT_have \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>}))\<close>
+    by (rule GEN) (fact term_out_1)
+  ultimately AOT_show \<open>\<phi>{\<tau>} \<equiv> \<exists>\<alpha>(\<alpha> = \<tau> & \<phi>{\<alpha>})\<close>
+    using "\<forall>E" by blast
+qed
+
+(* TODO: example of an apply-style proof. Keep or reformulate? *)
+AOT_theorem term_out_3: \<open>(\<phi>{\<alpha>} & \<forall>\<beta>(\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)) \<equiv> \<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+   apply (frule "&E"(1)) apply (drule "&E"(2))
+   apply (rule GEN; rule "\<equiv>I"; rule "\<rightarrow>I")
+  using rule_ui_2_a vdash_properties_5 apply blast
+  apply (meson "rule=E" id_eq_1)
+  apply (rule "&I")
+  using id_eq_1 intro_elim_3_b rule_ui_3 apply blast
+  apply (rule GEN; rule "\<rightarrow>I")
+  using intro_elim_3_a rule_ui_2_a by blast
+
+AOT_theorem term_out_4: \<open>(\<phi>{\<beta>} & \<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<alpha> = \<beta>)) \<equiv> \<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<alpha> = \<beta>)\<close>
+  using term_out_3 . (* TODO: same as above - another instance of the generalized alphabetic variant rule... *)
+
+(* TODO: would of course be nice to define it without the syntax magic *)
+AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>  ("\<exists>!_ _" [1,40])
+  uniqueness_1: \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
+translations
+  "AOT_exists_unique \<tau> \<phi>" == "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
+syntax
+   "_AOT_exists_unique_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>!_...\<exists>!_ _\<close> [1,40])
+parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_unique_ellipse\<close>, fn ctx => fn [a,b,c] =>
+  Ast.mk_appl (Ast.Constant "AOT_exists_unique") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
+print_translation
+  \<open>[Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>]\<close>
+
+
+AOT_theorem uniqueness_2: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accomodate PLMs double definition *)
+  (* TODO: hard to spot that AOT_modally_strict is needed here *)
+  AOT_modally_strict {
+    AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
+    AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
+      using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fE" by blast
+    then AOT_obtain \<alpha> where \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
+    AOT_hence \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> using term_out_3 "\<equiv>E" by blast
+    AOT_thus \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+      using "\<exists>I" by fast
+  }
+next
+  AOT_modally_strict {
+    AOT_assume \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    then AOT_obtain \<alpha> where \<open>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
+    AOT_hence \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using term_out_3 "\<equiv>E" by blast
+    AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
+      using "\<exists>I" by fast
+    AOT_thus \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
+      using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fI" by blast
+  }
+qed
+
+AOT_theorem uni_most: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<beta>\<forall>\<gamma>((\<phi>{\<beta>} & \<phi>{\<gamma>}) \<rightarrow> \<beta> = \<gamma>)\<close>
+proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
+  fix \<beta> \<gamma>
+  AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
+  AOT_hence \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    using uniqueness_2 "\<equiv>\<^sub>d\<^sub>fE" by blast
+  then AOT_obtain \<alpha> where \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    using "instantiation"[rotated] by blast
+  moreover AOT_assume \<open>\<phi>{\<beta>} & \<phi>{\<gamma>}\<close>
+  ultimately AOT_have \<open>\<beta> = \<alpha>\<close> and \<open>\<gamma> = \<alpha>\<close>
+    using "\<forall>E"(2) "&E" "\<equiv>E"(1,2) by blast+
+  AOT_thus \<open>\<beta> = \<gamma>\<close>
+    by (metis "rule=E" id_eq_2 "\<rightarrow>E")
+qed
+
+AOT_theorem "nec-exist-!": \<open>\<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> (\<exists>!\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>!\<alpha> \<box>\<phi>{\<alpha>})\<close>
+proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
+  AOT_assume a: \<open>\<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+  AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
+  AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close> using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fE" by blast
+  then AOT_obtain \<alpha> where \<xi>: \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
+  AOT_have \<open>\<box>\<phi>{\<alpha>}\<close>
+    using \<xi> a "&E" "\<forall>E" "\<rightarrow>E" by fast
+  moreover AOT_have \<open>\<forall>\<beta> (\<box>\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close>
+    apply (rule GEN; rule "\<rightarrow>I")
+    using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] qml_2[THEN "\<rightarrow>E"] by blast
+  ultimately AOT_have \<open>(\<box>\<phi>{\<alpha>} & \<forall>\<beta> (\<box>\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
+    using "&I" by blast
+  AOT_thus \<open>\<exists>!\<alpha> \<box>\<phi>{\<alpha>}\<close>
+    using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fI" "\<exists>I" by fast
+qed
+
+    
 
 end
