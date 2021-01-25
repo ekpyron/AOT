@@ -47,10 +47,16 @@ AOT_theorem rule_gen: assumes \<open>for arbitrary \<alpha>: \<phi>{\<alpha>}\<c
 lemmas GEN = rule_gen
 AOT_theorem RN: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<box>\<phi>\<close>
   by (simp add: AOT_sem_box assms) (* NOTE: semantics needed *)
+
 AOT_theorem df_rules_formulas_1: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp_all add: AOT_model_equiv_def AOT_sem_imp) (* NOTE: semantics needed *)
 AOT_theorem df_rules_formulas_2: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<psi> \<rightarrow> \<phi>\<close>
   using assms by (simp_all add: AOT_model_equiv_def AOT_sem_imp) (* NOTE: semantics needed *)
+(* To also get the closures of them, derive them as axioms as well *)
+AOT_axiom df_rules_formulas_3: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
+  by (rule AOT_model_axiomI) (simp add: df_rules_formulas_1[OF assms]) (* NOTE: semantics needed *)
+AOT_axiom df_rules_formulas_4: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<psi> \<rightarrow> \<phi>\<close>
+  by (rule AOT_model_axiomI) (simp add: df_rules_formulas_2[OF assms]) (* NOTE: semantics needed *)
 
 
 AOT_theorem df_rules_terms_1:
@@ -60,7 +66,16 @@ AOT_theorem df_rules_terms_1:
 AOT_theorem df_rules_terms_2:
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close>
   shows \<open>(\<sigma>\<down> \<rightarrow> \<tau> = \<sigma>) & (\<not>\<sigma>\<down> \<rightarrow> \<not>\<tau>\<down>)\<close>
-  using assms by (metis df_rules_terms_1 case_unit_Unity)
+  using assms by (metis df_rules_terms_1 case_unit_Unity) (* NOTE: semantics needed *)
+(* To also get the closures of them, derive them as axioms as well *)
+AOT_axiom df_rules_terms_3:
+  assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close>
+  shows \<open>(\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}) & (\<not>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<not>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>)\<close>
+  by (rule AOT_model_axiomI) (simp add: df_rules_terms_1[OF assms]) (* NOTE: semantics needed *)
+AOT_axiom df_rules_terms_4:
+  assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close>
+  shows \<open>(\<sigma>\<down> \<rightarrow> \<tau> = \<sigma>) & (\<not>\<sigma>\<down> \<rightarrow> \<not>\<tau>\<down>)\<close>
+  by (rule AOT_model_axiomI) (simp add: df_rules_terms_2[OF assms]) (* NOTE: semantics needed *)
 
 
 AOT_theorem if_p_then_p: \<open>\<phi> \<rightarrow> \<phi>\<close>
@@ -73,6 +88,7 @@ lemmas "\<rightarrow>I" = deduction_theorem
 
 AOT_theorem ded_thm_cor_1: assumes \<open>\<phi> \<rightarrow> \<psi>\<close> and \<open>\<psi> \<rightarrow> \<chi>\<close> shows \<open>\<phi> \<rightarrow> \<chi>\<close>
   using "\<rightarrow>E" "\<rightarrow>I" assms by blast
+declare ded_thm_cor_1[trans]
 AOT_theorem ded_thm_cor_2: assumes \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<chi>)\<close> and \<open>\<psi>\<close> shows \<open>\<phi> \<rightarrow> \<chi>\<close>
   using "\<rightarrow>E" "\<rightarrow>I" assms by blast
 
@@ -341,6 +357,7 @@ AOT_theorem intro_elim_3_d: assumes \<open>\<phi> \<equiv> \<psi>\<close> and \<
   using intro_elim_3_a raa_cor_3 assms by blast
 AOT_theorem intro_elim_3_e: assumes \<open>\<phi> \<equiv> \<psi>\<close> and \<open>\<psi> \<equiv> \<chi>\<close> shows \<open>\<phi> \<equiv> \<chi>\<close>
   by (metis "\<equiv>I" "\<rightarrow>I" intro_elim_3_a intro_elim_3_b assms)
+declare intro_elim_3_e[trans]
 AOT_theorem intro_elim_3_f: assumes \<open>\<phi> \<equiv> \<psi>\<close> and \<open>\<phi> \<equiv> \<chi>\<close> shows \<open>\<chi> \<equiv> \<psi>\<close>
   by (metis "\<equiv>I" "\<rightarrow>I" intro_elim_3_a intro_elim_3_b assms)
 lemmas "\<equiv>E" = intro_elim_3_a intro_elim_3_b intro_elim_3_c intro_elim_3_d intro_elim_3_e intro_elim_3_f
@@ -1238,21 +1255,198 @@ proof -
     using "&I" act_conj_act_1 act_conj_act_2 by simp
   ultimately AOT_have \<zeta>: \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>))\<close>
     using "\<rightarrow>E" by blast
-  (* TODO: PLM appeals to the closure of the definition theorem. Check how best to reproduce this
-           without the detour below. *)
-  AOT_modally_strict {
-    AOT_have \<open>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
-      by (simp add: AOT_equiv df_rules_formulas_2)
-  }
-  AOT_hence \<open>\<box>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
-    by(rule RN)
-  AOT_hence \<open>\<^bold>\<A>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
-    using nec_imp_act "\<rightarrow>E" by blast
+  AOT_have \<open>\<^bold>\<A>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+    using AOT_equiv[THEN df_rules_formulas_4, THEN act_closure, axiom_inst] by blast
   AOT_hence \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
     using act_cond "\<rightarrow>E" by blast
   AOT_thus \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close> using \<zeta> "\<rightarrow>E" by blast
 qed
 
-(* continue at thereom (134) "closure-act" PDF page 152, numbered page 307 *)
+(* TODO: consider introducing AOT_inductive *)
+inductive arbitrary_actualization for \<phi> where
+  \<open>arbitrary_actualization \<phi> \<guillemotleft>\<^bold>\<A>\<phi>\<guillemotright>\<close>
+| \<open>arbitrary_actualization \<phi> \<guillemotleft>\<^bold>\<A>\<psi>\<guillemotright>\<close> if \<open>arbitrary_actualization \<phi> \<psi>\<close>
+declare arbitrary_actualization.cases[AOT] arbitrary_actualization.induct[AOT]
+        arbitrary_actualization.simps[AOT] arbitrary_actualization.intros[AOT]
+syntax arbitrary_actualization :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> ("ARBITRARY'_ACTUALIZATION'(_,_')")
+
+notepad
+begin
+  AOT_modally_strict {
+    fix \<phi>
+    AOT_have \<open>ARBITRARY_ACTUALIZATION(\<^bold>\<A>\<phi> \<equiv> \<phi>, \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+      using AOT_PLM.arbitrary_actualization.intros by metis
+    AOT_have \<open>ARBITRARY_ACTUALIZATION(\<^bold>\<A>\<phi> \<equiv> \<phi>, \<^bold>\<A>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+      using AOT_PLM.arbitrary_actualization.intros by metis
+    AOT_have \<open>ARBITRARY_ACTUALIZATION(\<^bold>\<A>\<phi> \<equiv> \<phi>, \<^bold>\<A>\<^bold>\<A>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
+      using AOT_PLM.arbitrary_actualization.intros by metis
+  }
+end
+
+
+AOT_theorem closure_act_1: assumes \<open>ARBITRARY_ACTUALIZATION(\<^bold>\<A>\<phi> \<equiv> \<phi>, \<psi>)\<close> shows \<open>\<psi>\<close>
+using assms proof(induct)
+  case 1
+  AOT_show \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
+    by (simp add: act_conj_act_4)
+next
+  case (2 \<psi>)
+  AOT_thus \<open>\<^bold>\<A>\<psi>\<close>
+    by (metis arbitrary_actualization.simps "\<equiv>E"(1) logic_actual_nec_4[axiom_inst])
+qed
+
+AOT_theorem closure_act_2: \<open>\<forall>\<alpha> \<^bold>\<A>(\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<phi>{\<alpha>})\<close>
+  by (simp add: act_conj_act_4 "\<forall>I")
+
+AOT_theorem closure_act_3: \<open>\<^bold>\<A>\<forall>\<alpha> \<^bold>\<A>(\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<phi>{\<alpha>})\<close>
+  by (metis (no_types, lifting) act_conj_act_4 "\<equiv>E"(1,2) logic_actual_nec_3[axiom_inst] logic_actual_nec_4[axiom_inst] "\<forall>I")
+
+AOT_theorem closure_act_4: \<open>\<^bold>\<A>\<forall>\<alpha>\<^sub>1...\<forall>\<alpha>\<^sub>n \<^bold>\<A>(\<^bold>\<A>\<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv> \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n})\<close>
+  using closure_act_3 .
+
+(* TODO: examine these proofs *)
+AOT_theorem RA_1: assumes \<open>\<^bold>\<turnstile> \<phi>\<close> shows \<open>\<^bold>\<turnstile> \<^bold>\<A>\<phi>\<close>
+  (* This proof is the one rejected in remark (136) (meta-rule) *)
+  using "\<not>\<not>E" assms "\<equiv>E"(3) logic_actual[act_axiom_inst] logic_actual_nec_1[axiom_inst] modus_tollens_2 by blast
+AOT_theorem RA_2: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<phi>\<close>
+  (* This is actually \<Gamma> \<turnstile>\<^sub>\<box> \<phi> \<Longrightarrow> \<box>\<Gamma> \<turnstile>\<^sub>\<box> \<A>\<phi>*)
+  using RN assms nec_imp_act vdash_properties_5 by blast
+AOT_theorem RA_3: assumes \<open>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<^bold>\<A>\<psi> \<^bold>\<turnstile> \<^bold>\<A>\<phi>\<close>
+  (* This is unprovable in the current definition of \<turnstile> *)
+  (* \<Gamma> \<turnstile> \<phi> \<Longrightarrow> \<^bold>\<A>\<Gamma> \<turnstile> \<^bold>\<A>\<phi> is not even syntactically supported yet *)
+  oops
+
+lemmas RA = RA_1 RA_2
+
+AOT_act_theorem ANeg_1: \<open>\<not>\<^bold>\<A>\<phi> \<equiv> \<not>\<phi>\<close>
+  by (simp add: RA_1 contraposition_1_a deduction_theorem intro_elim_2 logic_actual[act_axiom_inst])
+
+AOT_act_theorem ANeg_2: \<open>\<not>\<^bold>\<A>\<not>\<phi> \<equiv> \<phi>\<close>
+  using ANeg_1 intro_elim_2 intro_elim_3_e useful_tautologies_1 useful_tautologies_2 by blast
+
+AOT_theorem Act_Basic_1: \<open>\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<not>\<phi>\<close>
+  by (meson "\<or>I"(1,2) "\<equiv>E"(2) logic_actual_nec_1[axiom_inst] raa_cor_1)
+
+AOT_theorem Act_Basic_2: \<open>\<^bold>\<A>(\<phi> & \<psi>) \<equiv> (\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>)\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<A>(\<phi> & \<psi>)\<close>
+  moreover AOT_have \<open>\<^bold>\<A>((\<phi> & \<psi>) \<rightarrow> \<phi>)\<close>
+    by (simp add: RA_2 con_dis_taut_1)
+  moreover AOT_have \<open>\<^bold>\<A>((\<phi> & \<psi>) \<rightarrow> \<psi>)\<close>
+    by (simp add: RA_2 con_dis_taut_2)
+  ultimately AOT_show \<open>\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>\<close>
+    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
+next
+  AOT_assume \<open>\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>\<close>
+  AOT_thus \<open>\<^bold>\<A>(\<phi> & \<psi>)\<close>
+    using act_conj_act_3 vdash_properties_6 by blast
+qed
+
+AOT_theorem Act_Basic_3: \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>) \<equiv> (\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>))\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>)\<close>
+  moreover AOT_have \<open>\<^bold>\<A>((\<phi> \<equiv> \<psi>) \<rightarrow> (\<phi> \<rightarrow> \<psi>))\<close>
+    by (simp add: RA_2 deduction_theorem intro_elim_3_a)
+  moreover AOT_have \<open>\<^bold>\<A>((\<phi> \<equiv> \<psi>) \<rightarrow> (\<psi> \<rightarrow> \<phi>))\<close>
+    by (simp add: RA_2 deduction_theorem intro_elim_3_b)
+  ultimately AOT_show \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
+    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
+next
+  AOT_assume \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
+  AOT_hence \<open>\<^bold>\<A>((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
+    by (metis act_conj_act_3 vdash_properties_10)
+  moreover AOT_have \<open>\<^bold>\<A>(((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)) \<rightarrow> (\<phi> \<equiv> \<psi>))\<close>
+    by (simp add: AOT_equiv RA_2 df_rules_formulas_4 vdash_properties_1_b)
+  ultimately AOT_show \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>)\<close>
+    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by metis
+qed
+
+AOT_theorem Act_Basic_4: \<open>(\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)) \<equiv> (\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>)\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
+  AOT_show \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>\<close>
+    using 0 "&E" act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "\<equiv>I" "\<rightarrow>I" by metis
+next
+  AOT_assume \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>\<close>
+  AOT_thus \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
+    by (metis "\<rightarrow>I" logic_actual_nec_2[axiom_inst] "\<equiv>E"(1,2) "&I")
+qed
+
+AOT_theorem Act_Basic_5: \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>) \<equiv> (\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>)\<close>
+  using Act_Basic_3 Act_Basic_4 intro_elim_3_e by blast
+
+AOT_theorem Act_Basic_6: \<open>\<^bold>\<A>\<phi> \<equiv> \<box>\<^bold>\<A>\<phi>\<close>
+  by (simp add: intro_elim_2 qml_2[axiom_inst] qml_act_1[axiom_inst])
+
+AOT_theorem Act_Basic_7: \<open>\<^bold>\<A>\<box>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
+  by (metis Act_Basic_6 "\<rightarrow>I" "\<rightarrow>E" "\<equiv>E"(1,2) nec_imp_act qml_act_2[axiom_inst])
+
+AOT_theorem Act_Basic_8: \<open>\<box>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
+  using ded_thm_cor_1 nec_imp_act qml_act_1[axiom_inst] by blast
+
+AOT_theorem Act_Basic_9: \<open>\<^bold>\<A>(\<phi> \<or> \<psi>) \<equiv> (\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>)\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<A>(\<phi> \<or> \<psi>)\<close>
+  AOT_thus \<open>\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>\<close>
+  proof (rule raa_cor_3)
+    AOT_assume \<open>\<not>(\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>)\<close>
+    AOT_hence \<open>\<not>\<^bold>\<A>\<phi> & \<not>\<^bold>\<A>\<psi>\<close>
+      by (metis intro_elim_3_a oth_class_taut_5_d)
+    AOT_hence \<open>\<^bold>\<A>\<not>\<phi> & \<^bold>\<A>\<not>\<psi>\<close>
+      using logic_actual_nec_1[axiom_inst, THEN "\<equiv>E"(2)] "&E" "&I" by metis
+    AOT_hence \<open>\<^bold>\<A>(\<not>\<phi> & \<not>\<psi>)\<close>
+      using "\<equiv>E" Act_Basic_2 by metis
+    moreover AOT_have \<open>\<^bold>\<A>((\<not>\<phi> & \<not>\<psi>) \<equiv> \<not>(\<phi> \<or> \<psi>))\<close>
+      using RA_2 intro_elim_3_f oth_class_taut_3_a oth_class_taut_5_d by blast
+    moreover AOT_have \<open>\<^bold>\<A>(\<not>\<phi> & \<not>\<psi>) \<equiv> \<^bold>\<A>(\<not>(\<phi> \<or> \<psi>))\<close>
+      using calculation(2) by (metis Act_Basic_5 intro_elim_3_a)
+    ultimately AOT_have \<open>\<^bold>\<A>(\<not>(\<phi> \<or> \<psi>))\<close> using "\<equiv>E" by blast
+    AOT_thus \<open>\<not>\<^bold>\<A>(\<phi> \<or> \<psi>)\<close>
+      using logic_actual_nec_1[axiom_inst, THEN "\<equiv>E"(1)] by auto
+  qed
+next
+  AOT_assume \<open>\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>\<close>
+  AOT_thus \<open>\<^bold>\<A>(\<phi> \<or> \<psi>)\<close>
+    by (meson RA_2 act_cond con_dis_i_e_3_a con_dis_i_e_4_a con_dis_taut_3 con_dis_taut_4)
+qed
+
+AOT_theorem Act_Basic_10: \<open>\<^bold>\<A>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
+proof -
+  AOT_have \<theta>: \<open>\<not>\<^bold>\<A>\<forall>\<alpha> \<not>\<phi>{\<alpha>} \<equiv> \<not>\<forall>\<alpha> \<^bold>\<A>\<not>\<phi>{\<alpha>}\<close>
+    by (rule oth_class_taut_4_b[THEN "\<equiv>E"(1)])
+       (metis logic_actual_nec_3[axiom_inst])
+  AOT_have \<xi>: \<open>\<not>\<forall>\<alpha> \<^bold>\<A>\<not>\<phi>{\<alpha>} \<equiv> \<not>\<forall>\<alpha> \<not>\<^bold>\<A>\<phi>{\<alpha>}\<close>
+    by (rule oth_class_taut_4_b[THEN "\<equiv>E"(1)])
+       (rule logic_actual_nec_1[THEN universal_closure, axiom_inst, THEN cqt_basic_3[THEN "\<rightarrow>E"]])
+  AOT_have \<open>\<^bold>\<A>(\<exists>\<alpha> \<phi>{\<alpha>}) \<equiv> \<^bold>\<A>(\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>})\<close>
+    using AOT_exists[THEN df_rules_formulas_3, THEN act_closure, axiom_inst]
+          AOT_exists[THEN df_rules_formulas_4, THEN act_closure, axiom_inst]
+    Act_Basic_4[THEN "\<equiv>E"(1)] "&I" Act_Basic_5[THEN "\<equiv>E"(2)] by metis
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<^bold>\<A>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+    by (simp add: logic_actual_nec_1 vdash_properties_1_b)
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<forall>\<alpha> \<^bold>\<A> \<not>\<phi>{\<alpha>}\<close> using \<theta> by blast
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<forall>\<alpha> \<not>\<^bold>\<A> \<phi>{\<alpha>}\<close> using \<xi> by blast
+  also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A> \<phi>{\<alpha>}\<close>
+    using AOT_exists[THEN "\<equiv>Df"] by (metis intro_elim_3_f oth_class_taut_3_a)
+  finally AOT_show \<open>\<^bold>\<A>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close> .
+qed
+
+
+AOT_theorem Act_Basic_11: \<open>\<^bold>\<A>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>}) \<equiv> \<forall>\<alpha>(\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<psi>{\<alpha>})\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close>
+  AOT_hence \<open>\<forall>\<alpha>\<^bold>\<A>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close>
+    using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<^bold>\<A>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close> for \<alpha> using "\<forall>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<psi>{\<alpha>}\<close> for \<alpha> by (metis Act_Basic_5 intro_elim_3_a)
+  AOT_thus \<open>\<forall>\<alpha>(\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<psi>{\<alpha>})\<close> by (rule "\<forall>I")
+next
+  AOT_assume \<open>\<forall>\<alpha>(\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<psi>{\<alpha>})\<close>
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<psi>{\<alpha>}\<close> for \<alpha> using "\<forall>E" by blast
+  AOT_hence \<open>\<^bold>\<A>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close> for \<alpha> by (metis Act_Basic_5 intro_elim_3_b)
+  AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close> by (rule "\<forall>I")
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>})\<close>
+    using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(2)] by fast
+qed
 
 end

@@ -17,6 +17,8 @@ theory AOT_syntax
          and "forall" = "\<forall>"
          and "exists" = "\<exists>"
          and "equivalent" = "\<equiv>"
+         and "not" = "\<not>"
+         and "implies" = "\<rightarrow>"
          and "equal" = "="
          and "by definition" = "\<^sub>d\<^sub>f"
          and "denotes" = "\<down>"
@@ -154,14 +156,21 @@ AOT_register_metavariable_names
 
 nonterminal \<phi>
 
+nonterminal \<phi>'
+syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> ("_")
+
 syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<phi>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
-syntax "_AOT_quoted" :: \<open>\<phi> \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+syntax "_AOT_quoted" :: \<open>\<phi>' \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
 
 syntax "" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>'(_')\<close>)
 
 nonterminal \<tau>
+
+nonterminal \<tau>'
+syntax "_AOT_process_frees" :: \<open>\<tau> \<Rightarrow> \<tau>'\<close> ("_")
+
 syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<tau>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
-syntax "_AOT_quoted" :: \<open>\<tau> \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+syntax "_AOT_quoted" :: \<open>\<tau>' \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
 
 nonterminal \<kappa>\<^sub>s
 nonterminal \<Pi>
@@ -179,7 +188,7 @@ syntax "_AOT_lambda_vars" :: \<open>id_position \<Rightarrow> lambda_args\<close
 syntax "_AOT_var" :: \<open>id_position \<Rightarrow> \<alpha>\<close> ("_")
 syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<alpha>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
 
-syntax "_AOT_valid" :: \<open>w \<Rightarrow> \<phi> \<Rightarrow> bool\<close> (\<open>[_ \<Turnstile> _]\<close>)
+syntax "_AOT_valid" :: \<open>w \<Rightarrow> \<phi>' \<Rightarrow> bool\<close> (\<open>[_ \<Turnstile> _]\<close>)
 
 translations
   "[w \<Turnstile> \<phi>]" <= "CONST AOT_model_valid_in w \<phi>"
@@ -321,21 +330,22 @@ val processFreesAlwaysMeta = processFreesForceMeta true
 \<close>
 
 (* TODO: move *)
+
 nonterminal AOT_props
 syntax (input) "_AOT_props" :: \<open>AOT_prop \<Rightarrow> AOT_props \<Rightarrow> AOT_props\<close> (infixr \<open>,\<close> 3)
 syntax "_AOT_prop" :: \<open>\<phi> \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
        "" :: \<open>AOT_prop \<Rightarrow> AOT_props\<close> (\<open>_\<close>)
        "_AOT_derivable" :: "AOT_props \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
-       "_AOT_theorem" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>_\<close>)
-       "_AOT_nec_theorem" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box>_\<close>)
-       "_AOT_equiv_def" :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
-       "_AOT_axiom" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
-       "_AOT_act_axiom" :: "\<phi> \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
+       "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>_\<close>)
+       "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box>_\<close>)
+       "_AOT_equiv_def" :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
+       "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
+       "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
 
-syntax "_AOT_axiom" :: "\<phi> \<Rightarrow> AOT_axiom" (\<open>_\<close>)
-syntax "_AOT_act_axiom" :: "\<phi> \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
+syntax "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
+syntax "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
 
 translations
   "_AOT_props a b" => "CONST Pure.conjunction a b"
@@ -353,20 +363,20 @@ in
 [
   (\<^syntax_const>\<open>_AOT_var\<close>, parseVar true),
   ("_AOT_vars", parseVar false),
-  (\<^syntax_const>\<open>_AOT_valid\<close>, fn ctxt => fn [w,x] => \<^const>\<open>AOT_model_valid_in\<close> $ w $ processFrees ctxt x),
-  (\<^syntax_const>\<open>_AOT_quoted\<close>, fn ctxt => fn [x] => processFrees ctxt x),
+  (\<^syntax_const>\<open>_AOT_valid\<close>, fn ctxt => fn [w,x] => \<^const>\<open>AOT_model_valid_in\<close> $ w $ x),
+  (\<^syntax_const>\<open>_AOT_quoted\<close>, fn ctxt => fn [x] => x),
+  (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
   (\<^syntax_const>\<open>_AOT_prop\<close>, fn ctxt => fn [x] => let
     val world = case (AOT_ProofData.get ctxt) of SOME w => w | _ => raise Fail "Expected world to be stored in the proof state."
     val trm = case x of (Const ("_AOT_term_var", _) $ (y as (Const ("_constrain", _) $ Free (name, _) $ pos))) =>
               if (hd (Symbol.explode name)) = "\<Gamma>" then SOME (HOLogic.mk_Trueprop y) else NONE | _ => NONE
     val trm = case trm of SOME trm => trm
-        | _ => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ (processFrees ctxt x))
+        | _ => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ processFrees ctxt x)
     in trm end),
-  (\<^syntax_const>\<open>_AOT_theorem\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ @{const w\<^sub>0} $ (processFrees ctxt x))),
-  (\<^syntax_const>\<open>_AOT_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_axiom} $ (processFrees ctxt x))),
-  (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ (processFrees ctxt x))),
-  (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, fn ctxt => fn [x] => let
-    val trm = processFrees ctxt x
+  (\<^syntax_const>\<open>_AOT_theorem\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ @{const w\<^sub>0} $ x)),
+  (\<^syntax_const>\<open>_AOT_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_axiom} $ x)),
+  (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ x)),
+  (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, fn ctxt => fn [trm] => let
     val world = singleton (Variable.variant_frees ctxt [trm]) ("v", @{typ w})
     val trm = HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Free world $ trm)
     val trm = Term.absfree world trm
@@ -377,7 +387,7 @@ in
   (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, fn ctxt => fn [_ $ var $ pos,trm] => let
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ (Const ("_constrainAbs", dummyT) $ Term.absfree (Term.dest_Free var) trm $ pos)
     in trm end),
-  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ processFrees ctxt x $ processFrees ctxt y)),
+  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ x $ y)),
   (\<^syntax_const>\<open>_AOT_exe\<close>, parseExe),
   (\<^syntax_const>\<open>_AOT_enc\<close>, parseEnc)
 ]
@@ -478,5 +488,22 @@ parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>
   Ast.mk_appl (Ast.Constant "AOT_exists") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
 print_translation
   \<open>[Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>AOT_exists\<close>]\<close>
+
+
+
+syntax "_AOT_DDDOT" :: "\<phi>" ("...")
+syntax "_AOT_DDDOT" :: "\<phi>" ("\<dots>")
+parse_translation\<open>
+[(\<^syntax_const>\<open>_AOT_DDDOT\<close>, fn ctxt => fn ts =>
+let
+val trm = Proof_Context.get_fact_single ctxt (Facts.named (Long_Name.localN ^ Long_Name.separator ^ Auto_Bind.thisN))
+val trm = Thm.concl_of trm
+fun readThisRHS (Const ("HOL.Trueprop", _) $ (Const ("AOT_model.AOT_model_valid_in", dummyT) $ _ $ (Const _ $ _ $ rhs))) = rhs
+  | readThisRHS _ = raise Term.TERM ("Could not expand ... from term.", [trm])
+in
+readThisRHS trm
+end
+)]
+\<close>
 
 end
