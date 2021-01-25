@@ -1449,4 +1449,151 @@ next
     using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(2)] by fast
 qed
 
+AOT_act_theorem act_quant_uniq: \<open>\<forall>\<beta>(\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>) \<equiv> \<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<forall>\<beta>(\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta> using "\<forall>E" by blast
+  AOT_hence \<open>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta>
+    using "\<equiv>I" "\<rightarrow>I" RA_1 intro_elim_3_a intro_elim_3_b logic_actual[act_axiom_inst] vdash_properties_6
+    by metis
+  AOT_thus \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> by (rule "\<forall>I")
+next
+  AOT_assume \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+  AOT_hence \<open>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta> using "\<forall>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta>
+    using "\<equiv>I" "\<rightarrow>I" RA_1 intro_elim_3_a intro_elim_3_b logic_actual[act_axiom_inst] vdash_properties_6
+    by metis
+  AOT_thus \<open>\<forall>\<beta>(\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> by (rule "\<forall>I")
+qed
+
+AOT_act_theorem fund_cont_desc: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<phi>{z} \<equiv> z = x)\<close>
+  using descriptions[axiom_inst] act_quant_uniq intro_elim_3_e by fast
+
+AOT_act_theorem hintikka: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close>
+  using oth_class_taut_2_e[THEN "\<equiv>E"(1)] term_out_3 fund_cont_desc intro_elim_3_e by blast
+
+
+locale russel_axiom =
+  fixes \<psi>
+  assumes \<psi>_denotes_asm: "[v \<Turnstile> \<psi>{\<kappa>}] \<Longrightarrow> [v \<Turnstile> \<kappa>\<down>]"
+begin
+AOT_act_theorem russell_axiom: \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}} \<equiv> \<exists>x(\<phi>{x} & \<forall>z(\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close>
+proof -
+  AOT_have b: \<open>\<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<phi>{x} & \<forall>z(\<phi>{z} \<rightarrow> z = x)))\<close>
+    using hintikka "\<forall>I" by fast
+  show ?thesis
+  proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+    AOT_assume c: \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+    AOT_hence d: \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> using \<psi>_denotes_asm by blast
+    AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+    then AOT_obtain a where a_def: \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+    moreover AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<phi>{a} & \<forall>z(\<phi>{z} \<rightarrow> z = a))\<close> using b "\<forall>E" by blast
+    ultimately AOT_have \<open>\<phi>{a} & \<forall>z(\<phi>{z} \<rightarrow> z = a)\<close> using "\<equiv>E" by blast
+    moreover AOT_have \<open>\<psi>{a}\<close>
+    proof - 
+      AOT_have \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
+        by (simp add: id_eq_2 universal_cor)
+      AOT_hence \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
+        by (rule_tac \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>" in "\<forall>E"(1); rule_tac \<beta>=a in "\<forall>E"(2))
+           (auto simp: d universal_cor)
+      AOT_thus \<open>\<psi>{a}\<close>
+        using a_def c "=E" "\<rightarrow>E" by blast
+    qed
+    ultimately AOT_have \<open>\<phi>{a} & \<forall>z(\<phi>{z} \<rightarrow> z = a) & \<psi>{a}\<close> by (rule "&I")
+    AOT_thus \<open>\<exists>x(\<phi>{x} & \<forall>z(\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close> by (rule "\<exists>I")
+  next
+    AOT_assume \<open>\<exists>x(\<phi>{x} & \<forall>z(\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close>
+    then AOT_obtain b where g: \<open>\<phi>{b} & \<forall>z(\<phi>{z} \<rightarrow> z = b) & \<psi>{b}\<close> using "instantiation"[rotated] by blast
+    AOT_hence h: \<open>b = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<phi>{b} & \<forall>z(\<phi>{z} \<rightarrow> z = b))\<close> using b "\<forall>E" by blast
+    AOT_have \<open>\<phi>{b} & \<forall>z(\<phi>{z} \<rightarrow> z = b)\<close> and j: \<open>\<psi>{b}\<close> using g "&E" by blast+
+    AOT_hence \<open>b = \<^bold>\<iota>x \<phi>{x}\<close> using h "\<equiv>E" by blast
+    AOT_thus \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}}\<close> using j "=E" by blast
+  qed
+qed
+end
+
+(* TODO: this nicely shows off using locales with the embedding, but maybe there is still a nicer way *)
+interpretation russell_axiom_exe_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_1[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_2_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>'\<guillemotright>"
+  by standard (metis cqt_5a_2[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_exe_2_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>'\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_2[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_2_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_2[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_3_1_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>'\<kappa>''\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_exe_3_1_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>'\<kappa>\<kappa>''\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_exe_3_1_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>'\<kappa>''\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_3_2_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>\<kappa>'\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_exe_3_2_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>'\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_3_2_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>'\<kappa>\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_exe_3_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>[\<Pi>]\<kappa>\<kappa>\<kappa>\<guillemotright>"
+  by standard (metis cqt_5a_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+
+interpretation russell_axiom_enc_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_1[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_2_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>'[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_2[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_enc_2_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>'\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_2[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_2_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_2[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_3_1_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>'\<kappa>''[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_enc_3_1_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>'\<kappa>\<kappa>''[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_enc_3_1_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>'\<kappa>''\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_3_2_1: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>\<kappa>'[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E")
+interpretation russell_axiom_enc_3_2_2: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>'\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_3_2_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>'\<kappa>\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+interpretation russell_axiom_enc_3_3: russel_axiom "\<lambda> \<kappa> . \<guillemotleft>\<kappa>\<kappa>\<kappa>[\<Pi>]\<guillemotright>"
+  by standard (metis cqt_5b_3[axiom_inst, THEN "\<rightarrow>E"] "&E"(2))
+
+AOT_act_theorem "!-exists_1": \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<exists>!x \<phi>{x}\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  AOT_hence \<open>\<phi>{a} & \<forall>z (\<phi>{z} \<rightarrow> z = a)\<close> using hintikka "\<equiv>E" by blast
+  AOT_hence \<open>\<exists>x (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>!x \<phi>{x}\<close> using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+next
+  AOT_assume \<open>\<exists>!x \<phi>{x}\<close>
+  AOT_hence \<open>\<exists>x (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close>
+    using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain b where \<open>\<phi>{b} & \<forall>z (\<phi>{z} \<rightarrow> z = b)\<close> using "instantiation"[rotated] by blast
+  AOT_hence \<open>b = \<^bold>\<iota>x \<phi>{x}\<close> using hintikka "\<equiv>E" by blast
+  AOT_thus \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> by (metis "t=t-proper_2" vdash_properties_6)
+qed
+
+AOT_act_theorem "!-exists_2": \<open>\<exists>y(y=\<^bold>\<iota>x \<phi>{x}) \<equiv> \<exists>!x \<phi>{x}\<close>
+  using "!-exists_1" free_thms_1 intro_elim_3_f by blast
+
+AOT_act_theorem y_in_1: \<open>x = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{x}\<close>
+  using "&E"(1) "\<rightarrow>I" hintikka "\<equiv>E"(1) by blast
+
+AOT_act_theorem y_in_2: \<open>z = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{z}\<close> using y_in_1. (* TODO: same as above *)
+
+AOT_act_theorem y_in_3: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  moreover AOT_have \<open>\<phi>{a}\<close> using calculation hintikka "\<equiv>E"(1) "&E" by blast
+  ultimately AOT_show \<open>\<phi>{\<^bold>\<iota>x \<phi>{x}}\<close> using "=E" by blast
+qed
+
+AOT_act_theorem y_in_4: \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x}) \<rightarrow> \<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+  using y_in_3[THEN "\<rightarrow>E"] free_thms_1[THEN "\<equiv>E"(2)] "\<rightarrow>I" by blast
+
 end
