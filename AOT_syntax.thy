@@ -498,6 +498,11 @@ parse_translation\<open>
 let
 val trm = Proof_Context.get_fact_single ctxt (Facts.named (Long_Name.localN ^ Long_Name.separator ^ Auto_Bind.thisN))
 val trm = Thm.concl_of trm
+(* TODO: find a proper way to do this *)
+fun mapTerms (Free (x,typ)) = (case List.rev (String.explode x) of #"_" :: #"_" :: tl =>
+  Free (String.implode (List.rev tl), typ) | _ => Free (x,typ))
+  | mapTerms x = x
+val trm = Term.map_aterms mapTerms trm
 fun readThisRHS (Const ("HOL.Trueprop", _) $ (Const ("AOT_model.AOT_model_valid_in", dummyT) $ _ $ (Const _ $ _ $ rhs))) = rhs
   | readThisRHS _ = raise Term.TERM ("Could not expand ... from term.", [trm])
 in

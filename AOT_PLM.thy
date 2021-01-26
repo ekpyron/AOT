@@ -1596,4 +1596,278 @@ qed
 AOT_act_theorem y_in_4: \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x}) \<rightarrow> \<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
   using y_in_3[THEN "\<rightarrow>E"] free_thms_1[THEN "\<equiv>E"(2)] "\<rightarrow>I" by blast
 
+
+AOT_theorem act_quant_nec: \<open>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>) \<equiv> \<forall>\<beta>(\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta> using "\<forall>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta> 
+    by (metis Act_Basic_5 act_conj_act_4 intro_elim_3_a intro_elim_3_e)
+  AOT_thus \<open>\<forall>\<beta>(\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    by (rule "\<forall>I")
+next
+  AOT_assume \<open>\<forall>\<beta>(\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+  AOT_hence \<open>\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta> using "\<forall>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>\<close> for \<beta>
+    by (metis Act_Basic_5 act_conj_act_4 intro_elim_3_a intro_elim_3_f)
+  AOT_thus \<open>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    by (rule "\<forall>I")
+qed
+
+AOT_theorem equi_desc_descA_1: \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> x = \<^bold>\<iota>x(\<^bold>\<A>\<phi>{x})\<close>
+proof -
+  AOT_have \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z (\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>  using descriptions[axiom_inst] by blast
+  also AOT_have \<open>... \<equiv> \<forall>z (\<^bold>\<A>\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+  proof(rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<forall>I")
+    AOT_assume \<open>\<forall>z (\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+    AOT_hence \<open>\<^bold>\<A>\<phi>{a} \<equiv> a = x\<close> for a using "\<forall>E" by blast
+    AOT_thus \<open>\<^bold>\<A>\<^bold>\<A>\<phi>{a} \<equiv> a = x\<close> for a by (metis Act_Basic_5 act_conj_act_4 intro_elim_3_a intro_elim_3_e)
+  next
+    AOT_assume \<open>\<forall>z (\<^bold>\<A>\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+    AOT_hence \<open>\<^bold>\<A>\<^bold>\<A>\<phi>{a} \<equiv> a = x\<close> for a using "\<forall>E" by blast
+    AOT_thus \<open>\<^bold>\<A>\<phi>{a} \<equiv> a = x\<close> for a  by (metis Act_Basic_5 act_conj_act_4 intro_elim_3_a intro_elim_3_f)
+  qed
+  also AOT_have \<open>... \<equiv> x = \<^bold>\<iota>x(\<^bold>\<A>\<phi>{x})\<close>
+    using oth_class_taut_2_e[THEN "\<equiv>E"(1)] descriptions[axiom_inst] by fast
+  finally show ?thesis .
+qed
+
+AOT_theorem equi_desc_descA_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x(\<^bold>\<A>\<phi>{x})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  moreover AOT_have \<open>a = \<^bold>\<iota>x(\<^bold>\<A>\<phi>{x})\<close> using calculation equi_desc_descA_1[THEN "\<equiv>E"(1)] by blast
+  ultimately AOT_show \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x(\<^bold>\<A>\<phi>{x})\<close> using "=E" by fast
+qed
+
+AOT_theorem nec_hintikka_scheme: \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> \<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x)\<close>
+proof -
+  AOT_have \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close> using descriptions[axiom_inst] by blast
+  also AOT_have \<open>\<dots> \<equiv> (\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x))\<close>
+    using oth_class_taut_2_e[THEN "\<equiv>E"(1)] term_out_3 by fast
+  finally show ?thesis.
+qed
+
+AOT_theorem equiv_desc_eq_1: \<open>\<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> x = \<^bold>\<iota>x \<psi>{x})\<close>
+proof(rule "\<rightarrow>I"; rule "\<forall>I")
+  fix \<beta>
+  AOT_assume \<open>\<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x})\<close>
+  AOT_hence \<open>\<^bold>\<A>(\<phi>{x} \<equiv> \<psi>{x})\<close> for x using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(1)] "\<forall>E"(2) by blast
+  AOT_hence 0: \<open>\<^bold>\<A>\<phi>{x} \<equiv> \<^bold>\<A>\<psi>{x}\<close> for x by (metis Act_Basic_5 intro_elim_3_a)
+  AOT_have \<open>\<beta> = \<^bold>\<iota>x \<phi>{x} \<equiv> \<^bold>\<A>\<phi>{\<beta>} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>)\<close> using nec_hintikka_scheme by blast
+  also AOT_have \<open>... \<equiv> \<^bold>\<A>\<psi>{\<beta>} & \<forall>z(\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>)\<close>
+  proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+    AOT_assume 1: \<open>\<^bold>\<A>\<phi>{\<beta>} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>)\<close>
+    AOT_hence \<open>\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>\<close> for z using "&E" "\<forall>E" by blast
+    AOT_hence \<open>\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>\<close> for z using 0 "\<equiv>E" "\<rightarrow>I" "\<rightarrow>E" by metis
+    AOT_hence \<open>\<forall>z(\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>)\<close> using "\<forall>I" by fast
+    moreover AOT_have \<open>\<^bold>\<A>\<psi>{\<beta>}\<close> using "&E" 0[THEN "\<equiv>E"(1)] 1 by blast
+    ultimately AOT_show \<open>\<^bold>\<A>\<psi>{\<beta>} & \<forall>z(\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>)\<close> using "&I" by blast
+  next
+    AOT_assume 1: \<open>\<^bold>\<A>\<psi>{\<beta>} & \<forall>z(\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>)\<close>
+    AOT_hence \<open>\<^bold>\<A>\<psi>{z} \<rightarrow> z = \<beta>\<close> for z using "&E" "\<forall>E" by blast
+    AOT_hence \<open>\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>\<close> for z using 0 "\<equiv>E" "\<rightarrow>I" "\<rightarrow>E" by metis
+    AOT_hence \<open>\<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>)\<close> using "\<forall>I" by fast
+    moreover AOT_have \<open>\<^bold>\<A>\<phi>{\<beta>}\<close> using "&E" 0[THEN "\<equiv>E"(2)] 1 by blast
+    ultimately AOT_show \<open>\<^bold>\<A>\<phi>{\<beta>} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = \<beta>)\<close> using "&I" by blast
+  qed
+  also AOT_have \<open>... \<equiv> \<beta> = \<^bold>\<iota>x \<psi>{x}\<close>
+    using oth_class_taut_2_e[THEN "\<equiv>E"(1)] nec_hintikka_scheme by blast
+  finally AOT_show \<open>\<beta> = \<^bold>\<iota>x \<phi>{x} \<equiv> \<beta> = \<^bold>\<iota>x \<psi>{x}\<close> .
+qed
+
+AOT_theorem equiv_desc_eq_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x})\<close>
+  AOT_hence 0: \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> and
+            1: \<open>\<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> x = \<^bold>\<iota>x \<psi>{x})\<close>
+    using "&E" free_thms_1[THEN "\<equiv>E"(1)] equiv_desc_eq_1 "\<rightarrow>E" by blast+
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  moreover AOT_have \<open>a = \<^bold>\<iota>x \<psi>{x}\<close> using calculation 1 "\<forall>E" "\<equiv>E"(1) by fast
+  ultimately AOT_show \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+    using "=E" by fast
+qed
+
+AOT_theorem equiv_desc_eq_3: \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<box>\<forall>x(\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+  using "\<rightarrow>I" equiv_desc_eq_2[THEN "\<rightarrow>E", OF "&I"] "&E" nec_imp_act[THEN "\<rightarrow>E"] by metis
+
+(* TODO: this is part of exist_nec *)
+AOT_theorem equiv_desc_eq_4: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<box>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  AOT_thus \<open>\<box>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+    using ex_2_a "=E" by fast
+qed
+
+AOT_theorem equiv_desc_eq_5: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<exists>y \<box>(y = \<^bold>\<iota>x \<phi>{x})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  AOT_hence \<open>\<box>(a = \<^bold>\<iota>x \<phi>{x})\<close> by (metis id_nec_2 vdash_properties_10)
+  AOT_thus \<open>\<exists>y \<box>(y = \<^bold>\<iota>x \<phi>{x})\<close> by (rule "\<exists>I")
+qed
+
+AOT_act_theorem equiv_desc_eq2_1: \<open>\<forall>x (\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> x = \<^bold>\<iota>x \<psi>{x})\<close>
+  using "\<rightarrow>I" logic_actual[act_axiom_inst, THEN "\<rightarrow>E"] equiv_desc_eq_1[THEN "\<rightarrow>E"]
+        RA_1 deduction_theorem by blast
+
+AOT_act_theorem equiv_desc_eq2_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<forall>x (\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+  using "\<rightarrow>I" logic_actual[act_axiom_inst, THEN "\<rightarrow>E"] equiv_desc_eq_2[THEN "\<rightarrow>E", OF "&I"]
+        RA_1 deduction_theorem "&E" by metis
+
+context russel_axiom
+begin
+AOT_theorem nec_russell_axiom: \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}} \<equiv> \<exists>x(\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close>
+proof -
+  AOT_have b: \<open>\<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x)))\<close>
+    using nec_hintikka_scheme "\<forall>I" by fast
+  show ?thesis
+  proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+    AOT_assume c: \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+    AOT_hence d: \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> using \<psi>_denotes_asm by blast
+    AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+    then AOT_obtain a where a_def: \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+    moreover AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<^bold>\<A>\<phi>{a} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = a))\<close> using b "\<forall>E" by blast
+    ultimately AOT_have \<open>\<^bold>\<A>\<phi>{a} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = a)\<close> using "\<equiv>E" by blast
+    moreover AOT_have \<open>\<psi>{a}\<close>
+    proof - 
+      AOT_have \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
+        by (simp add: id_eq_2 universal_cor)
+      AOT_hence \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
+        by (rule_tac \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>" in "\<forall>E"(1); rule_tac \<beta>=a in "\<forall>E"(2))
+           (auto simp: d universal_cor)
+      AOT_thus \<open>\<psi>{a}\<close>
+        using a_def c "=E" "\<rightarrow>E" by metis
+    qed
+    ultimately AOT_have \<open>\<^bold>\<A>\<phi>{a} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = a) & \<psi>{a}\<close> by (rule "&I")
+    AOT_thus \<open>\<exists>x(\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close> by (rule "\<exists>I")
+  next
+    AOT_assume \<open>\<exists>x(\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & \<psi>{x})\<close>
+    then AOT_obtain b where g: \<open>\<^bold>\<A>\<phi>{b} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = b) & \<psi>{b}\<close> using "instantiation"[rotated] by blast
+    AOT_hence h: \<open>b = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<^bold>\<A>\<phi>{b} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = b))\<close> using b "\<forall>E" by blast
+    AOT_have \<open>\<^bold>\<A>\<phi>{b} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = b)\<close> and j: \<open>\<psi>{b}\<close> using g "&E" by blast+
+    AOT_hence \<open>b = \<^bold>\<iota>x \<phi>{x}\<close> using h "\<equiv>E" by blast
+    AOT_thus \<open>\<psi>{\<^bold>\<iota>x \<phi>{x}}\<close> using j "=E" by blast
+  qed
+qed
+end
+
+AOT_theorem actual_desc_1: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<exists>!x \<^bold>\<A>\<phi>{x}\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  moreover AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close>
+    using descriptions[axiom_inst] by blast
+  ultimately AOT_have \<open>\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close>
+    using "\<equiv>E" by blast
+  AOT_hence \<open>\<exists>x\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close>
+    using uniqueness_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
+next
+  AOT_assume \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close>
+  AOT_hence \<open>\<exists>x\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+    using uniqueness_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by fast
+  then AOT_obtain a where \<open>\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close> using "instantiation"[rotated] by blast
+  moreover AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close>
+    using descriptions[axiom_inst] by blast
+  ultimately AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "\<equiv>E" by blast
+  AOT_thus \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> by (metis "t=t-proper_2" vdash_properties_6)
+qed
+
+AOT_theorem actual_desc_2: \<open>x = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<^bold>\<A>\<phi>{x}\<close>
+  using con_dis_i_e_2_a contraposition_1_b intro_elim_3_a nec_hintikka_scheme reductio_aa_2 vdash_properties_9 by blast
+
+AOT_theorem actual_desc_3: \<open>z = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<^bold>\<A>\<phi>{z}\<close>
+  using actual_desc_2. (* TODO: same as above *)
+
+AOT_theorem actual_desc_4: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<^bold>\<A>\<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I_1" existential_1)
+  then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
+  AOT_thus \<open>\<^bold>\<A>\<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
+    using actual_desc_2 "=E" "\<rightarrow>E" by fast
+qed
+
+(* TODO: the proof of this in PLM seems fishy *)
+AOT_theorem actual_desc_5: \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> \<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+  AOT_hence \<phi>_down: \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> and \<psi>_down: \<open>\<^bold>\<iota>x \<psi>{x}\<down>\<close>
+    using "t=t-proper_1" "t=t-proper_2" vdash_properties_6 by blast+
+  AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> and \<open>\<exists>y (y = \<^bold>\<iota>x \<psi>{x})\<close> by (metis "rule=I_1" existential_1)+
+  then AOT_obtain a and b where a_eq: \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> and b_eq: \<open>b = \<^bold>\<iota>x \<psi>{x}\<close>
+    using "instantiation"[rotated] by metis
+
+  AOT_have \<open>\<forall>\<alpha>\<forall>\<beta> (\<alpha> = \<beta> \<rightarrow> \<beta> = \<alpha>)\<close> by (rule "\<forall>I"; rule "\<forall>I"; rule id_eq_2)
+  AOT_hence \<open>\<forall>\<beta> (\<^bold>\<iota>x \<phi>{x} = \<beta> \<rightarrow> \<beta> = \<^bold>\<iota>x \<phi>{x})\<close>
+    using "\<forall>E" \<phi>_down by blast
+  AOT_hence \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> \<^bold>\<iota>x \<psi>{x} = \<^bold>\<iota>x \<phi>{x}\<close>
+    using "\<forall>E" \<psi>_down by blast
+  AOT_hence 1: \<open>\<^bold>\<iota>x \<psi>{x} = \<^bold>\<iota>x \<phi>{x}\<close> using 0
+    "\<rightarrow>E" by blast
+
+  AOT_have \<open>\<^bold>\<A>\<phi>{x} \<equiv> \<^bold>\<A>\<psi>{x}\<close> for x
+  proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+    AOT_assume \<open>\<^bold>\<A>\<phi>{x}\<close>
+    moreover AOT_have \<open>\<^bold>\<A>\<phi>{x} \<rightarrow> x = a\<close> for x
+      using nec_hintikka_scheme[THEN "\<equiv>E"(1), OF a_eq, THEN "&E"(2)] "\<forall>E" by blast
+    ultimately AOT_have \<open>x = a\<close> using "\<rightarrow>E" by blast
+    AOT_hence \<open>x = \<^bold>\<iota>x \<phi>{x}\<close> using a_eq "=E" by blast
+    AOT_hence \<open>x = \<^bold>\<iota>x \<psi>{x}\<close> using 0 "=E" by blast
+    AOT_thus \<open>\<^bold>\<A>\<psi>{x}\<close> by (metis actual_desc_3 vdash_properties_6)
+  next
+    AOT_assume \<open>\<^bold>\<A>\<psi>{x}\<close>
+    moreover AOT_have \<open>\<^bold>\<A>\<psi>{x} \<rightarrow> x = b\<close> for x
+      using nec_hintikka_scheme[THEN "\<equiv>E"(1), OF b_eq, THEN "&E"(2)] "\<forall>E" by blast
+    ultimately AOT_have \<open>x = b\<close> using "\<rightarrow>E" by blast
+    AOT_hence \<open>x = \<^bold>\<iota>x \<psi>{x}\<close> using b_eq "=E" by blast
+    AOT_hence \<open>x = \<^bold>\<iota>x \<phi>{x}\<close> using 1 "=E" by blast
+    AOT_thus \<open>\<^bold>\<A>\<phi>{x}\<close> by (metis actual_desc_3 vdash_properties_6)
+  qed
+  AOT_hence \<open>\<^bold>\<A>(\<phi>{x} \<equiv> \<psi>{x})\<close> for x by (metis Act_Basic_5 intro_elim_3_b)
+  AOT_hence \<open>\<forall>x \<^bold>\<A>(\<phi>{x} \<equiv> \<psi>{x})\<close> by (rule "\<forall>I")
+  AOT_thus \<open>\<^bold>\<A>\<forall>x (\<phi>{x} \<equiv> \<psi>{x})\<close>
+    using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(2)] by fast
+qed    
+
+AOT_theorem "!box-desc_1": \<open>\<exists>!x \<box>\<phi>{x} \<rightarrow> \<forall>y (y = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{y})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>!x \<box>\<phi>{x}\<close>
+  AOT_hence \<zeta>: \<open>\<exists>x (\<box>\<phi>{x} & \<forall>z (\<box>\<phi>{z} \<rightarrow> z = x))\<close>
+    using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain b where \<theta>: \<open>\<box>\<phi>{b} & \<forall>z (\<box>\<phi>{z} \<rightarrow> z = b)\<close> using "instantiation"[rotated] by blast
+  AOT_show \<open>\<forall>y (y = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{y})\<close>
+  proof(rule GEN; rule "\<rightarrow>I")
+    fix y
+    AOT_assume \<open>y = \<^bold>\<iota>x \<phi>{x}\<close>
+    AOT_hence \<open>\<^bold>\<A>\<phi>{y} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = y)\<close> using nec_hintikka_scheme[THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<^bold>\<A>\<phi>{b} \<rightarrow> b = y\<close> using "&E" "\<forall>E" by blast
+    moreover AOT_have \<open>\<^bold>\<A>\<phi>{b}\<close> using \<theta>[THEN "&E"(1)]  by (metis nec_imp_act "\<rightarrow>E")
+    ultimately AOT_have \<open>b = y\<close> using "\<rightarrow>E" by blast
+    moreover AOT_have \<open>\<phi>{b}\<close> using \<theta>[THEN "&E"(1)]  by (metis qml_2[axiom_inst] "\<rightarrow>E") 
+    ultimately AOT_show \<open>\<phi>{y}\<close> using "=E" by blast
+  qed
+qed
+
+AOT_theorem "!box-desc_2": \<open>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x}) \<rightarrow> (\<exists>!x \<phi>{x} \<rightarrow> \<forall>y (y = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{y}))\<close>
+proof(rule "\<rightarrow>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close>
+  moreover AOT_assume \<open>\<exists>!x \<phi>{x}\<close>
+  ultimately AOT_have \<open>\<exists>!x \<box>\<phi>{x}\<close>
+    using "nec-exist-!"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>\<forall>y (y = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{y})\<close>
+    using "!box-desc_1" "\<rightarrow>E" by blast
+qed
+
+AOT_theorem dr_alphabetic_thm: \<open>\<^bold>\<iota>\<nu> \<phi>{\<nu>}\<down> \<rightarrow> \<^bold>\<iota>\<nu> \<phi>{\<nu>} = \<^bold>\<iota>\<mu> \<phi>{\<mu>}\<close> (* TODO: vacuous *)
+  by (simp add: "rule=I_1" "\<rightarrow>I")
+
+(* Continue at PDF page 166; numbered page 321; 9.9 The Theory of Necessity *)
+
 end
