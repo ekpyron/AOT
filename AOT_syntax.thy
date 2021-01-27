@@ -140,6 +140,7 @@ fun term_of (Type (a, Ts)) =
       Term.list_comb (Syntax.const (Lexicon.mark_type a), map term_of Ts)
   | term_of (t as TFree _) = raise Term.TYPE ("", [t], [])
   | term_of (TVar _) = raise Fail "";
+fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
 fun fetchTermConstraint ctxt name unary =
   Local_Theory.raw_theory_result (fn thy => let
       fun getConstraint unary AOT_Individual = Const ("_dummy_ofsort", dummyT) $ term_of_sort (if unary then AOT_UnaryIndividualSort.get thy else AOT_NaryIndividualSort.get thy)
@@ -267,18 +268,18 @@ consts AOT_denotes :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
 nonterminal desc
 nonterminal exe_args
 nonterminal \<Pi>0
-syntax AOT_denotes :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<down>\<close>)
-       AOT_imp :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<rightarrow>\<close> 25)
-       AOT_not :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<not>_\<close> [50] 50)
-       AOT_not :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>~_\<close> [50] 50)
-       AOT_box :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<box>_\<close> [49] 54)
-       AOT_act :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<A>_\<close> [49] 54)
+syntax "_AOT_denotes" :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<down>\<close>)
+       "_AOT_imp" :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<rightarrow>\<close> 25)
+       "_AOT_not" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>~_\<close> [50] 50)
+       "_AOT_not" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<not>_\<close> [50] 50)
+       "_AOT_box" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<box>_\<close> [49] 54)
+       "_AOT_act" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<A>_\<close> [49] 54)
        "_AOT_all" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_ _\<close> [1,40])
        "_AOT_all_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_ _\<close> [1,40])
-       AOT_eq :: \<open>[\<tau>, \<tau>] \<Rightarrow> \<phi>\<close> (infixl \<open>=\<close> 50)
+       "_AOT_eq" :: \<open>[\<tau>, \<tau>] \<Rightarrow> \<phi>\<close> (infixl \<open>=\<close> 50)
        "_AOT_desc" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> desc\<close> ("\<^bold>\<iota>__" [1,1000])
        "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> ("_")
-       "_AOT_lambda" :: \<open>lambda_args \<Rightarrow> \<phi> \<Rightarrow> \<Pi>\<close> (\<open>[\<lambda>__]\<close>)
+       "_AOT_lambda" :: \<open>lambda_args \<Rightarrow> \<phi> \<Rightarrow> \<Pi>\<close> (\<open>[\<lambda>_ _]\<close>)
        "_explicitRelation" :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> ("[_]")
        "" :: \<open>desc \<Rightarrow> exe_arg\<close> ("_")
        "" :: \<open>exe_arg \<Rightarrow> exe_args\<close> ("_")
@@ -288,15 +289,29 @@ syntax AOT_denotes :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<down
        "_AOT_term_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<tau>\<close> ("_..._")
        "_AOT_exe" :: \<open>\<Pi> \<Rightarrow> exe_args \<Rightarrow> \<phi>\<close> (\<open>__\<close>)
        "_AOT_enc" :: \<open>exe_args \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>__\<close>)
-       AOT_lambda0 :: \<open>\<phi> \<Rightarrow> \<Pi>0\<close> (\<open>[\<lambda> _]\<close>)
+       "_AOT_lambda0" :: \<open>\<phi> \<Rightarrow> \<Pi>0\<close> (\<open>[\<lambda> _]\<close>)
        "" :: \<open>\<Pi>0 \<Rightarrow> \<phi>\<close> ("_")
        "" :: \<open>\<Pi>0 \<Rightarrow> \<tau>\<close> ("_")
-       AOT_concrete :: \<open>\<Pi>\<close> (\<open>E!\<close>)
+       "_AOT_concrete" :: \<open>\<Pi>\<close> (\<open>E!\<close>)
+
 
 translations
-  "_AOT_all \<alpha> \<phi>" == "CONST AOT_forall (\<lambda> \<alpha> . \<phi>)"
-  "_AOT_desc \<alpha> \<phi>" == "CONST AOT_desc (\<lambda> \<alpha> . \<phi>)"
-  "_AOT_lambda \<alpha> \<phi>" == "CONST AOT_lambda (\<lambda> \<alpha> . \<phi>)"
+  "_AOT_denotes \<tau>" == "CONST AOT_denotes \<tau>"
+  "_AOT_imp \<phi> \<psi>" == "CONST AOT_imp \<phi> \<psi>"
+  "_AOT_not \<phi>" == "CONST AOT_not \<phi>"
+  "_AOT_box \<phi>" == "CONST AOT_box \<phi>"
+  "_AOT_act \<phi>" == "CONST AOT_act \<phi>"
+  "_AOT_all \<alpha> \<phi>" == "CONST AOT_forall (_abs \<alpha> \<phi>)"
+  "_AOT_all \<alpha> \<phi>" <= "CONST AOT_forall (\<lambda>\<alpha>. \<phi>)"
+  "_AOT_eq \<tau> \<tau>'" == "CONST AOT_eq \<tau> \<tau>'"
+  "_AOT_desc x \<phi>" == "CONST AOT_desc (_abs x \<phi>)"
+  "_AOT_desc x \<phi>" <= "CONST AOT_desc (\<lambda>x. \<phi>)"
+  "_AOT_lambda0 \<phi>" == "CONST AOT_lambda0 \<phi>"
+  "_AOT_concrete" == "CONST AOT_concrete"
+  "_AOT_lambda \<alpha> \<phi>" == "CONST AOT_lambda (_abs \<alpha> \<phi>)"
+  "_AOT_lambda \<alpha> \<phi>" <= "CONST AOT_lambda (\<lambda> \<alpha> . \<phi>)"
+  "_AOT_exe (_AOT_lambda vars \<phi>) args" <= "CONST AOT_exe (_AOT_lambda vars \<phi>) args"
+  "_AOT_exe (_explicitRelation \<Pi>) args" <= "CONST AOT_exe \<Pi> args"
   "_explicitRelation \<Pi>" => "\<Pi>"
 
 
@@ -304,15 +319,19 @@ nonterminal free_var
 nonterminal free_vars
 syntax "" :: \<open>desc \<Rightarrow> free_var\<close> ("_")
 syntax "" :: \<open>\<Pi> \<Rightarrow> free_var\<close> ("_")
-syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<phi>\<close> ("_'{_'}")
-syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<tau>\<close> ("_'{_'}")
-syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
-syntax "_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
+syntax "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<phi>\<close> ("_'{_'}")
+syntax "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<tau>\<close> ("_'{_'}")
+syntax "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
+syntax "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
 syntax "_AOT_term_var" :: \<open>id_position \<Rightarrow> free_var\<close> ("_")
 syntax "" :: \<open>any \<Rightarrow> free_var\<close> ("\<guillemotleft>_\<guillemotright>")
 syntax "" :: \<open>free_var \<Rightarrow> free_vars\<close> ("_")
 syntax "_args" :: \<open>free_var \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_,_")
 syntax "_AOT_free_var_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> free_var\<close> ("_..._")
+
+parse_ast_translation\<open>
+[(\<^syntax_const>\<open>_AOT_appl\<close>, fn _ => fn (arg::[args]) => (Ast.mk_appl arg (Ast.unfold_ast "_args" args)))]
+\<close>
 
 ML\<open>
 fun constrainSort trm sort = Const ("_constrain", dummyT) $ trm $ (Const ("_dummy_ofsort", dummyT) $ Const (sort, dummyT))
@@ -368,8 +387,8 @@ syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premi
        "" :: \<open>AOT_prop \<Rightarrow> AOT_props\<close> (\<open>_\<close>)
        "_AOT_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
        "_AOT_nec_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close> 2)
-       "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>_\<close>)
-       "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box>_\<close>)
+       "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile> _\<close>)
+       "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box> _\<close>)
        "_AOT_equiv_def" :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
        "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
        "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
@@ -463,17 +482,6 @@ parse_ast_translation\<open>
 ]
 \<close>
 
-translations
-  (\<phi>) "\<tau>\<down>" <= "CONST AOT_denotes \<tau>"
-  (\<phi>) "\<phi> \<rightarrow> \<psi>" <= "CONST AOT_imp \<phi> \<psi>"
-  (\<phi>) "\<not>\<phi>" <= "CONST AOT_not \<phi>"
-  (\<phi>) "\<box>\<phi>" <= "CONST AOT_box \<phi>"
-  (\<phi>) "\<^bold>\<A>\<phi>" <= "CONST AOT_act \<phi>"
-  (\<phi>) "\<forall>\<alpha> \<phi>" == "CONST AOT_forall (_abs \<alpha> \<phi>)"
-  (\<phi>) "\<forall>\<alpha> \<phi>" <= "CONST AOT_forall (\<lambda>\<alpha>. \<phi>)"
-  (\<phi>) "\<tau> = \<tau>'" <= "CONST AOT_eq \<tau> \<tau>'"
-  (\<tau>) "\<^bold>\<iota>x \<phi>" == "CONST AOT_desc (\<lambda>x. \<phi>)"
-
 print_translation \<open>
  [
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close>,
@@ -521,7 +529,7 @@ end
 AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
 AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
 AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<equiv>\<close> 20) \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
 
 AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40]) \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
 translations
