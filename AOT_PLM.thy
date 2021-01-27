@@ -2020,45 +2020,78 @@ proof -
 qed
 
 AOT_theorem KBasic_14: \<open>\<diamond>\<box>\<phi> \<equiv> \<not>\<box>\<diamond>\<not>\<phi>\<close>
-  sorry
+  by (meson "RE\<diamond>" KBasic_11 KBasic_12 intro_elim_3_f oth_class_taut_3_a)
 AOT_theorem KBasic_15: \<open>(\<box>\<phi> \<or> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>
-  sorry
+proof -
+  AOT_modally_strict {
+    AOT_have \<open>\<phi> \<rightarrow> (\<phi> \<or> \<psi>)\<close> and \<open>\<psi> \<rightarrow> (\<phi> \<or> \<psi>)\<close>
+      by (auto simp: con_dis_taut_3 con_dis_taut_4)
+  }
+  AOT_hence \<open>\<box>\<phi> \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close> and \<open>\<box>\<psi> \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>
+    using RM by blast+
+  AOT_thus \<open>(\<box>\<phi> \<or> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>
+    by (metis con_dis_i_e_4_a deduction_theorem)
+qed
+
 AOT_theorem KBasic_16: \<open>(\<box>\<phi> & \<diamond>\<psi>) \<rightarrow> \<diamond>(\<phi> & \<psi>)\<close>
-  sorry
+  by (meson KBasic_13 RM_1 con_dis_taut_5 ded_thm_cor_1 oth_class_taut_7_b vdash_properties_6)
 
 AOT_theorem rule_sub_lem_1_a:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<psi> \<equiv> \<not>\<chi>\<close>
-  sorry
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms]
+        intro_elim_3_a oth_class_taut_4_b by blast
     
 AOT_theorem rule_sub_lem_1_b:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<psi> \<rightarrow> \<Theta>) \<equiv> (\<chi> \<rightarrow> \<Theta>)\<close>
-  sorry
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms]
+  using oth_class_taut_4_c vdash_properties_6 by blast
 
 AOT_theorem rule_sub_lem_1_c:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<Theta> \<rightarrow> \<psi>) \<equiv> (\<Theta> \<rightarrow> \<chi>)\<close>
-  sorry
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms]
+  using oth_class_taut_4_d vdash_properties_6 by blast
 
 AOT_theorem rule_sub_lem_1_d:
   assumes \<open>for arbitrary \<alpha>: \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>\<alpha> \<psi>{\<alpha>} \<equiv> \<forall>\<alpha> \<chi>{\<alpha>}\<close>
-  sorry
+proof -
+  AOT_modally_strict {
+    AOT_have \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
+      using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms] "\<forall>I" by fast
+    AOT_hence 0: \<open>\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>}\<close> for \<alpha> using "\<forall>E" by blast
+    AOT_show \<open>\<forall>\<alpha> \<psi>{\<alpha>} \<equiv> \<forall>\<alpha> \<chi>{\<alpha>}\<close>
+    proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+      AOT_assume \<open>\<forall>\<alpha> \<psi>{\<alpha>}\<close>
+      AOT_hence \<open>\<psi>{\<alpha>}\<close> for \<alpha> using "\<forall>E" by blast
+      AOT_hence \<open>\<chi>{\<alpha>}\<close> for \<alpha> using 0 "\<equiv>E" by blast
+      AOT_thus \<open>\<forall>\<alpha> \<chi>{\<alpha>}\<close> by (rule "\<forall>I")
+    next
+      AOT_assume \<open>\<forall>\<alpha> \<chi>{\<alpha>}\<close>
+      AOT_hence \<open>\<chi>{\<alpha>}\<close> for \<alpha> using "\<forall>E" by blast
+      AOT_hence \<open>\<psi>{\<alpha>}\<close> for \<alpha> using 0 "\<equiv>E" by blast
+      AOT_thus \<open>\<forall>\<alpha> \<psi>{\<alpha>}\<close> by (rule "\<forall>I")
+    qed
+  }
+qed
 
 AOT_theorem rule_sub_lem_1_e:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda> \<psi>] \<equiv> [\<lambda> \<chi>]\<close>
-  sorry
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms]
+  using intro_elim_3_a propositions_lemma_6 by blast
 
 AOT_theorem rule_sub_lem_1_f:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<psi> \<equiv> \<^bold>\<A>\<chi>\<close>
-  sorry
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms, THEN RA(2)]
+  by (metis Act_Basic_5 intro_elim_3_a)
 
 AOT_theorem rule_sub_lem_1_g:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>\<psi> \<equiv> \<box>\<chi>\<close>
-  sorry
+  using KBasic_6 assms vdash_properties_6 by blast
 
 end
