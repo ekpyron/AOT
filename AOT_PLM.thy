@@ -32,7 +32,7 @@ AOT_theorem vdash_properties_5: assumes \<open>\<Gamma>\<^sub>1 \<^bold>\<turnst
 AOT_theorem vdash_properties_6: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using MP assms by blast
 
-AOT_theorem vdash_properties_8: assumes \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close> and \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<psi>\<close>
+AOT_theorem vdash_properties_8: assumes \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close> and \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<psi>\<close>
   using assms by argo
 
 AOT_theorem vdash_properties_9: assumes \<open>\<phi>\<close> shows \<open>\<psi> \<rightarrow> \<phi>\<close>
@@ -45,8 +45,12 @@ lemmas "\<rightarrow>E" = vdash_properties_10
 AOT_theorem rule_gen: assumes \<open>for arbitrary \<alpha>: \<phi>{\<alpha>}\<close> shows \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
   using assms by (metis AOT_var_of_term_inverse AOT_sem_denotes AOT_sem_forall) (* NOTE: semantics needed *)
 lemmas GEN = rule_gen
+
+AOT_theorem RN_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi>\<close>
+  by (meson AOT_sem_box assms image_iff) (* NOTE: semantics needed *)
 AOT_theorem RN: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<box>\<phi>\<close>
-  by (simp add: AOT_sem_box assms) (* NOTE: semantics needed *)
+  using RN_prem assms by blast
+
 
 AOT_theorem df_rules_formulas_1: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp_all add: AOT_model_equiv_def AOT_sem_imp) (* NOTE: semantics needed *)
@@ -81,7 +85,7 @@ AOT_axiom df_rules_terms_4:
 AOT_theorem if_p_then_p: \<open>\<phi> \<rightarrow> \<phi>\<close>
   by (meson pl_1[axiom_inst] pl_2[axiom_inst] MP)
 
-AOT_theorem deduction_theorem: assumes \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
+AOT_theorem deduction_theorem: assumes \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
 lemmas CP = deduction_theorem
 lemmas "\<rightarrow>I" = deduction_theorem
@@ -142,10 +146,10 @@ AOT_theorem contraposition_2_b: assumes \<open>\<psi> \<rightarrow> \<not>\<phi>
   by (simp add: contraposition_2_a assms)
 
 AOT_theorem reductio_aa_1:
-  assumes \<open>\<not>\<phi> \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>\<not>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi>\<close>
+  assumes \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi>\<close>
   using "\<rightarrow>I" "\<not>\<not>E" MT(2) assms by blast
 AOT_theorem reductio_aa_2:
-  assumes \<open>\<phi> \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<not>\<phi>\<close>
+  assumes \<open>(\<phi>) \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<not>\<phi>\<close>
   using reductio_aa_1 assms by blast
 lemmas "RAA" = reductio_aa_1 reductio_aa_2
 
@@ -212,17 +216,17 @@ AOT_theorem con_dis_i_e_4_c: assumes \<open>\<phi> \<or> \<psi>\<close> and \<op
   using con_dis_i_e_4_a RAA(1) "\<rightarrow>I" assms by blast
 lemmas "\<or>E" = con_dis_i_e_4_a con_dis_i_e_4_b con_dis_i_e_4_c
 
-AOT_theorem raa_cor_1: assumes \<open>\<not>\<phi> \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<phi>\<close>
+AOT_theorem raa_cor_1: assumes \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<phi>\<close>
   using "&E" "\<or>E"(3) "\<or>I"(2) RAA(2) assms by blast
-AOT_theorem raa_cor_2: assumes \<open>\<phi> \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<not>\<phi>\<close>
+AOT_theorem raa_cor_2: assumes \<open>(\<phi>) \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<not>\<phi>\<close>
   using raa_cor_1 assms by blast
-AOT_theorem raa_cor_3: assumes \<open>\<phi>\<close> and \<open>\<not>\<psi> \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<psi>\<close>
+AOT_theorem raa_cor_3: assumes \<open>\<phi>\<close> and \<open>(\<not>\<psi>) \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_4: assumes \<open>\<not>\<phi>\<close> and \<open>\<not>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<psi>\<close>
+AOT_theorem raa_cor_4: assumes \<open>\<not>\<phi>\<close> and \<open>(\<not>\<psi>) \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_5: assumes \<open>\<phi>\<close> and \<open>\<psi> \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<not>\<psi>\<close>
+AOT_theorem raa_cor_5: assumes \<open>\<phi>\<close> and \<open>(\<psi>) \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<not>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_6: assumes \<open>\<not>\<phi>\<close> and \<open>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<not>\<psi>\<close>
+AOT_theorem raa_cor_6: assumes \<open>\<not>\<phi>\<close> and \<open>(\<psi>) \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<not>\<psi>\<close>
   using RAA assms by blast
 
 (* TODO: note these need manual introduction rules *)
@@ -538,7 +542,7 @@ AOT_theorem existential_2_b:
 lemmas "\<exists>I" = existential_1 existential_2_a existential_2_b 
 
 AOT_theorem "instantiation":
-  assumes \<open>for arbitrary \<beta>: \<phi>{\<beta>} \<^bold>\<turnstile> \<psi>\<close> and \<open>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+  assumes \<open>for arbitrary \<beta>: (\<phi>{\<beta>}) \<^bold>\<turnstile> \<psi>\<close> and \<open>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   shows \<open>\<psi>\<close>
   by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" GEN raa_cor_3 AOT_exists assms)
 lemmas "\<exists>E" = "instantiation"
@@ -1311,10 +1315,9 @@ AOT_theorem RA_1: assumes \<open>\<^bold>\<turnstile> \<phi>\<close> shows \<ope
 AOT_theorem RA_2: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<phi>\<close>
   (* This is actually \<Gamma> \<turnstile>\<^sub>\<box> \<phi> \<Longrightarrow> \<box>\<Gamma> \<turnstile>\<^sub>\<box> \<A>\<phi>*)
   using RN assms nec_imp_act vdash_properties_5 by blast
-AOT_theorem RA_3: assumes \<open>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<^bold>\<A>\<psi> \<^bold>\<turnstile> \<^bold>\<A>\<phi>\<close>
-  (* This is unprovable in the current definition of \<turnstile> *)
-  (* \<Gamma> \<turnstile> \<phi> \<Longrightarrow> \<^bold>\<A>\<Gamma> \<turnstile> \<^bold>\<A>\<phi> is not even syntactically supported yet *)
-  oops
+AOT_theorem RA_3: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>
+  using assms by (meson AOT_sem_act imageI)
+  (* This is not exactly right either. *)
 
 lemmas RA = RA_1 RA_2
 
@@ -1868,51 +1871,53 @@ qed
 AOT_theorem dr_alphabetic_thm: \<open>\<^bold>\<iota>\<nu> \<phi>{\<nu>}\<down> \<rightarrow> \<^bold>\<iota>\<nu> \<phi>{\<nu>} = \<^bold>\<iota>\<mu> \<phi>{\<mu>}\<close> (* TODO: vacuous *)
   by (simp add: "rule=I_1" "\<rightarrow>I")
 
-(* TODO: we only derive the strong version of the \<Gamma> = \<emptyset> case here. TODO: is that enough? *)
+AOT_theorem RM_1_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<rightarrow> \<box>\<psi>\<close>
+proof -
+  AOT_have \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<phi> \<rightarrow> \<psi>)\<close> using RN_prem assms by blast
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<rightarrow> \<box>\<psi>\<close> by (metis qml_1[axiom_inst] "\<rightarrow>E")
+qed
+
 AOT_theorem RM_1: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<rightarrow> \<box>\<psi>\<close>
-  using RN assms qml_1[axiom_inst] "\<rightarrow>E" by blast
+  using RM_1_prem assms by blast
 
 lemmas RM = RM_1
 
-AOT_theorem RM_2: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
+AOT_theorem RM_2_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
 proof -
-  AOT_modally_strict {
-    AOT_have \<open>\<not>\<psi> \<rightarrow> \<not>\<phi>\<close> using assms
-      by (simp add: contraposition_1_a)
-  }
-  AOT_modally_strict {
-    AOT_hence \<open>\<diamond>\<psi>\<close> if \<open>\<diamond>\<phi>\<close>
-      using RM_1 that contraposition_1_a "\<rightarrow>E"
-            AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"] AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
-    AOT_thus \<open>\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close> by (rule "\<rightarrow>I")
-  }
+  AOT_have \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<not>\<psi> \<rightarrow> \<not>\<phi>\<close> using assms 
+    by (simp add: contraposition_1_a)
+  AOT_hence \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<not>\<psi> \<rightarrow> \<box>\<not>\<phi>\<close> using RM_1_prem by blast
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
+    by (meson "\<equiv>\<^sub>d\<^sub>fE" "\<equiv>\<^sub>d\<^sub>fI" AOT_dia deduction_theorem modus_tollens_1)
 qed
+
+AOT_theorem RM_2: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
+  using RM_2_prem assms by blast
 
 lemmas "RM\<diamond>" = RM_2
 
-AOT_theorem RM_3: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<equiv> \<box>\<psi>\<close>
+AOT_theorem RM_3_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<equiv> \<box>\<psi>\<close>
 proof -
-  AOT_modally_strict {
-    AOT_have \<open>\<phi> \<rightarrow> \<psi>\<close> and \<open>\<psi> \<rightarrow> \<phi>\<close> using assms "\<equiv>E" "\<rightarrow>I" by fast+
-  }
-  AOT_modally_strict {
-    AOT_hence \<open>\<box>\<phi> \<rightarrow> \<box>\<psi>\<close> and \<open>\<box>\<psi> \<rightarrow> \<box>\<phi>\<close> using RM by blast+
-    AOT_thus \<open>\<box>\<phi> \<equiv> \<box>\<psi>\<close> using "\<equiv>I" by blast
-  }
+  AOT_have \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> and \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<psi> \<rightarrow> \<phi>\<close> using assms "\<equiv>E" "\<rightarrow>I" by metis+
+  AOT_hence \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<rightarrow> \<box>\<psi>\<close> and \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<psi> \<rightarrow> \<box>\<phi>\<close> using RM_1_prem by metis+
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<equiv> \<box>\<psi>\<close>
+    by (simp add: intro_elim_2)
 qed
+
+AOT_theorem RM_3: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<equiv> \<box>\<psi>\<close>
+  using RM_3_prem assms by blast
 
 lemmas RE = RM_3
 
-AOT_theorem RM_4: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<equiv> \<diamond>\<psi>\<close>
+AOT_theorem RM_4_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<equiv> \<diamond>\<psi>\<close>
 proof -
-  AOT_modally_strict {
-    AOT_have \<open>\<phi> \<rightarrow> \<psi>\<close> and \<open>\<psi> \<rightarrow> \<phi>\<close> using assms "\<equiv>E" "\<rightarrow>I" by fast+
-  }
-  AOT_modally_strict {
-    AOT_hence \<open>\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close> and \<open>\<diamond>\<psi> \<rightarrow> \<diamond>\<phi>\<close> using "RM\<diamond>" by blast+
-    AOT_thus \<open>\<diamond>\<phi> \<equiv> \<diamond>\<psi>\<close> using "\<equiv>I" by blast
-  }
+  AOT_have \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> and \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<psi> \<rightarrow> \<phi>\<close> using assms "\<equiv>E" "\<rightarrow>I" by metis+
+  AOT_hence \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close> and \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<psi> \<rightarrow> \<diamond>\<phi>\<close> using RM_2_prem by metis+
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<equiv> \<diamond>\<psi>\<close> by (simp add: intro_elim_2)
 qed
+
+AOT_theorem RM_4: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<equiv> \<diamond>\<psi>\<close>
+  using RM_4_prem assms by blast
 
 lemmas "RE\<diamond>" = RM_4
 
@@ -2007,7 +2012,13 @@ next
   using KBasic_11 intro_elim_3_a reductio_aa_1 that by blast
 qed
 AOT_theorem KBasic_13: \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>)\<close>
-  sorry
+proof -
+  AOT_have \<open>(\<phi> \<rightarrow> \<psi>) \<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>)\<close> by blast
+  AOT_hence \<open>(\<box>(\<phi> \<rightarrow> \<psi>)) \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
+    using RM_2_prem by blast
+  AOT_thus \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>)\<close> using "\<rightarrow>I" by blast
+qed
+
 AOT_theorem KBasic_14: \<open>\<diamond>\<box>\<phi> \<equiv> \<not>\<box>\<diamond>\<not>\<phi>\<close>
   sorry
 AOT_theorem KBasic_15: \<open>(\<box>\<phi> \<or> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>

@@ -332,10 +332,20 @@ val processFreesAlwaysMeta = processFreesForceMeta true
 (* TODO: move *)
 
 nonterminal AOT_props
-syntax (input) "_AOT_props" :: \<open>AOT_prop \<Rightarrow> AOT_props \<Rightarrow> AOT_props\<close> (infixr \<open>,\<close> 3)
-syntax "_AOT_prop" :: \<open>\<phi> \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
+nonterminal AOT_premises
+nonterminal AOT_premise
+nonterminal AOT_premise_set
+syntax "_AOT_premises" :: \<open>AOT_premise \<Rightarrow> AOT_premises \<Rightarrow> AOT_premises\<close> (infixr \<open>,\<close> 3)
+       "_AOT_premise" :: "\<phi> \<Rightarrow> AOT_premise" ("'(_')")
+       "" :: "id_position \<Rightarrow> AOT_premise_set" ("_")
+       "_AOT_premise_set" :: "AOT_premise_set \<Rightarrow> AOT_premise" ("_")
+       "_AOT_premise_set_nec" :: "AOT_premise_set \<Rightarrow> AOT_premise_set" ("\<box>_")
+       "_AOT_premise_set_act" :: "AOT_premise_set \<Rightarrow> AOT_premise_set" ("\<^bold>\<A>_")
+       "" :: "AOT_premise \<Rightarrow> AOT_premises" ("_")
+       "_AOT_prop" :: \<open>\<phi> \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
        "" :: \<open>AOT_prop \<Rightarrow> AOT_props\<close> (\<open>_\<close>)
-       "_AOT_derivable" :: "AOT_props \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
+       "_AOT_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
+       "_AOT_nec_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close> 2)
        "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>_\<close>)
        "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box>_\<close>)
        "_AOT_equiv_def" :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
@@ -348,7 +358,8 @@ syntax "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
 syntax "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
 
 translations
-  "_AOT_props a b" => "CONST Pure.conjunction a b"
+  "_AOT_premise_set_nec \<Gamma>" => "CONST image (CONST AOT_box) \<Gamma>"
+  "_AOT_premise_set_act \<Gamma>" => "CONST image (CONST AOT_act) \<Gamma>"
 
 parse_translation\<open>
 let
@@ -366,10 +377,23 @@ in
   (\<^syntax_const>\<open>_AOT_valid\<close>, fn ctxt => fn [w,x] => \<^const>\<open>AOT_model_valid_in\<close> $ w $ x),
   (\<^syntax_const>\<open>_AOT_quoted\<close>, fn ctxt => fn [x] => x),
   (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
+  (\<^syntax_const>\<open>_AOT_premises\<close>, fn ctxt => fn [x,y] => Abs ("v", dummyT, @{const Pure.conjunction} $ (x $ Bound 0) $ (y $ Bound 0))),
+  (\<^syntax_const>\<open>_AOT_premise_set\<close>, fn ctxt => fn [x] => (Abs ("v", dummyT, (Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, 
+    @{const "Pure.imp"} $
+      HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Set.member\<close>, dummyT) $ Bound 0 $ x) $
+      HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 1 $ Bound 0)
+
+))))),
+  (\<^syntax_const>\<open>_AOT_premise\<close>, fn ctxt => fn [x] => let
+    val trm = case x of (Const ("_AOT_term_var", _) $ (y as (Const ("_constrain", _) $ Free (name, _) $ pos))) =>
+              if (hd (Symbol.explode name)) = "\<Gamma>" then SOME (Abs ("v", dummyT, (Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 1 $ (y $ Bound 0)))))) else NONE | _ => NONE
+    val trm = case trm of SOME trm => trm
+        | _ => Abs ("v", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 0 $ processFrees ctxt x))
+    in trm end),
   (\<^syntax_const>\<open>_AOT_prop\<close>, fn ctxt => fn [x] => let
     val world = case (AOT_ProofData.get ctxt) of SOME w => w | _ => raise Fail "Expected world to be stored in the proof state."
     val trm = case x of (Const ("_AOT_term_var", _) $ (y as (Const ("_constrain", _) $ Free (name, _) $ pos))) =>
-              if (hd (Symbol.explode name)) = "\<Gamma>" then SOME (HOLogic.mk_Trueprop y) else NONE | _ => NONE
+              if (hd (Symbol.explode name)) = "\<Gamma>" then SOME ((Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ (y $ Bound 0))))) else NONE | _ => NONE
     val trm = case trm of SOME trm => trm
         | _ => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ processFrees ctxt x)
     in trm end),
@@ -383,7 +407,10 @@ in
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ trm
     in trm end),
   (\<^syntax_const>\<open>_AOT_derivable\<close>, fn ctxt => fn [x,y] => let
-    in @{const "Pure.imp"} $ x $ y end),
+    val world = case (AOT_ProofData.get ctxt) of SOME w => w | _ => raise Fail "Expected world to be stored in the proof state."
+    in @{const "Pure.imp"} $ (x $ world) $ HOLogic.mk_Trueprop  (@{const AOT_model_valid_in} $ world $ y) end),
+  (\<^syntax_const>\<open>_AOT_nec_derivable\<close>, fn ctxt => fn [x,y] => let
+    in Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("v", dummyT, @{const "Pure.imp"} $ (x $ Bound 0) $ HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 0 $ y)) end),
   (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, fn ctxt => fn [_ $ var $ pos,trm] => let
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ (Const ("_constrainAbs", dummyT) $ Term.absfree (Term.dest_Free var) trm $ pos)
     in trm end),
