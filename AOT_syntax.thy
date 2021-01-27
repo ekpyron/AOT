@@ -2,6 +2,7 @@ theory AOT_syntax
   imports AOT_commands
   keywords "AOT_register_variable_names" :: thy_decl
        and "AOT_register_metavariable_names" :: thy_decl
+       and "AOT_register_premise_set_names" :: thy_decl
        and "AOT_Category_Individual"
        and "AOT_Category_Relation"
        and "AOT_Category_Proposition"
@@ -41,7 +42,13 @@ structure AOT_TermPrefix = Theory_Data (
   val extend = I
   val merge = Symtab.merge (K true)
 );
-                                                                          
+structure AOT_PremiseSetPrefix = Theory_Data (
+  type T = unit Symtab.table
+  val empty = Symtab.empty
+  val extend = I
+  val merge = Symtab.merge (K true)
+);
+
 structure AOT_Categorytab = Table(type key = AOT_TypeCategory val ord = AOT_TypeCategory_ord);
 
 fun sort_thys_merge (old_thy, new_thy) = Sorts.inter_sort (Sorts.merge_algebra (Context.Theory old_thy) (Sign.classes_of old_thy, Sign.classes_of new_thy))
@@ -76,12 +83,14 @@ fun AOT_TermSort_add sort thy = let
 (*    val thy = AOT_NaryIndividualSort_add sort thy *)
   in AOT_TermSort.map (fn oldSort => sort_merge thy (oldSort, sort)) thy end
 fun AOT_TermSort_local_get ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_TermSort.get thy, thy)) ctxt |> fst
+fun AOT_IsPremiseSetPrefix ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_PremiseSetPrefix.get thy, thy)) ctxt |> fst |> Symtab.lookup #> Option.isSome
 
 fun parseCategory "AOT_Individual" = AOT_Individual
   | parseCategory _ = raise Fail "Unexpected type category."
 fun register_variable_name meta (category, prefices) =
    fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
 fun register_variable_names meta x = fold (register_variable_name meta) x
+fun register_premise_set_names x = fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())) ) x
 val parse_AOT_TypeCategory =  Parse.group (fn () => "AOT type category")
   (Parse.$$$ "AOT_Category_Individual" >> K AOT_Individual ||
    Parse.$$$ "AOT_Category_Relation" >> K AOT_Relation ||
@@ -103,6 +112,9 @@ val _ =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
     (Scan.repeat1 ((parse_AOT_TypeCategory --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
+    (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o register_premise_set_names));
 val _ =
   Outer_Syntax.local_theory \<^command_keyword>\<open>AOT_add_individual_sorts\<close> "Constrain the sort of unary individuals and tuples of individuals."
     (Parse.sort -- Parse.sort >> add_individual_sorts);
@@ -153,6 +165,8 @@ AOT_register_metavariable_names
   AOT_Category_Proposition: \<phi> \<psi> \<chi> \<theta> \<zeta> \<xi> \<Theta>
   AOT_Category_Relation: \<Pi>
   AOT_Category_Term: \<tau> \<sigma>
+
+AOT_register_premise_set_names \<Gamma> \<Delta> \<Lambda>
 
 nonterminal \<phi>
 
@@ -319,30 +333,38 @@ fun constrainTrm ctxt forceMeta unary (Free (var, _)) = (fn trm =>
       | _ => raise Term.TERM ("Unknown variable or metavariable prefix.", [trm]))
   | constrainTrm _ _ _ (Bound _) = (fn var => var)
   | constrainTrm _ _ _ trm = raise Term.TERM ("Expected free or bound variable.", [trm])
-fun processFreesForceMeta forceMeta ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (constrainTrm ctxt forceMeta true (dropConstraints v) v)
-  | processFreesForceMeta forceMeta ctxt (Const ("_AOT_term_vars", _) $ v) = (constrainTrm ctxt forceMeta false (dropConstraints v) v)
-  | processFreesForceMeta _ _ (Const (\<^syntax_const>\<open>_AOT_verbatim\<close>, _) $ v) = v
-  | processFreesForceMeta forceMeta ctxt (x $ y) = processFreesForceMeta forceMeta ctxt x $ processFreesForceMeta forceMeta ctxt y
-  | processFreesForceMeta forceMeta ctxt (Abs (x,y,z)) = Abs (x,y,processFreesForceMeta forceMeta ctxt z)
-  | processFreesForceMeta _ _ x = x
-val processFrees = processFreesForceMeta false
-val processFreesAlwaysMeta = processFreesForceMeta true
+fun isPremiseVar ctxt (Free (var, _)) = AOT_IsPremiseSetPrefix ctxt (hd (Symbol.explode var))
+  | isPremiseVar _ _ = false
+fun processFreesForceMeta forceMeta premiseVars ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (
+    if isPremiseVar ctxt (dropConstraints v) then (dropConstraints v, if List.find (fn x => x = v) premiseVars = NONE then v::premiseVars else premiseVars)
+                         else (constrainTrm ctxt forceMeta true (dropConstraints v) v, premiseVars))
+  | processFreesForceMeta forceMeta premiseVars ctxt (Const ("_AOT_term_vars", _) $ v) = (
+    if isPremiseVar ctxt (dropConstraints v) then (v, if List.find (fn x => x = v) premiseVars = NONE then v::premiseVars else premiseVars)
+     else (constrainTrm ctxt forceMeta false (dropConstraints v) v, premiseVars)
+  )
+  | processFreesForceMeta _ premiseVars _ (Const (\<^syntax_const>\<open>_AOT_verbatim\<close>, _) $ v) = (v, premiseVars)
+  | processFreesForceMeta forceMeta premiseVars ctxt (x $ y)  = let
+          val (x, premiseVars) = processFreesForceMeta forceMeta premiseVars ctxt x
+          val (y, premiseVars) = processFreesForceMeta forceMeta premiseVars ctxt y
+      in (x $ y, premiseVars) end
+  | processFreesForceMeta forceMeta premiseVars ctxt (Abs (x,y,z)) = let
+      val (z, premiseVars) = processFreesForceMeta forceMeta premiseVars ctxt z
+      in (Abs (x,y,z), premiseVars) end
+  | processFreesForceMeta _ premiseVars _ x = (x, premiseVars)
+fun processFrees ctxt trm = (case processFreesForceMeta false [] ctxt trm of (r,[]) => r | _ => raise Term.TERM ("No premise set expected in term.", [trm]))
+fun processFreesAlwaysMeta ctxt trm = (case processFreesForceMeta true [] ctxt trm of (r,[]) => r | _ => raise Term.TERM ("No premise set expected in term.", [trm]))
+val processFreesAndPremises = processFreesForceMeta false []
 \<close>
 
 (* TODO: move *)
 
 nonterminal AOT_props
 nonterminal AOT_premises
-nonterminal AOT_premise
-nonterminal AOT_premise_set
-syntax "_AOT_premises" :: \<open>AOT_premise \<Rightarrow> AOT_premises \<Rightarrow> AOT_premises\<close> (infixr \<open>,\<close> 3)
-       "_AOT_premise" :: "\<phi> \<Rightarrow> AOT_premise" ("'(_')")
-       "" :: "id_position \<Rightarrow> AOT_premise_set" ("_")
-       "_AOT_premise_set" :: "AOT_premise_set \<Rightarrow> AOT_premise" ("_")
-       "_AOT_premise_set_nec" :: "AOT_premise_set \<Rightarrow> AOT_premise_set" ("\<box>_")
-       "_AOT_premise_set_act" :: "AOT_premise_set \<Rightarrow> AOT_premise_set" ("\<^bold>\<A>_")
-       "" :: "AOT_premise \<Rightarrow> AOT_premises" ("_")
-       "_AOT_prop" :: \<open>\<phi> \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
+nonterminal AOT_world_relative_prop
+syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premises \<Rightarrow> AOT_premises\<close> (infixr \<open>,\<close> 3)
+       "_AOT_world_relative_prop" :: "\<phi> \<Rightarrow> AOT_world_relative_prop" ("_")
+       "" :: "AOT_world_relative_prop \<Rightarrow> AOT_premises" ("_")
+       "_AOT_prop" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
        "" :: \<open>AOT_prop \<Rightarrow> AOT_props\<close> (\<open>_\<close>)
        "_AOT_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
        "_AOT_nec_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close> 2)
@@ -356,10 +378,6 @@ syntax "_AOT_premises" :: \<open>AOT_premise \<Rightarrow> AOT_premises \<Righta
 
 syntax "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
 syntax "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
-
-translations
-  "_AOT_premise_set_nec \<Gamma>" => "CONST image (CONST AOT_box) \<Gamma>"
-  "_AOT_premise_set_act \<Gamma>" => "CONST image (CONST AOT_act) \<Gamma>"
 
 parse_translation\<open>
 let
@@ -378,25 +396,24 @@ in
   (\<^syntax_const>\<open>_AOT_quoted\<close>, fn ctxt => fn [x] => x),
   (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
   (\<^syntax_const>\<open>_AOT_premises\<close>, fn ctxt => fn [x,y] => Abs ("v", dummyT, @{const Pure.conjunction} $ (x $ Bound 0) $ (y $ Bound 0))),
-  (\<^syntax_const>\<open>_AOT_premise_set\<close>, fn ctxt => fn [x] => (Abs ("v", dummyT, (Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, 
-    @{const "Pure.imp"} $
-      HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Set.member\<close>, dummyT) $ Bound 0 $ x) $
-      HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 1 $ Bound 0)
-
-))))),
-  (\<^syntax_const>\<open>_AOT_premise\<close>, fn ctxt => fn [x] => let
-    val trm = case x of (Const ("_AOT_term_var", _) $ (y as (Const ("_constrain", _) $ Free (name, _) $ pos))) =>
-              if (hd (Symbol.explode name)) = "\<Gamma>" then SOME (Abs ("v", dummyT, (Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 1 $ (y $ Bound 0)))))) else NONE | _ => NONE
-    val trm = case trm of SOME trm => trm
-        | _ => Abs ("v", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 0 $ processFrees ctxt x))
-    in trm end),
+  (\<^syntax_const>\<open>_AOT_world_relative_prop\<close>, fn ctxt => fn [x] => let
+    val (x, premises) = processFreesAndPremises ctxt x
+    val (world::formulas) = Variable.variant_frees ctxt [x] (("v", dummyT)::(map (fn _ => ("\<phi>", dummyT)) premises))
+    val term = HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Free world $ processFrees ctxt x)
+    val term = fold (fn (premise,form) => fn trm =>
+         @{const "Pure.imp"} $
+        HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Set.member\<close>, dummyT) $ Free form $ premise) $
+        (Term.absfree (Term.dest_Free (dropConstraints premise)) trm $ Free form)
+    ) (ListPair.zipEq (premises,formulas)) term
+    val term = fold (fn (form) => fn trm =>
+         Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $
+        (Term.absfree form trm)
+    ) formulas term
+    val term = Term.absfree world term
+    in term end),
   (\<^syntax_const>\<open>_AOT_prop\<close>, fn ctxt => fn [x] => let
     val world = case (AOT_ProofData.get ctxt) of SOME w => w | _ => raise Fail "Expected world to be stored in the proof state."
-    val trm = case x of (Const ("_AOT_term_var", _) $ (y as (Const ("_constrain", _) $ Free (name, _) $ pos))) =>
-              if (hd (Symbol.explode name)) = "\<Gamma>" then SOME ((Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("\<phi>", dummyT, HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ (y $ Bound 0))))) else NONE | _ => NONE
-    val trm = case trm of SOME trm => trm
-        | _ => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ world $ processFrees ctxt x)
-    in trm end),
+    in x $ world end),
   (\<^syntax_const>\<open>_AOT_theorem\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ @{const w\<^sub>0} $ x)),
   (\<^syntax_const>\<open>_AOT_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_axiom} $ x)),
   (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] => HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ x)),

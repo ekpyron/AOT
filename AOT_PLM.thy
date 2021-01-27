@@ -32,7 +32,7 @@ AOT_theorem vdash_properties_5: assumes \<open>\<Gamma>\<^sub>1 \<^bold>\<turnst
 AOT_theorem vdash_properties_6: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using MP assms by blast
 
-AOT_theorem vdash_properties_8: assumes \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close> and \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<psi>\<close>
+AOT_theorem vdash_properties_8: assumes \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close> and \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<psi>\<close>
   using assms by argo
 
 AOT_theorem vdash_properties_9: assumes \<open>\<phi>\<close> shows \<open>\<psi> \<rightarrow> \<phi>\<close>
@@ -85,7 +85,7 @@ AOT_axiom df_rules_terms_4:
 AOT_theorem if_p_then_p: \<open>\<phi> \<rightarrow> \<phi>\<close>
   by (meson pl_1[axiom_inst] pl_2[axiom_inst] MP)
 
-AOT_theorem deduction_theorem: assumes \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
+AOT_theorem deduction_theorem: assumes \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
 lemmas CP = deduction_theorem
 lemmas "\<rightarrow>I" = deduction_theorem
@@ -146,10 +146,10 @@ AOT_theorem contraposition_2_b: assumes \<open>\<psi> \<rightarrow> \<not>\<phi>
   by (simp add: contraposition_2_a assms)
 
 AOT_theorem reductio_aa_1:
-  assumes \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi>\<close>
+  assumes \<open>\<not>\<phi> \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>\<not>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<phi>\<close>
   using "\<rightarrow>I" "\<not>\<not>E" MT(2) assms by blast
 AOT_theorem reductio_aa_2:
-  assumes \<open>(\<phi>) \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>(\<phi>) \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<not>\<phi>\<close>
+  assumes \<open>\<phi> \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>\<phi> \<^bold>\<turnstile> \<psi>\<close> shows \<open>\<not>\<phi>\<close>
   using reductio_aa_1 assms by blast
 lemmas "RAA" = reductio_aa_1 reductio_aa_2
 
@@ -216,17 +216,17 @@ AOT_theorem con_dis_i_e_4_c: assumes \<open>\<phi> \<or> \<psi>\<close> and \<op
   using con_dis_i_e_4_a RAA(1) "\<rightarrow>I" assms by blast
 lemmas "\<or>E" = con_dis_i_e_4_a con_dis_i_e_4_b con_dis_i_e_4_c
 
-AOT_theorem raa_cor_1: assumes \<open>(\<not>\<phi>) \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<phi>\<close>
+AOT_theorem raa_cor_1: assumes \<open>\<not>\<phi> \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<phi>\<close>
   using "&E" "\<or>E"(3) "\<or>I"(2) RAA(2) assms by blast
-AOT_theorem raa_cor_2: assumes \<open>(\<phi>) \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<not>\<phi>\<close>
+AOT_theorem raa_cor_2: assumes \<open>\<phi> \<^bold>\<turnstile> \<psi> & \<not>\<psi>\<close> shows \<open>\<not>\<phi>\<close>
   using raa_cor_1 assms by blast
-AOT_theorem raa_cor_3: assumes \<open>\<phi>\<close> and \<open>(\<not>\<psi>) \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<psi>\<close>
+AOT_theorem raa_cor_3: assumes \<open>\<phi>\<close> and \<open>\<not>\<psi> \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_4: assumes \<open>\<not>\<phi>\<close> and \<open>(\<not>\<psi>) \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<psi>\<close>
+AOT_theorem raa_cor_4: assumes \<open>\<not>\<phi>\<close> and \<open>\<not>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_5: assumes \<open>\<phi>\<close> and \<open>(\<psi>) \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<not>\<psi>\<close>
+AOT_theorem raa_cor_5: assumes \<open>\<phi>\<close> and \<open>\<psi> \<^bold>\<turnstile> \<not>\<phi>\<close> shows \<open>\<not>\<psi>\<close>
   using RAA assms by blast
-AOT_theorem raa_cor_6: assumes \<open>\<not>\<phi>\<close> and \<open>(\<psi>) \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<not>\<psi>\<close>
+AOT_theorem raa_cor_6: assumes \<open>\<not>\<phi>\<close> and \<open>\<psi> \<^bold>\<turnstile> \<phi>\<close> shows \<open>\<not>\<psi>\<close>
   using RAA assms by blast
 
 (* TODO: note these need manual introduction rules *)
@@ -542,7 +542,7 @@ AOT_theorem existential_2_b:
 lemmas "\<exists>I" = existential_1 existential_2_a existential_2_b 
 
 AOT_theorem "instantiation":
-  assumes \<open>for arbitrary \<beta>: (\<phi>{\<beta>}) \<^bold>\<turnstile> \<psi>\<close> and \<open>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+  assumes \<open>for arbitrary \<beta>: \<phi>{\<beta>} \<^bold>\<turnstile> \<psi>\<close> and \<open>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   shows \<open>\<psi>\<close>
   by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" GEN raa_cor_3 AOT_exists assms)
 lemmas "\<exists>E" = "instantiation"
@@ -2013,8 +2013,8 @@ next
 qed
 AOT_theorem KBasic_13: \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>)\<close>
 proof -
-  AOT_have \<open>(\<phi> \<rightarrow> \<psi>) \<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>)\<close> by blast
-  AOT_hence \<open>(\<box>(\<phi> \<rightarrow> \<psi>)) \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
+  AOT_have \<open>\<phi> \<rightarrow> \<psi> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> by blast
+  AOT_hence \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
     using RM_2_prem by blast
   AOT_thus \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>)\<close> using "\<rightarrow>I" by blast
 qed
