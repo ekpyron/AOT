@@ -2,6 +2,9 @@ theory AOT_PLM
   imports AOT_axioms
 begin
 
+(* Enable experimental printing mode. *)
+declare[[show_AOT_syntax,show_question_marks=false]]
+
 AOT_theorem modus_ponens: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
 lemmas MP = modus_ponens

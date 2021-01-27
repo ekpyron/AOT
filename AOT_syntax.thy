@@ -206,7 +206,7 @@ syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<alpha>\<close> (\<open>\<gu
 syntax "_AOT_valid" :: \<open>w \<Rightarrow> \<phi>' \<Rightarrow> bool\<close> (\<open>[_ \<Turnstile> _]\<close>)
 
 translations
-  "[w \<Turnstile> \<phi>]" <= "CONST AOT_model_valid_in w \<phi>"
+  "[w \<Turnstile> \<phi>]" == "CONST AOT_model_valid_in w \<phi>"
 
 
 ML\<open>
@@ -326,12 +326,12 @@ syntax "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> f
 syntax "_AOT_term_var" :: \<open>id_position \<Rightarrow> free_var\<close> ("_")
 syntax "" :: \<open>any \<Rightarrow> free_var\<close> ("\<guillemotleft>_\<guillemotright>")
 syntax "" :: \<open>free_var \<Rightarrow> free_vars\<close> ("_")
-syntax "_args" :: \<open>free_var \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_,_")
+syntax "_AOT_args" :: \<open>free_var \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_,_")
 syntax "_AOT_free_var_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> free_var\<close> ("_..._")
 
-parse_ast_translation\<open>
-[(\<^syntax_const>\<open>_AOT_appl\<close>, fn _ => fn (arg::[args]) => (Ast.mk_appl arg (Ast.unfold_ast "_args" args)))]
-\<close>
+translations
+  "_AOT_appl \<phi> (_AOT_args a b)" => "_AOT_appl (\<phi> a) b"
+  "_AOT_appl \<phi> a" => "\<phi> a"
 
 ML\<open>
 fun constrainSort trm sort = Const ("_constrain", dummyT) $ trm $ (Const ("_dummy_ofsort", dummyT) $ Const (sort, dummyT))
@@ -390,13 +390,16 @@ syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premi
        "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile> _\<close>)
        "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box> _\<close>)
        "_AOT_equiv_def" :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
+       "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
+       "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
        "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
        "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
 
-syntax "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
-syntax "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
+translations
+  "_AOT_act_axiom \<phi>" <= "CONST AOT_model_act_axiom \<phi>"
+  "_AOT_axiom \<phi>" <= "CONST AOT_model_axiom \<phi>"
 
 parse_translation\<open>
 let
@@ -562,5 +565,101 @@ readThisRHS trm
 end
 )]
 \<close>
+
+
+
+(* TODO: experimental printing mode: *)
+
+
+ML\<open>
+val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
+local
+    fun AOT_map_translation b (name:string, f)
+      = (name, fn ctxt => if Config.get ctxt print_AOT_syntax = b then f ctxt else raise Match)
+in
+val AOT_syntax_print_translations = map (fn (n,f:Proof.context -> term list -> term) => AOT_map_translation true (n,f))
+val AOT_syntax_typed_print_translations = map (fn (n,f:Proof.context -> typ -> term list -> term) => AOT_map_translation true (n,f))
+val AOT_syntax_print_ast_translations = map (fn (n,f:Proof.context -> Ast.ast list -> Ast.ast) => AOT_map_translation true (n,f))
+end
+\<close>
+
+print_translation\<open>AOT_syntax_print_translations
+[(\<^const_syntax>\<open>Pure.all\<close>, fn ctxt => fn [Abs (_, _,
+  Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_valid_in\<close>, _) $ Bound 0 $ y))] => let
+    val y = (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
+    in (Const (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, dummyT) $ y) end
+| [p as Abs (name, _,
+  Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_valid_in\<close>, _) $ w $ y))]
+=> (Const (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, dummyT) $ (Const ("_bound", dummyT) $ Free (name, dummyT)) $ (Term.betapply (p, (Const ("_bound", dummyT) $ Free (name, dummyT)))))
+),
+
+ (\<^const_syntax>\<open>AOT_model_valid_in\<close>, fn ctxt => fn [w as (Const ("_free", _) $ Free (v, _)), y] => let
+    val is_world = (case (AOT_ProofData.get ctxt) of SOME (Free (w, _)) => Name.clean w = Name.clean v | _ => false)
+    val y = (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
+    in if is_world then y else Const (\<^syntax_const>\<open>_AOT_valid\<close>, dummyT) $ w $ y end
+  | [Const (\<^const_syntax>\<open>w\<^sub>0\<close>, _), y] => let
+    val y = (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
+    in case (AOT_ProofData.get ctxt) of SOME (Const (\<^const_name>\<open>w\<^sub>0\<close>, _)) => y | _ => Const (\<^syntax_const>\<open>_AOT_theorem\<close>, dummyT) $ y end
+  | [Const ("_var", _) $ _, y] => let
+    val y = (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
+    in Const (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, dummyT) $ y end
+  ),
+(\<^syntax_const>\<open>_AOT_process_frees\<close>, fn _ =>  fn [t] => let
+  fun mapAppls (x as Const ("_free", _) $ Free (_, Type ("_ignore_type", [Type ("fun", _)]))) = (Const ("_AOT_raw_appl", dummyT) $ x)
+    | mapAppls (x as Const ("_free", _) $ Free (_, Type ("fun", _))) = (Const ("_AOT_raw_appl", dummyT) $ x)
+    | mapAppls (x as Const ("_var", _) $ Var (_, Type ("_ignore_type", [Type ("fun", _)]))) = (Const ("_AOT_raw_appl", dummyT) $ x)
+    | mapAppls (x as Const ("_var", _) $ Var (_, Type ("fun", _))) = (Const ("_AOT_raw_appl", dummyT) $ x)
+    | mapAppls (x $ y) = mapAppls x $ mapAppls y
+    | mapAppls (Abs (x,y,z)) = Abs (x,y, mapAppls z)
+    | mapAppls x = x
+  in mapAppls t end
+)
+]
+\<close>
+
+print_ast_translation\<open>AOT_syntax_print_ast_translations
+[(\<^const_syntax>\<open>AOT_term_of_var\<close>,
+let
+fun handleTermOfVar x kind name = (
+let
+val _ = case kind of "_free" => () | "_var" => () | "_bound" => () | _ => raise Match
+fun splitFormulaParts x = x |> Symbol.explode |>
+   Scan.finite Symbol.stopper (Scan.repeat (
+  (Scan.one (Symbol.is_letter) --
+  (((Scan.repeat ($$ "\<^sub>" -- (Scan.one (Symbol.is_digit)) >> (fn (x,y) => [x,y])) >> List.concat )
+  -- (Scan.repeat ($$ "'"))) >> (fn (x,y) => x@y)))))
+val isSingleVariableName = case (splitFormulaParts (Name.clean name)) of
+        ([v],[]) => true | _ => false
+in
+  if isSingleVariableName
+        then Ast.Appl [Ast.Constant "_constrain", Ast.Appl [Ast.Constant kind, Ast.Variable name], Ast.Variable name]
+        else Ast.mk_appl (Ast.Constant "_AOT_quoted") [Ast.mk_appl (Ast.Constant "_AOT_term_of_var") [x]]
+end
+)
+in
+fn ctxt => fn [x as Ast.Appl [Ast.Constant "_constrain", Ast.Appl [Ast.Constant kind, Ast.Variable name], _]] => handleTermOfVar x kind name
+| [x as Ast.Appl [Ast.Constant kind, Ast.Variable name]] => handleTermOfVar x kind name
+end
+),
+("_AOT_raw_appl", fn _ => fn t::a::args => let
+val ts = fold (fn a => fn b => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_args\<close>) [b,a]) args a
+in Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_appl\<close>) [t,ts] end)]
+\<close>
+
+(* TODO for printing (not exhaustive):
+
+\<equiv>\<^sub>d\<^sub>f; =\<^sub>d\<^sub>f ; sth \<^bold>\<turnstile> sth ; sth \<^bold>\<turnstile>\<^sub>\<box> sth ; INSTANCE_OF_CQT_2 ; ellipses; invalid term names ; cqt_2_const_var[axiom_inst];
+
+\<And>v \<tau> \<tau>'. [v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>'\<down>] (additional Pure.all quantified variables)
+
+parentheses around \<forall> body
+
+exemplification/encoding/lambda tuples
+
+Enable with: declare[[show_AOT_syntax,show_question_marks=false]]
+ *)
+
+
+
 
 end

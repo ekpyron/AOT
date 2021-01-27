@@ -491,6 +491,11 @@ class AOT_Enc =
       and AOT_sem_proj_enc_nec: \<open>[v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>] \<Longrightarrow> [w \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>]\<close>
       and AOT_sem_universal_encoder: \<open>\<exists> \<kappa>\<^sub>1\<kappa>\<^sub>n. [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> (\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<Pi>\<guillemotright>]) \<and> (\<forall> \<phi> . [v \<Turnstile> [\<lambda>z\<^sub>1...z\<^sub>n \<phi>{z\<^sub>1...z\<^sub>n}]\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>])\<close>
 
+(* TODO: unfortunate that this is not in AOT_syntax *)
+translations
+  "_AOT_enc args (_AOT_lambda vars \<phi>)" <= "CONST AOT_enc args (_AOT_lambda vars \<phi>)"
+  "_AOT_enc args (_explicitRelation \<Pi>)" <= "CONST AOT_enc args \<Pi>"
+
 class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
   assumes AOT_sem_enc_eq: \<open>[v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>\<nu> (\<nu>[\<Pi>] \<equiv> \<nu>[\<Pi>']) \<rightarrow> \<Pi> = \<Pi>']\<close>
       and AOT_sem_a_objects: \<open>[v \<Turnstile> \<exists>x (\<not>\<diamond>E!x & \<forall>F (x[F] \<equiv> \<phi>{F}))]\<close>
