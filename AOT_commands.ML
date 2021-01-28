@@ -373,14 +373,18 @@ end
 
 (*********)
 
+val long_keyword =
+  Parse_Spec.includes >> K "" ||
+  Parse_Spec.long_statement_keyword;
+
 val long_statement =
-  Scan.optional (Parse_Spec.opt_thm_name ":" --| Scan.ahead Parse_Spec.long_statement_keyword) Binding.empty_atts --
-  Parse_Spec.long_statement
-    >> (fn ((binding), (elems, concl)) => (true, binding, elems, concl))
+  Scan.optional (Parse_Spec.opt_thm_name ":" --| Scan.ahead long_keyword) Binding.empty_atts --
+  Scan.optional Parse_Spec.includes [] --Parse_Spec.long_statement
+    >> (fn ((binding, includes), (elems, concl)) => (true, binding, includes, elems, concl))
 val short_statement =
   Parse_Spec.statement -- Parse_Spec.if_statement -- Parse.for_fixes
     >> (fn ((shows, assumes), fixes) =>
-      (false, Binding.empty_atts, [Element.Fixes fixes, Element.Assumes assumes],
+      (false, Binding.empty_atts, [], [Element.Fixes fixes, Element.Assumes assumes],
         Element.Shows shows))
 
 fun setupStrictWorld ctxt = let
@@ -393,15 +397,16 @@ fun mapStmt mapTerm _ (Element.Shows x) = Element.Shows (map (map (fn (trm, trms
   | mapStmt mapTerm mapTyp (Element.Obtains x) = Element.Obtains (map ((fn (x, y) => (map (fn (a,b,c) => (a, Option.map mapTyp b, c)) x, map mapTerm y)) |> apsnd) x)
 fun mapCtxt mapTerm mapTyp ctxtElem = Element.map_ctxt {attrib = I, binding = I, fact = I, pattern = mapTerm, term = mapTerm, typ = mapTyp} ctxtElem
 
-fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding assumptions shows int ctxt = (let
+fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding includes assumptions shows int ctxt = (let
+  val ctxt = Bundle.includes_cmd includes ctxt
   val ctxt = if modallyStrict then setupStrictWorld ctxt else setupWeakWorld ctxt
   val (stmts,assumptions,ctxt) = read_statement (if axiom then (if modallyStrict then @{nonterminal "AOT_axiom"} else @{nonterminal "AOT_act_axiom"}) else @{nonterminal AOT_prop}) @{nonterminal AOT_prop} assumptions shows ctxt
 in Specification.theorem long "AOT_theorem" NONE afterQed thmBinding [] assumptions (Element.Shows stmts) int ctxt end)
 
 fun AOT_theorem spec axiom modallyStrict descr =
   Outer_Syntax.local_theory_to_proof' spec ("state " ^ descr)
-    ((long_statement || short_statement) >> (fn (long, binding, elems, concl) =>
-      (AOT_theorem_cmd axiom modallyStrict long AOT_note_theorems binding elems concl)));
+    ((long_statement || short_statement) >> (fn (long, binding, includes, elems, concl) =>
+      (AOT_theorem_cmd axiom modallyStrict long AOT_note_theorems binding includes elems concl)));
 
 val _ = AOT_theorem \<^command_keyword>\<open>AOT_theorem\<close> false true "AOT modally-strict theorem";
 val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_theorem\<close> false false "AOT modally-weak theorem"
