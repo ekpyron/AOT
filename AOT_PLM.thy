@@ -8,9 +8,9 @@ interpretation AOT_meta_syntax.
 (* interpretation AOT_no_meta_syntax. *)
 
 (* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_syntax
+(* unbundle AOT_syntax *)
 (* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
-(* unbundle AOT_no_syntax *)
+unbundle AOT_no_syntax
 
 AOT_theorem modus_ponens: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)

@@ -8,9 +8,9 @@ interpretation AOT_meta_syntax.
 (* interpretation AOT_no_meta_syntax. *)
 
 (* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_syntax
+(* unbundle AOT_syntax *)
 (* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
-(* unbundle AOT_no_syntax *)
+unbundle AOT_no_syntax
 
 specification(AOT_denotes)
   AOT_sem_denotes: \<open>[w \<Turnstile> \<tau>\<down>] = AOT_model_denotes \<tau>\<close>
