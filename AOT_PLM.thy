@@ -2,14 +2,15 @@ theory AOT_PLM
   imports AOT_axioms
 begin
 
-(* Enable meta syntax mode. *)
-(*
-  declare[[show_AOT_syntax=false,show_question_marks=true]]
-  interpretation AOT_meta_syntax .
-*)
-(* Enable experimental printing mode. *)
-declare[[show_AOT_syntax=true,show_question_marks=false]]
+(* To enable meta syntax: *)
+interpretation AOT_meta_syntax.
+(* To disable meta syntax: *)
+(* interpretation AOT_no_meta_syntax. *)
 
+(* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
+unbundle AOT_syntax
+(* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
+(* unbundle AOT_no_syntax *)
 
 AOT_theorem modus_ponens: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
@@ -1180,6 +1181,10 @@ print_translation\<open>AOT_syntax_print_translations
 context AOT_meta_syntax
 begin
 notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
+end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
 end
 
 AOT_theorem uniqueness_2: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>

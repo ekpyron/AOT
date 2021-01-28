@@ -2,13 +2,15 @@ theory AOT_axioms
   imports AOT_semantics
 begin
 
-(* Enable meta syntax mode. *)
-(*
-  declare[[show_AOT_syntax=false,show_question_marks=true]]
-  interpretation AOT_meta_syntax .
-*)
-(* Enable experimental printing mode. *)
-declare[[show_AOT_syntax=true,show_question_marks=false]]
+(* To enable meta syntax: *)
+interpretation AOT_meta_syntax.
+(* To disable meta syntax: *)
+(* interpretation AOT_no_meta_syntax. *)
+
+(* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
+unbundle AOT_syntax
+(* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
+(* unbundle AOT_no_syntax *)
 
 (* conventions - these are already defined, resp. valid, so just note them here again *)
 notepad
@@ -162,6 +164,10 @@ AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> 
 context AOT_meta_syntax
 begin
 notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
+end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
 AOT_axiom pl_1: \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<phi>)\<close>

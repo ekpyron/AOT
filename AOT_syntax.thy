@@ -31,6 +31,12 @@ notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
 notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
 notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
 end
+locale AOT_no_meta_syntax
+begin
+no_notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
+no_notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
+no_notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
+end
 
 ML\<open>
 datatype AOT_TypeCategory = AOT_Individual | AOT_Relation | AOT_Proposition | AOT_Term
@@ -564,6 +570,13 @@ notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
 notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
 notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
 end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+no_notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
+no_notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
+no_notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
+end
 
 
 AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40]) \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
@@ -576,6 +589,11 @@ context AOT_meta_syntax
 begin
 notation AOT_exists (binder "\<^bold>\<exists>" 8)
 end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_exists (binder "\<^bold>\<exists>" 8)
+end
+
 
 syntax
    "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ _\<close> [1,40])
@@ -693,6 +711,24 @@ notation AOT_model_id_def (infixl "\<^bold>=\<^sub>d\<^sub>f" 10)
 notation AOT_term_of_var ("\<^bold>\<langle>_\<^bold>\<rangle>")
 notation AOT_concrete ("\<^bold>E\<^bold>!")
 end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_denotes ("_\<^bold>\<down>")
+no_notation AOT_imp (infixl "\<^bold>\<rightarrow>" 25)
+no_notation AOT_not ("\<^bold>\<not>_" [50] 50)
+no_notation AOT_box ("\<^bold>\<box>_" [49] 54)
+no_notation AOT_act ("\<^bold>\<A>_" [49] 54)
+no_notation AOT_forall (binder "\<^bold>\<forall>" 8)
+no_notation AOT_eq (infixl "\<^bold>=" 50)
+no_notation AOT_desc (binder "\<^bold>\<iota>" 100)
+no_notation AOT_lambda (binder "\<^bold>\<lambda>" 100)
+no_notation AOT_lambda0 ("\<^bold>[\<^bold>\<lambda> _\<^bold>]")
+no_notation AOT_exe ("\<^bold>\<lparr>_,_\<^bold>\<rparr>")
+no_notation AOT_model_equiv_def (infixl "\<^bold>\<equiv>\<^sub>d\<^sub>f" 10)
+no_notation AOT_model_id_def (infixl "\<^bold>=\<^sub>d\<^sub>f" 10)
+no_notation AOT_term_of_var ("\<^bold>\<langle>_\<^bold>\<rangle>")
+no_notation AOT_concrete ("\<^bold>E\<^bold>!")
+end
 
 
 (* TODO for AOT syntax printing mode (not exhaustive):
@@ -705,7 +741,16 @@ parentheses around \<forall> body
 
 exemplification/encoding/lambda tuples
 
-Enable with: declare[[show_AOT_syntax,show_question_marks=false]]
  *)
+
+bundle AOT_syntax
+begin
+declare[[show_AOT_syntax=true, show_question_marks=false]]
+end
+
+bundle AOT_no_syntax
+begin
+declare[[show_AOT_syntax=false, show_question_marks=true]]
+end
 
 end
