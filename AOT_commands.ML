@@ -1,3 +1,59 @@
+
+val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
+local
+    fun AOT_map_translation b (name:string, f)
+      = (name, fn ctxt => if Config.get ctxt print_AOT_syntax = b then f ctxt else raise Match)
+in
+val AOT_syntax_print_translations = map (fn (n,f:Proof.context -> term list -> term) => AOT_map_translation true (n,f))
+val AOT_syntax_typed_print_translations = map (fn (n,f:Proof.context -> typ -> term list -> term) => AOT_map_translation true (n,f))
+val AOT_syntax_print_ast_translations = map (fn (n,f:Proof.context -> Ast.ast list -> Ast.ast) => AOT_map_translation true (n,f))
+end
+
+
+fun add_AOT_print_rule AOTsyntax raw_rules thy = let
+  val rules = map (fn (r, s) => let
+    val head = Ast.head_of_rule (s,r)
+  in (head, fn ctxt => fn asts => if Config.get ctxt print_AOT_syntax = AOTsyntax then 
+    let
+      val orig = (Ast.mk_appl (Ast.Constant head) asts)
+      val normalized = Ast.normalize ctxt (fn head' => if head = head' then [(s,r)] else []) orig
+      in if orig = normalized then raise Match else normalized end else raise Match) end
+    ) raw_rules
+in Sign.print_ast_translation rules thy end
+
+local
+         
+val trans_pat =
+  Scan.optional
+    (\<^keyword>\<open>(\<close> |-- Parse.!!! (Parse.inner_syntax Parse.name --| \<^keyword>\<open>)\<close>)) "logic"
+    -- Parse.inner_syntax Parse.string;
+
+fun trans_arrow toks =
+  ((\<^keyword>\<open>\<leftharpoondown>\<close> || \<^keyword>\<open><=\<close>) >> K Syntax.Print_Rule) toks;
+
+val trans_line =
+  trans_pat -- Parse.!!! (trans_arrow |-- trans_pat)
+    >> (fn (left, right) => (left, right));
+
+fun add_trans_rule AOTsyntax raw_rules thy =
+let
+  fun mapPair f (x, y) = (f x, f y)
+  val ctxt = Proof_Context.init_global thy;
+  val read_root = #1 o dest_Type o Proof_Context.read_type_name {proper = true, strict = false} ctxt;
+  val raw_rules = map (mapPair (fn (r, s) => (Syntax_Phases.parse_ast_pattern ctxt (read_root r, s)))) raw_rules
+in add_AOT_print_rule AOTsyntax raw_rules thy end
+
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_syntax_print_translations\<close> "add print translation rules for AOT syntax"
+    (Scan.repeat1 trans_line >> (Toplevel.theory o add_trans_rule true));
+
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_no_syntax_print_translations\<close> "add AOT print translation rules for non-AOT syntax"
+    (Scan.repeat1 trans_line >> (Toplevel.theory o add_trans_rule false));
+in end
+
+
+
 structure AOT_Theorems = Named_Thms(
   val name = @{binding "AOT"}
   val description = "AOT Theorems"
@@ -71,8 +127,8 @@ let
   val (thm, ctxt) = Local_Theory.background_theory_result (fn lthy => let
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
         Sign.add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
-        Sign.add_trrules [
-          Syntax.Print_Rule (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
+        add_AOT_print_rule true [
+          (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
      in
       Choice_Specification.add_specification [("",bnd_str,false)] (lthy, thm)
@@ -132,8 +188,8 @@ let
      fun remove_alls frees (thy, thm) = (thy, fold (inst_all thy) frees thm)
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
         Sign.add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
-        Sign.add_trrules [
-          Syntax.Print_Rule (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
+        add_AOT_print_rule true [
+          (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
      in
       Choice_Specification.add_specification [("",bnd_str,false)] (lthy, thm)

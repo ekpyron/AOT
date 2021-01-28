@@ -25,6 +25,13 @@ theory AOT_syntax
          and "denotes" = "\<down>"
 begin
 
+locale AOT_meta_syntax
+begin
+notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
+notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
+notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
+end
+
 ML\<open>
 datatype AOT_TypeCategory = AOT_Individual | AOT_Relation | AOT_Proposition | AOT_Term
 val AOT_TypeCategory_ord = let
@@ -206,8 +213,10 @@ syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<alpha>\<close> (\<open>\<gu
 syntax "_AOT_valid" :: \<open>w \<Rightarrow> \<phi>' \<Rightarrow> bool\<close> (\<open>[_ \<Turnstile> _]\<close>)
 
 translations
-  "[w \<Turnstile> \<phi>]" == "CONST AOT_model_valid_in w \<phi>"
+  "[w \<Turnstile> \<phi>]" => "CONST AOT_model_valid_in w \<phi>"
 
+AOT_syntax_print_translations
+  "[w \<Turnstile> \<phi>]" <= "CONST AOT_model_valid_in w \<phi>"
 
 ML\<open>
 fun decode_pos str =
@@ -296,23 +305,36 @@ syntax "_AOT_denotes" :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<d
 
 
 translations
-  "_AOT_denotes \<tau>" == "CONST AOT_denotes \<tau>"
-  "_AOT_imp \<phi> \<psi>" == "CONST AOT_imp \<phi> \<psi>"
-  "_AOT_not \<phi>" == "CONST AOT_not \<phi>"
-  "_AOT_box \<phi>" == "CONST AOT_box \<phi>"
-  "_AOT_act \<phi>" == "CONST AOT_act \<phi>"
-  "_AOT_all \<alpha> \<phi>" == "CONST AOT_forall (_abs \<alpha> \<phi>)"
+  "_AOT_denotes \<tau>" => "CONST AOT_denotes \<tau>"
+  "_AOT_imp \<phi> \<psi>" => "CONST AOT_imp \<phi> \<psi>"
+  "_AOT_not \<phi>" => "CONST AOT_not \<phi>"
+  "_AOT_box \<phi>" => "CONST AOT_box \<phi>"
+  "_AOT_act \<phi>" => "CONST AOT_act \<phi>"
+  "_AOT_all \<alpha> \<phi>" => "CONST AOT_forall (_abs \<alpha> \<phi>)"
+  "_AOT_eq \<tau> \<tau>'" => "CONST AOT_eq \<tau> \<tau>'"
+  "_AOT_desc x \<phi>" => "CONST AOT_desc (_abs x \<phi>)"
+  "_AOT_lambda0 \<phi>" => "CONST AOT_lambda0 \<phi>"
+  "_AOT_concrete" => "CONST AOT_concrete"
+  "_AOT_lambda \<alpha> \<phi>" => "CONST AOT_lambda (_abs \<alpha> \<phi>)"
+  "_explicitRelation \<Pi>" => "\<Pi>"
+
+AOT_syntax_print_translations
+  "_AOT_denotes \<tau>" <= "CONST AOT_denotes \<tau>"
+  "_AOT_imp \<phi> \<psi>" <= "CONST AOT_imp \<phi> \<psi>"
+  "_AOT_not \<phi>" <= "CONST AOT_not \<phi>"
+  "_AOT_box \<phi>" <= "CONST AOT_box \<phi>"
+  "_AOT_act \<phi>" <= "CONST AOT_act \<phi>"
+  "_AOT_all \<alpha> \<phi>" <= "CONST AOT_forall (_abs \<alpha> \<phi>)"
   "_AOT_all \<alpha> \<phi>" <= "CONST AOT_forall (\<lambda>\<alpha>. \<phi>)"
-  "_AOT_eq \<tau> \<tau>'" == "CONST AOT_eq \<tau> \<tau>'"
-  "_AOT_desc x \<phi>" == "CONST AOT_desc (_abs x \<phi>)"
+  "_AOT_eq \<tau> \<tau>'" <= "CONST AOT_eq \<tau> \<tau>'"
+  "_AOT_desc x \<phi>" <= "CONST AOT_desc (_abs x \<phi>)"
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (\<lambda>x. \<phi>)"
-  "_AOT_lambda0 \<phi>" == "CONST AOT_lambda0 \<phi>"
-  "_AOT_concrete" == "CONST AOT_concrete"
-  "_AOT_lambda \<alpha> \<phi>" == "CONST AOT_lambda (_abs \<alpha> \<phi>)"
+  "_AOT_lambda0 \<phi>" <= "CONST AOT_lambda0 \<phi>"
+  "_AOT_concrete" <= "CONST AOT_concrete"
+  "_AOT_lambda \<alpha> \<phi>" <= "CONST AOT_lambda (_abs \<alpha> \<phi>)"
   "_AOT_lambda \<alpha> \<phi>" <= "CONST AOT_lambda (\<lambda> \<alpha> . \<phi>)"
   "_AOT_exe (_AOT_lambda vars \<phi>) args" <= "CONST AOT_exe (_AOT_lambda vars \<phi>) args"
   "_AOT_exe (_explicitRelation \<Pi>) args" <= "CONST AOT_exe \<Pi> args"
-  "_explicitRelation \<Pi>" => "\<Pi>"
 
 
 nonterminal free_var
@@ -397,7 +419,7 @@ syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premi
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
 
-translations
+AOT_syntax_print_translations
   "_AOT_act_axiom \<phi>" <= "CONST AOT_model_act_axiom \<phi>"
   "_AOT_axiom \<phi>" <= "CONST AOT_model_axiom \<phi>"
 
@@ -486,6 +508,7 @@ parse_ast_translation\<open>
 \<close>
 
 print_translation \<open>
+AOT_syntax_print_translations
  [
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close>,
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_desc\<close> \<^syntax_const>\<open>_AOT_desc\<close>,
@@ -534,15 +557,33 @@ AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (inf
 AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
 AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
 
+context AOT_meta_syntax
+begin
+notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
+notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
+notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
+end
+
+
 AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40]) \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
 translations
-  "AOT_exists \<tau> \<phi>" == "CONST AOT_exists (_abs \<tau> \<phi>)"
+  "AOT_exists \<tau> \<phi>" => "CONST AOT_exists (_abs \<tau> \<phi>)"
+AOT_syntax_print_translations
+  "AOT_exists \<tau> \<phi>" <= "CONST AOT_exists (_abs \<tau> \<phi>)"
+
+context AOT_meta_syntax
+begin
+notation AOT_exists (binder "\<^bold>\<exists>" 8)
+end
+
 syntax
    "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ _\<close> [1,40])
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
-print_translation
-  \<open>[Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>AOT_exists\<close>]\<close>
+print_translation\<open>AOT_syntax_print_translations
+  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>AOT_exists\<close>]
+\<close>
 
 
 
@@ -570,18 +611,6 @@ end
 
 (* TODO: experimental printing mode: *)
 
-
-ML\<open>
-val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
-local
-    fun AOT_map_translation b (name:string, f)
-      = (name, fn ctxt => if Config.get ctxt print_AOT_syntax = b then f ctxt else raise Match)
-in
-val AOT_syntax_print_translations = map (fn (n,f:Proof.context -> term list -> term) => AOT_map_translation true (n,f))
-val AOT_syntax_typed_print_translations = map (fn (n,f:Proof.context -> typ -> term list -> term) => AOT_map_translation true (n,f))
-val AOT_syntax_print_ast_translations = map (fn (n,f:Proof.context -> Ast.ast list -> Ast.ast) => AOT_map_translation true (n,f))
-end
-\<close>
 
 print_translation\<open>AOT_syntax_print_translations
 [(\<^const_syntax>\<open>Pure.all\<close>, fn ctxt => fn [Abs (_, _,
@@ -646,7 +675,27 @@ val ts = fold (fn a => fn b => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>
 in Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_appl\<close>) [t,ts] end)]
 \<close>
 
-(* TODO for printing (not exhaustive):
+context AOT_meta_syntax
+begin
+notation AOT_denotes ("_\<^bold>\<down>")
+notation AOT_imp (infixl "\<^bold>\<rightarrow>" 25)
+notation AOT_not ("\<^bold>\<not>_" [50] 50)
+notation AOT_box ("\<^bold>\<box>_" [49] 54)
+notation AOT_act ("\<^bold>\<A>_" [49] 54)
+notation AOT_forall (binder "\<^bold>\<forall>" 8)
+notation AOT_eq (infixl "\<^bold>=" 50)
+notation AOT_desc (binder "\<^bold>\<iota>" 100)
+notation AOT_lambda (binder "\<^bold>\<lambda>" 100)
+notation AOT_lambda0 ("\<^bold>[\<^bold>\<lambda> _\<^bold>]")
+notation AOT_exe ("\<^bold>\<lparr>_,_\<^bold>\<rparr>")
+notation AOT_model_equiv_def (infixl "\<^bold>\<equiv>\<^sub>d\<^sub>f" 10)
+notation AOT_model_id_def (infixl "\<^bold>=\<^sub>d\<^sub>f" 10)
+notation AOT_term_of_var ("\<^bold>\<langle>_\<^bold>\<rangle>")
+notation AOT_concrete ("\<^bold>E\<^bold>!")
+end
+
+
+(* TODO for AOT syntax printing mode (not exhaustive):
 
 \<equiv>\<^sub>d\<^sub>f; =\<^sub>d\<^sub>f ; sth \<^bold>\<turnstile> sth ; sth \<^bold>\<turnstile>\<^sub>\<box> sth ; INSTANCE_OF_CQT_2 ; ellipses; invalid term names ; cqt_2_const_var[axiom_inst];
 
@@ -658,8 +707,5 @@ exemplification/encoding/lambda tuples
 
 Enable with: declare[[show_AOT_syntax,show_question_marks=false]]
  *)
-
-
-
 
 end

@@ -18,6 +18,8 @@ theory AOT_commands
        and "thm_name" :: diag
        and "AOT_sledgehammer" :: diag
        and "AOT_sledgehammer_only" :: diag
+       and "AOT_syntax_print_translations" :: thy_decl
+       and "AOT_no_syntax_print_translations" :: thy_decl
 begin
 
 nonterminal AOT_prop

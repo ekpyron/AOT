@@ -2,8 +2,14 @@ theory AOT_PLM
   imports AOT_axioms
 begin
 
+(* Enable meta syntax mode. *)
+(*
+  declare[[show_AOT_syntax=false,show_question_marks=true]]
+  interpretation AOT_meta_syntax .
+*)
 (* Enable experimental printing mode. *)
-declare[[show_AOT_syntax,show_question_marks=false]]
+declare[[show_AOT_syntax=true,show_question_marks=false]]
+
 
 AOT_theorem modus_ponens: assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
@@ -1161,14 +1167,20 @@ AOT_theorem term_out_4: \<open>(\<phi>{\<beta>} & \<forall>\<alpha>(\<phi>{\<alp
 AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>  ("\<exists>!_ _" [1,40])
   uniqueness_1: \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
 translations
-  "AOT_exists_unique \<tau> \<phi>" == "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
+  "AOT_exists_unique \<tau> \<phi>" => "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
+AOT_syntax_print_translations
+  "AOT_exists_unique \<tau> \<phi>" <= "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
 syntax
    "_AOT_exists_unique_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>!_...\<exists>!_ _\<close> [1,40])
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_unique_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists_unique") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
-print_translation
-  \<open>[Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>]\<close>
-
+print_translation\<open>AOT_syntax_print_translations
+  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>]
+\<close>
+context AOT_meta_syntax
+begin
+notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
+end
 
 AOT_theorem uniqueness_2: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
 proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accomodate PLMs double definition *)

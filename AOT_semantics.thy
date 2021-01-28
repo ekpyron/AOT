@@ -2,6 +2,14 @@ theory AOT_semantics
   imports AOT_syntax
 begin
 
+(* Enable meta syntax mode. *)
+(*
+  declare[[show_AOT_syntax=false,show_question_marks=true]]
+  interpretation AOT_meta_syntax .
+*)
+(* Enable experimental printing mode. *)
+declare[[show_AOT_syntax=true,show_question_marks=false]]
+
 specification(AOT_denotes)
   AOT_sem_denotes: \<open>[w \<Turnstile> \<tau>\<down>] = AOT_model_denotes \<tau>\<close>
   by (rule_tac x=\<open>\<lambda> \<tau> . \<epsilon>\<^sub>\<o> w . AOT_model_denotes \<tau>\<close> in exI)
@@ -492,9 +500,14 @@ class AOT_Enc =
       and AOT_sem_universal_encoder: \<open>\<exists> \<kappa>\<^sub>1\<kappa>\<^sub>n. [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> (\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<Pi>\<guillemotright>]) \<and> (\<forall> \<phi> . [v \<Turnstile> [\<lambda>z\<^sub>1...z\<^sub>n \<phi>{z\<^sub>1...z\<^sub>n}]\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>])\<close>
 
 (* TODO: unfortunate that this is not in AOT_syntax *)
-translations
+AOT_syntax_print_translations
   "_AOT_enc args (_AOT_lambda vars \<phi>)" <= "CONST AOT_enc args (_AOT_lambda vars \<phi>)"
   "_AOT_enc args (_explicitRelation \<Pi>)" <= "CONST AOT_enc args \<Pi>"
+
+context AOT_meta_syntax
+begin
+notation AOT_enc ("\<^bold>\<lbrace>_,_\<^bold>\<rbrace>")
+end
 
 class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
   assumes AOT_sem_enc_eq: \<open>[v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>\<nu> (\<nu>[\<Pi>] \<equiv> \<nu>[\<Pi>']) \<rightarrow> \<Pi> = \<Pi>']\<close>
@@ -763,6 +776,12 @@ AOT_add_individual_sorts AOT_\<kappa> AOT_\<kappa>s
 
 AOT_define AOT_ordinary :: \<open>\<Pi>\<close> (\<open>O!\<close>) \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close>
 AOT_define AOT_abstract :: \<open>\<Pi>\<close> (\<open>A!\<close>) \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close>
+
+context AOT_meta_syntax
+begin
+notation AOT_ordinary ("\<^bold>O\<^bold>!")
+notation AOT_abstract ("\<^bold>A\<^bold>!")
+end
 
 lemma AOT_sem_ordinary: "\<guillemotleft>O!\<guillemotright> = \<guillemotleft>[\<lambda>x \<diamond>E!x]\<guillemotright>"
   using AOT_ordinary[THEN AOT_sem_id_def0E1, OF AOT_sem_ordinary_def_denotes]

@@ -2,6 +2,14 @@ theory AOT_axioms
   imports AOT_semantics
 begin
 
+(* Enable meta syntax mode. *)
+(*
+  declare[[show_AOT_syntax=false,show_question_marks=true]]
+  interpretation AOT_meta_syntax .
+*)
+(* Enable experimental printing mode. *)
+declare[[show_AOT_syntax=true,show_question_marks=false]]
+
 (* conventions - these are already defined, resp. valid, so just note them here again *)
 notepad
 begin
@@ -124,7 +132,6 @@ AOT_theorem p_identity:
   using AOT_sem_enc_eq[of _ \<Pi> \<Pi>']
   by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq AOT_sem_conj
                  AOT_sem_forall AOT_sem_box AOT_sem_equiv)
-
 AOT_theorem p_identity_2_a:
   \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y([\<lambda>z [\<Pi>]zy] = [\<lambda>z [\<Pi>']zy] & [\<lambda>z [\<Pi>]yz] = [\<lambda>z [\<Pi>']yz])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
@@ -133,6 +140,7 @@ AOT_theorem p_identity_2_b:
   \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+
 AOT_theorem p_identity_2_c:
   \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
@@ -150,6 +158,11 @@ AOT_theorem p_identity_3:
 
 AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>" 50)
   noneq_infix: \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
+
+context AOT_meta_syntax
+begin
+notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
+end
 
 AOT_axiom pl_1: \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<phi>)\<close>
   by (auto simp: AOT_sem_imp AOT_model_axiomI)
