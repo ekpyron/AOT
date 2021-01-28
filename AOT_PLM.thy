@@ -1176,8 +1176,11 @@ syntax
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_unique_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists_unique") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
 print_translation\<open>AOT_syntax_print_translations
-  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>]
+  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>,
+  AOT_binder_trans @{theory} @{binding "AOT_exists_unique_binder"} \<^syntax_const>\<open>AOT_exists_unique\<close>]
 \<close>
+
+
 context AOT_meta_syntax
 begin
 notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)

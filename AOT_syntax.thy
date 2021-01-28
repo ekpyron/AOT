@@ -37,6 +37,10 @@ no_notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
 no_notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
 no_notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
 end
+ML\<open>
+fun AOT_binder_trans thy bnd syntaxConst =
+  (Lexicon.mark_const (Sign.full_name thy bnd), K (fn trms => Term.list_comb (Const (syntaxConst, dummyT),trms)))
+\<close>
 
 ML\<open>
 datatype AOT_TypeCategory = AOT_Individual | AOT_Relation | AOT_Proposition | AOT_Term
@@ -309,7 +313,6 @@ syntax "_AOT_denotes" :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<d
        "" :: \<open>\<Pi>0 \<Rightarrow> \<tau>\<close> ("_")
        "_AOT_concrete" :: \<open>\<Pi>\<close> (\<open>E!\<close>)
 
-
 translations
   "_AOT_denotes \<tau>" => "CONST AOT_denotes \<tau>"
   "_AOT_imp \<phi> \<psi>" => "CONST AOT_imp \<phi> \<psi>"
@@ -517,8 +520,11 @@ print_translation \<open>
 AOT_syntax_print_translations
  [
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close>,
+  AOT_binder_trans @{theory} @{binding "AOT_forall_binder"} \<^syntax_const>\<open>_AOT_all\<close>,
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_desc\<close> \<^syntax_const>\<open>_AOT_desc\<close>,
-  Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close>
+  AOT_binder_trans @{theory} @{binding "AOT_desc_binder"} \<^syntax_const>\<open>_AOT_desc\<close>,
+  Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close>,
+  AOT_binder_trans @{theory} @{binding "AOT_lambda_binder"} \<^syntax_const>\<open>_AOT_lambda\<close>
  ]
 \<close> \<comment> \<open>to avoid eta-contraction\<close>
 
@@ -600,7 +606,8 @@ syntax
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
 print_translation\<open>AOT_syntax_print_translations
-  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>AOT_exists\<close>]
+  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>AOT_exists\<close>,
+  AOT_binder_trans @{theory} @{binding "AOT_exists_binder"} \<^syntax_const>\<open>AOT_exists\<close>]
 \<close>
 
 
