@@ -2460,12 +2460,15 @@ AOT_theorem S5Basic_2: \<open>\<box>\<phi> \<equiv> \<diamond>\<box>\<phi>\<clos
 
 AOT_theorem S5Basic_3: \<open>\<phi> \<rightarrow> \<box>\<diamond>\<phi>\<close>
   using T_S5_fund_1 ded_thm_cor_1 qml_3 vdash_properties_1_b by blast
+lemmas "B" = S5Basic_3
 
 AOT_theorem S5Basic_4: \<open>\<diamond>\<box>\<phi> \<rightarrow> \<phi>\<close>
   using T_S5_fund_2 ded_thm_cor_1 qml_2 vdash_properties_1_b by blast
+lemmas "B\<diamond>" = S5Basic_4
 
 AOT_theorem S5Basic_5: \<open>\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>\<close>
   using RM_1 S5Basic_3 T_S5_fund_2 ded_thm_cor_1 by blast
+lemmas "4" = S5Basic_5
 
 AOT_theorem S5Basic_6: \<open>\<box>\<phi> \<equiv> \<box>\<box>\<phi>\<close>
   by (simp add: S5Basic_5 intro_elim_2 qml_2[axiom_inst])
@@ -2475,6 +2478,7 @@ AOT_theorem S5Basic_7: \<open>\<diamond>\<diamond>\<phi> \<rightarrow> \<diamond
       AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>";
       AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>";
       AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<box>\<box>\<not>\<phi>\<guillemotright>")
+lemmas "4\<diamond>" = S5Basic_7
 
 AOT_theorem S5Basic_8: \<open>\<diamond>\<diamond>\<phi> \<equiv> \<diamond>\<phi>\<close>
   by (simp add: S5Basic_7 T_S5_fund_1 intro_elim_2)
@@ -2554,5 +2558,245 @@ next
   AOT_thus \<open>\<box>(\<diamond>\<phi> \<rightarrow> \<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<box>\<psi>)\<close>
     using S5Basic_5 ded_thm_cor_1 by blast
 qed
+
+AOT_theorem derived_S5_rules_1:
+  assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close>
+proof -
+  AOT_have \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<diamond>\<phi> \<rightarrow> \<box>\<psi>\<close>
+    using assms by (rule RM_1_prem)
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close>
+    using S5Basic_3 ded_thm_cor_1 by blast
+qed
+
+AOT_theorem derived_S5_rules_2:
+  assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close>
+proof -
+  AOT_have \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<box>\<psi>\<close>
+    using assms by (rule RM_2_prem)
+  AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close>
+    using "B\<diamond>" ded_thm_cor_1 by blast
+qed
+
+AOT_theorem BFs_1: \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
+proof -
+  AOT_modally_strict {
+    AOT_modally_strict {
+      AOT_have \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> by (fact AOT)
+    }
+    AOT_hence \<open>\<diamond>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<diamond>\<box>\<phi>{\<alpha>}\<close> for \<alpha> by (rule "RM\<diamond>")
+    AOT_hence \<open>\<diamond>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<phi>{\<alpha>}\<close>
+      using "B\<diamond>" "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
+  }
+  thus ?thesis using derived_S5_rules_1 by blast
+qed
+lemmas "BF" = BFs_1
+
+AOT_theorem BFs_2: \<open>\<box>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<box>\<phi>{\<alpha>}\<close>
+proof -
+  AOT_have \<open>\<box>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using RM cqt_orig_3 by metis
+  thus ?thesis using  cqt_orig_2[THEN "\<rightarrow>E"] "\<forall>I" by metis
+qed
+lemmas "CBF" = BFs_2
+
+AOT_theorem BFs_3: \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_have \<open>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>} \<equiv> \<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
+      using BF CBF "\<equiv>I" by blast
+  } note \<theta> = this
+
+  AOT_assume \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+  AOT_hence \<open>\<not>\<box>\<not>(\<exists>\<alpha> \<phi>{\<alpha>})\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia by blast
+  AOT_hence \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+    apply - apply (AOT_subst "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<not>(\<exists>\<alpha> \<phi>{\<alpha>})\<guillemotright>")
+    using "\<equiv>\<^sub>d\<^sub>fI" AOT_equiv AOT_exists con_dis_i_e_1 contraposition_2_b cqt_further_4
+          df_rules_formulas_3 vdash_properties_1_b by blast
+  AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
+    apply - apply (AOT_subst_using_rev subst: \<theta>)
+    using \<theta> by blast
+  AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close>
+    apply - apply (AOT_subst_rev "\<lambda> \<tau>. \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>"  "\<lambda> \<tau>. \<guillemotleft>\<not>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
+    by (simp add: oth_class_taut_3_b)
+  AOT_hence 0: \<open>\<exists>\<alpha> \<not>\<box>\<not>\<phi>{\<alpha>}\<close>
+    by (rule AOT_exists[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_show \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+    apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<diamond>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
+    using 0 by blast
+qed
+lemmas "BF\<diamond>" = "BFs_3"
+
+AOT_theorem BFs_4: \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>} \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+  AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<diamond>\<phi>{\<alpha>}\<close>
+    using AOT_exists[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
+    apply - apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<diamond>\<phi>{\<tau>}\<guillemotright>")
+    by (simp add: KBasic2_1)
+  moreover AOT_have \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>} \<equiv> \<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+    using "\<equiv>I" BFs_1 BFs_2 by metis
+  ultimately AOT_have 1: \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+    using intro_elim_3_c by blast
+  AOT_show \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    apply (AOT_subst "\<guillemotleft>\<exists>\<alpha> \<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
+    apply (AOT_subst "\<guillemotleft>\<not>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
+    by (auto simp: 1 intro_elim_2 useful_tautologies_1 useful_tautologies_2)
+qed
+lemmas "CBF\<diamond>" = BFs_4
+
+AOT_theorem sign_S5_thm_1: \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>}\<close>
+  then AOT_obtain \<alpha> where \<open>\<box>\<phi>{\<alpha>}\<close> using "\<exists>E" by metis
+  moreover AOT_have \<open>\<box>\<alpha>\<down>\<close>
+    by (simp add: ex_1_a rule_ui_2_a RN)
+  moreover AOT_have \<open>\<box>\<phi>{\<tau>}, \<box>\<tau>\<down> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close> for \<tau>
+  proof -
+    AOT_have \<open>\<phi>{\<tau>}, \<tau>\<down> \<^bold>\<turnstile>\<^sub>\<box> \<exists>\<alpha> \<phi>{\<alpha>}\<close> using existential_1 by blast
+    AOT_thus \<open>\<box>\<phi>{\<tau>}, \<box>\<tau>\<down> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+      using RN_prem[where \<Gamma>="{\<phi> \<tau>, \<guillemotleft>\<tau>\<down>\<guillemotright>}", simplified] by blast
+  qed
+  ultimately AOT_show \<open>\<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close> by blast
+qed
+
+lemmas "Buridan" = sign_S5_thm_1
+
+AOT_theorem sign_S5_thm_2: \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+proof -
+  AOT_have \<open>\<forall>\<alpha> (\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<diamond>\<phi>{\<alpha>})\<close>
+    by (simp add: "RM\<diamond>" cqt_orig_3 "\<forall>I")
+  AOT_thus \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+    using "\<forall>E" "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
+qed
+
+lemmas "Buridan\<diamond>" = sign_S5_thm_2
+
+AOT_theorem sign_S5_thm_3: \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>(\<exists>\<alpha> \<phi>{\<alpha>} & \<exists>\<alpha> \<psi>{\<alpha>})\<close>
+  apply (rule RM_2)
+  by (metis (no_types, lifting) "instantiation" con_dis_i_e_1 con_dis_i_e_2_a
+                                con_dis_i_e_2_b deduction_theorem existential_2_a)
+
+AOT_theorem sign_S5_thm_4: \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+  apply (rule RM_2)
+  by (meson "instantiation" con_dis_i_e_2_a deduction_theorem existential_2_a)
+
+AOT_theorem sign_S5_thm_5: \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})\<close>
+proof -
+  {
+    fix \<phi>' \<psi>' \<chi>'
+    AOT_assume \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>' & \<psi>' \<rightarrow> \<chi>'\<close>
+    AOT_hence \<open>\<box>\<phi>' & \<box>\<psi>' \<rightarrow> \<box>\<chi>'\<close>
+      using RN_prem[where \<Gamma>="{\<phi>', \<psi>'}"] apply simp
+      using "&E" "&I" "\<rightarrow>E" "\<rightarrow>I" by metis
+  } note R = this
+  show ?thesis by (rule R; fact AOT)
+qed
+
+AOT_theorem sign_S5_thm_6: \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
+proof -
+  {
+    fix \<phi>' \<psi>' \<chi>'
+    AOT_assume \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>' & \<psi>' \<rightarrow> \<chi>'\<close>
+    AOT_hence \<open>\<box>\<phi>' & \<box>\<psi>' \<rightarrow> \<box>\<chi>'\<close>
+      using RN_prem[where \<Gamma>="{\<phi>', \<psi>'}"] apply simp
+      using "&E" "&I" "\<rightarrow>E" "\<rightarrow>I" by metis
+  } note R = this
+  show ?thesis by (rule R; fact AOT)
+qed
+
+AOT_theorem exist_nec2_1: \<open>\<diamond>\<tau>\<down> \<rightarrow> \<tau>\<down>\<close>
+  using "B\<diamond>" "RM\<diamond>" ded_thm_cor_1 exist_nec by blast
+
+AOT_theorem exists_nec2_2: \<open>\<diamond>\<tau>\<down> \<equiv> \<box>\<tau>\<down>\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 exist_nec exist_nec2_1 intro_elim_2 nec_imp_act)
+
+AOT_theorem exists_nec2_3: \<open>\<not>\<tau>\<down> \<rightarrow> \<box>\<not>\<tau>\<down>\<close>
+  using KBasic2_1 deduction_theorem exist_nec2_1 intro_elim_3_b modus_tollens_1 by blast
+
+AOT_theorem exists_nec2_4: \<open>\<diamond>\<not>\<tau>\<down> \<equiv> \<box>\<not>\<tau>\<down>\<close>
+  by (metis Act_Sub_3 KBasic_12 deduction_theorem exist_nec exists_nec2_3 intro_elim_2 intro_elim_3_d nec_imp_act reductio_aa_1)
+
+AOT_theorem id_nec2_1: \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<alpha> = \<beta>\<close>
+  using "B\<diamond>" "RM\<diamond>" ded_thm_cor_1 id_nec_1 by blast
+
+AOT_theorem id_nec2_2: \<open>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<alpha> \<noteq> \<beta>\<close>
+  apply (AOT_subst_using subst: noneq_infix[THEN "\<equiv>Df"])
+  using KBasic2_1 deduction_theorem id_nec2_1 intro_elim_3_b modus_tollens_1 by blast
+
+AOT_theorem id_nec2_3: \<open>\<diamond>\<alpha> \<noteq> \<beta> \<rightarrow> \<alpha> \<noteq> \<beta>\<close>
+  apply (AOT_subst_using subst: noneq_infix[THEN "\<equiv>Df"])
+  by (metis KBasic_11 deduction_theorem id_nec_2 intro_elim_3_c reductio_aa_2 vdash_properties_6)
+
+AOT_theorem id_nec2_4: \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<box>\<alpha> = \<beta>\<close>
+  using ded_thm_cor_1 id_nec2_1 id_nec_1 by blast
+
+AOT_theorem id_nec2_5: \<open>\<diamond>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<alpha> \<noteq> \<beta>\<close>
+  using id_nec2_3 id_nec2_2 "\<rightarrow>I" "\<rightarrow>E" by metis
+
+AOT_theorem sc_eq_box_box_1: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<equiv> (\<diamond>\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+  using KBasic_13 T_S5_fund_2 ded_thm_cor_1 vdash_properties_10 apply blast
+  by (metis KBasic2_1 KBasic_1 KBasic_2 S5Basic_13 intro_elim_3_b raa_cor_5 vdash_properties_6)
+
+AOT_theorem sc_eq_box_box_2: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<or> (\<diamond>\<phi> \<rightarrow> \<box>\<phi>)) \<rightarrow> (\<diamond>\<phi> \<equiv> \<box>\<phi>)\<close>
+  by (metis Act_Sub_3 KBasic_13 T_S5_fund_2 con_dis_i_e_4_b deduction_theorem intro_elim_2 nec_imp_act raa_cor_2 vdash_properties_10)
+
+AOT_theorem sc_eq_box_box_3: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> (\<not>\<box>\<phi> \<equiv> \<box>\<not>\<phi>)\<close>
+proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  AOT_hence \<open>\<diamond>\<phi> \<rightarrow> \<box>\<phi>\<close> using sc_eq_box_box_1 "\<equiv>E" by blast
+  moreover AOT_assume \<open>\<not>\<box>\<phi>\<close>
+  ultimately AOT_have \<open>\<not>\<diamond>\<phi>\<close>
+    using modus_tollens_1 by blast
+  AOT_thus \<open>\<box>\<not>\<phi>\<close>
+    using KBasic2_1 intro_elim_3_b by blast
+next
+  AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  moreover AOT_assume \<open>\<box>\<not>\<phi>\<close>
+  ultimately AOT_show \<open>\<not>\<box>\<phi>\<close>
+    using modus_tollens_1 qml_2 vdash_properties_10 vdash_properties_1_b by blast
+qed
+
+AOT_theorem sc_eq_box_box_4: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> ((\<box>\<phi> \<equiv> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
+proof(rule "\<rightarrow>I"; rule "\<rightarrow>I")
+  AOT_assume \<theta>: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)\<close>
+  AOT_assume \<xi>: \<open>\<box>\<phi> \<equiv> \<box>\<psi>\<close>
+  AOT_hence \<open>(\<box>\<phi> & \<box>\<psi>) \<or> (\<not>\<box>\<phi> & \<not>\<box>\<psi>)\<close>
+    using intro_elim_3_d oth_class_taut_4_g raa_cor_3 by blast
+  moreover {
+    AOT_assume \<open>\<box>\<phi> & \<box>\<psi>\<close>
+    AOT_hence \<open>\<box>(\<phi> \<equiv> \<psi>)\<close>
+      using KBasic_3 KBasic_8 intro_elim_3_b vdash_properties_10 by blast
+  }
+  moreover {
+    AOT_assume \<open>\<not>\<box>\<phi> & \<not>\<box>\<psi>\<close>
+    moreover AOT_have \<open>\<not>\<box>\<phi> \<equiv> \<box>\<not>\<phi>\<close> and \<open>\<not>\<box>\<psi> \<equiv> \<box>\<not>\<psi>\<close>
+      using \<theta> con_dis_taut_1 con_dis_taut_2 sc_eq_box_box_3 vdash_properties_10 by metis+
+    ultimately AOT_have \<open>\<box>\<not>\<phi> & \<box>\<not>\<psi>\<close>
+      by (metis con_dis_i_e_1 con_dis_taut_1 con_dis_taut_2 intro_elim_3_d modus_tollens_1 raa_cor_3)
+    AOT_hence \<open>\<box>(\<phi> \<equiv> \<psi>)\<close>
+      using KBasic_3 KBasic_9 intro_elim_3_b vdash_properties_10 by blast
+  }
+  ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close>
+    using con_dis_i_e_4_b reductio_aa_1 by blast
+qed
+
+AOT_theorem sc_eq_box_box_5: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> ((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
+proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
+  AOT_assume A: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
+  AOT_hence \<open>\<phi> \<rightarrow> \<box>\<phi>\<close> and \<open>\<psi> \<rightarrow> \<box>\<psi>\<close>
+    using "&E" qml_2[axiom_inst] "\<rightarrow>E" by blast+
+  moreover AOT_assume \<open>\<phi> \<equiv> \<psi>\<close>
+  ultimately AOT_have \<open>\<box>\<phi> \<equiv> \<box>\<psi>\<close>
+    using "\<rightarrow>E" qml_2[axiom_inst] "\<equiv>E" "\<equiv>I" by meson
+  moreover AOT_have \<open>(\<box>\<phi> \<equiv> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
+    using A sc_eq_box_box_4 "\<rightarrow>E" by blast
+  ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close> using "\<rightarrow>E" by blast
+qed
+
+(* Continue at sc-eq-fur (172) page 334, pdf page 179*)
+
 
 end
