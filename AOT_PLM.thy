@@ -1,5 +1,5 @@
 theory AOT_PLM
-  imports AOT_axioms
+  imports AOT_axioms "HOL-Eisbach.Eisbach"
 begin
 
 (* To enable meta syntax: *)
@@ -2064,7 +2064,8 @@ AOT_theorem rule_sub_lem_1_a:
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<psi> \<equiv> \<not>\<chi>\<close>
   using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms]
         intro_elim_3_a oth_class_taut_4_b by blast
-    
+
+
 AOT_theorem rule_sub_lem_1_b:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<psi> \<rightarrow> \<Theta>) \<equiv> (\<chi> \<rightarrow> \<Theta>)\<close>
@@ -2117,108 +2118,216 @@ AOT_theorem rule_sub_lem_1_g:
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>\<psi> \<equiv> \<box>\<chi>\<close>
   using KBasic_6 assms vdash_properties_6 by blast
 
-inductive AOT_subformula where
-  AOT_subformula_self: "AOT_subformula \<phi> \<phi>"
-| AOT_subformula_not: "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<not>\<psi>\<guillemotright>"
-| AOT_subformula_imp_1: "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<psi> \<rightarrow> \<chi>\<guillemotright>"
-| AOT_subformula_imp_2: "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<chi> \<rightarrow> \<psi>\<guillemotright>"
-| AOT_subformula_imp_box: "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<box>\<psi>\<guillemotright>"
-| AOT_subformula_imp_act: "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<^bold>\<A>\<psi>\<guillemotright>"
-| AOT_subformula_by_def: "AOT_model_equiv_def \<phi> \<psi> \<Longrightarrow> AOT_subformula \<chi> \<psi> \<Longrightarrow> AOT_subformula \<chi> \<phi>"
+class AOT_subst =
+  fixes AOT_subst :: "('a \<Rightarrow> \<o>) \<Rightarrow> bool"
+    and AOT_subst_cond :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assumes AOT_subst: "AOT_subst \<phi> \<Longrightarrow> AOT_subst_cond \<psi> \<chi> \<Longrightarrow> [v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright> \<equiv> \<guillemotleft>\<phi> \<chi>\<guillemotright>]"
 
-inductive AOT_subformula_subst where
-  AOT_subformula_subst_id: "AOT_subformula_subst (\<lambda>\<phi>. \<phi>)"
-| AOT_subformula_subst_const: "AOT_subformula_subst (\<lambda>\<phi>. \<psi>)"
-| AOT_subformula_subst_not: "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi>. \<guillemotleft>\<not>\<Theta>{\<phi>}\<guillemotright>)"
-| AOT_subformula_subst_imp: "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst \<Xi> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi>. \<guillemotleft>\<Theta>{\<phi>} \<rightarrow> \<Xi>{\<phi>}\<guillemotright>)"
-| AOT_subformula_subst_lambda0: "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi>. (AOT_lambda0 (\<Theta> \<phi>)))"
-| AOT_subformula_subst_act: "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi>. \<guillemotleft>\<^bold>\<A>\<Theta>{\<phi>}\<guillemotright>)"
-| AOT_subformula_subst_box: "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi>. \<guillemotleft>\<box>\<Theta>{\<phi>}\<guillemotright>)"
-| AOT_subformula_subst_by_def: "(\<And> \<psi> . AOT_model_equiv_def (\<Theta> \<psi>) (\<Xi> \<psi>)) \<Longrightarrow> AOT_subformula_subst \<Xi> \<Longrightarrow> AOT_subformula_subst \<Theta>"
+instantiation \<o> :: AOT_subst
+begin
 
-lemma "AOT_subformula_subst (\<lambda> \<phi> .\<guillemotleft>\<not>(\<phi> \<rightarrow> \<psi>)\<guillemotright>)"
-  using AOT_subformula_subst.intros by blast
+inductive AOT_subst_\<o> where
+  AOT_subst_\<o>_id: "AOT_subst_\<o> (\<lambda>\<phi>. \<phi>)"
+| AOT_subst_\<o>_const: "AOT_subst_\<o> (\<lambda>\<phi>. \<psi>)"
+| AOT_subst_\<o>_not: "AOT_subst_\<o> \<Theta> \<Longrightarrow> AOT_subst_\<o> (\<lambda> \<phi>. \<guillemotleft>\<not>\<Theta>{\<phi>}\<guillemotright>)"
+| AOT_subst_\<o>_imp: "AOT_subst_\<o> \<Theta> \<Longrightarrow> AOT_subst_\<o> \<Xi> \<Longrightarrow> AOT_subst_\<o> (\<lambda> \<phi>. \<guillemotleft>\<Theta>{\<phi>} \<rightarrow> \<Xi>{\<phi>}\<guillemotright>)"
+| AOT_subst_\<o>_lambda0: "AOT_subst_\<o> \<Theta> \<Longrightarrow> AOT_subst_\<o> (\<lambda> \<phi>. (AOT_lambda0 (\<Theta> \<phi>)))"
+| AOT_subst_\<o>_act: "AOT_subst_\<o> \<Theta> \<Longrightarrow> AOT_subst_\<o> (\<lambda> \<phi>. \<guillemotleft>\<^bold>\<A>\<Theta>{\<phi>}\<guillemotright>)"
+| AOT_subst_\<o>_box: "AOT_subst_\<o> \<Theta> \<Longrightarrow> AOT_subst_\<o> (\<lambda> \<phi>. \<guillemotleft>\<box>\<Theta>{\<phi>}\<guillemotright>)"
+| AOT_subst_\<o>_by_def: "(\<And> \<psi> . AOT_model_equiv_def (\<Theta> \<psi>) (\<Xi> \<psi>)) \<Longrightarrow> AOT_subst_\<o> \<Xi> \<Longrightarrow> AOT_subst_\<o> \<Theta>"
 
-lemma "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst \<Xi> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi> .\<guillemotleft>\<Theta>{\<phi>} & \<Xi>{\<phi>}\<guillemotright>)"
-  apply (rule AOT_subformula_subst_by_def[OF AOT_conj])
-  using AOT_subformula_subst.intros by fastforce
+definition AOT_subst_cond_\<o> where "AOT_subst_cond_\<o> \<equiv> \<lambda> \<psi> \<chi> . \<forall> v . [v \<Turnstile> \<psi> \<equiv> \<chi>]"
 
-lemma "AOT_subformula_subst \<Theta> \<Longrightarrow> AOT_subformula_subst \<Xi> \<Longrightarrow> AOT_subformula_subst (\<lambda> \<phi> .\<guillemotleft>\<Theta>{\<phi>} \<or> \<Xi>{\<phi>}\<guillemotright>)"
-  apply (rule AOT_subformula_subst_by_def[OF AOT_disj])
-  using AOT_subformula_subst.intros by fastforce
+instance
+proof
+  fix \<psi> \<chi> :: \<o> and \<phi> :: \<open>\<o> \<Rightarrow> \<o>\<close>
+  assume cond: \<open>AOT_subst_cond \<psi> \<chi>\<close>
+  assume \<open>AOT_subst \<phi>\<close>
+  moreover AOT_have \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> using cond unfolding AOT_subst_cond_\<o>_def by blast
+  ultimately AOT_show \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>{\<psi>} \<equiv> \<phi>{\<chi>}\<close>
+  proof (induct arbitrary: \<psi> \<chi>)
+    case AOT_subst_\<o>_id
+    thus ?case using intro_elim_3_b oth_class_taut_4_b rule_sub_lem_1_a by blast
+  next
+    case (AOT_subst_\<o>_const \<psi>)
+    thus ?case by (simp add: oth_class_taut_3_a)
+  next
+    case (AOT_subst_\<o>_not \<Theta>)
+    thus ?case by (simp add: RN rule_sub_lem_1_a)
+  next
+    case (AOT_subst_\<o>_imp \<Theta> \<Xi>)
+    thus ?case by (meson RN intro_elim_3_e rule_sub_lem_1_b rule_sub_lem_1_c)
+  next
+    case (AOT_subst_\<o>_lambda0 \<Theta>)
+    thus ?case by (simp add: RN rule_sub_lem_1_e)
+  next
+    case (AOT_subst_\<o>_act \<Theta>)
+    thus ?case by (simp add: RN rule_sub_lem_1_f)
+  next
+    case (AOT_subst_\<o>_box \<Theta>)
+    thus ?case by (simp add: RN rule_sub_lem_1_g)
+  next
+    case (AOT_subst_\<o>_by_def \<Theta> \<Xi>)
+    AOT_modally_strict {
+      AOT_have \<open>\<Xi>{\<psi>} \<equiv> \<Xi>{\<chi>}\<close> using AOT_subst_\<o>_by_def by simp
+      AOT_thus \<open>\<Theta>{\<psi>} \<equiv> \<Theta>{\<chi>}\<close>
+        using "\<equiv>Df"[OF AOT_subst_\<o>_by_def(1), of _ \<psi>] "\<equiv>Df"[OF AOT_subst_\<o>_by_def(1), of _ \<chi>]
+        by (metis intro_elim_3_f oth_class_taut_3_a)
+    }
+  qed
+qed
+end
 
-syntax "_AOT_subformula" :: "\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" ("SUBFORMULA'(_,_')")
-syntax "_AOT_subformula_subst" :: "any \<Rightarrow> AOT_prop" ("SUBFORMULA'_SUBST'(_')")
+instantiation "fun" :: (AOT_Term_id_2, AOT_subst) AOT_subst
+begin
 
-translations
-  "_AOT_subformula \<phi> \<psi>" => "CONST Trueprop (CONST AOT_subformula \<phi> \<psi>)"
-  "_AOT_subformula_subst \<phi>" => "CONST Trueprop (CONST AOT_subformula_subst \<phi>)"
+definition AOT_subst_cond_fun :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool" where
+  "AOT_subst_cond_fun \<equiv> \<lambda> \<phi> \<psi> . \<forall> \<alpha> . AOT_subst_cond (\<phi> (AOT_term_of_var \<alpha>)) (\<psi> (AOT_term_of_var \<alpha>))"
 
-AOT_syntax_print_translations
-  "_AOT_subformula \<phi> \<psi>" <= "CONST AOT_subformula \<phi> \<psi>"
-  "_AOT_subformula_subst \<phi>" <= "CONST AOT_subformula_subst \<phi>"
+inductive AOT_subst_fun :: "(('a \<Rightarrow> 'b) \<Rightarrow> \<o>) \<Rightarrow> bool" where
+  AOT_subst_fun_const: "AOT_subst_fun (\<lambda>\<phi>. \<psi>)"
+| AOT_subst_fun_id: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<Psi> (\<phi> (AOT_term_of_var x)))"
+| AOT_subst_fun_all: "AOT_subst \<Psi> \<Longrightarrow> (\<And> \<alpha> . AOT_subst (\<Theta> (AOT_term_of_var \<alpha>))) \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<Psi> \<guillemotleft>\<forall>\<alpha> \<guillemotleft>\<Theta> \<alpha> (\<phi> \<alpha>)\<guillemotright>\<guillemotright>)"
+| AOT_subst_fun_not: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<guillemotleft>\<not>\<guillemotleft>\<Psi> \<phi>\<guillemotright>\<guillemotright>)"
+| AOT_subst_fun_imp: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst \<Theta> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<guillemotleft>\<guillemotleft>\<Psi> \<phi>\<guillemotright> \<rightarrow> \<guillemotleft>\<Theta> \<phi>\<guillemotright>\<guillemotright>)"
+| AOT_subst_fun_lambda0: "AOT_subst \<Theta> \<Longrightarrow> AOT_subst_fun (\<lambda> \<phi>. (AOT_lambda0 (\<Theta> \<phi>)))"
+| AOT_subst_fun_act: "AOT_subst \<Theta> \<Longrightarrow> AOT_subst_fun (\<lambda> \<phi>. \<guillemotleft>\<^bold>\<A>\<guillemotleft>\<Theta> \<phi>\<guillemotright>\<guillemotright>)"
+| AOT_subst_fun_box: "AOT_subst \<Theta> \<Longrightarrow> AOT_subst_fun (\<lambda> \<phi>. \<guillemotleft>\<box>\<guillemotleft>\<Theta> \<phi>\<guillemotright>\<guillemotright>)"
+| AOT_subst_fun_def: "(\<And> \<phi> . AOT_model_equiv_def (\<Theta> \<phi>) (\<Psi> \<phi>)) \<Longrightarrow> AOT_subst_fun \<Psi> \<Longrightarrow> AOT_subst_fun \<Theta>"
 
-AOT_theorem rule_sub_lem_2_a: assumes "SUBFORMULA_SUBST(\<phi>)" and "\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)" shows "\<^bold>\<turnstile>\<^sub>\<box> \<phi>{\<psi>} \<equiv> \<phi>{\<chi>}"
-  using assms including AOT_syntax
-proof (induct arbitrary: \<psi> \<chi>)
-  case AOT_subformula_subst_id
-  then show ?case
-    using intro_elim_3_b oth_class_taut_4_b rule_sub_lem_1_a by blast
-next
-  case (AOT_subformula_subst_const \<psi>) 
-  then show ?case by (simp add: oth_class_taut_3_a)
-next
-  case (AOT_subformula_subst_not \<Theta>)
-  then show ?case
-    by (simp add: RN rule_sub_lem_1_a)
-next
-  case (AOT_subformula_subst_imp \<Theta> \<Xi>)
-  then show ?case
-    by (meson RN intro_elim_3_e rule_sub_lem_1_b rule_sub_lem_1_c)
-next
-  case (AOT_subformula_subst_lambda0 \<Theta>)
+instance proof
+  fix \<psi> \<chi> :: "'a \<Rightarrow> 'b" and \<phi> :: \<open>('a \<Rightarrow> 'b) \<Rightarrow> \<o>\<close>
+  assume \<open>AOT_subst \<phi>\<close>
+  moreover assume cond: \<open>AOT_subst_cond \<psi> \<chi>\<close>
+  ultimately AOT_show \<open>\<^bold>\<turnstile>\<^sub>\<box> \<guillemotleft>\<phi> \<psi>\<guillemotright> \<equiv> \<guillemotleft>\<phi> \<chi>\<guillemotright>\<close>
+  proof(induct)
+    case (AOT_subst_fun_const \<psi>)
+    then show ?case by (simp add: oth_class_taut_3_a)
+  next
+  case (AOT_subst_fun_id \<Psi> x)
+  then show ?case by (simp add: AOT_subst AOT_subst_cond_fun_def) 
+  next
+  case (AOT_subst_fun_all \<Psi> \<Theta>)
+    AOT_have \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<Theta>{\<alpha>, \<psi>{\<alpha>}} \<equiv> \<Theta>{\<alpha>, \<chi>{\<alpha>}})\<close> for \<alpha>
+      by (metis AOT_subst RN AOT_subst_cond_fun_def AOT_subst_fun_all.hyps(2) cond)
+    thus ?case using AOT_subst[OF AOT_subst_fun_all(1)]
+      by (simp add: RN rule_sub_lem_1_d AOT_subst_cond_fun_def AOT_subst_cond_\<o>_def)
+  next
+  case (AOT_subst_fun_not \<Psi>)
+  then show ?case by (simp add: RN rule_sub_lem_1_a)
+  next
+  case (AOT_subst_fun_imp \<Psi> \<Theta>)
+  then show ?case 
+    unfolding AOT_subst_cond_fun_def AOT_subst_cond_\<o>_def
+    by (meson intro_elim_3_e oth_class_taut_4_c oth_class_taut_4_d vdash_properties_6)
+  next
+  case (AOT_subst_fun_lambda0 \<Theta>)
   then show ?case by (simp add: RN rule_sub_lem_1_e)
-next
-  case (AOT_subformula_subst_act \<Theta>)
+  next
+  case (AOT_subst_fun_act \<Theta>)
   then show ?case by (simp add: RN rule_sub_lem_1_f)
-next
-  case (AOT_subformula_subst_box \<Theta>)
-  then show ?case by (simp add: RM_3)
-next
-  case (AOT_subformula_subst_by_def \<Theta> \<Xi>)
-  AOT_modally_strict {
-    AOT_have \<open>\<Xi>{\<psi>} \<equiv> \<Xi>{\<chi>}\<close> using AOT_subformula_subst_by_def by simp
-    AOT_thus \<open>\<Theta>{\<psi>} \<equiv> \<Theta>{\<chi>}\<close>
-      using "\<equiv>Df"[OF AOT_subformula_subst_by_def(1), of _ \<psi>] "\<equiv>Df"[OF AOT_subformula_subst_by_def(1), of _ \<chi>]
-       by (metis intro_elim_3_f oth_class_taut_3_a)
-  }
+  next
+  case (AOT_subst_fun_box \<Theta>)
+  then show ?case by (simp add: RN rule_sub_lem_1_g)
+  next
+  case (AOT_subst_fun_def \<Theta> \<Psi>)
+  then show ?case
+    by (meson df_rules_formulas_1 df_rules_formulas_2 intro_elim_2 intro_elim_3_e)
+  qed
 qed
+end
 
-AOT_theorem rule_sub_lem_2_b: assumes "for arbitrary \<alpha>: SUBFORMULA_SUBST(\<phi> \<alpha>)"
-  and "for arbitrary \<alpha>: \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})" shows "\<^bold>\<turnstile>\<^sub>\<box> \<forall>\<alpha> \<phi>{\<alpha>,\<psi>{\<alpha>}} \<equiv> \<forall>\<alpha> \<phi>{\<alpha>,\<chi>{\<alpha>}}"
-proof -
-  AOT_modally_strict {
-    AOT_show \<open>\<forall>\<alpha> \<phi>{\<alpha>,\<psi>{\<alpha>}} \<equiv> \<forall>\<alpha> \<phi>{\<alpha>,\<chi>{\<alpha>}}\<close>
-      using rule_sub_lem_2_a[OF assms(1), OF assms(2), THEN RN]
-      by (simp add: rule_sub_lem_1_d)
-  }
-qed
+method AOT_subst_intro_helper = ((rule AOT_subst_fun.intros AOT_subst_\<o>.intros
+    | fact AOT | (simp only: AOT_subst_cond_\<o>_def AOT_subst_cond_fun_def; ((rule allI)+)?)))
 
-AOT_theorem assumes "for arbitrary \<alpha>:  \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})"
-  shows "\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<not>\<psi>{\<alpha>} \<rightarrow> p) \<equiv> \<forall>\<alpha> (\<chi>{\<alpha>} \<rightarrow> \<not>\<chi>{\<alpha>} \<rightarrow> p)"
-  apply (rule rule_sub_lem_2_b[rotated, of \<psi> \<chi>])
-  using assms apply simp
-  by (simp add: AOT_subformula_subst.intros)
+method AOT_subst for \<psi>::"'a::AOT_subst" and \<chi>::"'a::AOT_subst" =
+    (match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> and v \<Rightarrow>
+      \<open>match (\<phi>) in "\<lambda>a . ?p" \<Rightarrow> \<open>fail\<close> \<bar> "\<lambda>a . a" \<Rightarrow> \<open>fail\<close>
+       \<bar> _ \<Rightarrow> \<open>rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(2)]
+       ; (AOT_subst_intro_helper+)?\<close>\<close>)
 
-lemma "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<chi> & \<psi>\<guillemotright>"
-  apply (rule AOT_subformula_by_def)
-  using AOT_conj apply blast
-  by(auto intro: AOT_subformula.intros)
-lemma "AOT_subformula \<phi> \<psi> \<Longrightarrow> AOT_subformula \<phi> \<guillemotleft>\<psi> & \<chi>\<guillemotright>"
-  apply (rule AOT_subformula_by_def)
-  using AOT_conj apply blast
-  by(auto intro: AOT_subformula.intros)
+method AOT_subst_rev for \<chi>::"'a::AOT_subst" and \<psi>::"'a::AOT_subst" =
+    (match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> and v \<Rightarrow>
+      \<open>match (\<phi>) in "\<lambda>a . ?p" \<Rightarrow> \<open>fail\<close> \<bar> "\<lambda>a . a" \<Rightarrow> \<open>fail\<close>
+       \<bar> _ \<Rightarrow> \<open>rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<chi> and \<chi>=\<psi>, THEN "\<equiv>E"(1)]
+       ; (AOT_subst_intro_helper+)?\<close>\<close>)
 
+method AOT_subst_manual for \<phi>::"'a::AOT_subst \<Rightarrow> \<o>" =
+    (rule AOT_subst[where \<phi>=\<phi>, THEN "\<equiv>E"(2)]; (AOT_subst_intro_helper+)?)
 
+method AOT_subst_manual_rev for \<phi>::"'a::AOT_subst \<Rightarrow> \<o>" =
+    (rule AOT_subst[where \<phi>=\<phi>, THEN "\<equiv>E"(1)]; (AOT_subst_intro_helper+)?)
+
+method AOT_subst_using uses subst =
+    (match subst in "[?w \<Turnstile> \<psi> \<equiv> \<chi>]" for \<psi> \<chi> \<Rightarrow> \<open>
+       match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> v \<Rightarrow> \<open>
+         rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(2)]
+         ; ((AOT_subst_intro_helper | (fact subst; fail))+)?\<close>\<close>)
+
+method AOT_subst_using_rev uses subst =
+    (match subst in "[?w \<Turnstile> \<psi> \<equiv> \<chi>]" for \<psi> \<chi> \<Rightarrow> \<open>
+      match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<chi>\<guillemotright>]" for \<phi> v \<Rightarrow> \<open>
+        rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(1)]
+        ; ((AOT_subst_intro_helper | (fact subst; fail))+)?\<close>\<close>)
+
+AOT_theorem rule_sub_remark_1_a: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close> and \<open>\<not>A!x\<close> shows \<open>\<not>\<not>\<diamond>E!x\<close>
+  by (AOT_subst_rev "\<guillemotleft>A!x\<guillemotright>" "\<guillemotleft>\<not>\<diamond>E!x\<guillemotright>") (auto simp: assms)
+
+AOT_theorem rule_sub_remark_1_b: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close> and  \<open>\<not>\<not>\<diamond>E!x\<close> shows \<open>\<not>A!x\<close>
+  by (AOT_subst "\<guillemotleft>A!x\<guillemotright>" "\<guillemotleft>\<not>\<diamond>E!x\<guillemotright>") (auto simp: assms)
+
+AOT_theorem rule_sub_remark_2_a:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> [R]xy \<equiv> ([R]xy & ([Q]a \<or> \<not>[Q]a))\<close> and \<open>p \<rightarrow> [R]xy\<close> shows \<open>p \<rightarrow> [R]xy & ([Q]a \<or> \<not>[Q]a)\<close>
+  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_2_b:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> [R]xy \<equiv> ([R]xy & ([Q]a \<or> \<not>[Q]a))\<close> and \<open>p \<rightarrow> [R]xy & ([Q]a \<or> \<not>[Q]a)\<close> shows \<open>p \<rightarrow> [R]xy\<close>
+  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+
+(* TODO: unfortunate typing *)
+AOT_theorem rule_sub_remark_3_a:
+  assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!\<guillemotleft>(AOT_term_of_var x)::('a::AOT_\<kappa>)\<guillemotright>\<close>
+      and \<open>\<exists>x A!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+    shows \<open>\<exists>x \<not>\<diamond>E!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+  by (AOT_subst_rev "\<lambda>\<kappa>::'a::AOT_\<kappa>. \<guillemotleft>A!\<kappa>\<guillemotright>" "\<lambda>\<kappa>. \<guillemotleft>\<not>\<diamond>E!\<kappa>\<guillemotright>") (auto simp: assms)
+
+(* TODO: unfortunate typing *)
+AOT_theorem rule_sub_remark_3_b:
+  assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!\<guillemotleft>(AOT_term_of_var x)::('a::AOT_\<kappa>)\<guillemotright>\<close>
+      and \<open>\<exists>x \<not>\<diamond>E!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+    shows \<open>\<exists>x A!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+  by (AOT_subst "\<lambda>\<kappa>::'a::AOT_\<kappa>. \<guillemotleft>A!\<kappa>\<guillemotright>" "\<lambda>\<kappa>. \<guillemotleft>\<not>\<diamond>E!\<kappa>\<guillemotright>") (auto simp: assms)
+
+AOT_theorem rule_sub_remark_4_a:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<not>[P]x \<equiv> [P]x\<close> and \<open>\<^bold>\<A>\<not>\<not>[P]x\<close> shows \<open>\<^bold>\<A>[P]x\<close>
+  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_4_b:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<not>[P]x \<equiv> [P]x\<close> and \<open>\<^bold>\<A>[P]x\<close> shows \<open>\<^bold>\<A>\<not>\<not>[P]x\<close>
+  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_5_a:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> and \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> shows \<open>\<box>(\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close>
+  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_5_b:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> and \<open>\<box>(\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> 
+  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_6_a:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<chi>)\<close> 
+  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_6_b:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<chi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close>
+  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_7_a:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<not>\<not>\<phi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<phi>)\<close> shows \<open>\<box>(\<not>\<not>\<phi> \<rightarrow> \<phi>)\<close> 
+  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+
+AOT_theorem rule_sub_remark_7_b:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<not>\<not>\<phi>\<close> and \<open>\<box>(\<not>\<not>\<phi> \<rightarrow> \<phi>)\<close> shows  \<open>\<box>(\<phi> \<rightarrow> \<phi>)\<close>
+  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
 
 end

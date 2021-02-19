@@ -175,7 +175,7 @@ fun fetchTermConstraint ctxt name unary =
 AOT_register_variable_names
   AOT_Category_Individual: x y z \<nu> \<mu> a b c d
   AOT_Category_Proposition: p q r s
-  AOT_Category_Relation: F G H R
+  AOT_Category_Relation: F G H P Q R
   AOT_Category_Term: \<alpha> \<beta> \<gamma> \<delta>
 
 AOT_register_metavariable_names
@@ -312,6 +312,7 @@ syntax "_AOT_denotes" :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<d
        "" :: \<open>\<Pi>0 \<Rightarrow> \<phi>\<close> ("_")
        "" :: \<open>\<Pi>0 \<Rightarrow> \<tau>\<close> ("_")
        "_AOT_concrete" :: \<open>\<Pi>\<close> (\<open>E!\<close>)
+syntax "" :: \<open>any \<Rightarrow> exe_arg\<close> ("\<guillemotleft>_\<guillemotright>")
 
 translations
   "_AOT_denotes \<tau>" => "CONST AOT_denotes \<tau>"
