@@ -376,6 +376,8 @@ AOT_theorem intro_elim_3_f: assumes \<open>\<phi> \<equiv> \<psi>\<close> and \<
   by (metis "\<equiv>I" "\<rightarrow>I" intro_elim_3_a intro_elim_3_b assms)
 lemmas "\<equiv>E" = intro_elim_3_a intro_elim_3_b intro_elim_3_c intro_elim_3_d intro_elim_3_e intro_elim_3_f
 
+declare oth_class_taut_2_e[THEN "\<equiv>E"(1), sym]
+
 AOT_theorem rule_eq_df_1: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<equiv> \<psi>\<close>
   by (simp add: "\<equiv>I" df_rules_formulas_1 df_rules_formulas_2 assms)
 lemmas "\<equiv>Df" = rule_eq_df_1
@@ -2796,7 +2798,236 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close> using "\<rightarrow>E" by blast
 qed
 
-(* Continue at sc-eq-fur (172) page 334, pdf page 179*)
+AOT_theorem sc_eq_fur_1: \<open>\<diamond>\<^bold>\<A>\<phi> \<equiv> \<box>\<^bold>\<A>\<phi>\<close>
+  using Act_Basic_6 Act_Sub_4 intro_elim_3_f by blast
+
+AOT_theorem sc_eq_fur_2: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
+  by (metis "B\<diamond>" Act_Sub_3 KBasic_13 T_S5_fund_1 ded_thm_cor_1 deduction_theorem intro_elim_2 nec_imp_act)
+
+AOT_theorem sc_eq_fur_3: \<open>\<box>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x}) \<rightarrow> (\<exists>!x \<phi>{x} \<rightarrow> \<^bold>\<iota>x \<phi>{x}\<down>)\<close>
+proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close>
+  AOT_hence A: \<open>\<forall>x \<box>(\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close> using CBF "\<rightarrow>E" by blast
+  AOT_assume \<open>\<exists>!x \<phi>{x}\<close>
+  then AOT_obtain a where a_def: \<open>\<phi>{a} & \<forall>y (\<phi>{y} \<rightarrow> y = a)\<close>
+    using "\<exists>E"[rotated 1, OF uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"]] by blast
+  moreover AOT_have \<open>\<box>\<phi>{a}\<close> using calculation A "\<forall>E"(2) qml_2[axiom_inst] "\<rightarrow>E" "&E"(1) by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi>{a}\<close> using nec_imp_act vdash_properties_6 by blast
+  moreover AOT_have \<open>\<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = a)\<close>
+  proof (rule "\<forall>I"; rule "\<rightarrow>I")
+    fix b
+    AOT_assume \<open>\<^bold>\<A>\<phi>{b}\<close>
+    AOT_hence \<open>\<diamond>\<phi>{b}\<close>
+      using Act_Sub_3 vdash_properties_6 by blast
+    moreover {
+      AOT_have \<open>\<box>(\<phi>{b} \<rightarrow> \<box>\<phi>{b})\<close>
+        using A "\<forall>E"(2) by blast
+      AOT_hence \<open>\<diamond>\<phi>{b} \<rightarrow> \<box>\<phi>{b}\<close>
+        using KBasic_13 T_S5_fund_2 ded_thm_cor_1 vdash_properties_6 by blast
+    }
+    ultimately AOT_have \<open>\<box>\<phi>{b}\<close> using "\<rightarrow>E" by blast
+    AOT_hence \<open>\<phi>{b}\<close> using qml_2[axiom_inst] "\<rightarrow>E" by blast
+    AOT_thus \<open>b = a\<close>
+      using a_def[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
+  qed
+  ultimately AOT_have \<open>\<^bold>\<A>\<phi>{a} & \<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = a)\<close>
+    using "&I" by blast
+  AOT_hence \<open>\<exists>x (\<^bold>\<A>\<phi>{x} & \<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = x))\<close> using "\<exists>I" by fast
+  AOT_hence \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close> using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
+  AOT_thus \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
+    using actual_desc_1[THEN "\<equiv>E"(2)] by blast
+qed
+
+AOT_theorem sc_eq_fur_4: \<open>\<box>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x}) \<rightarrow> (x = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x)))\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close>
+  AOT_hence \<open>\<forall>x \<box>(\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close> using CBF "\<rightarrow>E" by blast
+  AOT_hence A: \<open>\<^bold>\<A>\<phi>{\<alpha>} \<equiv> \<phi>{\<alpha>}\<close> for \<alpha> using sc_eq_fur_2 "\<forall>E" "\<rightarrow>E" by fast
+  AOT_show \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close>
+  proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+    AOT_assume \<open>x = \<^bold>\<iota>x \<phi>{x}\<close>
+    AOT_hence B: \<open>\<^bold>\<A>\<phi>{x} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = x)\<close>
+      using nec_hintikka_scheme[THEN "\<equiv>E"(1)] by blast
+    AOT_show \<open>\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x)\<close>
+    proof (rule "&I"; (rule "\<forall>I"; rule "\<rightarrow>I")?)
+      AOT_show \<open>\<phi>{x}\<close> using A B[THEN "&E"(1)] "\<equiv>E"(1) by blast
+    next
+      AOT_show \<open>z = x\<close> if \<open>\<phi>{z}\<close> for z
+        using that B[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" A[THEN "\<equiv>E"(2)] by blast
+    qed
+  next
+    AOT_assume B: \<open>\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x)\<close>
+    AOT_have \<open>\<^bold>\<A>\<phi>{x} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = x)\<close>
+    proof(rule "&I"; (rule "\<forall>I"; rule "\<rightarrow>I")?)
+      AOT_show \<open>\<^bold>\<A>\<phi>{x}\<close> using B[THEN "&E"(1)] A[THEN "\<equiv>E"(2)] by blast
+    next
+      AOT_show \<open>b = x\<close> if \<open>\<^bold>\<A>\<phi>{b}\<close> for b
+        using that A[THEN "\<equiv>E"(1)] B[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+    qed
+    AOT_thus \<open>x = \<^bold>\<iota>x \<phi>{x}\<close>
+      using nec_hintikka_scheme[THEN "\<equiv>E"(2)] by blast
+  qed
+qed
+
+AOT_theorem id_act_1: \<open>\<alpha> = \<beta> \<equiv> \<^bold>\<A>\<alpha> = \<beta>\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 id_nec2_1 id_nec_2 intro_elim_2 nec_imp_act)
+
+AOT_theorem id_act_2: \<open>\<alpha> \<noteq> \<beta> \<equiv> \<^bold>\<A>\<alpha> \<noteq> \<beta>\<close>
+proof (AOT_subst "\<guillemotleft>\<alpha> \<noteq> \<beta>\<guillemotright>" "\<guillemotleft>\<not>(\<alpha> = \<beta>)\<guillemotright>"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>\<not>\<alpha> = \<beta>\<close>
+  AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close> using id_act_1 intro_elim_3_c by blast
+  AOT_thus \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
+    using "\<not>\<not>E" Act_Sub_1 intro_elim_3_c by blast
+next
+  AOT_assume \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
+  AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close>
+    using "\<not>\<not>I" Act_Sub_1 intro_elim_3_d by blast
+  AOT_thus \<open>\<not>\<alpha> = \<beta>\<close>
+    using id_act_1 intro_elim_3_d by blast
+qed
+
+AOT_theorem A_Exists_1: \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
+proof -
+  AOT_have \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<exists>\<alpha>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    by (AOT_subst_using subst: uniqueness_2[THEN "\<equiv>Df"])
+  also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    by (simp add: Act_Basic_10)
+  also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>")
+    using logic_actual_nec_3 vdash_properties_1_b by blast
+  also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<^bold>\<A>\<beta> = \<alpha>)\<close>
+    by (AOT_subst_rev "\<lambda> \<tau> \<tau>' . \<guillemotleft>\<^bold>\<A>(\<phi>{\<tau>'} \<equiv> \<tau>' = \<tau>)\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<^bold>\<A>\<phi>{\<tau>'} \<equiv> \<^bold>\<A>\<tau>' = \<tau>\<guillemotright>")
+  also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+    apply (AOT_subst "\<lambda> \<tau> \<tau>' :: 'a . \<guillemotleft>\<^bold>\<A>\<tau>' = \<tau>\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<tau>' = \<tau>\<guillemotright>")
+    using id_act_1 intro_elim_3_f oth_class_taut_3_a by blast
+  also AOT_have \<open>... \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
+    using uniqueness_2[THEN "\<equiv>Df"] oth_class_taut_2_e[THEN "\<equiv>E"(1)] by fast
+  finally show ?thesis .
+qed
+
+AOT_theorem A_Exists_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<^bold>\<A>\<exists>!x \<phi>{x}\<close>
+  by (AOT_subst_using subst: A_Exists_1)
+
+AOT_theorem id_act_desc_1: \<open>\<^bold>\<iota>x (x = y)\<down>\<close>
+proof(rule existence_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
+  AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<^bold>\<iota>x (x = y)\<close>
+  proof (rule russell_axiom_exe_1.nec_russell_axiom[THEN "\<equiv>E"(2)]; rule "\<exists>I"; (rule "&I")+)
+    AOT_show \<open>\<^bold>\<A>y = y\<close> by (simp add: RA_2 id_eq_1)
+  next
+    AOT_show \<open>\<forall>z (\<^bold>\<A>z = y \<rightarrow> z = y)\<close>
+      apply (rule "\<forall>I")
+      using id_act_1[THEN "\<equiv>E"(2)] "\<rightarrow>I" by blast
+  next
+    AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]y\<close>
+    proof (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E", THEN "\<equiv>E"(2)])
+      AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<down>\<close>
+        by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+    next
+      AOT_show \<open>E!y \<rightarrow> E!y\<close> 
+        by (simp add: if_p_then_p)
+    qed
+  qed
+next
+  AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<down>\<close>
+    by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+qed
+
+AOT_theorem id_act_desc_2: \<open>y = \<^bold>\<iota>x (x = y)\<close>
+  by (rule descriptions[axiom_inst, THEN "\<equiv>E"(2)]; rule "\<forall>I"; rule id_act_1[symmetric])
+
+AOT_theorem pre_en_eq_1_2: \<open>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2[F]\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
+  AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
+    using nary_encoding_2[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
+    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
+    "\<forall>I" by fast
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
+    using "\<rightarrow>E" "&I" by blast+
+  note A = this
+  AOT_hence \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2] & x\<^sub>2[\<lambda>y [F]x\<^sub>1y])\<close>
+    using KBasic_3[THEN intro_elim_3_b] "&I" by blast
+  AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2[F]\<close>
+    by (rule nary_encoding_2[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+qed
+
+AOT_theorem pre_en_eq_1_3: \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
+    using nary_encoding_3[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
+    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
+    "\<forall>I" by fast
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
+    using "\<rightarrow>E" by blast+
+  note A = this
+  AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y])\<close>
+    by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
+  AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+    by (rule nary_encoding_3[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+qed
+
+AOT_theorem pre_en_eq_1_4: \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and  \<open>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
+    using nary_encoding_4[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
+  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
+    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
+    "\<forall>I" by fast
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and \<open>\<box>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
+    using "\<rightarrow>E" by blast+
+  note A = this
+  AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4] & x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y])\<close>
+    by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
+  AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+    by (rule nary_encoding_4[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+qed
+
+AOT_theorem pre_en_eq_2_2: \<open>\<not>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
+proof (rule "\<rightarrow>I"; rule raa_cor_1)
+  AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
+  AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2[F]\<close>
+    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_hence \<open>x\<^sub>1x\<^sub>2[F]\<close>
+    by(rule S5Basic_13[THEN "\<equiv>E"(1), OF  pre_en_eq_1_2[THEN RN], THEN qml_2[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+  moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2[F]\<close>
+  ultimately AOT_show \<open>x\<^sub>1x\<^sub>2[F] & \<not>x\<^sub>1x\<^sub>2[F]\<close> by (rule "&I")
+qed
+
+AOT_theorem pre_en_eq_2_3: \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<rightarrow> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+proof (rule "\<rightarrow>I"; rule raa_cor_1)
+  AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_hence \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+    by(rule S5Basic_13[THEN "\<equiv>E"(1), OF  pre_en_eq_1_3[THEN RN], THEN qml_2[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+  moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  ultimately AOT_show \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] & \<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close> by (rule "&I")
+qed
+
+AOT_theorem pre_en_eq_2_4: \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<rightarrow> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+proof (rule "\<rightarrow>I"; rule raa_cor_1)
+  AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_hence \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+    by(rule S5Basic_13[THEN "\<equiv>E"(1), OF  pre_en_eq_1_4[THEN RN], THEN qml_2[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+  moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  ultimately AOT_show \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] & \<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close> by (rule "&I")
+qed
+
 
 
 end
