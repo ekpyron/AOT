@@ -957,4 +957,10 @@ in thy end
 bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
 (* Can be used as: "including AOT_no_atp sledgehammer" or "sledgehammer(del: AOT_no_atp) *)
 
+(* These are merely artifacts of the defined syntax. *)
+AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+
 end

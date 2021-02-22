@@ -2672,7 +2672,7 @@ proof -
   AOT_have \<open>\<forall>\<alpha> (\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<diamond>\<phi>{\<alpha>})\<close>
     by (simp add: "RM\<diamond>" cqt_orig_3 "\<forall>I")
   AOT_thus \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
-    using "\<forall>E" "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
+    using "\<forall>E"(4) "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
 qed
 
 lemmas "Buridan\<diamond>" = sign_S5_thm_2
@@ -2945,7 +2945,7 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
     using nary_encoding_2[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
-  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
+  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x and \<Pi>
     using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
     "\<forall>I" by fast
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
@@ -3209,5 +3209,317 @@ AOT_theorem oa_facts_7: \<open>O!x \<equiv> \<^bold>\<A>O!x\<close>
 AOT_theorem oa_facts_8: \<open>A!x \<equiv> \<^bold>\<A>A!x\<close>
   by (meson Act_Sub_3 ded_thm_cor_1 intro_elim_2 nec_imp_act oa_facts_2 oa_facts_4)
 
+AOT_theorem beta_C_meta: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> \<rightarrow> ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n})\<close>
+  using lambda_predicates_2[axiom_inst] by blast
+
+AOT_theorem beta_C_cor_1: \<open>(\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>)) \<rightarrow> \<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n})\<close>
+  apply (rule cqt_basic_14[where 'a='a, THEN "\<rightarrow>E"])
+  using beta_C_meta "\<forall>I" by fast
+
+AOT_theorem beta_C_cor_2: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down> \<rightarrow> \<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n})\<close>
+  apply (rule "\<rightarrow>I"; rule "\<forall>I")
+  using beta_C_meta[THEN "\<rightarrow>E"] by fast
+
+(* TODO: syntax + double-check if this is really a faithful representation *)
+theorem beta_C_cor_3: assumes \<open>\<And>\<nu>\<^sub>1\<nu>\<^sub>n. AOT_instance_of_cqt_2 (\<phi> (AOT_term_of_var \<nu>\<^sub>1\<nu>\<^sub>n))\<close>
+  shows \<open>[v \<Turnstile> \<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<mu>\<^sub>1...\<mu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<nu>\<^sub>1...\<nu>\<^sub>n})]\<close>
+  using cqt_2_lambda[axiom_inst, OF assms] beta_C_cor_1[THEN "\<rightarrow>E"] "\<forall>I" by fast
+
+AOT_theorem betaC_1_a: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<^bold>\<turnstile>\<^sub>\<box> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
+proof -
+  AOT_modally_strict {
+    AOT_assume \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
+    moreover AOT_have \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>\<close> and \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>\<close>
+      using calculation cqt_5a[axiom_inst, THEN "\<rightarrow>E"] "&E" by blast+
+    ultimately AOT_show \<open>\<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
+      using beta_C_cor_2[THEN "\<rightarrow>E", THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] by blast
+  }
+qed
+
+AOT_theorem betaC_1_b: \<open>\<not>\<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n} \<^bold>\<turnstile>\<^sub>\<box> \<not>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
+  using betaC_1_a raa_cor_3 by blast
+
+lemmas "\<beta>\<rightarrow>C" = betaC_1_a betaC_1_b
+
+AOT_theorem betaC_2_a: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>, \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>, \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n} \<^bold>\<turnstile>\<^sub>\<box> [\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
+proof -
+  AOT_modally_strict {
+    AOT_assume 1: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>\<close> and 2: \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>\<close> and 3: \<open>\<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
+    AOT_hence \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
+      using beta_C_cor_2[THEN "\<rightarrow>E", OF 1, THEN "\<forall>E"(1), THEN "\<equiv>E"(2)] by blast
+  }
+  AOT_thus \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>, \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>, \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n} \<^bold>\<turnstile>\<^sub>\<box> [\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
+    by blast
+qed
+
+AOT_theorem betaC_2_b: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>, \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>, \<not>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<^bold>\<turnstile>\<^sub>\<box> \<not>\<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
+  using betaC_2_a raa_cor_3 by blast
+
+lemmas "\<beta>\<leftarrow>C" = betaC_2_a betaC_2_b
+
+AOT_theorem eta_conversion_lemma1_1: \<open>\<Pi>\<down> \<rightarrow> [\<lambda>x\<^sub>1...x\<^sub>n [\<Pi>]x\<^sub>1...x\<^sub>n] = \<Pi>\<close>
+  using lambda_predicates_3[axiom_inst] "\<forall>I" "\<forall>E"(1) "\<rightarrow>I" by fast
+
+AOT_theorem eta_conversion_lemma1_2: \<open>\<Pi>\<down> \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<Pi>]\<nu>\<^sub>1...\<nu>\<^sub>n] = \<Pi>\<close>
+  using eta_conversion_lemma1_1. (* TODO: spurious in the embedding *)
+
+(* match (\<tau>) in "\<lambda>a . ?b" \<Rightarrow> \<open>match (\<tau>') in "\<lambda>a . ?b" \<Rightarrow> \<open>fail\<close>\<close> \<bar> _ \<Rightarrow> \<open> *)
+
+AOT_theorem id_sym: assumes \<open>\<tau> = \<tau>'\<close> shows \<open>\<tau>' = \<tau>\<close>
+  using "=E"[where \<phi>="\<lambda> \<tau>' . \<guillemotleft>\<tau>' = \<tau>\<guillemotright>", rotated 1, OF assms]
+        "=I"(1)[OF "t=t-proper_1"[THEN "\<rightarrow>E", OF assms]] by auto
+
+declare id_sym[sym]
+
+
+method "\<eta>C" for \<Pi> :: \<open><'a::AOT_\<kappa>s>\<close> = (match conclusion in "[v \<Turnstile> \<tau>{\<Pi>} = \<tau>'{\<Pi>}]" for v \<tau> \<tau>' \<Rightarrow> \<open>
+rule "=E"[rotated 1, OF eta_conversion_lemma1_2[THEN "\<rightarrow>E", of v "\<guillemotleft>[\<Pi>]\<guillemotright>", symmetric]]
+\<close>)
+
+AOT_theorem \<open>[\<lambda>y [\<lambda>z [P]z]y \<rightarrow> [\<lambda>u [S]u]y] = [\<lambda>y [P]y \<rightarrow> [S]y]\<close>
+  apply ("\<eta>C" "\<guillemotleft>[P]\<guillemotright>") defer
+   apply ("\<eta>C" "\<guillemotleft>[S]\<guillemotright>") defer
+  oops
+
+(* TODO: proper representation of eta_conversion_lemma2 *)
+
+AOT_theorem sub_des_lam_1: \<open>[\<lambda>z\<^sub>1...z\<^sub>n  \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}]\<down> & \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}] = [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<psi>{x}}]\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume A: \<open>[\<lambda>z\<^sub>1...z\<^sub>n  \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}]\<down> & \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
+  AOT_show \<open>[\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}] = [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<psi>{x}}]\<close>
+    using "=E"[where \<phi>="\<lambda> \<tau> . \<guillemotleft>[\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}] = [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<tau>}]\<guillemotright>",
+               OF "=I"(1)[OF A[THEN "&E"(1)]], OF A[THEN "&E"(2)]]
+    by blast
+qed
+
+AOT_theorem sub_des_lam_2: \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> \<chi>{\<^bold>\<iota>x \<phi>{x}} = \<chi>{\<^bold>\<iota>x \<psi>{x}}\<close> for \<chi> :: "'a::AOT_\<kappa> \<Rightarrow> \<o>"
+  using "=E"[where \<phi>="\<lambda> \<tau> . \<guillemotleft>\<chi>{\<^bold>\<iota>x \<phi>{x}} = \<chi>{\<tau>}\<guillemotright>", OF "=I"(1)[OF log_prop_prop_2]] "\<rightarrow>I" by blast
+
+AOT_theorem prop_equiv: \<open>F = G \<equiv> \<forall>x (x[F] \<equiv> x[G])\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>F = G\<close>
+  AOT_thus \<open>\<forall>x (x[F] \<equiv> x[G])\<close>
+    by (rule "=E"[rotated]) (fact oth_class_taut_3_a[THEN GEN])
+next
+  AOT_assume \<open>\<forall>x (x[F] \<equiv> x[G])\<close>
+  AOT_hence \<open>x[F] \<equiv> x[G]\<close> for x using "\<forall>E" by blast
+  AOT_hence \<open>\<box>(x[F] \<equiv> x[G])\<close> for x using en_eq_6_1[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<forall>x \<box>(x[F] \<equiv> x[G])\<close> by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>x (x[F] \<equiv> x[G])\<close> using BF[THEN "\<rightarrow>E"] by fast
+  AOT_thus "F = G" using p_identity_thm2_1[THEN "\<equiv>E"(2)] by blast
+qed
+
+AOT_theorem relations_1:
+  assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
+  shows \<open>\<exists>F \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
+  apply (rule_tac \<tau>="\<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<guillemotright>" in "\<exists>I"(1))
+  using cqt_2_lambda[OF assms, axiom_inst] beta_C_cor_2[THEN "\<rightarrow>E", THEN RN] by blast+
+
+AOT_theorem relations_2:
+  assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
+  shows \<open>\<exists>F \<box>\<forall>x ([F]x \<equiv> \<phi>{x})\<close>
+  using relations_1 assms by blast
+
+AOT_theorem block_paradox_1: \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
+proof(rule RAA(2))
+  let ?\<phi>="\<lambda> \<tau>::'a. \<guillemotleft>\<exists>G (\<tau>[G] & \<not>[G]\<tau>)\<guillemotright>"
+  AOT_assume A: \<open>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<down>\<close>
+  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]))\<close>
+    using a_objects[axiom_inst] by fast
+  then AOT_obtain a where \<xi>: \<open>A!a & \<forall>F (a[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>])\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_show \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
+  proof (rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I")
+    AOT_assume B: \<open>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    AOT_hence \<open>\<exists>G (a[G] & \<not>[G]a)\<close> using "\<beta>\<rightarrow>C" A by blast
+    then AOT_obtain P where \<open>a[P] & \<not>[P]a\<close> using "\<exists>E"[rotated] by blast
+    moreover AOT_have \<open>P = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close>
+      using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] calculation[THEN "&E"(1)] by blast
+    ultimately AOT_have \<open>\<not>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+      using "=E" "&E"(2) by fast
+    AOT_thus \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close> using B RAA by blast
+  next
+    AOT_assume B: \<open>\<not>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close> using "\<beta>\<leftarrow>C" cqt_2_const_var[of a, axiom_inst] A by blast
+    AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using cqt_further_4[THEN "\<rightarrow>E"] by blast
+    AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
+      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>") (simp add: C)
+    AOT_hence \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>] \<rightarrow> [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close> using "\<forall>E" A by blast
+    moreover AOT_have \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(1), OF A, THEN "\<equiv>E"(2)]
+      using "=I"(1)[OF A] by blast
+    ultimately AOT_show \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close> using B "\<rightarrow>E" RAA by blast
+  qed
+qed(simp)
+
+AOT_theorem block_paradox_2: \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close>
+proof(rule RAA(2))
+  AOT_assume \<open>\<exists>F \<forall>x ([F]\<guillemotleft>x::'a\<guillemotright> \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close>
+  then AOT_obtain F where F_prop: \<open>\<forall>x ([F]\<guillemotleft>x::'a\<guillemotright> \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close> using "\<exists>E"[rotated] by blast
+  AOT_have \<open>\<exists>x (A!x & \<forall>G (x[G] \<equiv> G = F))\<close>
+    using a_objects[axiom_inst] by fast
+  then AOT_obtain a where \<xi>: \<open>A!a & \<forall>G (a[G] \<equiv> G = F)\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_show \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close>
+  proof (rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I")
+    AOT_assume B: \<open>[F]a\<close>
+    AOT_hence \<open>\<exists>G (a[G] & \<not>[G]a)\<close> using F_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+    then AOT_obtain P where \<open>a[P] & \<not>[P]a\<close> using "\<exists>E"[rotated] by blast
+    moreover AOT_have \<open>P = F\<close>
+      using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] calculation[THEN "&E"(1)] by blast
+    ultimately AOT_have \<open>\<not>[F]a\<close>
+      using "=E" "&E"(2) by fast
+    AOT_thus \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close> using B RAA by blast
+  next
+    AOT_assume B: \<open>\<not>[F]a\<close>
+    AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close>
+      using oth_class_taut_4_b[THEN "\<equiv>E"(1), OF F_prop[THEN "\<forall>E"(2)[of _ _ a]], THEN "\<equiv>E"(1)] by simp
+    AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using cqt_further_4[THEN "\<rightarrow>E"] by blast
+    AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
+      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>") (simp add: C)
+    AOT_hence \<open>a[F] \<rightarrow> [F]a\<close> using "\<forall>E" by blast
+    moreover AOT_have \<open>a[F]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), of F, THEN "\<equiv>E"(2)]
+      using "=I"(2) by blast
+    ultimately AOT_show \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close> using B "\<rightarrow>E" RAA by blast
+  qed
+qed(simp)
+
+AOT_theorem block_paradox_3: \<open>\<not>\<forall>y [\<lambda>z z = y]\<down>\<close>
+proof(rule RAA(2))
+  AOT_assume \<theta>: \<open>\<forall>y [\<lambda>z z = \<guillemotleft>y::'a\<guillemotright>]\<down>\<close>
+  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> \<exists>y(F = [\<lambda>z z = y] & \<not>y[F])))\<close>
+    using a_objects[axiom_inst] by force
+  then AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y (F = [\<lambda>z z = y] & \<not>\<guillemotleft>y::'a\<guillemotright>[F]))\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_have \<zeta>: \<open>a[\<lambda>z z = a] \<equiv> \<exists>y ([\<lambda>z z = a] = [\<lambda>z z = y] & \<not>y[\<lambda>z z = a])\<close>
+    using \<theta>[THEN "\<forall>E"(2)] a_prop[THEN "&E"(2), THEN "\<forall>E"(1)] by blast
+  AOT_show \<open>\<not>\<forall>y [\<lambda>z z = y]\<down>\<close>
+  proof (rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I")
+    AOT_assume A: \<open>a[\<lambda>z z = a]\<close>
+    AOT_hence \<open>\<exists>y ([\<lambda>z z = a] = [\<lambda>z z = y] & \<not>y[\<lambda>z z = a])\<close>
+      using \<zeta>[THEN "\<equiv>E"(1)] by blast
+    then AOT_obtain b where b_prop: \<open>[\<lambda>z z = a] = [\<lambda>z z = b] & \<not>b[\<lambda>z z = a]\<close>
+      using "\<exists>E"[rotated] by blast
+    moreover AOT_have \<open>a = a\<close> by (rule "=I")
+    moreover AOT_have \<open>[\<lambda>z z = a]\<down>\<close> using \<theta> "\<forall>E" by blast
+    moreover AOT_have \<open>a\<down>\<close> using cqt_2_const_var[axiom_inst] .
+    ultimately AOT_have \<open>[\<lambda>z z = a]a\<close> using "\<beta>\<leftarrow>C" by blast
+    AOT_hence \<open>[\<lambda>z z = b]a\<close> using "=E" b_prop[THEN "&E"(1)] by fast
+    AOT_hence \<open>a = b\<close> using "\<beta>\<rightarrow>C" by blast
+    AOT_hence \<open>b[\<lambda>z z = a]\<close> using A "=E" by fast
+    AOT_thus \<open>\<not>\<forall>y [\<lambda>z z = y]\<down>\<close> using b_prop[THEN "&E"(2)] RAA by blast
+  next
+    AOT_assume A: \<open>\<not>a[\<lambda>z z = a]\<close>
+    AOT_hence \<open>\<not>\<exists>y ([\<lambda>z z = a] = [\<lambda>z z = y] & \<not>y[\<lambda>z z = a])\<close>
+      using \<zeta> oth_class_taut_4_b[THEN "\<equiv>E"(1), THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<forall>y \<not>([\<lambda>z z = a] = [\<lambda>z z = y] & \<not>y[\<lambda>z z = a])\<close>
+      using cqt_further_4[THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>\<not>([\<lambda>z z = a] = [\<lambda>z z = a] & \<not>a[\<lambda>z z = a])\<close>
+      using "\<forall>E" by blast
+    AOT_hence \<open>[\<lambda>z z = a] = [\<lambda>z z = a] \<rightarrow> a[\<lambda>z z = a]\<close>
+      by (metis con_dis_i_e_1 deduction_theorem raa_cor_4)
+    AOT_hence \<open>a[\<lambda>z z = a]\<close> using "=I"(1) \<theta>[THEN "\<forall>E"(2)] "\<rightarrow>E" by blast
+    AOT_thus \<open>\<not>\<forall>y [\<lambda>z z = y]\<down>\<close> using A RAA by blast
+  qed
+qed(simp)
+
+AOT_theorem block_paradox_4: \<open>\<not>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = y)\<close>
+proof(rule RAA(2))
+  AOT_assume \<theta>: \<open>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = \<guillemotleft>y::'a\<guillemotright>)\<close>
+  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> \<exists>z (\<forall>y([F]y \<equiv> y = z) & \<not>z[F])))\<close>
+    using a_objects[axiom_inst] by force
+  then AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>z (\<forall>y([F]y \<equiv> y = \<guillemotleft>z::'a\<guillemotright>) & \<not>z[F]))\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_obtain F where F_prop: \<open>\<forall>x ([F]x \<equiv> x = a)\<close> using \<theta>[THEN "\<forall>E"(2)] "\<exists>E"[rotated] by blast
+  AOT_have \<zeta>: \<open>a[F] \<equiv> \<exists>z (\<forall>y ([F]y \<equiv> y = z) & \<not>z[F])\<close>
+    using a_prop[THEN "&E"(2), THEN "\<forall>E"(2)] by blast
+  AOT_show \<open>\<not>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = y)\<close>
+  proof (rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I")
+    AOT_assume A: \<open>a[F]\<close>
+    AOT_hence \<open>\<exists>z (\<forall>y ([F]y \<equiv> y = z) & \<not>z[F])\<close>
+      using \<zeta>[THEN "\<equiv>E"(1)] by blast
+    then AOT_obtain b where b_prop: \<open>\<forall>y ([F]y \<equiv> y = b) & \<not>b[F]\<close>
+      using "\<exists>E"[rotated] by blast
+    moreover AOT_have \<open>[F]a\<close> using F_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] "=I"(2) by blast
+    ultimately AOT_have \<open>a = b\<close> using "\<forall>E"(2) "\<equiv>E"(1) "&E" by fast
+    AOT_hence \<open>a = b\<close> using "\<beta>\<rightarrow>C" by blast
+    AOT_hence \<open>b[F]\<close> using A "=E" by fast
+    AOT_thus \<open>\<not>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = y)\<close> using b_prop[THEN "&E"(2)] RAA by blast
+  next
+    AOT_assume A: \<open>\<not>a[F]\<close>
+    AOT_hence \<open>\<not>\<exists>z (\<forall>y ([F]y \<equiv> y = z) & \<not>z[F])\<close>
+      using \<zeta> oth_class_taut_4_b[THEN "\<equiv>E"(1), THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<forall>z \<not>(\<forall>y ([F]y \<equiv> y = z) & \<not>z[F])\<close>
+      using cqt_further_4[THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>\<not>(\<forall>y ([F]y \<equiv> y = a) & \<not>a[F])\<close>
+      using "\<forall>E" by blast
+    AOT_hence \<open>\<forall>y ([F]y \<equiv> y = a) \<rightarrow> a[F]\<close>
+      by (metis con_dis_i_e_1 deduction_theorem raa_cor_4)
+    AOT_hence \<open>a[F]\<close> using F_prop "\<rightarrow>E" by blast
+    AOT_thus \<open>\<not>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = y)\<close> using A RAA by blast
+  qed
+qed(simp)
+
+(* TODO: this is wrong in PLM *)
+AOT_theorem block_paradox_5_wrong: \<open>\<forall>x\<forall>y\<exists>F ([F]xy \<equiv> x = \<guillemotleft>y::'a::AOT_\<kappa>\<guillemotright>)\<close>
+proof (rule "\<forall>I")+
+  fix x y :: "'a AOT_var"
+  AOT_show \<open>\<exists>F ([F]xy \<equiv> x = y)\<close>
+  proof (rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I")
+    AOT_assume 0: \<open>x = y\<close>
+    AOT_have A: \<open>[\<lambda>xy \<forall>p (p \<rightarrow> p)]\<down>\<close>
+      by cqt_2_lambda
+    AOT_have \<open>[\<lambda>xy \<forall>p (p \<rightarrow> p)]xy\<close>
+      apply (rule "\<beta>\<leftarrow>C"(1))
+      using A apply blast
+      using cqt_2_const_var[of "x", axiom_inst] cqt_2_const_var[of "y", axiom_inst]
+       apply (simp add: prod_denotesI con_dis_i_e_1)
+      using if_p_then_p "\<forall>I" by fast
+    AOT_hence \<open>[\<lambda>xy \<forall>p (p \<rightarrow> p)]xy \<equiv> x = y\<close>
+      using 0 "\<equiv>I" vdash_properties_9 "\<rightarrow>I" by blast
+    AOT_thus \<open>\<exists>F ([F]xy \<equiv> x = y)\<close>
+      using A "\<exists>I" by fast
+  next
+    AOT_assume 0: \<open>\<not>(x = y)\<close>
+    AOT_have A: \<open>[\<lambda>xy \<exists>p (p & \<not>p)]\<down>\<close>
+      by cqt_2_lambda
+    AOT_have 1: \<open>\<not>[\<lambda>xy \<exists>p (p & \<not>p)]xy\<close>
+      apply (rule "\<beta>\<rightarrow>C"(2)) apply simp
+      by (meson "instantiation" raa_cor_1)
+    AOT_have \<open>\<not>[\<lambda>xy \<exists>p (p & \<not>p)]xy \<equiv> \<not>(x = y)\<close>
+      using "\<equiv>I"[OF vdash_properties_9[OF 0], OF vdash_properties_9[OF 1]]
+      by blast
+    AOT_hence \<open>[\<lambda>xy \<exists>p (p & \<not>p)]xy \<equiv> (x = y)\<close>
+      using oth_class_taut_4_b[THEN "\<equiv>E"(2)] by blast
+    AOT_thus \<open>\<exists>F ([F]xy \<equiv> x = y)\<close>
+      using A "\<exists>I" by fast
+  qed
+qed
+
+(* TODO: this is supposedly the correct version *)
+AOT_theorem block_paradox_5: \<open>\<not>\<exists>F\<forall>x\<forall>y([F]xy \<equiv> y = x)\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>F\<forall>x\<forall>y([F]xy \<equiv> y = \<guillemotleft>x::'a\<guillemotright>)\<close>
+  then AOT_obtain F where F_prop: \<open>\<forall>x\<forall>y([F]xy \<equiv> y = \<guillemotleft>x::'a\<guillemotright>)\<close> using "\<exists>E"[rotated] by blast
+  {
+    fix x :: "'a AOT_var"
+    AOT_have 1: \<open>\<forall>y([F]xy \<equiv> y = x)\<close> using F_prop "\<forall>E" by blast
+    AOT_have 2: \<open>[\<lambda>z [F]xz]\<down>\<close> by cqt_2_lambda
+    moreover AOT_have \<open>\<forall>y([\<lambda>z [F]xz]y \<equiv> y = x)\<close>
+    proof(rule "\<forall>I")
+      fix y
+      AOT_have \<open>[\<lambda>z [F]xz]y \<equiv> [F]xy\<close>
+        using beta_C_meta[THEN "\<rightarrow>E"] 2 by fast
+      also AOT_have \<open>... \<equiv> y = x\<close> using 1 "\<forall>E"
+        by fast
+      finally AOT_show \<open>[\<lambda>z [F]xz]y \<equiv> y = x\<close>.
+    qed
+    ultimately AOT_have \<open>\<exists>F\<forall>y([F]y \<equiv> y = x)\<close>
+      using "\<exists>I" by fast
+  }
+  AOT_hence \<open>\<forall>x\<exists>F\<forall>y([F]y \<equiv> y = \<guillemotleft>x::'a\<guillemotright>)\<close>
+    by (rule GEN)
+  AOT_thus \<open>\<forall>x\<exists>F\<forall>y([F]y \<equiv> y = \<guillemotleft>x::'a\<guillemotright>) & \<not>\<forall>x\<exists>F\<forall>y([F]y \<equiv> y = \<guillemotleft>x::'a\<guillemotright>)\<close>
+    using "&I" block_paradox_4 by blast
+qed
 
 end

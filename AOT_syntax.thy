@@ -173,9 +173,9 @@ fun fetchTermConstraint ctxt name unary =
 
 
 AOT_register_variable_names
-  AOT_Category_Individual: x y z \<nu> \<mu> a b c d
+  AOT_Category_Individual: x y z \<nu> \<mu> a b c d u v
   AOT_Category_Proposition: p q r s
-  AOT_Category_Relation: F G H P Q R
+  AOT_Category_Relation: F G H P Q R S
   AOT_Category_Term: \<alpha> \<beta> \<gamma> \<delta>
 
 AOT_register_metavariable_names
