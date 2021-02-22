@@ -2408,6 +2408,7 @@ qed
 
 AOT_theorem T_S5_fund_1: \<open>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
   by (meson "\<equiv>\<^sub>d\<^sub>fI" AOT_dia contraposition_2_b ded_thm_cor_1 deduction_theorem qml_2[axiom_inst])
+lemmas "T\<diamond>" = T_S5_fund_1
 
 AOT_theorem T_S5_fund_2: \<open>\<diamond>\<box>\<phi> \<rightarrow> \<box>\<phi>\<close>
 proof(rule "\<rightarrow>I")
@@ -2420,6 +2421,7 @@ proof(rule "\<rightarrow>I")
     using modus_tollens_1 by blast
   AOT_thus \<open>\<box>\<phi>\<close> using KBasic_12 intro_elim_3_b by blast
 qed
+lemmas "5\<diamond>" = T_S5_fund_2
 
 (* TODO: incorrect reference in note at the end of the theorem in PLM.
    Also interestingly none of these have proofs in PLM. *)
@@ -2935,6 +2937,9 @@ qed
 AOT_theorem id_act_desc_2: \<open>y = \<^bold>\<iota>x (x = y)\<close>
   by (rule descriptions[axiom_inst, THEN "\<equiv>E"(2)]; rule "\<forall>I"; rule id_act_1[symmetric])
 
+AOT_theorem pre_en_eq_1_1: \<open>x\<^sub>1[F] \<rightarrow> \<box>x\<^sub>1[F]\<close>
+  by (simp add: encoding vdash_properties_1_b)
+
 AOT_theorem pre_en_eq_1_2: \<open>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2[F]\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
@@ -2995,6 +3000,16 @@ proof (rule "\<rightarrow>I")
     by (rule nary_encoding_4[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
+AOT_theorem pre_en_eq_2_1: \<open>\<not>x\<^sub>1[F] \<rightarrow> \<box>\<not>x\<^sub>1[F]\<close>
+proof (rule "\<rightarrow>I"; rule raa_cor_1)
+  AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1[F]\<close>
+  AOT_hence \<open>\<diamond>x\<^sub>1[F]\<close>
+    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_hence \<open>x\<^sub>1[F]\<close>
+    by(rule S5Basic_13[THEN "\<equiv>E"(1), OF  pre_en_eq_1_1[THEN RN], THEN qml_2[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+  moreover AOT_assume \<open>\<not>x\<^sub>1[F]\<close>
+  ultimately AOT_show \<open>x\<^sub>1[F] & \<not>x\<^sub>1[F]\<close> by (rule "&I")
+qed
 AOT_theorem pre_en_eq_2_2: \<open>\<not>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
 proof (rule "\<rightarrow>I"; rule raa_cor_1)
   AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
@@ -3028,6 +3043,113 @@ proof (rule "\<rightarrow>I"; rule raa_cor_1)
   ultimately AOT_show \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] & \<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close> by (rule "&I")
 qed
 
+AOT_theorem en_eq_1_1: \<open>\<diamond>x\<^sub>1[F] \<equiv> \<box>x\<^sub>1[F]\<close>
+  using pre_en_eq_1_1[THEN RN] sc_eq_box_box_2 "\<or>I" "\<rightarrow>E" by metis
+AOT_theorem en_eq_1_2: \<open>\<diamond>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>x\<^sub>1x\<^sub>2[F]\<close>
+  using pre_en_eq_1_2[THEN RN] sc_eq_box_box_2 "\<or>I" "\<rightarrow>E" by metis
+AOT_theorem en_eq_1_3: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  using pre_en_eq_1_3[THEN RN] sc_eq_box_box_2 "\<or>I" "\<rightarrow>E" by fast
+AOT_theorem en_eq_1_4: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  using pre_en_eq_1_4[THEN RN] sc_eq_box_box_2 "\<or>I" "\<rightarrow>E" by fast
+
+AOT_theorem en_eq_2_1: \<open>x\<^sub>1[F] \<equiv> \<box>x\<^sub>1[F]\<close>
+  by (simp add: "\<equiv>I" pre_en_eq_1_1 qml_2[axiom_inst])
+AOT_theorem en_eq_2_2: \<open>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>x\<^sub>1x\<^sub>2[F]\<close>
+  by (simp add: "\<equiv>I" pre_en_eq_1_2 qml_2[axiom_inst])
+AOT_theorem en_eq_2_3: \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  by (simp add: "\<equiv>I" pre_en_eq_1_3 qml_2[axiom_inst])
+AOT_theorem en_eq_2_4: \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  by (simp add: "\<equiv>I" pre_en_eq_1_4 qml_2[axiom_inst])
+
+find_theorems "\<guillemotleft>\<box>\<guillemotleft>?p\<guillemotright> \<rightarrow> \<diamond>\<guillemotleft>?p\<guillemotright>\<guillemotright>"
+
+AOT_theorem en_eq_3_1: \<open>\<diamond>x\<^sub>1[F] \<equiv> x\<^sub>1[F]\<close>
+  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_1] "\<equiv>I" by blast
+AOT_theorem en_eq_3_2: \<open>\<diamond>x\<^sub>1x\<^sub>2[F] \<equiv> x\<^sub>1x\<^sub>2[F]\<close>
+  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_2] "\<equiv>I" by blast
+AOT_theorem en_eq_3_3: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_3] "\<equiv>I" by blast
+AOT_theorem en_eq_3_4: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_4] "\<equiv>I" by blast
+
+AOT_theorem en_eq_4_1: \<open>(x\<^sub>1[F] \<equiv> y\<^sub>1[G]) \<equiv> (\<box>x\<^sub>1[F] \<equiv> \<box>y\<^sub>1[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  using qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(1,2) en_eq_2_1 by blast+
+AOT_theorem en_eq_4_2: \<open>(x\<^sub>1x\<^sub>2[F] \<equiv> y\<^sub>1y\<^sub>2[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>y\<^sub>1y\<^sub>2[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  using qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(1,2) en_eq_2_2 by blast+
+AOT_theorem en_eq_4_3: \<open>(x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>y\<^sub>1y\<^sub>2y\<^sub>3[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  using qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(1,2) en_eq_2_3 by blast+
+AOT_theorem en_eq_4_4: \<open>(x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+  using qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(1,2) en_eq_2_4 by blast+
+
+AOT_theorem en_eq_5_1: \<open>\<box>(x\<^sub>1[F] \<equiv> y\<^sub>1[G]) \<equiv> (\<box>x\<^sub>1[F] \<equiv> \<box>y\<^sub>1[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+  using en_eq_4_1[THEN "\<equiv>E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] apply blast
+  using sc_eq_box_box_4[THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+        "&I"[OF pre_en_eq_1_1[THEN RN], OF pre_en_eq_1_1[THEN RN]] by blast
+AOT_theorem en_eq_5_2: \<open>\<box>(x\<^sub>1x\<^sub>2[F] \<equiv> y\<^sub>1y\<^sub>2[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>y\<^sub>1y\<^sub>2[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+  using en_eq_4_2[THEN "\<equiv>E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] apply blast
+  using sc_eq_box_box_4[THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+        "&I"[OF pre_en_eq_1_2[THEN RN], OF pre_en_eq_1_2[THEN RN]] by blast
+AOT_theorem en_eq_5_3: \<open>\<box>(x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>y\<^sub>1y\<^sub>2y\<^sub>3[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+  using en_eq_4_3[THEN "\<equiv>E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] apply blast
+  using sc_eq_box_box_4[THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+        "&I"[OF pre_en_eq_1_3[THEN RN], OF pre_en_eq_1_3[THEN RN]] by blast
+AOT_theorem en_eq_5_4: \<open>\<box>(x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G]) \<equiv> (\<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G])\<close>
+  apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+  using en_eq_4_4[THEN "\<equiv>E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] apply blast
+  using sc_eq_box_box_4[THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+        "&I"[OF pre_en_eq_1_4[THEN RN], OF pre_en_eq_1_4[THEN RN]] by blast
+
+AOT_theorem en_eq_6_1: \<open>(x\<^sub>1[F] \<equiv> y\<^sub>1[G]) \<equiv> \<box>(x\<^sub>1[F] \<equiv> y\<^sub>1[G])\<close>
+  using en_eq_5_1[symmetric] en_eq_4_1 "\<equiv>E"(5) by fast
+AOT_theorem en_eq_6_2: \<open>(x\<^sub>1x\<^sub>2[F] \<equiv> y\<^sub>1y\<^sub>2[G]) \<equiv> \<box>(x\<^sub>1x\<^sub>2[F] \<equiv> y\<^sub>1y\<^sub>2[G])\<close>
+  using en_eq_5_2[symmetric] en_eq_4_2 "\<equiv>E"(5) by fast
+AOT_theorem en_eq_6_3: \<open>(x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3[G]) \<equiv> \<box>(x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3[G])\<close>
+  using en_eq_5_3[symmetric] en_eq_4_3 "\<equiv>E"(5) by fast
+AOT_theorem en_eq_6_4: \<open>(x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G]) \<equiv> \<box>(x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> y\<^sub>1y\<^sub>2y\<^sub>3y\<^sub>4[G])\<close>
+  using en_eq_5_4[symmetric] en_eq_4_4 "\<equiv>E"(5) by fast
+
+AOT_theorem en_eq_7_1: \<open>\<not>x\<^sub>1[F] \<equiv> \<box>\<not>x\<^sub>1[F]\<close>
+  using pre_en_eq_2_1 qml_2[axiom_inst] "\<equiv>I" by blast
+AOT_theorem en_eq_7_2: \<open>\<not>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
+  using pre_en_eq_2_2 qml_2[axiom_inst] "\<equiv>I" by blast
+AOT_theorem en_eq_7_3: \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  using pre_en_eq_2_3 qml_2[axiom_inst] "\<equiv>I" by blast
+AOT_theorem en_eq_7_4: \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  using pre_en_eq_2_4 qml_2[axiom_inst] "\<equiv>I" by blast
+
+AOT_theorem en_eq_8_1: \<open>\<diamond>\<not>x\<^sub>1[F] \<equiv> \<not>x\<^sub>1[F]\<close>
+  using en_eq_2_1[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)]] KBasic_11 intro_elim_3_e[symmetric] by blast
+AOT_theorem en_eq_8_2: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2[F] \<equiv> \<not>x\<^sub>1x\<^sub>2[F]\<close>
+  using en_eq_2_2[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)]] KBasic_11 intro_elim_3_e[symmetric] by blast
+AOT_theorem en_eq_8_3: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  using en_eq_2_3[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)]] KBasic_11 intro_elim_3_e[symmetric] by blast
+AOT_theorem en_eq_8_4: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  using en_eq_2_4[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)]] KBasic_11 intro_elim_3_e[symmetric] by blast
+
+AOT_theorem en_eq_9_1: \<open>\<diamond>\<not>x\<^sub>1[F] \<equiv> \<box>\<not>x\<^sub>1[F]\<close>
+  using en_eq_7_1 en_eq_8_1 intro_elim_3_e by blast
+AOT_theorem en_eq_9_2: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
+  using en_eq_7_2 en_eq_8_2 intro_elim_3_e by blast
+AOT_theorem en_eq_9_3: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  using en_eq_7_3 en_eq_8_3 intro_elim_3_e by blast
+AOT_theorem en_eq_9_4: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  using en_eq_7_4 en_eq_8_4 intro_elim_3_e by blast
+
+AOT_theorem en_eq_10_1: \<open>\<^bold>\<A>x\<^sub>1[F] \<equiv> x\<^sub>1[F]\<close>
+  by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_1 pre_en_eq_1_1)
+AOT_theorem en_eq_10_2: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2[F] \<equiv> x\<^sub>1x\<^sub>2[F]\<close>
+  by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_2 pre_en_eq_1_2)
+AOT_theorem en_eq_10_3: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
+  by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_3 pre_en_eq_1_3)
+AOT_theorem en_eq_10_4: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
+  by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_4 pre_en_eq_1_4)
 
 
 end
