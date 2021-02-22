@@ -3151,5 +3151,63 @@ AOT_theorem en_eq_10_3: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equi
 AOT_theorem en_eq_10_4: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_4 pre_en_eq_1_4)
 
+method cqt_2_lambda = (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+
+AOT_theorem oa_facts_1: \<open>O!x \<rightarrow> \<box>O!x\<close>
+proof(rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_have \<open>[\<lambda>x \<diamond>E!x]x \<equiv> \<diamond>E!x\<close>
+      by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]) cqt_2_lambda
+  } note \<theta> = this
+  AOT_assume \<open>O!x\<close>
+  AOT_hence \<open>[\<lambda>x \<diamond>E!x]x\<close>
+    by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_ordinary, rotated 1]) cqt_2_lambda
+  AOT_hence \<open>\<diamond>E!x\<close> using \<theta>[THEN "\<equiv>E"(1)] by blast
+  AOT_hence 0: \<open>\<box>\<diamond>E!x\<close> using qml_3[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_have \<open>\<box>[\<lambda>x \<diamond>E!x]x\<close>
+    by (AOT_subst_using subst: \<theta>) (simp add: 0)
+  AOT_thus \<open>\<box>O!x\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated 1]) cqt_2_lambda
+qed
+
+AOT_theorem oa_facts_2: \<open>A!x \<rightarrow> \<box>A!x\<close>
+proof(rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_have \<open>[\<lambda>x \<not>\<diamond>E!x]x \<equiv> \<not>\<diamond>E!x\<close>
+      by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]) cqt_2_lambda
+  } note \<theta> = this
+  AOT_assume \<open>A!x\<close>
+  AOT_hence \<open>[\<lambda>x \<not>\<diamond>E!x]x\<close>
+    by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_abstract, rotated 1]) cqt_2_lambda
+  AOT_hence \<open>\<not>\<diamond>E!x\<close> using \<theta>[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<box>\<not>E!x\<close> using KBasic2_1[THEN "\<equiv>E"(2)] by blast
+  AOT_hence 0: \<open>\<box>\<box>\<not>E!x\<close> using S5Basic_5[THEN "\<rightarrow>E"] by blast
+  AOT_have 1: \<open>\<box>\<not>\<diamond>E!x\<close>
+    apply (AOT_subst "\<guillemotleft>\<not>\<diamond>E!x\<guillemotright>" "\<guillemotleft>\<box>\<not>E!x\<guillemotright>")
+    using KBasic2_1[symmetric] apply blast
+    using 0 by blast
+  AOT_have \<open>\<box>[\<lambda>x \<not>\<diamond>E!x]x\<close>
+    by (AOT_subst_using subst: \<theta>) (simp add: 1)
+  AOT_thus \<open>\<box>A!x\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_abstract, rotated 1]) cqt_2_lambda
+qed
+
+AOT_theorem oa_facts_3: \<open>\<diamond>O!x \<rightarrow> O!x\<close>
+  using oa_facts_1 "B\<diamond>" "RM\<diamond>" ded_thm_cor_1 by blast
+AOT_theorem oa_facts_4: \<open>\<diamond>A!x \<rightarrow> A!x\<close>
+  using oa_facts_2 "B\<diamond>" "RM\<diamond>" ded_thm_cor_1 by blast
+
+AOT_theorem oa_facts_5: \<open>\<diamond>O!x \<equiv> \<box>O!x\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 intro_elim_2 nec_imp_act oa_facts_1 oa_facts_3)
+
+AOT_theorem oa_facts_6: \<open>\<diamond>A!x \<equiv> \<box>A!x\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 intro_elim_2 nec_imp_act oa_facts_2 oa_facts_4)
+
+AOT_theorem oa_facts_7: \<open>O!x \<equiv> \<^bold>\<A>O!x\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 intro_elim_2 nec_imp_act oa_facts_1 oa_facts_3)
+
+AOT_theorem oa_facts_8: \<open>A!x \<equiv> \<^bold>\<A>A!x\<close>
+  by (meson Act_Sub_3 ded_thm_cor_1 intro_elim_2 nec_imp_act oa_facts_2 oa_facts_4)
+
 
 end
