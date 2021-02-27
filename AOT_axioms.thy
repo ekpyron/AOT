@@ -189,6 +189,9 @@ AOT_axiom cqt_2_lambda0:
   shows \<open>[\<lambda> \<phi>]\<down>\<close>
   apply (rule AOT_model_axiomI)
   using AOT_model_equiv_def AOT_sem_lambda_denotes existence_3 by fastforce
+AOT_axiom cqt_2_concrete: \<open>E!\<down>\<close>
+  apply (rule AOT_model_axiomI)
+  using AOT_sem_concrete_denotes by auto
 
 AOT_axiom cqt_3: \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
