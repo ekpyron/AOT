@@ -424,6 +424,52 @@ AOT_theorem universal: assumes \<open>for arbitrary \<beta>: \<phi>{\<beta>}\<cl
   using GEN assms .
 lemmas "\<forall>I" = universal
 
+(* Generalized mechanism for "\<forall>I" followed by \<forall>E *)
+ML\<open>
+fun get_instantiated_allI ctxt varname thm = let
+val trm = Thm.concl_of thm
+val trm = case trm of (@{const Trueprop} $ (@{const AOT_model_valid_in} $ _ $ x)) => x
+                      | _ => raise Term.TERM ("Expected simple theorem.", [trm])
+fun extractVars (Const (\<^const_name>\<open>AOT_term_of_var\<close>, _) $ Var v) =
+    (if fst (fst v) = fst varname then [Var v] else []) (* TODO: care about the index? *)
+  | extractVars (t1 $ t2) = extractVars t1 @ extractVars t2
+  | extractVars (Abs (_, _, t)) = extractVars t
+  | extractVars _ = []
+val vars = extractVars trm
+val vars = fold Term.add_vars vars []
+val var = hd vars
+val trmty = case (snd var) of (Type (\<^type_name>\<open>AOT_var\<close>, [t])) => (t)
+              | _ => raise Term.TYPE ("Expected variable type.", [snd var], [Var var])
+val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (
+      Const (\<^const_name>\<open>AOT_term_of_var\<close>, Type ("fun", [snd var, trmty]))
+       $ Var var, trm))
+val trm = Thm.cterm_of (Context.proof_of ctxt) trm
+val ty = hd (Term.add_tvars (Thm.prop_of @{thm "\<forall>I"}) [])
+val typ = Thm.ctyp_of (Context.proof_of ctxt) trmty
+val allthm = Drule.instantiate_normalize ([(ty, typ)],[]) @{thm "\<forall>I"}
+val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
+val allthm = Drule.instantiate_normalize ([],[(phi,trm)]) allthm
+in
+allthm
+end
+\<close>
+
+attribute_setup "\<forall>I" =
+  \<open>Scan.lift (Scan.repeat1 Args.var) >> (fn args => Thm.rule_attribute []
+  (fn ctxt => fn thm => fold (fn arg => fn thm => thm RS get_instantiated_allI ctxt arg thm) args thm))\<close>
+  "Quantify over a variable in a theorem using GEN."
+
+attribute_setup "unvarify" =
+  \<open>Scan.lift (Scan.repeat1 Args.var) >> (fn args => Thm.rule_attribute []
+  (fn ctxt => fn thm =>
+    let
+    val thm = fold (fn arg => fn thm => thm RS get_instantiated_allI ctxt arg thm) args thm
+    val thm = fold (fn _ => fn thm => thm RS @{thm "\<forall>E"(1)}) args thm
+    in
+     thm
+    end))\<close>
+  "Generalize a statement about variables to a statement about denoting terms."
+
 (* TODO: rereplace-lem does not apply to the embedding *)
 
 AOT_theorem cqt_basic_1: \<open>\<forall>\<alpha>\<forall>\<beta> \<phi>{\<alpha>,\<beta>} \<equiv> \<forall>\<beta>\<forall>\<alpha> \<phi>{\<alpha>,\<beta>}\<close>
@@ -2946,13 +2992,10 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
     using nary_encoding_2[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
-  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x and \<Pi>
-    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
-    "\<forall>I" by fast
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
-    using "\<rightarrow>E" "&I" by blast+
+    using encoding[axiom_inst, unvarify F] "\<rightarrow>E" "&I" by blast+
   note A = this
   AOT_hence \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2] & x\<^sub>2[\<lambda>y [F]x\<^sub>1y])\<close>
     using KBasic_3[THEN intro_elim_3_b] "&I" by blast
@@ -2965,14 +3008,11 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
     using nary_encoding_3[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
-  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
-    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
-    "\<forall>I" by fast
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
-    using "\<rightarrow>E" by blast+
+    using encoding[axiom_inst, unvarify F] "\<rightarrow>E" by blast+
   note A = this
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y])\<close>
     by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
@@ -2985,15 +3025,12 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and  \<open>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
     using nary_encoding_4[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
-  moreover AOT_have \<open>x[\<Pi>] \<rightarrow> \<box>x[\<Pi>]\<close> if \<open>\<Pi>\<down>\<close> for x \<Pi>
-    using encoding[axiom_inst] "\<forall>E"(1)[rotated 1, OF that]
-    "\<forall>I" by fast
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and \<open>\<box>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
-    using "\<rightarrow>E" by blast+
+    using "\<rightarrow>E" encoding[axiom_inst, unvarify F] by blast+
   note A = this
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4] & x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y])\<close>
     by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
@@ -4675,22 +4712,15 @@ AOT_act_theorem q0cf_1: \<open>ContingentlyFalse(q\<^sub>0)\<close>
   by (fact qml_4[axiom_inst])
 
 AOT_act_theorem q0cf_2: \<open>ContingentlyTrue(((q\<^sub>0)\<^sup>-))\<close>
-proof -
-  AOT_have 0: \<open>((\<phi>)\<^sup>-) \<equiv> \<not>\<phi>\<close> for \<phi>
-    using thm_relation_negation_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
-  AOT_have 1: \<open>(\<phi>)\<^sup>- = (\<not>\<phi>)\<close> for \<phi>
-    using thm_relation_negation_7 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
-  show ?thesis
   apply (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   apply (rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def])
    apply (fact log_prop_prop_2)
   apply (rule "&I")
-     apply (rule 0[THEN "\<equiv>E"(2)])
+     apply (rule thm_relation_negation_3[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(2)])
      apply (fact no_cnac)
-    apply (rule "=E"[rotated, OF 1[THEN id_sym]])
+    apply (rule "=E"[rotated, OF thm_relation_negation_7[unvarify p, OF log_prop_prop_2, THEN id_sym]])
     apply (AOT_subst_rev "\<guillemotleft>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::\<kappa>\<guillemotright>)\<guillemotright>" "\<guillemotleft>\<not>\<not>(\<exists>x  (E!x & \<not>\<^bold>\<A>E!x))\<guillemotright>")
     by (fact qml_4[axiom_inst])
-qed
 
 (* TODO: q0cf-rem skipped for now *)
 
@@ -4701,27 +4731,23 @@ proof(rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I"; rule "\<exists>I")
   AOT_thus \<open>ContingentlyTrue(q\<^sub>0)\<close>
     by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
 next
-  AOT_have 0: \<open>ContingentlyFalse(\<phi>) \<equiv> ContingentlyTrue(((\<phi>)\<^sup>-))\<close> for \<phi>
-    using cont_true_cont_4 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
   AOT_assume \<open>\<not>q\<^sub>0\<close>
   AOT_hence \<open>\<not>q\<^sub>0 & \<diamond>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(1)] "&I" by blast
   AOT_hence \<open>ContingentlyFalse(q\<^sub>0)\<close>
     by (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_thus \<open>ContingentlyTrue(((q\<^sub>0)\<^sup>-))\<close>
-    by (rule 0[THEN "\<equiv>E"(1)])
+    by (rule cont_true_cont_4[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)])
 qed(auto simp: log_prop_prop_2)
 
 
 AOT_theorem cont_tf_thm_2: \<open>\<exists>p ContingentlyFalse((p))\<close>
 proof(rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I"; rule "\<exists>I")
-  AOT_have 0: \<open>ContingentlyTrue(\<phi>) \<equiv> ContingentlyFalse(((\<phi>)\<^sup>-))\<close> for \<phi>
-    using cont_true_cont_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
   AOT_assume \<open>q\<^sub>0\<close>
   AOT_hence \<open>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(2)] "&I" by blast
   AOT_hence \<open>ContingentlyTrue(q\<^sub>0)\<close>
     by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_thus \<open>ContingentlyFalse(((q\<^sub>0)\<^sup>-))\<close>
-    by (rule 0[THEN "\<equiv>E"(1)])
+    by (rule cont_true_cont_3[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)])
 next
   AOT_assume \<open>\<not>q\<^sub>0\<close>
   AOT_hence \<open>\<not>q\<^sub>0 & \<diamond>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(1)] "&I" by blast
@@ -5209,5 +5235,342 @@ proof(rule GEN)
   ultimately AOT_show \<open>\<exists>G (\<^bold>\<A>\<not>\<forall>x ([F]x \<equiv> [G]x) & \<diamond>\<forall>x([F]x \<equiv> [G]x))\<close>
     using "\<or>E"(1)[OF exc_mid] "\<rightarrow>I" by blast
 qed
+
+AOT_theorem oa_contingent_1: \<open>O! \<noteq> A!\<close>
+proof(rule "\<equiv>\<^sub>d\<^sub>fI"[OF noneq_infix]; rule raa_cor_2)
+  fix x :: "'a AOT_var"
+  AOT_assume 1: \<open>O! = \<guillemotleft>AOT_abstract::<'a>\<guillemotright>\<close> (* TODO: sorts *)
+  AOT_hence \<open>[\<lambda>x \<diamond>E!\<guillemotleft>x::'a\<guillemotright>] = A!\<close>
+    by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_ordinary, rotated]) cqt_2_lambda
+  AOT_hence \<open>[\<lambda>x \<diamond>E!\<guillemotleft>x::'a\<guillemotright>] = [\<lambda>x \<not>\<diamond>E!\<guillemotleft>x::'a\<guillemotright>]\<close>
+    by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_abstract, rotated]) cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>x \<diamond>E!\<guillemotleft>x::'a\<guillemotright>]x \<equiv> \<diamond>E!x\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E"]) cqt_2_lambda
+  ultimately AOT_have \<open>[\<lambda>x \<not>\<diamond>E!\<guillemotleft>x::'a\<guillemotright>]x \<equiv> \<diamond>E!x\<close>
+    using "=E" by fast
+  moreover AOT_have \<open>[\<lambda>x \<not>\<diamond>E!\<guillemotleft>x::'a\<guillemotright>]x \<equiv> \<not>\<diamond>E!x\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E"]) cqt_2_lambda
+  ultimately AOT_have \<open>\<diamond>E!x \<equiv> \<not>\<diamond>E!x\<close> using intro_elim_3_f oth_class_taut_2_e[THEN "\<equiv>E"(1)] by blast
+  AOT_thus "(\<diamond>E!x \<equiv> \<not>\<diamond>E!x) & \<not>(\<diamond>E!x \<equiv> \<not>\<diamond>E!x)" using oth_class_taut_3_c "&I" by blast
+qed
+
+AOT_theorem oa_contingent_2: \<open>O!x \<equiv> \<not>A!x\<close>
+proof -
+  AOT_have \<open>O!x \<equiv> [\<lambda>x \<diamond>E!x]x\<close>
+    apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+     apply (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_ordinary])
+      apply cqt_2_lambda
+     apply argo
+    apply (rule  "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary])
+     apply cqt_2_lambda
+    by argo
+  also AOT_have \<open>\<dots> \<equiv> \<diamond>E!x\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E"]) cqt_2_lambda
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<not>\<diamond>E!x\<close>
+    using oth_class_taut_3_b.
+  also AOT_have \<open>\<dots> \<equiv> \<not>[\<lambda>x \<not>\<diamond>E!x]x\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], symmetric]) cqt_2_lambda
+  also AOT_have \<open>\<dots> \<equiv> \<not>A!x\<close>
+    apply (rule "\<equiv>I"; rule "\<rightarrow>I")
+     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_abstract])
+      apply cqt_2_lambda
+     apply argo
+    apply (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_abstract])
+     apply cqt_2_lambda
+    by argo
+  finally show ?thesis.
+qed
+
+AOT_theorem oa_contingent_3: \<open>A!x \<equiv> \<not>O!x\<close>
+  apply (AOT_subst "\<guillemotleft>A!x\<guillemotright>" "\<guillemotleft>\<not>\<not>A!x\<guillemotright>")
+  using oa_contingent_2[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], symmetric] .
+
+AOT_theorem oa_contingent_4: \<open>Contingent(O!)\<close>
+proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_1, THEN "\<equiv>E"(2)]; rule "&I")
+  AOT_have \<open>\<diamond>\<exists>x E!x\<close> using thm_cont_e_3 .
+  AOT_hence \<open>\<exists>x \<diamond>E!x\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
+  then AOT_obtain a where \<open>\<diamond>E!\<guillemotleft>AOT_term_of_var a::'a::AOT_\<kappa>\<guillemotright>\<close> using "\<exists>E"[rotated] by blast (* TODO: type hack *)
+  AOT_hence \<open>[\<lambda>x \<diamond>E!x]a\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated]) cqt_2_lambda
+  AOT_hence \<open>O!a\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated]) cqt_2_lambda
+  AOT_hence \<open>\<exists>x O!\<guillemotleft>x::'a\<guillemotright>\<close> using "\<exists>I" by blast
+  AOT_thus \<open>\<diamond>\<exists>x O!\<guillemotleft>x::'a\<guillemotright>\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
+next
+  AOT_obtain a where \<open>A!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+  AOT_hence \<open>\<not>O!a\<close> using oa_contingent_3[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<exists>x \<not>O!\<guillemotleft>x::'a\<guillemotright>\<close> using "\<exists>I" by fast
+  AOT_thus \<open>\<diamond>\<exists>x \<not>O!\<guillemotleft>x::'a\<guillemotright>\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem oa_contingent_5: \<open>Contingent(A!)\<close>
+proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_2, THEN "\<equiv>E"(2)]; rule "&I")
+  AOT_obtain a where \<open>A!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+  AOT_hence \<open>\<exists>x A!\<guillemotleft>x::'a\<guillemotright>\<close> using "\<exists>I" by fast
+  AOT_thus \<open>\<diamond>\<exists>x A!\<guillemotleft>x::'a\<guillemotright>\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
+next
+  AOT_have \<open>\<diamond>\<exists>x E!x\<close> using thm_cont_e_3 .
+  AOT_hence \<open>\<exists>x \<diamond>E!x\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
+  then AOT_obtain a where \<open>\<diamond>E!\<guillemotleft>AOT_term_of_var a::'a::AOT_\<kappa>\<guillemotright>\<close> using "\<exists>E"[rotated] by blast (* TODO: type hack *)
+  AOT_hence \<open>[\<lambda>x \<diamond>E!x]a\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated]) cqt_2_lambda
+  AOT_hence \<open>O!a\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated]) cqt_2_lambda
+  AOT_hence \<open>\<not>A!a\<close> using oa_contingent_2[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<exists>x \<not>A!\<guillemotleft>x::'a\<guillemotright>\<close> using "\<exists>I" by fast
+  AOT_thus \<open>\<diamond>\<exists>x \<not>A!\<guillemotleft>x::'a\<guillemotright>\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem oa_contingent_7: \<open>O!\<^sup>-x \<equiv> \<not>A!\<^sup>-x\<close>
+proof -
+  AOT_have \<open>O!x \<equiv> \<not>A!x\<close>
+    using oa_contingent_2 by blast
+  also AOT_have \<open>\<dots> \<equiv> A!\<^sup>-x\<close>
+    using thm_relation_negation_1[symmetric, unvarify F, OF oa_exist_2].
+  finally AOT_have 1: \<open>O!x \<equiv> A!\<^sup>-x\<close>.
+
+  AOT_have \<open>A!x \<equiv> \<not>O!x\<close>
+    using oa_contingent_3 by blast
+  also AOT_have \<open>\<dots> \<equiv> O!\<^sup>-x\<close>
+    using thm_relation_negation_1[symmetric, unvarify F, OF oa_exist_1].
+  finally AOT_have 2: \<open>A!x \<equiv> O!\<^sup>-x\<close>.
+
+  AOT_show \<open>O!\<^sup>-x \<equiv> \<not>A!\<^sup>-x\<close>
+    using 1[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)]] oa_contingent_3[of _ x] 2[symmetric]
+          intro_elim_3_e by blast
+qed
+
+AOT_theorem oa_contingent_6: \<open>O!\<^sup>- \<noteq> A!\<^sup>-\<close>
+proof (rule noneq_infix[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule raa_cor_2)
+  AOT_assume 1: \<open>O!\<^sup>- = [\<guillemotleft>AOT_abstract::<'a>\<guillemotright>]\<^sup>-\<close>
+  fix x :: \<open>'a AOT_var\<close>
+  AOT_have \<open>A!\<^sup>-x \<equiv> O!\<^sup>-x\<close>
+    apply (rule "=E"[rotated, OF 1]) by (fact oth_class_taut_3_a)
+  AOT_hence \<open>A!\<^sup>-x \<equiv> \<not>A!\<^sup>-x\<close>
+    using oa_contingent_7 "\<equiv>E" by fast
+  AOT_thus \<open>(A!\<^sup>-x \<equiv> \<not>A!\<^sup>-x) & \<not>(A!\<^sup>-x \<equiv> \<not>A!\<^sup>-x)\<close> using oth_class_taut_3_c "&I" by blast
+qed
+
+AOT_theorem oa_contingent_8: \<open>Contingent(O!\<^sup>-)\<close>
+  using thm_cont_prop_3[unvarify F, OF oa_exist_1, THEN "\<equiv>E"(1), OF oa_contingent_4].
+
+AOT_theorem oa_contingent_9: \<open>Contingent(A!\<^sup>-)\<close>
+  using thm_cont_prop_3[unvarify F, OF oa_exist_2, THEN "\<equiv>E"(1), OF oa_contingent_5].
+
+AOT_define WeaklyContingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("WeaklyContingent'(_')")
+  df_cont_nec: "WeaklyContingent([\<Pi>]) \<equiv>\<^sub>d\<^sub>f Contingent([\<Pi>]) & \<forall>x (\<diamond>[\<Pi>]x \<rightarrow> \<box>[\<Pi>]x)"
+
+AOT_theorem cont_nec_fact1_1: \<open>WeaklyContingent([F]) \<equiv> WeaklyContingent([F]\<^sup>-)\<close>
+proof -
+  AOT_have \<open>WeaklyContingent([F]) \<equiv> Contingent([F]) & \<forall>x (\<diamond>[F]x \<rightarrow> \<box>[F]x)\<close>
+    using df_cont_nec[THEN "\<equiv>Df"] by blast
+  also AOT_have \<open>... \<equiv> Contingent([F]\<^sup>-) & \<forall>x (\<diamond>[F]x \<rightarrow> \<box>[F]x)\<close>
+    apply (rule oth_class_taut_8_f[THEN "\<equiv>E"(2)]; rule "\<rightarrow>I")
+    using thm_cont_prop_3.
+  also AOT_have \<open>\<dots> \<equiv> Contingent([F]\<^sup>-) & \<forall>x (\<diamond>[F]\<^sup>-x \<rightarrow> \<box>[F]\<^sup>-x)\<close>
+  proof (rule oth_class_taut_8_e[THEN "\<equiv>E"(2)]; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I"; rule GEN; rule "\<rightarrow>I")
+    fix x
+    AOT_assume 0: \<open>\<forall>x (\<diamond>[F]x \<rightarrow> \<box>[F]x)\<close>
+    AOT_assume 1: \<open>\<diamond>[F]\<^sup>-x\<close>
+    AOT_have \<open>\<diamond>\<not>[F]x\<close>
+      apply (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
+      by (fact 1)
+    AOT_hence 2: \<open>\<not>\<box>[F]x\<close>
+      using KBasic_11[THEN "\<equiv>E"(2)] by blast
+    AOT_show \<open>\<box>[F]\<^sup>-x\<close>
+    proof (rule raa_cor_1)
+      AOT_assume 3: \<open>\<not>\<box>[F]\<^sup>-x\<close>
+      AOT_have \<open>\<not>\<box>\<not>[F]x\<close>
+        apply (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
+        by (fact 3)
+      AOT_hence \<open>\<diamond>[F]x\<close>
+        using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
+      AOT_hence \<open>\<box>[F]x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
+      AOT_thus \<open>\<box>[F]x & \<not>\<box>[F]x\<close> using "&I" 2 by blast
+    qed
+  next
+    fix x
+    AOT_assume 0: \<open>\<forall>x (\<diamond>[F]\<^sup>-x \<rightarrow> \<box>[F]\<^sup>-x)\<close>
+    AOT_assume 1: \<open>\<diamond>[F]x\<close>
+    AOT_have \<open>\<diamond>\<not>[F]\<^sup>-x\<close>
+      apply (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
+      by (fact 1)
+    AOT_hence 2: \<open>\<not>\<box>[F]\<^sup>-x\<close>
+      using KBasic_11[THEN "\<equiv>E"(2)] by blast
+    AOT_show \<open>\<box>[F]x\<close>
+    proof (rule raa_cor_1)
+      AOT_assume 3: \<open>\<not>\<box>[F]x\<close>
+      AOT_have \<open>\<not>\<box>\<not>[F]\<^sup>-x\<close>
+        apply (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
+        by (fact 3)
+      AOT_hence \<open>\<diamond>[F]\<^sup>-x\<close>
+        using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
+      AOT_hence \<open>\<box>[F]\<^sup>-x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
+      AOT_thus \<open>\<box>[F]\<^sup>-x & \<not>\<box>[F]\<^sup>-x\<close> using "&I" 2 by blast
+    qed
+  qed
+  also AOT_have \<open>\<dots> \<equiv> WeaklyContingent([F]\<^sup>-)\<close>
+    using df_cont_nec[THEN "\<equiv>Df", symmetric] by blast
+  finally show ?thesis.
+qed
+
+AOT_theorem cont_nec_fact1_2: \<open>(WeaklyContingent([F]) & \<not>WeaklyContingent([G])) \<rightarrow> F \<noteq> G\<close>
+proof (rule "\<rightarrow>I"; rule noneq_infix[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule raa_cor_2)
+  AOT_assume 1: \<open>WeaklyContingent([F]) & \<not>WeaklyContingent([G])\<close>
+  AOT_hence \<open>WeaklyContingent([F])\<close> using "&E" by blast
+  moreover AOT_assume \<open>F = G\<close>
+  ultimately AOT_have \<open>WeaklyContingent([G])\<close>
+    using "=E" by blast
+  AOT_thus \<open>WeaklyContingent([G]) & \<not>WeaklyContingent([G])\<close>
+    using 1 "&I" "&E" by blast
+qed
+
+AOT_theorem cont_nec_fact2_1: \<open>WeaklyContingent(O!)\<close>
+proof (rule df_cont_nec[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "&I")
+  AOT_show \<open>Contingent(O!)\<close>
+    using oa_contingent_4.
+next
+  AOT_show \<open>\<forall>x (\<diamond>[O!]x \<rightarrow> \<box>[O!]x)\<close>
+    apply (rule GEN; rule "\<rightarrow>I")
+    using oa_facts_5[THEN "\<equiv>E"(1)] by blast
+qed
+
+
+AOT_theorem cont_nec_fact2_2: \<open>WeaklyContingent(A!)\<close>
+proof (rule df_cont_nec[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "&I")
+  AOT_show \<open>Contingent(A!)\<close>
+    using oa_contingent_5.
+next
+  AOT_show \<open>\<forall>x (\<diamond>[A!]x \<rightarrow> \<box>[A!]x)\<close>
+    apply (rule GEN; rule "\<rightarrow>I")
+    using oa_facts_6[THEN "\<equiv>E"(1)] by blast
+qed
+
+AOT_theorem cont_nec_fact2_3: \<open>\<not>WeaklyContingent(E!)\<close>
+proof (rule df_cont_nec[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)];
+       rule DeMorgan(1)[THEN "\<equiv>E"(2)]; rule "\<or>I"(2); rule raa_cor_2)
+  AOT_have \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close> using qml_4[axiom_inst].
+  AOT_hence \<open>\<exists>x \<diamond>(E!x & \<not>\<^bold>\<A>E!x)\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
+  then AOT_obtain a where \<open>\<diamond>(E!a & \<not>\<^bold>\<A>E!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>)\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence 1: \<open>\<diamond>E!a & \<diamond>\<not>\<^bold>\<A>E!a\<close> using KBasic2_3[THEN "\<rightarrow>E"] by simp
+  moreover AOT_assume \<open>\<forall>x (\<diamond>[E!]x \<rightarrow> \<box>[E!]\<guillemotleft>x::'a\<guillemotright>)\<close>
+  ultimately AOT_have \<open>\<box>E!a\<close> using "&E" "\<forall>E" "\<rightarrow>E" by fast
+  AOT_hence \<open>\<^bold>\<A>E!a\<close> using nec_imp_act[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<box>\<^bold>\<A>E!a\<close> using qml_act_1[axiom_inst, THEN "\<rightarrow>E"] by blast
+  moreover AOT_have \<open>\<not>\<box>\<^bold>\<A>E!a\<close> using KBasic_11[THEN "\<equiv>E"(2)] 1[THEN "&E"(2)] by meson
+  ultimately AOT_have \<open>\<box>\<^bold>\<A>E!a & \<not>\<box>\<^bold>\<A>E!a\<close> using "&I" by blast
+  AOT_thus \<open>p & \<not>p\<close> for p using raa_cor_1 by blast
+qed
+
+AOT_theorem cont_nec_fact2_4: \<open>\<not>WeaklyContingent(L)\<close>
+  apply (rule df_cont_nec[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)];
+       rule DeMorgan(1)[THEN "\<equiv>E"(2)]; rule "\<or>I"(1))
+  apply (rule contingent_properties_4[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+  apply (rule DeMorgan(1)[THEN "\<equiv>E"(2)]; rule "\<or>I"(2); rule useful_tautologies_2[THEN "\<rightarrow>E"])
+  using thm_noncont_e_e_3[THEN contingent_properties_3[THEN "\<equiv>\<^sub>d\<^sub>fE"]].
+
+(* TODO: cleanup *)
+AOT_theorem cont_nec_fact2_5: \<open>O! \<noteq> E! & O! \<noteq> E!\<^sup>- & O! \<noteq> L & O! \<noteq> L\<^sup>-\<close>
+proof -
+  AOT_have 1: \<open>L\<down>\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]) cqt_2_lambda+
+  {
+    fix \<phi> and \<Pi> and \<Pi>'
+    AOT_have A: \<open>\<not>(\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>})\<close> if  \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
+    proof (rule raa_cor_2)
+      AOT_assume \<open>\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>}\<close>
+      AOT_hence \<open>\<phi>{\<Pi>'}\<close> using that(1) "\<equiv>E" by blast
+      AOT_thus \<open>\<phi>{\<Pi>'} & \<not>\<phi>{\<Pi>'}\<close> using that(2) "&I" by blast
+    qed
+    AOT_have \<open>\<Pi>' \<noteq> \<Pi>\<close> if \<open>\<Pi>\<down>\<close> and \<open>\<Pi>'\<down>\<close> and \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
+      using pos_not_equiv_ne_4[unvarify F G, THEN "\<rightarrow>E", OF that(1,2), OF A[OF that(3, 4)]].
+  } note 0 = this
+  show ?thesis
+    apply(safe intro!: "&I"; rule 0)
+    using cqt_2_concrete[axiom_inst] apply blast
+    using oa_exist_1 apply blast
+    using cont_nec_fact2_3 apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_1 apply fast
+    using rel_neg_T_3 apply fast
+    using oa_exist_1 apply blast
+    using cont_nec_fact1_1[unvarify F, THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1), rotated, OF cont_nec_fact2_3, OF cqt_2_concrete[axiom_inst]] apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_1 apply blast
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; cqt_2_lambda)
+    using oa_exist_1 apply fast
+    using cont_nec_fact2_4 apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_1 apply fast
+    using rel_neg_T_3 apply fast
+    using oa_exist_1 apply fast
+    apply (rule cont_nec_fact1_1[unvarify F, THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1), rotated, OF cont_nec_fact2_4])
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; cqt_2_lambda)
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_1 by blast
+qed
+
+(* TODO: cleanup together with above *)
+AOT_theorem cont_nec_fact2_6: \<open>A! \<noteq> E! & A! \<noteq> E!\<^sup>- & A! \<noteq> L & A! \<noteq> L\<^sup>-\<close>
+proof -
+  AOT_have 1: \<open>L\<down>\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]) cqt_2_lambda+
+  {
+    fix \<phi> and \<Pi> and \<Pi>'
+    AOT_have A: \<open>\<not>(\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>})\<close> if  \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
+    proof (rule raa_cor_2)
+      AOT_assume \<open>\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>}\<close>
+      AOT_hence \<open>\<phi>{\<Pi>'}\<close> using that(1) "\<equiv>E" by blast
+      AOT_thus \<open>\<phi>{\<Pi>'} & \<not>\<phi>{\<Pi>'}\<close> using that(2) "&I" by blast
+    qed
+    AOT_have \<open>\<Pi>' \<noteq> \<Pi>\<close> if \<open>\<Pi>\<down>\<close> and \<open>\<Pi>'\<down>\<close> and \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
+      using pos_not_equiv_ne_4[unvarify F G, THEN "\<rightarrow>E", OF that(1,2), OF A[OF that(3, 4)]].
+  } note 0 = this
+  show ?thesis
+    apply(safe intro!: "&I"; rule 0)
+    using cqt_2_concrete[axiom_inst] apply blast
+    using oa_exist_2 apply blast
+    using cont_nec_fact2_3 apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_2 apply fast
+    using rel_neg_T_3 apply fast
+    using oa_exist_2 apply blast
+    using cont_nec_fact1_1[unvarify F, THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1), rotated, OF cont_nec_fact2_3, OF cqt_2_concrete[axiom_inst]] apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_2 apply blast
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; cqt_2_lambda)
+    using oa_exist_2 apply fast
+    using cont_nec_fact2_4 apply fast
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_2 apply fast
+    using rel_neg_T_3 apply fast
+    using oa_exist_2 apply fast
+    apply (rule cont_nec_fact1_1[unvarify F, THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1), rotated, OF cont_nec_fact2_4])
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; cqt_2_lambda)
+    apply (rule useful_tautologies_2[THEN "\<rightarrow>E"])
+    using cont_nec_fact2_2 by blast
+qed
+
+AOT_theorem sixteen:
+ shows \<open>\<exists>F\<^sub>1\<exists>F\<^sub>2\<exists>F\<^sub>3\<exists>F\<^sub>4\<exists>F\<^sub>5\<exists>F\<^sub>6\<exists>F\<^sub>7\<exists>F\<^sub>8\<exists>F\<^sub>9\<exists>F\<^sub>1\<^sub>0\<exists>F\<^sub>1\<^sub>1\<exists>F\<^sub>1\<^sub>2\<exists>F\<^sub>1\<^sub>3\<exists>F\<^sub>1\<^sub>4\<exists>F\<^sub>1\<^sub>5\<exists>F\<^sub>1\<^sub>6 (
+\<guillemotleft>F\<^sub>1::<'a::AOT_\<kappa>>\<guillemotright> \<noteq> F\<^sub>2 & F\<^sub>1 \<noteq> F\<^sub>3 & F\<^sub>1 \<noteq> F\<^sub>4 & F\<^sub>1 \<noteq> F\<^sub>5 & F\<^sub>1 \<noteq> F\<^sub>6 & F\<^sub>1 \<noteq> F\<^sub>7 & F\<^sub>1 \<noteq> F\<^sub>8 & F\<^sub>1 \<noteq> F\<^sub>9 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>2 \<noteq> F\<^sub>3 & F\<^sub>2 \<noteq> F\<^sub>4 & F\<^sub>2 \<noteq> F\<^sub>5 & F\<^sub>2 \<noteq> F\<^sub>6 & F\<^sub>2 \<noteq> F\<^sub>7 & F\<^sub>2 \<noteq> F\<^sub>8 & F\<^sub>2 \<noteq> F\<^sub>9 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>2 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>3 \<noteq> F\<^sub>4 & F\<^sub>3 \<noteq> F\<^sub>5 & F\<^sub>3 \<noteq> F\<^sub>6 & F\<^sub>3 \<noteq> F\<^sub>7 & F\<^sub>3 \<noteq> F\<^sub>8 & F\<^sub>3 \<noteq> F\<^sub>9 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>3 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>4 \<noteq> F\<^sub>5 & F\<^sub>4 \<noteq> F\<^sub>6 & F\<^sub>4 \<noteq> F\<^sub>7 & F\<^sub>4 \<noteq> F\<^sub>8 & F\<^sub>4 \<noteq> F\<^sub>9 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>4 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>5 \<noteq> F\<^sub>6 & F\<^sub>5 \<noteq> F\<^sub>7 & F\<^sub>5 \<noteq> F\<^sub>8 & F\<^sub>5 \<noteq> F\<^sub>9 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>5 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>6 \<noteq> F\<^sub>7 & F\<^sub>6 \<noteq> F\<^sub>8 & F\<^sub>6 \<noteq> F\<^sub>9 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>6 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>7 \<noteq> F\<^sub>8 & F\<^sub>7 \<noteq> F\<^sub>9 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>7 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>8 \<noteq> F\<^sub>9 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>8 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>9 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>9 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>0 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>4 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>4 \<noteq> F\<^sub>1\<^sub>6 &
+F\<^sub>1\<^sub>6 \<noteq> F\<^sub>1\<^sub>6)\<close> 
+  oops
+
 
 end
