@@ -318,6 +318,8 @@ AOT_theorem oth_class_taut_5_d: \<open>\<not>(\<phi> \<or> \<psi>) \<equiv> (\<n
   using AOT_equiv[THEN df_rules_formulas_2]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 
+lemmas DeMorgan = oth_class_taut_5_c oth_class_taut_5_d
+
 AOT_theorem oth_class_taut_6_a: \<open>(\<phi> & (\<psi> \<or> \<chi>)) \<equiv> ((\<phi> & \<psi>) \<or> (\<phi> & \<chi>))\<close>
   using AOT_equiv[THEN df_rules_formulas_2]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
@@ -3151,7 +3153,8 @@ AOT_theorem en_eq_10_3: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equi
 AOT_theorem en_eq_10_4: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_4 pre_en_eq_1_4)
 
-method cqt_2_lambda = (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+method cqt_2_lambda_inst_prover = (fast intro: AOT_instance_of_cqt_2_intro)
+method cqt_2_lambda = (rule cqt_2_lambda[axiom_inst]; cqt_2_lambda_inst_prover)
 
 AOT_theorem oa_facts_1: \<open>O!x \<rightarrow> \<box>O!x\<close>
 proof(rule "\<rightarrow>I")
@@ -3652,11 +3655,42 @@ proof (rule "\<rightarrow>I")
     using id_nec2_3[THEN "\<rightarrow>E"] by blast
 qed
 
+AOT_theorem pos_not_equiv_ne_2_0: \<open>(\<diamond>\<not>(\<phi>{p} \<equiv> \<phi>{q})) \<rightarrow> p \<noteq> q\<close>
+proof (rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_have \<open>\<not>(\<phi>{p} \<equiv> \<phi>{q}) \<rightarrow> \<not>(p = q)\<close>
+    proof (rule "\<rightarrow>I"; rule raa_cor_2)
+      AOT_assume 1: \<open>p = q\<close>
+      AOT_hence \<open>\<phi>{p} \<rightarrow> \<phi>{q}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+      moreover {
+        AOT_have \<open>q = p\<close> using 1 id_sym by blast
+        AOT_hence \<open>\<phi>{q} \<rightarrow> \<phi>{p}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+      }
+      ultimately AOT_have \<open>\<phi>{p} \<equiv> \<phi>{q}\<close> using "\<equiv>I" by blast
+      moreover AOT_assume \<open>\<not>(\<phi>{p} \<equiv> \<phi>{q})\<close>
+      ultimately AOT_show \<open>(\<phi>{p} \<equiv> \<phi>{q}) & \<not>(\<phi>{p} \<equiv> \<phi>{q})\<close>
+        using "&I" by blast
+    qed
+  }
+  AOT_hence \<open>\<diamond>\<not>(\<phi>{p} \<equiv> \<phi>{q}) \<rightarrow> \<diamond>\<not>(p = q)\<close>
+    using RM_2_prem by blast
+  moreover AOT_assume \<open>\<diamond>\<not>(\<phi>{p} \<equiv> \<phi>{q})\<close>
+  ultimately AOT_have 0: \<open>\<diamond>\<not>(p = q)\<close> using "\<rightarrow>E" by blast
+  AOT_have \<open>\<diamond>(p \<noteq> q)\<close>
+    apply(AOT_subst "\<guillemotleft>p \<noteq> q\<guillemotright>" "\<guillemotleft>\<not>(p = q)\<guillemotright>")
+    using 0 by simp
+  AOT_thus \<open>p \<noteq> q\<close>
+    using id_nec2_3[THEN "\<rightarrow>E"] by blast
+qed
+
 AOT_theorem pos_not_equiv_ne_3: \<open>(\<not>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)) \<rightarrow> F \<noteq> G\<close>
   using "\<rightarrow>I" pos_not_equiv_ne_1[THEN "\<rightarrow>E"] "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 
 AOT_theorem pos_not_equiv_ne_4: \<open>(\<not>(\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> F \<noteq> G\<close>
   using "\<rightarrow>I" pos_not_equiv_ne_2[THEN "\<rightarrow>E"] "T\<diamond>"[THEN "\<rightarrow>E"] by blast
+
+AOT_theorem pos_not_equiv_ne_4_0: \<open>(\<not>(\<phi>{p} \<equiv> \<phi>{q})) \<rightarrow> p \<noteq> q\<close>
+  using "\<rightarrow>I" pos_not_equiv_ne_2_0[THEN "\<rightarrow>E"] "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 
 AOT_define relation_negation :: "\<Pi> \<Rightarrow> \<Pi>" ("_\<^sup>-")
   df_relation_negation: "[\<Pi>]\<^sup>- =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n \<not>[\<Pi>]x\<^sub>1...x\<^sub>n]"
@@ -4299,5 +4333,464 @@ proof -
     using thm_cont_propos_2[symmetric] by blast
   finally show ?thesis.
 qed
+
+AOT_define noncontingent_prop :: \<open>\<phi>\<close> ("p\<^sub>0")
+  p\<^sub>0_def: "(p\<^sub>0) =\<^sub>d\<^sub>f (\<forall>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> \<rightarrow> E!x))"
+
+AOT_theorem thm_noncont_propos_1:  \<open>Necessary0((p\<^sub>0))\<close>
+proof(rule contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_show \<open>\<box>(p\<^sub>0)\<close>
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF p\<^sub>0_def])
+    using log_prop_prop_2 apply simp
+    using if_p_then_p RN GEN by fast
+qed
+
+AOT_theorem thm_noncont_propos_2: \<open>Impossible0(((p\<^sub>0)\<^sup>-))\<close>
+proof(rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_show \<open>\<box>\<not>((p\<^sub>0)\<^sup>-)\<close>
+    apply (AOT_subst "\<guillemotleft>((p\<^sub>0)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<^sub>0\<guillemotright>")
+    using thm_relation_negation_3 GEN "\<forall>E"(1)[rotated, OF log_prop_prop_2] apply fast
+    apply (AOT_subst_rev "\<guillemotleft>p\<^sub>0\<guillemotright>" "\<guillemotleft>\<not>\<not>p\<^sub>0\<guillemotright>" )
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF p\<^sub>0_def])
+    using log_prop_prop_2 apply simp
+    using if_p_then_p RN GEN by fast
+qed
+
+AOT_theorem thm_noncont_propos_3: \<open>NonContingent0((p\<^sub>0))\<close>
+  apply(rule contingent_properties_3_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  using thm_noncont_propos_1 "\<or>I" by blast
+
+AOT_theorem thm_noncont_propos_4: \<open>NonContingent0(((p\<^sub>0)\<^sup>-))\<close>
+  apply(rule contingent_properties_3_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  using thm_noncont_propos_2 "\<or>I" by blast
+
+AOT_theorem thm_noncont_propos_5: \<open>\<exists>p\<exists>q (NonContingent0((p)) & NonContingent0((q)) & p \<noteq> q)\<close>
+proof(rule "\<exists>I")+
+  AOT_have 0: \<open>\<phi> \<noteq> (\<phi>)\<^sup>-\<close> for \<phi>
+    using thm_relation_negation_6 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_thus \<open>NonContingent0((p\<^sub>0)) & NonContingent0(((p\<^sub>0)\<^sup>-)) & (p\<^sub>0) \<noteq> (p\<^sub>0)\<^sup>-\<close>
+    using thm_noncont_propos_3 thm_noncont_propos_4 "&I" by auto
+qed(auto simp: log_prop_prop_2)
+
+AOT_act_theorem no_cnac: \<open>\<not>\<exists>x(E!x & \<not>\<^bold>\<A>E!x)\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>x(E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+  then AOT_obtain a where a: \<open>E!a & \<not>\<^bold>\<A>E!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<^bold>\<A>\<not>E!a\<close> using "&E" logic_actual_nec_1[axiom_inst, THEN "\<equiv>E"(2)] by blast
+  AOT_hence \<open>\<not>E!a\<close> using logic_actual[act_axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>E!a & \<not>E!a\<close> using a "&E" "&I" by blast
+  AOT_thus \<open>p & \<not>p\<close> for p using raa_cor_1 by blast
+qed
+
+AOT_theorem pos_not_pna_1: \<open>\<not>\<^bold>\<A>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<^bold>\<A>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+  AOT_hence \<open>\<exists>x \<^bold>\<A>(E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using Act_Basic_10[THEN "\<equiv>E"(1)] by blast
+  then AOT_obtain a where \<open>\<^bold>\<A>(E!a & \<not>\<^bold>\<A>E!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>)\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence 1: \<open>\<^bold>\<A>E!a & \<^bold>\<A>\<not>\<^bold>\<A>E!a\<close> using Act_Basic_2[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<not>\<^bold>\<A>\<^bold>\<A>E!a\<close> using "&E"(2) logic_actual_nec_1[axiom_inst, THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<not>\<^bold>\<A>E!a\<close> using logic_actual_nec_4[axiom_inst, THEN "\<equiv>E"(1)] RAA by blast
+  AOT_thus \<open>p & \<not>p\<close> for p using 1[THEN "&E"(1)] "&I" raa_cor_1 by blast
+qed
+
+AOT_theorem pos_not_pna_2: \<open>\<diamond>\<not>\<exists>x(E!x & \<not>\<^bold>\<A>E!x)\<close>
+proof (rule RAA(1))
+  AOT_show \<open>\<not>\<^bold>\<A>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close> using pos_not_pna_1 by blast
+next
+  AOT_assume \<open>\<not>\<diamond>\<not>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+  AOT_hence \<open>\<box>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using KBasic_12[THEN "\<equiv>E"(2)] by blast
+  AOT_thus \<open>\<^bold>\<A>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using nec_imp_act[THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem pos_not_pna_3: \<open>\<exists>x (\<diamond>E!x & \<not>\<^bold>\<A>E!x)\<close>
+proof -
+  AOT_obtain a where \<open>\<diamond>(E!a & \<not>\<^bold>\<A>E!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>)\<close>
+    using qml_4[axiom_inst] "BF\<diamond>"[THEN "\<rightarrow>E"] "\<exists>E"[rotated] by blast
+  AOT_hence \<theta>: \<open>\<diamond>E!a\<close> and \<xi>: \<open>\<diamond>\<not>\<^bold>\<A>E!a\<close> using KBasic2_3[THEN "\<rightarrow>E"] "&E" by blast+
+  AOT_have \<open>\<not>\<box>\<^bold>\<A>E!a\<close> using \<xi> KBasic_11[THEN "\<equiv>E"(2)] by blast
+  AOT_hence \<open>\<not>\<^bold>\<A>E!a\<close> using Act_Basic_6[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)] by blast
+  AOT_hence \<open>\<diamond>E!a & \<not>\<^bold>\<A>E!a\<close> using \<theta> "&I" by blast
+  thus ?thesis using "\<exists>I" by fast
+qed
+
+AOT_define contingent_prop :: \<phi> ("q\<^sub>0")
+  q\<^sub>0_def: \<open>(q\<^sub>0) =\<^sub>d\<^sub>f (\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close>
+
+AOT_theorem q\<^sub>0_prop: \<open>\<diamond>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close>
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def])
+  apply (fact log_prop_prop_2)
+  apply (rule "&I")
+   apply (fact qml_4[axiom_inst])
+  by (fact pos_not_pna_2)
+
+AOT_theorem basic_prop_1: \<open>Contingent0((q\<^sub>0))\<close>
+proof(rule contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_have \<open>\<not>Necessary0((q\<^sub>0)) & \<not>Impossible0((q\<^sub>0))\<close>
+  proof (rule "&I"; rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def]; (rule log_prop_prop_2 | rule raa_cor_2))
+    AOT_assume \<open>Necessary0(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close>
+    AOT_hence \<open>\<box>\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x)\<close>
+      using contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    AOT_hence \<open>\<^bold>\<A>\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x)\<close>
+      using Act_Basic_8[THEN "\<rightarrow>E"] qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+    AOT_thus \<open>\<^bold>\<A>\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x) & \<not>\<^bold>\<A>\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x)\<close>
+      using pos_not_pna_1 "&I" by blast
+  next
+    AOT_assume \<open>Impossible0(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close>
+    AOT_hence \<open>\<box>\<not>(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close>
+      using contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    AOT_hence \<open>\<not>\<diamond>(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close> using KBasic2_1[THEN "\<equiv>E"(1)] by blast
+    AOT_thus \<open>\<diamond>(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x)) & \<not>\<diamond>(\<exists>x (E!\<guillemotleft>x::\<kappa>\<guillemotright> & \<not>\<^bold>\<A>E!x))\<close>
+      using qml_4[axiom_inst] "&I" by blast
+  qed
+  AOT_thus \<open>\<not>(Necessary0((q\<^sub>0)) \<or> Impossible0((q\<^sub>0)))\<close>
+    using oth_class_taut_5_d "\<equiv>E"(2) by blast
+qed
+
+AOT_theorem basic_prop_2: \<open>\<exists>p Contingent0((p))\<close>
+  using "\<exists>I"(1)[rotated, OF log_prop_prop_2] basic_prop_1 by blast
+
+AOT_theorem basic_prop_3: \<open>Contingent0(((q\<^sub>0)\<^sup>-))\<close>
+  apply (AOT_subst "\<guillemotleft>(q\<^sub>0)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>q\<^sub>0\<guillemotright>")
+   apply (insert thm_relation_negation_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2]; fast)
+  apply (rule contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  apply (rule oth_class_taut_5_d[THEN "\<equiv>E"(2)])
+  apply (rule "&I")
+   apply (rule contingent_properties_1_0[THEN df_rules_formulas_1, THEN useful_tautologies_5[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+   apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+   apply (rule "=\<^sub>d\<^sub>fE"(2)[OF q\<^sub>0_def])
+    apply (rule log_prop_prop_2)
+   apply (rule q\<^sub>0_prop[THEN "&E"(1)])
+  apply (rule contingent_properties_2_0[THEN df_rules_formulas_1, THEN useful_tautologies_5[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
+  apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+  by (rule q\<^sub>0_prop[THEN "&E"(2)])
+
+AOT_theorem basic_prop_4: \<open>\<exists>p\<exists>q (p \<noteq> q & Contingent0(p) & Contingent0(q))\<close>
+proof(rule "\<exists>I")+
+  AOT_have 0: \<open>\<phi> \<noteq> (\<phi>)\<^sup>-\<close> for \<phi>
+    using thm_relation_negation_6 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_show \<open>(q\<^sub>0) \<noteq> (q\<^sub>0)\<^sup>- & Contingent0(q\<^sub>0) & Contingent0(((q\<^sub>0)\<^sup>-))\<close>
+    using basic_prop_1 basic_prop_3 "&I" 0 by presburger
+qed(auto simp: log_prop_prop_2)
+
+AOT_theorem proposition_facts_1: \<open>NonContingent0(p) \<rightarrow> \<not>\<exists>q (Contingent0(q) & q = p)\<close>
+proof(rule "\<rightarrow>I"; rule raa_cor_2)
+  AOT_assume \<open>NonContingent0(p)\<close>
+  AOT_hence 1: \<open>Necessary0(p) \<or> Impossible0(p)\<close>
+    using contingent_properties_3_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_assume \<open>\<exists>q (Contingent0(q) & q = p)\<close>
+  then AOT_obtain q where \<open>Contingent0(q) & q = p\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>Contingent0(p)\<close> using "=E" "&E" by fast
+  AOT_thus \<open>(Necessary0(p) \<or> Impossible0(p)) & \<not>(Necessary0(p) \<or> Impossible0(p))\<close>
+    using contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] 1 "&I" by blast
+qed
+
+AOT_theorem proposition_facts_2: \<open>Contingent0(p) \<rightarrow> \<not>\<exists>q (NonContingent0(q) & q = p)\<close>
+proof(rule "\<rightarrow>I"; rule raa_cor_2)
+  AOT_assume \<open>Contingent0(p)\<close>
+  AOT_hence 1: \<open>\<not>(Necessary0(p) \<or> Impossible0(p))\<close>
+    using contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_assume \<open>\<exists>q (NonContingent0(q) & q = p)\<close>
+  then AOT_obtain q where \<open>NonContingent0(q) & q = p\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>NonContingent0(p)\<close> using "=E" "&E" by fast
+  AOT_thus \<open>(Necessary0(p) \<or> Impossible0(p)) & \<not>(Necessary0(p) \<or> Impossible0(p))\<close>
+    using contingent_properties_3_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] 1 "&I" by blast
+qed
+
+AOT_theorem proposition_facts_3: \<open>(p\<^sub>0) \<noteq> (p\<^sub>0)\<^sup>- & (p\<^sub>0) \<noteq> (q\<^sub>0) & (p\<^sub>0) \<noteq> (q\<^sub>0)\<^sup>- & (p\<^sub>0)\<^sup>- \<noteq> (q\<^sub>0)\<^sup>- & (q\<^sub>0) \<noteq> (q\<^sub>0)\<^sup>-\<close>
+proof -
+  {
+    fix \<chi> \<phi> \<psi>
+    AOT_assume \<open>\<chi>{\<phi>}\<close>
+    moreover AOT_assume \<open>\<not>\<chi>{\<psi>}\<close>
+    ultimately AOT_have \<open>\<not>(\<chi>{\<phi>} \<equiv> \<chi>{\<psi>})\<close>
+      using RAA "\<equiv>E" by metis
+    moreover {
+      AOT_have \<open>\<forall>p\<forall>q ((\<not>(\<chi>{p} \<equiv> \<chi>{q})) \<rightarrow> p \<noteq> q)\<close>
+        by (rule "\<forall>I"; rule "\<forall>I"; rule pos_not_equiv_ne_4_0)
+      AOT_hence \<open>((\<not>(\<chi>{\<phi>} \<equiv> \<chi>{\<psi>})) \<rightarrow> \<phi> \<noteq> \<psi>)\<close>
+        using "\<forall>E" log_prop_prop_2 by blast
+    }
+    ultimately AOT_have \<open>\<phi> \<noteq> \<psi>\<close>
+      using "\<rightarrow>E" by blast
+  } note 0 = this
+  AOT_have contingent_neg: \<open>Contingent0(\<phi>) \<equiv> Contingent0(((\<phi>)\<^sup>-))\<close> for \<phi>
+    using thm_cont_propos_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_have not_noncontingent_if_contingent: \<open>\<not>NonContingent0(\<phi>)\<close> if \<open>Contingent0(\<phi>)\<close> for \<phi>
+    apply (rule contingent_properties_3_0[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+    using that contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  show ?thesis
+    apply (rule "&I")+
+    using thm_relation_negation_6 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] apply fast
+       apply (rule 0)
+    using thm_noncont_propos_3 apply fast
+       apply (rule not_noncontingent_if_contingent)
+       apply (fact AOT)
+      apply (rule 0)
+    apply (rule thm_noncont_propos_3)
+      apply (rule not_noncontingent_if_contingent)
+      apply (rule contingent_neg[THEN "\<equiv>E"(1)])
+      apply (fact AOT)
+     apply (rule 0)
+    apply (rule thm_noncont_propos_4)
+      apply (rule not_noncontingent_if_contingent)
+      apply (rule contingent_neg[THEN "\<equiv>E"(1)])
+     apply (fact AOT)
+    using thm_relation_negation_6 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+qed
+
+AOT_define cont_tf_1 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyTrue'(_')")
+  cont_tf_1: \<open>ContingentlyTrue(\<phi>) \<equiv>\<^sub>d\<^sub>f \<phi> & \<diamond>\<not>\<phi>\<close>
+
+AOT_define cont_tf_2 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyFalse'(_')")
+  cont_tf_2: \<open>ContingentlyFalse(\<phi>) \<equiv>\<^sub>d\<^sub>f \<not>\<phi> & \<diamond>\<phi>\<close>
+
+AOT_theorem cont_true_cont_1: \<open>ContingentlyTrue((p)) \<rightarrow> Contingent0((p))\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>ContingentlyTrue((p))\<close>
+  AOT_hence 1: \<open>p\<close> and 2: \<open>\<diamond>\<not>p\<close> using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+  AOT_have \<open>\<not>Necessary0((p))\<close>
+    apply (rule contingent_properties_1_0[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+    using 2 KBasic_11[THEN "\<equiv>E"(2)] by blast
+  moreover AOT_have \<open>\<not>Impossible0((p))\<close>
+    apply (rule contingent_properties_2_0[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+    using "T\<diamond>"[THEN "\<rightarrow>E", OF 1].
+  ultimately AOT_have \<open>\<not>(Necessary0((p)) \<or> Impossible0((p)))\<close>
+    using DeMorgan(2)[THEN "\<equiv>E"(2)] "&I" by blast
+  AOT_thus \<open>Contingent0((p))\<close>
+    using contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+qed
+
+AOT_theorem cont_true_cont_2: \<open>ContingentlyFalse((p)) \<rightarrow> Contingent0((p))\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>ContingentlyFalse((p))\<close>
+  AOT_hence 1: \<open>\<not>p\<close> and 2: \<open>\<diamond>p\<close> using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+  AOT_have \<open>\<not>Necessary0((p))\<close>
+    apply (rule contingent_properties_1_0[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+    using KBasic_11[THEN "\<equiv>E"(2)] "T\<diamond>"[THEN "\<rightarrow>E", OF 1] by blast
+  moreover AOT_have \<open>\<not>Impossible0((p))\<close>
+    apply (rule contingent_properties_2_0[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
+    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+    using 2.
+  ultimately AOT_have \<open>\<not>(Necessary0((p)) \<or> Impossible0((p)))\<close>
+    using DeMorgan(2)[THEN "\<equiv>E"(2)] "&I" by blast
+  AOT_thus \<open>Contingent0((p))\<close>
+    using contingent_properties_4_0[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+qed
+
+AOT_theorem cont_true_cont_3: \<open>ContingentlyTrue((p)) \<equiv> ContingentlyFalse(((p)\<^sup>-))\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>ContingentlyTrue((p))\<close>
+  AOT_hence 0: \<open>p & \<diamond>\<not>p\<close> using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_have 1: \<open>ContingentlyFalse(\<not>p)\<close>
+    apply (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    apply (AOT_subst_rev "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
+    by (fact 0)
+  AOT_show \<open>ContingentlyFalse(((p)\<^sup>-))\<close>
+    apply (AOT_subst "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+    using 1 by blast
+next
+  AOT_assume 1: \<open>ContingentlyFalse(((p)\<^sup>-))\<close>
+  AOT_have \<open>ContingentlyFalse(\<not>p)\<close>
+    apply (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+    using 1 by blast
+  AOT_hence \<open>\<not>\<not>p & \<diamond>\<not>p\<close> using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_hence \<open>p & \<diamond>\<not>p\<close>
+    using "&I" "&E" useful_tautologies_1[THEN "\<rightarrow>E"] by metis
+  AOT_thus \<open>ContingentlyTrue((p))\<close>
+    using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+qed
+
+AOT_theorem cont_true_cont_4: \<open>ContingentlyFalse((p)) \<equiv> ContingentlyTrue(((p)\<^sup>-))\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>ContingentlyFalse(p)\<close>
+  AOT_hence 0: \<open>\<not>p & \<diamond>p\<close>
+    using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_have \<open>\<not>p & \<diamond>\<not>\<not>p\<close>
+    apply (AOT_subst_rev "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
+    by (rule 0)
+  AOT_hence 1: \<open>ContingentlyTrue(\<not>p)\<close>
+    by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_show \<open>ContingentlyTrue(((p)\<^sup>-))\<close>
+    apply (AOT_subst "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+    by (fact 1)
+next
+  AOT_assume 1: \<open>ContingentlyTrue(((p)\<^sup>-))\<close>
+  AOT_have \<open>ContingentlyTrue(\<not>p)\<close>
+    apply (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+    by (rule 1)
+  AOT_hence 2: \<open>\<not>p & \<diamond>\<not>\<not>p\<close> using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_have \<open>\<diamond>p\<close>
+    apply (AOT_subst "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
+    using 2[THEN "&E"(2)].
+  AOT_hence \<open>\<not>p & \<diamond>p\<close> using 2[THEN "&E"(1)] "&I" by blast
+  AOT_thus \<open>ContingentlyFalse(p)\<close>
+    by (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+qed
+
+AOT_theorem cont_true_cont_5: \<open>(ContingentlyTrue((p)) & Necessary0((q))) \<rightarrow> p \<noteq> q\<close>
+proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule raa_cor_1)
+  AOT_assume \<open>ContingentlyTrue((p))\<close>
+  AOT_hence \<open>\<diamond>\<not>p\<close>
+    using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_hence 0: \<open>\<not>\<box>p\<close> using KBasic_11[THEN "\<equiv>E"(2)] by blast
+  AOT_assume \<open>Necessary0((q))\<close>
+  moreover AOT_assume \<open>\<not>(p \<noteq> q)\<close>
+  AOT_hence \<open>p = q\<close>
+    using noneq_infix[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1)]
+          useful_tautologies_1[THEN "\<rightarrow>E"] by blast
+  ultimately AOT_have \<open>Necessary0((p))\<close> using "=E" id_sym by blast
+  AOT_hence \<open>\<box>p\<close>
+    using contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_thus \<open>\<box>p & \<not>\<box>p\<close> using 0 "&I" by blast
+qed
+
+AOT_theorem cont_true_cont_6: \<open>(ContingentlyFalse((p)) & Impossible0((q))) \<rightarrow> p \<noteq> q\<close>
+proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule raa_cor_1)
+  AOT_assume \<open>ContingentlyFalse((p))\<close>
+  AOT_hence \<open>\<diamond>p\<close>
+    using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_hence 1: \<open>\<not>\<box>\<not>p\<close>
+    using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_assume \<open>Impossible0((q))\<close>
+  moreover AOT_assume \<open>\<not>(p \<noteq> q)\<close>
+  AOT_hence \<open>p = q\<close>
+    using noneq_infix[THEN "\<equiv>Df", THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1)]
+          useful_tautologies_1[THEN "\<rightarrow>E"] by blast
+  ultimately AOT_have \<open>Impossible0((p))\<close> using "=E" id_sym by blast
+  AOT_hence \<open>\<box>\<not>p\<close>
+    using contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_thus \<open>\<box>\<not>p & \<not>\<box>\<not>p\<close> using 1 "&I" by blast
+qed
+
+AOT_act_theorem q0cf_1: \<open>ContingentlyFalse(q\<^sub>0)\<close>
+  apply (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def])
+   apply (fact log_prop_prop_2)
+  apply (rule "&I")
+   apply (fact no_cnac)
+  by (fact qml_4[axiom_inst])
+
+AOT_act_theorem q0cf_2: \<open>ContingentlyTrue(((q\<^sub>0)\<^sup>-))\<close>
+proof -
+  AOT_have 0: \<open>((\<phi>)\<^sup>-) \<equiv> \<not>\<phi>\<close> for \<phi>
+    using thm_relation_negation_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_have 1: \<open>(\<phi>)\<^sup>- = (\<not>\<phi>)\<close> for \<phi>
+    using thm_relation_negation_7 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  show ?thesis
+  apply (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def])
+   apply (fact log_prop_prop_2)
+  apply (rule "&I")
+     apply (rule 0[THEN "\<equiv>E"(2)])
+     apply (fact no_cnac)
+    apply (rule "=E"[rotated, OF 1[THEN id_sym]])
+    apply (AOT_subst_rev "\<guillemotleft>\<exists>x (E!x & \<not>\<^bold>\<A>E!\<guillemotleft>x::\<kappa>\<guillemotright>)\<guillemotright>" "\<guillemotleft>\<not>\<not>(\<exists>x  (E!x & \<not>\<^bold>\<A>E!x))\<guillemotright>")
+    by (fact qml_4[axiom_inst])
+qed
+
+(* TODO: q0cf-rem skipped for now *)
+
+AOT_theorem cont_tf_thm_1: \<open>\<exists>p ContingentlyTrue((p))\<close>
+proof(rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I"; rule "\<exists>I")
+  AOT_assume \<open>q\<^sub>0\<close>
+  AOT_hence \<open>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(2)] "&I" by blast
+  AOT_thus \<open>ContingentlyTrue(q\<^sub>0)\<close>
+    by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+next
+  AOT_have 0: \<open>ContingentlyFalse(\<phi>) \<equiv> ContingentlyTrue(((\<phi>)\<^sup>-))\<close> for \<phi>
+    using cont_true_cont_4 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_assume \<open>\<not>q\<^sub>0\<close>
+  AOT_hence \<open>\<not>q\<^sub>0 & \<diamond>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(1)] "&I" by blast
+  AOT_hence \<open>ContingentlyFalse(q\<^sub>0)\<close>
+    by (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_thus \<open>ContingentlyTrue(((q\<^sub>0)\<^sup>-))\<close>
+    by (rule 0[THEN "\<equiv>E"(1)])
+qed(auto simp: log_prop_prop_2)
+
+
+AOT_theorem cont_tf_thm_2: \<open>\<exists>p ContingentlyFalse((p))\<close>
+proof(rule "\<or>E"(1)[OF exc_mid]; rule "\<rightarrow>I"; rule "\<exists>I")
+  AOT_have 0: \<open>ContingentlyTrue(\<phi>) \<equiv> ContingentlyFalse(((\<phi>)\<^sup>-))\<close> for \<phi>
+    using cont_true_cont_3 "\<forall>I" "\<forall>E"(1)[rotated, OF log_prop_prop_2] by fast
+  AOT_assume \<open>q\<^sub>0\<close>
+  AOT_hence \<open>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(2)] "&I" by blast
+  AOT_hence \<open>ContingentlyTrue(q\<^sub>0)\<close>
+    by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_thus \<open>ContingentlyFalse(((q\<^sub>0)\<^sup>-))\<close>
+    by (rule 0[THEN "\<equiv>E"(1)])
+next
+  AOT_assume \<open>\<not>q\<^sub>0\<close>
+  AOT_hence \<open>\<not>q\<^sub>0 & \<diamond>q\<^sub>0\<close> using q\<^sub>0_prop[THEN "&E"(1)] "&I" by blast
+  AOT_thus \<open>ContingentlyFalse(q\<^sub>0)\<close>
+    by (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+qed(auto simp: log_prop_prop_2)
+
+(* TODO: inspect modally strict subproof involving obtained variable *)
+AOT_theorem property_facts1_1: \<open>\<exists>F\<exists>x ([F]x & \<diamond>\<not>[F]\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>)\<close>
+proof -
+  fix x :: "'a :: AOT_\<kappa> AOT_var"
+  AOT_obtain p\<^sub>1 where \<open>ContingentlyTrue((p\<^sub>1))\<close>
+    using cont_tf_thm_1 "\<exists>E"[rotated] by blast
+  AOT_hence 1: \<open>p\<^sub>1 & \<diamond>\<not>p\<^sub>1\<close> using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_modally_strict {
+    AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
+      by (rule beta_C_cor_3[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
+    AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> \<box> ([\<lambda>z p]x \<equiv> p)\<close>
+      by (rule RN)
+    AOT_hence \<open>\<forall>p \<box>([\<lambda>z p]x \<equiv> p)\<close> using GEN by fast
+    AOT_hence \<open>\<box>([\<lambda>z p\<^sub>1]x \<equiv> p\<^sub>1)\<close> using "\<forall>E" by fast
+  } note 2 = this
+  AOT_hence \<open>\<box>([\<lambda>z p\<^sub>1]x \<equiv> p\<^sub>1)\<close> using "\<forall>E" by blast
+  AOT_hence \<open>[\<lambda>z p\<^sub>1]x\<close> using 1[THEN "&E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(2) by blast
+  moreover AOT_have \<open>\<diamond>\<not>[\<lambda>z p\<^sub>1]x\<close>
+    apply (AOT_subst_using subst: 2[THEN qml_2[axiom_inst, THEN "\<rightarrow>E"]])
+    using 1[THEN "&E"(2)] by blast
+  ultimately AOT_have \<open>[\<lambda>z p\<^sub>1]x & \<diamond>\<not>[\<lambda>z p\<^sub>1]x\<close> using "&I" by blast
+  AOT_hence \<open>\<exists>x ([\<lambda>z p\<^sub>1]x & \<diamond>\<not>[\<lambda>z p\<^sub>1]\<guillemotleft>x::'a\<guillemotright>)\<close> using "\<exists>I"(2) by fast
+  moreover AOT_have \<open>[\<lambda>z p\<^sub>1]\<down>\<close> by cqt_2_lambda
+  ultimately AOT_show \<open>\<exists>F\<exists>x ([F]x & \<diamond>\<not>[F]\<guillemotleft>x::'a\<guillemotright>)\<close> by (rule "\<exists>I"(1))
+qed
+
+(* TODO: inspect modally strict subproof involving obtained variable *)
+AOT_theorem property_facts1_2: \<open>\<exists>F\<exists>x (\<not>[F]x & \<diamond>[F]\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>)\<close>
+proof -
+  fix x :: "'a :: AOT_\<kappa> AOT_var"
+  AOT_obtain p\<^sub>1 where \<open>ContingentlyFalse((p\<^sub>1))\<close>
+    using cont_tf_thm_2 "\<exists>E"[rotated] by blast
+  AOT_hence 1: \<open>\<not>p\<^sub>1 & \<diamond>p\<^sub>1\<close> using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_modally_strict {
+    AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
+      by (rule beta_C_cor_3[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
+    AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> (\<not>[\<lambda>z p]x \<equiv> \<not>p)\<close>
+      using oth_class_taut_4_b "\<equiv>E" by blast
+    AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<not>[\<lambda>z p]x \<equiv> \<not>p)\<close>
+      by (rule RN)
+    AOT_hence \<open>\<forall>p \<box>(\<not>[\<lambda>z p]x \<equiv> \<not>p)\<close> using GEN by fast
+    AOT_hence \<open>\<box>(\<not>[\<lambda>z p\<^sub>1]x \<equiv> \<not>p\<^sub>1)\<close> using "\<forall>E" by fast
+  } note 2 = this
+  AOT_hence \<open>\<box>(\<not>[\<lambda>z p\<^sub>1]x \<equiv> \<not>p\<^sub>1)\<close> using "\<forall>E" by blast
+  AOT_hence 3: \<open>\<not>[\<lambda>z p\<^sub>1]x\<close> using 1[THEN "&E"(1)] qml_2[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(2) by blast
+  AOT_modally_strict {
+    AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
+      by (rule beta_C_cor_3[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
+    AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> \<box>([\<lambda>z p]x \<equiv> p)\<close>
+      by (rule RN)
+    AOT_hence \<open>\<forall>p \<box>([\<lambda>z p]x \<equiv> p)\<close> using GEN by fast
+    AOT_hence \<open>\<box>([\<lambda>z p\<^sub>1]x \<equiv> p\<^sub>1)\<close> using "\<forall>E" by fast
+  } note 4 = this
+  AOT_have \<open>\<diamond>[\<lambda>z p\<^sub>1]x\<close>
+    apply (AOT_subst_using subst: 4[THEN qml_2[axiom_inst, THEN "\<rightarrow>E"]])
+    using 1[THEN "&E"(2)] by blast
+  AOT_hence \<open>\<not>[\<lambda>z p\<^sub>1]x & \<diamond>[\<lambda>z p\<^sub>1]x\<close> using 3 "&I" by blast
+  AOT_hence \<open>\<exists>x (\<not>[\<lambda>z p\<^sub>1]x & \<diamond>[\<lambda>z p\<^sub>1]\<guillemotleft>x::'a\<guillemotright>)\<close> using "\<exists>I"(2) by fast
+  moreover AOT_have \<open>[\<lambda>z p\<^sub>1]\<down>\<close> by cqt_2_lambda
+  ultimately AOT_show \<open>\<exists>F\<exists>x (\<not>[F]x & \<diamond>[F]\<guillemotleft>x::'a\<guillemotright>)\<close> by (rule "\<exists>I"(1))
+qed
+
 
 end
