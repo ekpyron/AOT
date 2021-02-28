@@ -2,7 +2,9 @@ theory AOT_commands
   imports AOT_model
   keywords "AOT_define" :: thy_decl
        and "AOT_theorem" :: thy_goal
+       and "AOT_lemma" :: thy_goal
        and "AOT_act_theorem" :: thy_goal
+       and "AOT_act_lemma" :: thy_goal
 
        and "AOT_axiom" :: thy_goal
        and "AOT_act_axiom" :: thy_goal

@@ -403,15 +403,17 @@ fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding includes assump
   val (stmts,assumptions,ctxt) = read_statement (if axiom then (if modallyStrict then @{nonterminal "AOT_axiom"} else @{nonterminal "AOT_act_axiom"}) else @{nonterminal AOT_prop}) @{nonterminal AOT_prop} assumptions shows ctxt
 in Specification.theorem long "AOT_theorem" NONE afterQed thmBinding [] assumptions (Element.Shows stmts) int ctxt end)
 
-fun AOT_theorem spec axiom modallyStrict descr =
+fun AOT_theorem spec note axiom modallyStrict descr =
   Outer_Syntax.local_theory_to_proof' spec ("state " ^ descr)
     ((long_statement || short_statement) >> (fn (long, binding, includes, elems, concl) =>
-      (AOT_theorem_cmd axiom modallyStrict long AOT_note_theorems binding includes elems concl)));
+      (AOT_theorem_cmd axiom modallyStrict long (if note then AOT_note_theorems else K I) binding includes elems concl)));
 
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_theorem\<close> false true "AOT modally-strict theorem";
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_theorem\<close> false false "AOT modally-weak theorem"
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_axiom\<close> true true "AOT modally-strict axiom";
-val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_axiom\<close> true false "AOT modally-weak axiom"
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_lemma\<close> false false true "AOT modally-strict lemma";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_theorem\<close> true false true "AOT modally-strict theorem";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_lemma\<close> false false false "AOT modally-weak lemma";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_theorem\<close> true false false "AOT modally-weak theorem"
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_axiom\<close> true true true "AOT modally-strict axiom";
+val _ = AOT_theorem \<^command_keyword>\<open>AOT_act_axiom\<close> true true false "AOT modally-weak axiom"
 
 local
 val structured_statement =
