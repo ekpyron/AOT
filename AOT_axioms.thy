@@ -70,65 +70,6 @@ AOT_theorem identity: \<open>\<kappa> = \<kappa>' \<equiv>\<^sub>d\<^sub>f ([O!]
   using AOT_sem_ind_eq[of _ \<kappa> \<kappa>']
   by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
 
-(* TODO: remove, resp. move to later *)
-(*
-AOT_define AOT_eq_E :: \<open>\<Pi>\<close> ("'(=\<^sub>E')") \<open>(=\<^sub>E) =\<^sub>d\<^sub>f [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<close>
-syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>E" 50)
-translations (\<phi>) "\<kappa> =\<^sub>E \<kappa>'" == (\<phi>) "[(=\<^sub>E)]\<kappa> \<kappa>'" 
-lemma identity_old: \<open>\<kappa> = \<kappa>' \<equiv>\<^sub>d\<^sub>f \<kappa> =\<^sub>E \<kappa>' \<or> ([A!]\<kappa> & [A!]\<kappa>' & \<box>\<forall>F (\<kappa>[F] \<equiv> \<kappa>'[F]))\<close>
-proof -
-  have ax42_2: \<open>AOT_instance_of_cqt_2 \<phi> \<Longrightarrow> [w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close> for w \<phi>
-    by (simp add: AOT_instance_of_cqt_2_def)
-  have 1: \<open>[v \<Turnstile> [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<down>]\<close> for v
-    by (rule ax42_2) (auto intro!: AOT_instance_of_cqt_2_intro)
-  hence \<open>[v \<Turnstile> [(=\<^sub>E)] = [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]]\<close> for v
-    using AOT_eq_E[THEN AOT_sem_id_def0E1] by blast
-  hence \<open>[v \<Turnstile> [(=\<^sub>E)]\<down>]\<close> and AOT_eq_E_eq: \<open>\<guillemotleft>(=\<^sub>E)\<guillemotright> = \<guillemotleft>[\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<guillemotright>\<close> for v
-    unfolding AOT_sem_eq AOT_sem_denotes by blast+
-  {
-    fix v
-    assume a: \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> \<kappa> = \<kappa>'\<close>
-    hence 0: \<open>[v \<Turnstile> O!\<kappa> & O!\<kappa>' & \<box>\<forall>F ([F]\<kappa> \<equiv> [F]\<kappa>')] \<or> [v \<Turnstile>[A!]\<kappa> & [A!]\<kappa>' & \<box>\<forall>F (\<kappa>[F] \<equiv> \<kappa>'[F])]\<close>
-      using AOT_sem_ind_eq[THEN iffD1, of v \<kappa> \<kappa>']
-      by (simp add: AOT_sem_conj AOT_sem_box AOT_sem_forall AOT_sem_equiv AOT_sem_denotes)
-    have den: \<open>AOT_model_denotes (\<kappa>,\<kappa>')\<close>
-      by (simp add: AOT_model_denotes_prod_def a)
-    {
-      assume 0: \<open>[v \<Turnstile> O!\<kappa> & O!\<kappa>' & \<box>\<forall>F ([F]\<kappa> \<equiv> [F]\<kappa>')]\<close>
-      hence \<open>[v \<Turnstile> \<kappa> =\<^sub>E \<kappa>']\<close>
-        unfolding AOT_eq_E_eq
-        by (rule AOT_sem_lambda_beta[OF 1, unfolded AOT_sem_denotes, OF den, THEN iffD2, simplified])
-    }
-    hence \<open>[v \<Turnstile> \<kappa> =\<^sub>E \<kappa>'] \<or> ([v \<Turnstile> [A!]\<kappa>] \<and> [v \<Turnstile> [A!]\<kappa>'] \<and> (\<forall> v \<Pi> . AOT_model_denotes \<Pi> \<longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]]))\<close>
-      using "0" AOT_sem_conj a by blast
-  }
-  moreover {
-    fix v
-    assume 0: \<open>[v \<Turnstile> \<kappa> =\<^sub>E \<kappa>']\<close>
-    hence den: \<open>AOT_model_denotes (\<kappa>,\<kappa>')\<close>
-      using AOT_sem_exe AOT_sem_denotes by blast
-    have \<open>[v \<Turnstile> O!\<kappa> & O!\<kappa>' & \<box>\<forall>F ([F]\<kappa> \<equiv> [F]\<kappa>')]\<close>
-      using 0 unfolding AOT_eq_E_eq
-      using AOT_sem_lambda_beta[OF 1, unfolded AOT_sem_denotes, OF den]
-      by auto
-    hence \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> \<kappa> = \<kappa>'\<close>
-      using AOT_sem_ind_eq[THEN iffD2, of v \<kappa> \<kappa>']
-      by (simp add: AOT_sem_conj AOT_sem_box AOT_sem_forall AOT_sem_equiv AOT_sem_denotes)
-  }
-  moreover {
-    fix v
-    assume \<open>[v \<Turnstile> [A!]\<kappa>]\<close>
-    moreover assume \<open>[v \<Turnstile> [A!]\<kappa>']\<close>
-    moreover assume \<open>AOT_model_denotes \<Pi> \<Longrightarrow> [v \<Turnstile> \<kappa>[\<Pi>]] = [v \<Turnstile> \<kappa>'[\<Pi>]]\<close> for v \<Pi>
-    ultimately have \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> \<kappa> = \<kappa>'\<close>
-      using AOT_sem_ind_eq[THEN iffD2, of v \<kappa> \<kappa>']
-      unfolding AOT_sem_denotes by auto
-  }
-  ultimately show ?thesis
-    by (auto simp: AOT_sem_denotes AOT_model_equiv_def AOT_sem_disj AOT_sem_conj
-                   AOT_sem_box AOT_sem_forall AOT_sem_eq AOT_sem_equiv)
-qed
-*)
 AOT_theorem p_identity:
   \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>x(x[\<Pi>] \<equiv> x[\<Pi>'])\<close>
   using AOT_sem_enc_eq[of _ \<Pi> \<Pi>']
@@ -369,5 +310,8 @@ AOT_theorem universal_closure_act: assumes \<open>for arbitrary \<alpha>: \<phi>
 
 AOT_theorem act_closure_act: assumes \<open>\<phi> \<in> \<Lambda>\<close> shows \<open>\<^bold>\<A>\<phi> \<in> \<Lambda>\<close>
   using assms by (simp add: AOT_model_act_axiom_def AOT_sem_act)
+
+AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
+  by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
 
 end

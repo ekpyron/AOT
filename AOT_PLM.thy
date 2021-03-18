@@ -6075,6 +6075,248 @@ proof -
                                 OF "&I", OF A, OF B]\<close>\<close>\<close>\<close>)+
 qed
 
+AOT_theorem o_objects_exist_1: \<open>\<box>\<exists>x O!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+proof(rule RN)
+  AOT_modally_strict {
+    AOT_obtain a where \<open>\<diamond>(E!a & \<not>\<^bold>\<A>[E!]\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>)\<close>
+      using "\<exists>E"[where 'a='a, rotated, OF qml_4[axiom_inst, THEN "BF\<diamond>"[THEN "\<rightarrow>E"]]] by blast
+    AOT_hence 1: \<open>\<diamond>E!a\<close> by (metis KBasic2_3 con_dis_i_e_2_a "\<rightarrow>E")
+    AOT_have \<open>[\<lambda>x \<diamond>[E!]x]a\<close>
+    proof (rule betaC_2_a; cqt_2_lambda?)
+      AOT_show \<open>a\<down>\<close> using cqt_2_const_var[axiom_inst] by blast
+    next
+      AOT_show \<open>\<diamond>E!a\<close> by (fact 1)
+    qed
+    AOT_hence \<open>O!a\<close> by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated]) cqt_2_lambda
+    AOT_thus \<open>\<exists>x [O!]\<guillemotleft>x::'a\<guillemotright>\<close> by (rule "\<exists>I")
+  }
+qed
 
+AOT_theorem o_objects_exist_2: \<open>\<box>\<exists>x A!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+proof (rule RN)
+  AOT_modally_strict {
+    AOT_obtain a where \<open>[A!]\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+      using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+    AOT_thus \<open>\<exists>x A!\<guillemotleft>x::'a\<guillemotright>\<close> using "\<exists>I" by blast
+  }
+qed
+
+AOT_theorem o_objects_exist_3: \<open>\<box>\<not>\<forall>x O!x\<close>
+  by (rule RN) (metis (no_types, hide_lams) "\<exists>E" cqt_orig_1_a intro_elim_3_d modus_tollens_1 o_objects_exist_2 oa_contingent_2 qml_2[axiom_inst] reductio_aa_2)
+
+AOT_theorem o_objects_exist_4: \<open>\<box>\<not>\<forall>x A!x\<close>
+  by (rule RN) (metis (mono_tags, hide_lams) "\<exists>E" cqt_orig_1_a intro_elim_3_a modus_tollens_1 o_objects_exist_1 oa_contingent_2 qml_2[axiom_inst] "\<rightarrow>E")
+
+AOT_theorem o_objects_exist_5: \<open>\<box>\<not>\<forall>x E!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>\<close>
+proof (rule RN; rule raa_cor_2)
+  AOT_modally_strict {
+    AOT_assume \<open>\<forall>x E!\<guillemotleft>x::'a\<guillemotright>\<close>
+    moreover AOT_obtain a where abs: \<open>A!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+      using o_objects_exist_2[THEN qml_2[axiom_inst, THEN "\<rightarrow>E"]] "\<exists>E"[rotated] by blast
+    ultimately AOT_have \<open>E!a\<close> using "\<forall>E" by blast
+    AOT_hence 1: \<open>\<diamond>E!a\<close> by (metis T_S5_fund_1 "\<rightarrow>E")
+    AOT_have \<open>[\<lambda>y \<diamond>E!y]a\<close>
+    proof (rule betaC_2_a; cqt_2_lambda?)
+      AOT_show \<open>a\<down>\<close> using cqt_2_const_var[axiom_inst].
+    next
+      AOT_show \<open>\<diamond>E!a\<close> by (fact 1)
+    qed
+    AOT_hence \<open>O!a\<close>
+      by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated]) cqt_2_lambda
+    AOT_hence \<open>\<not>A!a\<close> by (metis intro_elim_3_a oa_contingent_2) 
+    AOT_thus \<open>p & \<not>p\<close> for p using abs by (metis raa_cor_3)
+  }
+qed
+
+AOT_theorem partition: \<open>\<not>\<exists>x (O!x & A!\<guillemotleft>x::'a::AOT_\<kappa>\<guillemotright>)\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>x (O!x & A!\<guillemotleft>x::'a\<guillemotright>)\<close>
+  then AOT_obtain a where \<open>O!a & A!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close> using "\<exists>E"[rotated] by blast
+  AOT_thus \<open>p & \<not>p\<close> for p by (metis con_dis_i_e_2_a con_dis_taut_2 intro_elim_3_a modus_tollens_1 oa_contingent_2 raa_cor_3)
+qed
+
+AOT_define eq_E :: \<open>\<Pi>\<close> ("'(=\<^sub>E')") \<open>(=\<^sub>E) =\<^sub>d\<^sub>f [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<close>
+
+syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>E" 50)
+translations (\<phi>) "\<kappa> =\<^sub>E \<kappa>'" == (\<phi>) "[(=\<^sub>E)]\<kappa> \<kappa>'" 
+
+AOT_theorem eq_E_denotes: \<open>[(=\<^sub>E)]\<down>\<close>
+  by (rule "=\<^sub>d\<^sub>fI"(2)[OF eq_E]) cqt_2_lambda+
+
+AOT_theorem eq_E_simple_1: \<open>x =\<^sub>E y \<equiv> (O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y))\<close>
+proof -
+  (* TODO: rethink the product hacks *)
+  AOT_have 0: \<open>\<guillemotleft>(AOT_term_of_var x,AOT_term_of_var y)\<guillemotright>\<down>\<close>
+    by (simp add: con_dis_i_e_1 cqt_2_const_var prod_denotesI vdash_properties_1_b)
+  AOT_have 1: \<open>[\<lambda>xy [O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<down>\<close> by cqt_2_lambda
+  show ?thesis apply (rule "=\<^sub>d\<^sub>fI"(2)[OF eq_E]; cqt_2_lambda?)
+    using beta_C_meta[THEN "\<rightarrow>E", OF 1, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, of "(AOT_term_of_var x,AOT_term_of_var y)", OF 0]
+    by fast
+qed
+
+AOT_theorem eq_E_simple_2: \<open>x =\<^sub>E y \<rightarrow> x = y\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>x =\<^sub>E y\<close>
+  AOT_hence \<open>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<close> using eq_E_simple_1[THEN "\<equiv>E"(1)] by blast
+  AOT_thus \<open>x = y\<close>
+    using "\<equiv>\<^sub>d\<^sub>fI"[OF identity] "\<or>I" by blast
+qed
+
+AOT_theorem id_nec3_1: \<open>x =\<^sub>E y \<equiv> \<box>(x =\<^sub>E y)\<close>
+proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>x =\<^sub>E y\<close>
+  AOT_hence \<open>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    using eq_E_simple_1 "\<equiv>E" by blast
+  AOT_hence \<open>\<box>O!x & \<box>O!y & \<box>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    by (metis S5Basic_6 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b intro_elim_3_d oa_facts_1 raa_cor_3 vdash_properties_10)
+  AOT_hence 1: \<open>\<box>(O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y))\<close>
+    by (metis "&E"(1) "&E"(2) "\<equiv>E"(2) KBasic_3 con_dis_i_e_1)
+  AOT_show \<open>\<box>(x =\<^sub>E y)\<close>
+    by (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y\<guillemotright>\<close> \<open>\<guillemotleft>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<guillemotright>\<close>) (fact 1)
+next
+  AOT_assume \<open>\<box>(x =\<^sub>E y)\<close>
+  AOT_thus \<open>x =\<^sub>E y\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem id_nec3_2: \<open>\<diamond>(x =\<^sub>E y) \<equiv> x =\<^sub>E y\<close>
+  by (meson "RE\<diamond>" S5Basic_2 id_nec3_1 intro_elim_3_a intro_elim_3_e oth_class_taut_2_e)
+
+AOT_theorem id_nec3_3: \<open>\<diamond>(x =\<^sub>E y) \<equiv> \<box>(x =\<^sub>E y)\<close>
+  by (meson id_nec3_1 id_nec3_2 intro_elim_3_e)
+
+syntax "_AOT_non_eq_E" :: \<open>\<Pi>\<close> ("'(\<noteq>\<^sub>E')")
+translations
+  (\<Pi>) "(\<noteq>\<^sub>E)" == (\<Pi>) "(=\<^sub>E)\<^sup>-"
+syntax "_AOT_non_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>\<^sub>E" 50)
+translations (\<phi>) "\<kappa> \<noteq>\<^sub>E \<kappa>'" == (\<phi>) "[(\<noteq>\<^sub>E)]\<kappa>\<kappa>'" 
+
+AOT_theorem thm_neg_eq_E: \<open>x \<noteq>\<^sub>E y \<equiv> \<not>(x =\<^sub>E y)\<close>
+proof -
+  (* TODO: rethink the product hacks *)
+  AOT_have 0: \<open>\<guillemotleft>(AOT_term_of_var x,AOT_term_of_var y)\<guillemotright>\<down>\<close>
+    by (simp add: con_dis_i_e_1 cqt_2_const_var prod_denotesI vdash_properties_1_b)
+  AOT_have \<theta>: \<open>[\<lambda>x\<^sub>1...x\<^sub>2 \<not>(=\<^sub>E)x\<^sub>1...x\<^sub>2]\<down>\<close> by cqt_2_lambda (* TODO_PLM: convoluted proof in PLM; TODO: product hack *)
+  AOT_have \<open>x \<noteq>\<^sub>E y \<equiv> [\<lambda>x\<^sub>1...x\<^sub>2 \<not>(=\<^sub>E)x\<^sub>1...x\<^sub>2]xy\<close>
+    by (rule "=\<^sub>d\<^sub>fI"(1)[OF df_relation_negation, OF \<theta>])
+       (meson oth_class_taut_3_a)
+  also AOT_have \<open>\<dots> \<equiv> \<not>(=\<^sub>E)xy\<close>
+    apply (rule beta_C_meta[THEN "\<rightarrow>E", unvarify \<nu>\<^sub>1\<nu>\<^sub>n])
+     apply cqt_2_lambda
+    by (fact 0)
+  finally show ?thesis.
+qed
+
+AOT_theorem id_nec_4_1: \<open>x \<noteq>\<^sub>E y \<equiv> \<box>(x \<noteq>\<^sub>E y)\<close>
+proof -
+  AOT_have \<open>x \<noteq>\<^sub>E y \<equiv> \<not>(x =\<^sub>E y)\<close> using thm_neg_eq_E.
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<diamond>(x =\<^sub>E y)\<close>
+    by (meson id_nec3_2 intro_elim_3_a oth_class_taut_2_e oth_class_taut_4_b)
+  also AOT_have \<open>\<dots> \<equiv> \<box>\<not>(x =\<^sub>E y)\<close>
+    by (meson KBasic2_1 intro_elim_3_b oth_class_taut_2_e)
+  also AOT_have \<open>\<dots> \<equiv> \<box>(x \<noteq>\<^sub>E y)\<close>
+    by (AOT_subst_rev "\<guillemotleft>x \<noteq>\<^sub>E y\<guillemotright>" "\<guillemotleft>\<not>(x =\<^sub>E y)\<guillemotright>")
+  finally show ?thesis.
+qed
+
+AOT_theorem id_nec_4_2: \<open>\<diamond>(x \<noteq>\<^sub>E y) \<equiv> (x \<noteq>\<^sub>E y)\<close>
+  by (meson "RE\<diamond>" S5Basic_2 id_nec_4_1 intro_elim_3_b intro_elim_3_e oth_class_taut_2_e)
+
+AOT_theorem id_nec_4_3: \<open>\<diamond>(x \<noteq>\<^sub>E y) \<equiv> \<box>(x \<noteq>\<^sub>E y)\<close>
+  by (meson id_nec_4_1 id_nec_4_2 intro_elim_3_e)
+
+AOT_theorem id_act2_1: \<open>x =\<^sub>E y \<equiv> \<^bold>\<A>x =\<^sub>E y\<close>
+  by (meson Act_Basic_5 Act_Sub_2 RA_2 id_nec3_2 intro_elim_3_a intro_elim_3_f)
+AOT_theorem id_act2_2: \<open>x \<noteq>\<^sub>E y \<equiv> \<^bold>\<A>x \<noteq>\<^sub>E y\<close>
+  by (meson Act_Basic_5 Act_Sub_2 RA_2 id_nec_4_2 intro_elim_3_a intro_elim_3_f)
+
+AOT_theorem ord_eq_Eequiv_1: \<open>O!x \<rightarrow> x =\<^sub>E x\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume 1: \<open>O!x\<close>
+  AOT_show \<open>x =\<^sub>E x\<close>
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF eq_E]) apply cqt_2_lambda
+    apply (rule betaC_2_a)
+      apply cqt_2_lambda
+     apply (simp add: con_dis_i_e_1 cqt_2_const_var prod_denotesI vdash_properties_1_b)
+    by (simp add: "1" RN con_dis_i_e_1 oth_class_taut_3_a universal_cor)
+qed
+
+AOT_theorem ord_eq_Eequiv_2: \<open>x =\<^sub>E y \<rightarrow> y =\<^sub>E x\<close>
+proof(rule CP)
+  AOT_assume 1: \<open>x =\<^sub>E y\<close>
+  AOT_hence 2: \<open>x = y\<close> by (metis eq_E_simple_2 vdash_properties_10) 
+  AOT_have \<open>O!x\<close> using 1 by (meson con_dis_i_e_2_a eq_E_simple_1 intro_elim_3_a)
+  AOT_hence \<open>x =\<^sub>E x\<close> using ord_eq_Eequiv_1 "\<rightarrow>E" by blast
+  AOT_thus \<open>y =\<^sub>E x\<close> using "=E"[rotated, OF 2] by fast
+qed
+
+AOT_theorem ord_eq_Eequiv_3: \<open>(x =\<^sub>E y & y =\<^sub>E z) \<rightarrow> x =\<^sub>E z\<close>
+proof (rule CP)
+  AOT_assume 1: \<open>x =\<^sub>E y & y =\<^sub>E z\<close>
+  AOT_hence \<open>x = y & y = z\<close>
+    by (metis con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b eq_E_simple_2 vdash_properties_6)
+  AOT_hence \<open>x = z\<close> by (metis id_eq_3 vdash_properties_6)
+  moreover AOT_have \<open>x =\<^sub>E x\<close>
+    using 1[THEN "&E"(1)] con_dis_i_e_2_a eq_E_simple_1 intro_elim_3_a ord_eq_Eequiv_1 "\<rightarrow>E" by blast
+  ultimately AOT_show \<open>x =\<^sub>E z\<close>
+    using "=E" by fast
+qed
+
+AOT_theorem ord_eq_E_eq: \<open>(O!x \<or> O!y) \<rightarrow> \<box>(x = y \<equiv> x =\<^sub>E y)\<close>
+proof(rule CP)
+  AOT_assume \<open>O!x \<or> O!y\<close>
+  moreover {
+    AOT_assume \<open>O!x\<close>
+    AOT_hence \<open>\<box>O!x\<close> by (metis oa_facts_1 vdash_properties_10)
+    moreover {
+      AOT_modally_strict {
+        AOT_have \<open>O!x \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
+        proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+          AOT_assume \<open>O!x\<close>
+          AOT_hence \<open>x =\<^sub>E x\<close> by (metis ord_eq_Eequiv_1 "\<rightarrow>E")
+          moreover AOT_assume \<open>x = y\<close>
+          ultimately AOT_show \<open>x =\<^sub>E y\<close> using "=E" by fast
+        next
+          AOT_assume \<open>x =\<^sub>E y\<close>
+          AOT_thus \<open>x = y\<close> by (metis eq_E_simple_2 "\<rightarrow>E")
+        qed
+      }
+      AOT_hence \<open>\<box>O!x \<rightarrow> \<box>(x = y \<equiv> x =\<^sub>E y)\<close> by (metis RM_1)
+    }
+    ultimately AOT_have \<open>\<box>(x = y \<equiv> x =\<^sub>E y)\<close> using "\<rightarrow>E" by blast
+  }
+  moreover {
+    AOT_assume \<open>O!y\<close>
+    AOT_hence \<open>\<box>O!y\<close> by (metis oa_facts_1 vdash_properties_10)
+    moreover {
+      AOT_modally_strict {
+        AOT_have \<open>O!y \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
+        proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
+          AOT_assume \<open>O!y\<close>
+          AOT_hence \<open>y =\<^sub>E y\<close> by (metis ord_eq_Eequiv_1 "\<rightarrow>E")
+          moreover AOT_assume \<open>x = y\<close>
+          ultimately AOT_show \<open>x =\<^sub>E y\<close> using "=E" id_sym by fast
+        next
+          AOT_assume \<open>x =\<^sub>E y\<close>
+          AOT_thus \<open>x = y\<close> by (metis eq_E_simple_2 "\<rightarrow>E")
+        qed
+      }
+      AOT_hence \<open>\<box>O!y \<rightarrow> \<box>(x = y \<equiv> x =\<^sub>E y)\<close> by (metis RM_1)
+    }
+    ultimately AOT_have \<open>\<box>(x = y \<equiv> x =\<^sub>E y)\<close> using "\<rightarrow>E" by blast
+  }
+  ultimately AOT_show \<open>\<box>(x = y \<equiv> x =\<^sub>E y)\<close> by (metis con_dis_i_e_4_c raa_cor_1)
+qed
+
+AOT_theorem ord_eq_E_eq_2: \<open>O!y \<rightarrow> [\<lambda>x x = y]\<down>\<close>
+proof (rule "\<rightarrow>I"; rule safe_ext[axiom_inst, THEN "\<rightarrow>E"]; rule "&I")
+  AOT_show \<open>[\<lambda>x x =\<^sub>E y]\<down>\<close> by cqt_2_lambda
+next
+  AOT_assume \<open>O!y\<close>
+  AOT_hence 1: \<open>\<box>(x = y \<equiv> x =\<^sub>E y)\<close> for x using ord_eq_E_eq "\<rightarrow>E" "\<or>I" by blast
+  AOT_have \<open>\<box>(x =\<^sub>E y \<equiv> x = y)\<close> for x
+    by (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y \<equiv> x = y\<guillemotright>\<close> \<open>\<guillemotleft>x = y \<equiv> x =\<^sub>E y\<guillemotright>\<close>) (fact 1)
+  AOT_hence \<open>\<forall>x \<box>(x =\<^sub>E y \<equiv> x = y)\<close> by (rule GEN)
+  AOT_thus \<open>\<box>\<forall>x (x =\<^sub>E y \<equiv> x = y)\<close> by (rule BF[THEN "\<rightarrow>E"])
+qed
 
 end
