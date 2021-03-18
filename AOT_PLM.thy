@@ -5886,46 +5886,46 @@ proof -
   note props = props this
 
   (* TODO_PLM: binary property 9 wrong in PLM *)
-  let ?\<Pi> = "\<guillemotleft>[\<lambda>y \<not>[E!]y & (\<not>[A!]y \<or> q\<^sub>0)]\<guillemotright>"
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y \<not>[E!]y & ([O!]y \<or> q\<^sub>0)]\<guillemotright>"
   AOT_modally_strict {
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by cqt_2_lambda
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
   proof(safe intro!: "&I"; AOT_subst_using subst: beta_C_meta[THEN "\<rightarrow>E", OF 1])
-    AOT_show \<open>\<^bold>\<A>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0))\<close>
-      by (metis Act_Basic_1 Act_Basic_2 Act_Basic_9 con_dis_i_e_1 con_dis_i_e_3_a con_dis_i_e_4_b intro_elim_3_c not_act_abs_b not_act_concrete_b raa_cor_1)
-  next AOT_show \<open>\<not>\<^bold>\<Delta>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0))\<close>
+    AOT_show \<open>\<^bold>\<A>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
+      by (metis Act_Basic_1 Act_Basic_2 Act_Basic_9 act_ord_b con_dis_i_e_1 con_dis_i_e_3_a
+                con_dis_i_e_4_b intro_elim_3_c not_act_concrete_b raa_cor_1)
+  next AOT_show \<open>\<not>\<^bold>\<Delta>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
     proof (rule act_and_pos_not_not_delta)
-      AOT_show \<open>\<^bold>\<A>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0))\<close>
-        by (metis Act_Basic_1 Act_Basic_2 Act_Basic_9 con_dis_i_e_1 con_dis_i_e_3_a con_dis_i_e_4_b intro_elim_3_c not_act_abs_b not_act_concrete_b raa_cor_1)
+      AOT_show \<open>\<^bold>\<A>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
+        by (metis Act_Basic_1 Act_Basic_2 Act_Basic_9 act_ord_b con_dis_i_e_1 con_dis_i_e_3_a
+                  con_dis_i_e_4_b intro_elim_3_c not_act_concrete_b raa_cor_1)
     next
-      AOT_show \<open>\<diamond>\<not>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0))\<close>
-      proof (AOT_subst \<open>\<guillemotleft>\<not>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0))\<guillemotright>\<close> \<open>\<guillemotleft>[E!]b \<or> \<not>(\<not>[A!]b \<or> q\<^sub>0)\<guillemotright>\<close>)
+      AOT_show \<open>\<diamond>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
+      proof (AOT_subst \<open>\<guillemotleft>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<guillemotright>\<close> \<open>\<guillemotleft>[E!]b \<or> \<not>([O!]b \<or> q\<^sub>0)\<guillemotright>\<close>)
         AOT_modally_strict {
-          AOT_show \<open>\<not>(\<not>[E!]b & (\<not>[A!]b \<or> q\<^sub>0)) \<equiv> [E!]b \<or> \<not>(\<not>[A!]b \<or> q\<^sub>0)\<close>
+          AOT_show \<open>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0)) \<equiv> [E!]b \<or> \<not>([O!]b \<or> q\<^sub>0)\<close>
             by (metis con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b deduction_theorem intro_elim_2 reductio_aa_1)
         }
       next
-        AOT_show \<open>\<diamond>([E!]b \<or> \<not>(\<not>[A!]b \<or> q\<^sub>0))\<close>
+        AOT_show \<open>\<diamond>([E!]b \<or> \<not>([O!]b \<or> q\<^sub>0))\<close>
           using KBasic2_2 b_prop con_dis_i_e_2_a con_dis_i_e_3_a intro_elim_3_c raa_cor_3 by blast
        qed
      qed
    next
-     AOT_show \<open>\<not>\<^bold>\<A>(\<not>[E!]a & (\<not>[A!]a \<or> q\<^sub>0))\<close>
-       by (metis "&E"(2) Act_Basic_2 Act_Basic_9 Act_Sub_1 act_abs_a con_dis_i_e_1 intro_elim_3_a
-                 intro_elim_3_c not_act_q_zero oth_class_taut_5_d raa_cor_1)
+     AOT_show \<open>\<not>\<^bold>\<A>(\<not>[E!]a & ([O!]a \<or> q\<^sub>0))\<close>
+       using Act_Basic_2 Act_Basic_9 con_dis_i_e_2_b con_dis_i_e_4_c intro_elim_3_a not_act_ord_a not_act_q_zero reductio_aa_2 by blast
    next
-     AOT_show \<open>\<^bold>\<Delta>(\<not>[E!]a & (\<not>[A!]a \<or> q\<^sub>0))\<close>
+     AOT_show \<open>\<^bold>\<Delta>(\<not>[E!]a & ([O!]a \<or> q\<^sub>0))\<close>
      proof (rule not_act_and_pos_delta)
-       AOT_show \<open>\<not>\<^bold>\<A>(\<not>[E!]a & (\<not>[A!]a \<or> q\<^sub>0))\<close>
-         by (metis "&E"(2) Act_Basic_2 Act_Basic_9 Act_Sub_1 act_abs_a con_dis_i_e_1 intro_elim_3_a
-                   intro_elim_3_c not_act_q_zero oth_class_taut_5_d raa_cor_1)
+       AOT_show \<open>\<not>\<^bold>\<A>(\<not>[E!]a & ([O!]a \<or> q\<^sub>0))\<close>
+         by (metis Act_Basic_2 Act_Basic_9 con_dis_i_e_2_b con_dis_i_e_4_c intro_elim_3_a not_act_ord_a not_act_q_zero reductio_aa_2)
      next
        AOT_have \<open>\<box>\<not>[E!]a\<close>
          using KBasic2_1 intro_elim_3_b not_act_and_pos_delta not_act_concrete_a not_delta_concrete_a raa_cor_5 by blast
-       moreover AOT_have \<open>\<diamond>(\<not>[A!]a \<or> q\<^sub>0)\<close>
+       moreover AOT_have \<open>\<diamond>([O!]a \<or> q\<^sub>0)\<close>
          by (metis KBasic2_2 con_dis_i_e_2_a con_dis_i_e_3_b intro_elim_3_c q\<^sub>0_prop raa_cor_3)
-       ultimately AOT_show \<open>\<diamond>(\<not>[E!]a & (\<not>[A!]a \<or> q\<^sub>0))\<close>
+       ultimately AOT_show \<open>\<diamond>(\<not>[E!]a & ([O!]a \<or> q\<^sub>0))\<close>
          by (metis KBasic_16 con_dis_i_e_1 vdash_properties_10)
      qed
    qed
