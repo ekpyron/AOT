@@ -2,6 +2,9 @@ theory AOT_PLM
   imports AOT_axioms "HOL-Eisbach.Eisbach_Tools"
 begin
 
+(* constrain sledgehammer to the abstraction layer *)
+unbundle AOT_no_atp
+
 (* To enable meta syntax: *)
 (*interpretation AOT_meta_syntax.*)
 (* To disable meta syntax: *)
@@ -1870,7 +1873,7 @@ proof(rule "\<rightarrow>I")
     using actual_desc_2 "=E" "\<rightarrow>E" by fast
 qed
 
-(* TODO: the proof of this in PLM seems fishy *)
+(* TODO: change to proof in PLM *)
 AOT_theorem actual_desc_5: \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> \<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x})\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume 0: \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
@@ -2442,7 +2445,6 @@ proof(rule "\<rightarrow>I"; rule raa_cor_1)
   AOT_thus \<open>\<diamond>\<psi> & \<not>\<diamond>\<psi>\<close> using "&I"(1) 1[THEN "\<rightarrow>E"] KBasic_11 intro_elim_3_d raa_cor_3 by blast
 qed
 
-(* TODO: note: additional parentheses in PLM *)
 AOT_theorem KBasic2_7: \<open>(\<box>(\<phi> \<or> \<psi>) & \<diamond>\<not>\<phi>) \<rightarrow> \<diamond>\<psi>\<close>
 proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   AOT_assume \<open>\<box>(\<phi> \<or> \<psi>)\<close>
@@ -2470,8 +2472,7 @@ proof(rule "\<rightarrow>I")
 qed
 lemmas "5\<diamond>" = T_S5_fund_2
 
-(* TODO: incorrect reference in note at the end of the theorem in PLM.
-   Also interestingly none of these have proofs in PLM. *)
+(* Also interestingly none of these have proofs in PLM. *)
 AOT_theorem Act_Sub_1: \<open>\<^bold>\<A>\<phi> \<equiv> \<not>\<^bold>\<A>\<not>\<phi>\<close>
   by (AOT_subst "\<guillemotleft>\<^bold>\<A>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<^bold>\<A>\<phi>\<guillemotright>")
      (simp add: logic_actual_nec_1[axiom_inst])
@@ -3512,7 +3513,6 @@ proof(rule RAA(2))
   qed
 qed(simp)
 
-(* TODO[IMPORTANT]: this is wrong in PLM *)
 AOT_theorem block_paradox_5_wrong: \<open>\<forall>x\<forall>y\<exists>F ([F]xy \<equiv> x = \<guillemotleft>y::'a::AOT_\<kappa>\<guillemotright>)\<close>
 proof (rule "\<forall>I")+
   fix x y :: "'a AOT_var"
@@ -3662,7 +3662,6 @@ proof (rule "\<rightarrow>I")
     using noneq_infix[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
 qed
 
-(* TODO: this proof seems to be a bit convoluted in PLM; the version below seems simpler *)
 AOT_theorem pos_not_equiv_ne_2: \<open>(\<diamond>\<not>(\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> F \<noteq> G\<close>
 proof (rule "\<rightarrow>I")
   AOT_modally_strict {
@@ -4853,11 +4852,6 @@ private lemmas eqnotnec_123_Aux_\<xi> =  eqnotnec_123_Aux_\<theta>[THEN oth_clas
                       THEN "RM\<diamond>"]
 private lemmas eqnotnec_123_Aux_\<xi>' = eqnotnec_123_Aux_\<theta>[THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)], THEN "RM\<diamond>"]
 
-
-(* TODO: typo in PLM in proof of \<xi> first indented formula: parentheses *)
-(* also: generally convoluted proof; step from E to F is weird (p\<^sub>1 & \<diamond>\<not>p\<^sub>1 is locally true anyways -
-   if that was not to be used, it should have been carried as assumption instead;
-   only \<zeta> and \<omega> need to be modally strict) *)
 AOT_theorem eqnotnec_1: \<open>\<exists>F\<exists>G(\<forall>x([F]x \<equiv> [G]x) & \<diamond>\<not>\<forall>x([F]x \<equiv> [G]x))\<close>
 proof-
   AOT_obtain p\<^sub>1 where \<open>ContingentlyTrue(p\<^sub>1)\<close> using cont_tf_thm_1 "\<exists>E"[rotated] by blast
@@ -5553,6 +5547,9 @@ proof -
     using cont_nec_fact2_2 by blast
 qed
 
+AOT_define necessary_or_contigently_false :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>\<Delta>_" [49] 54)
+  \<open>\<^bold>\<Delta>\<phi> \<equiv>\<^sub>d\<^sub>f \<box>\<phi> \<or> (\<not>\<^bold>\<A>\<phi> & \<diamond>\<phi>)\<close>
+
 AOT_theorem sixteen:
  shows \<open>\<exists>F\<^sub>1\<exists>F\<^sub>2\<exists>F\<^sub>3\<exists>F\<^sub>4\<exists>F\<^sub>5\<exists>F\<^sub>6\<exists>F\<^sub>7\<exists>F\<^sub>8\<exists>F\<^sub>9\<exists>F\<^sub>1\<^sub>0\<exists>F\<^sub>1\<^sub>1\<exists>F\<^sub>1\<^sub>2\<exists>F\<^sub>1\<^sub>3\<exists>F\<^sub>1\<^sub>4\<exists>F\<^sub>1\<^sub>5\<exists>F\<^sub>1\<^sub>6 (
 \<guillemotleft>F\<^sub>1::<'a::AOT_\<kappa>>\<guillemotright> \<noteq> F\<^sub>2 & F\<^sub>1 \<noteq> F\<^sub>3 & F\<^sub>1 \<noteq> F\<^sub>4 & F\<^sub>1 \<noteq> F\<^sub>5 & F\<^sub>1 \<noteq> F\<^sub>6 & F\<^sub>1 \<noteq> F\<^sub>7 & F\<^sub>1 \<noteq> F\<^sub>8 & F\<^sub>1 \<noteq> F\<^sub>9 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>0 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>1 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1 \<noteq> F\<^sub>1\<^sub>6 &
@@ -5569,8 +5566,166 @@ F\<^sub>1\<^sub>1 \<noteq> F\<^sub>1\<^sub>2 & F\<^sub>1\<^sub>1 \<noteq> F\<^su
 F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>3 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>2 \<noteq> F\<^sub>1\<^sub>6 &
 F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>4 & F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>3 \<noteq> F\<^sub>1\<^sub>6 &
 F\<^sub>1\<^sub>4 \<noteq> F\<^sub>1\<^sub>5 & F\<^sub>1\<^sub>4 \<noteq> F\<^sub>1\<^sub>6 &
-F\<^sub>1\<^sub>6 \<noteq> F\<^sub>1\<^sub>6)\<close> 
-  oops
+F\<^sub>1\<^sub>5 \<noteq> F\<^sub>1\<^sub>6)\<close> 
+proof -
 
+  let ?d = "\<lambda> \<phi> . \<guillemotleft>\<box>\<phi> \<or> (\<not>\<^bold>\<A>\<phi> & \<diamond>\<phi>)\<guillemotright>"
+
+  AOT_obtain a where \<open>A!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+  AOT_obtain b where \<open>\<diamond>[E!]b & \<not>\<^bold>\<A>[E!]\<guillemotleft>AOT_term_of_var b::'a\<guillemotright>\<close>
+    using pos_not_pna_3 using "\<exists>E"[rotated] by blast
+
+  AOT_have \<open>[L\<^sup>-]\<down>\<close> and \<open>\<not>\<^bold>\<A>[L\<^sup>-]b & \<not>\<^bold>\<Delta>[L\<^sup>-]b & \<not>\<^bold>\<A>[L\<^sup>-]a & \<not>\<^bold>\<Delta>[L\<^sup>-]a\<close>
+     apply (simp add: rel_neg_T_3) sorry
+  then AOT_obtain F\<^sub>0 where \<open>\<not>\<^bold>\<A>[F\<^sub>0]b & \<not>\<^bold>\<Delta>[F\<^sub>0]b & \<not>\<^bold>\<A>[F\<^sub>0]a & \<not>\<^bold>\<Delta>[F\<^sub>0]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>0]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>0]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>0]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>0]a\<close>
+    using "&E" by blast+
+  note props = this
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y & q\<^sub>0]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1 where \<open>\<not>\<^bold>\<A>[F\<^sub>1]b & \<not>\<^bold>\<Delta>[F\<^sub>1]b & \<not>\<^bold>\<A>[F\<^sub>1]a & \<^bold>\<Delta>[F\<^sub>1]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>1]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y & \<not>q\<^sub>0]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>2 where \<open>\<not>\<^bold>\<A>[F\<^sub>2]b & \<not>\<^bold>\<Delta>[F\<^sub>2]b & \<^bold>\<A>[F\<^sub>2]a & \<not>\<^bold>\<Delta>[F\<^sub>2]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>2]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>2]b\<close> and \<open>\<^bold>\<A>[F\<^sub>2]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>2]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[A!]\<down>\<close> and \<open>\<not>\<^bold>\<A>[A!]b & \<not>\<^bold>\<Delta>[A!]b & \<^bold>\<A>[A!]a & \<^bold>\<Delta>[A!]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>3 where \<open>\<not>\<^bold>\<A>[F\<^sub>3]b & \<not>\<^bold>\<Delta>[F\<^sub>3]b & \<^bold>\<A>[F\<^sub>3]a & \<^bold>\<Delta>[F\<^sub>3]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>3]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>3]b\<close> and \<open>\<^bold>\<A>[F\<^sub>3]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>3]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[E!]\<down>\<close> and \<open>\<not>\<^bold>\<A>[E!]b & \<^bold>\<Delta>[E!]b & \<not>\<^bold>\<A>[E!]a & \<not>\<^bold>\<Delta>[E!]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>4 where \<open>\<not>\<^bold>\<A>[F\<^sub>4]b & \<^bold>\<Delta>[F\<^sub>4]b & \<not>\<^bold>\<A>[F\<^sub>4]a & \<not>\<^bold>\<Delta>[F\<^sub>4]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>4]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>4]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>4]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>4]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[\<lambda>y q\<^sub>0]\<down>\<close> and \<open>\<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]b & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]b & \<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]a & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>5 where \<open>\<not>\<^bold>\<A>[F\<^sub>5]b & \<^bold>\<Delta>[F\<^sub>5]b & \<not>\<^bold>\<A>[F\<^sub>5]a & \<^bold>\<Delta>[F\<^sub>5]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>5]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>5]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [E!]y \<or> ([A!]y & \<not>q\<^sub>0)]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>6 where \<open>\<not>\<^bold>\<A>[F\<^sub>6]b & \<^bold>\<Delta>[F\<^sub>6]b & \<^bold>\<A>[F\<^sub>6]a & \<not>\<^bold>\<Delta>[F\<^sub>6]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>6]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>6]b\<close> and \<open>\<^bold>\<A>[F\<^sub>6]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>6]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y \<or> [E!]y]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>7 where \<open>\<not>\<^bold>\<A>[F\<^sub>7]b & \<^bold>\<Delta>[F\<^sub>7]b & \<^bold>\<A>[F\<^sub>7]a & \<^bold>\<Delta>[F\<^sub>7]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>7]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>7]b\<close> and \<open>\<^bold>\<A>[F\<^sub>7]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>7]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y & \<not>[E!]y]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>8 where \<open>\<^bold>\<A>[F\<^sub>8]b & \<not>\<^bold>\<Delta>[F\<^sub>8]b & \<not>\<^bold>\<A>[F\<^sub>8]a & \<not>\<^bold>\<Delta>[F\<^sub>8]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>8]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>8]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>8]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>8]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y \<not>[E!]y \<or> ([A!]y & q\<^sub>0)]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>9 where \<open>\<^bold>\<A>[F\<^sub>9]b & \<not>\<^bold>\<Delta>[F\<^sub>9]b & \<not>\<^bold>\<A>[F\<^sub>9]a & \<^bold>\<Delta>[F\<^sub>9]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>9]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>9]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>9]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>9]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[\<lambda>y \<not>q\<^sub>0]\<down>\<close> and \<open>\<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]b & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]b & \<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]a & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1\<^sub>0 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]b & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]b & \<^bold>\<A>[F\<^sub>1\<^sub>0]a & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[E!\<^sup>-]\<down>\<close> and \<open>\<^bold>\<A>[E!\<^sup>-]b & \<not>\<^bold>\<Delta>[E!\<^sup>-]b & \<^bold>\<A>[E!\<^sup>-]a & \<^bold>\<Delta>[E!\<^sup>-]a\<close>
+     apply (simp add: rel_neg_T_3) sorry
+  then AOT_obtain F\<^sub>1\<^sub>1 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]b & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]b & \<^bold>\<A>[F\<^sub>1\<^sub>1]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>1]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[O!]\<down>\<close> and \<open>\<^bold>\<A>[O!]b & \<^bold>\<Delta>[O!]b & \<not>\<^bold>\<A>[O!]a & \<not>\<^bold>\<Delta>[O!]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1\<^sub>2 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>2]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>2]b & \<not>\<^bold>\<A>[F\<^sub>1\<^sub>2]a & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>2]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>2]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>2]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>1\<^sub>2]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>2]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y \<or> q\<^sub>0]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1\<^sub>3 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>3]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>3]b & \<not>\<^bold>\<A>[F\<^sub>1\<^sub>3]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>3]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>3]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>3]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>1\<^sub>3]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>3]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y \<or> \<not>q\<^sub>0]\<guillemotright>"
+  AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> and \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1\<^sub>4 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>4]b & \<^bold>\<A>[F\<^sub>1\<^sub>4]a & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  AOT_have \<open>[L]\<down>\<close> and \<open>\<^bold>\<A>[L]b & \<^bold>\<Delta>[L]b & \<^bold>\<A>[L]a & \<^bold>\<Delta>[L]a\<close>
+    sorry
+  then AOT_obtain F\<^sub>1\<^sub>5 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>5]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>5]b & \<^bold>\<A>[F\<^sub>1\<^sub>5]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>5]a\<close>
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
+  AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>5]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>5]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>5]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>5]a\<close>
+    using "&E" by blast+
+  note props = props this
+
+  show ?thesis
+    by (rule "\<exists>I"(2)[where \<beta>=F\<^sub>0]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>1]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>2];
+           rule "\<exists>I"(2)[where \<beta>=F\<^sub>3]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>4]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>5];
+           rule "\<exists>I"(2)[where \<beta>=F\<^sub>6]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>7]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>8];
+           rule "\<exists>I"(2)[where \<beta>=F\<^sub>9]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>0]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>1];
+           rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>2]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>3]; rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>4];
+           rule "\<exists>I"(2)[where \<beta>=F\<^sub>1\<^sub>5]; safe intro!: "&I")
+       (match conclusion in "[?v \<Turnstile> [F] \<noteq> [G]]" for F G \<Rightarrow> \<open>
+        match props in A: "[?v \<Turnstile> \<not>(\<guillemotleft>\<phi> (AOT_term_of_var F)\<guillemotright>)]" for \<phi> \<Rightarrow> \<open>
+        match (\<phi>) in "\<lambda>a . ?p" \<Rightarrow> \<open>fail\<close> \<bar> "\<lambda>a . a" \<Rightarrow> \<open>fail\<close> \<bar> _ \<Rightarrow> \<open>
+        match props in B: "[?v \<Turnstile> (\<guillemotleft>\<phi> (AOT_term_of_var G)\<guillemotright>)]" \<Rightarrow> \<open>
+        fact pos_not_equiv_ne_4[where F=F and G=G and \<phi>=\<phi>, THEN "\<rightarrow>E",
+                                OF oth_class_taut_4_h[THEN "\<equiv>E"(2)],
+                                OF con_dis_taut_4[THEN "\<rightarrow>E"],
+                                OF "&I", OF A, OF B]\<close>\<close>\<close>\<close>)+
+qed
 
 end
