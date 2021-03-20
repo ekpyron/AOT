@@ -7208,5 +7208,240 @@ proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
   AOT_thus \<open>\<box>(\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n})\<close> using "\<rightarrow>E" 0 by blast
 qed
 
+AOT_define propositional :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Propositional'(_')\<close>)
+  prop_prop1: \<open>Propositional([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<exists>p(\<Pi> = [\<lambda>y p])\<close>
+
+AOT_theorem prop_prop2_1: \<open>\<forall>p [\<lambda>y p]\<down>\<close>
+  by (rule GEN) cqt_2_lambda
+
+AOT_theorem prop_prop2_2: \<open>[\<lambda>\<nu> \<phi>]\<down>\<close>
+  by cqt_2_lambda
+
+AOT_theorem prop_prop2_3: \<open>F = [\<lambda>y p] \<rightarrow> \<box>\<forall>x([F]x \<equiv> p)\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume 0: \<open>F = [\<lambda>y p]\<close>
+  AOT_show \<open>\<box>\<forall>x([F]x \<equiv> p)\<close>
+    by (rule "=E"[rotated, OF 0[symmetric]]; rule RN; rule GEN; rule beta_C_meta[THEN "\<rightarrow>E"])
+      cqt_2_lambda
+qed
+
+AOT_theorem prop_prop2_4: \<open>Propositional([F]) \<rightarrow> \<box>Propositional([F])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>Propositional([F])\<close>
+  AOT_hence \<open>\<exists>p(F = [\<lambda>y p])\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_prop1] by blast
+  then AOT_obtain p where \<open>F = [\<lambda>y p]\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> using id_nec_2 modus_tollens_1 raa_cor_3 by blast
+  AOT_hence \<open>\<exists>p \<box>(F = [\<lambda>y p])\<close> using "\<exists>I" by fast
+  AOT_hence 0: \<open>\<box>\<exists>p (F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 vdash_properties_10)
+  AOT_show \<open>\<box>Propositional([F])\<close>
+    apply (AOT_subst \<open>\<guillemotleft>Propositional([F])\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>p (F = [\<lambda>y p])\<guillemotright>\<close>)
+    by (fact 0)
+qed
+
+AOT_define indicriminate :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Indiscriminate'(_')")
+  prop_indis: \<open>Indiscriminate([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<box>(\<exists>x [\<Pi>]x \<rightarrow> \<forall>x [\<Pi>]x)\<close>
+
+AOT_theorem prop_in_thm: \<open>Propositional([\<Pi>]) \<rightarrow> Indiscriminate([\<Pi>])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>Propositional([\<Pi>])\<close>
+  AOT_hence \<open>\<exists>p \<Pi> = [\<lambda>y p]\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_prop1] by blast
+  then AOT_obtain p where \<Pi>_def: \<open>\<Pi> = [\<lambda>y p]\<close> using "\<exists>E"[rotated] by blast
+  AOT_show \<open>Indiscriminate([\<Pi>])\<close>
+  proof (rule "\<equiv>\<^sub>d\<^sub>fI"[OF prop_indis]; rule "&I")
+    AOT_show \<open>\<Pi>\<down>\<close>
+      using \<Pi>_def by (meson "t=t-proper_1" vdash_properties_6)
+  next
+    AOT_show \<open>\<box>(\<exists>x [\<Pi>]x \<rightarrow> \<forall>x [\<Pi>]x)\<close>
+    proof (rule "=E"[rotated, OF \<Pi>_def[symmetric]]; rule RN; rule "\<rightarrow>I"; rule GEN)
+      AOT_modally_strict {
+        AOT_assume \<open>\<exists>x [\<lambda>y p]\<guillemotleft>x::'a\<guillemotright>\<close>
+        then AOT_obtain a where \<open>[\<lambda>y p]\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close> using "\<exists>E"[rotated] by blast
+        AOT_hence 0: \<open>p\<close> by (metis betaC_1_a)
+        AOT_show \<open>[\<lambda>y p]x\<close> for x :: "'a AOT_var"
+          apply (rule betaC_2_a)
+            apply cqt_2_lambda
+           apply (fact cqt_2_const_var[axiom_inst])
+          by (fact 0)
+      }
+    qed
+  qed
+qed
+
+AOT_theorem prop_in_f_1: \<open>Necessary([F]) \<rightarrow> Indiscriminate([F])\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>Necessary([F])\<close>
+  AOT_hence 0: \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF contingent_properties_1] by blast
+  AOT_show \<open>Indiscriminate([F])\<close>
+    by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF prop_indis])
+       (metis "0" KBasic_1 con_dis_i_e_1 ex_1_a rule_ui_2_a vdash_properties_6) 
+qed
+
+AOT_theorem prop_in_f_2: \<open>Impossible([F]) \<rightarrow> Indiscriminate([F])\<close>
+proof (rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_have \<open>\<forall>x \<not>[F]x \<rightarrow> (\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close>
+      by (metis "instantiation" cqt_orig_3 ded_thm_cor_1 deduction_theorem raa_cor_3)
+  }
+  AOT_hence 0: \<open>\<box>\<forall>x \<not>[F]x \<rightarrow> \<box>(\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close>
+    by (rule RM_1)
+  AOT_assume \<open>Impossible([F])\<close>
+  AOT_hence \<open>\<box>\<forall>x \<not>[F]x\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF contingent_properties_2] "&E" by blast
+  AOT_hence 1: \<open>\<box>(\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close> using 0 "\<rightarrow>E" by blast
+  AOT_show \<open>Indiscriminate([F])\<close>
+    by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF prop_indis]; rule "&I")
+       (simp add: ex_1_a rule_ui_2_a 1)+
+qed
+
+AOT_theorem prop_in_f_3_a: \<open>\<not>Indiscriminate([\<guillemotleft>AOT_concrete::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>Indiscriminate([\<guillemotleft>AOT_concrete::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+  AOT_hence 0: \<open>\<box>(\<exists>x [E!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<forall>x [E!]\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_indis] "&E" by blast
+  AOT_hence \<open>\<diamond>\<exists>x [E!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<diamond>\<forall>x [E!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using KBasic_13 vdash_properties_10 by blast
+  moreover AOT_have \<open>\<diamond>\<exists>x [E!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    by (simp add: thm_cont_e_3)
+  ultimately AOT_have \<open>\<diamond>\<forall>x [E!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    by (metis vdash_properties_6)
+  AOT_thus \<open>p & \<not>p\<close> for p
+    by (metis "\<equiv>\<^sub>d\<^sub>fE" AOT_dia o_objects_exist_5 reductio_aa_1)
+qed
+
+AOT_theorem prop_in_f_3_b: \<open>\<not>Indiscriminate([\<guillemotleft>AOT_concrete::<'a::AOT_\<kappa>>\<guillemotright>]\<^sup>-)\<close>
+proof (rule "=E"[rotated, OF rel_neg_T_2[symmetric]]; rule raa_cor_2)
+  AOT_assume \<open>Indiscriminate([\<lambda>x \<not>[E!]\<guillemotleft>x::'a\<guillemotright>])\<close>
+  AOT_hence 0: \<open>\<box>(\<exists>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<forall>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_indis] "&E" by blast
+  AOT_hence \<open>\<box>\<exists>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<box>\<forall>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using "\<rightarrow>E" qml_1 vdash_properties_1_b by blast
+  moreover AOT_have \<open>\<box>\<exists>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright>\<close>
+    apply (AOT_subst \<open>\<lambda>\<kappa>::'a. \<guillemotleft>[\<lambda>x \<not>[E!]x]\<kappa>\<guillemotright>\<close> \<open>\<lambda>\<kappa>. \<guillemotleft>\<not>[E!]\<kappa>\<guillemotright>\<close>)
+    apply (rule beta_C_meta[THEN "\<rightarrow>E"])
+     apply cqt_2_lambda
+    by (metis (full_types) "B\<diamond>" RN T_S5_fund_1 cqt_further_2 o_objects_exist_5 vdash_properties_10)
+  ultimately AOT_have 1: \<open>\<box>\<forall>x [\<lambda>x \<not>[E!]x]\<guillemotleft>x::'a\<guillemotright>\<close>
+    by (metis vdash_properties_6)
+  AOT_have \<open>\<box>\<forall>x \<not>[E!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    apply (AOT_subst_rev \<open>\<lambda>\<kappa>::'a. \<guillemotleft>[\<lambda>x \<not>[E!]x]\<kappa>\<guillemotright>\<close> \<open>\<lambda>\<kappa>. \<guillemotleft>\<not>[E!]\<kappa>\<guillemotright>\<close>)
+    apply (rule beta_C_meta[THEN "\<rightarrow>E"])
+     apply cqt_2_lambda
+    by (fact 1)
+  AOT_hence \<open>\<forall>x \<box>\<not>[E!]\<guillemotleft>x::'a\<guillemotright>\<close> by (metis BFs_2 vdash_properties_10)
+  moreover AOT_obtain a where abs_a: \<open>O!\<guillemotleft>AOT_term_of_var a::'a\<guillemotright>\<close>
+    using "instantiation" o_objects_exist_1 qml_2 vdash_properties_1_b vdash_properties_6 by blast
+  ultimately AOT_have \<open>\<box>\<not>[E!]a\<close> using "\<forall>E" by blast
+  AOT_hence 2: \<open>\<not>\<diamond>[E!]a\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" AOT_dia reductio_aa_1)
+  AOT_have \<open>A!a\<close>
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_abstract])
+     apply cqt_2_lambda
+    apply (rule betaC_2_a)
+      apply cqt_2_lambda
+    using cqt_2_const_var[axiom_inst] apply blast
+    by (fact 2)
+  AOT_thus \<open>p & \<not>p\<close> for p using abs_a
+    by (metis intro_elim_3_a oa_contingent_2 reductio_aa_1)
+qed
+
+AOT_theorem prop_in_f_3_c: \<open>\<not>Indiscriminate([\<guillemotleft>AOT_ordinary::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>Indiscriminate([\<guillemotleft>AOT_ordinary::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+  AOT_hence 0: \<open>\<box>(\<exists>x [O!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<forall>x [O!]\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_indis] "&E" by blast
+  AOT_hence \<open>\<box>\<exists>x [O!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<box>\<forall>x [O!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using qml_1[axiom_inst] vdash_properties_6 by blast
+  moreover AOT_have \<open>\<box>\<exists>x [O!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using o_objects_exist_1 by blast
+  ultimately AOT_have \<open>\<box>\<forall>x [O!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    by (metis vdash_properties_6)
+  AOT_thus \<open>p & \<not>p\<close> for p
+    by (metis o_objects_exist_3 qml_2 raa_cor_3 vdash_properties_10 vdash_properties_1_b)
+qed
+
+AOT_theorem prop_in_f_3_d: \<open>\<not>Indiscriminate([\<guillemotleft>AOT_abstract::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>Indiscriminate([\<guillemotleft>AOT_abstract::<'a::AOT_\<kappa>>\<guillemotright>])\<close>
+  AOT_hence 0: \<open>\<box>(\<exists>x [A!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<forall>x [A!]\<guillemotleft>x::'a\<guillemotright>)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_indis] "&E" by blast
+  AOT_hence \<open>\<box>\<exists>x [A!]\<guillemotleft>x::'a\<guillemotright> \<rightarrow> \<box>\<forall>x [A!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using qml_1[axiom_inst] vdash_properties_6 by blast
+  moreover AOT_have \<open>\<box>\<exists>x [A!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    using o_objects_exist_2 by blast
+  ultimately AOT_have \<open>\<box>\<forall>x [A!]\<guillemotleft>x::'a\<guillemotright>\<close>
+    by (metis vdash_properties_6)
+  AOT_thus \<open>p & \<not>p\<close> for p
+    by (metis o_objects_exist_4 qml_2 raa_cor_3 vdash_properties_10 vdash_properties_1_b)
+qed
+
+AOT_theorem prop_in_f_4_a: \<open>\<not>Propositional(E!)\<close>
+  using modus_tollens_1 prop_in_f_3_a prop_in_thm by blast
+
+AOT_theorem prop_in_f_4_b: \<open>\<not>Propositional(E!\<^sup>-)\<close>
+  using modus_tollens_1 prop_in_f_3_b prop_in_thm by blast
+
+AOT_theorem prop_in_f_4_c: \<open>\<not>Propositional(O!)\<close>
+  using modus_tollens_1 prop_in_f_3_c prop_in_thm by blast
+
+AOT_theorem prop_in_f_4_d: \<open>\<not>Propositional(A!)\<close>
+  using modus_tollens_1 prop_in_f_3_d prop_in_thm by blast
+
+AOT_theorem prop_prop_nec_1: \<open>\<diamond>\<exists>p (F = [\<lambda>y p]) \<rightarrow> \<exists>p(F = [\<lambda>y p])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<diamond>\<exists>p (F = [\<lambda>y p])\<close>
+  AOT_hence \<open>\<exists>p \<diamond>(F = [\<lambda>y p])\<close>
+    by (metis "BF\<diamond>" vdash_properties_10)
+  then AOT_obtain p where \<open>\<diamond>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>F = [\<lambda>y p]\<close> by (metis derived_S5_rules_2 emptyE id_nec_2 vdash_properties_6)
+  AOT_thus \<open>\<exists>p(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
+qed
+
+AOT_theorem prop_prop_nec_2: \<open>\<forall>p (F \<noteq> [\<lambda>y p]) \<rightarrow> \<box>\<forall>p(F \<noteq> [\<lambda>y p])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<forall>p (F \<noteq> [\<lambda>y p])\<close>
+  AOT_hence \<open>(F \<noteq> [\<lambda>y p])\<close> for p
+    using "\<forall>E" by blast
+  AOT_hence \<open>\<box>(F \<noteq> [\<lambda>y p])\<close> for p
+    by (rule id_nec2_2[unvarify \<beta>, THEN "\<rightarrow>E", rotated]) cqt_2_lambda
+  AOT_hence \<open>\<forall>p \<box>(F \<noteq> [\<lambda>y p])\<close> by (rule GEN)
+  AOT_thus \<open>\<box>\<forall>p (F \<noteq> [\<lambda>y p])\<close> using BF[THEN "\<rightarrow>E"] by fast
+qed
+
+AOT_theorem prop_prop_nec_3: \<open>\<exists>p (F = [\<lambda>y p]) \<rightarrow> \<box>\<exists>p(F = [\<lambda>y p])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>p (F = [\<lambda>y p])\<close>
+  then AOT_obtain p where \<open>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> by (metis id_nec_2 vdash_properties_6)
+  AOT_hence \<open>\<exists>p\<box>(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<box>\<exists>p(F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 vdash_properties_10)
+qed
+
+AOT_theorem prop_prop_nec_4: \<open>\<diamond>\<forall>p (F \<noteq> [\<lambda>y p]) \<rightarrow> \<forall>p(F \<noteq> [\<lambda>y p])\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<diamond>\<forall>p (F \<noteq> [\<lambda>y p])\<close>
+  AOT_hence \<open>\<forall>p \<diamond>(F \<noteq> [\<lambda>y p])\<close> by (metis "Buridan\<diamond>" vdash_properties_10)
+  AOT_hence \<open>\<diamond>(F \<noteq> [\<lambda>y p])\<close> for p
+    using "\<forall>E" by blast
+  AOT_hence \<open>F \<noteq> [\<lambda>y p]\<close> for p
+    by (rule id_nec2_3[unvarify \<beta>, THEN "\<rightarrow>E", rotated]) cqt_2_lambda
+  AOT_thus \<open>\<forall>p (F \<noteq> [\<lambda>y p])\<close> by (rule GEN)
+qed
+
+AOT_theorem enc_prop_nec_1: \<open>\<diamond>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
+proof(rule "\<rightarrow>I"; rule GEN; rule "\<rightarrow>I")
+  fix F :: \<open><'a> AOT_var\<close>
+  AOT_assume \<open>\<diamond>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p]))\<close>
+  AOT_hence \<open>\<forall>F \<diamond>(x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p]))\<close>
+    using "Buridan\<diamond>" vdash_properties_10 by blast
+  AOT_hence 0: \<open>\<diamond>(x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p]))\<close> using "\<forall>E" by blast
+  AOT_assume \<open>x[F]\<close>
+  AOT_hence \<open>\<box>x[F]\<close> by (metis en_eq_2_1 intro_elim_3_a)
+  AOT_hence \<open>\<diamond>\<exists>p(F = [\<lambda>y p])\<close>
+    using 0 by (metis KBasic2_4 intro_elim_3_a vdash_properties_10)
+  AOT_thus \<open>\<exists>p(F = [\<lambda>y p])\<close>
+    using prop_prop_nec_1[THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem enc_prop_nec_2: \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<box>\<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
+  using derived_S5_rules_1[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
+  by blast
 
 end
