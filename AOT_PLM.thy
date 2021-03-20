@@ -36,6 +36,9 @@ attribute_setup axiom_inst =
   \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm RS @{thm vdash_properties_1_b})))\<close>
   "Instantiate axiom as theorem."
 
+method cqt_2_lambda_inst_prover = (fast intro: AOT_instance_of_cqt_2_intro)
+method cqt_2_lambda = (rule cqt_2_lambda[axiom_inst]; cqt_2_lambda_inst_prover)
+
 AOT_theorem vdash_properties_3: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close>
   using assms by blast
 
@@ -654,8 +657,7 @@ AOT_theorem log_prop_prop_1: \<open>[\<lambda> \<phi>]\<down>\<close>
   using cqt_2_lambda0[axiom_inst] by auto
 
 AOT_theorem log_prop_prop_2: \<open>\<phi>\<down>\<close>
-  by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF existence_3]; rule cqt_2_lambda[axiom_inst])
-     (auto intro!: AOT_instance_of_cqt_2_intro)
+  by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF existence_3]) cqt_2_lambda
 
 AOT_theorem exist_nec: \<open>\<tau>\<down> \<rightarrow> \<box>\<tau>\<down>\<close>
 proof -
@@ -811,16 +813,14 @@ AOT_theorem propositions_lemma_6: \<open>(\<phi> \<equiv> \<psi>) \<equiv> ([\<l
 
 AOT_theorem oa_exist_1: \<open>O!\<down>\<close>
 proof -
-  AOT_have \<open>[\<lambda>x \<diamond>[E!]x]\<down>\<close>
-    by (rule cqt_2_lambda[axiom_inst]) (auto intro!: AOT_instance_of_cqt_2_intro) (* TODO: make this a proof method *)
+  AOT_have \<open>[\<lambda>x \<diamond>[E!]x]\<down>\<close> by cqt_2_lambda
   AOT_hence 1: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_1, THEN "&E"(1)] "\<rightarrow>E" by blast
   AOT_show \<open>O!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
 qed
 
 AOT_theorem oa_exist_2: \<open>A!\<down>\<close>
 proof -
-  AOT_have \<open>[\<lambda>x \<not>\<diamond>[E!]x]\<down>\<close>
-    by (rule cqt_2_lambda[axiom_inst]) (auto intro!: AOT_instance_of_cqt_2_intro) (* TODO: make this a proof method *)
+  AOT_have \<open>[\<lambda>x \<not>\<diamond>[E!]x]\<down>\<close> by cqt_2_lambda
   AOT_hence 1: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_2, THEN "&E"(1)] "\<rightarrow>E" by blast
   AOT_show \<open>A!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
 qed
@@ -831,21 +831,17 @@ proof(rule raa_cor_1)
   AOT_hence A: \<open>\<not>O!x\<close> and B: \<open>\<not>A!x\<close>
     using con_dis_taut_3 modus_tollens_1 con_dis_i_e_3_b raa_cor_5 by blast+
   AOT_have C: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close>
-    by (rule df_rules_terms_2[OF oa_1, THEN "&E"(1), THEN "\<rightarrow>E"]; rule cqt_2_lambda[axiom_inst])
-       (auto intro!: AOT_instance_of_cqt_2_intro)
+    by (rule df_rules_terms_2[OF oa_1, THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_have D: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close>
-    by (rule df_rules_terms_2[OF oa_2, THEN "&E"(1), THEN "\<rightarrow>E"]; rule cqt_2_lambda[axiom_inst])
-       (auto intro!: AOT_instance_of_cqt_2_intro)
+    by (rule df_rules_terms_2[OF oa_2, THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_have E: \<open>\<not>[\<lambda>x \<diamond>[E!]x]x\<close>
     using A C "=E" by fast
   AOT_have F: \<open>\<not>[\<lambda>x \<not>\<diamond>[E!]x]x\<close>
     using B D "=E" by fast
   AOT_have G: \<open>[\<lambda>x \<diamond>[E!]x]x \<equiv> \<diamond>[E!]x\<close>
-    by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]; rule cqt_2_lambda[axiom_inst])
-       (auto intro!: AOT_instance_of_cqt_2_intro)
+    by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_have H: \<open>[\<lambda>x \<not>\<diamond>[E!]x]x \<equiv> \<not>\<diamond>[E!]x\<close>
-    by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]; rule cqt_2_lambda[axiom_inst])
-       (auto intro!: AOT_instance_of_cqt_2_intro)
+    by (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_show \<open>\<not>\<diamond>[E!]x & \<not>\<not>\<diamond>[E!]x\<close> using G E "\<equiv>E" H F "\<equiv>E" "&I" by metis
 qed
 
@@ -943,8 +939,7 @@ proof
     AOT_have 0: \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
       by (simp add: lambda_predicates_3[axiom_inst])
     AOT_have \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
-      by (rule cqt_2_lambda[axiom_inst])
-         (auto intro: AOT_instance_of_cqt_2_intro)
+      by cqt_2_lambda
     AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = [\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n]\<close>
       using lambda_predicates_1[axiom_inst] "\<rightarrow>E" by blast
     AOT_show \<open>F = F\<close> using "=E" 0 by force 
@@ -2973,7 +2968,7 @@ proof(rule existence_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
     AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]y\<close>
     proof (rule lambda_predicates_2[axiom_inst, THEN "\<rightarrow>E", THEN "\<equiv>E"(2)])
       AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<down>\<close>
-        by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+        by cqt_2_lambda
     next
       AOT_show \<open>E!y \<rightarrow> E!y\<close> 
         by (simp add: if_p_then_p)
@@ -2981,7 +2976,7 @@ proof(rule existence_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
   qed
 next
   AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<down>\<close>
-    by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+    by cqt_2_lambda
 qed
 
 AOT_theorem id_act_desc_2: \<open>y = \<^bold>\<iota>x (x = y)\<close>
@@ -2995,8 +2990,8 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
     using nary_encoding_2[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
-  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by cqt_2_lambda
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
     using encoding[axiom_inst, unvarify F] "\<rightarrow>E" "&I" by blast+
   note A = this
@@ -3011,9 +3006,9 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
     using nary_encoding_3[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
-  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by cqt_2_lambda
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
     using encoding[axiom_inst, unvarify F] "\<rightarrow>E" by blast+
   note A = this
@@ -3028,10 +3023,10 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and  \<open>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
     using nary_encoding_4[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
-  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
-  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<down>\<close> by (rule cqt_2_lambda[axiom_inst]; fast intro: AOT_instance_of_cqt_2_intro)
+  moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by cqt_2_lambda
+  moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<down>\<close> by cqt_2_lambda
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>\<box>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and \<open>\<box>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
     using "\<rightarrow>E" encoding[axiom_inst, unvarify F] by blast+
   note A = this
@@ -3189,9 +3184,6 @@ AOT_theorem en_eq_10_3: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equi
   by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_3 pre_en_eq_1_3)
 AOT_theorem en_eq_10_4: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_a nec_imp_act en_eq_3_4 pre_en_eq_1_4)
-
-method cqt_2_lambda_inst_prover = (fast intro: AOT_instance_of_cqt_2_intro)
-method cqt_2_lambda = (rule cqt_2_lambda[axiom_inst]; cqt_2_lambda_inst_prover)
 
 AOT_theorem oa_facts_1: \<open>O!x \<rightarrow> \<box>O!x\<close>
 proof(rule "\<rightarrow>I")
