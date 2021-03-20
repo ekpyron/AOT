@@ -68,7 +68,7 @@ AOT_theorem oa_2: \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<
 AOT_theorem identity: \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)) \<or> ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ x y]
-  by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
+  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
 
 AOT_theorem p_identity:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
@@ -132,7 +132,7 @@ AOT_axiom cqt_2_lambda0:
   using AOT_model_equiv_def AOT_sem_lambda_denotes existence_3 by fastforce
 AOT_axiom cqt_2_concrete: \<open>E!\<down>\<close>
   apply (rule AOT_model_axiomI)
-  using AOT_sem_concrete_denotes by auto
+  using AOT_sem_concrete_denotes AOT_concrete_sem by auto
 
 AOT_axiom cqt_3: \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
@@ -202,7 +202,7 @@ AOT_axiom qml_4: \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<clos
   apply (rule AOT_model_axiomI)
   using AOT_sem_concrete AOT_model_contingent
   by (auto simp: AOT_sem_box AOT_sem_dia AOT_sem_imp AOT_sem_exists AOT_sem_denotes
-                 AOT_sem_conj AOT_sem_not AOT_sem_act AOT_sem_exe)
+                 AOT_sem_conj AOT_sem_not AOT_sem_act AOT_sem_exe AOT_concrete_sem)
 
 AOT_axiom qml_act_1: \<open>\<^bold>\<A>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
@@ -285,7 +285,7 @@ AOT_axiom encoding: \<open>x[F] \<rightarrow> \<box>x[F]\<close>
 
 AOT_axiom nocoder: \<open>O!x \<rightarrow> \<not>\<exists>F x[F]\<close>
   apply (rule AOT_model_axiomI)
-  by (simp add: AOT_sem_imp AOT_sem_not AOT_sem_exists AOT_sem_ordinary AOT_sem_dia
+  by (simp add: AOT_sem_imp AOT_sem_not AOT_sem_exists AOT_sem_ordinary AOT_sem_dia AOT_concrete_sem
                 AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes,
                                      OF AOT_sem_vars_denote])
      (metis AOT_sem_nocoder)
@@ -296,13 +296,13 @@ proof(rule AOT_model_axiomI)
     AOT_obtain \<kappa> where \<open>\<kappa>\<down> & \<box>\<not>E!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<phi>{F})\<close>
       using AOT_sem_a_objects[of _ \<phi>]
       by (auto simp: AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_exists AOT_sem_conj
-                     AOT_sem_not AOT_sem_dia AOT_sem_denotes AOT_sem_equiv) blast
+                     AOT_sem_not AOT_sem_dia AOT_sem_denotes AOT_sem_equiv AOT_concrete_sem) blast
     AOT_thus \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
       unfolding AOT_sem_exists
       by (rule_tac x=\<kappa> in exI)
          (auto simp: AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes]
                      AOT_sem_box AOT_sem_dia AOT_sem_not AOT_sem_denotes AOT_var_of_term_inverse
-                     AOT_sem_equiv AOT_sem_forall AOT_sem_conj AOT_sem_abstract)
+                     AOT_sem_equiv AOT_sem_forall AOT_sem_conj AOT_sem_abstract AOT_concrete_sem)
   }
 qed
 

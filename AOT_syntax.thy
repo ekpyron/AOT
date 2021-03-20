@@ -262,7 +262,7 @@ consts AOT_denotes :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
        AOT_exe :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>
        AOT_lambda :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> <'a>\<close>
        AOT_lambda0 :: \<open>\<o> \<Rightarrow> \<o>\<close>
-       AOT_concrete :: \<open><'a::AOT_UnaryIndividualTerm>\<close>
+       AOT_concrete :: \<open><\<kappa>>\<close>
 nonterminal desc
 nonterminal exe_args
 nonterminal \<Pi>0
