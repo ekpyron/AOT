@@ -7444,14 +7444,4 @@ AOT_theorem enc_prop_nec_2: \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F =
   using derived_S5_rules_1[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
   by blast
 
-section\<open>Natural Numbers\<close>
-
-AOT_define one_one_cor :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ 1\<longleftrightarrow>1 _\<close>)
-  \<open>R |: F 1\<longleftrightarrow>1 G \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & G\<down> &
-    \<forall>x ([F]x \<rightarrow> \<exists>!y([G]y & [R]xy)) &
-    \<forall>y ([G]y \<rightarrow> \<exists>!x([F]y & [R]xy))\<close>
-
-
-
-
 end
