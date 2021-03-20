@@ -778,7 +778,9 @@ class AOT_\<kappa> = AOT_\<kappa>s + AOT_UnaryIndividualTerm + AOT_UnaryIndividu
 instance \<kappa> :: AOT_\<kappa> by standard
 instance prod :: (AOT_\<kappa>, AOT_\<kappa>s) AOT_\<kappa>s by standard
 
-AOT_add_individual_sorts AOT_\<kappa> AOT_\<kappa>s
+AOT_register_type_constraints
+  Individual: \<open>_::AOT_\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close> and
+  Relation: \<open><_::AOT_\<kappa>s>\<close>
 
 AOT_define AOT_ordinary :: \<open>\<Pi>\<close> (\<open>O!\<close>) \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close>
 AOT_define AOT_abstract :: \<open>\<Pi>\<close> (\<open>A!\<close>) \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close>

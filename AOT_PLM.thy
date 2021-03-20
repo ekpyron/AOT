@@ -740,7 +740,8 @@ next
 qed
 
 (* TODO: this is the end of the "proof by types" and makes the results available on new theorems *)
-AOT_add_term_sort AOT_Term_id
+AOT_register_type_constraints
+  Term: \<open>_::AOT_Term_id\<close>
 
 AOT_theorem id_rel_nec_equiv_1: \<open>\<Pi> = \<Pi>' \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
 proof(rule "\<rightarrow>I")
@@ -964,7 +965,8 @@ proof
   }
 qed
 
-AOT_add_term_sort AOT_Term_id_2
+AOT_register_type_constraints
+  Term: \<open>_::AOT_Term_id_2\<close>
 
 (* TODO: Interestingly, this doesn't depend on id_eq_1 at all! *)
 AOT_theorem id_eq_2: \<open>\<alpha> = \<beta> \<rightarrow> \<beta> = \<alpha>\<close>

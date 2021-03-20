@@ -3,9 +3,7 @@ theory AOT_syntax
   keywords "AOT_register_variable_names" :: thy_decl
        and "AOT_register_metavariable_names" :: thy_decl
        and "AOT_register_premise_set_names" :: thy_decl
-(*       and "AOT_register_type" :: thy_decl *)
-       and "AOT_add_individual_sorts" :: thy_decl
-       and "AOT_add_term_sort" :: thy_decl
+       and "AOT_register_type_constraints" :: thy_decl
      abbrevs "actually" = "\<^bold>\<A>"
          and "neccessarily" = "\<box>"
          and "possibly" = "\<diamond>"
@@ -74,48 +72,28 @@ functor AOT_Sort_Data (Data:AOT_SORT_DATA) = Theory_Data' (
   fun merge thys = sort_thys_merge thys
 )
 
-structure AOT_UnaryIndividualSort = AOT_Sort_Data(val default = @{sort AOT_UnaryIndividualTerm})
-structure AOT_NaryIndividualSort = AOT_Sort_Data(val default = @{sort AOT_IndividualTerm})
-structure AOT_TermSort = AOT_Sort_Data(val default = @{sort "AOT_Term"})
-fun AOT_UnaryIndividualSort_add sort thy = AOT_UnaryIndividualSort.map (fn oldSort => sort_merge thy (oldSort, sort)) thy
-fun AOT_NaryIndividualSort_add sort thy = AOT_NaryIndividualSort.map (fn oldSort => sort_merge thy (oldSort, sort)) thy
-fun AOT_TermSort_add sort thy = let
-    val thy = AOT_UnaryIndividualSort_add sort thy
-(* TODO: do this or don't do this? Yes, if products are always instantiated, no otherwise *)
-(*    val thy = AOT_NaryIndividualSort_add sort thy *)
-  in AOT_TermSort.map (fn oldSort => sort_merge thy (oldSort, sort)) thy end
-fun AOT_TermSort_local_get ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_TermSort.get thy, thy)) ctxt |> fst
+structure AOT_Constraints = Theory_Data (
+  type T = (term*term) Symtab.table
+  val empty = Symtab.empty
+  val extend = I
+  val merge = Symtab.merge (K true)
+)
+
 fun AOT_IsPremiseSetPrefix ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_PremiseSetPrefix.get thy, thy)) ctxt |> fst |> Symtab.lookup #> Option.isSome
 
 fun register_variable_name meta (category, prefices) =
    fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
 fun register_variable_names meta x = fold (register_variable_name meta) x
 fun register_premise_set_names x = fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())) ) x
-fun add_individual_sorts (unarySort, narySort) thy = let
-    val unarySort = Syntax.parse_sort thy unarySort
-    val narySort = Syntax.parse_sort thy narySort
-    val thy = Local_Theory.background_theory (AOT_UnaryIndividualSort_add unarySort) thy
-    val thy = Local_Theory.background_theory (AOT_NaryIndividualSort_add narySort) thy
-  in thy end
-fun add_term_sort sort thy = let
-    val sort = Syntax.parse_sort thy sort
-    val thy = Local_Theory.background_theory (AOT_TermSort_add sort) thy
-  in thy end
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
-    (Scan.repeat1 ((Parse.string --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (register_variable_names false)));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (register_variable_names false)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
-    (Scan.repeat1 ((Parse.string --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
     (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o register_premise_set_names));
-val _ =
-  Outer_Syntax.local_theory \<^command_keyword>\<open>AOT_add_individual_sorts\<close> "Constrain the sort of unary individuals and tuples of individuals."
-    (Parse.sort -- Parse.sort >> add_individual_sorts);
-val _ =
-  Outer_Syntax.local_theory \<^command_keyword>\<open>AOT_add_term_sort\<close> "Constrain the base sort for all terms."
-    (Parse.sort >> add_term_sort);
 
 fun term_of_sort S =
   let
@@ -133,34 +111,57 @@ fun term_of_sort S =
   end
 fun term_of (Type (a, Ts)) = 
       Term.list_comb (Syntax.const (Lexicon.mark_type a), map term_of Ts)
-  | term_of (t as TFree _) = raise Term.TYPE ("", [t], [])
+  | term_of (TFree ("'_dummy_",sort)) = (Const ("_dummy_ofsort", dummyT) $ term_of_sort sort)
+  | term_of (t as TFree _) = (@{print} t; raise Term.TYPE ("", [t], []))
   | term_of (TVar _) = raise Fail "";
 fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
+fun getConstraint ctxt unary name = Local_Theory.raw_theory_result (fn thy => let
+  val constraints = case (Symtab.lookup (AOT_Constraints.get thy) name) of SOME c => c
+    | NONE => raise Fail "Unknown type category."
+  in (if unary then fst constraints else snd constraints, thy) end) ctxt |> fst
 fun fetchTermConstraint ctxt name unary =
-  Local_Theory.raw_theory_result (fn thy => let
-      fun getConstraint unary "Individual" = Const ("_dummy_ofsort", dummyT) $ term_of_sort (if unary then AOT_UnaryIndividualSort.get thy else AOT_NaryIndividualSort.get thy)
-        | getConstraint _ "Term" = Const ("_dummy_ofsort", dummyT) $ term_of_sort (AOT_TermSort.get thy)
-        | getConstraint _ "Proposition" = term_of @{typ \<o>}
-        | getConstraint _ "Relation" = Const (\<^type_syntax>\<open>rel\<close>, dummyT) $ getConstraint false "Individual"
-    in
-    (Option.map (fn (meta, category) => (meta, getConstraint unary category))
-     ((Symtab.lookup o AOT_TermPrefix.get) thy (hd (Symbol.explode name))), thy)
-    end
+  Local_Theory.raw_theory_result (fn thy =>
+    (Option.map (fn (meta, category) => (meta, getConstraint ctxt unary category))
+    ((Symtab.lookup o AOT_TermPrefix.get) thy (hd (Symbol.explode name))), thy)
 ) ctxt |> fst
+
+fun register_constraint (name:string, (unaryConstraint:string,naryConstraint:string option)) thy = (
+let
+val unaryConstraint = (term_of (Syntax.parse_typ (Proof_Context.init_global thy) unaryConstraint))
+val naryConstraint = (case naryConstraint of
+  (SOME constraint) => (term_of (Syntax.parse_typ (Proof_Context.init_global thy) constraint))
+  | _ => unaryConstraint
+)
+in 
+AOT_Constraints.map (Symtab.update (name, (unaryConstraint, naryConstraint))) thy
+end
+)
+fun register_constraints constraints = fold register_constraint constraints
+
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_type_constraints\<close> "Register constraints for term types."
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- (Parse.typ -- Scan.option Parse.typ)) >> (Toplevel.theory o register_constraints));
+
+
 \<close>
 
+AOT_register_type_constraints
+  Individual: \<open>_::AOT_UnaryIndividualTerm\<close> \<open>_::AOT_IndividualTerm\<close> and
+  Proposition: \<o> and
+  Relation: \<open><_::AOT_IndividualTerm>\<close> and
+  Term: \<open>_::AOT_Term\<close>
 
 AOT_register_variable_names
-  "Individual": x y z \<nu> \<mu> a b c d u v
-  "Proposition": p q r s
-  "Relation": F G H P Q R S
-  "Term": \<alpha> \<beta> \<gamma> \<delta>
+  Individual: x y z \<nu> \<mu> a b c d u v and
+  Proposition: p q r s and
+  Relation: F G H P Q R S and
+  Term: \<alpha> \<beta> \<gamma> \<delta>
 
 AOT_register_metavariable_names
-  "Individual": \<kappa>
-  "Proposition": \<phi> \<psi> \<chi> \<theta> \<zeta> \<xi> \<Theta>
-  "Relation": \<Pi>
-  "Term": \<tau> \<sigma>
+  Individual: \<kappa> and
+  Proposition: \<phi> \<psi> \<chi> \<theta> \<zeta> \<xi> \<Theta> and
+  Relation: \<Pi> and
+  Term: \<tau> \<sigma>
 
 AOT_register_premise_set_names \<Gamma> \<Delta> \<Lambda>
 
@@ -533,7 +534,7 @@ fun parseIdDef ctxt [lhs, rhs] =
     (Const ("_constrain", dummyT) $
      Const (\<^const_name>\<open>AOT_model_id_def\<close>, dummyT) $
      (Const (\<^type_syntax>\<open>fun\<close>, dummyT) $
-        (Const (\<^type_syntax>\<open>fun\<close>, dummyT) $ Const (\<^type_syntax>\<open>dummy\<close>, dummyT) $ (Const ("_dummy_ofsort", dummyT) $ term_of_sort (AOT_TermSort_local_get ctxt))) $
+        (Const (\<^type_syntax>\<open>fun\<close>, dummyT) $ Const (\<^type_syntax>\<open>dummy\<close>, dummyT) $ (getConstraint ctxt false "Term")) $
         (Const (\<^type_syntax>\<open>dummy\<close>, dummyT)))
     )
     $ lhs_abs $ rhs_abs
