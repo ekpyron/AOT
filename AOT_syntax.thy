@@ -421,7 +421,7 @@ syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premi
        "_AOT_nec_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close> 2)
        "_AOT_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile> _\<close>)
        "_AOT_nec_theorem" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>\<^bold>\<turnstile>\<^sub>\<box> _\<close>)
-       "_AOT_equiv_def" :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
+       "_AOT_equiv_def" :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> AOT_prop\<close> (infixl \<open>\<equiv>\<^sub>d\<^sub>f\<close> 3)
        "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_axiom" (\<open>_\<close>)
        "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_act_axiom" (\<open>_\<close>)
        "_AOT_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<^sub>\<box>\<close>)
@@ -485,7 +485,7 @@ in
   (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, fn ctxt => fn [_ $ var $ pos,trm] => let
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ (Const ("_constrainAbs", dummyT) $ Term.absfree (Term.dest_Free var) trm $ pos)
     in trm end),
-  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ x $ y)),
+  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ processFreesAlwaysMeta ctxt x $ processFreesAlwaysMeta ctxt y)),
   (\<^syntax_const>\<open>_AOT_exe\<close>, parseExe),
   (\<^syntax_const>\<open>_AOT_enc\<close>, parseEnc)
 ]

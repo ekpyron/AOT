@@ -3728,14 +3728,14 @@ AOT_theorem pos_not_equiv_ne_4_0: \<open>(\<not>(\<phi>{p} \<equiv> \<phi>{q})) 
   using "\<rightarrow>I" pos_not_equiv_ne_2_0[THEN "\<rightarrow>E"] "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 
 AOT_define relation_negation :: "\<Pi> \<Rightarrow> \<Pi>" ("_\<^sup>-")
-  df_relation_negation: "[\<Pi>]\<^sup>- =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n \<not>[\<Pi>]x\<^sub>1...x\<^sub>n]"
+  df_relation_negation: "[F]\<^sup>- =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n]"
 
 nonterminal \<phi>neg
 syntax "" :: "\<phi>neg \<Rightarrow> \<tau>" ("_")
 syntax "" :: "\<phi>neg \<Rightarrow> \<phi>" ("'(_')")
 
 AOT_define relation_negation_0 :: "\<phi> \<Rightarrow> \<phi>neg" ("'(_')\<^sup>-")
-  df_relation_negation_0: "(\<phi>)\<^sup>- =\<^sub>d\<^sub>f [\<lambda> \<not>\<phi>]"
+  df_relation_negation_0: "(p)\<^sup>- =\<^sub>d\<^sub>f [\<lambda> \<not>p]"
 
 AOT_theorem rel_neg_T_1: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<not>[\<Pi>]x\<^sub>1...x\<^sub>n]\<down>\<close>
   by cqt_2_lambda
@@ -3847,28 +3847,28 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_define Necessary :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Necessary'(_')")
-  contingent_properties_1: \<open>Necessary([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n [\<Pi>]x\<^sub>1...x\<^sub>n\<close>
+  contingent_properties_1: \<open>Necessary([F]) \<equiv>\<^sub>d\<^sub>f \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n\<close>
 
 AOT_define Necessary0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Necessary0'(_')")
-  contingent_properties_1_0: \<open>Necessary0(\<phi>) \<equiv>\<^sub>d\<^sub>f \<box>\<phi>\<close>
+  contingent_properties_1_0: \<open>Necessary0(p) \<equiv>\<^sub>d\<^sub>f \<box>p\<close>
 
 AOT_define Impossible :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Impossible'(_')")
-  contingent_properties_2: \<open>Impossible([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<not>[\<Pi>]x\<^sub>1...x\<^sub>n\<close>
+  contingent_properties_2: \<open>Impossible([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n\<close>
 
 AOT_define Impossible0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Impossible0'(_')")
-  contingent_properties_2_0: \<open>Impossible0(\<phi>) \<equiv>\<^sub>d\<^sub>f \<box>\<not>\<phi>\<close>
+  contingent_properties_2_0: \<open>Impossible0(p) \<equiv>\<^sub>d\<^sub>f \<box>\<not>p\<close>
 
 AOT_define NonContingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("NonContingent'(_')")
-  contingent_properties_3: \<open>NonContingent([\<Pi>]) \<equiv>\<^sub>d\<^sub>f Necessary([\<Pi>]) \<or> Impossible([\<Pi>])\<close>
+  contingent_properties_3: \<open>NonContingent([F]) \<equiv>\<^sub>d\<^sub>f Necessary([F]) \<or> Impossible([F])\<close>
 
 AOT_define NonContingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("NonContingent0'(_')")
-  contingent_properties_3_0: \<open>NonContingent0(\<phi>) \<equiv>\<^sub>d\<^sub>f Necessary0(\<phi>) \<or> Impossible0(\<phi>)\<close>
+  contingent_properties_3_0: \<open>NonContingent0(p) \<equiv>\<^sub>d\<^sub>f Necessary0(p) \<or> Impossible0(p)\<close>
 
 AOT_define Contingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Contingent'(_')")
-  contingent_properties_4: \<open>Contingent([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<not>(Necessary([\<Pi>]) \<or> Impossible([\<Pi>]))\<close>
+  contingent_properties_4: \<open>Contingent([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<not>(Necessary([F]) \<or> Impossible([F]))\<close>
 
 AOT_define Contingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Contingent0'(_')")
-  contingent_properties_4_0: \<open>Contingent0(\<phi>) \<equiv>\<^sub>d\<^sub>f \<not>(Necessary0(\<phi>) \<or> Impossible0(\<phi>))\<close>
+  contingent_properties_4_0: \<open>Contingent0(p) \<equiv>\<^sub>d\<^sub>f \<not>(Necessary0(p) \<or> Impossible0(p))\<close>
 
 
 AOT_theorem thm_cont_prop_1: \<open>NonContingent([F]) \<equiv> NonContingent([F]\<^sup>-)\<close>
@@ -4578,10 +4578,10 @@ proof -
 qed
 
 AOT_define cont_tf_1 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyTrue'(_')")
-  cont_tf_1: \<open>ContingentlyTrue(\<phi>) \<equiv>\<^sub>d\<^sub>f \<phi> & \<diamond>\<not>\<phi>\<close>
+  cont_tf_1: \<open>ContingentlyTrue(p) \<equiv>\<^sub>d\<^sub>f p & \<diamond>\<not>p\<close>
 
 AOT_define cont_tf_2 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyFalse'(_')")
-  cont_tf_2: \<open>ContingentlyFalse(\<phi>) \<equiv>\<^sub>d\<^sub>f \<not>\<phi> & \<diamond>\<phi>\<close>
+  cont_tf_2: \<open>ContingentlyFalse(p) \<equiv>\<^sub>d\<^sub>f \<not>p & \<diamond>p\<close>
 
 AOT_theorem cont_true_cont_1: \<open>ContingentlyTrue((p)) \<rightarrow> Contingent0((p))\<close>
 proof(rule "\<rightarrow>I")
@@ -5354,7 +5354,7 @@ AOT_theorem oa_contingent_9: \<open>Contingent(A!\<^sup>-)\<close>
   using thm_cont_prop_3[unvarify F, OF oa_exist_2, THEN "\<equiv>E"(1), OF oa_contingent_5].
 
 AOT_define WeaklyContingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("WeaklyContingent'(_')")
-  df_cont_nec: "WeaklyContingent([\<Pi>]) \<equiv>\<^sub>d\<^sub>f Contingent([\<Pi>]) & \<forall>x (\<diamond>[\<Pi>]x \<rightarrow> \<box>[\<Pi>]x)"
+  df_cont_nec: "WeaklyContingent([F]) \<equiv>\<^sub>d\<^sub>f Contingent([F]) & \<forall>x (\<diamond>[F]x \<rightarrow> \<box>[F]x)"
 
 AOT_theorem cont_nec_fact1_1: \<open>WeaklyContingent([F]) \<equiv> WeaklyContingent([F]\<^sup>-)\<close>
 proof -
@@ -5548,7 +5548,7 @@ proof -
 qed
 
 AOT_define necessary_or_contingently_false :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>\<Delta>_" [49] 54)
-  \<open>\<^bold>\<Delta>\<phi> \<equiv>\<^sub>d\<^sub>f \<box>\<phi> \<or> (\<not>\<^bold>\<A>\<phi> & \<diamond>\<phi>)\<close>
+  \<open>\<^bold>\<Delta>p \<equiv>\<^sub>d\<^sub>f \<box>p \<or> (\<not>\<^bold>\<A>p & \<diamond>p)\<close>
 
 AOT_theorem sixteen:
  shows \<open>\<exists>F\<^sub>1\<exists>F\<^sub>2\<exists>F\<^sub>3\<exists>F\<^sub>4\<exists>F\<^sub>5\<exists>F\<^sub>6\<exists>F\<^sub>7\<exists>F\<^sub>8\<exists>F\<^sub>9\<exists>F\<^sub>1\<^sub>0\<exists>F\<^sub>1\<^sub>1\<exists>F\<^sub>1\<^sub>2\<exists>F\<^sub>1\<^sub>3\<exists>F\<^sub>1\<^sub>4\<exists>F\<^sub>1\<^sub>5\<exists>F\<^sub>1\<^sub>6 (
@@ -6652,10 +6652,10 @@ AOT_theorem box_phi_a_3: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
     intro_elim_3_e by blast
 
 AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Null'(_')") 
-  df_null_uni_1: \<open>Null(\<kappa>) \<equiv>\<^sub>d\<^sub>f A!\<kappa> & \<not>\<exists>F \<kappa>[F]\<close>
+  df_null_uni_1: \<open>Null(x) \<equiv>\<^sub>d\<^sub>f A!x & \<not>\<exists>F x[F]\<close>
 
 AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Universal'(_')")
-  df_null_uni_2: \<open>Universal(\<kappa>) \<equiv>\<^sub>d\<^sub>f A!\<kappa> & \<forall>F \<kappa>[F]\<close>
+  df_null_uni_2: \<open>Universal(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F x[F]\<close>
 
 AOT_theorem null_uni_uniq_1: \<open>\<exists>!x Null(x)\<close>
 proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
@@ -7209,7 +7209,7 @@ proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
 qed
 
 AOT_define propositional :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Propositional'(_')\<close>)
-  prop_prop1: \<open>Propositional([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<exists>p(\<Pi> = [\<lambda>y p])\<close>
+  prop_prop1: \<open>Propositional([F]) \<equiv>\<^sub>d\<^sub>f \<exists>p(F = [\<lambda>y p])\<close>
 
 AOT_theorem prop_prop2_1: \<open>\<forall>p [\<lambda>y p]\<down>\<close>
   by (rule GEN) cqt_2_lambda
@@ -7239,7 +7239,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_define indicriminate :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Indiscriminate'(_')")
-  prop_indis: \<open>Indiscriminate([\<Pi>]) \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<box>(\<exists>x [\<Pi>]x \<rightarrow> \<forall>x [\<Pi>]x)\<close>
+  prop_indis: \<open>Indiscriminate([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>(\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close>
 
 AOT_theorem prop_in_thm: \<open>Propositional([\<Pi>]) \<rightarrow> Indiscriminate([\<Pi>])\<close>
 proof(rule "\<rightarrow>I")
@@ -7443,5 +7443,15 @@ qed
 AOT_theorem enc_prop_nec_2: \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<box>\<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
   using derived_S5_rules_1[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
   by blast
+
+section\<open>Natural Numbers\<close>
+
+AOT_define one_one_cor :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ 1\<longleftrightarrow>1 _\<close>)
+  \<open>R |: F 1\<longleftrightarrow>1 G \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & G\<down> &
+    \<forall>x ([F]x \<rightarrow> \<exists>!y([G]y & [R]xy)) &
+    \<forall>y ([G]y \<rightarrow> \<exists>!x([F]y & [R]xy))\<close>
+
+
+
 
 end

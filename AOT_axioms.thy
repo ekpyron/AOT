@@ -65,37 +65,37 @@ AOT_theorem existence_3: \<open>\<phi>\<down> \<equiv>\<^sub>d\<^sub>f [\<lambda
 AOT_theorem oa_1: \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close> using AOT_ordinary .
 AOT_theorem oa_2: \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close> using AOT_abstract .
 
-AOT_theorem identity: \<open>\<kappa> = \<kappa>' \<equiv>\<^sub>d\<^sub>f ([O!]\<kappa> & [O!]\<kappa>' & \<box>\<forall>F ([F]\<kappa> \<equiv> [F]\<kappa>')) \<or> ([A!]\<kappa> & [A!]\<kappa>' & \<box>\<forall>F (\<kappa>[F] \<equiv> \<kappa>'[F]))\<close>
+AOT_theorem identity: \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)) \<or> ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
   unfolding AOT_model_equiv_def
-  using AOT_sem_ind_eq[of _ \<kappa> \<kappa>']
+  using AOT_sem_ind_eq[of _ x y]
   by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
 
 AOT_theorem p_identity:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>x(x[\<Pi>] \<equiv> x[\<Pi>'])\<close>
-  using AOT_sem_enc_eq[of _ \<Pi> \<Pi>']
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
+  using AOT_sem_enc_eq[of _ F G]
   by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq AOT_sem_conj
                  AOT_sem_forall AOT_sem_box AOT_sem_equiv)
 AOT_theorem p_identity_2_a:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y([\<lambda>z [\<Pi>]zy] = [\<lambda>z [\<Pi>']zy] & [\<lambda>z [\<Pi>]yz] = [\<lambda>z [\<Pi>']yz])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y([\<lambda>z [F]zy] = [\<lambda>z [G]zy] & [\<lambda>z [F]yz] = [\<lambda>z [G]yz])\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem p_identity_2_b:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [F]zy\<^sub>1y\<^sub>2] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2] & [\<lambda>z [F]y\<^sub>1y\<^sub>2z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2z])\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 
 AOT_theorem p_identity_2_c:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [\<Pi>]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [\<Pi>]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [\<Pi>']y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [F]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [G]y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 
 AOT_theorem p_identity_2_generic:
-  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . \<guillemotleft>[\<Pi>]\<tau>\<guillemotright>) (\<lambda> \<tau> . \<guillemotleft>[\<Pi>']\<tau>\<guillemotright>)\<guillemotright>\<close> (* TODO: is it ok to state this as axiom? *)
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ \<Pi> \<Pi>'] AOT_sem_proj_id_prod_def AOT_sem_conj
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . AOT_exe F \<tau>) (\<lambda> \<tau> . AOT_exe G \<tau>)\<guillemotright>\<close> (* TODO: is it ok to state this as axiom? *)
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 
 AOT_theorem p_identity_3:
-  \<open>\<phi> = \<psi> \<equiv>\<^sub>d\<^sub>f \<phi>\<down> & \<psi>\<down> & [\<lambda>x \<phi>] = [\<lambda>x \<psi>]\<close>
+  \<open>p = q \<equiv>\<^sub>d\<^sub>f p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_eq AOT_sem_denotes AOT_sem_conj
                  AOT_model_lambda_denotes AOT_sem_lambda_eq_prop_eq)
 
