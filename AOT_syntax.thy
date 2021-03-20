@@ -50,28 +50,6 @@ structure AOT_PremiseSetPrefix = Theory_Data (
   val extend = I
   val merge = Symtab.merge (K true)
 );
-
-fun sort_thys_merge (old_thy, new_thy) = Sorts.inter_sort (Sorts.merge_algebra (Context.Theory old_thy) (Sign.classes_of old_thy, Sign.classes_of new_thy))
-fun sort_merge thy = Sorts.inter_sort (Sign.classes_of thy) 
-
-structure AOT_Sorts = Theory_Data' (
-  type T = (sort*sort) Symtab.table
-  val empty = Symtab.empty
-  val extend = I
-  fun merge thys = Symtab.join (K (apply2 (sort_thys_merge thys)));
-)
-signature AOT_SORT_DATA =
-sig
-  val default: sort
-end;
-
-functor AOT_Sort_Data (Data:AOT_SORT_DATA) = Theory_Data' (
-  type T = sort
-  val empty = Data.default
-  val extend = I
-  fun merge thys = sort_thys_merge thys
-)
-
 structure AOT_Constraints = Theory_Data (
   type T = (term*term) Symtab.table
   val empty = Symtab.empty
@@ -80,20 +58,6 @@ structure AOT_Constraints = Theory_Data (
 )
 
 fun AOT_IsPremiseSetPrefix ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_PremiseSetPrefix.get thy, thy)) ctxt |> fst |> Symtab.lookup #> Option.isSome
-
-fun register_variable_name meta (category, prefices) =
-   fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
-fun register_variable_names meta x = fold (register_variable_name meta) x
-fun register_premise_set_names x = fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())) ) x
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (register_variable_names false)));
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
-    (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o register_premise_set_names));
 
 fun term_of_sort S =
   let
@@ -114,7 +78,9 @@ fun term_of (Type (a, Ts)) =
   | term_of (TFree ("'_dummy_",sort)) = (Const ("_dummy_ofsort", dummyT) $ term_of_sort sort)
   | term_of (t as TFree _) = (@{print} t; raise Term.TYPE ("", [t], []))
   | term_of (TVar _) = raise Fail "";
-fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
+
+fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy =>
+  (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
 fun getConstraint ctxt unary name = Local_Theory.raw_theory_result (fn thy => let
   val constraints = case (Symtab.lookup (AOT_Constraints.get thy) name) of SOME c => c
     | NONE => raise Fail "Unknown type category."
@@ -136,13 +102,22 @@ in
 AOT_Constraints.map (Symtab.update (name, (unaryConstraint, naryConstraint))) thy
 end
 )
-fun register_constraints constraints = fold register_constraint constraints
 
+
+fun register_variable_name meta (category, prefices) =
+   fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (fold (register_variable_name false))));
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (fold (register_variable_name true))));
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
+    (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_type_constraints\<close> "Register constraints for term types."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- (Parse.typ -- Scan.option Parse.typ)) >> (Toplevel.theory o register_constraints));
-
-
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- (Parse.typ -- Scan.option Parse.typ)) >> (Toplevel.theory o fold register_constraint));
 \<close>
 
 AOT_register_type_constraints
@@ -345,7 +320,6 @@ translations
   "_AOT_appl \<phi> a" => "\<phi> a"
 
 ML\<open>
-fun constrainSort trm sort = Const ("_constrain", dummyT) $ trm $ (Const ("_dummy_ofsort", dummyT) $ Const (sort, dummyT))
 fun parseVar unary ctxt [var as Const ("_constrain", _) $ Free (x,_) $ Free _] =
         Const ("_constrain", dummyT) $ var $ (case fetchTermConstraint ctxt x unary of
           SOME (meta,constraint) =>
