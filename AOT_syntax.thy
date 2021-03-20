@@ -3,10 +3,7 @@ theory AOT_syntax
   keywords "AOT_register_variable_names" :: thy_decl
        and "AOT_register_metavariable_names" :: thy_decl
        and "AOT_register_premise_set_names" :: thy_decl
-       and "AOT_Category_Individual"
-       and "AOT_Category_Relation"
-       and "AOT_Category_Proposition"
-       and "AOT_Category_Term"
+(*       and "AOT_register_type" :: thy_decl *)
        and "AOT_add_individual_sorts" :: thy_decl
        and "AOT_add_term_sort" :: thy_decl
      abbrevs "actually" = "\<^bold>\<A>"
@@ -43,18 +40,8 @@ fun AOT_binder_trans thy bnd syntaxConst =
 \<close>
 
 ML\<open>
-datatype AOT_TypeCategory = AOT_Individual | AOT_Relation | AOT_Proposition | AOT_Term
-val AOT_TypeCategory_ord = let
-  fun AOT_TypeCategory_int AOT_Individual = 0
-    | AOT_TypeCategory_int AOT_Relation = 1
-    | AOT_TypeCategory_int AOT_Proposition = 2
-    | AOT_TypeCategory_int AOT_Term = 3
-  in
-    make_ord (fn (a, b) => AOT_TypeCategory_int a < AOT_TypeCategory_int b)
-  end
-
 structure AOT_TermPrefix = Theory_Data (
-  type T = (bool*AOT_TypeCategory) Symtab.table
+  type T = (bool*string) Symtab.table
   val empty = Symtab.empty
   val extend = I
   val merge = Symtab.merge (K true)
@@ -66,16 +53,14 @@ structure AOT_PremiseSetPrefix = Theory_Data (
   val merge = Symtab.merge (K true)
 );
 
-structure AOT_Categorytab = Table(type key = AOT_TypeCategory val ord = AOT_TypeCategory_ord);
-
 fun sort_thys_merge (old_thy, new_thy) = Sorts.inter_sort (Sorts.merge_algebra (Context.Theory old_thy) (Sign.classes_of old_thy, Sign.classes_of new_thy))
 fun sort_merge thy = Sorts.inter_sort (Sign.classes_of thy) 
 
 structure AOT_Sorts = Theory_Data' (
-  type T = (sort*sort) AOT_Categorytab.table
-  val empty = AOT_Categorytab.empty
+  type T = (sort*sort) Symtab.table
+  val empty = Symtab.empty
   val extend = I
-  fun merge thys = AOT_Categorytab.join (K (apply2 (sort_thys_merge thys)));
+  fun merge thys = Symtab.join (K (apply2 (sort_thys_merge thys)));
 )
 signature AOT_SORT_DATA =
 sig
@@ -102,17 +87,10 @@ fun AOT_TermSort_add sort thy = let
 fun AOT_TermSort_local_get ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_TermSort.get thy, thy)) ctxt |> fst
 fun AOT_IsPremiseSetPrefix ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_PremiseSetPrefix.get thy, thy)) ctxt |> fst |> Symtab.lookup #> Option.isSome
 
-fun parseCategory "AOT_Individual" = AOT_Individual
-  | parseCategory _ = raise Fail "Unexpected type category."
 fun register_variable_name meta (category, prefices) =
    fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
 fun register_variable_names meta x = fold (register_variable_name meta) x
 fun register_premise_set_names x = fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())) ) x
-val parse_AOT_TypeCategory =  Parse.group (fn () => "AOT type category")
-  (Parse.$$$ "AOT_Category_Individual" >> K AOT_Individual ||
-   Parse.$$$ "AOT_Category_Relation" >> K AOT_Relation ||
-   Parse.$$$ "AOT_Category_Proposition" >> K AOT_Proposition ||
-   Parse.$$$ "AOT_Category_Term" >> K AOT_Term)
 fun add_individual_sorts (unarySort, narySort) thy = let
     val unarySort = Syntax.parse_sort thy unarySort
     val narySort = Syntax.parse_sort thy narySort
@@ -125,10 +103,10 @@ fun add_term_sort sort thy = let
   in thy end
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
-    (Scan.repeat1 ((parse_AOT_TypeCategory --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (register_variable_names false)));
+    (Scan.repeat1 ((Parse.string --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (register_variable_names false)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
-    (Scan.repeat1 ((parse_AOT_TypeCategory --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
+    (Scan.repeat1 ((Parse.string --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (register_variable_names true)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
     (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o register_premise_set_names));
@@ -160,10 +138,10 @@ fun term_of (Type (a, Ts)) =
 fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
 fun fetchTermConstraint ctxt name unary =
   Local_Theory.raw_theory_result (fn thy => let
-      fun getConstraint unary AOT_Individual = Const ("_dummy_ofsort", dummyT) $ term_of_sort (if unary then AOT_UnaryIndividualSort.get thy else AOT_NaryIndividualSort.get thy)
-        | getConstraint _ AOT_Term = Const ("_dummy_ofsort", dummyT) $ term_of_sort (AOT_TermSort.get thy)
-        | getConstraint _ AOT_Proposition = term_of @{typ \<o>}
-        | getConstraint _ AOT_Relation = Const (\<^type_syntax>\<open>rel\<close>, dummyT) $ getConstraint false AOT_Individual
+      fun getConstraint unary "Individual" = Const ("_dummy_ofsort", dummyT) $ term_of_sort (if unary then AOT_UnaryIndividualSort.get thy else AOT_NaryIndividualSort.get thy)
+        | getConstraint _ "Term" = Const ("_dummy_ofsort", dummyT) $ term_of_sort (AOT_TermSort.get thy)
+        | getConstraint _ "Proposition" = term_of @{typ \<o>}
+        | getConstraint _ "Relation" = Const (\<^type_syntax>\<open>rel\<close>, dummyT) $ getConstraint false "Individual"
     in
     (Option.map (fn (meta, category) => (meta, getConstraint unary category))
      ((Symtab.lookup o AOT_TermPrefix.get) thy (hd (Symbol.explode name))), thy)
@@ -173,16 +151,16 @@ fun fetchTermConstraint ctxt name unary =
 
 
 AOT_register_variable_names
-  AOT_Category_Individual: x y z \<nu> \<mu> a b c d u v
-  AOT_Category_Proposition: p q r s
-  AOT_Category_Relation: F G H P Q R S
-  AOT_Category_Term: \<alpha> \<beta> \<gamma> \<delta>
+  "Individual": x y z \<nu> \<mu> a b c d u v
+  "Proposition": p q r s
+  "Relation": F G H P Q R S
+  "Term": \<alpha> \<beta> \<gamma> \<delta>
 
 AOT_register_metavariable_names
-  AOT_Category_Individual: \<kappa>
-  AOT_Category_Proposition: \<phi> \<psi> \<chi> \<theta> \<zeta> \<xi> \<Theta>
-  AOT_Category_Relation: \<Pi>
-  AOT_Category_Term: \<tau> \<sigma>
+  "Individual": \<kappa>
+  "Proposition": \<phi> \<psi> \<chi> \<theta> \<zeta> \<xi> \<Theta>
+  "Relation": \<Pi>
+  "Term": \<tau> \<sigma>
 
 AOT_register_premise_set_names \<Gamma> \<Delta> \<Lambda>
 
