@@ -300,7 +300,7 @@ syntax "_AOT_denotes" :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>_\<d
        "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> ("_")
        "_AOT_lambda" :: \<open>lambda_args \<Rightarrow> \<phi> \<Rightarrow> \<Pi>\<close> (\<open>[\<lambda>_ _]\<close>)
        "_explicitRelation" :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> ("[_]")
-       "" :: \<open>desc \<Rightarrow> exe_arg\<close> ("_")
+       "" :: \<open>\<kappa>\<^sub>s \<Rightarrow> exe_arg\<close> ("_")
        "" :: \<open>exe_arg \<Rightarrow> exe_args\<close> ("_")
        "_AOT_exe_args" :: \<open>exe_arg \<Rightarrow> exe_args \<Rightarrow> exe_args\<close> ("__")
        "_AOT_exe_arg_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> exe_arg\<close> ("_..._")

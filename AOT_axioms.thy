@@ -249,8 +249,20 @@ proof (rule AOT_model_axiomI)
 qed
 AOT_axiom safe_ext: \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
   apply (rule AOT_model_axiomI)
-  using AOT_sem_lambda_coex 
+  using AOT_sem_lambda_coex
   by (simp add: AOT_sem_imp AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box AOT_sem_forall) blast
+AOT_axiom safe_ext_2: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down>\<close>
+  using safe_ext[where \<phi>="\<lambda>(x,y). \<phi> x y"]
+  by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
+                AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
+AOT_axiom safe_ext_3: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down>\<close>
+  using safe_ext[where \<phi>="\<lambda>(x,y,z). \<phi> x y z"]
+  by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
+                AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
+AOT_axiom safe_ext_4: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3\<forall>\<nu>\<^sub>4 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down>\<close>
+  using safe_ext[where \<phi>="\<lambda>(x,y,z,w). \<phi> x y z w"]
+  by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
+                AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
 
 AOT_axiom nary_encoding_2: \<open>xy[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>y] & y[\<lambda>\<nu> [F]x\<nu>]\<close>
   by (rule AOT_model_axiomI)
