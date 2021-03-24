@@ -17,6 +17,7 @@ theory AOT_syntax
          and "implies" = "\<rightarrow>"
          and "equal" = "="
          and "by definition" = "\<^sub>d\<^sub>f"
+         and "df" = "\<^sub>d\<^sub>f"
          and "denotes" = "\<down>"
 begin
 
