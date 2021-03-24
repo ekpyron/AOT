@@ -39,8 +39,9 @@ fun AOT_binder_trans thy bnd syntaxConst =
 \<close>
 
 ML\<open>
-structure AOT_TermPrefix = Theory_Data (
-  type T = (bool*string) Symtab.table
+datatype AOT_VariableKind = AOT_Variable | AOT_MetaVariable
+structure AOT_VariablePrefix = Theory_Data (
+  type T = (AOT_VariableKind*string) Symtab.table
   val empty = Symtab.empty
   val extend = I
   val merge = Symtab.merge (K true)
@@ -81,7 +82,7 @@ fun term_of (Type (a, Ts)) =
   | term_of (TVar _) = raise Fail "";
 
 fun fetchTermCategory ctxt = Local_Theory.raw_theory_result (fn thy =>
-  (Symtab.lookup (AOT_TermPrefix.get thy), thy)) ctxt |> fst
+  (Symtab.lookup (AOT_VariablePrefix.get thy), thy)) ctxt |> fst
 fun getConstraint ctxt unary name = Local_Theory.raw_theory_result (fn thy => let
   val constraints = case (Symtab.lookup (AOT_Constraints.get thy) name) of SOME c => c
     | NONE => raise Fail "Unknown type category."
@@ -89,7 +90,7 @@ fun getConstraint ctxt unary name = Local_Theory.raw_theory_result (fn thy => le
 fun fetchTermConstraint ctxt name unary =
   Local_Theory.raw_theory_result (fn thy =>
     (Option.map (fn (meta, category) => (meta, getConstraint ctxt unary category))
-    ((Symtab.lookup o AOT_TermPrefix.get) thy (hd (Symbol.explode name))), thy)
+    ((Symtab.lookup o AOT_VariablePrefix.get) thy (hd (Symbol.explode name))), thy)
 ) ctxt |> fst
 
 fun register_constraint (name:string, (unaryConstraint:string,naryConstraint:string option)) thy = (
@@ -106,13 +107,13 @@ end
 
 
 fun register_variable_name meta (category, prefices) =
-   fold (fn prefix => AOT_TermPrefix.map (Symtab.update (prefix, (meta, category)))) prefices
+   fold (fn prefix => AOT_VariablePrefix.map (Symtab.update (prefix, (meta, category)))) prefices
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (fold (register_variable_name false))));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (fold (register_variable_name AOT_Variable))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (fold (register_variable_name true))));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (fold (register_variable_name AOT_MetaVariable))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
     (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())))));
@@ -323,18 +324,17 @@ translations
 ML\<open>
 fun parseVar unary ctxt [var as Const ("_constrain", _) $ Free (x,_) $ Free _] =
         Const ("_constrain", dummyT) $ var $ (case fetchTermConstraint ctxt x unary of
-          SOME (meta,constraint) =>
-            if meta then raise Term.TERM ("Expected variable prefix, but got metavariable prefix.", [var])
-            else constraint
+            SOME (AOT_MetaVariable,_) => raise Term.TERM ("Expected variable prefix, but got metavariable prefix.", [var])
+          | SOME (AOT_Variable, constraint) => constraint
           | _ => raise Term.TERM ("Unknown variable prefix.", [var]))
   | parseVar _ _ var = raise Term.TERM ("Expected constrained free variable.", var)
 
 fun constrainTrm ctxt forceMeta unary (Free (var, _)) = (fn trm =>
-      case fetchTermConstraint ctxt var unary of SOME (meta,constraint) =>
-        if forceMeta orelse meta then
-          Const ("_constrain", dummyT) $ trm $ constraint
-        else
-          Const ("_constrain", dummyT) $ (Const (\<^const_syntax>\<open>AOT_term_of_var\<close>, dummyT) $ trm) $ constraint
+      case fetchTermConstraint ctxt var unary of
+        SOME (AOT_MetaVariable,constraint) => Const ("_constrain", dummyT) $ trm $ constraint
+      | SOME (AOT_Variable, constraint) =>
+          if forceMeta then Const ("_constrain", dummyT) $ trm $ constraint
+          else Const ("_constrain", dummyT) $ (Const (\<^const_syntax>\<open>AOT_term_of_var\<close>, dummyT) $ trm) $ constraint
       | _ => raise Term.TERM ("Unknown variable or metavariable prefix.", [trm]))
   | constrainTrm _ _ _ (Bound _) = (fn var => var)
   | constrainTrm _ _ _ trm = raise Term.TERM ("Expected free or bound variable.", [trm])
