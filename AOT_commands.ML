@@ -70,6 +70,10 @@ fun AOT_read_prop nonterminal ctxt prop = (let
     val typ = Term.fastype_of (Syntax.check_term ctxt' trm)
     val trm = if typ = @{typ prop} then trm else HOLogic.mk_Trueprop trm (* TODO: try to avoid *)
   in trm end)
+fun AOT_read_term nonterminal ctxt prop = (let
+    val ctxt' = Config.put Syntax.root nonterminal ctxt
+    val trm = Syntax.parse_term ctxt' prop
+  in trm end)
 fun AOT_check_prop nonterminal ctxt prop = AOT_read_prop nonterminal ctxt prop |> Syntax.check_prop ctxt;
 
 let
@@ -389,7 +393,7 @@ val short_statement =
 
 fun setupStrictWorld ctxt = let
 (* TODO: ideally not just a fixed name, but a variant name... *)
-val (v,ctxt) = Proof_Context.add_fixes [(Binding.make ("v", Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt |> apfst the_single
+val (v,ctxt) = Proof_Context.add_fixes [(Binding.make ("w", Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt |> apfst the_single
 in AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt end
 fun setupWeakWorld ctxt = AOT_ProofData.put (SOME @{const w\<^sub>0}) ctxt
 

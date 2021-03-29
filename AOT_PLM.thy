@@ -67,7 +67,6 @@ AOT_theorem RN_prem: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \
 AOT_theorem RN: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<box>\<phi>\<close>
   using RN_prem assms by blast
 
-
 AOT_theorem df_rules_formulas_1: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp_all add: AOT_model_equiv_def AOT_sem_imp) (* NOTE: semantics needed *)
 AOT_theorem df_rules_formulas_2: assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<psi> \<rightarrow> \<phi>\<close>
@@ -978,10 +977,10 @@ qed
 (*  by (meson "rule=E" deduction_theorem) *)
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<alpha> = \<beta>\<close>
-  moreover AOT_have \<open>\<beta> = \<beta>\<close> using calculation "=E"[of v "\<lambda> \<tau> . \<guillemotleft>\<tau> = \<beta>\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
+  moreover AOT_have \<open>\<beta> = \<beta>\<close> using calculation "=E"[of _ "\<lambda> \<tau> . \<guillemotleft>\<tau> = \<beta>\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
   moreover AOT_have \<open>\<alpha> = \<alpha> \<rightarrow> \<alpha> = \<alpha>\<close> using if_p_then_p by blast
   ultimately AOT_show \<open>\<beta> = \<alpha>\<close>
-    using "\<rightarrow>E" "\<rightarrow>I" "=E"[of v "\<lambda> \<tau> . \<guillemotleft>(\<tau> = \<tau>) \<rightarrow> (\<tau> = \<alpha>)\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
+    using "\<rightarrow>E" "\<rightarrow>I" "=E"[of _ "\<lambda> \<tau> . \<guillemotleft>(\<tau> = \<tau>) \<rightarrow> (\<tau> = \<alpha>)\<guillemotright>" "AOT_term_of_var \<alpha>" "AOT_term_of_var \<beta>"] by blast
 qed
 
 AOT_theorem id_eq_3: \<open>\<alpha> = \<beta> & \<beta> = \<gamma> \<rightarrow> \<alpha> = \<gamma>\<close>
@@ -1215,19 +1214,19 @@ AOT_theorem term_out_4: \<open>(\<phi>{\<beta>} & \<forall>\<alpha>(\<phi>{\<alp
   using term_out_3 . (* TODO: same as above - another instance of the generalized alphabetic variant rule... *)
 
 (* TODO: would of course be nice to define it without the syntax magic *)
-AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>  ("\<exists>!_ _" [1,40])
+AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>
   uniqueness_1: \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
-translations
-  "AOT_exists_unique \<tau> \<phi>" => "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
+syntax "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>!_ _" [1,40])
 AOT_syntax_print_translations
-  "AOT_exists_unique \<tau> \<phi>" <= "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
+  "_AOT_exists_unique \<tau> \<phi>" <= "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
 syntax
    "_AOT_exists_unique_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>!_...\<exists>!_ _\<close> [1,40])
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_unique_ellipse\<close>, fn ctx => fn [a,b,c] =>
-  Ast.mk_appl (Ast.Constant "AOT_exists_unique") [parseEllipseList "_AOT_vars" ctx [a,b],c])]\<close>
+  Ast.mk_appl (Ast.Constant "AOT_exists_unique") [parseEllipseList "_AOT_vars" ctx [a,b],c]),
+(\<^syntax_const>\<open>_AOT_exists_unique\<close>,AOT_restricted_binder \<^const_name>\<open>AOT_exists_unique\<close> \<^const_syntax>\<open>AOT_conj\<close>)]\<close>
 print_translation\<open>AOT_syntax_print_translations
-  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>AOT_exists_unique\<close>,
-  AOT_binder_trans @{theory} @{binding "AOT_exists_unique_binder"} \<^syntax_const>\<open>AOT_exists_unique\<close>]
+  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists_unique\<close> \<^syntax_const>\<open>_AOT_exists_unique\<close>,
+  AOT_binder_trans @{theory} @{binding "AOT_exists_unique_binder"} \<^syntax_const>\<open>_AOT_exists_unique\<close>]
 \<close>
 
 
@@ -1241,7 +1240,7 @@ no_notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
 end
 
 AOT_theorem uniqueness_2: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accomodate PLMs double definition *)
+proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accommodate PLMs double definition *)
   (* TODO: hard to spot that AOT_modally_strict is needed here *)
   AOT_modally_strict {
     AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
@@ -3321,12 +3320,12 @@ declare id_trans[trans]
 method "\<eta>C" for \<Pi> :: \<open><'a::AOT_\<kappa>s>\<close> = (match conclusion in "[v \<Turnstile> \<tau>{\<Pi>} = \<tau>'{\<Pi>}]" for v \<tau> \<tau>' \<Rightarrow> \<open>
 rule "=E"[rotated 1, OF eta_conversion_lemma1_2[THEN "\<rightarrow>E", of v "\<guillemotleft>[\<Pi>]\<guillemotright>", symmetric]]
 \<close>)
-
+(*
 AOT_theorem \<open>[\<lambda>y [\<lambda>z [P]z]y \<rightarrow> [\<lambda>u [S]u]y] = [\<lambda>y [P]y \<rightarrow> [S]y]\<close>
   apply ("\<eta>C" "\<guillemotleft>[P]\<guillemotright>") defer
    apply ("\<eta>C" "\<guillemotleft>[S]\<guillemotright>") defer
   oops
-
+*)
 (* TODO: proper representation of eta_conversion_lemma2 *)
 
 AOT_theorem sub_des_lam_1: \<open>[\<lambda>z\<^sub>1...z\<^sub>n  \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}]\<down> & \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow> [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}] = [\<lambda>z\<^sub>1...z\<^sub>n \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<psi>{x}}]\<close>
