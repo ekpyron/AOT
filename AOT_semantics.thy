@@ -843,6 +843,11 @@ lemma AOT_instance_of_cqt_2_intros_box[AOT_instance_of_cqt_2_intro]:
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<box>\<phi>{\<tau>}\<guillemotright>)\<close>
   using assms
   by (auto simp: AOT_instance_of_cqt_2_def AOT_sem_denotes AOT_model_lambda_denotes AOT_sem_box)
+lemma AOT_instance_of_cqt_2_intros_act[AOT_instance_of_cqt_2_intro]:
+  assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
+  shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<^bold>\<A>\<phi>{\<tau>}\<guillemotright>)\<close>
+  using assms
+  by (auto simp: AOT_instance_of_cqt_2_def AOT_sem_denotes AOT_model_lambda_denotes AOT_sem_act)
 lemma AOT_instance_of_cqt_2_intros_diamond[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<diamond>\<phi>{\<tau>}\<guillemotright>)\<close>

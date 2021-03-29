@@ -506,6 +506,7 @@ fun parseIdDef ctxt [lhs, rhs] =
       | add_frees (Const _) frees = frees
       | add_frees (Free _ $ args) frees = Term.add_frees args frees
       | add_frees (Const _ $ args) frees = Term.add_frees args frees
+      | add_frees (args $ args') frees = Term.add_frees args' (Term.add_frees args frees)
       | add_frees trm _ = raise Term.TERM ("Expected definition term.", [trm])
     val lhs' = dropConstraints lhs
     val rhs' = dropConstraints rhs
