@@ -6601,9 +6601,14 @@ qed
 definition rigid_condition where \<open>rigid_condition \<phi> \<equiv> \<forall>v . [v \<Turnstile> \<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})]\<close>
 syntax rigid_condition :: \<open>id_position \<Rightarrow> AOT_prop\<close> ("RIGID'_CONDITION'(_')")
 
-AOT_theorem rigid_condition: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+AOT_theorem rigid_conditionE: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   using assms[unfolded rigid_condition_def] by auto
+
+AOT_theorem rigid_conditionI:
+  assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+  shows \<open>RIGID_CONDITION(\<phi>)\<close>
+  using assms rigid_condition_def by auto
 
 AOT_theorem box_phi_a_1: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>(A!x  & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> \<box>(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
@@ -6612,7 +6617,7 @@ proof (rule "\<rightarrow>I")
   AOT_hence b: \<open>\<box>A!x\<close> by (metis con_dis_taut_1 oa_facts_2 vdash_properties_10)
   AOT_have \<open>x[F] \<equiv> \<phi>{F}\<close> for F using a[THEN "&E"(2)] "\<forall>E" by blast
   moreover AOT_have \<open>\<box>(x[F] \<rightarrow> \<box>x[F])\<close> for F by (meson pre_en_eq_1_1 RN)
-  moreover AOT_have \<open>\<box>(\<phi>{F} \<rightarrow> \<box>\<phi>{F})\<close> for F using RN rigid_condition[OF assms] "\<forall>E" by blast
+  moreover AOT_have \<open>\<box>(\<phi>{F} \<rightarrow> \<box>\<phi>{F})\<close> for F using RN rigid_conditionE[OF assms] "\<forall>E" by blast
   ultimately AOT_have \<open>\<box>(x[F] \<equiv> \<phi>{F})\<close> for F
     by (metis con_dis_i_e_1 sc_eq_box_box_5 vdash_properties_6)
   AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> \<phi>{F})\<close> by (rule GEN)
@@ -6632,7 +6637,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<^bold>\<A>(y[F] \<equiv> \<phi>{F})\<close> for F using "\<forall>E" by blast
   AOT_hence \<open>\<^bold>\<A>y[F] \<equiv> \<^bold>\<A>\<phi>{F}\<close> for F by (metis Act_Basic_5 intro_elim_3_a) 
   AOT_hence \<open>y[F] \<equiv> \<phi>{F}\<close> for F
-    using sc_eq_fur_2[THEN "\<rightarrow>E", OF rigid_condition[OF assms, THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
+    using sc_eq_fur_2[THEN "\<rightarrow>E", OF rigid_conditionE[OF assms, THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
     by (metis en_eq_10_1 intro_elim_3_f)
   AOT_hence \<open>\<forall>F (y[F] \<equiv> \<phi>{F})\<close> by (rule GEN)
   AOT_thus \<open>[A!]y & \<forall>F (y[F] \<equiv> \<phi>{F})\<close> using abs con_dis_i_e_1 intro_elim_3_b oa_facts_8 by blast
@@ -6641,7 +6646,7 @@ qed
 AOT_theorem box_phi_a_3: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
   using desc_nec_encode 
-    sc_eq_fur_2[THEN "\<rightarrow>E", OF rigid_condition[OF assms, THEN "\<forall>E"(2)[where \<beta>=G], THEN RN]]
+    sc_eq_fur_2[THEN "\<rightarrow>E", OF rigid_conditionE[OF assms, THEN "\<forall>E"(2)[where \<beta>=G], THEN RN]]
     intro_elim_3_e by blast
 
 AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Null'(_')") 

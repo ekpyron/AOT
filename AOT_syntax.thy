@@ -287,9 +287,7 @@ translations
   "_AOT_not \<phi>" => "CONST AOT_not \<phi>"
   "_AOT_box \<phi>" => "CONST AOT_box \<phi>"
   "_AOT_act \<phi>" => "CONST AOT_act \<phi>"
-(*  "_AOT_all \<alpha> \<phi>" => "CONST AOT_forall (_abs \<alpha> \<phi>)" *)
   "_AOT_eq \<tau> \<tau>'" => "CONST AOT_eq \<tau> \<tau>'"
-  "_AOT_desc x \<phi>" => "CONST AOT_desc (_abs x \<phi>)"
   "_AOT_lambda0 \<phi>" => "CONST AOT_lambda0 \<phi>"
   "_AOT_concrete" => "CONST AOT_concrete"
   "_AOT_lambda \<alpha> \<phi>" => "CONST AOT_lambda (_abs \<alpha> \<phi>)"
@@ -566,8 +564,9 @@ in
 end] | _ => raise Match)
 \<close>
 
-parse_ast_translation\<open>                              
-[(\<^syntax_const>\<open>_AOT_all\<close>, AOT_restricted_binder \<^const_name>\<open>AOT_forall\<close> \<^const_name>\<open>AOT_imp\<close>)]
+parse_ast_translation\<open>
+[(\<^syntax_const>\<open>_AOT_all\<close>, AOT_restricted_binder \<^const_name>\<open>AOT_forall\<close> \<^const_name>\<open>AOT_imp\<close>),
+ (\<^syntax_const>\<open>_AOT_desc\<close>, AOT_restricted_binder \<^const_name>\<open>AOT_desc\<close> \<^const_name>\<open>AOT_conj\<close>)]
 \<close>
 
 
