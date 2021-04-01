@@ -17,6 +17,8 @@ theory AOT_commands
        and "AOT_show" :: prf_asm_goal % "proof"
        and "AOT_thus" :: prf_asm_goal % "proof"
 
+       and "AOT_find_theorems" :: diag
+
        and "thm_name" :: diag
        and "AOT_sledgehammer" :: diag
        and "AOT_sledgehammer_only" :: diag
@@ -25,6 +27,10 @@ theory AOT_commands
 begin
 
 nonterminal AOT_prop
+nonterminal \<phi>
+nonterminal \<phi>'
+nonterminal \<tau>
+nonterminal \<tau>'
 nonterminal "AOT_axiom"
 nonterminal "AOT_act_axiom"
 ML_file AOT_commands.ML

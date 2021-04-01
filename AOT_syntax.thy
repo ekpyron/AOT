@@ -35,9 +35,6 @@ no_notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
 no_notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
 end
 
-nonterminal \<phi>
-
-nonterminal \<phi>'
 syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> ("_")
 
 syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<phi>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
@@ -45,9 +42,6 @@ syntax "_AOT_quoted" :: \<open>\<phi>' \<Rightarrow> any\<close> (\<open>\<guill
 
 syntax "" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>'(_')\<close>)
 
-nonterminal \<tau>
-
-nonterminal \<tau>'
 syntax "_AOT_process_frees" :: \<open>\<tau> \<Rightarrow> \<tau>'\<close> ("_")
 
 syntax "_AOT_verbatim" :: \<open>any \<Rightarrow> \<tau>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)

@@ -393,7 +393,7 @@ val short_statement =
 
 fun setupStrictWorld ctxt = let
 (* TODO: ideally not just a fixed name, but a variant name... *)
-val (v,ctxt) = Proof_Context.add_fixes [(Binding.make ("w", Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt |> apfst the_single
+val (v,ctxt) = Proof_Context.add_fixes [(Binding.make ("ws", Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt |> apfst the_single
 in AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt end
 fun setupWeakWorld ctxt = AOT_ProofData.put (SOME @{const w\<^sub>0}) ctxt
 
@@ -550,4 +550,44 @@ val result = map (fn x => (x,[])) facts
 val ctxt = Toplevel.proof_of state
 val _ = Sledgehammer.run_sledgehammer params Sledgehammer_Prover.Normal NONE 1 {add = result, del = [], only = true} ctxt
 in () end)))
+
+
+fun readTermPattern ctxt str = (let
+  val trm = case try (AOT_read_term @{nonterminal \<tau>'} ctxt) str of SOME x => x
+            | NONE => AOT_read_term @{nonterminal \<phi>'} ctxt str
+  val trm = Syntax.check_term ctxt trm
+  fun varifyTerm (Const (\<^const_name>\<open>AOT_term_of_var\<close>, _) $ Free (x, t)) = Var ((x, 0), t)
+    | varifyTerm (x $ y) = varifyTerm x $ varifyTerm y
+    | varifyTerm (Abs (a, b, c)) = Abs(a, b, varifyTerm c)
+    | varifyTerm z = z
+in varifyTerm trm end)
+
+fun parseCriterion ctxt (Find_Theorems.Simp crit) = (Find_Theorems.Simp (readTermPattern ctxt crit))
+  | parseCriterion ctxt (Find_Theorems.Pattern crit) = (Find_Theorems.Pattern (readTermPattern ctxt crit))
+  | parseCriterion _ (Find_Theorems.Name x) = (Find_Theorems.Name x)
+  | parseCriterion _ Find_Theorems.Intro = Find_Theorems.Intro
+  | parseCriterion _ Find_Theorems.Elim = Find_Theorems.Elim
+  | parseCriterion _ Find_Theorems.Dest = Find_Theorems.Dest
+  | parseCriterion _ Find_Theorems.Solves = Find_Theorems.Solves
+
+fun pretty_theorems ctxt opt_lim rem_dups spec =
+  (map (Find_Theorems.pretty_thm ctxt))
+  (snd (Find_Theorems.find_theorems ctxt NONE opt_lim rem_dups (map (apsnd (parseCriterion ctxt)) spec)))
+
+val options =
+  Scan.optional
+    (Parse.$$$ "(" |--
+      Parse.!!! (Scan.option Parse.nat --
+        Scan.optional (Parse.reserved "with_dups" >> K false) true --| Parse.$$$ ")"))
+    (NONE, true);
+
+val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_find_theorems\<close>
+    "find theorems meeting specified criteria"
+    (options -- Find_Theorems.query_parser >> (fn ((opt_lim, rem_dups), spec) =>
+      Toplevel.keep (fn st =>
+        Pretty.writeln_chunks
+          (pretty_theorems (AOT_ProofData.put (SOME (Var (("ws", 0), @{typ w})))
+                            (Proof.context_of (Find_Theorems.proof_state st)))
+                           opt_lim rem_dups spec))));
 
