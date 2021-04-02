@@ -1,5 +1,5 @@
 theory AOT_NaturalNumbers
-  imports AOT_PLM
+  imports AOT_PLM AOT_PossibleWorlds
   abbrevs one-to-one = \<open>\<^sub>1\<^sub>-\<^sub>1\<close>
       and onto = \<open>\<^sub>o\<^sub>n\<^sub>t\<^sub>o\<close>
 begin
@@ -425,6 +425,56 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>F \<approx>\<^sub>E H\<close>
     by (metis con_dis_taut_5 eq_part_3 vdash_properties_10)
 qed
+
+(* TODO_IMPORTANT: PLM states right-to-left direction as well without proof earlier than here! *)
+AOT_theorem eq_part_5': \<open>F \<approx>\<^sub>E G \<equiv> \<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume 0: \<open>F \<approx>\<^sub>E G\<close>
+  AOT_thus \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close> by (rule eq_part_5[THEN "\<rightarrow>E"])
+next
+  AOT_assume 0: \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close>
+  AOT_obtain H where \<open>Rigidifies([H],[F])\<close> using rigid_der_3 "\<exists>E" by metis
+  AOT_hence H: \<open>Rigid([H]) & \<forall>x ([H]x \<equiv> [F]x)\<close>
+    using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_have H_rigid: \<open>\<box>\<forall>x ([H]x \<rightarrow> \<box>[H]x)\<close> using H[THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)].
+  AOT_hence \<open>\<forall>x \<box>([H]x \<rightarrow> \<box>[H]x)\<close>
+    using BFs_2 vdash_properties_10 by blast
+  AOT_hence \<open>\<box>([H]x \<rightarrow> \<box>[H]x)\<close> for x using "\<forall>E"(2) by blast
+  AOT_hence rigid: \<open>[H]x \<equiv> \<^bold>\<A>[H]x\<close> for x
+     by (metis intro_elim_3_f oth_class_taut_3_a sc_eq_fur_2 vdash_properties_10)
+  AOT_have \<open>H \<equiv>\<^sub>E F\<close>
+  proof (safe intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+    AOT_show \<open>[H]u \<equiv> [F]u\<close> for u using H[THEN "&E"(2)] "\<forall>E"(2) by fast
+  qed
+  AOT_hence \<open>H \<approx>\<^sub>E F\<close>
+    by (rule apE_eqE_2[THEN "\<rightarrow>E", OF "&I", rotated])
+       (simp add: eq_part_1)
+  AOT_hence F_approx_H: \<open>F \<approx>\<^sub>E H\<close>
+    by (metis eq_part_2 vdash_properties_10)
+  moreover AOT_have H_eq_act_H: \<open>H \<equiv>\<^sub>E [\<lambda>z \<^bold>\<A>[H]z]\<close>
+  proof (safe intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+    AOT_show \<open>[\<lambda>z \<^bold>\<A>[H]z]\<down>\<close> by cqt_2_lambda
+  next
+    AOT_show \<open>[H]u \<equiv> [\<lambda>z \<^bold>\<A>[H]z]u\<close> for u
+      apply (AOT_subst \<open>\<guillemotleft>[\<lambda>z \<^bold>\<A>[H]z]u\<guillemotright>\<close> \<open>\<guillemotleft>\<^bold>\<A>[H]u\<guillemotright>\<close>)
+       apply (rule beta_C_meta[THEN "\<rightarrow>E"])
+       apply cqt_2_lambda
+      using rigid by blast
+  qed
+  AOT_have a: \<open>F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[H]z]\<close>
+    apply (rule apE_eqE_2[unvarify H, THEN "\<rightarrow>E"])
+     apply cqt_2_lambda
+    using F_approx_H H_eq_act_H "&I" by blast
+  AOT_hence \<open>[\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F\<close>
+    apply (rule eq_part_2[unvarify G, THEN "\<rightarrow>E", rotated])
+    by cqt_2_lambda
+  AOT_hence b: \<open>[\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G\<close>
+    by (rule 0[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) (rule cqt_2_const_var[axiom_inst]) 
+  AOT_show \<open>F \<approx>\<^sub>E G\<close>
+    by (rule eq_part_3[unvarify G, THEN "\<rightarrow>E", rotated, OF "&I", OF a, OF b])
+       cqt_2_lambda
+qed
+
 
 AOT_theorem empty_approx_1: \<open>(\<not>\<exists>u [F]u & \<not>\<exists>v [H]v) \<rightarrow> F \<approx>\<^sub>E H\<close>
 proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
