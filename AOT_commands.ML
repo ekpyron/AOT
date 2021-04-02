@@ -551,16 +551,20 @@ val ctxt = Toplevel.proof_of state
 val _ = Sledgehammer.run_sledgehammer params Sledgehammer_Prover.Normal NONE 1 {add = result, del = [], only = true} ctxt
 in () end)))
 
+local
 
 fun readTermPattern ctxt str = (let
   val trm = case try (AOT_read_term @{nonterminal \<tau>'} ctxt) str of SOME x => x
             | NONE => AOT_read_term @{nonterminal \<phi>'} ctxt str
   val trm = Syntax.check_term ctxt trm
-  fun varifyTerm (Const (\<^const_name>\<open>AOT_term_of_var\<close>, _) $ Free (x, t)) = Var ((x, 0), t)
+  fun varifyTerm (Const (\<^const_name>\<open>AOT_term_of_var\<close>, Type ("fun", [_, t])) $ Free (x, _)) = Var ((x, 0), t)
+    | varifyTerm (Free (x,t)) = Var ((x, 0), t)
     | varifyTerm (x $ y) = varifyTerm x $ varifyTerm y
     | varifyTerm (Abs (a, b, c)) = Abs(a, b, varifyTerm c)
     | varifyTerm z = z
-in varifyTerm trm end)
+  val trm = Term.map_types (Term.map_type_tfree (fn (str,sort) => TVar ((str, 0), sort))) trm
+  val trm = varifyTerm trm
+in trm end)
 
 fun parseCriterion ctxt (Find_Theorems.Simp crit) = (Find_Theorems.Simp (readTermPattern ctxt crit))
   | parseCriterion ctxt (Find_Theorems.Pattern crit) = (Find_Theorems.Pattern (readTermPattern ctxt crit))
@@ -570,9 +574,61 @@ fun parseCriterion ctxt (Find_Theorems.Simp crit) = (Find_Theorems.Simp (readTer
   | parseCriterion _ Find_Theorems.Dest = Find_Theorems.Dest
   | parseCriterion _ Find_Theorems.Solves = Find_Theorems.Solves
 
+
+fun pretty_criterion ctxt (b, c) =
+  let
+    fun prfx s = if b then s else "-" ^ s;
+  in
+    (case c of
+      Find_Theorems.Name name => Pretty.str (prfx "name: " ^ quote name)
+    | Find_Theorems.Intro => Pretty.str (prfx "intro")
+    | Find_Theorems.Elim => Pretty.str (prfx "elim")
+    | Find_Theorems.Dest => Pretty.str (prfx "dest")
+    | Find_Theorems.Solves => Pretty.str (prfx "solves")
+    | Find_Theorems.Simp pat => Pretty.block [Pretty.str (prfx "simp:"), Pretty.brk 1,
+        Pretty.quote (Syntax.pretty_term ctxt (Term.show_dummy_patterns pat))]
+    | Find_Theorems.Pattern pat => Pretty.enclose (prfx "\"") "\""
+        [Syntax.pretty_term ctxt (Term.show_dummy_patterns pat)])
+  end;
+
 fun pretty_theorems ctxt opt_lim rem_dups spec =
-  (map (Find_Theorems.pretty_thm ctxt))
-  (snd (Find_Theorems.find_theorems ctxt NONE opt_lim rem_dups (map (apsnd (parseCriterion ctxt)) spec)))
+let
+  fun pretty_ref ctxt thmref =
+    let
+      val (name, sel) =
+        (case thmref of
+          Facts.Named ((name, _), sel) => (name, sel)
+        | Facts.Fact _ => raise Fail "Illegal literal fact");
+    in
+      [Pretty.marks_str (#1 (Proof_Context.markup_extern_fact ctxt name), name),
+        Pretty.str (Facts.string_of_selection sel), Pretty.str ":", Pretty.brk 1]
+    end;
+  fun pretty_thm ctxt (thmref, thm) =
+    Pretty.block (pretty_ref ctxt thmref @ [Thm.pretty_thm ctxt thm]);
+  val criteria = (map (apsnd (parseCriterion ctxt)) spec)
+  val (opt_found, theorems) = Find_Theorems.find_theorems ctxt NONE opt_lim rem_dups criteria
+  val returned = length theorems
+    val tally_msg =
+      (case opt_found of
+        NONE => "displaying " ^ string_of_int returned ^ " theorem(s)"
+      | SOME found =>
+          "found " ^ string_of_int found ^ " theorem(s)" ^
+            (if returned < found
+             then " (" ^ string_of_int returned ^ " displayed)"
+             else ""));
+    val position_markup = Position.markup (Position.thread_data ()) Markup.position;
+  val pretty = Pretty.block
+        (Pretty.fbreaks
+          (Pretty.mark position_markup (Pretty.keyword1 "AOT_find_theorems") ::
+            map (pretty_criterion ctxt) criteria)) ::
+    Pretty.str "" ::
+    (if null theorems then [Pretty.str "found nothing"]
+     else
+       Pretty.str (tally_msg ^ ":") ::
+       grouped 10 Par_List.map (Pretty.item o single o pretty_thm ctxt) (rev theorems))
+in
+  pretty |> Pretty.fbreaks |> curry Pretty.blk 0
+end
 
 val options =
   Scan.optional
@@ -580,14 +636,15 @@ val options =
       Parse.!!! (Scan.option Parse.nat --
         Scan.optional (Parse.reserved "with_dups" >> K false) true --| Parse.$$$ ")"))
     (NONE, true);
-
+in
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_find_theorems\<close>
     "find theorems meeting specified criteria"
     (options -- Find_Theorems.query_parser >> (fn ((opt_lim, rem_dups), spec) =>
       Toplevel.keep (fn st =>
-        Pretty.writeln_chunks
+        Pretty.writeln
           (pretty_theorems (AOT_ProofData.put (SOME (Var (("ws", 0), @{typ w})))
                             (Proof.context_of (Find_Theorems.proof_state st)))
                            opt_lim rem_dups spec))));
 
+end
