@@ -618,8 +618,9 @@ AOT_theorem cqt_further_1: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarro
 AOT_theorem cqt_further_2: \<open>\<not>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<not>\<phi>{\<alpha>}\<close>
   using "\<forall>I" "\<exists>I"(2) "\<rightarrow>I" RAA by metis
 
-AOT_theorem cqt_further_3: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<not>\<exists>\<alpha> \<not>\<phi>{\<alpha>}\<close>
-  using "\<forall>E"(4) "\<exists>E" "\<rightarrow>I" RAA by metis
+AOT_theorem cqt_further_3: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<equiv> \<not>\<exists>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+  using "\<forall>E"(4) "\<exists>E" "\<rightarrow>I" RAA
+  by (metis cqt_further_2 intro_elim_2 modus_tollens_1)
 
 AOT_theorem cqt_further_4: \<open>\<not>\<exists>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
   using "\<forall>I" "\<exists>I"(2)"\<rightarrow>I" RAA by metis
