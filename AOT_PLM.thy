@@ -1,5 +1,5 @@
 theory AOT_PLM
-  imports AOT_axioms "HOL-Eisbach.Eisbach_Tools"
+  imports AOT_axioms
 begin
 
 (* constrain sledgehammer to the abstraction layer *)
@@ -2320,18 +2320,31 @@ instance proof
 qed
 end
 
-method AOT_def_prover1 = (match conclusion in "[v \<Turnstile> \<guillemotleft>\<Theta> \<phi>\<guillemotright> \<equiv> \<guillemotleft>\<Xi> \<phi>\<guillemotright>]" for v \<Theta> \<Xi> \<phi> \<Rightarrow>
-    \<open>match AOT in def: "AOT_model_equiv_def (\<Theta> ?\<tau>) (\<Xi> ?\<tau>)" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1]\<close>
-    | match AOT in def: "AOT_model_equiv_def (\<Xi> ?\<tau>) (\<Theta> ?\<tau>)" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1[THEN intro_elim_3_b[OF oth_class_taut_2_e]]]\<close>\<close>)
-method AOT_def_prover2 = (match conclusion in "[v \<Turnstile> \<guillemotleft>\<Theta> \<phi> \<psi>\<guillemotright> \<equiv> \<guillemotleft>\<Xi> \<phi> \<psi>\<guillemotright>]" for v \<Theta> \<Xi> \<phi> \<psi> \<Rightarrow>
-    \<open>match AOT in def: "AOT_model_equiv_def (\<Theta> ?\<tau> ?\<tau>') (\<Xi> ?\<tau> ?\<tau>')" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1]\<close>
-    | match AOT in def: "AOT_model_equiv_def (\<Xi> ?\<tau> ?\<tau>') (\<Theta> ?\<tau> ?\<tau>')" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1[THEN intro_elim_3_b[OF oth_class_taut_2_e]]]\<close>\<close>)
-method AOT_def_prover3 = (match conclusion in "[v \<Turnstile> \<guillemotleft>\<Theta> \<phi> \<psi> \<chi>\<guillemotright> \<equiv> \<guillemotleft>\<Xi> \<phi> \<psi> \<chi>\<guillemotright>]" for v \<Theta> \<Xi> \<phi> \<psi> \<chi> \<Rightarrow>
-    \<open>match AOT in def: "AOT_model_equiv_def (\<Theta> ?\<tau> ?\<tau>' ?\<tau>'') (\<Xi> ?\<tau> ?\<tau>' ?\<tau>'')" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1]\<close>
-    | match AOT in def: "AOT_model_equiv_def (\<Xi> ?\<tau> ?\<tau>' ?\<tau>'') (\<Theta> ?\<tau> ?\<tau>' ?\<tau>'')" \<Rightarrow> \<open>rule def[THEN rule_eq_df_1[THEN intro_elim_3_b[OF oth_class_taut_2_e]]]\<close>\<close>)
+method_setup AOT_defI =
+\<open>Scan.lift (Scan.succeed (fn ctxt => (Method.CONTEXT_METHOD (fn thms => (Context_Tactic.CONTEXT_SUBGOAL (fn (trm,int) => 
+Context_Tactic.CONTEXT_TACTIC (
+let
+fun findHeadConst (Const x) = SOME x
+  | findHeadConst (A $ B) = findHeadConst A
+  | findHeadConst _ = NONE
+fun findDef (Const (\<^const_name>\<open>AOT_model_equiv_def\<close>, _) $ lhs $ rhs) = findHeadConst lhs
+  | findDef (A $ B) = (case findDef A of SOME x => SOME x | _ => findDef B)
+  | findDef (Abs (a,b,c)) = findDef c
+  | findDef _ = NONE
+val const_opt = (findDef trm)
+val defs = case const_opt of SOME const => List.filter (fn thm => let
+    val concl = Thm.concl_of thm
+    val thmconst = (findDef concl)
+    in case thmconst of SOME (c,_) => fst const = c | _ => false end) (AOT_Definitions.get ctxt)
+    | _ => []
+in
+resolve_tac ctxt defs 1
+end
+)) 1)))))\<close>
+\<open>Resolve AOT definitions\<close>
 
 method AOT_subst_intro_helper = ((rule AOT_substI
-      | fact AOT | AOT_def_prover1 | AOT_def_prover2
+      | AOT_defI
       | (simp only: AOT_subst_cond_\<o>_def AOT_subst_cond_fun_def; ((rule allI)+)?)))
 
 method AOT_subst for \<psi>::"'a::AOT_subst" and \<chi>::"'a::AOT_subst" =
@@ -2378,14 +2391,12 @@ AOT_theorem rule_sub_remark_2_b:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> [R]xy \<equiv> ([R]xy & ([Q]a \<or> \<not>[Q]a))\<close> and \<open>p \<rightarrow> [R]xy & ([Q]a \<or> \<not>[Q]a)\<close> shows \<open>p \<rightarrow> [R]xy\<close>
   by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
 
-(* TODO: unfortunate typing *)
 AOT_theorem rule_sub_remark_3_a:
   assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close>
       and \<open>\<exists>x A!x\<close>
     shows \<open>\<exists>x \<not>\<diamond>E!x\<close>
   by (AOT_subst_rev "\<lambda>\<kappa>. \<guillemotleft>A!\<kappa>\<guillemotright>" "\<lambda>\<kappa>. \<guillemotleft>\<not>\<diamond>E!\<kappa>\<guillemotright>") (auto simp: assms)
 
-(* TODO: unfortunate typing *)
 AOT_theorem rule_sub_remark_3_b:
   assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close>
       and \<open>\<exists>x \<not>\<diamond>E!x\<close>
@@ -2437,7 +2448,10 @@ proof -
   also AOT_have \<open>\<dots> \<equiv> \<not>(\<box>\<not>\<phi> & \<box>\<not>\<psi>)\<close>
     using KBasic_3 intro_elim_3_a oth_class_taut_4_b by blast
   also AOT_have \<open>\<dots> \<equiv> \<not>(\<not>\<diamond>\<phi> & \<not>\<diamond>\<psi>)\<close>
-    by (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<phi>\<guillemotright>"; AOT_subst_rev "\<guillemotleft>\<box>\<not>\<psi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<psi>\<guillemotright>")
+    apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<phi>\<guillemotright>")
+    apply (simp add: KBasic2_1)
+    apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<psi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<psi>\<guillemotright>")
+    by (auto simp: KBasic2_1 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<not>\<not>(\<diamond>\<phi> \<or> \<diamond>\<psi>)\<close>
     using intro_elim_3_f oth_class_taut_3_b oth_class_taut_5_b by blast
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<phi> \<or> \<diamond>\<psi>\<close>
@@ -2452,10 +2466,12 @@ AOT_theorem KBasic2_4: \<open>\<diamond>(\<phi> \<rightarrow> \<psi>) \<equiv> (
 proof -
   AOT_have \<open>\<diamond>(\<phi> \<rightarrow> \<psi>) \<equiv> \<diamond>(\<not>\<phi> \<or> \<psi>)\<close>
     by (AOT_subst "\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>" "\<guillemotleft>\<not>\<phi> \<or> \<psi>\<guillemotright>")
+       (auto simp: oth_class_taut_1_c oth_class_taut_3_a)
   also AOT_have \<open>... \<equiv> \<diamond>\<not>\<phi> \<or> \<diamond>\<psi>\<close>
     by (simp add: KBasic2_2)
   also AOT_have \<open>... \<equiv> \<not>\<box>\<phi> \<or> \<diamond>\<psi>\<close>
     by (AOT_subst "\<guillemotleft>\<not>\<box>\<phi>\<guillemotright>" "\<guillemotleft>\<diamond>\<not>\<phi>\<guillemotright>")
+       (auto simp: KBasic_11 oth_class_taut_3_a)
   also AOT_have \<open>... \<equiv> \<box>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
     using intro_elim_3_f oth_class_taut_1_c oth_class_taut_3_a by blast
   finally show ?thesis .
@@ -2463,13 +2479,20 @@ qed
 
 AOT_theorem KBasic2_5: \<open>\<diamond>\<diamond>\<phi> \<equiv> \<not>\<box>\<box>\<not>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
   apply (AOT_subst "\<guillemotleft>\<diamond>\<not>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
-  by (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>"  "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
+  apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>"  "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: oth_class_taut_3_b)
+  by (simp add: oth_class_taut_3_a)
+
 
 AOT_theorem KBasic2_6: \<open>\<box>(\<phi> \<or> \<psi>) \<rightarrow> (\<box>\<phi> \<or> \<diamond>\<psi>)\<close>
 proof(rule "\<rightarrow>I"; rule raa_cor_1)
   AOT_assume \<open>\<box>(\<phi> \<or> \<psi>)\<close>
-  AOT_hence \<open>\<box>(\<not>\<phi> \<rightarrow> \<psi>)\<close> apply - by (AOT_subst_rev "\<guillemotleft>\<phi> \<or> \<psi>\<guillemotright>" "\<guillemotleft>\<not>\<phi> \<rightarrow> \<psi>\<guillemotright>")
+  AOT_hence \<open>\<box>(\<not>\<phi> \<rightarrow> \<psi>)\<close>
+    apply - apply (AOT_subst_rev "\<guillemotleft>\<phi> \<or> \<psi>\<guillemotright>" "\<guillemotleft>\<not>\<phi> \<rightarrow> \<psi>\<guillemotright>")
+    by (simp add: AOT_disj rule_eq_df_1)
   AOT_hence 1: \<open>\<diamond>\<not>\<phi> \<rightarrow> \<diamond>\<psi>\<close> using KBasic_13 vdash_properties_10 by blast
   AOT_assume \<open>\<not>(\<box>\<phi> \<or> \<diamond>\<psi>)\<close>
   AOT_hence \<open>\<not>\<box>\<phi>\<close> and \<open>\<not>\<diamond>\<psi>\<close> using "&E" intro_elim_3_a oth_class_taut_5_d by blast+
@@ -2506,16 +2529,19 @@ lemmas "5\<diamond>" = T_S5_fund_2
 (* Also interestingly none of these have proofs in PLM. *)
 AOT_theorem Act_Sub_1: \<open>\<^bold>\<A>\<phi> \<equiv> \<not>\<^bold>\<A>\<not>\<phi>\<close>
   by (AOT_subst "\<guillemotleft>\<^bold>\<A>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<^bold>\<A>\<phi>\<guillemotright>")
-     (simp add: logic_actual_nec_1[axiom_inst])
+     (auto simp: logic_actual_nec_1[axiom_inst] oth_class_taut_3_b)
 
 AOT_theorem Act_Sub_2: \<open>\<diamond>\<phi> \<equiv> \<^bold>\<A>\<diamond>\<phi>\<close>
-  by (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-     (metis deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b intro_elim_3_c
+  apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
+  by (metis deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b intro_elim_3_c
             logic_actual_nec_1[axiom_inst] qml_act_2[axiom_inst])
 
 AOT_theorem Act_Sub_3: \<open>\<^bold>\<A>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
-  by (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-     (metis Act_Sub_1 deduction_theorem intro_elim_3_d nec_imp_act reductio_aa_2 vdash_properties_6)
+  apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
+  by (metis Act_Sub_1 deduction_theorem intro_elim_3_d nec_imp_act reductio_aa_2 vdash_properties_6)
+
 
 AOT_theorem Act_Sub_4: \<open>\<^bold>\<A>\<phi> \<equiv> \<diamond>\<^bold>\<A>\<phi>\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -2557,10 +2583,16 @@ AOT_theorem S5Basic_6: \<open>\<box>\<phi> \<equiv> \<box>\<box>\<phi>\<close>
   by (simp add: S5Basic_5 intro_elim_2 qml_2[axiom_inst])
 
 AOT_theorem S5Basic_7: \<open>\<diamond>\<diamond>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
-  by (AOT_subst "\<guillemotleft>\<diamond>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<diamond>\<phi>\<guillemotright>";
-      AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>";
-      AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>";
-      AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<box>\<box>\<not>\<phi>\<guillemotright>")
+  apply (AOT_subst "\<guillemotleft>\<diamond>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<diamond>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
+  apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: AOT_dia rule_eq_df_1)
+  apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: oth_class_taut_3_b)
+  apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<box>\<box>\<not>\<phi>\<guillemotright>")
+   apply (simp add: S5Basic_6)
+  by (simp add: if_p_then_p)
+
 lemmas "4\<diamond>" = S5Basic_7
 
 AOT_theorem S5Basic_8: \<open>\<diamond>\<diamond>\<phi> \<equiv> \<diamond>\<phi>\<close>
@@ -2592,14 +2624,19 @@ AOT_theorem S5Basic_11: \<open>\<diamond>(\<phi> & \<diamond>\<psi>) \<equiv> (\
 proof -
   AOT_have \<open>\<diamond>(\<phi> & \<diamond>\<psi>) \<equiv> \<diamond>\<not>(\<not>\<phi> \<or> \<not>\<diamond>\<psi>)\<close>
     by (AOT_subst "\<guillemotleft>\<phi> & \<diamond>\<psi>\<guillemotright>" "\<guillemotleft>\<not>(\<not>\<phi> \<or> \<not>\<diamond>\<psi>)\<guillemotright>")
+       (auto simp: oth_class_taut_5_a oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<not>(\<not>\<phi> \<or> \<box>\<not>\<psi>)\<close>
     by (AOT_subst "\<guillemotleft>\<box>\<not>\<psi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<psi>\<guillemotright>")
+       (auto simp: KBasic2_1 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<not>\<box>(\<not>\<phi> \<or> \<box>\<not>\<psi>)\<close>
     using KBasic_11 intro_elim_3_f oth_class_taut_3_a by blast
   also AOT_have \<open>\<dots> \<equiv> \<not>(\<box>\<not>\<phi> \<or> \<box>\<not>\<psi>)\<close>
     using S5Basic_9 intro_elim_3_a oth_class_taut_4_b by blast
   also AOT_have \<open>\<dots> \<equiv> \<not>(\<not>\<diamond>\<phi> \<or> \<not>\<diamond>\<psi>)\<close>
-    by (AOT_subst "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<phi>\<guillemotright>"; AOT_subst "\<guillemotleft>\<box>\<not>\<psi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<psi>\<guillemotright>")
+    apply (AOT_subst "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<phi>\<guillemotright>")
+     apply (simp add: KBasic2_1)
+    apply (AOT_subst "\<guillemotleft>\<box>\<not>\<psi>\<guillemotright>" "\<guillemotleft>\<not>\<diamond>\<psi>\<guillemotright>")
+    by (auto simp: KBasic2_1 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<phi> & \<diamond>\<psi>\<close>
     using intro_elim_3_f oth_class_taut_3_a oth_class_taut_5_a by blast
   finally show ?thesis .
@@ -2616,6 +2653,7 @@ next
   AOT_assume \<open>\<diamond>\<phi> & \<box>\<psi>\<close>
   moreover AOT_have \<open>(\<box>\<box>\<psi> & \<diamond>\<phi>) \<rightarrow> \<diamond>(\<phi> & \<box>\<psi>)\<close>
     by (AOT_subst "\<guillemotleft>\<phi> & \<box>\<psi>\<guillemotright>" "\<guillemotleft>\<box>\<psi> & \<phi>\<guillemotright>")
+       (auto simp: oth_class_taut_2_a KBasic_16)
   ultimately AOT_show \<open>\<diamond>(\<phi> & \<box>\<psi>)\<close>
     by (metis S5Basic_5 con_dis_i_e_1 con_dis_taut_1 con_dis_taut_2 vdash_properties_6)
 qed
@@ -2705,6 +2743,7 @@ proof(rule "\<rightarrow>I")
     by (rule AOT_exists[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_show \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
     apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<diamond>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
+     apply (simp add: AOT_dia rule_eq_df_1)
     using 0 by blast
 qed
 lemmas "BF\<diamond>" = "BFs_3"
@@ -2724,6 +2763,7 @@ proof(rule "\<rightarrow>I")
   AOT_show \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
     apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     apply (AOT_subst "\<guillemotleft>\<exists>\<alpha> \<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
+     apply (simp add: AOT_exists rule_eq_df_1)
     apply (AOT_subst "\<guillemotleft>\<not>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
     by (auto simp: 1 intro_elim_2 useful_tautologies_1 useful_tautologies_2)
 qed
@@ -2954,33 +2994,44 @@ AOT_theorem id_act_1: \<open>\<alpha> = \<beta> \<equiv> \<^bold>\<A>\<alpha> = 
   by (meson Act_Sub_3 ded_thm_cor_1 id_nec2_1 id_nec_2 intro_elim_2 nec_imp_act)
 
 AOT_theorem id_act_2: \<open>\<alpha> \<noteq> \<beta> \<equiv> \<^bold>\<A>\<alpha> \<noteq> \<beta>\<close>
-proof (AOT_subst "\<guillemotleft>\<alpha> \<noteq> \<beta>\<guillemotright>" "\<guillemotleft>\<not>(\<alpha> = \<beta>)\<guillemotright>"; rule "\<equiv>I"; rule "\<rightarrow>I")
-  AOT_assume \<open>\<not>\<alpha> = \<beta>\<close>
-  AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close> using id_act_1 intro_elim_3_c by blast
-  AOT_thus \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
-    using "\<not>\<not>E" Act_Sub_1 intro_elim_3_c by blast
+proof (AOT_subst "\<guillemotleft>\<alpha> \<noteq> \<beta>\<guillemotright>" "\<guillemotleft>\<not>(\<alpha> = \<beta>)\<guillemotright>")
+  AOT_modally_strict {
+    AOT_show \<open>\<alpha> \<noteq> \<beta> \<equiv> \<not>(\<alpha> = \<beta>)\<close>
+      by (simp add: noneq_infix rule_eq_df_1)
+  }
 next
-  AOT_assume \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
-  AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close>
-    using "\<not>\<not>I" Act_Sub_1 intro_elim_3_d by blast
-  AOT_thus \<open>\<not>\<alpha> = \<beta>\<close>
-    using id_act_1 intro_elim_3_d by blast
+  AOT_show \<open>\<not>(\<alpha> = \<beta>) \<equiv> \<^bold>\<A>\<not>(\<alpha> = \<beta>)\<close>
+  proof (safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume \<open>\<not>\<alpha> = \<beta>\<close>
+    AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close> using id_act_1 intro_elim_3_c by blast
+    AOT_thus \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
+      using "\<not>\<not>E" Act_Sub_1 intro_elim_3_c by blast
+  next
+    AOT_assume \<open>\<^bold>\<A>\<not>\<alpha> = \<beta>\<close>
+    AOT_hence \<open>\<not>\<^bold>\<A>\<alpha> = \<beta>\<close>
+      using "\<not>\<not>I" Act_Sub_1 intro_elim_3_d by blast
+    AOT_thus \<open>\<not>\<alpha> = \<beta>\<close>
+      using id_act_1 intro_elim_3_d by blast
+  qed
 qed
 
 AOT_theorem A_Exists_1: \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
 proof -
   AOT_have \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<exists>\<alpha>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     by (AOT_subst_using subst: uniqueness_2[THEN "\<equiv>Df"])
+       (simp add: oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     by (simp add: Act_Basic_10)
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>")
-    using logic_actual_nec_3 vdash_properties_1_b by blast
+    by (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>")
+       (auto simp: logic_actual_nec_3 vdash_properties_1_b oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<^bold>\<A>\<beta> = \<alpha>)\<close>
     by (AOT_subst_rev "\<lambda> \<tau> \<tau>' . \<guillemotleft>\<^bold>\<A>(\<phi>{\<tau>'} \<equiv> \<tau>' = \<tau>)\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<^bold>\<A>\<phi>{\<tau>'} \<equiv> \<^bold>\<A>\<tau>' = \<tau>\<guillemotright>")
+       (auto simp: Act_Basic_5 cqt_further_7)
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     apply (AOT_subst "\<lambda> \<tau> \<tau>' :: 'a . \<guillemotleft>\<^bold>\<A>\<tau>' = \<tau>\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<tau>' = \<tau>\<guillemotright>")
-    using id_act_1 intro_elim_3_f oth_class_taut_3_a by blast
+     apply (meson id_act_1 intro_elim_3_f oth_class_taut_3_a)
+    by (simp add: cqt_further_7)
   also AOT_have \<open>... \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
     using uniqueness_2[THEN "\<equiv>Df"] oth_class_taut_2_e[THEN "\<equiv>E"(1)] by fast
   finally show ?thesis .
@@ -2988,6 +3039,7 @@ qed
 
 AOT_theorem A_Exists_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<^bold>\<A>\<exists>!x \<phi>{x}\<close>
   by (AOT_subst_using subst: A_Exists_1)
+     (simp add: actual_desc_1)
 
 AOT_theorem id_act_desc_1: \<open>\<^bold>\<iota>x (x = y)\<down>\<close>
 proof(rule existence_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
@@ -3423,7 +3475,8 @@ proof(rule RAA(2))
     AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close> using "\<beta>\<leftarrow>C" cqt_2_const_var[of a, axiom_inst] A by blast
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using cqt_further_4[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>") (simp add: C)
+      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>")
+         (auto simp: oth_class_taut_1_a C)
     AOT_hence \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>] \<rightarrow> [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close> using "\<forall>E" A by blast
     moreover AOT_have \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(1), OF A, THEN "\<equiv>E"(2)]
       using "=I"(1)[OF A] by blast
@@ -3455,7 +3508,8 @@ proof(rule RAA(2))
       using oth_class_taut_4_b[THEN "\<equiv>E"(1), OF F_prop[THEN "\<forall>E"(2)[of _ _ a]], THEN "\<equiv>E"(1)] by simp
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using cqt_further_4[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>") (simp add: C)
+      by (AOT_subst "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>")
+         (auto simp: oth_class_taut_1_a C)
     AOT_hence \<open>a[F] \<rightarrow> [F]a\<close> using "\<forall>E" by blast
     moreover AOT_have \<open>a[F]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), of F, THEN "\<equiv>E"(2)]
       using "=I"(2) by blast
@@ -3710,8 +3764,8 @@ proof (rule "\<rightarrow>I")
   moreover AOT_assume \<open>\<diamond>\<not>(\<phi>{F} \<equiv> \<phi>{G})\<close>
   ultimately AOT_have 0: \<open>\<diamond>\<not>(F = G)\<close> using "\<rightarrow>E" by blast
   AOT_have \<open>\<diamond>(F \<noteq> G)\<close>
-    apply(AOT_subst "\<guillemotleft>F \<noteq> G\<guillemotright>" "\<guillemotleft>\<not>(F = G)\<guillemotright>")
-    using 0 by simp
+    by (AOT_subst "\<guillemotleft>F \<noteq> G\<guillemotright>" "\<guillemotleft>\<not>(F = G)\<guillemotright>")
+       (auto simp: noneq_infix rule_eq_df_1 0)
   AOT_thus \<open>F \<noteq> G\<close>
     using id_nec2_3[THEN "\<rightarrow>E"] by blast
 qed
@@ -3738,8 +3792,8 @@ proof (rule "\<rightarrow>I")
   moreover AOT_assume \<open>\<diamond>\<not>(\<phi>{p} \<equiv> \<phi>{q})\<close>
   ultimately AOT_have 0: \<open>\<diamond>\<not>(p = q)\<close> using "\<rightarrow>E" by blast
   AOT_have \<open>\<diamond>(p \<noteq> q)\<close>
-    apply(AOT_subst "\<guillemotleft>p \<noteq> q\<guillemotright>" "\<guillemotleft>\<not>(p = q)\<guillemotright>")
-    using 0 by simp
+    by (AOT_subst "\<guillemotleft>p \<noteq> q\<guillemotright>" "\<guillemotleft>\<not>(p = q)\<guillemotright>")
+       (auto simp: 0 noneq_infix rule_eq_df_1)
   AOT_thus \<open>p \<noteq> q\<close>
     using id_nec2_3[THEN "\<rightarrow>E"] by blast
 qed
@@ -3797,6 +3851,7 @@ qed
 
 AOT_theorem thm_relation_negation_2: \<open>\<not>[F]\<^sup>-x\<^sub>1...x\<^sub>n \<equiv> [F]x\<^sub>1...x\<^sub>n\<close>
   apply (AOT_subst "\<guillemotleft>[F]x\<^sub>1...x\<^sub>n\<guillemotright>" "\<guillemotleft>\<not>\<not>[F]x\<^sub>1...x\<^sub>n\<guillemotright>")
+   apply (simp add: oth_class_taut_3_b)
   apply (rule oth_class_taut_4_b[THEN "\<equiv>E"(1)])
   using thm_relation_negation_1.
 
@@ -3998,8 +4053,10 @@ proof -
   proof (rule oth_class_taut_4_e[THEN "\<rightarrow>E"])
     AOT_have \<open>\<not>Impossible([F]) \<equiv> \<not>\<box>\<not> \<exists>x [F]x\<close>
       apply (rule oth_class_taut_4_b[THEN "\<equiv>E"(1)])
-      apply (AOT_subst "\<guillemotleft>\<exists>x [F]x\<guillemotright>" "\<guillemotleft>\<not> \<forall>x \<not>[F]x\<guillemotright>" )
+      apply (AOT_subst "\<guillemotleft>\<exists>x [F]x\<guillemotright>" "\<guillemotleft>\<not> \<forall>x \<not>[F]x\<guillemotright>")
+       apply (simp add: AOT_exists rule_eq_df_1)
       apply (AOT_subst_rev "\<guillemotleft>\<forall>x \<not>[F]x\<guillemotright>" "\<guillemotleft>\<not>\<not>\<forall>x \<not>[F]x\<guillemotright>" )
+       apply (simp add: oth_class_taut_3_b)
       using contingent_properties_2[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF cqt_2_const_var[axiom_inst]] by blast
     also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]x\<close>
       using AOT_dia[THEN "\<equiv>Df", symmetric] by blast
@@ -4010,8 +4067,11 @@ proof -
     AOT_have \<open>\<not>Necessary([F]) \<equiv> \<not>\<box>\<not>\<exists>x \<not>[F]x\<close>
       apply (rule oth_class_taut_4_b[THEN "\<equiv>E"(1)])
       apply (AOT_subst "\<guillemotleft>\<exists>x \<not>[F]x\<guillemotright>" "\<guillemotleft>\<not> \<forall>x \<not>\<not>[F]x\<guillemotright>")
+       apply (simp add: AOT_exists rule_eq_df_1)
       apply (AOT_subst_rev "\<lambda> \<kappa> . \<guillemotleft>[F]\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>\<not>\<not>[F]\<kappa>\<guillemotright>")
-      by (AOT_subst_rev "\<guillemotleft>\<forall>x [F]x\<guillemotright>" "\<guillemotleft>\<not>\<not>\<forall>x [F]x\<guillemotright>")
+       apply (simp add: oth_class_taut_3_b)
+      apply (AOT_subst_rev "\<guillemotleft>\<forall>x [F]x\<guillemotright>" "\<guillemotleft>\<not>\<not>\<forall>x [F]x\<guillemotright>")
+      by (auto simp: oth_class_taut_3_b contingent_properties_1 rule_eq_df_1)
     also AOT_have \<open>... \<equiv> \<diamond>\<exists>x \<not>[F]x\<close>
       using AOT_dia[THEN "\<equiv>Df", symmetric] by blast
     finally AOT_show \<open>\<not>Necessary([F]) \<equiv> \<diamond>\<exists>x \<not>[F]x\<close>.
@@ -4035,8 +4095,10 @@ proof -
     by (simp add: oth_class_taut_2_a)
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]\<^sup>-x & \<diamond>\<exists>x [F]x\<close>
     by (AOT_subst "\<lambda> \<kappa> . \<guillemotleft>[F]\<^sup>-\<kappa>\<guillemotright>"  "\<lambda>\<kappa> . \<guillemotleft>\<not>[F]\<kappa>\<guillemotright>")
+       (auto simp: thm_relation_negation_1 oth_class_taut_3_a)
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]\<^sup>-x & \<diamond>\<exists>x \<not>[F]\<^sup>-x\<close>
     by (AOT_subst_rev "\<lambda> \<kappa> . \<guillemotleft>\<not>[F]\<^sup>-\<kappa>\<guillemotright>"  "\<lambda>\<kappa> . \<guillemotleft>[F]\<kappa>\<guillemotright>")
+       (auto simp: thm_relation_negation_2 oth_class_taut_3_a)
   also AOT_have \<open>... \<equiv> Contingent([F]\<^sup>-)\<close>
     using 1[OF rel_neg_T_3, symmetric] by blast
   finally show ?thesis.
@@ -4131,10 +4193,13 @@ proof -
     using "BF\<diamond>" "CBF\<diamond>" "\<equiv>I" by blast
   also AOT_have \<open>\<dots> \<equiv> \<exists>x (\<diamond>[F]x &  \<diamond>\<not>[F]x)\<close>
     by (AOT_subst \<open>\<lambda>\<kappa>. \<guillemotleft>\<diamond>([F]\<kappa> & \<diamond>\<not>[F]\<kappa>)\<guillemotright>\<close>  \<open>\<lambda> \<kappa> .  \<guillemotleft>\<diamond>[F]\<kappa> &  \<diamond>\<not>[F]\<kappa>\<guillemotright>\<close>)
+       (auto simp: S5Basic_11 cqt_further_7)
   also AOT_have \<open>\<dots> \<equiv> \<exists>x (\<diamond>\<not>[F]x & \<diamond>[F]x)\<close>
     by (AOT_subst \<open>\<lambda>\<kappa>. \<guillemotleft>\<diamond>\<not>[F]\<kappa> & \<diamond>[F]\<kappa>\<guillemotright>\<close>  \<open>\<lambda> \<kappa> .  \<guillemotleft>\<diamond>[F]\<kappa> & \<diamond>\<not>[F]\<kappa>\<guillemotright>\<close>)
+       (auto simp: oth_class_taut_2_a cqt_further_7)
   also AOT_have \<open>\<dots> \<equiv> \<exists>x \<diamond>(\<not>[F]x & \<diamond>[F]x)\<close>
     by (AOT_subst \<open>\<lambda> \<kappa> .  \<guillemotleft>\<diamond>(\<not>[F]\<kappa> & \<diamond>[F]\<kappa>)\<guillemotright>\<close> \<open>\<lambda>\<kappa>. \<guillemotleft>\<diamond>\<not>[F]\<kappa> & \<diamond>[F]\<kappa>\<guillemotright>\<close>)
+       (auto simp: S5Basic_11 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<exists>x (\<not>[F]x & \<diamond>[F]x)\<close>
     using "BF\<diamond>" "CBF\<diamond>" "\<equiv>I" by fast
   finally show ?thesis.
@@ -4145,7 +4210,11 @@ proof -
   AOT_have \<open>\<diamond>\<exists>x ([F]x & \<diamond>\<not>[F]x) \<equiv> \<diamond>\<exists>x (\<not>[F]x & \<diamond>[F]x)\<close>
     using lem_cont_e_1.
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<exists>x ([F]\<^sup>-x & \<diamond>\<not>[F]\<^sup>-x)\<close>
-    by (AOT_subst "\<lambda> \<kappa> . \<guillemotleft>\<not>[F]\<^sup>-\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>[F]\<kappa>\<guillemotright>"; AOT_subst "\<lambda> \<kappa> . \<guillemotleft>[F]\<^sup>-\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>\<not>[F]\<kappa>\<guillemotright>")
+    apply (AOT_subst "\<lambda> \<kappa> . \<guillemotleft>\<not>[F]\<^sup>-\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>[F]\<kappa>\<guillemotright>")
+     apply (simp add: thm_relation_negation_2)
+    apply (AOT_subst "\<lambda> \<kappa> . \<guillemotleft>[F]\<^sup>-\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>\<not>[F]\<kappa>\<guillemotright>")
+     apply (simp add: thm_relation_negation_1)
+    by (simp add: oth_class_taut_3_a)
   finally show ?thesis.
 qed
 
@@ -4157,9 +4226,11 @@ proof (rule "CBF\<diamond>"[THEN "\<rightarrow>E"])
   AOT_hence \<theta>: \<open>\<diamond>E!a & \<diamond>\<not>\<^bold>\<A>E!a\<close>
     using KBasic2_3[THEN "\<rightarrow>E"] by blast
   AOT_have \<xi>: \<open>\<diamond>E!a & \<diamond>\<^bold>\<A>\<not>E!a\<close>
-    by (AOT_subst  "\<guillemotleft>\<^bold>\<A>\<not>E!a\<guillemotright>" "\<guillemotleft>\<not>\<^bold>\<A>E!a\<guillemotright>") (auto simp: logic_actual_nec_1[axiom_inst] \<theta>)
+    by (AOT_subst  "\<guillemotleft>\<^bold>\<A>\<not>E!a\<guillemotright>" "\<guillemotleft>\<not>\<^bold>\<A>E!a\<guillemotright>")
+       (auto simp: logic_actual_nec_1[axiom_inst] \<theta>)
   AOT_have \<zeta>: \<open>\<diamond>E!a & \<^bold>\<A>\<not>E!a\<close>
-    by (AOT_subst "\<guillemotleft>\<^bold>\<A>\<not>E!a\<guillemotright>" "\<guillemotleft>\<diamond>\<^bold>\<A>\<not>E!a\<guillemotright>") (fact \<xi>)
+    by (AOT_subst "\<guillemotleft>\<^bold>\<A>\<not>E!a\<guillemotright>" "\<guillemotleft>\<diamond>\<^bold>\<A>\<not>E!a\<guillemotright>")
+       (auto simp add: Act_Sub_4 \<xi>)
   AOT_hence \<open>\<diamond>E!a & \<diamond>\<not>E!a\<close>
     using "&E" "&I" Act_Sub_3[THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<diamond>(E!a & \<diamond>\<not>E!a)\<close> using S5Basic_11[THEN "\<equiv>E"(2)] by simp
@@ -4321,7 +4392,8 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_assume \<open>Necessary0(p)\<close>
     AOT_hence 1: \<open>\<box>p\<close> using contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     AOT_have \<open>\<box>\<not>((p)\<^sup>-)\<close>
-      by (AOT_subst "\<guillemotleft>\<not>((p)\<^sup>-)\<guillemotright>" "AOT_term_of_var p") (simp add: 1)
+      by (AOT_subst "\<guillemotleft>\<not>((p)\<^sup>-)\<guillemotright>" "AOT_term_of_var p")
+         (auto simp add: 1 thm_relation_negation_4)
     AOT_hence \<open>Impossible0(((p)\<^sup>-))\<close>
       by (rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   }
@@ -4330,7 +4402,8 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_hence 1: \<open>\<box>\<not>p\<close>
       by (rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fE"])
     AOT_have \<open>\<box>((p)\<^sup>-)\<close>
-      by (AOT_subst "\<guillemotleft>((p)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>") (simp add: 1)
+      by (AOT_subst "\<guillemotleft>((p)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>") 
+         (auto simp: 1 thm_relation_negation_3)
     AOT_hence \<open>Necessary0(((p)\<^sup>-))\<close>
       by (rule contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   }
@@ -4347,7 +4420,8 @@ next
     AOT_hence 1: \<open>\<box>\<not>((p)\<^sup>-)\<close>
       by (rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fE"])
     AOT_have \<open>\<box>p\<close>
-      by (AOT_subst_rev "\<guillemotleft>\<not>((p)\<^sup>-)\<guillemotright>" "AOT_term_of_var p") (simp add: 1)
+      by (AOT_subst_rev "\<guillemotleft>\<not>((p)\<^sup>-)\<guillemotright>" "AOT_term_of_var p")
+         (auto simp: 1 thm_relation_negation_4)
     AOT_hence \<open>Necessary0(p)\<close>
       using contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
   }
@@ -4356,7 +4430,8 @@ next
     AOT_hence 1: \<open>\<box>((p)\<^sup>-)\<close>
       by (rule contingent_properties_1_0[THEN "\<equiv>\<^sub>d\<^sub>fE"])
     AOT_have \<open>\<box>\<not>p\<close>
-      by (AOT_subst_rev "\<guillemotleft>((p)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>") (simp add: 1)
+      by (AOT_subst_rev "\<guillemotleft>((p)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+         (auto simp: 1 thm_relation_negation_3)
     AOT_hence \<open>Impossible0(p)\<close>
       by (rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   }
@@ -4376,9 +4451,14 @@ proof -
     by (fact AOT)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<phi> & \<diamond>\<not>\<phi>\<close>
     apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
+     apply (simp add: AOT_dia rule_eq_df_1)
     apply (AOT_subst "\<guillemotleft>Impossible0(\<phi>)\<guillemotright>" "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>")
+     apply (simp add: contingent_properties_2_0 rule_eq_df_1)
     apply (AOT_subst_rev "\<guillemotleft>\<not>\<box>\<phi>\<guillemotright>" "\<guillemotleft>\<diamond>\<not>\<phi>\<guillemotright>")
-    by (AOT_subst "\<guillemotleft>Necessary0(\<phi>)\<guillemotright>" "\<guillemotleft>\<box>\<phi>\<guillemotright>")
+     apply (simp add: KBasic_11)
+    apply (AOT_subst "\<guillemotleft>Necessary0(\<phi>)\<guillemotright>" "\<guillemotleft>\<box>\<phi>\<guillemotright>")
+     apply (simp add: contingent_properties_1_0 rule_eq_df_1)
+    by (simp add: oth_class_taut_3_a)
   finally show ?thesis.
 qed
 
@@ -4388,8 +4468,10 @@ proof -
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<not>p & \<diamond>p\<close> by (fact AOT)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>((p)\<^sup>-) & \<diamond>p\<close>
     by (AOT_subst "\<guillemotleft>((p)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+       (auto simp: thm_relation_negation_3 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>((p)\<^sup>-) & \<diamond>\<not>((p)\<^sup>-)\<close>
     by (AOT_subst "\<guillemotleft>\<not>((p)\<^sup>-)\<guillemotright>" "AOT_term_of_var p")
+       (auto simp: thm_relation_negation_4 oth_class_taut_3_a)
   also AOT_have \<open>\<dots> \<equiv> Contingent0(((p)\<^sup>-))\<close>
     using thm_cont_propos_2[symmetric] by blast
   finally show ?thesis.
@@ -4412,6 +4494,7 @@ proof(rule contingent_properties_2_0[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     apply (AOT_subst "\<guillemotleft>((p\<^sub>0)\<^sup>-)\<guillemotright>" "\<guillemotleft>\<not>p\<^sub>0\<guillemotright>")
     using thm_relation_negation_3 GEN "\<forall>E"(1)[rotated, OF log_prop_prop_2] apply fast
     apply (AOT_subst_rev "\<guillemotleft>p\<^sub>0\<guillemotright>" "\<guillemotleft>\<not>\<not>p\<^sub>0\<guillemotright>" )
+     apply (simp add: oth_class_taut_3_b)
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF p\<^sub>0_def])
     using log_prop_prop_2 apply simp
     using if_p_then_p RN GEN by fast
@@ -4650,15 +4733,15 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_have 1: \<open>ContingentlyFalse(\<not>p)\<close>
     apply (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     apply (AOT_subst_rev "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
-    by (fact 0)
+    by (auto simp: oth_class_taut_3_b 0)
   AOT_show \<open>ContingentlyFalse(((p)\<^sup>-))\<close>
     apply (AOT_subst "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
-    using 1 by blast
+    by (auto simp: thm_relation_negation_3 1)
 next
   AOT_assume 1: \<open>ContingentlyFalse(((p)\<^sup>-))\<close>
   AOT_have \<open>ContingentlyFalse(\<not>p)\<close>
-    apply (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
-    using 1 by blast
+    by (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+       (auto simp: thm_relation_negation_3 1)
   AOT_hence \<open>\<not>\<not>p & \<diamond>\<not>p\<close> using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>p & \<diamond>\<not>p\<close>
     using "&I" "&E" useful_tautologies_1[THEN "\<rightarrow>E"] by metis
@@ -4672,22 +4755,22 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence 0: \<open>\<not>p & \<diamond>p\<close>
     using cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have \<open>\<not>p & \<diamond>\<not>\<not>p\<close>
-    apply (AOT_subst_rev "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
-    by (rule 0)
+    by (AOT_subst_rev "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
+       (auto simp: oth_class_taut_3_b 0)
   AOT_hence 1: \<open>ContingentlyTrue(\<not>p)\<close>
     by (rule cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_show \<open>ContingentlyTrue(((p)\<^sup>-))\<close>
-    apply (AOT_subst "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
-    by (fact 1)
+    by (AOT_subst "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+       (auto simp: thm_relation_negation_3 1)
 next
   AOT_assume 1: \<open>ContingentlyTrue(((p)\<^sup>-))\<close>
   AOT_have \<open>ContingentlyTrue(\<not>p)\<close>
-    apply (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
-    by (rule 1)
+    by (AOT_subst_rev "\<guillemotleft>(p)\<^sup>-\<guillemotright>" "\<guillemotleft>\<not>p\<guillemotright>")
+       (auto simp add: thm_relation_negation_3 1)
   AOT_hence 2: \<open>\<not>p & \<diamond>\<not>\<not>p\<close> using cont_tf_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have \<open>\<diamond>p\<close>
-    apply (AOT_subst "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
-    using 2[THEN "&E"(2)].
+    by (AOT_subst "AOT_term_of_var p" "\<guillemotleft>\<not>\<not>p\<guillemotright>")
+       (auto simp add: oth_class_taut_3_b 2[THEN "&E"(2)])
   AOT_hence \<open>\<not>p & \<diamond>p\<close> using 2[THEN "&E"(1)] "&I" by blast
   AOT_thus \<open>ContingentlyFalse(p)\<close>
     by (rule cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fI"])
@@ -4744,8 +4827,8 @@ AOT_act_theorem q0cf_2: \<open>ContingentlyTrue(((q\<^sub>0)\<^sup>-))\<close>
      apply (rule thm_relation_negation_3[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(2)])
      apply (fact no_cnac)
     apply (rule "=E"[rotated, OF thm_relation_negation_7[unvarify p, OF log_prop_prop_2, THEN id_sym]])
-    apply (AOT_subst_rev "\<guillemotleft>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<guillemotright>" "\<guillemotleft>\<not>\<not>(\<exists>x  (E!x & \<not>\<^bold>\<A>E!x))\<guillemotright>")
-    by (fact qml_4[axiom_inst])
+  apply (AOT_subst_rev "\<guillemotleft>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<guillemotright>" "\<guillemotleft>\<not>\<not>(\<exists>x  (E!x & \<not>\<^bold>\<A>E!x))\<guillemotright>")
+  by (auto simp: oth_class_taut_3_b qml_4[axiom_inst])
 
 (* TODO: q0cf-rem skipped for now *)
 
@@ -5302,8 +5385,8 @@ proof -
 qed
 
 AOT_theorem oa_contingent_3: \<open>A!x \<equiv> \<not>O!x\<close>
-  apply (AOT_subst "\<guillemotleft>A!x\<guillemotright>" "\<guillemotleft>\<not>\<not>A!x\<guillemotright>")
-  using oa_contingent_2[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], symmetric] .
+  by (AOT_subst "\<guillemotleft>A!x\<guillemotright>" "\<guillemotleft>\<not>\<not>A!x\<guillemotright>")
+     (auto simp add: oth_class_taut_3_b oa_contingent_2[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)], symmetric])
 
 AOT_theorem oa_contingent_4: \<open>Contingent(O!)\<close>
 proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_1, THEN "\<equiv>E"(2)]; rule "&I")
@@ -5395,16 +5478,16 @@ proof -
     AOT_assume 0: \<open>\<forall>x (\<diamond>[F]x \<rightarrow> \<box>[F]x)\<close>
     AOT_assume 1: \<open>\<diamond>[F]\<^sup>-x\<close>
     AOT_have \<open>\<diamond>\<not>[F]x\<close>
-      apply (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
-      by (fact 1)
+      by (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
+         (auto simp add: thm_relation_negation_1 1)
     AOT_hence 2: \<open>\<not>\<box>[F]x\<close>
       using KBasic_11[THEN "\<equiv>E"(2)] by blast
     AOT_show \<open>\<box>[F]\<^sup>-x\<close>
     proof (rule raa_cor_1)
       AOT_assume 3: \<open>\<not>\<box>[F]\<^sup>-x\<close>
       AOT_have \<open>\<not>\<box>\<not>[F]x\<close>
-        apply (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
-        by (fact 3)
+        by (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
+           (auto simp add: thm_relation_negation_1 3)
       AOT_hence \<open>\<diamond>[F]x\<close>
         using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
       AOT_hence \<open>\<box>[F]x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
@@ -5415,16 +5498,16 @@ proof -
     AOT_assume 0: \<open>\<forall>x (\<diamond>[F]\<^sup>-x \<rightarrow> \<box>[F]\<^sup>-x)\<close>
     AOT_assume 1: \<open>\<diamond>[F]x\<close>
     AOT_have \<open>\<diamond>\<not>[F]\<^sup>-x\<close>
-      apply (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
-      by (fact 1)
+      by (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
+         (auto simp: thm_relation_negation_2 1)
     AOT_hence 2: \<open>\<not>\<box>[F]\<^sup>-x\<close>
       using KBasic_11[THEN "\<equiv>E"(2)] by blast
     AOT_show \<open>\<box>[F]x\<close>
     proof (rule raa_cor_1)
       AOT_assume 3: \<open>\<not>\<box>[F]x\<close>
       AOT_have \<open>\<not>\<box>\<not>[F]\<^sup>-x\<close>
-        apply (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
-        by (fact 3)
+        by (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
+           (auto simp add: thm_relation_negation_2 3)
       AOT_hence \<open>\<diamond>[F]\<^sup>-x\<close>
         using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
       AOT_hence \<open>\<box>[F]\<^sup>-x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
@@ -5822,7 +5905,7 @@ proof -
       by (metis Act_Basic_2 Act_Sub_1 con_dis_i_e_1 intro_elim_3_c raa_cor_1)
     AOT_have \<open>\<^bold>\<A>\<not>([E!]b \<or> ([A!]b & \<not>q\<^sub>0))\<close>
       by (AOT_subst \<open>\<guillemotleft>\<not>([E!]b \<or> ([A!]b & \<not>q\<^sub>0))\<guillemotright>\<close> \<open>\<guillemotleft>\<not>[E!]b & \<not>([A!]b & \<not>q\<^sub>0)\<guillemotright>\<close>)
-         (fact 2)
+         (auto simp: oth_class_taut_5_d 2)
     AOT_thus \<open>\<not>\<^bold>\<A>([E!]b \<or> ([A!]b & \<not>q\<^sub>0))\<close>
       by (metis "\<not>\<not>I" Act_Sub_1 intro_elim_3_d)
   next
@@ -6198,7 +6281,9 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence 1: \<open>\<box>(O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y))\<close>
     by (metis "&E"(1) "&E"(2) "\<equiv>E"(2) KBasic_3 con_dis_i_e_1)
   AOT_show \<open>\<box>(x =\<^sub>E y)\<close>
-    by (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y\<guillemotright>\<close> \<open>\<guillemotleft>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<guillemotright>\<close>) (fact 1)
+    apply (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y\<guillemotright>\<close> \<open>\<guillemotleft>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<guillemotright>\<close>)
+     using eq_E_simple_1 apply presburger
+    by (simp add: "1")
 next
   AOT_assume \<open>\<box>(x =\<^sub>E y)\<close>
   AOT_thus \<open>x =\<^sub>E y\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
@@ -6241,6 +6326,7 @@ proof -
     by (meson KBasic2_1 intro_elim_3_b oth_class_taut_2_e)
   also AOT_have \<open>\<dots> \<equiv> \<box>(x \<noteq>\<^sub>E y)\<close>
     by (AOT_subst_rev "\<guillemotleft>x \<noteq>\<^sub>E y\<guillemotright>" "\<guillemotleft>\<not>(x =\<^sub>E y)\<guillemotright>")
+       (auto simp: thm_neg_eq_E oth_class_taut_3_a)
   finally show ?thesis.
 qed
 
@@ -6340,7 +6426,8 @@ next
   AOT_assume \<open>O!y\<close>
   AOT_hence 1: \<open>\<box>(x = y \<equiv> x =\<^sub>E y)\<close> for x using ord_eq_E_eq "\<rightarrow>E" "\<or>I" by blast
   AOT_have \<open>\<box>(x =\<^sub>E y \<equiv> x = y)\<close> for x
-    by (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y \<equiv> x = y\<guillemotright>\<close> \<open>\<guillemotleft>x = y \<equiv> x =\<^sub>E y\<guillemotright>\<close>) (fact 1)
+    by (AOT_subst \<open>\<guillemotleft>x =\<^sub>E y \<equiv> x = y\<guillemotright>\<close> \<open>\<guillemotleft>x = y \<equiv> x =\<^sub>E y\<guillemotright>\<close>)
+       (auto simp add: oth_class_taut_2_e 1)
   AOT_hence \<open>\<forall>x \<box>(x =\<^sub>E y \<equiv> x = y)\<close> by (rule GEN)
   AOT_thus \<open>\<box>\<forall>x (x =\<^sub>E y \<equiv> x = y)\<close> by (rule BF[THEN "\<rightarrow>E"])
 qed
@@ -6778,7 +6865,8 @@ proof (rule "\<rightarrow>I")
   ultimately AOT_have r: \<open>\<box>(A!x & \<not>\<exists>F x[F])\<close>
     by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_c raa_cor_3)
   AOT_show \<open>\<box>Null(x)\<close>
-    by (AOT_subst "\<guillemotleft>Null(x)\<guillemotright>" "\<guillemotleft>A!x & \<not>\<exists>F x[F]\<guillemotright>") (fact r)
+    by (AOT_subst "\<guillemotleft>Null(x)\<guillemotright>" "\<guillemotleft>A!x & \<not>\<exists>F x[F]\<guillemotright>")
+       (auto simp: df_null_uni_1 rule_eq_df_1 r)
 qed  
 
 AOT_theorem null_uni_facts_2: \<open>Universal(x) \<rightarrow> \<box>Universal(x)\<close>
@@ -6795,7 +6883,8 @@ proof (rule "\<rightarrow>I")
   ultimately AOT_have r: \<open>\<box>(A!x & \<forall>F x[F])\<close>
     by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_c raa_cor_3)
   AOT_show \<open>\<box>Universal(x)\<close>
-    by (AOT_subst "\<guillemotleft>Universal(x)\<guillemotright>" "\<guillemotleft>A!x & \<forall>F x[F]\<guillemotright>") (fact r)
+    by (AOT_subst "\<guillemotleft>Universal(x)\<guillemotright>" "\<guillemotleft>A!x & \<forall>F x[F]\<guillemotright>")
+       (auto simp add: df_null_uni_2 rule_eq_df_1 r)
 qed
 
 AOT_theorem null_uni_facts_3: \<open>Null(a\<^sub>\<emptyset>)\<close>
@@ -7267,6 +7356,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence 0: \<open>\<box>\<exists>p (F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 vdash_properties_10)
   AOT_show \<open>\<box>Propositional([F])\<close>
     apply (AOT_subst \<open>\<guillemotleft>Propositional([F])\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>p (F = [\<lambda>y p])\<guillemotright>\<close>)
+     using prop_prop1 rule_eq_df_1 apply presburger
     by (fact 0)
 qed
 

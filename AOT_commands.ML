@@ -58,11 +58,17 @@ structure AOT_Theorems = Named_Thms(
   val name = @{binding "AOT"}
   val description = "AOT Theorems"
 )
+structure AOT_Definitions = Named_Thms(
+  val name = @{binding "AOT_defs"}
+  val description = "AOT Definitions"
+)
 structure AOT_ProofData = Proof_Data
 (type T = term option
  fun init _ = NONE)
 fun AOT_note_theorems thms = Local_Theory.background_theory
   (Context.theory_map (fold AOT_Theorems.add_thm (map Drule.export_without_context (flat thms))))
+fun AOT_note_definitions thms = Local_Theory.background_theory
+  (Context.theory_map (fold AOT_Definitions.add_thm (map Drule.export_without_context (flat thms))))
 
 fun AOT_read_prop nonterminal ctxt prop = (let
     val ctxt' = Config.put Syntax.root nonterminal ctxt
@@ -226,6 +232,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     val thmbind = if Binding.is_empty thmbind then bnd else thmbind
     val ctxt = ctxt |> Local_Theory.note ((thmbind, thmattrs), [thm]) |> snd
     val ctxt = AOT_note_theorems [[thm]] ctxt
+    val ctxt = AOT_note_definitions [[thm]] ctxt
   in
     ctxt
   end

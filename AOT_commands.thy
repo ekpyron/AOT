@@ -1,5 +1,5 @@
 theory AOT_commands
-  imports AOT_model
+  imports AOT_model "HOL-Eisbach.Eisbach_Tools"
   keywords "AOT_define" :: thy_decl
        and "AOT_theorem" :: thy_goal
        and "AOT_lemma" :: thy_goal
@@ -18,7 +18,6 @@ theory AOT_commands
        and "AOT_thus" :: prf_asm_goal % "proof"
 
        and "AOT_find_theorems" :: diag
-
        and "thm_name" :: diag
        and "AOT_sledgehammer" :: diag
        and "AOT_sledgehammer_only" :: diag
@@ -35,6 +34,7 @@ nonterminal "AOT_axiom"
 nonterminal "AOT_act_axiom"
 ML_file AOT_commands.ML
 setup\<open>AOT_Theorems.setup\<close>
+setup\<open>AOT_Definitions.setup\<close>
 setup\<open>AOT_no_atp.setup\<close>
 
 end

@@ -8,11 +8,16 @@ AOT_define TruthValueOf :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<ph
   tv_p: \<open>TruthValueOf(x,p) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
 
 AOT_theorem p_has_tv_1: \<open>\<exists>x TruthValueOf(x,p)\<close>
-  by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
-     (fact a_objects[where \<phi>=\<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv>p) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>, axiom_inst])
+  apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
+   using rule_eq_df_1 tv_p apply blast
+  by (fact a_objects[where \<phi>=\<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv>p) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>, axiom_inst])
+
 
 AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
-  by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
+  apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
+   using rule_eq_df_1 tv_p apply presburger
+  by (simp add: A_objects_unique)
+
 
 AOT_theorem uni_tv: \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
   using A_Exists_2 RA_2 intro_elim_3_b p_has_tv_2 by blast
@@ -163,8 +168,8 @@ proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<forall>p (p \<rightarrow> p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<phi>\<close>)
-     apply (metis (full_types) deduction_theorem intro_elim_2 intro_elim_3_b universal_cor)
-    by (fact 0)
+      apply (metis (full_types) deduction_theorem intro_elim_2 intro_elim_3_b universal_cor)
+    by (auto simp add: cqt_further_7 0)
 qed
 
 AOT_theorem TV_lem2_2: \<open>(A!x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))) \<rightarrow> TruthValue(x)\<close>
@@ -173,8 +178,8 @@ proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (\<not>q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<exists>p (p & \<not>p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<guillemotleft>\<not>\<phi>\<guillemotright>\<close>)
-    apply (metis "instantiation" deduction_theorem intro_elim_2 intro_elim_3_a raa_cor_1 raa_cor_3)
-    by (fact 0)
+      apply (metis "instantiation" deduction_theorem intro_elim_2 intro_elim_3_a raa_cor_1 raa_cor_3)
+    by (auto simp add: cqt_further_7 0)
 qed
 
 AOT_define TheTrue :: \<kappa>\<^sub>s (\<open>\<top>\<close>)
@@ -460,7 +465,9 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
             dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"] exten_p[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   AOT_assume 1: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
   AOT_have \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
-    by (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>) (fact 1)
+    apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>)
+     using intro_elim_3_b oth_class_taut_2_e prop_prop1 rule_eq_df_1 apply blast
+    by (simp add: 1)
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   proof(safe intro!: "&I" GEN 1[THEN "&E"(1), THEN "&E"(1)] "\<equiv>I" "\<rightarrow>I")
     fix F
@@ -516,6 +523,7 @@ qed
 
 AOT_theorem ext_p_tv_1: \<open>\<exists>!x ExtensionOf(x, p)\<close>
   by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>ExtensionOf(\<kappa>, p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>, p)\<guillemotright>\<close>)
+     (auto simp: extof_e p_has_tv_2)
 
 AOT_theorem ext_p_tv_2: \<open>\<^bold>\<iota>x(ExtensionOf(x, p))\<down>\<close>
   using A_Exists_2 RA_2 ext_p_tv_1 intro_elim_3_b by blast

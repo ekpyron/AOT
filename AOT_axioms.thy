@@ -43,24 +43,31 @@ end
 AOT_theorem existence_1: \<open>\<kappa>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>F [F]\<kappa>\<close>
   by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def)
      (metis AOT_sem_denotes AOT_sem_exe AOT_sem_lambda_beta AOT_sem_lambda_denotes)
+declare existence_1[AOT_defs]
 AOT_theorem existence_2: \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]\<close>
   using AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_universal_encoder
   by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def) blast
+declare existence_2[AOT_defs]
 AOT_theorem existence_2a: \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x x[\<Pi>]\<close>
   using existence_2[of \<Pi>] by simp
+declare existence_2a[AOT_defs]
 AOT_theorem existence_2b: \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y xy[\<Pi>]\<close>
   using existence_2[of \<Pi>]
   by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+declare existence_2b[AOT_defs]
 AOT_theorem existence_2c: \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y\<exists>z xyz[\<Pi>]\<close>
   using existence_2[of \<Pi>]
   by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+declare existence_2c[AOT_defs]
 AOT_theorem existence_2d: \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]\<close>
   using existence_2[of \<Pi>]
   by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+declare existence_2d[AOT_defs]
 
 AOT_theorem existence_3: \<open>\<phi>\<down> \<equiv>\<^sub>d\<^sub>f [\<lambda>x \<phi>]\<down>\<close>
   by (simp add: AOT_sem_denotes AOT_model_denotes_\<o>_def AOT_model_equiv_def
                 AOT_model_lambda_denotes)
+declare existence_3[AOT_defs]
 
 AOT_theorem oa_1: \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close> using AOT_ordinary .
 AOT_theorem oa_2: \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close> using AOT_abstract .
@@ -69,35 +76,42 @@ AOT_theorem identity: \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<b
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ x y]
   by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
+declare identity[AOT_defs]
 
 AOT_theorem p_identity:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
   using AOT_sem_enc_eq[of _ F G]
   by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq AOT_sem_conj
                  AOT_sem_forall AOT_sem_box AOT_sem_equiv)
+declare p_identity[AOT_defs]
 AOT_theorem p_identity_2_a:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y([\<lambda>z [F]zy] = [\<lambda>z [G]zy] & [\<lambda>z [F]yz] = [\<lambda>z [G]yz])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+declare p_identity_2_a[AOT_defs]
 AOT_theorem p_identity_2_b:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [F]zy\<^sub>1y\<^sub>2] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2] & [\<lambda>z [F]y\<^sub>1y\<^sub>2z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+declare p_identity_2_b[AOT_defs]
 
 AOT_theorem p_identity_2_c:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [F]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [G]y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+declare p_identity_2_c[AOT_defs]
 
 AOT_theorem p_identity_2_generic:
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . AOT_exe F \<tau>) (\<lambda> \<tau> . AOT_exe G \<tau>)\<guillemotright>\<close> (* TODO: is it ok to state this as axiom? *)
   by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
                  AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+declare p_identity_2_generic[AOT_defs]
 
 AOT_theorem p_identity_3:
   \<open>p = q \<equiv>\<^sub>d\<^sub>f p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
   by (auto simp: AOT_model_equiv_def AOT_sem_eq AOT_sem_denotes AOT_sem_conj
                  AOT_model_lambda_denotes AOT_sem_lambda_eq_prop_eq)
+declare p_identity_3[AOT_defs]
 
 AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>" 50)
   noneq_infix: \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
@@ -325,5 +339,6 @@ AOT_theorem act_closure_act: assumes \<open>\<phi> \<in> \<Lambda>\<close> shows
 
 AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
   by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
+declare tuple_denotes[AOT_defs]
 
 end
