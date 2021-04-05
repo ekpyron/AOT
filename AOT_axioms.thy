@@ -341,4 +341,16 @@ AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotrig
   by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
 declare tuple_denotes[AOT_defs]
 
+AOT_theorem tuple_identity: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright> = \<guillemotleft>(\<sigma>, \<sigma>')\<guillemotright> \<equiv>\<^sub>d\<^sub>f (\<tau> = \<sigma>) & (\<tau>' = \<sigma>')\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_conj AOT_sem_eq AOT_model_denotes_prod_def AOT_sem_denotes)
+declare tuple_identity[AOT_defs]
+
+AOT_theorem tuple_forall: \<open>\<forall>\<alpha>\<^sub>1...\<forall>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<forall>\<alpha>\<^sub>1(\<forall>\<alpha>\<^sub>2...\<forall>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_forall AOT_sem_denotes AOT_model_denotes_prod_def)
+declare tuple_forall[AOT_defs]
+
+AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<^sub>1(\<exists>\<alpha>\<^sub>2...\<exists>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_exists AOT_sem_denotes AOT_model_denotes_prod_def)
+declare tuple_exists[AOT_defs]
+
 end

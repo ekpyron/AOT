@@ -118,10 +118,13 @@ next
 qed
 AOT_register_variable_names
   Ordinary: u v r t s
-
-context AOT_restriction_condition
-begin
-end
+interpretation AOT_rigid_restriction_condition \<open>\<lambda>\<kappa>. \<guillemotleft>O!\<kappa>\<guillemotright>\<close>
+proof
+  AOT_modally_strict {
+    AOT_show \<open>\<box>(O!x \<rightarrow> \<box>O!x)\<close> for x
+      by (simp add: RN oa_facts_1)
+  }
+qed
 
 AOT_theorem equi_1: \<open>\<exists>!u \<phi>{u} \<equiv>\<^sub>d\<^sub>f \<exists>u (\<phi>{u} & \<forall>v (\<phi>{v} \<rightarrow> v =\<^sub>E u))\<close>
 proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accommodate PLMs double definition *)
@@ -1582,6 +1585,225 @@ proof -
       by (simp add: rel_neg_T_3)
   qed
 qed
+
+(* TODO: PLM: proof in PLM takes weaker assumption, resulting in a more involved proof *)
+AOT_theorem approx_nec_1: \<open>\<box>\<forall>x ([F]x \<rightarrow> \<box>[F]x) \<rightarrow> F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>x ([F]x \<rightarrow> \<box>[F]x)\<close>
+  AOT_hence 0: \<open>\<forall>x \<box>([F]x \<rightarrow> \<box>[F]x)\<close> using CBF[THEN "\<rightarrow>E"] by blast
+  AOT_hence 1: \<open>\<forall>x ([F]x \<rightarrow> \<box>[F]x)\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_have act_F_den: \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> by cqt_2_lambda
+  AOT_show \<open>F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]\<close>
+  proof (safe intro!: apE_eqE_1[unvarify G, THEN "\<rightarrow>E"] eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] act_F_den GEN "\<rightarrow>I" "\<equiv>I")
+    fix u
+    AOT_assume \<open>[F]u\<close>
+    AOT_hence \<open>\<box>[F]u\<close> using 1[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+    AOT_hence act_F_u: \<open>\<^bold>\<A>[F]u\<close> by (metis nec_imp_act vdash_properties_10)
+    AOT_show \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close>
+      by (rule betaC_2_a; cqt_2_lambda; safe intro!: act_F_u cqt_2_const_var[axiom_inst])
+  next
+    fix u
+    AOT_assume \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close>
+    AOT_hence \<open>\<^bold>\<A>[F]u\<close>
+      by (rule betaC_1_a)
+    AOT_thus \<open>[F]u\<close>
+      using 0[THEN "\<forall>E"(2)[where \<beta>=u]]
+      by (metis intro_elim_3_a sc_eq_fur_2 vdash_properties_10)
+  qed
+qed
+
+AOT_theorem approx_nec_2: \<open>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)) \<rightarrow> \<box>(F \<approx>\<^sub>E G \<rightarrow> \<box>F \<approx>\<^sub>E G)\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
+  AOT_hence \<open>\<box>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x))\<close>
+    using "&E"(1) "&E"(2) KBasic_3 S5Basic_5 con_dis_i_e_1 intro_elim_3_b vdash_properties_10 by meson
+  moreover AOT_have \<open>\<box>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)) \<rightarrow> \<box>(F \<approx>\<^sub>E G \<rightarrow> \<box>F \<approx>\<^sub>E G)\<close>
+  proof(rule RM; rule "\<rightarrow>I"; rule "\<rightarrow>I")
+    AOT_modally_strict {
+      AOT_assume \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
+      AOT_hence \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x)\<close> and \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close> using "&E" by blast+
+      AOT_hence \<open>\<forall>x\<box>([F]x \<rightarrow> \<box>[F]x)\<close> and \<open>\<forall>x\<box>([G]x \<rightarrow> \<box>[G]x)\<close> using CBF[THEN "\<rightarrow>E"] by blast+
+      AOT_hence F_nec: \<open>\<box>([F]x \<rightarrow> \<box>[F]x)\<close> and G_nec: \<open>\<box>([G]x \<rightarrow> \<box>[G]x)\<close> for x using "\<forall>E"(2) by blast+
+      AOT_assume \<open>F \<approx>\<^sub>E G\<close>
+      AOT_hence \<open>\<exists>R R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
+        by (metis "\<equiv>\<^sub>d\<^sub>fE" equi_3)
+      then AOT_obtain R where \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close> using "\<exists>E"[rotated] by blast
+      AOT_hence C1: \<open>\<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R]uv))\<close> and C2: \<open>\<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R]uv))\<close>
+        using equi_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+      AOT_obtain R' where \<open>Rigidifies([R'], [R])\<close>
+        using rigid_der_3 "\<exists>E"[rotated] by blast
+      AOT_hence 1: \<open>Rigid([R']) & \<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<equiv> [R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+      AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+      AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n (\<diamond>[R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close>
+        using intro_elim_3_a rigid_rel_thms_1 by blast
+      AOT_hence D: \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 (\<diamond>[R']x\<^sub>1x\<^sub>2 \<rightarrow> \<box>[R']x\<^sub>1x\<^sub>2)\<close>
+        using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+      AOT_have E: \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 ([R']x\<^sub>1x\<^sub>2 \<equiv> [R]x\<^sub>1x\<^sub>2)\<close> using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE", OF 1[THEN "&E"(2)]] by blast
+      AOT_have \<open>\<forall>u \<box>([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close> and \<open>\<forall>v \<box>([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close>
+      proof (safe intro!: GEN "\<rightarrow>I")
+        fix u
+        AOT_assume ou: \<open>O!u\<close>
+        AOT_show \<open>\<box>([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close>
+        proof (rule raa_cor_1)
+          AOT_assume \<open>\<not>\<box>([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close>
+          AOT_hence 1: \<open>\<diamond>\<not>([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close> using KBasic_11 intro_elim_3_a by blast
+          AOT_have \<open>\<diamond>([F]u & \<not>\<exists>!v ([G]v & [R']uv))\<close>
+            apply (AOT_subst \<open>\<guillemotleft>[F]u & \<not>\<exists>!v ([G]v & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<not>([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<guillemotright>\<close>)
+             apply (meson intro_elim_3_f oth_class_taut_1_b oth_class_taut_3_a)
+            by (fact 1)
+          AOT_hence A: \<open>\<diamond>[F]u & \<diamond>\<not>\<exists>!v ([G]v & [R']uv)\<close>
+            using KBasic2_3 vdash_properties_10 by blast
+          AOT_hence \<open>\<box>[F]u\<close>
+            using F_nec con_dis_i_e_2_a intro_elim_3_a sc_eq_box_box_1 vdash_properties_6 by blast
+          AOT_hence \<open>[F]u\<close> by (metis qml_2 vdash_properties_10 vdash_properties_1_b)
+          AOT_hence \<open>\<exists>!v ([G]v & [R]uv)\<close> using C1[THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF ou, THEN "\<rightarrow>E"] by blast
+          AOT_hence \<open>\<exists>v ([G]v & [R]uv & \<forall>v' ([G]v' & [R]uv' \<rightarrow> v' =\<^sub>E v))\<close>
+            using equi_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by auto
+          then AOT_obtain a where a_prop: \<open>O!a & ([G]a & [R]ua & \<forall>v' ([G]v' & [R]uv' \<rightarrow> v' =\<^sub>E a))\<close>
+            using "\<exists>E"[rotated] by blast
+          AOT_have \<open>\<exists>v \<box>([G]v & [R']uv & \<forall>v' ([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E v))\<close>
+          proof(rule_tac \<beta>=a in "\<exists>I"(2); safe intro!: "&I" a_prop[THEN "&E"(1)] KBasic_3[THEN "\<equiv>E"(2)])
+            AOT_show \<open>\<box>[G]a\<close>
+              using a_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(1)]
+              by (metis G_nec qml_2 vdash_properties_10 vdash_properties_1_b)
+          next
+            AOT_show \<open>\<box>[R']ua\<close>
+              using D[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
+                    E[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2),
+                      OF a_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(2)]]
+              by (metis T_S5_fund_1 vdash_properties_10)
+          next
+            AOT_have \<open>\<forall>v' \<box>([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<close>
+            proof (rule GEN; rule "\<rightarrow>I"; rule raa_cor_1)
+              fix v'
+              AOT_assume ov': \<open>O!v'\<close>
+              AOT_assume \<open>\<not>\<box>([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<close>
+              AOT_hence 1: \<open>\<diamond>\<not>([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<close> by (metis KBasic_11 intro_elim_3_a)
+              AOT_have \<open>\<diamond>([G]v' & [R']uv' & \<not>v' =\<^sub>E a)\<close>
+                apply (AOT_subst \<open>\<guillemotleft>[G]v' & [R']uv' & \<not>v' =\<^sub>E a\<guillemotright>\<close> \<open>\<guillemotleft>\<not>([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<guillemotright>\<close>)
+                 apply (meson intro_elim_3_f oth_class_taut_1_b oth_class_taut_3_a)
+                by (fact 1)
+              AOT_hence 1: \<open>\<diamond>[G]v'\<close> and 2: \<open>\<diamond>[R']uv'\<close> and 3: \<open>\<diamond>\<not>v' =\<^sub>E a\<close>
+                using KBasic2_3[THEN "\<rightarrow>E", THEN "&E"(1)] KBasic2_3[THEN "\<rightarrow>E", THEN "&E"(2)] by blast+
+              AOT_have Gv': \<open>[G]v'\<close> using G_nec 1
+                by (meson "B\<diamond>" KBasic_13 vdash_properties_10)
+              AOT_have \<open>\<box>[R']uv'\<close> using 2 D[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+              AOT_hence R'uv': \<open>[R']uv'\<close> by (metis "B\<diamond>" T_S5_fund_1 vdash_properties_10) 
+              AOT_hence \<open>[R]uv'\<close> using E[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+              AOT_hence \<open>v' =\<^sub>E a\<close>
+                using a_prop[THEN "&E"(2), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF ov',
+                             THEN "\<rightarrow>E", OF "&I", OF Gv'] by blast
+              AOT_hence \<open>\<box>(v' =\<^sub>E a)\<close> by (metis id_nec3_1 intro_elim_3_d raa_cor_3)
+              moreover AOT_have \<open>\<not>\<box>(v' =\<^sub>E a)\<close>
+                using 3 KBasic_11 intro_elim_3_b by blast
+              ultimately AOT_show \<open>\<box>(v' =\<^sub>E a) & \<not>\<box>(v' =\<^sub>E a)\<close> using "&I" by blast
+            qed
+            AOT_thus \<open>\<box>\<forall>v'([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<close>
+              using res_var_bound_reas_2 vdash_properties_10 by fast
+          qed
+          AOT_hence 1: \<open>\<box>\<exists>v ([G]v & [R']uv & \<forall>v' ([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E v))\<close>
+            using res_var_bound_Buridan vdash_properties_10 by fast
+          AOT_have \<open>\<box>\<exists>!v ([G]v & [R']uv)\<close>
+            by (AOT_subst \<open>\<guillemotleft>\<exists>!v ([G]v & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>v ([G]v & [R']uv & \<forall>v' ([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E v))\<guillemotright>\<close>)
+               (auto simp: 1 equi_1[THEN "\<equiv>Df"])
+          moreover AOT_have \<open>\<not>\<box>\<exists>!v ([G]v & [R']uv)\<close>
+            using A[THEN "&E"(2)] KBasic_11[THEN "\<equiv>E"(2)] by blast
+          ultimately AOT_show \<open>\<box>\<exists>!v ([G]v & [R']uv) & \<not>\<box>\<exists>!v ([G]v & [R']uv)\<close> by (rule "&I")
+        qed
+      next
+        fix v
+        AOT_assume ou: \<open>O!v\<close>
+        AOT_show \<open>\<box>([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close>
+        proof (rule raa_cor_1)
+          AOT_assume \<open>\<not>\<box>([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close>
+          AOT_hence 1: \<open>\<diamond>\<not>([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close> using KBasic_11 intro_elim_3_a by blast
+          AOT_have \<open>\<diamond>([G]v & \<not>\<exists>!u ([F]u & [R']uv))\<close>
+            apply (AOT_subst \<open>\<guillemotleft>[G]v & \<not>\<exists>!u ([F]u & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<not>([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<guillemotright>\<close>)
+             apply (meson intro_elim_3_f oth_class_taut_1_b oth_class_taut_3_a)
+            by (fact 1)
+          AOT_hence A: \<open>\<diamond>[G]v & \<diamond>\<not>\<exists>!u ([F]u & [R']uv)\<close>
+            using KBasic2_3 vdash_properties_10 by blast
+          AOT_hence \<open>\<box>[G]v\<close>
+            using G_nec con_dis_i_e_2_a intro_elim_3_a sc_eq_box_box_1 vdash_properties_6 by blast
+          AOT_hence \<open>[G]v\<close> by (metis qml_2 vdash_properties_10 vdash_properties_1_b)
+          AOT_hence \<open>\<exists>!u ([F]u & [R]uv)\<close> using C2[THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF ou, THEN "\<rightarrow>E"] by blast
+          AOT_hence \<open>\<exists>u ([F]u & [R]uv & \<forall>u' ([F]u' & [R]u'v \<rightarrow> u' =\<^sub>E u))\<close>
+            using equi_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by auto
+          then AOT_obtain a where a_prop: \<open>O!a & ([F]a & [R]av & \<forall>u' ([F]u' & [R]u'v \<rightarrow> u' =\<^sub>E a))\<close>
+            using "\<exists>E"[rotated] by blast
+          AOT_have \<open>\<exists>u \<box>([F]u & [R']uv & \<forall>u' ([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E u))\<close>
+          proof(rule_tac \<beta>=a in "\<exists>I"(2); safe intro!: "&I" a_prop[THEN "&E"(1)] KBasic_3[THEN "\<equiv>E"(2)])
+            AOT_show \<open>\<box>[F]a\<close>
+              using a_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(1)]
+              by (metis F_nec qml_2 vdash_properties_10 vdash_properties_1_b)
+          next
+            AOT_show \<open>\<box>[R']av\<close>
+              using D[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
+                    E[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2),
+                      OF a_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(2)]]
+              by (metis T_S5_fund_1 vdash_properties_10)
+          next
+            AOT_have \<open>\<forall>u' \<box>([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<close>
+            proof (rule GEN; rule "\<rightarrow>I"; rule raa_cor_1)
+              fix u'
+              AOT_assume ou': \<open>O!u'\<close>
+              AOT_assume \<open>\<not>\<box>([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<close>
+              AOT_hence 1: \<open>\<diamond>\<not>([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<close> by (metis KBasic_11 intro_elim_3_a)
+              AOT_have \<open>\<diamond>([F]u' & [R']u'v & \<not>u' =\<^sub>E a)\<close>
+                apply (AOT_subst \<open>\<guillemotleft>[F]u' & [R']u'v & \<not>u' =\<^sub>E a\<guillemotright>\<close> \<open>\<guillemotleft>\<not>([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<guillemotright>\<close>)
+                 apply (meson intro_elim_3_f oth_class_taut_1_b oth_class_taut_3_a)
+                by (fact 1)
+              AOT_hence 1: \<open>\<diamond>[F]u'\<close> and 2: \<open>\<diamond>[R']u'v\<close> and 3: \<open>\<diamond>\<not>u' =\<^sub>E a\<close>
+                using KBasic2_3[THEN "\<rightarrow>E", THEN "&E"(1)] KBasic2_3[THEN "\<rightarrow>E", THEN "&E"(2)] by blast+
+              AOT_have Fu': \<open>[F]u'\<close> using F_nec 1
+                by (meson "B\<diamond>" KBasic_13 vdash_properties_10)
+              AOT_have \<open>\<box>[R']u'v\<close> using 2 D[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+              AOT_hence R'u'v: \<open>[R']u'v\<close> by (metis "B\<diamond>" T_S5_fund_1 vdash_properties_10) 
+              AOT_hence \<open>[R]u'v\<close> using E[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+              AOT_hence \<open>u' =\<^sub>E a\<close>
+                using a_prop[THEN "&E"(2), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF ou',
+                             THEN "\<rightarrow>E", OF "&I", OF Fu'] by blast
+              AOT_hence \<open>\<box>(u' =\<^sub>E a)\<close> by (metis id_nec3_1 intro_elim_3_d raa_cor_3)
+              moreover AOT_have \<open>\<not>\<box>(u' =\<^sub>E a)\<close>
+                using 3 KBasic_11 intro_elim_3_b by blast
+              ultimately AOT_show \<open>\<box>(u' =\<^sub>E a) & \<not>\<box>(u' =\<^sub>E a)\<close> using "&I" by blast
+            qed
+            AOT_thus \<open>\<box>\<forall>u'([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<close>
+              using res_var_bound_reas_2 vdash_properties_10 by fast
+          qed
+          AOT_hence 1: \<open>\<box>\<exists>u ([F]u & [R']uv & \<forall>u' ([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E u))\<close>
+            using res_var_bound_Buridan vdash_properties_10 by fast
+          AOT_have \<open>\<box>\<exists>!u ([F]u & [R']uv)\<close>
+            by (AOT_subst \<open>\<guillemotleft>\<exists>!u ([F]u & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>u ([F]u & [R']uv & \<forall>u' ([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E u))\<guillemotright>\<close>)
+               (auto simp: 1 equi_1[THEN "\<equiv>Df"])
+          moreover AOT_have \<open>\<not>\<box>\<exists>!u ([F]u & [R']uv)\<close>
+            using A[THEN "&E"(2)] KBasic_11[THEN "\<equiv>E"(2)] by blast
+          ultimately AOT_show \<open>\<box>\<exists>!u ([F]u & [R']uv) & \<not>\<box>\<exists>!u ([F]u & [R']uv)\<close> by (rule "&I")
+        qed
+      qed
+      AOT_hence \<open>\<box>\<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close> and \<open>\<box>\<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close>
+        using res_var_bound_reas_2[THEN "\<rightarrow>E"] by auto
+      moreover AOT_have \<open>\<box>[R']\<down>\<close> and \<open>\<box>[F]\<down>\<close> and \<open>\<box>[G]\<down>\<close>
+        by (simp_all add: ex_2_a)
+      ultimately AOT_have 1: \<open>\<box>([R']\<down> & [F]\<down> & [G]\<down> & \<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv)) & \<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv)))\<close>
+        using KBasic_3 con_dis_i_e_1 intro_elim_3_b by meson
+      AOT_have \<open>\<box>R' |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
+        by (AOT_subst_using subst: equi_2[THEN "\<equiv>Df"])
+           (fact 1)
+      AOT_hence \<open>\<exists>R \<box>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
+        by (rule "\<exists>I"(2))
+      AOT_hence 1: \<open>\<box>\<exists>R R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
+        by (metis sign_S5_thm_1 vdash_properties_10)
+      AOT_show \<open>\<box>F \<approx>\<^sub>E G\<close>
+        by (AOT_subst_using subst: equi_3[THEN "\<equiv>Df"])
+           (fact 1)
+    }
+  qed
+  ultimately AOT_show \<open>\<box>(F \<approx>\<^sub>E G \<rightarrow> \<box>F \<approx>\<^sub>E G)\<close> using "\<rightarrow>E" by blast
+qed
+
+
+
 
 
 end

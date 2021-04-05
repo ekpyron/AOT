@@ -741,9 +741,40 @@ next
   }
 qed
 
+instance prod :: (AOT_Term_id, AOT_Term_id) AOT_Term_id
+proof
+  AOT_modally_strict {
+    fix \<tau> \<tau>' :: \<open>'a\<times>'b\<close>
+    AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close>
+    proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
+      fix \<tau>\<^sub>1 \<tau>\<^sub>1' :: 'a and \<tau>\<^sub>2  \<tau>\<^sub>2' :: 'b
+      AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<close>
+      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity)
+      AOT_hence \<open>\<tau>\<^sub>1\<down>\<close> and \<open>\<tau>\<^sub>2\<down>\<close> using "t=t-proper_1" "&E" vdash_properties_10 by blast+
+      AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright>\<down>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_denotes)
+    qed
+  }
+next
+  AOT_modally_strict {
+    fix \<tau> \<tau>' :: \<open>'a\<times>'b\<close>
+    AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>'\<down>\<close>
+    proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
+      fix \<tau>\<^sub>1 \<tau>\<^sub>1' :: 'a and \<tau>\<^sub>2  \<tau>\<^sub>2' :: 'b
+      AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<close>
+      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity)
+      AOT_hence \<open>\<tau>\<^sub>1'\<down>\<close> and \<open>\<tau>\<^sub>2'\<down>\<close> using "t=t-proper_2" "&E" vdash_properties_10 by blast+
+      AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<down>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_denotes)
+    qed
+  }
+qed
+
 (* TODO: this is the end of the "proof by types" and makes the results available on new theorems *)
 AOT_register_type_constraints
-  Term: \<open>_::AOT_Term_id\<close>
+  Term: \<open>_::AOT_Term_id\<close> \<open>_::AOT_Term_id\<close>
+AOT_register_type_constraints
+  Individual: \<open>\<kappa>\<close> \<open>_::{AOT_\<kappa>s, AOT_Term_id}\<close>
+AOT_register_type_constraints
+  Relation: \<open><_::{AOT_\<kappa>s, AOT_Term_id}>\<close>
 
 AOT_theorem id_rel_nec_equiv_1: \<open>\<Pi> = \<Pi>' \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
 proof(rule "\<rightarrow>I")
@@ -932,7 +963,7 @@ proof
   }
 qed
 
-instance rel :: (AOT_\<kappa>s) AOT_Term_id_2
+instance rel :: ("{AOT_\<kappa>s,AOT_Term_id_2}") AOT_Term_id_2
 proof
   AOT_modally_strict {
     fix F :: "<'a> AOT_var"
@@ -960,8 +991,31 @@ proof
   }
 qed
 
+instance prod :: (AOT_Term_id_2, AOT_Term_id_2) AOT_Term_id_2
+proof
+  AOT_modally_strict {
+    fix \<alpha> :: \<open>('a\<times>'b) AOT_var\<close>
+    AOT_show \<open>\<alpha> = \<alpha>\<close>
+    proof (induct)
+      AOT_show \<open>\<tau> = \<tau>\<close> if \<open>\<tau>\<down>\<close> for \<tau> :: \<open>'a\<times>'b\<close>
+        using that
+      proof (induct \<tau>)
+        fix \<tau>\<^sub>1 :: 'a and \<tau>\<^sub>2 :: 'b
+        AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>\<down>\<close>
+        AOT_hence \<open>\<tau>\<^sub>1\<down>\<close> and \<open>\<tau>\<^sub>2\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE" "&E" tuple_denotes by blast+
+        AOT_hence \<open>\<tau>\<^sub>1 = \<tau>\<^sub>1\<close> and \<open>\<tau>\<^sub>2 = \<tau>\<^sub>2\<close> using id_eq_1[unvarify \<alpha>] by blast+
+        AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_identity)
+      qed
+    qed
+  }
+qed
+
 AOT_register_type_constraints
-  Term: \<open>_::AOT_Term_id_2\<close>
+  Term: \<open>_::AOT_Term_id_2\<close> \<open>_::AOT_Term_id_2\<close>
+AOT_register_type_constraints
+  Individual: \<open>\<kappa>\<close> \<open>_::{AOT_\<kappa>s, AOT_Term_id_2}\<close>
+AOT_register_type_constraints
+  Relation: \<open><_::{AOT_\<kappa>s, AOT_Term_id_2}>\<close>
 
 (* TODO: Interestingly, this doesn't depend on id_eq_1 at all! *)
 AOT_theorem id_eq_2: \<open>\<alpha> = \<beta> \<rightarrow> \<beta> = \<alpha>\<close>
@@ -2697,7 +2751,6 @@ proof -
   AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close>
     using "B\<diamond>" ded_thm_cor_1 by blast
 qed
-
 AOT_theorem BFs_1: \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
 proof -
   AOT_modally_strict {
@@ -3404,7 +3457,7 @@ qed
 
 declare id_trans[trans]
 
-method "\<eta>C" for \<Pi> :: \<open><'a::AOT_\<kappa>s>\<close> = (match conclusion in "[v \<Turnstile> \<tau>{\<Pi>} = \<tau>'{\<Pi>}]" for v \<tau> \<tau>' \<Rightarrow> \<open>
+method "\<eta>C" for \<Pi> :: \<open><'a::{AOT_Term_id_2,AOT_\<kappa>s}>\<close> = (match conclusion in "[v \<Turnstile> \<tau>{\<Pi>} = \<tau>'{\<Pi>}]" for v \<tau> \<tau>' \<Rightarrow> \<open>
 rule "=E"[rotated 1, OF eta_conversion_lemma1_2[THEN "\<rightarrow>E", of v "\<guillemotleft>[\<Pi>]\<guillemotright>", symmetric]]
 \<close>)
 (*
@@ -7565,5 +7618,145 @@ qed
 AOT_theorem enc_prop_nec_2: \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<box>\<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
   using derived_S5_rules_1[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
   by blast
+
+locale AOT_restriction_condition' = AOT_restriction_condition +
+  constrains \<psi> :: \<open>'a::AOT_Term_id_2 \<Rightarrow> \<o>\<close>
+begin
+AOT_theorem res_var_bound_reas_1: \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}) \<equiv> \<forall>\<beta>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
+  fix \<beta> \<alpha>
+  AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>})\<close>
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}\<close> using "\<forall>E"(2) by blast
+  moreover AOT_assume \<open>\<psi>{\<alpha>}\<close>
+  ultimately AOT_have \<open>\<forall>\<beta> \<phi>{\<alpha>, \<beta>}\<close> using "\<rightarrow>E" by blast
+  AOT_thus \<open>\<phi>{\<alpha>, \<beta>}\<close> using "\<forall>E"(2) by blast
+next
+  fix \<alpha> \<beta>
+  AOT_assume \<open>\<forall>\<beta>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
+  AOT_hence \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close> using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>}\<close> using "\<forall>E"(2) by blast
+  moreover AOT_assume \<open>\<psi>{\<alpha>}\<close>
+  ultimately AOT_show \<open>\<phi>{\<alpha>, \<beta>}\<close> using "\<rightarrow>E" by blast
+qed
+end
+
+(* TODO: not part of PLM *)
+AOT_theorem kir_ext_1: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> ((\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<box>\<psi>))\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<phi> \<rightarrow> \<box>\<psi>\<close>
+  AOT_hence \<open>\<box>(\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
+    by (metis "B\<diamond>" KBasic2_1 KBasic_1 KBasic_2 S5Basic_5 intro_elim_3_b modus_tollens_1 reductio_aa_1)
+  moreover AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  ultimately AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>))\<close>
+    by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_b)
+  moreover AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>)) \<rightarrow> \<box>(\<phi> \<rightarrow> \<box>\<psi>)\<close>
+    apply (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+    using ded_thm_cor_1 by blast
+  ultimately AOT_show \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>)\<close> using "\<rightarrow>E" by blast
+qed
+AOT_theorem kir_ext_2: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> ((\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<psi>))\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<phi> \<rightarrow> \<box>\<psi>\<close>
+  AOT_hence \<open>\<box>(\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
+    by (metis "B\<diamond>" KBasic2_1 KBasic_1 KBasic_2 S5Basic_5 intro_elim_3_b modus_tollens_1 reductio_aa_1)
+  moreover AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  ultimately AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>))\<close>
+    by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_b)
+  moreover AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>)) \<rightarrow> \<box>(\<phi> \<rightarrow> \<psi>)\<close>
+    apply (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+    by (metis deduction_theorem qml_2 vdash_properties_10 vdash_properties_1_b)
+  ultimately AOT_show \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> using "\<rightarrow>E" by blast
+qed
+AOT_theorem kir_ext_3: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> ((\<phi> \<rightarrow> \<^bold>\<A>\<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<^bold>\<A>\<psi>))\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<phi> \<rightarrow> \<^bold>\<A>\<psi>\<close>
+  AOT_hence \<open>\<box>(\<box>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
+     by (metis "B\<diamond>" Act_Basic_6 KBasic2_1 KBasic_1 KBasic_2 intro_elim_3_a intro_elim_3_b modus_tollens_1 reductio_aa_1)
+  moreover AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  ultimately AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<^bold>\<A>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>))\<close>
+    by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_b)
+  moreover AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<^bold>\<A>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>)) \<rightarrow> \<box>(\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
+    apply (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+    using ded_thm_cor_1 by blast
+  ultimately AOT_show \<open>\<box>(\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close> using "\<rightarrow>E" by blast
+qed
+AOT_theorem kir_ext_4: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> ((\<phi> \<rightarrow> \<^bold>\<A>\<psi>) \<rightarrow> \<^bold>\<A>(\<phi> \<rightarrow> \<psi>))\<close>
+proof(safe intro!: "\<rightarrow>I"; rule raa_cor_1)
+  AOT_assume 1: \<open>\<phi> \<rightarrow> \<^bold>\<A>\<psi>\<close>
+  AOT_assume 2: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
+  AOT_assume \<open>\<not>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>)\<close>
+  AOT_hence 3: \<open>\<^bold>\<A>\<not>(\<phi> \<rightarrow> \<psi>)\<close>
+    by (metis Act_Basic_1 con_dis_i_e_4_b)
+  AOT_have \<open>\<^bold>\<A>(\<phi> & \<not>\<psi>)\<close>
+    apply (AOT_subst \<open>\<guillemotleft>\<phi> & \<not>\<psi>\<guillemotright>\<close> \<open>\<guillemotleft>\<not>(\<phi> \<rightarrow> \<psi>)\<guillemotright>\<close>)
+    apply (meson intro_elim_3_f oth_class_taut_1_b oth_class_taut_3_a)
+    by (fact 3)
+  AOT_hence 4: \<open>\<^bold>\<A>\<phi> & \<^bold>\<A>\<not>\<psi>\<close> by (metis Act_Basic_2 intro_elim_3_a)
+  AOT_hence \<open>\<phi>\<close> by (metis "2" con_dis_i_e_2_a intro_elim_3_a sc_eq_fur_2 vdash_properties_10)
+  AOT_hence \<open>\<^bold>\<A>\<psi>\<close> using 1 "\<rightarrow>E" by blast
+  moreover AOT_have \<open>\<not>\<^bold>\<A>\<psi>\<close> using 4[THEN "&E"(2)] by (metis "\<not>\<not>I" Act_Sub_1 intro_elim_3_d)
+  ultimately AOT_show \<open>\<^bold>\<A>\<psi> & \<not>\<^bold>\<A>\<psi>\<close> by (rule "&I")
+qed
+
+locale AOT_rigid_restriction_condition = AOT_restriction_condition' +
+  assumes ridig_condition: \<open>[v \<Turnstile> \<box>(\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>})]\<close>
+begin
+
+(* TODO: PLM: easier proof with lemmas above *)
+AOT_theorem res_var_bound_reas_2: \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_2 ridig_condition vdash_properties_6)
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
+  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_1 vdash_properties_6)
+qed
+
+AOT_theorem res_var_bound_reas_3: \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+proof(safe intro!: "\<rightarrow>I" GEN)
+  fix \<alpha>
+  AOT_assume \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_2 vdash_properties_6)
+  AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> using "\<forall>E"(2) by blast
+  AOT_assume \<open>\<psi>{\<alpha>}\<close>
+  AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
+    by (metis "B\<diamond>" T_S5_fund_1 ridig_condition vdash_properties_6)
+  AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem res_var_bound_reas_4: \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_4 ridig_condition vdash_properties_6)
+  AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b logic_actual_nec_3 vdash_properties_1_b)
+qed
+
+
+AOT_theorem res_var_bound_reas_5: \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
+proof(safe intro!: "\<rightarrow>I" GEN)
+  fix \<alpha>
+  AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (metis intro_elim_3_a logic_actual_nec_3 vdash_properties_1_b)
+  AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis rule_ui_3)
+  AOT_assume \<open>\<psi>{\<alpha>}\<close>
+  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act qml_2 ridig_condition vdash_properties_1_b vdash_properties_6)
+  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond vdash_properties_6)
+qed
+
+AOT_theorem res_var_bound_Buridan: \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>})\<close>
+  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
+    by (metis KBasic_11 KBasic_3 T_S5_fund_1 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b
+              intro_elim_3_b reductio_aa_1 ridig_condition vdash_properties_6)
+  AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
+qed
+
+end
 
 end

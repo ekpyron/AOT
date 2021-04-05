@@ -2688,4 +2688,31 @@ proof -
   qed
 qed
 
+AOT_theorem rigid_rel_thms_1: \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
+  fix x\<^sub>1x\<^sub>n
+  AOT_assume \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+  AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+    by (metis "\<rightarrow>E" GEN RM cqt_orig_3)
+  AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+    using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n\<close>
+    by (metis intro_elim_3_a sc_eq_box_box_1)
+  moreover AOT_assume \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n\<close>
+  ultimately AOT_show \<open>\<box>[F]x\<^sub>1...x\<^sub>n\<close> using "\<rightarrow>E" by blast
+next
+  AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n (\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+  AOT_hence \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n by (metis intro_elim_3_b sc_eq_box_box_1)
+  AOT_hence 0: \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> by (rule GEN)
+  AOT_thus \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n))\<close>
+    using BFs_1 vdash_properties_10 by blast
+qed
+
+AOT_theorem rigid_rel_thms_2: \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
+  oops (* TODO *)
+
+AOT_theorem rigid_rel_thms_3: \<open>Rigid([F]) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
+  oops (* TODO *)
+
 end
