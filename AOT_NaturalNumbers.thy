@@ -117,7 +117,7 @@ next
   }
 qed
 AOT_register_variable_names
-  Ordinary: u v t s
+  Ordinary: u v r t s
 
 context AOT_restriction_condition
 begin
@@ -780,7 +780,6 @@ proof (rule "\<rightarrow>I"; frule "&E"(2); drule "&E"(1); frule "&E"(2); drule
    and \<Pi>_minus_\<kappa>E = rule_id_def_2_a_2[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF F_minus_u, simplified, OF this]
   AOT_have \<Pi>_minus_\<kappa>_den: \<open>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<down>\<close> for \<Pi> \<kappa> (* TODO: PLM: quietly dismissed *)
     by (rule \<Pi>_minus_\<kappa>I) cqt_2_lambda+
-
   {
     fix R
     AOT_assume R_prop: \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
@@ -1207,6 +1206,170 @@ proof (rule "\<rightarrow>I"; frule "&E"(2); drule "&E"(1); frule "&E"(2); drule
   ultimately AOT_have \<open>\<exists>R R |: [F]\<^sup>-\<^sup>u \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E [G]\<^sup>-\<^sup>v\<close> using R_prop by (metis reductio_aa_2) 
   AOT_thus \<open>[F]\<^sup>-\<^sup>u \<approx>\<^sub>E [G]\<^sup>-\<^sup>v\<close>
     by (rule equi_3[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+qed
+
+AOT_theorem P'_eq:
+  assumes Ou: \<open>O!u\<close> and Ov: \<open>O!v\<close>
+  shows \<open>[F]\<^sup>-\<^sup>u \<approx>\<^sub>E [G]\<^sup>-\<^sup>v & [F]u & [G]v \<rightarrow> F \<approx>\<^sub>E G\<close>
+proof(safe intro!: "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); frule "&E"(1); drule "&E"(2))
+  AOT_have \<open>[\<lambda>z [\<Pi>]z & z \<noteq>\<^sub>E \<kappa>]\<down>\<close> for \<Pi> \<kappa> by cqt_2_lambda
+  note \<Pi>_minus_\<kappa>I = rule_id_def_2_b_2[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF F_minus_u, simplified, OF this]
+   and \<Pi>_minus_\<kappa>E = rule_id_def_2_a_2[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF F_minus_u, simplified, OF this]
+  AOT_have \<Pi>_minus_\<kappa>_den: \<open>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<down>\<close> for \<Pi> \<kappa> (* TODO: PLM: quietly dismissed *)
+    by (rule \<Pi>_minus_\<kappa>I) cqt_2_lambda+
+
+  AOT_have \<Pi>_minus_\<kappa>E1: \<open>[\<Pi>]\<kappa>'\<close> and \<Pi>_minus_\<kappa>E2: \<open>\<kappa>' \<noteq>\<^sub>E \<kappa>\<close> if \<open>[[\<Pi>]\<^sup>-\<^sup>\<kappa>]\<kappa>'\<close> for \<Pi> \<kappa> \<kappa>'
+  proof -
+    AOT_have \<open>[\<lambda>z [\<Pi>]z & z \<noteq>\<^sub>E \<kappa>]\<kappa>'\<close> using \<Pi>_minus_\<kappa>E that by fast
+    AOT_hence \<open>[\<Pi>]\<kappa>' & \<kappa>' \<noteq>\<^sub>E \<kappa>\<close> by (rule betaC_1_a)
+    AOT_thus \<open>[\<Pi>]\<kappa>'\<close> and \<open>\<kappa>' \<noteq>\<^sub>E \<kappa>\<close> using "&E" by blast+
+  qed
+  AOT_have \<Pi>_minus_\<kappa>I': \<open>[[\<Pi>]\<^sup>-\<^sup>\<kappa>]\<kappa>'\<close> if \<open>[\<Pi>]\<kappa>'\<close> and \<open>\<kappa>' \<noteq>\<^sub>E \<kappa>\<close> for \<Pi> \<kappa> \<kappa>'
+  proof -
+    AOT_have \<kappa>'_den: \<open>\<kappa>'\<down>\<close>  by (metis russell_axiom_exe_1.\<psi>_denotes_asm that(1))
+    AOT_have \<open>[\<lambda>z [\<Pi>]z & z \<noteq>\<^sub>E \<kappa>]\<kappa>'\<close> by (rule betaC_2_a; cqt_2_lambda; safe intro!: \<kappa>'_den "&I" that)
+    AOT_thus \<open>[[\<Pi>]\<^sup>-\<^sup>\<kappa>]\<kappa>'\<close> using \<Pi>_minus_\<kappa>I by fast
+  qed
+
+  AOT_assume Gv: \<open>[G]v\<close>
+  AOT_assume Fu: \<open>[F]u\<close>
+  AOT_assume \<open>[F]\<^sup>-\<^sup>u \<approx>\<^sub>E [G]\<^sup>-\<^sup>v\<close>
+  AOT_hence \<open>\<exists>R R |: [F]\<^sup>-\<^sup>u \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E [G]\<^sup>-\<^sup>v\<close>
+    using equi_3[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain R where R_prop: \<open>R |: [F]\<^sup>-\<^sup>u \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E [G]\<^sup>-\<^sup>v\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence Fact1: \<open>\<forall>r([[F]\<^sup>-\<^sup>u]r \<rightarrow> \<exists>!s ([[G]\<^sup>-\<^sup>v]s & [R]rs))\<close> and Fact1': \<open>\<forall>s([[G]\<^sup>-\<^sup>v]s \<rightarrow> \<exists>!r ([[F]\<^sup>-\<^sup>u]r & [R]rs))\<close>
+    using equi_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+  AOT_have \<open>R |: [F]\<^sup>-\<^sup>u \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE [G]\<^sup>-\<^sup>v\<close>
+    using equi_rem_thm[unvarify F G, OF \<Pi>_minus_\<kappa>_den, OF \<Pi>_minus_\<kappa>_den, THEN "\<equiv>E"(1), OF R_prop].
+  AOT_hence \<open>R |: [F]\<^sup>-\<^sup>u \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>E [G]\<^sup>-\<^sup>v & R |: [F]\<^sup>-\<^sup>u \<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE [G]\<^sup>-\<^sup>v\<close> using equi_rem_4[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_hence Fact2: \<open>\<forall>r\<forall>s\<forall>t(([[F]\<^sup>-\<^sup>u]r & [[F]\<^sup>-\<^sup>u]s & [[G]\<^sup>-\<^sup>v]t) \<rightarrow> ([R]rt & [R]st \<rightarrow> r =\<^sub>E s))\<close>
+    using equi_rem_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+
+  let ?R = \<open>\<guillemotleft>[\<lambda>xy ([[F]\<^sup>-\<^sup>u]x & [[G]\<^sup>-\<^sup>v]y & [R]xy) \<or> (x =\<^sub>E u & y =\<^sub>E v)]\<guillemotright>\<close>
+  AOT_have R_den: \<open>\<guillemotleft>?R\<guillemotright>\<down>\<close> by cqt_2_lambda
+
+  AOT_find_theorems \<open>F \<approx>\<^sub>E G\<close>
+  AOT_show \<open>F \<approx>\<^sub>E G\<close>
+  proof(safe intro!: equi_3[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[where \<tau>="?R"] R_den equi_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+    fix r
+    AOT_assume Or: \<open>O!r\<close>
+    AOT_assume Fr: \<open>[F]r\<close>
+    {
+      AOT_assume not_r_eq_u: \<open>\<not>(r =\<^sub>E u)\<close>
+      AOT_hence r_noteq_u: \<open>r \<noteq>\<^sub>E u\<close>
+        using intro_elim_3_b thm_neg_eq_E by blast
+      AOT_have \<open>[[F]\<^sup>-\<^sup>u]r\<close>
+        by(rule \<Pi>_minus_\<kappa>I; rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] "&I" Fr r_noteq_u)
+      AOT_hence \<open>\<exists>!s ([[G]\<^sup>-\<^sup>v]s & [R]rs)\<close> using Fact1[THEN "\<forall>E"(2)] "\<rightarrow>E" Or by blast
+      AOT_hence \<open>\<exists>s ([[G]\<^sup>-\<^sup>v]s & [R]rs & \<forall>t ([[G]\<^sup>-\<^sup>v]t & [R]rt \<rightarrow> t =\<^sub>E s))\<close>
+        using equi_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by simp
+      then AOT_obtain s where s_prop: \<open>O!s & ([[G]\<^sup>-\<^sup>v]s & [R]rs & \<forall>t ([[G]\<^sup>-\<^sup>v]t & [R]rt \<rightarrow> t =\<^sub>E s))\<close>
+        using "\<exists>E"[rotated] by blast
+      AOT_hence Os: \<open>O!s\<close> and G_minus_v_s: \<open>[[G]\<^sup>-\<^sup>v]s\<close> and Rrs: \<open>[R]rs\<close> using "&E" by blast+
+      AOT_have s_unique: \<open>t =\<^sub>E s\<close> if \<open>O!t\<close> and \<open>[[G]\<^sup>-\<^sup>v]t\<close> and \<open>[R]rt\<close> for t
+        using s_prop[THEN "&E"(2), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1), THEN "\<rightarrow>E", OF "&I", OF that(2,3)].
+      AOT_have Gs: \<open>[G]s\<close> using \<Pi>_minus_\<kappa>E1[OF G_minus_v_s].
+      AOT_have s_noteq_v: \<open>s \<noteq>\<^sub>E v\<close> using \<Pi>_minus_\<kappa>E2[OF G_minus_v_s].
+      AOT_have \<open>\<exists>s ([G]s & [\<guillemotleft>?R\<guillemotright>]rs & (\<forall>t ([G]t & [\<guillemotleft>?R\<guillemotright>]rt \<rightarrow> t =\<^sub>E s)))\<close>
+      proof(safe intro!: "\<exists>I"(2)[where \<beta>=s] "&I" Os Gs GEN "\<rightarrow>I")
+        AOT_show \<open>[\<guillemotleft>?R\<guillemotright>]rs\<close>
+          by (rule betaC_2_a; cqt_2_lambda; simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3;
+              safe intro!: "&I" "\<or>I"(1) \<Pi>_minus_\<kappa>I' Fr Gs s_noteq_v Rrs r_noteq_u)
+      next
+        fix t
+        AOT_assume Ot: \<open>O!t\<close>
+        AOT_assume 0: \<open>[G]t & [\<guillemotleft>?R\<guillemotright>]rt\<close>
+        AOT_hence \<open>([[F]\<^sup>-\<^sup>u]r & [[G]\<^sup>-\<^sup>v]t & [R]rt) \<or> (r =\<^sub>E u & t =\<^sub>E v)\<close>
+          using betaC_1_a[OF 0[THEN "&E"(2)], simplified] by blast
+        AOT_hence 1: \<open>[[F]\<^sup>-\<^sup>u]r & [[G]\<^sup>-\<^sup>v]t & [R]rt\<close>
+          using not_r_eq_u by (metis con_dis_i_e_2_a con_dis_i_e_4_c reductio_aa_1)
+        AOT_show \<open>t =\<^sub>E s\<close> using s_unique[OF Ot] 1 "&E" by blast
+      qed
+    }
+    moreover {
+      AOT_assume r_eq_u: \<open>r =\<^sub>E u\<close>
+      AOT_have \<open>\<exists>s ([G]s & [\<guillemotleft>?R\<guillemotright>]rs & (\<forall>t ([G]t & [\<guillemotleft>?R\<guillemotright>]rt \<rightarrow> t =\<^sub>E s)))\<close>
+      proof(safe intro!: "\<exists>I"(2)[where \<beta>=v] "&I" Ov Gv GEN "\<rightarrow>I")
+        AOT_show \<open>[\<guillemotleft>?R\<guillemotright>]rv\<close>
+          by (rule betaC_2_a; cqt_2_lambda; simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3)
+             (safe intro!: "&I" "\<or>I"(2) \<Pi>_minus_\<kappa>I' Fr r_eq_u ord_eq_Eequiv_1[THEN "\<rightarrow>E", OF Ov])
+      next
+        fix t
+        AOT_assume \<open>O!t\<close>
+        AOT_assume 0: \<open>[G]t & [\<guillemotleft>?R\<guillemotright>]rt\<close>
+        AOT_hence \<open>([[F]\<^sup>-\<^sup>u]r & [[G]\<^sup>-\<^sup>v]t & [R]rt) \<or> (r =\<^sub>E u & t =\<^sub>E v)\<close>
+          using betaC_1_a[OF 0[THEN "&E"(2)], simplified] by blast
+        AOT_hence \<open>r =\<^sub>E u & t =\<^sub>E v\<close>
+          using r_eq_u \<Pi>_minus_\<kappa>E2 by (metis con_dis_i_e_2_a con_dis_i_e_4_b intro_elim_3_a reductio_aa_1 thm_neg_eq_E)
+        AOT_thus \<open>t =\<^sub>E v\<close> using "&E" by blast
+      qed
+    }
+    ultimately AOT_show \<open>\<exists>!s ([G]s & [\<guillemotleft>?R\<guillemotright>]rs)\<close> using reductio_aa_2 equi_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
+  next
+    fix s
+    AOT_assume Os: \<open>[O!]s\<close>
+    AOT_assume Gs: \<open>[G]s\<close>
+
+    {
+      AOT_assume not_s_eq_v: \<open>\<not>(s =\<^sub>E v)\<close>
+      AOT_hence s_noteq_v: \<open>s \<noteq>\<^sub>E v\<close>
+        using intro_elim_3_b thm_neg_eq_E by blast
+      AOT_have \<open>[[G]\<^sup>-\<^sup>v]s\<close>
+        by (rule \<Pi>_minus_\<kappa>I; rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] "&I" Gs s_noteq_v)
+      AOT_hence \<open>\<exists>!r ([[F]\<^sup>-\<^sup>u]r & [R]rs)\<close> using Fact1'[THEN "\<forall>E"(2)] "\<rightarrow>E" Os by blast
+      AOT_hence \<open>\<exists>r ([[F]\<^sup>-\<^sup>u]r & [R]rs & \<forall>t ([[F]\<^sup>-\<^sup>u]t & [R]ts \<rightarrow> t =\<^sub>E r))\<close>
+        using equi_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by simp
+      then AOT_obtain r where r_prop: \<open>O!r & ([[F]\<^sup>-\<^sup>u]r & [R]rs & \<forall>t ([[F]\<^sup>-\<^sup>u]t & [R]ts \<rightarrow> t =\<^sub>E r))\<close>
+        using "\<exists>E"[rotated] by blast
+      AOT_hence Or: \<open>O!r\<close> and F_minus_u_r: \<open>[[F]\<^sup>-\<^sup>u]r\<close> and Rrs: \<open>[R]rs\<close> using "&E" by blast+
+      AOT_have r_unique: \<open>t =\<^sub>E r\<close> if \<open>O!t\<close> and \<open>[[F]\<^sup>-\<^sup>u]t\<close> and \<open>[R]ts\<close> for t
+        using r_prop[THEN "&E"(2), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1), THEN "\<rightarrow>E", OF "&I", OF that(2,3)].
+      AOT_have Fr: \<open>[F]r\<close> using \<Pi>_minus_\<kappa>E1[OF F_minus_u_r].
+      AOT_have r_noteq_u: \<open>r \<noteq>\<^sub>E u\<close> using \<Pi>_minus_\<kappa>E2[OF F_minus_u_r].
+      AOT_have \<open>\<exists>r ([F]r & [\<guillemotleft>?R\<guillemotright>]rs & (\<forall>t ([F]t & [\<guillemotleft>?R\<guillemotright>]ts \<rightarrow> t =\<^sub>E r)))\<close>
+      proof(safe intro!: "\<exists>I"(2)[where \<beta>=r] "&I" Or Fr GEN "\<rightarrow>I")
+        AOT_show \<open>[\<guillemotleft>?R\<guillemotright>]rs\<close>
+          by (rule betaC_2_a; cqt_2_lambda; simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3;
+              safe intro!: "&I" "\<or>I"(1) \<Pi>_minus_\<kappa>I' Fr Gs s_noteq_v Rrs r_noteq_u)
+      next
+        fix t
+        AOT_assume Ot: \<open>O!t\<close>
+        AOT_assume 0: \<open>[F]t & [\<guillemotleft>?R\<guillemotright>]ts\<close>
+        AOT_hence \<open>([[F]\<^sup>-\<^sup>u]t & [[G]\<^sup>-\<^sup>v]s & [R]ts) \<or> (t =\<^sub>E u & s =\<^sub>E v)\<close>
+          using betaC_1_a[OF 0[THEN "&E"(2)], simplified] by blast
+        AOT_hence 1: \<open>[[F]\<^sup>-\<^sup>u]t & [[G]\<^sup>-\<^sup>v]s & [R]ts\<close>
+          using not_s_eq_v by (metis con_dis_i_e_2_b con_dis_i_e_4_c reductio_aa_1)
+        AOT_show \<open>t =\<^sub>E r\<close> using r_unique[OF Ot] 1 "&E" by blast
+      qed
+    }
+    moreover {
+      AOT_assume s_eq_v: \<open>s =\<^sub>E v\<close>
+      AOT_have \<open>\<exists>r ([F]r & [\<guillemotleft>?R\<guillemotright>]rs & (\<forall>t ([F]t & [\<guillemotleft>?R\<guillemotright>]ts \<rightarrow> t =\<^sub>E r)))\<close>
+      proof(safe intro!: "\<exists>I"(2)[where \<beta>=u] "&I" Ou Fu GEN "\<rightarrow>I")
+        AOT_show \<open>[\<guillemotleft>?R\<guillemotright>]us\<close>
+          by (rule betaC_2_a; cqt_2_lambda; simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3)
+             (safe intro!: "&I" "\<or>I"(2) \<Pi>_minus_\<kappa>I' Gs s_eq_v ord_eq_Eequiv_1[THEN "\<rightarrow>E", OF Ou])
+      next
+        fix t
+        AOT_assume \<open>O!t\<close>
+        AOT_assume 0: \<open>[F]t & [\<guillemotleft>?R\<guillemotright>]ts\<close>
+        AOT_hence 1: \<open>([[F]\<^sup>-\<^sup>u]t & [[G]\<^sup>-\<^sup>v]s & [R]ts) \<or> (t =\<^sub>E u & s =\<^sub>E v)\<close>
+          using betaC_1_a[OF 0[THEN "&E"(2)], simplified] by blast
+        moreover AOT_have \<open>\<not>([[F]\<^sup>-\<^sup>u]t & [[G]\<^sup>-\<^sup>v]s & [R]ts)\<close>
+        proof (rule raa_cor_2)
+          AOT_assume \<open>([[F]\<^sup>-\<^sup>u]t & [[G]\<^sup>-\<^sup>v]s & [R]ts)\<close>
+          AOT_hence \<open>[[G]\<^sup>-\<^sup>v]s\<close> using "&E" by blast
+          AOT_thus \<open>s =\<^sub>E v & \<not>(s =\<^sub>E v)\<close>
+            by (metis \<Pi>_minus_\<kappa>E2 intro_elim_3_d reductio_aa_1 s_eq_v thm_neg_eq_E)
+        qed
+        ultimately AOT_have \<open>t =\<^sub>E u & s =\<^sub>E v\<close>
+          by (metis con_dis_i_e_4_b)
+        AOT_thus \<open>t =\<^sub>E u\<close> using "&E" by blast
+      qed
+    }
+    ultimately AOT_show \<open>\<exists>!r ([F]r & [\<guillemotleft>?R\<guillemotright>]rs)\<close>
+      using "\<equiv>\<^sub>d\<^sub>fI" equi_1 reductio_aa_2 by fast
+  qed
 qed
 
 end
