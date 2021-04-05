@@ -465,7 +465,7 @@ val _ =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict {\<close> "begin explicit AOT modally-strict proof block"
     (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let
-        val v = singleton (Variable.variant_frees ctxt []) ("v", @{typ w}) |> fst
+        val v = singleton (Variable.variant_frees ctxt []) ("ws", @{typ w}) |> fst
         val (_,ctxt) = Proof_Context.add_fixes [(Binding.make (v, Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt
         val ctxt = AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt
         in ctxt end) (Proof.begin_block state)))));

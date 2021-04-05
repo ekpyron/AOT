@@ -1372,4 +1372,216 @@ proof(safe intro!: "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); frule "&E"(1)
   qed
 qed
 
+AOT_act_theorem eq_part_act_1: \<open>[\<lambda>z \<^bold>\<A>[F]z] \<equiv>\<^sub>E F\<close>
+proof (safe intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+  AOT_show \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> by cqt_2_lambda
+next
+  fix u
+  AOT_assume \<open>O!u\<close>
+  AOT_have \<open>[\<lambda>z \<^bold>\<A>[F]z]u \<equiv> \<^bold>\<A>[F]u\<close>
+    by (rule beta_C_meta[THEN "\<rightarrow>E"]) cqt_2_lambda
+  also AOT_have \<open>\<dots> \<equiv> [F]u\<close>
+    using act_conj_act_4 logic_actual[act_axiom_inst, THEN "\<rightarrow>E"] by blast
+  finally AOT_show \<open>[\<lambda>z \<^bold>\<A>[F]z]u \<equiv> [F]u\<close>.
+qed
+
+AOT_act_theorem eq_part_act_2: \<open>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E F\<close>
+  by (safe intro!: apE_eqE_1[unvarify F, THEN "\<rightarrow>E"] eq_part_act_1) cqt_2_lambda
+
+AOT_theorem approx_cont_1: \<open>\<exists>F\<exists>G \<diamond>(F \<approx>\<^sub>E G & \<diamond>\<not>F \<approx>\<^sub>E G)\<close>
+proof -
+  let ?P = \<open>\<guillemotleft>[\<lambda>x E!x & \<not>\<^bold>\<A>E!x]\<guillemotright>\<close>
+  AOT_have \<open>\<diamond>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close> by (metis q\<^sub>0_prop)
+  AOT_hence 1: \<open>\<diamond>\<exists>x(E!x & \<not>\<^bold>\<A>E!x) & \<diamond>\<not>\<exists>x(E!x & \<not>\<^bold>\<A>E!x)\<close>
+    by (rule q\<^sub>0_def[THEN "=\<^sub>d\<^sub>fE"(2), rotated])
+       (simp add: log_prop_prop_2)
+  AOT_have \<theta>: \<open>\<diamond>\<exists>x [\<guillemotleft>?P\<guillemotright>]x & \<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+    apply (AOT_subst \<open>\<lambda>\<kappa> . \<guillemotleft>[\<guillemotleft>?P\<guillemotright>]\<kappa>\<guillemotright>\<close> \<open>\<lambda>\<kappa> . \<guillemotleft>E!\<kappa> & \<not>\<^bold>\<A>E!\<kappa>\<guillemotright>\<close>)
+     apply (rule beta_C_meta[THEN "\<rightarrow>E"]; cqt_2_lambda)
+    by (fact 1)
+  show ?thesis
+  proof (rule_tac \<tau>=\<open>\<guillemotleft>[L]\<^sup>-\<guillemotright>\<close> in "\<exists>I"(1); (rule_tac \<tau>=\<open>?P\<close> in "\<exists>I"(1))?)
+    AOT_have \<open>\<diamond>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+    proof (rule "&I"; rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
+      AOT_modally_strict {
+        AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+        AOT_show \<open>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+          AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by cqt_2_lambda
+        next
+          AOT_show \<open>\<not>\<exists>u [L\<^sup>-]u\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>u [L\<^sup>-]u\<close>
+            then AOT_obtain u where \<open>O!u & [L\<^sup>-]u\<close> using "\<exists>E"[rotated] by blast
+            moreover AOT_have \<open>\<not>[L\<^sup>-]u\<close>
+              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              by (metis qml_2 rule_ui_3 vdash_properties_10 vdash_properties_1_b)
+            ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis con_dis_taut_2 modus_tollens_1 raa_cor_3)
+          qed
+        next
+          AOT_show \<open>\<not>\<exists>v [\<guillemotleft>?P\<guillemotright>]v\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>v [\<guillemotleft>?P\<guillemotright>]v\<close>
+            then AOT_obtain u where \<open>O!u & [\<guillemotleft>?P\<guillemotright>]u\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>]u\<close> using "&E" by blast
+            AOT_hence \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> by (rule "\<exists>I")
+            AOT_thus \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x & \<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using A "&I" by blast
+          qed
+        qed
+      }
+    next
+      AOT_show \<open>\<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using \<theta> "&E" by blast
+    next
+      AOT_modally_strict {
+        AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+        AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close>
+        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+          AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by cqt_2_lambda
+        next
+          AOT_obtain x where Px: \<open>[\<guillemotleft>?P\<guillemotright>]x\<close> using A "\<exists>E" by blast
+          (* TODO: PLM: Proving O!x is silently skipped. *)
+          AOT_hence \<open>E!x & \<not>\<^bold>\<A>E!x\<close>
+            by (rule betaC_1_a)
+          AOT_hence 1: \<open>\<diamond>E!x\<close> by (metis T_S5_fund_1 con_dis_i_e_2_a vdash_properties_10)
+          AOT_have \<open>[\<lambda>x \<diamond>E!x]x\<close>
+            by (rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] 1)
+          AOT_hence \<open>O!x\<close>
+            by (rule AOT_ordinary[THEN "=\<^sub>d\<^sub>fI"(2), rotated]) cqt_2_lambda
+          AOT_hence \<open>O!x & [\<guillemotleft>?P\<guillemotright>]x\<close> using Px "&I" by blast
+          AOT_thus \<open>\<exists>u [\<guillemotleft>?P\<guillemotright>]u\<close> by (rule "\<exists>I")
+        next
+          AOT_show \<open>\<not>\<exists>u [L\<^sup>-]u\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>u [L\<^sup>-]u\<close>
+            then AOT_obtain u where \<open>O!u & [L\<^sup>-]u\<close> using "\<exists>E"[rotated] by blast
+            moreover AOT_have \<open>\<not>[L\<^sup>-]u\<close>
+              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              by (metis qml_2 rule_ui_3 vdash_properties_10 vdash_properties_1_b)
+            ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis con_dis_taut_2 modus_tollens_1 raa_cor_3)
+          qed
+        qed
+        AOT_show \<open>\<not>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+        proof (rule raa_cor_2)
+          AOT_assume \<open>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+          AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close>
+            apply (rule eq_part_2[unvarify F G, THEN "\<rightarrow>E", rotated 2])
+             apply cqt_2_lambda
+            by (simp add: rel_neg_T_3)
+          AOT_thus \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>- & \<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close> using B "&I" by blast
+        qed
+      }
+    next
+      AOT_show \<open>\<diamond>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using \<theta> "&E" by blast
+    qed
+    AOT_thus \<open>\<diamond>([L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>])\<close> using S5Basic_11 intro_elim_3_b by blast
+  next
+    AOT_show \<open>[\<lambda>x [E!]x & \<not>\<^bold>\<A>[E!]x]\<down>\<close> by cqt_2_lambda
+  next
+    AOT_show \<open>[L]\<^sup>-\<down>\<close>
+      by (simp add: rel_neg_T_3)
+  qed
+qed
+
+
+AOT_theorem approx_cont_2: \<open>\<exists>F\<exists>G \<diamond>([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close>
+proof -
+  let ?P = \<open>\<guillemotleft>[\<lambda>x E!x & \<not>\<^bold>\<A>E!x]\<guillemotright>\<close>
+  AOT_have \<open>\<diamond>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close> by (metis q\<^sub>0_prop)
+  AOT_hence 1: \<open>\<diamond>\<exists>x(E!x & \<not>\<^bold>\<A>E!x) & \<diamond>\<not>\<exists>x(E!x & \<not>\<^bold>\<A>E!x)\<close>
+    by (rule q\<^sub>0_def[THEN "=\<^sub>d\<^sub>fE"(2), rotated])
+       (simp add: log_prop_prop_2)
+  AOT_have \<theta>: \<open>\<diamond>\<exists>x [\<guillemotleft>?P\<guillemotright>]x & \<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+    apply (AOT_subst \<open>\<lambda>\<kappa> . \<guillemotleft>[\<guillemotleft>?P\<guillemotright>]\<kappa>\<guillemotright>\<close> \<open>\<lambda>\<kappa> . \<guillemotleft>E!\<kappa> & \<not>\<^bold>\<A>E!\<kappa>\<guillemotright>\<close>)
+     apply (rule beta_C_meta[THEN "\<rightarrow>E"]; cqt_2_lambda)
+    by (fact 1)
+  show ?thesis
+  proof (rule_tac \<tau>=\<open>\<guillemotleft>[L]\<^sup>-\<guillemotright>\<close> in "\<exists>I"(1); (rule_tac \<tau>=\<open>?P\<close> in "\<exists>I"(1))?)
+    AOT_have \<open>\<diamond>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+    proof (rule "&I"; rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
+      AOT_modally_strict {
+        AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+        AOT_show \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+          AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by cqt_2_lambda
+        next
+          AOT_show \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close>
+            then AOT_obtain u where \<open>O!u & [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>\<^bold>\<A>[L\<^sup>-]u\<close>
+              using betaC_1_a "&E" by blast
+            moreover AOT_have \<open>\<box>\<not>[L\<^sup>-]u\<close>
+              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              by (metis RN qml_2 rule_ui_3 vdash_properties_10 vdash_properties_1_b)
+            ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis Act_Sub_3 KBasic2_1 intro_elim_3_a raa_cor_3 vdash_properties_10)
+          qed
+        next
+          AOT_show \<open>\<not>\<exists>v [\<guillemotleft>?P\<guillemotright>]v\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>v [\<guillemotleft>?P\<guillemotright>]v\<close>
+            then AOT_obtain u where \<open>O!u & [\<guillemotleft>?P\<guillemotright>]u\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>]u\<close> using "&E" by blast
+            AOT_hence \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> by (rule "\<exists>I")
+            AOT_thus \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x & \<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using A "&I" by blast
+          qed
+        next
+          AOT_show \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<down>\<close> by cqt_2_lambda
+        qed
+      }
+    next
+      AOT_show \<open>\<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using \<theta> "&E" by blast
+    next
+      AOT_modally_strict {
+        AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
+        AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<close>
+        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+          AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by cqt_2_lambda
+        next
+          AOT_obtain x where Px: \<open>[\<guillemotleft>?P\<guillemotright>]x\<close> using A "\<exists>E" by blast
+          AOT_hence \<open>E!x & \<not>\<^bold>\<A>E!x\<close>
+            by (rule betaC_1_a)
+          AOT_hence 1: \<open>\<diamond>E!x\<close> by (metis T_S5_fund_1 con_dis_i_e_2_a vdash_properties_10)
+          AOT_have \<open>[\<lambda>x \<diamond>E!x]x\<close>
+            by (rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] 1)
+          AOT_hence \<open>O!x\<close>
+            by (rule AOT_ordinary[THEN "=\<^sub>d\<^sub>fI"(2), rotated]) cqt_2_lambda
+          AOT_hence \<open>O!x & [\<guillemotleft>?P\<guillemotright>]x\<close> using Px "&I" by blast
+          AOT_thus \<open>\<exists>u [\<guillemotleft>?P\<guillemotright>]u\<close> by (rule "\<exists>I")
+        next
+          AOT_show \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close>
+          proof (rule raa_cor_2)
+            AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close>
+            then AOT_obtain u where \<open>O!u & [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>\<^bold>\<A>[L\<^sup>-]u\<close>
+              using betaC_1_a "&E" by blast
+            moreover AOT_have \<open>\<box>\<not>[L\<^sup>-]u\<close>
+              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              by (metis RN qml_2 rule_ui_3 vdash_properties_10 vdash_properties_1_b)
+            ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis Act_Sub_3 KBasic2_1 intro_elim_3_a raa_cor_3 vdash_properties_10)
+          qed
+        next
+          AOT_show \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<down>\<close> by cqt_2_lambda
+        qed
+        AOT_show \<open>\<not>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+        proof (rule raa_cor_2)
+          AOT_assume \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
+          AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<close>
+            by (rule eq_part_2[unvarify F G, THEN "\<rightarrow>E", rotated 2])
+               cqt_2_lambda+
+          AOT_thus \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z] & \<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<close> using B "&I" by blast
+        qed
+      }
+    next
+      AOT_show \<open>\<diamond>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using \<theta> "&E" by blast
+    qed
+    AOT_thus \<open>\<diamond>([\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>])\<close> using S5Basic_11 intro_elim_3_b by blast
+  next
+    AOT_show \<open>[\<lambda>x [E!]x & \<not>\<^bold>\<A>[E!]x]\<down>\<close> by cqt_2_lambda
+  next
+    AOT_show \<open>[L]\<^sup>-\<down>\<close>
+      by (simp add: rel_neg_T_3)
+  qed
+qed
+
+
 end
