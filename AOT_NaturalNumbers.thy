@@ -1863,6 +1863,14 @@ qed
 AOT_define numbers :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Numbers'(_,_')\<close>)
   \<open>Numbers(x,G) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close>
 
+(* Not in PLM *)
+AOT_theorem numbers_den:
+  assumes \<open>\<Pi>\<down>\<close>
+  shows \<open>Numbers(\<kappa>, \<Pi>) \<equiv> A!\<kappa> & \<forall>F(\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E \<Pi>)\<close>
+  apply (safe intro!: assms numbers[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<equiv>I" "\<rightarrow>I" cqt_2_const_var[axiom_inst] dest!:  numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+  using "&E" by blast+
+  
+
 AOT_theorem num_trans_1: \<open>G \<approx>\<^sub>E H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
 proof (safe intro!: "\<rightarrow>I" "\<equiv>I")
   AOT_assume 0: \<open>G \<approx>\<^sub>E H\<close>
@@ -2019,5 +2027,13 @@ proof (rule "\<rightarrow>I")
      apply (rule_tac \<tau>=\<open>\<guillemotleft>[\<lambda>x x =\<^sub>E d]\<guillemotright>\<close> in "\<exists>I"(1))
     by (safe intro!: eqE_den "&I" num_a_eq_c num_a_eq_d not_equiv)
 qed
+
+AOT_theorem num_1: \<open>\<exists>x Numbers(x,G)\<close>
+  by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>,G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>[A!]\<kappa> & \<forall>F (\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<guillemotright>\<close>)
+     (auto simp: numbers_den[OF cqt_2_const_var[axiom_inst]] a_objects[axiom_inst])
+
+AOT_theorem num_2: \<open>\<exists>!x Numbers(x,G)\<close>
+  by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>,G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>[A!]\<kappa> & \<forall>F (\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<guillemotright>\<close>)
+     (auto simp: A_objects_unique numbers_den[OF cqt_2_const_var[axiom_inst]])
 
 end
