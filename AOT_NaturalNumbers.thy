@@ -1263,7 +1263,6 @@ proof(safe intro!: "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); frule "&E"(1)
   let ?R = \<open>\<guillemotleft>[\<lambda>xy ([[F]\<^sup>-\<^sup>u]x & [[G]\<^sup>-\<^sup>v]y & [R]xy) \<or> (x =\<^sub>E u & y =\<^sub>E v)]\<guillemotright>\<close>
   AOT_have R_den: \<open>\<guillemotleft>?R\<guillemotright>\<down>\<close> by cqt_2_lambda
 
-  AOT_find_theorems \<open>F \<approx>\<^sub>E G\<close>
   AOT_show \<open>F \<approx>\<^sub>E G\<close>
   proof(safe intro!: equi_3[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[where \<tau>="?R"] R_den equi_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
     fix r
@@ -2156,7 +2155,6 @@ proof (rule id_trans[OF num_can_1]; rule equiv_desc_eq_2[THEN "\<rightarrow>E"];
       by (auto intro!: RA "\<rightarrow>I" "\<equiv>I"
                simp: eq_part_3[unvarify G, OF act_den, THEN "\<rightarrow>E", OF "&I"]
                      eq_part_3'[unvarify G, OF act_den, THEN "\<rightarrow>E", OF "&I"])
-    AOT_find_theorems \<open>F \<approx>\<^sub>E G\<close>
     ultimately AOT_have \<open>\<^bold>\<A>([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G \<equiv> F \<approx>\<^sub>E G)\<close>
       using logic_actual_nec_2[axiom_inst, THEN "\<equiv>E"(1), THEN "\<rightarrow>E"] by blast
 
@@ -2664,7 +2662,6 @@ proof(rule "\<rightarrow>I")
     by (rule RM) (metis "\<rightarrow>I" KBasic_3 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b intro_elim_3_b vdash_properties_10)
   ultimately AOT_have 2: \<open>\<box>(([R]xz & [R]yz) \<rightarrow> \<box>([R]xz & [R]yz))\<close> for x y z using "\<rightarrow>E" by blast
   AOT_hence 3: \<open>\<box>([R]xz & [R]yz \<rightarrow> x = y)\<close> for x y z using kir_ext_2[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF 2, OF 1] by blast
-  AOT_find_theorems \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
   AOT_show \<open>\<box>\<forall>x\<forall>y\<forall>z([R]xz & [R]yz \<rightarrow> x = y)\<close>
     by (safe intro!: GEN BF[THEN "\<rightarrow>E"] 3)
 qed
