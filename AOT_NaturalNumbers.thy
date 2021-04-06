@@ -232,6 +232,18 @@ proof (rule "\<rightarrow>I")
     using equi_3[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
 qed
 
+(* TODO: not in PLM *)
+AOT_theorem eq_part_2': \<open>\<Pi> \<approx>\<^sub>E \<Pi>' \<rightarrow> \<Pi>' \<approx>\<^sub>E \<Pi>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<Pi> \<approx>\<^sub>E \<Pi>'\<close>
+  AOT_hence \<open>\<exists>R R |: \<Pi> \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E \<Pi>'\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" equi_3)
+  then AOT_obtain R where \<open>R |: \<Pi> \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E \<Pi>'\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<Pi>\<down>\<close> and \<open>\<Pi>'\<down>\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" con_dis_taut_1 con_dis_taut_2 equi_2 vdash_properties_10 by meson+
+  AOT_thus \<open>\<Pi>' \<approx>\<^sub>E \<Pi>\<close> using eq_part_2[unvarify F G, THEN "\<rightarrow>E"] 0 by blast
+qed
+declare eq_part_2'[THEN "\<rightarrow>E", sym]
+
 AOT_theorem eq_part_3: \<open>(F \<approx>\<^sub>E G & G \<approx>\<^sub>E H) \<rightarrow> F \<approx>\<^sub>E H\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>F \<approx>\<^sub>E G & G \<approx>\<^sub>E H\<close>
@@ -670,8 +682,8 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_thus \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close> by (rule eq_part_5[THEN "\<rightarrow>E"])
 next
   AOT_assume 0: \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close>
-  AOT_obtain H where \<open>Rigidifies([H],[F])\<close> using rigid_der_3 "\<exists>E" by metis
-  AOT_hence H: \<open>Rigid([H]) & \<forall>x ([H]x \<equiv> [F]x)\<close>
+  AOT_obtain H where \<open>Rigidifies(H,F)\<close> using rigid_der_3 "\<exists>E" by metis
+  AOT_hence H: \<open>Rigid(H) & \<forall>x ([H]x \<equiv> [F]x)\<close>
     using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have H_rigid: \<open>\<box>\<forall>x ([H]x \<rightarrow> \<box>[H]x)\<close> using H[THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)].
   AOT_hence \<open>\<forall>x \<box>([H]x \<rightarrow> \<box>[H]x)\<close>
@@ -1630,9 +1642,9 @@ proof (rule "\<rightarrow>I")
       then AOT_obtain R where \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close> using "\<exists>E"[rotated] by blast
       AOT_hence C1: \<open>\<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R]uv))\<close> and C2: \<open>\<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R]uv))\<close>
         using equi_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
-      AOT_obtain R' where \<open>Rigidifies([R'], [R])\<close>
+      AOT_obtain R' where \<open>Rigidifies(R', R)\<close>
         using rigid_der_3 "\<exists>E"[rotated] by blast
-      AOT_hence 1: \<open>Rigid([R']) & \<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<equiv> [R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+      AOT_hence 1: \<open>Rigid(R') & \<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<equiv> [R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
       AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
       AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n (\<diamond>[R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close>
         using intro_elim_3_a rigid_rel_thms_1 by blast
@@ -1872,7 +1884,7 @@ AOT_theorem numbers_den:
   using "&E" by blast+
   
 
-AOT_theorem num_trans_1: \<open>G \<approx>\<^sub>E H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
+AOT_theorem num_tran_1: \<open>G \<approx>\<^sub>E H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
 proof (safe intro!: "\<rightarrow>I" "\<equiv>I")
   AOT_assume 0: \<open>G \<approx>\<^sub>E H\<close>
   AOT_assume \<open>Numbers(x, G)\<close>
@@ -1900,7 +1912,7 @@ next
   qed
 qed
 
-AOT_theorem num_trans_2: \<open>(Numbers(x, G) & Numbers(x,H)) \<rightarrow> G \<approx>\<^sub>E H\<close>
+AOT_theorem num_tran_2: \<open>(Numbers(x, G) & Numbers(x,H)) \<rightarrow> G \<approx>\<^sub>E H\<close>
 proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   AOT_assume \<open>Numbers(x,G)\<close>
   AOT_hence \<open>\<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
@@ -1913,8 +1925,8 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     using eq_part_5'[THEN "\<equiv>E"(2), OF GEN] by blast
 qed
 
-AOT_theorem num_trans_3: \<open>G \<equiv>\<^sub>E H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
-  using apE_eqE_1 ded_thm_cor_1 num_trans_1 by blast
+AOT_theorem num_tran_3: \<open>G \<equiv>\<^sub>E H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
+  using apE_eqE_1 ded_thm_cor_1 num_tran_1 by blast
 
 AOT_theorem pre_Hume: \<open>(Numbers(x,G) & Numbers(y,H)) \<rightarrow> (x = y \<equiv> G \<approx>\<^sub>E H)\<close>
 proof(safe intro!: "\<rightarrow>I" "\<equiv>I"; frule "&E"(1); drule "&E"(2))
@@ -1922,7 +1934,7 @@ proof(safe intro!: "\<rightarrow>I" "\<equiv>I"; frule "&E"(1); drule "&E"(2))
   moreover AOT_assume \<open>x = y\<close>
   ultimately AOT_have \<open>Numbers(y, G)\<close> by (rule "rule=E")
   moreover AOT_assume \<open>Numbers(y, H)\<close>
-  ultimately AOT_show \<open>G \<approx>\<^sub>E H\<close> using num_trans_2 "\<rightarrow>E" "&I" by blast
+  ultimately AOT_show \<open>G \<approx>\<^sub>E H\<close> using num_tran_2 "\<rightarrow>E" "&I" by blast
 next
   AOT_assume \<open>Numbers(x, G)\<close>
   AOT_hence Ax: \<open>A!x\<close> and xF: \<open>\<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
@@ -2179,6 +2191,8 @@ qed
 (* TODO: not in PLM *)
 AOT_theorem num_den: \<open>#G\<down>\<close>
   using "t=t-proper_1" num_can_1 vdash_properties_10 by blast
+AOT_theorem num_den': \<open>#\<Pi>\<down>\<close> if \<open>\<Pi>\<down>\<close>
+  using num_den[unvarify G, OF that].
 (* TODO: not in PLM *)
 AOT_act_theorem numbers_num: \<open>Numbers(#G, G)\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF num])
@@ -2223,7 +2237,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
 next
   AOT_assume 0: \<open>F \<approx>\<^sub>E G\<close>
   moreover AOT_obtain b where num_b_F: \<open>Numbers(b, F)\<close> by (metis "instantiation" num_1)
-  ultimately AOT_have num_b_G: \<open>Numbers(b, G)\<close> using num_trans_1[THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
+  ultimately AOT_have num_b_G: \<open>Numbers(b, G)\<close> using num_tran_1[THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
   AOT_have \<open>\<forall>z (Numbers(z, F) & Numbers(z, G) \<rightarrow> z = b)\<close>
   proof(safe intro!: GEN "\<rightarrow>I"; drule "&E"(1))
     AOT_show \<open>z = b\<close> if \<open>Numbers(z, F)\<close> for z
@@ -2236,5 +2250,231 @@ next
   AOT_thus \<open>\<exists>!x (Numbers(x, F) & Numbers(x, G))\<close>
     by (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
 qed
+
+AOT_theorem unotEu: \<open>\<not>\<exists>y[\<lambda>x O!x & \<not>(x =\<^sub>E x)]y\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>y[\<lambda>x O!x & \<not>(x =\<^sub>E x)]y\<close>
+  then AOT_obtain y where \<open>[\<lambda>x O!x & \<not>(x =\<^sub>E x)]y\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>O!y & \<not>(y =\<^sub>E y)\<close> by (rule betaC_1_a)
+  moreover AOT_have \<open>y =\<^sub>E y\<close> by (metis calculation[THEN "&E"(1)] ord_eq_Eequiv_1 vdash_properties_10)
+  ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis con_dis_i_e_2_b raa_cor_3)
+qed
+(* TODO: PLM: maybe this should actually be stated as 756 unotEu *)
+AOT_theorem unotEu': \<open>\<not>\<exists>y[\<lambda>x O!x & x \<noteq>\<^sub>E x]y\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>y[\<lambda>x O!x & x \<noteq>\<^sub>E x]y\<close>
+  then AOT_obtain y where \<open>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence 0: \<open>O!y & y \<noteq>\<^sub>E y\<close> by (rule betaC_1_a)
+  AOT_hence \<open>\<not>(y =\<^sub>E y)\<close> using con_dis_i_e_2_b intro_elim_3_a thm_neg_eq_E by blast
+  moreover AOT_have \<open>y =\<^sub>E y\<close> by (metis 0[THEN "&E"(1)] ord_eq_Eequiv_1 vdash_properties_10)
+  ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis raa_cor_3)
+qed
+(* TODO: not in PLM, but used in proof 761 *)
+AOT_theorem unotEu'': \<open>\<not>\<exists>v[\<lambda>x O!x & \<^bold>\<A>x \<noteq>\<^sub>E x]v\<close>
+proof(rule raa_cor_2)
+  AOT_assume \<open>\<exists>v[\<lambda>x O!x & \<^bold>\<A>x \<noteq>\<^sub>E x]v\<close>
+  then AOT_obtain y where \<open>[\<lambda>x O!x & \<^bold>\<A>x \<noteq>\<^sub>E x]y\<close> using "\<exists>E"[rotated] "&E" by blast
+  AOT_hence 0: \<open>O!y & \<^bold>\<A>y \<noteq>\<^sub>E y\<close> by (rule betaC_1_a)
+  AOT_have \<open>\<^bold>\<A>\<not>(y =\<^sub>E y)\<close>
+    apply (AOT_subst  \<open>\<guillemotleft>\<not>(y =\<^sub>E y)\<guillemotright>\<close> \<open>\<guillemotleft>y \<noteq>\<^sub>E y\<guillemotright>\<close>)
+     apply (meson intro_elim_3_b oth_class_taut_2_e thm_neg_eq_E)
+    by (fact 0[THEN "&E"(2)])
+  AOT_hence \<open>\<not>(y =\<^sub>E y)\<close> by (metis "\<not>\<not>I" Act_Sub_1 id_act2_1 intro_elim_3_d)
+  moreover AOT_have \<open>y =\<^sub>E y\<close> by (metis 0[THEN "&E"(1)] ord_eq_Eequiv_1 vdash_properties_10)
+  ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis raa_cor_3)
+qed
+
+AOT_define zero :: \<open>\<kappa>\<^sub>s\<close> (\<open>0\<close>)
+  \<open>0 =\<^sub>d\<^sub>f #[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<close>
+
+(* TODO: not part of PLM *)
+AOT_theorem zero_den: \<open>0\<down>\<close>
+  by (rule "=\<^sub>d\<^sub>fI"(2)[OF zero]; rule num_den'; cqt_2_lambda)
+
+AOT_theorem \<open>NaturalCardinal(0)\<close>
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF zero])
+   apply (rule num_den'; cqt_2_lambda)
+  apply (rule card[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  apply (rule_tac \<tau>=\<open>\<guillemotleft>[\<lambda>x [O!]x & x \<noteq>\<^sub>E x]\<guillemotright>\<close> in "\<exists>I"(1))
+   apply (rule "rule=I_1"; rule num_den'; cqt_2_lambda)
+  by cqt_2_lambda
+
+AOT_theorem eq_num_1: \<open>\<^bold>\<A>Numbers(x, G) \<equiv> Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])\<close>
+proof -
+  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by cqt_2_lambda
+  AOT_have \<open>\<box>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using hume_strict[unvarify G, OF act_den, THEN RN].
+  AOT_hence \<open>\<^bold>\<A>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using nec_imp_act[THEN "\<rightarrow>E"] by fast
+  AOT_hence \<open>\<^bold>\<A>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    using actuallyF_1 Act_Basic_5 intro_elim_3_a intro_elim_3_b by fast
+  AOT_hence \<open>\<exists>!x \<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    by (metis A_Exists_1 intro_elim_3_a)
+  AOT_hence \<open>\<exists>x(\<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]))) & \<forall>z(\<^bold>\<A>((Numbers(z, G) & Numbers(z,[\<lambda>z \<^bold>\<A>[G]z]))) \<rightarrow> z = x))\<close>
+    using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain a where \<open>\<^bold>\<A>((Numbers(a, G) & Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    using "\<exists>E"[rotated] "&E" by blast
+  AOT_hence act_a_num_G: \<open>\<^bold>\<A>Numbers(a, G)\<close> and act_a_num_actG: \<open>\<^bold>\<A>Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using Act_Basic_2 "&E" intro_elim_3_a by blast+
+  AOT_hence num_a_act_g: \<open>Numbers(a, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using num_cont_2[unvarify G, OF act_den, THEN "\<rightarrow>E", OF actuallyF_2',
+                     THEN CBF[THEN "\<rightarrow>E"], THEN "\<forall>E"(2)]
+    by (metis intro_elim_3_a sc_eq_fur_2 vdash_properties_6)
+  AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> Numbers(x, G) & Numbers(y, G) \<rightarrow> x = y\<close> for y
+    using pre_Hume[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated, OF eq_part_1] "\<rightarrow>I" by blast
+  show ?thesis
+  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume \<open>\<^bold>\<A>Numbers(x, G)\<close>
+    AOT_hence \<open>\<^bold>\<A>x = a\<close>
+      using 0[THEN RA(2), THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E", OF Act_Basic_2[THEN "\<equiv>E"(2)], OF "&I"]
+            act_a_num_G by blast
+    AOT_hence \<open>x = a\<close> by (metis id_act_1 intro_elim_3_b)
+    AOT_hence \<open>a = x\<close> using id_sym by auto
+    AOT_thus \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+      using "rule=E" num_a_act_g by fast
+  next
+    AOT_assume \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    AOT_hence \<open>a = x\<close>
+      using pre_Hume[unvarify G H, THEN "\<rightarrow>E", OF act_den, OF act_den, OF "&I", OF num_a_act_g, THEN "\<equiv>E"(2)]
+            eq_part_1[unvarify F, OF act_den] by blast
+    AOT_thus \<open>\<^bold>\<A>Numbers(x, G)\<close>
+      using act_a_num_G "rule=E" by fast
+  qed
+qed
+
+AOT_theorem eq_num_2: \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G\<close>
+proof -
+  AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> x = \<^bold>\<iota>x Numbers(x, G) \<equiv> \<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = x)\<close> for x
+    by (AOT_subst_rev \<open>\<lambda> \<kappa> . \<guillemotleft>\<^bold>\<A>Numbers(\<kappa>, G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>, [\<lambda>z \<^bold>\<A>[G]z])\<guillemotright>\<close>)
+       (auto simp: eq_num_1 descriptions[axiom_inst])
+  AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G) \<equiv> \<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close>
+    using 0[unvarify x, OF num_den].
+  moreover AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G)\<close>
+    using num num_uniq rule_id_def_1 by blast
+  ultimately AOT_have \<open>\<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close> using "\<equiv>E" by blast
+  thus ?thesis using "\<forall>E"(2) by blast
+qed
+
+AOT_theorem eq_num_3: \<open>Numbers(#G, [\<lambda>y \<^bold>\<A>[G]y])\<close>
+proof -
+  AOT_have \<open>#G = #G\<close>
+    by (simp add: "rule=I_1" num_den)
+  thus ?thesis using eq_num_2[unvarify x, OF num_den, THEN "\<equiv>E"(2)] by blast
+qed
+
+AOT_theorem eq_num_4: \<open>A!#G & \<forall>F (#G[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
+  by (auto intro!: "&I" eq_num_3[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1), THEN "&E"(1)]
+                   eq_num_3[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)])
+
+AOT_theorem eq_num_5: \<open>#G[\<lambda>z \<^bold>\<A>[G]z]\<close>
+proof -
+  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by cqt_2_lambda
+  show ?thesis
+    apply (rule eq_num_4[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)])
+     apply cqt_2_lambda
+    apply (rule approx_nec_1[unvarify F, THEN "\<rightarrow>E", symmetric])
+     apply cqt_2_lambda
+    using actuallyF_2' by auto
+qed
+
+AOT_theorem eq_num_6: \<open>Numbers(x, G) \<rightarrow> NaturalCardinal(x)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by cqt_2_lambda
+  AOT_obtain F where \<open>Rigidifies(F, G)\<close>
+    by (metis "instantiation" rigid_der_3)
+  AOT_hence \<theta>: \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x)\<close> and \<open>\<forall>x([F]x \<equiv> [G]x)\<close>
+    using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)]
+          df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+    by blast+
+  AOT_hence \<open>F \<equiv>\<^sub>E G\<close>
+    by (auto intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I" elim: "\<forall>E"(2))
+  moreover AOT_assume \<open>Numbers(x, G)\<close>
+  ultimately AOT_have \<open>Numbers(x, F)\<close>
+    using num_tran_3[THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] by blast
+  moreover AOT_have \<open>F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]\<close> using \<theta> approx_nec_1 vdash_properties_10 by blast
+  ultimately AOT_have \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[F]z])\<close>
+    using num_tran_1[unvarify H, OF act_den, THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>x = #F\<close> using eq_num_2[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<exists>F x = #F\<close> by (rule "\<exists>I")
+  AOT_thus \<open>NaturalCardinal(x)\<close>
+    using card[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+qed
+
+AOT_theorem card_en: \<open>NaturalCardinal(x) \<rightarrow> \<forall>F(x[F] \<equiv> x = #F)\<close>
+proof(rule "\<rightarrow>I"; rule GEN)
+  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by cqt_2_lambda
+  fix F
+  AOT_assume \<open>NaturalCardinal(x)\<close>
+  AOT_hence \<open>\<exists>F x = #F\<close> using card[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain P where x_def: \<open>x = #P\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence num_x_act_P: \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[P]z])\<close> using eq_num_2[THEN "\<equiv>E"(2)] by blast
+  AOT_have \<open>#P[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[P]z]\<close>
+    using eq_num_4[THEN "&E"(2), THEN "\<forall>E"(2)] by blast
+  AOT_hence \<open>x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[P]z]\<close> using x_def[symmetric] "rule=E" by fast
+  also AOT_have \<open>\<dots> \<equiv> Numbers(x, [\<lambda>z \<^bold>\<A>[F]z])\<close>
+    using num_tran_1[unvarify G H, OF act_den, OF act_den]
+    using num_tran_2[unvarify G H, OF act_den, OF act_den]
+    by (metis con_dis_i_e_1 deduction_theorem intro_elim_2 intro_elim_3_b num_x_act_P)
+  also AOT_have \<open>\<dots> \<equiv> x = #F\<close>
+    using eq_num_2 by blast
+  finally AOT_show \<open>x[F] \<equiv> x = #F\<close>.
+qed
+
+AOT_theorem zeroF: \<open>\<not>\<exists>u [F]u \<equiv> Numbers(0, F)\<close>
+proof -
+  AOT_have \<open>Numbers(0, [\<lambda>y \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y])\<close>
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF zero])
+     apply (rule num_den'; cqt_2_lambda)
+    apply (rule eq_num_3[unvarify G])
+    by cqt_2_lambda
+  AOT_hence numbers0: \<open>Numbers(0, [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x])\<close>
+  proof (rule num_tran_3[unvarify x G H, THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated 4])
+    AOT_show \<open>[\<lambda>y \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y] \<equiv>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]\<close>
+    proof (safe intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" GEN "\<rightarrow>I")
+      fix u
+      AOT_assume Ou: \<open>O!u\<close>
+      AOT_have \<open>[\<lambda>y \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y]u \<equiv> \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]u\<close>
+        by (rule beta_C_meta[THEN "\<rightarrow>E"]; cqt_2_lambda)
+      also AOT_have \<open>\<dots> \<equiv> \<^bold>\<A>(O!u & u \<noteq>\<^sub>E u)\<close>
+        apply (AOT_subst \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]u\<guillemotright>\<close> \<open>\<guillemotleft>O!u & u \<noteq>\<^sub>E u\<guillemotright>\<close>)
+         apply (rule beta_C_meta[THEN "\<rightarrow>E"]; cqt_2_lambda)
+        by (simp add: oth_class_taut_3_a)
+      also AOT_have \<open>\<dots> \<equiv> (\<^bold>\<A>O!u & \<^bold>\<A>u \<noteq>\<^sub>E u)\<close>
+        by (simp add: Act_Basic_2)
+      also AOT_have \<open>\<dots> \<equiv> (O!u & \<^bold>\<A>u \<noteq>\<^sub>E u)\<close>
+        by (metis Ou con_dis_i_e_1 con_dis_i_e_2_b deduction_theorem intro_elim_2 intro_elim_3_a oa_facts_7)
+      also AOT_have \<open>\<dots> \<equiv> [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]u\<close>
+        by (rule beta_C_meta[THEN "\<rightarrow>E", symmetric]; cqt_2_lambda)
+      finally AOT_show \<open>[\<lambda>y \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y]u \<equiv> [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]u\<close>.
+    qed(cqt_2_lambda)+
+  qed(fact zero_den | cqt_2_lambda)+
+  show ?thesis
+  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume \<open>\<not>\<exists>u [F]u\<close>
+    moreover AOT_have \<open>\<not>\<exists>v [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]v\<close> using unotEu''.
+    ultimately AOT_have 0: \<open>F \<approx>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]\<close>
+      by (rule empty_approx_1[unvarify H, THEN "\<rightarrow>E", rotated, OF "&I"]) cqt_2_lambda
+    AOT_thus \<open>Numbers(0, F)\<close>
+      by (rule num_tran_1[unvarify x H, THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated, rotated])
+         (fact zero_den numbers0 | cqt_2_lambda)+
+  next
+    AOT_assume \<open>Numbers(0, F)\<close>
+    AOT_hence 1: \<open>F \<approx>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]\<close>
+      by (rule num_tran_2[unvarify x H, THEN "\<rightarrow>E", rotated 2, OF "&I"])
+         (fact numbers0 zero_den | cqt_2_lambda)+
+    AOT_show \<open>\<not>\<exists>u [F]u\<close>
+    proof(rule raa_cor_2)
+      AOT_have 0: \<open>[\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x]\<down>\<close> by cqt_2_lambda
+      AOT_assume \<open>\<exists>u [F]u\<close>
+      AOT_hence \<open>\<not>(F \<approx>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x])\<close>
+        by (rule empty_approx_2[unvarify H, OF 0, THEN "\<rightarrow>E", OF "&I"])
+           (rule unotEu'')
+      AOT_thus \<open>F \<approx>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x] & \<not>(F \<approx>\<^sub>E [\<lambda>x [O!]x & \<^bold>\<A>x \<noteq>\<^sub>E x])\<close> 
+        using 1 "&I" by blast
+    qed
+  qed
+qed
+lemmas "0F" = zeroF
+
 
 end

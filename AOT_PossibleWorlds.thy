@@ -2595,11 +2595,11 @@ AOT_theorem w_rel_3:
 AOT_define w_index :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sub>_\<close>)
   \<open>[F]\<^sub>w =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<close>
 
-AOT_define df_rigid_rel_1 :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Rigid'(_')\<close>)
-  \<open>Rigid([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+AOT_define df_rigid_rel_1 :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigid'(_')\<close>)
+  \<open>Rigid(F) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
 
-AOT_define df_rigid_rel_2 :: \<open>\<Pi> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>Rigidifies'(_,_')\<close>)
-  \<open>Rigidifies([F], [G]) \<equiv>\<^sub>d\<^sub>f Rigid([F]) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
+AOT_define df_rigid_rel_2 :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigidifies'(_,_')\<close>)
+  \<open>Rigidifies(F, G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
 
 AOT_theorem rigid_der_1:
   assumes \<open>PossibleWorld(w)\<close>
@@ -2655,7 +2655,7 @@ next
   ultimately AOT_show \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close> using "\<rightarrow>E" by blast
 qed
 
-AOT_theorem rigid_der_3: \<open>\<exists>F Rigidifies([F], [G])\<close>
+AOT_theorem rigid_der_3: \<open>\<exists>F Rigidifies(F, G)\<close>
 proof -
   AOT_obtain w where w: \<open>PossibleWorld(w) & \<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "\<exists>E"[rotated] by blast
   show ?thesis
@@ -2712,7 +2712,7 @@ qed
 AOT_theorem rigid_rel_thms_2: \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
   oops (* TODO *)
 
-AOT_theorem rigid_rel_thms_3: \<open>Rigid([F]) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
+AOT_theorem rigid_rel_thms_3: \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
   oops (* TODO *)
 
 end
