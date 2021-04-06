@@ -2291,7 +2291,7 @@ AOT_define zero :: \<open>\<kappa>\<^sub>s\<close> (\<open>0\<close>)
 AOT_theorem zero_den: \<open>0\<down>\<close>
   by (rule "=\<^sub>d\<^sub>fI"(2)[OF zero]; rule num_den'; cqt_2_lambda)
 
-AOT_theorem \<open>NaturalCardinal(0)\<close>
+AOT_theorem zero_card: \<open>NaturalCardinal(0)\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(2)[OF zero])
    apply (rule num_den'; cqt_2_lambda)
   apply (rule card[THEN "\<equiv>\<^sub>d\<^sub>fI"])
@@ -2475,6 +2475,51 @@ proof -
   qed
 qed
 lemmas "0F" = zeroF
+
+AOT_act_theorem zero_eq_1: \<open>NaturalCardinal(x) \<rightarrow> \<forall>F (x[F] \<equiv> Numbers(x, F))\<close>
+proof(safe intro!: "\<rightarrow>I" GEN)
+  fix F
+  AOT_assume \<open>NaturalCardinal(x)\<close>
+  AOT_hence \<open>\<forall>F (x[F] \<equiv> x = #F)\<close> by (metis card_en vdash_properties_10)
+  AOT_hence 1: \<open>x[F] \<equiv> x = #F\<close> using "\<forall>E"(2) by blast
+  AOT_have 2: \<open>x[F] \<equiv> x = \<^bold>\<iota>y(Numbers(y, F))\<close>
+    by (rule num[THEN "=\<^sub>d\<^sub>fE"(1)])
+       (auto simp: 1 num_uniq)
+  AOT_have \<open>x = \<^bold>\<iota>y(Numbers(y, F)) \<rightarrow> Numbers(x, F)\<close> (* TODO: PLM: missing closing parenthesis *)
+    using y_in_1 by blast
+  moreover AOT_have \<open>Numbers(x, F) \<rightarrow> x = \<^bold>\<iota>y(Numbers(y, F))\<close>
+  proof(rule "\<rightarrow>I")
+    AOT_assume 1: \<open>Numbers(x, F)\<close>
+    moreover AOT_obtain z where z_prop: \<open>\<forall>y (Numbers(y, F) \<rightarrow> y = z)\<close>
+      using num_2[THEN uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<exists>E"[rotated] "&E" by blast
+    ultimately AOT_have \<open>x = z\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+    AOT_hence \<open>\<forall>y (Numbers(y, F) \<rightarrow> y = x)\<close> using z_prop "rule=E" id_sym by fast
+    AOT_thus \<open>x = \<^bold>\<iota>y(Numbers(y,F))\<close>
+      by (rule hintikka[THEN "\<equiv>E"(2), OF "&I", rotated])
+         (fact 1)
+  qed
+  ultimately AOT_have \<open>x = \<^bold>\<iota>y(Numbers(y, F)) \<equiv> Numbers(x, F)\<close>
+    by (metis intro_elim_2)
+  AOT_thus \<open>x[F] \<equiv> Numbers(x, F)\<close> using 2 by (metis intro_elim_3_e)
+qed
+
+AOT_act_theorem zero_eq_2: \<open>0[F] \<equiv> \<not>\<exists>u[F]u\<close>
+proof -
+  AOT_have \<open>0[F] \<equiv> Numbers(0, F)\<close>
+    using zero_eq_1[unvarify x, OF zero_den, THEN "\<rightarrow>E", OF zero_card, THEN "\<forall>E"(2)].
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<exists>u[F]u\<close> using "0F"[symmetric].
+  finally show ?thesis.
+qed
+
+AOT_act_theorem zero_eq_3: \<open>\<not>\<exists>u[F]u \<equiv> #F = 0\<close>
+proof -
+  AOT_have \<open>\<not>\<exists>u[F]u \<equiv> 0[F]\<close> using zero_eq_2[symmetric].
+  also AOT_have \<open>\<dots> \<equiv> 0 = #F\<close>
+    using card_en[unvarify x, OF zero_den, THEN "\<rightarrow>E", OF zero_card, THEN "\<forall>E"(2)].
+  also AOT_have \<open>\<dots> \<equiv> #F = 0\<close>
+    by (simp add: deduction_theorem id_sym intro_elim_2)
+  finally show ?thesis.
+qed
 
 
 end
