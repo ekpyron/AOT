@@ -2519,16 +2519,16 @@ proof -
   finally show ?thesis.
 qed
 
-AOT_define Heredetary :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Heredetary'(_,_')\<close>)
-  hered_1: \<open>Heredetary(F, R) \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
+AOT_define Hereditary :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Hereditary'(_,_')\<close>)
+  hered_1: \<open>Hereditary(F, R) \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
 
-AOT_theorem hered_2: \<open>[\<lambda>xy \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Heredetary(F,R)) \<rightarrow> [F]y)]\<down>\<close>
+AOT_theorem hered_2: \<open>[\<lambda>xy \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)) \<rightarrow> [F]y)]\<down>\<close>
   by cqt_2_lambda
 
 AOT_define StrongAncestral :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sup>*\<close>)
-  ances_df: \<open>R\<^sup>* =\<^sub>d\<^sub>f [\<lambda>xy \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Heredetary(F,R)) \<rightarrow> [F]y)]\<close>
+  ances_df: \<open>R\<^sup>* =\<^sub>d\<^sub>f [\<lambda>xy \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)) \<rightarrow> [F]y)]\<close>
 
-AOT_theorem ances: \<open>[R\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Heredetary(F,R)) \<rightarrow> [F]y)\<close>
+AOT_theorem ances: \<open>[R\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)) \<rightarrow> [F]y)\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF ances_df])
    apply cqt_2_lambda
   apply (rule beta_C_meta[THEN "\<rightarrow>E", OF hered_2, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, where \<tau>=\<open>(_,_)\<close>, simplified])
@@ -2537,26 +2537,26 @@ AOT_theorem ances: \<open>[R\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([R]xz \<
 AOT_theorem anc_her_1: \<open>[R]xy \<rightarrow> [R\<^sup>*]xy\<close>
 proof (safe intro!: "\<rightarrow>I" ances[THEN "\<equiv>E"(2)] GEN)
   fix F
-  AOT_assume \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Heredetary(F, R)\<close>
+  AOT_assume \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Hereditary(F, R)\<close>
   AOT_hence \<open>[R]xy \<rightarrow> [F]y\<close> using "\<forall>E"(2) "&E" by blast
   moreover AOT_assume \<open>[R]xy\<close>
   ultimately AOT_show \<open>[F]y\<close> using "\<rightarrow>E" by blast
 qed
 
-AOT_theorem anc_her_2: \<open>([R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [F]z) & Heredetary(F,R)) \<rightarrow> [F]y\<close>
+AOT_theorem anc_her_2: \<open>([R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)) \<rightarrow> [F]y\<close>
 proof(rule "\<rightarrow>I"; (frule "&E"(1); drule "&E"(2))+)
   AOT_assume \<open>[R\<^sup>*]xy\<close>
-  AOT_hence \<open>(\<forall>z([R]xz \<rightarrow> [F]z) & Heredetary(F,R)) \<rightarrow> [F]y\<close>
+  AOT_hence \<open>(\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)) \<rightarrow> [F]y\<close>
     using ances[THEN "\<equiv>E"(1)] "\<forall>E"(2) by blast
   moreover AOT_assume \<open>\<forall>z([R]xz \<rightarrow> [F]z)\<close>
-  moreover AOT_assume \<open>Heredetary(F,R)\<close>
+  moreover AOT_assume \<open>Hereditary(F,R)\<close>
   ultimately AOT_show \<open>[F]y\<close> using "\<rightarrow>E" "&I" by blast
 qed
 
-AOT_theorem anc_her_3: \<open>([F]x & [R\<^sup>*]xy & Heredetary(F, R)) \<rightarrow> [F]y\<close>
+AOT_theorem anc_her_3: \<open>([F]x & [R\<^sup>*]xy & Hereditary(F, R)) \<rightarrow> [F]y\<close>
 proof(rule "\<rightarrow>I"; (frule "&E"(1); drule "&E"(2))+)
   AOT_assume 1: \<open>[F]x\<close>
-  AOT_assume 2: \<open>Heredetary(F, R)\<close>
+  AOT_assume 2: \<open>Hereditary(F, R)\<close>
   AOT_hence 3: \<open>\<forall>x \<forall>y ([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close> using hered_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
   AOT_have \<open>\<forall>z ([R]xz \<rightarrow> [F]z)\<close>
   proof (rule GEN; rule "\<rightarrow>I")
@@ -2578,7 +2578,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     fix F
     AOT_assume \<open>\<forall>z ([R]xz \<rightarrow> [F]z)\<close>
     AOT_hence 1: \<open>[F]y\<close> using 1 "\<forall>E"(2) "\<rightarrow>E" by blast
-    AOT_assume 2: \<open>Heredetary(F,R)\<close>
+    AOT_assume 2: \<open>Hereditary(F,R)\<close>
     AOT_show \<open>[F]z\<close>
       by (rule anc_her_3[THEN "\<rightarrow>E"]; auto intro!: "&I" 1 2 0)
   qed
@@ -2612,18 +2612,18 @@ qed
 AOT_theorem anc_her_6: \<open>([R\<^sup>*]xy & [R\<^sup>*]yz) \<rightarrow> [R\<^sup>*]xz\<close>
 proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   AOT_assume \<open>[R\<^sup>*]xy\<close>
-  AOT_hence \<theta>: \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Heredetary(F,R) \<rightarrow> [F]y\<close> for F
+  AOT_hence \<theta>: \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Hereditary(F,R) \<rightarrow> [F]y\<close> for F
     using "\<forall>E"(2)  ances[THEN "\<equiv>E"(1)] by blast
   AOT_assume \<open>[R\<^sup>*]yz\<close>
-  AOT_hence \<xi>: \<open>\<forall>z ([R]yz \<rightarrow> [F]z) & Heredetary(F,R) \<rightarrow> [F]z\<close> for F
+  AOT_hence \<xi>: \<open>\<forall>z ([R]yz \<rightarrow> [F]z) & Hereditary(F,R) \<rightarrow> [F]z\<close> for F
     using "\<forall>E"(2) ances[THEN "\<equiv>E"(1)] by blast
   AOT_show \<open>[R\<^sup>*]xz\<close>
   proof (rule ances[THEN "\<equiv>E"(2)]; safe intro!: GEN "\<rightarrow>I")
     fix F
-    AOT_assume \<zeta>: \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Heredetary(F,R)\<close>
+    AOT_assume \<zeta>: \<open>\<forall>z ([R]xz \<rightarrow> [F]z) & Hereditary(F,R)\<close>
     AOT_show \<open>[F]z\<close>
     proof (rule \<xi>[THEN "\<rightarrow>E", OF "&I"])
-      AOT_show \<open>Heredetary(F,R)\<close> using \<zeta>[THEN "&E"(2)].
+      AOT_show \<open>Hereditary(F,R)\<close> using \<zeta>[THEN "&E"(2)].
     next
       AOT_show \<open>\<forall>z ([R]yz \<rightarrow> [F]z)\<close>
       proof(rule GEN; rule "\<rightarrow>I")
@@ -2740,8 +2740,469 @@ AOT_define id_d_R :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> (\<open>'(=\<^sub
 syntax "_AOT_id_d_R_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("(_ =\<^sub>_/ _)" [50, 51, 51] 50)
 translations (\<phi>) "\<kappa> =\<^sub>\<Pi> \<kappa>'" == (\<phi>) "[(=\<^sub>\<Pi>)]\<kappa> \<kappa>'"
 
-AOT_theorem id_R_thm_1: assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
-  shows \<open>x =\<^sub>\<R> y \<equiv> \<exists>z ([\<R>]xz & [\<R>]yz)\<close>
-  oops
+AOT_theorem id_R_thm_1: \<open>x =\<^sub>\<R> y \<equiv> \<exists>z ([\<R>]xz & [\<R>]yz)\<close>
+proof -
+  AOT_have 0: \<open>[\<lambda>xy \<exists>z ([\<R>]xz & [\<R>]yz)]\<down>\<close> by cqt_2_lambda
+  show ?thesis
+    apply (rule "=\<^sub>d\<^sub>fI"(1)[OF id_d_R])
+    apply (fact 0)
+    apply (rule beta_C_meta[THEN "\<rightarrow>E", OF 0, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, where \<tau>=\<open>(_,_)\<close>, simplified])
+    by (simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3)
+
+qed
+
+AOT_theorem id_R_thm_2: \<open>x =\<^sub>\<R> y \<rightarrow> (InDomainOf(x, \<R>) & InDomainOf(y, \<R>))\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>x =\<^sub>\<R> y\<close>
+  AOT_hence \<open>\<exists>z ([\<R>]xz & [\<R>]yz)\<close> using id_R_thm_1[THEN "\<equiv>E"(1)] by simp
+  then AOT_obtain z where z_prop: \<open>[\<R>]xz & [\<R>]yz\<close> using "\<exists>E"[rotated] by blast
+  AOT_show \<open>InDomainOf(x, \<R>) & InDomainOf(y, \<R>)\<close>
+  proof (safe intro!: "&I" df_1_1_4[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    AOT_show \<open>\<exists>y [\<R>]xy\<close> using z_prop[THEN "&E"(1)] "\<exists>I" by fast
+  next
+    AOT_show \<open>\<exists>z [\<R>]yz\<close> using z_prop[THEN "&E"(2)] "\<exists>I" by fast
+  qed
+qed
+
+AOT_theorem id_R_thm_3:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>x =\<^sub>\<R> y \<rightarrow> x = y\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>x =\<^sub>\<R> y\<close>
+  AOT_hence \<open>\<exists>z ([\<R>]xz & [\<R>]yz)\<close> using id_R_thm_1[THEN "\<equiv>E"(1)] by simp
+  then AOT_obtain z where z_prop: \<open>[\<R>]xz & [\<R>]yz\<close> using "\<exists>E"[rotated] by blast
+  AOT_thus \<open>x = y\<close>
+    using df_1_1_3[THEN "\<rightarrow>E", OF assms, THEN qml_2[axiom_inst, THEN "\<rightarrow>E"],
+                   THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+qed
+
+AOT_theorem id_R_thm_4:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>(InDomainOf(x, \<R>) \<or> InDomainOf(y, \<R>)) \<rightarrow> (x =\<^sub>\<R> y \<equiv> x = y)\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>InDomainOf(x, \<R>) \<or> InDomainOf(y, \<R>)\<close>
+  moreover {
+    AOT_assume \<open>InDomainOf(x, \<R>)\<close>
+    AOT_hence \<open>\<exists>z [\<R>]xz\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" df_1_1_4)
+    then AOT_obtain z where z_prop: \<open>[\<R>]xz\<close> using "\<exists>E"[rotated] by blast
+    AOT_have \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    proof(safe intro!: "\<equiv>I" "\<rightarrow>I" id_R_thm_3[OF assms, THEN "\<rightarrow>E"])
+      AOT_assume \<open>x = y\<close>
+      AOT_hence \<open>[\<R>]yz\<close> using z_prop "=E" by fast
+      AOT_hence \<open>[\<R>]xz & [\<R>]yz\<close> using z_prop "&I" by blast
+      AOT_hence \<open>\<exists>z ([\<R>]xz & [\<R>]yz)\<close> by (rule "\<exists>I")
+      AOT_thus \<open>x =\<^sub>\<R> y\<close>
+        using id_R_thm_1 intro_elim_3_b by blast
+    qed
+  }
+  moreover {
+    AOT_assume \<open>InDomainOf(y, \<R>)\<close>
+    AOT_hence \<open>\<exists>z [\<R>]yz\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" df_1_1_4)
+    then AOT_obtain z where z_prop: \<open>[\<R>]yz\<close> using "\<exists>E"[rotated] by blast
+    AOT_have \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    proof(safe intro!: "\<equiv>I" "\<rightarrow>I" id_R_thm_3[OF assms, THEN "\<rightarrow>E"])
+      AOT_assume \<open>x = y\<close>
+      AOT_hence \<open>[\<R>]xz\<close> using z_prop "=E" id_sym by fast
+      AOT_hence \<open>[\<R>]xz & [\<R>]yz\<close> using z_prop "&I" by blast
+      AOT_hence \<open>\<exists>z ([\<R>]xz & [\<R>]yz)\<close> by (rule "\<exists>I")
+      AOT_thus \<open>x =\<^sub>\<R> y\<close>
+        using id_R_thm_1 intro_elim_3_b by blast
+    qed
+  }
+  ultimately AOT_show \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    by (metis con_dis_i_e_4_b raa_cor_1)
+qed
+
+AOT_theorem id_R_thm_5: \<open>InDomainOf(x, \<R>) \<rightarrow> x =\<^sub>\<R> x\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>InDomainOf(x, \<R>)\<close>
+  AOT_hence \<open>\<exists>z [\<R>]xz\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" df_1_1_4)
+  then AOT_obtain z where z_prop: \<open>[\<R>]xz\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>[\<R>]xz & [\<R>]xz\<close> using "&I" by blast
+  AOT_hence \<open>\<exists>z ([\<R>]xz & [\<R>]xz)\<close> using "\<exists>I" by fast
+  AOT_thus \<open>x =\<^sub>\<R> x\<close>
+    using id_R_thm_1 intro_elim_3_b by blast
+qed
+
+AOT_theorem id_R_thm_6:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>x =\<^sub>\<R> y \<rightarrow> y =\<^sub>\<R> x\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>x =\<^sub>\<R> y\<close>
+  AOT_hence 1: \<open>InDomainOf(x,\<R>) & InDomainOf(y,\<R>)\<close> using id_R_thm_2[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    using id_R_thm_4[THEN "\<rightarrow>E", OF assms, OF "\<or>I"(1)] "&E" by blast
+  AOT_hence \<open>x = y\<close> using 0 by (metis intro_elim_3_a)
+  AOT_hence \<open>y = x\<close> using id_sym by blast
+  moreover AOT_have \<open>y =\<^sub>\<R> x \<equiv> y = x\<close>
+    using id_R_thm_4[THEN "\<rightarrow>E", OF assms, OF "\<or>I"(2)] 1 "&E" by blast
+  ultimately AOT_show \<open>y =\<^sub>\<R> x\<close>
+    by (metis intro_elim_3_b)
+qed
+
+AOT_theorem id_R_thm_7:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>x =\<^sub>\<R> y & y =\<^sub>\<R> z \<rightarrow> x =\<^sub>\<R> z\<close>
+proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume 0: \<open>x =\<^sub>\<R> y\<close>
+  AOT_hence 1: \<open>InDomainOf(x,\<R>) & InDomainOf(y,\<R>)\<close> using id_R_thm_2[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    using id_R_thm_4[THEN "\<rightarrow>E", OF assms, OF "\<or>I"(1)] "&E" by blast
+  AOT_hence x_eq_y: \<open>x = y\<close> using 0 by (metis intro_elim_3_a)
+  AOT_assume 2: \<open>y =\<^sub>\<R> z\<close>
+  AOT_hence 3: \<open>InDomainOf(y,\<R>) & InDomainOf(z,\<R>)\<close> using id_R_thm_2[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>y =\<^sub>\<R> z \<equiv> y = z\<close>
+    using id_R_thm_4[THEN "\<rightarrow>E", OF assms, OF "\<or>I"(1)] "&E" by blast
+  AOT_hence \<open>y = z\<close> using 2 by (metis intro_elim_3_a)
+  AOT_hence x_eq_z: \<open>x = z\<close> using x_eq_y id_trans by blast
+  AOT_have \<open>InDomainOf(x,\<R>) & InDomainOf(z,\<R>)\<close> using 1 3 "&I" "&E" by meson
+  AOT_hence \<open>x =\<^sub>\<R> z \<equiv> x = z\<close>
+    using id_R_thm_4[THEN "\<rightarrow>E", OF assms, OF "\<or>I"(1)] "&E" by blast
+  AOT_thus \<open>x =\<^sub>\<R> z\<close> using x_eq_z "\<equiv>E"(2) by blast
+qed
+
+AOT_define w_ances_df :: \<open>\<Pi> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sup>+\<close>)
+  \<open>[\<R>]\<^sup>+ =\<^sub>d\<^sub>f [\<lambda>xy [\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y]\<close>
+
+AOT_theorem w_ances_df_den_1: \<open>[\<lambda>xy [\<Pi>]\<^sup>*xy \<or> x =\<^sub>\<Pi> y]\<down>\<close> by cqt_2_lambda
+AOT_theorem w_ances_df_den_2: \<open>[\<Pi>]\<^sup>+\<down>\<close> using w_ances_df_den_1 "=\<^sub>d\<^sub>fI"(1)[OF w_ances_df] by blast
+
+AOT_theorem w_ances: \<open>[\<R>]\<^sup>+xy \<equiv> ([\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y)\<close>
+proof -
+  AOT_have 0: \<open>[\<lambda>xy [\<R>\<^sup>*]xy \<or> x =\<^sub>\<R> y]\<down>\<close> by cqt_2_lambda
+  (* TODO: try to prevent 1 and 2 from being needed *)
+  AOT_have 1: \<open>\<guillemotleft>(AOT_term_of_var x,AOT_term_of_var y)\<guillemotright>\<down>\<close>
+    by (simp add: con_dis_i_e_1 ex_1_a prod_denotesI rule_ui_3)
+  have 2: \<open>\<guillemotleft>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n [\<R>\<^sup>*]\<mu>\<^sub>1...\<mu>\<^sub>n \<or> [(=\<^sub>\<R>)]\<mu>\<^sub>1...\<mu>\<^sub>n]xy\<guillemotright> = \<guillemotleft>[\<lambda>xy [\<R>\<^sup>*]xy \<or> [(=\<^sub>\<R>)]xy]xy\<guillemotright>\<close>
+    by (simp add: cond_case_prod_eta)
+  show ?thesis
+    apply (rule "=\<^sub>d\<^sub>fI"(1)[OF w_ances_df])
+     apply (fact w_ances_df_den_1)
+    using beta_C_meta[THEN "\<rightarrow>E", OF 0, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, where \<tau>=\<open>(_,_)\<close>, simplified, OF 1] 2 by simp
+qed
+
+AOT_theorem wances_her_1: \<open>[\<R>]xy \<rightarrow> [\<R>]\<^sup>+xy\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>[\<R>]xy\<close>
+  AOT_hence \<open>[\<R>]\<^sup>*xy\<close>
+    using anc_her_1[THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>[\<R>]\<^sup>+xy\<close> using w_ances[THEN "\<equiv>E"(2)] "\<or>I" by blast
+qed
+
+AOT_theorem wances_her_2:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([F]x & [\<R>]\<^sup>+xy & Hereditary(F, \<R>)) \<rightarrow> [F]y\<close>
+proof(rule "\<rightarrow>I"; (frule "&E"(1); drule "&E"(2))+)
+  AOT_assume 0: \<open>[F]x\<close>
+  AOT_assume 1: \<open>Hereditary(F, \<R>)\<close>
+  AOT_assume \<open>[\<R>]\<^sup>+xy\<close>
+  AOT_hence \<open>[\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close> using w_ances[THEN "\<equiv>E"(1)] by simp
+  moreover {
+    AOT_assume \<open>[\<R>]\<^sup>*xy\<close>
+    AOT_hence \<open>[F]y\<close>  using anc_her_3[THEN "\<rightarrow>E", OF "&I", OF "&I"] 0 1 by blast
+  }
+  moreover {
+    AOT_assume \<open>x =\<^sub>\<R> y\<close>
+    AOT_hence \<open>x = y\<close> using id_R_thm_3[OF assms, THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>[F]y\<close> using 0 "=E" by blast
+  }
+  ultimately AOT_show \<open>[F]y\<close>
+    by (metis con_dis_i_e_4_c raa_cor_1)
+qed
+
+AOT_theorem wances_her_3:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([\<R>]\<^sup>+xy & [\<R>]yz) \<rightarrow> [\<R>]\<^sup>*xz\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume \<open>[\<R>]\<^sup>+xy\<close>
+  moreover AOT_assume Ryz: \<open>[\<R>]yz\<close>
+  ultimately AOT_have \<open>[\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close> using w_ances[THEN "\<equiv>E"(1)] by metis
+  moreover {
+    AOT_assume R_star_xy: \<open>[\<R>]\<^sup>*xy\<close>
+    AOT_have \<open>[\<R>]\<^sup>*xz\<close>
+    proof (safe intro!: ances[THEN "\<equiv>E"(2)] "\<rightarrow>I" GEN)
+      fix F
+      AOT_assume 0: \<open>\<forall>z ([\<R>]xz \<rightarrow> [F]z) & Hereditary(F,\<R>)\<close>
+      AOT_hence \<open>[F]y\<close>
+        using R_star_xy ances[THEN "\<equiv>E"(1), OF R_star_xy, THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+      AOT_thus \<open>[F]z\<close>
+        using hered_1[THEN "\<equiv>\<^sub>d\<^sub>fE", OF 0[THEN "&E"(2)], THEN "&E"(2)]
+              "\<forall>E"(2) "\<rightarrow>E" Ryz by blast
+    qed
+  }
+  moreover {
+    AOT_assume \<open>x =\<^sub>\<R> y\<close>
+    AOT_hence \<open>x = y\<close> using id_R_thm_3[OF assms, THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>[\<R>]xz\<close> using Ryz "=E" id_sym by fast
+    AOT_hence \<open>[\<R>]\<^sup>*xz\<close> by (metis anc_her_1[THEN "\<rightarrow>E"])
+  }
+  ultimately AOT_show \<open>[\<R>]\<^sup>*xz\<close>
+    by (metis con_dis_i_e_4_c raa_cor_1)
+qed
+
+AOT_theorem wances_her_4:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([\<R>]\<^sup>*xy & [\<R>]yz) \<rightarrow> [\<R>]\<^sup>+xz\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume \<open>[\<R>]\<^sup>*xy\<close>
+  AOT_hence \<open>[\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close> using "\<or>I" by blast
+  AOT_hence \<open>[\<R>]\<^sup>+xy\<close> using w_ances[THEN "\<equiv>E"(2)] by blast
+  moreover AOT_assume \<open>[\<R>]yz\<close>
+  ultimately AOT_have \<open>[\<R>]\<^sup>*xz\<close> using wances_her_3[OF assms, THEN "\<rightarrow>E", OF "&I"] by simp
+  AOT_hence \<open>[\<R>]\<^sup>*xz \<or> x =\<^sub>\<R> z\<close> using "\<or>I" by blast
+  AOT_thus \<open>[\<R>]\<^sup>+xz\<close> using w_ances[THEN "\<equiv>E"(2)] by blast
+qed
+
+AOT_theorem wances_her_5:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([\<R>]xy & [\<R>]\<^sup>+yz) \<rightarrow> [\<R>]\<^sup>*xz\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume 0: \<open>[\<R>]xy\<close>
+  AOT_assume \<open>[\<R>]\<^sup>+yz\<close>
+  AOT_hence \<open>[\<R>]\<^sup>*yz \<or> y =\<^sub>\<R> z\<close> by (metis intro_elim_3_a w_ances)
+  moreover {
+    AOT_assume \<open>[\<R>]\<^sup>*yz\<close>
+    AOT_hence \<open>[\<R>]\<^sup>*xz\<close> using 0 by (metis anc_her_4 con_dis_taut_5 vdash_properties_10)
+  }
+  moreover {
+    AOT_assume \<open>y =\<^sub>\<R> z\<close>
+    AOT_hence \<open>y = z\<close> by (metis assms id_R_thm_3 vdash_properties_10)
+    AOT_hence \<open>[\<R>]xz\<close> using 0 "=E" by fast
+    AOT_hence \<open>[\<R>]\<^sup>*xz\<close> by (metis anc_her_1 vdash_properties_10)
+  }
+  ultimately AOT_show \<open>[\<R>]\<^sup>*xz\<close> by (metis con_dis_i_e_4_b reductio_aa_1)
+qed
+
+AOT_theorem wances_her_6:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([\<R>]\<^sup>+xy & [\<R>]\<^sup>+yz) \<rightarrow> [\<R>]\<^sup>+xz\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume 0: \<open>[\<R>]\<^sup>+xy\<close>
+  AOT_hence 1: \<open>[\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close> by (metis intro_elim_3_a w_ances)
+  AOT_assume 2: \<open>[\<R>]\<^sup>+yz\<close>
+  {
+    AOT_assume \<open>x =\<^sub>\<R> y\<close>
+    AOT_hence \<open>x = y\<close> by (metis assms id_R_thm_3 vdash_properties_10)
+    AOT_hence \<open>[\<R>]\<^sup>+xz\<close> using 2 "=E" id_sym by fast
+  }
+  moreover {
+    AOT_assume \<open>\<not>(x =\<^sub>\<R> y)\<close>
+    AOT_hence 3: \<open>[\<R>]\<^sup>*xy\<close> using 1 by (metis con_dis_i_e_4_c) 
+    AOT_have \<open>[\<R>]\<^sup>*yz \<or> y =\<^sub>\<R> z\<close> using 2 by (metis intro_elim_3_a w_ances)
+    moreover {
+      AOT_assume \<open>[\<R>]\<^sup>*yz\<close>
+      AOT_hence \<open>[\<R>]\<^sup>*xz\<close> using 3 by (metis anc_her_6 con_dis_taut_5 vdash_properties_10)
+      AOT_hence \<open>[\<R>]\<^sup>+xz\<close> by (metis con_dis_i_e_3_a intro_elim_3_b w_ances)
+    }
+    moreover {
+      AOT_assume \<open>y =\<^sub>\<R> z\<close>
+      AOT_hence \<open>y = z\<close> by (metis assms id_R_thm_3 vdash_properties_10)
+      AOT_hence \<open>[\<R>]\<^sup>+xz\<close> using 0 "=E" id_sym by fast
+    }
+    ultimately AOT_have \<open>[\<R>]\<^sup>+xz\<close> by (metis con_dis_i_e_4_c reductio_aa_1)
+  }
+  ultimately AOT_show \<open>[\<R>]\<^sup>+xz\<close> by (metis reductio_aa_1)
+qed
+
+AOT_theorem wances_her_7:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>[\<R>]\<^sup>*xy \<rightarrow> \<exists>z([\<R>]\<^sup>+xz & [\<R>]zy)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<R>]\<^sup>*xy\<close>
+  AOT_have 1: \<open>\<forall>z ([\<R>]xz \<rightarrow> [\<Pi>]z) & Hereditary(\<Pi>,\<R>) \<rightarrow> [\<Pi>]y\<close> if \<open>\<Pi>\<down>\<close> for \<Pi>
+    using ances[THEN "\<equiv>E"(1), THEN "\<forall>E"(1), OF 0] that by blast
+  AOT_have \<open>[\<lambda>y \<exists>z([\<R>]\<^sup>+xz & [\<R>]zy)]y\<close>
+  proof (rule 1[THEN "\<rightarrow>E"]; cqt_2_lambda?; safe intro!: "&I" GEN "\<rightarrow>I" hered_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] cqt_2_const_var[axiom_inst])
+    fix z
+    AOT_assume 0: \<open>[\<R>]xz\<close>
+    AOT_hence \<open>\<exists>z [\<R>]xz\<close> by (rule "\<exists>I")
+    AOT_hence \<open>InDomainOf(x, \<R>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" df_1_1_4)
+    AOT_hence \<open>x =\<^sub>\<R> x\<close> by (metis id_R_thm_5 "\<rightarrow>E")
+    AOT_hence \<open>[\<R>]\<^sup>+xx\<close> by (metis con_dis_i_e_3_b intro_elim_3_b w_ances)
+    AOT_hence \<open>[\<R>]\<^sup>+xx & [\<R>]xz\<close> using 0 "&I" by blast
+    AOT_hence 1: \<open>\<exists>y ([\<R>]\<^sup>+xy & [\<R>]yz)\<close> by (rule "\<exists>I")
+    AOT_show \<open>[\<lambda>y \<exists>z ([\<R>]\<^sup>+xz & [\<R>]zy)]z\<close>
+      by (rule betaC_2_a; cqt_2_lambda; simp add: cqt_2_const_var[axiom_inst] 1)
+  next
+    fix x' y
+    AOT_assume Rx'y: \<open>[\<R>]x'y\<close>
+    AOT_assume \<open>[\<lambda>y \<exists>z ([\<R>]\<^sup>+xz & [\<R>]zy)]x'\<close>
+    AOT_hence \<open>\<exists>z ([\<R>]\<^sup>+xz & [\<R>]zx')\<close>
+      using betaC_1_a by blast
+    then AOT_obtain c where c_prop: \<open>[\<R>]\<^sup>+xc & [\<R>]cx'\<close> using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>[\<R>]\<^sup>*xx'\<close>
+      by (meson Rx'y anc_her_1 anc_her_6 assms con_dis_taut_5 vdash_properties_10 wances_her_3)
+    AOT_hence \<open>[\<R>]\<^sup>*xx' \<or> x =\<^sub>\<R> x'\<close> by (rule "\<or>I")
+    AOT_hence \<open>[\<R>]\<^sup>+xx'\<close> by (metis intro_elim_3_b w_ances)
+    AOT_hence \<open>[\<R>]\<^sup>+xx' & [\<R>]x'y\<close> using Rx'y by (metis con_dis_i_e_1)
+    AOT_hence 1: \<open>\<exists>z ([\<R>]\<^sup>+xz & [\<R>]zy)\<close> by (rule "\<exists>I")
+    AOT_show \<open>[\<lambda>y \<exists>z ([\<R>]\<^sup>+xz & [\<R>]zy)]y\<close>
+      by (rule betaC_2_a; cqt_2_lambda; simp add: cqt_2_const_var[axiom_inst] 1)
+  qed(cqt_2_lambda)
+  AOT_thus \<open>\<exists>z([\<R>]\<^sup>+xz & [\<R>]zy)\<close>
+    using betaC_1_a by fast
+qed
+
+AOT_theorem one_to_one_R_1:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([\<R>]xy & [\<R>]\<^sup>*zy) \<rightarrow> [\<R>]\<^sup>+zx\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+  AOT_assume \<open>[\<R>]\<^sup>*zy\<close>
+  AOT_hence \<open>\<exists>x ([\<R>]\<^sup>+zx & [\<R>]xy)\<close> using wances_her_7[OF assms, THEN "\<rightarrow>E"] by simp
+  then AOT_obtain a where a_prop: \<open>[\<R>]\<^sup>+za & [\<R>]ay\<close> using "\<exists>E"[rotated] by blast
+  moreover AOT_assume \<open>[\<R>]xy\<close>
+  ultimately AOT_have \<open>x = a\<close>
+    using df_1_1_2[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms, THEN "&E"(1), THEN "\<equiv>\<^sub>d\<^sub>fE"[OF df_1_1_1],
+                   THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF "&I"]
+    "&E" by blast
+  AOT_thus \<open>[\<R>]\<^sup>+zx\<close> using a_prop[THEN "&E"(1)] "=E" id_sym by fast
+qed
+
+AOT_theorem one_to_one_R_2:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>[\<R>]xy \<rightarrow> (\<not>[\<R>]\<^sup>*xx \<rightarrow> \<not>[\<R>]\<^sup>*yy)\<close>
+proof(rule "\<rightarrow>I"; rule useful_tautologies_5[THEN "\<rightarrow>E"]; rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<R>]xy\<close>
+  moreover AOT_assume \<open>[\<R>]\<^sup>*yy\<close>
+  ultimately AOT_have \<open>[\<R>]\<^sup>+yx\<close> using one_to_one_R_1[OF assms, THEN "\<rightarrow>E", OF "&I"] by blast
+  AOT_thus \<open>[\<R>]\<^sup>*xx\<close> using 0 by (metis assms con_dis_i_e_1 vdash_properties_10 wances_her_5)
+qed
+
+AOT_theorem one_to_one_R_3:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>\<not>[\<R>]\<^sup>*xx \<rightarrow> ([\<R>]\<^sup>+xy \<rightarrow> \<not>[\<R>]\<^sup>*yy)\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_have 0: \<open>[\<lambda>z \<not>[\<R>]\<^sup>*zz]\<down>\<close> by cqt_2_lambda
+  AOT_assume 1: \<open>\<not>[\<R>]\<^sup>*xx\<close>
+  AOT_assume 2: \<open>[\<R>]\<^sup>+xy\<close>
+  AOT_have \<open>[\<lambda>z \<not>[\<R>]\<^sup>*zz]y\<close>
+  proof(rule wances_her_2[OF assms, unvarify F, OF 0, THEN "\<rightarrow>E"];
+        safe intro!: "&I" hered_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+    AOT_show  \<open>[\<lambda>z \<not>[\<R>]\<^sup>*zz]x\<close>
+      by (rule betaC_2_a; cqt_2_lambda; simp add: 1 cqt_2_const_var[axiom_inst])
+  next
+    AOT_show \<open>[\<R>]\<^sup>+xy\<close> by (fact 2)
+  next
+    fix x y
+    AOT_assume \<open>[\<lambda>z \<not>[\<R>\<^sup>*]zz]x\<close>
+    AOT_hence \<open>\<not>[\<R>]\<^sup>*xx\<close> by (rule betaC_1_a)
+    moreover AOT_assume \<open>[\<R>]xy\<close>
+    ultimately AOT_have 1: \<open>\<not>[\<R>]\<^sup>*yy\<close> using one_to_one_R_2[OF assms, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+    AOT_show \<open>[\<lambda>z \<not>[\<R>\<^sup>*]zz]y\<close>
+      by (rule betaC_2_a; cqt_2_lambda; simp add: cqt_2_const_var[axiom_inst] 1)
+  qed(cqt_2_lambda)
+  AOT_thus \<open>\<not>[\<R>]\<^sup>*yy\<close> using betaC_1_a by blast
+qed
+
+AOT_theorem one_to_one_R_4:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>[\<R>]\<^sup>*xy \<rightarrow> InDomainOf(x,\<R>)\<close>
+proof(rule "\<rightarrow>I"; rule df_1_1_4[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_have 0: \<open>[\<lambda>z [\<R>]\<^sup>*xz \<rightarrow> \<exists>y [\<R>]xy]\<down>\<close> by cqt_2_lambda
+  AOT_assume 1: \<open>[\<R>]\<^sup>*xy\<close>
+  AOT_have \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]y\<close>
+  proof (rule anc_her_2[unvarify F, OF 0, THEN "\<rightarrow>E"];
+         safe intro!: "&I" hered_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+    AOT_show \<open>[\<R>]\<^sup>*xy\<close> by (fact 1)
+  next
+    fix z
+    AOT_assume 0: \<open>[\<R>]xz\<close>
+    AOT_show \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]z\<close>
+      apply (rule betaC_2_a; cqt_2_lambda)
+       apply (simp add: cqt_2_const_var[axiom_inst])
+      by (meson "0" deduction_theorem existential_2_a)
+  next
+    fix x' y
+    AOT_assume Rx'y: \<open>[\<R>]x'y\<close>
+    AOT_assume \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]x'\<close>
+    AOT_hence 0: \<open>[\<R>\<^sup>*]xx' \<rightarrow> \<exists>y [\<R>]xy\<close> by (rule betaC_1_a)
+    AOT_have 1: \<open>[\<R>\<^sup>*]xy \<rightarrow> \<exists>y [\<R>]xy\<close>
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>[\<R>]\<^sup>*xy\<close>
+      AOT_hence \<open>[\<R>]\<^sup>+xx'\<close> by (metis Rx'y assms con_dis_i_e_1 one_to_one_R_1 vdash_properties_6)
+      AOT_hence \<open>[\<R>]\<^sup>*xx' \<or> x =\<^sub>\<R> x'\<close> by (metis intro_elim_3_a w_ances)
+      moreover {
+        AOT_assume \<open>[\<R>]\<^sup>*xx'\<close>
+        AOT_hence \<open>\<exists>y [\<R>]xy\<close> using 0 by (metis "\<rightarrow>E")
+      }
+      moreover {
+        AOT_assume \<open>x =\<^sub>\<R> x'\<close>
+        AOT_hence \<open>x = x'\<close> by (metis assms id_R_thm_3 "\<rightarrow>E")
+        AOT_hence \<open>[\<R>]xy\<close> using Rx'y "=E" id_sym by fast
+        AOT_hence \<open>\<exists>y [\<R>]xy\<close> by (rule "\<exists>I")
+      }
+      ultimately AOT_show \<open>\<exists>y [\<R>]xy\<close> by (metis con_dis_i_e_4_c reductio_aa_1)
+    qed
+    AOT_show \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]y\<close>
+      by (rule betaC_2_a; cqt_2_lambda; simp add: cqt_2_const_var[axiom_inst] 1)
+  qed(cqt_2_lambda)
+  AOT_hence \<open>[\<R>\<^sup>*]xy \<rightarrow> \<exists>y [\<R>]xy\<close> by (rule betaC_1_a)
+  AOT_thus \<open>\<exists>y [\<R>]xy\<close> using 1 "\<rightarrow>E" by blast
+qed
+
+AOT_theorem one_to_one_R_5:
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>[\<R>]\<^sup>+xy \<rightarrow> InDomainOf(x,\<R>)\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>[\<R>]\<^sup>+xy\<close>
+  AOT_hence \<open>[\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close> by (metis intro_elim_3_a w_ances)
+  moreover {
+    AOT_assume \<open>[\<R>]\<^sup>*xy\<close>
+    AOT_hence \<open>InDomainOf(x,\<R>)\<close> using one_to_one_R_4[OF assms] "\<rightarrow>E" by blast
+  }
+  moreover {
+    AOT_assume \<open>x =\<^sub>\<R> y\<close>
+    AOT_hence \<open>InDomainOf(x,\<R>)\<close> by (metis con_dis_taut_1 id_R_thm_2 vdash_properties_6)
+  }
+  ultimately AOT_show \<open>InDomainOf(x,\<R>)\<close> by (metis con_dis_i_e_4_c reductio_aa_1)
+qed
+
+AOT_theorem pre_ind: 
+  assumes \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<R>)\<close>
+  shows \<open>([F]z & \<forall>x\<forall>y(([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy) \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))) \<rightarrow> \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
+proof(safe intro!: "\<rightarrow>I" GEN)
+  AOT_have den: \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]\<down>\<close> by cqt_2_lambda
+  fix x
+  AOT_assume \<theta>: \<open>[F]z & \<forall>x\<forall>y(([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy) \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
+  AOT_assume 0: \<open>[\<R>]\<^sup>+zx\<close>
+
+  AOT_have \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]x\<close>
+  proof (rule wances_her_2[OF assms, unvarify F, OF den, THEN "\<rightarrow>E"]; safe intro!: "&I")
+    AOT_show \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]z\<close>
+    proof (rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] "&I")
+      AOT_show \<open>[F]z\<close> using \<theta> "&E" by blast
+    next
+      AOT_show \<open>[\<R>]\<^sup>+zz\<close>
+        by (rule w_ances[THEN "\<equiv>E"(2), OF "\<or>I"(2)])
+           (meson "0" assms id_R_thm_5 one_to_one_R_5 "\<rightarrow>E")
+    qed
+  next
+    AOT_show \<open>[\<R>]\<^sup>+zx\<close> by (fact 0)
+  next
+    AOT_show \<open>Hereditary([\<lambda>y [F]y & [\<R>]\<^sup>+zy],\<R>)\<close>
+    proof (safe intro!: hered_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+      fix x' y
+      AOT_assume 1: \<open>[\<R>]x'y\<close>
+      AOT_assume \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]x'\<close>
+      AOT_hence 2: \<open>[F]x' & [\<R>]\<^sup>+zx'\<close> by (rule betaC_1_a)
+      AOT_have \<open>[\<R>]\<^sup>*zy\<close> using 1 2[THEN "&E"(2)]
+        by (metis assms con_dis_taut_5 modus_tollens_1 reductio_aa_1 wances_her_3)
+      AOT_hence 3: \<open>[\<R>]\<^sup>+zy\<close> by (metis con_dis_i_e_3_a intro_elim_3_b w_ances)
+      AOT_show \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]y\<close>
+      proof (rule betaC_2_a; cqt_2_lambda; safe intro!: cqt_2_const_var[axiom_inst] "&I" 3)
+        AOT_show \<open>[F]y\<close>
+        proof (rule \<theta>[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
+          AOT_show \<open>[\<R>]\<^sup>+zx' & [\<R>]\<^sup>+zy\<close>
+            using 2 3 "&E" "&I" by blast
+        next
+          AOT_show \<open>[\<R>]x'y\<close> by (fact 1)
+        next
+          AOT_show \<open>[F]x'\<close> using 2 "&E" by blast
+        qed
+      qed
+    qed(cqt_2_lambda)
+  qed
+  AOT_thus \<open>[F]x\<close> using betaC_1_a con_dis_i_e_2_a by fast
+qed
 
 end
