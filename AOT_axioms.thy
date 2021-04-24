@@ -353,4 +353,172 @@ AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<
   by (auto simp: AOT_model_equiv_def AOT_sem_exists AOT_sem_denotes AOT_model_denotes_prod_def)
 declare tuple_exists[AOT_defs]
 
+(* extended model only *)
+AOT_axiom indistinguishable_ord_enc_all: \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
+  ((\<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])) \<equiv> \<forall>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G]))\<close>
+proof (rule AOT_model_axiomI)
+  AOT_modally_strict {
+    {
+      AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
+      AOT_assume \<open>A!x\<close>
+      AOT_hence 0: \<open>[\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]x\<close>
+        by (simp add: AOT_concrete_sem AOT_sem_abstract)
+      AOT_assume \<open>A!y\<close>
+      AOT_hence 1: \<open>[\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]y\<close>
+        by (simp add: AOT_concrete_sem AOT_sem_abstract)
+      AOT_assume 2: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+      {
+        AOT_assume \<open>\<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])\<close>
+        AOT_hence 3: \<open>\<forall>G(\<forall>z ([\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])\<close>
+          by (simp add: AOT_concrete_sem AOT_sem_ordinary)
+        {
+          fix \<Pi>' :: \<open><\<kappa>>\<close>
+          AOT_assume 1: \<open>\<Pi>'\<down>\<close>
+          AOT_assume 2: \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)\<close> for z
+          AOT_have \<open>x[\<Pi>']\<close>
+            using 3 apply (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+            by (metis (no_types, lifting) 1 2 AOT_model.AOT_term_of_var_cases AOT_sem_box AOT_sem_denotes AOT_sem_imp)
+        } note 3 = this
+        fix \<Pi>' :: \<open><\<kappa>>\<close>
+        AOT_assume \<Pi>_den: \<open>\<Pi>'\<down>\<close>
+        AOT_assume 4: \<open>\<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close>
+        {
+          fix \<kappa>\<^sub>0
+          AOT_assume \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0\<close>
+          AOT_hence \<open>O!\<kappa>\<^sub>0\<close>
+            using AOT_concrete_sem AOT_sem_ordinary by simp
+          moreover AOT_hence \<open>\<kappa>\<^sub>0\<down>\<close>
+            by (simp add: AOT_sem_exe)
+          ultimately AOT_have \<open>\<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
+        } note 4 = this
+        AOT_have \<open>y[\<Pi>']\<close>
+          apply (rule AOT_sem_enc_indistinguishable_all)
+          apply (fact 0)
+               apply (auto simp: 0 1 \<Pi>_den 2[simplified AOT_sem_forall AOT_sem_box AOT_sem_equiv])
+          apply (rule 3)
+           apply auto[1]
+          using 4
+          by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+      }
+      AOT_hence \<open>\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])\<close> if \<open>\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])\<close>
+        using that
+        by (auto simp: AOT_sem_forall AOT_sem_imp)
+      moreover {
+      {
+        AOT_assume \<open>\<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])\<close>
+        AOT_hence 3: \<open>\<forall>G(\<forall>z ([\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])\<close>
+          by (simp add: AOT_concrete_sem AOT_sem_ordinary)
+        {
+          fix \<Pi>' :: \<open><\<kappa>>\<close>
+          AOT_assume 1: \<open>\<Pi>'\<down>\<close>
+          AOT_assume 2: \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)\<close> for z
+          AOT_have \<open>y[\<Pi>']\<close>
+            using 3 apply (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+            by (metis (no_types, lifting) 1 2 AOT_model.AOT_term_of_var_cases AOT_sem_box AOT_sem_denotes AOT_sem_imp)
+        } note 3 = this
+        fix \<Pi>' :: \<open><\<kappa>>\<close>
+        AOT_assume \<Pi>_den: \<open>\<Pi>'\<down>\<close>
+        AOT_assume 4: \<open>\<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close>
+        {
+          fix \<kappa>\<^sub>0
+          AOT_assume \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0\<close>
+          AOT_hence \<open>O!\<kappa>\<^sub>0\<close>
+            using AOT_concrete_sem AOT_sem_ordinary by simp
+          moreover AOT_hence \<open>\<kappa>\<^sub>0\<down>\<close>
+            by (simp add: AOT_sem_exe)
+          ultimately AOT_have \<open>\<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
+        } note 4 = this
+        AOT_have \<open>x[\<Pi>']\<close>
+          apply (rule AOT_sem_enc_indistinguishable_all)
+          apply (fact 1)
+               apply (auto simp: 0 1 \<Pi>_den 2[simplified AOT_sem_forall AOT_sem_box AOT_sem_equiv])
+          apply (rule 3)
+           apply auto[1]
+          using 4
+          by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+      }
+
+      AOT_hence \<open>\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])\<close> if \<open>\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])\<close>
+        using that
+        by (auto simp: AOT_sem_forall AOT_sem_imp)
+      }
+      ultimately AOT_have \<open>\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G]) \<equiv> \<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])\<close>
+        by (auto simp: AOT_sem_equiv)
+    }
+    AOT_thus \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
+       (\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G]) \<equiv> \<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G]))\<close>
+      by (auto simp: AOT_sem_imp AOT_sem_conj)
+  }
+qed
+
+AOT_axiom indistinguishable_ord_enc_ex: \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
+  ((\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G])) \<equiv> \<exists>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G]))\<close>
+proof (rule AOT_model_axiomI)
+  have Aux: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] = ([v \<Turnstile> [\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] \<and> [v \<Turnstile> \<kappa>\<down>])\<close> for v \<kappa>
+    using AOT_sem_exe by blast
+  AOT_modally_strict {
+    fix x y
+    AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
+    AOT_assume 2: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+    AOT_assume \<open>A!x\<close>
+    AOT_hence 0: \<open>[\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]x\<close>
+      by (simp add: AOT_concrete_sem AOT_sem_abstract)
+    AOT_assume \<open>A!y\<close>
+    AOT_hence 1: \<open>[\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]y\<close>
+      by (simp add: AOT_concrete_sem AOT_sem_abstract)
+    {
+      AOT_assume \<open>\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G])\<close>
+      then AOT_obtain \<Pi>' where \<Pi>'_den: \<open>\<Pi>'\<down>\<close> and \<Pi>'_indist: \<open>\<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close> and x_enc_\<Pi>': \<open>x[\<Pi>']\<close>
+        by (meson AOT_sem_conj AOT_sem_exists)
+      {
+        fix \<kappa>\<^sub>0
+        AOT_assume \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0\<close>
+        AOT_hence \<open>\<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close>
+          using \<Pi>'_indist
+          by (auto simp: AOT_sem_exe AOT_sem_imp AOT_sem_exists AOT_sem_conj AOT_sem_ordinary AOT_sem_forall AOT_concrete_sem)
+      } note 3 = this
+      AOT_have \<open>\<forall>z ([\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close>
+        using \<Pi>'_indist by (simp add: AOT_concrete_sem AOT_sem_ordinary)
+      AOT_obtain \<Pi>'' where
+          \<Pi>''_den: \<open>\<Pi>''\<down>\<close> and
+          \<Pi>''_indist: \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0 \<rightarrow> \<box>([\<Pi>'']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> and
+          y_enc_\<Pi>'': \<open>y[\<Pi>'']\<close> for \<kappa>\<^sub>0
+        using AOT_sem_enc_indistinguishable_ex[OF 0, OF 1, rotated, OF \<Pi>_den, OF exI[where x=\<Pi>'], OF conjI, OF \<Pi>'_den, OF conjI,
+                OF x_enc_\<Pi>', OF allI, OF impI, OF 3[simplified AOT_sem_box AOT_sem_equiv], simplified, OF
+                2[simplified AOT_sem_forall AOT_sem_equiv AOT_sem_box, THEN spec, THEN mp, THEN spec], simplified]
+        unfolding AOT_sem_imp AOT_sem_box AOT_sem_equiv by blast
+      {
+        AOT_have \<open>\<Pi>''\<down>\<close>
+            and \<open>\<forall>x ([\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]x \<rightarrow> \<box>([\<Pi>'']x \<equiv> [\<Pi>]x))\<close>
+            and \<open>y[\<Pi>'']\<close>
+          apply (simp add: \<Pi>''_den)
+          apply (simp add: AOT_sem_forall \<Pi>''_indist)
+          by (simp add: y_enc_\<Pi>'')
+      } note 2 = this
+      AOT_have \<open>\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])\<close>
+        apply (auto simp: AOT_sem_exists AOT_sem_ordinary AOT_concrete_sem AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_equiv
+                          AOT_sem_conj)
+        using 2[simplified AOT_sem_box AOT_sem_equiv AOT_sem_imp AOT_sem_forall]
+        by blast
+    }
+  } note 0 = this
+  AOT_modally_strict {
+    {
+      fix x y
+      AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
+      moreover AOT_assume \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+      moreover AOT_have \<open>\<forall>F \<box>([F]y \<equiv> [F]x)\<close>
+        using calculation(2)
+        by (auto simp: AOT_sem_forall AOT_sem_box AOT_sem_equiv)
+      moreover AOT_assume \<open>A!x\<close>
+      moreover AOT_assume \<open>A!y\<close>
+      ultimately AOT_have \<open>\<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G]) \<equiv> \<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])\<close>
+        using 0 by (auto simp: AOT_sem_equiv)
+    }
+    AOT_thus \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
+       (\<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G]) \<equiv> \<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G]))\<close>
+      by (auto simp: AOT_sem_imp AOT_sem_conj)
+  }
+qed
+
 end
