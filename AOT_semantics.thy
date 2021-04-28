@@ -962,7 +962,24 @@ lemma AOT_sem_ordinary_denotes: \<open>[w \<Turnstile> O!\<down>]\<close>
   by (simp add: AOT_sem_ordinary AOT_sem_ordinary_def_denotes AOT_concrete_sem)
 lemma AOT_meta_abstract_denotes: \<open>[w \<Turnstile> A!\<down>]\<close>
   by (simp add: AOT_sem_abstract AOT_sem_abstract_def_denotes AOT_concrete_sem)
+lemma AOT_model_abstract_\<alpha>\<kappa>: \<open>\<exists> a . \<kappa> = \<alpha>\<kappa> a\<close> if \<open>[v \<Turnstile> A!\<kappa>]\<close>
+  using that[unfolded AOT_sem_abstract, simplified AOT_meta_abstract_denotes[unfolded AOT_sem_abstract, THEN AOT_sem_lambda_beta,
+        OF that[simplified AOT_sem_exe, THEN conjunct2, THEN conjunct1]]]
+  apply (simp add: AOT_sem_not AOT_sem_dia AOT_sem_concrete AOT_concrete_sem)
+  by (metis AOT_model_\<omega>_concrete_in_some_world AOT_model_concrete_\<kappa>.simps(1) AOT_model_denotes_\<kappa>_def AOT_sem_denotes AOT_sem_exe \<kappa>.exhaust_disc is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def that)
+lemma AOT_model_ordinary_\<omega>\<kappa>: \<open>\<exists> a . \<kappa> = \<omega>\<kappa> a\<close> if \<open>[v \<Turnstile> O!\<kappa>]\<close>
+  using that[unfolded AOT_sem_ordinary, simplified AOT_sem_ordinary_denotes[unfolded AOT_sem_ordinary, THEN AOT_sem_lambda_beta,
+        OF that[simplified AOT_sem_exe, THEN conjunct2, THEN conjunct1]]]
+  apply (simp add: AOT_sem_dia AOT_sem_concrete AOT_concrete_sem)
+  by (metis AOT_model_concrete_\<kappa>.simps(2) AOT_model_concrete_\<kappa>.simps(3) \<kappa>.exhaust_disc is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def is_null\<kappa>_def)
+lemma AOT_model_\<omega>\<kappa>_ordinary: \<open>[v \<Turnstile> O!\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close>
+  using AOT_sem_ordinary AOT_sem_ordinary_denotes[unfolded AOT_sem_ordinary, THEN AOT_sem_lambda_beta] AOT_sem_exe
+  by (metis AOT_concrete_sem AOT_model_\<omega>_concrete_in_some_world AOT_model_concrete_\<kappa>.simps(1) AOT_sem_concrete AOT_sem_denotes AOT_sem_dia) 
+lemma AOT_model_\<alpha>\<kappa>_ordinary: \<open>[v \<Turnstile> A!\<guillemotleft>\<alpha>\<kappa> x\<guillemotright>]\<close>
+  using AOT_sem_abstract AOT_meta_abstract_denotes[unfolded AOT_sem_abstract, THEN AOT_sem_lambda_beta]
+  by (metis AOT_concrete_sem AOT_model_concrete_\<kappa>.simps(2) AOT_model_denotes_\<kappa>_def AOT_sem_concrete AOT_sem_denotes AOT_sem_dia AOT_sem_not \<kappa>.disc(8))
 
+  
 (********* TODO: this is still a mess - simplify all this and make sure it's valid ********)
 definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2 \<equiv> \<lambda> \<phi> . \<forall> v . [v \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close>

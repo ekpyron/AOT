@@ -6300,7 +6300,8 @@ qed
 AOT_define eq_E :: \<open>\<Pi>\<close> ("'(=\<^sub>E')") \<open>(=\<^sub>E) =\<^sub>d\<^sub>f [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<close>
 
 syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>E" 50)
-translations (\<phi>) "\<kappa> =\<^sub>E \<kappa>'" == (\<phi>) "[(=\<^sub>E)]\<kappa> \<kappa>'" 
+translations
+  "_AOT_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST eq_E) (\<kappa>, \<kappa>')"
 
 AOT_theorem eq_E_denotes: \<open>[(=\<^sub>E)]\<down>\<close>
   by (rule "=\<^sub>d\<^sub>fI"(2)[OF eq_E]) cqt_2_lambda+
@@ -6352,7 +6353,8 @@ syntax "_AOT_non_eq_E" :: \<open>\<Pi>\<close> ("'(\<noteq>\<^sub>E')")
 translations
   (\<Pi>) "(\<noteq>\<^sub>E)" == (\<Pi>) "(=\<^sub>E)\<^sup>-"
 syntax "_AOT_non_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>\<^sub>E" 50)
-translations (\<phi>) "\<kappa> \<noteq>\<^sub>E \<kappa>'" == (\<phi>) "[(\<noteq>\<^sub>E)]\<kappa>\<kappa>'" 
+translations
+ "_AOT_non_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST relation_negation (CONST eq_E)) (\<kappa>,\<kappa>')"
 
 AOT_theorem thm_neg_eq_E: \<open>x \<noteq>\<^sub>E y \<equiv> \<not>(x =\<^sub>E y)\<close>
 proof -

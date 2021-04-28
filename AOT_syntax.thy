@@ -788,4 +788,10 @@ in restr end
 )]
 \<close>
 
+print_translation \<open>
+AOT_syntax_print_translations [
+(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [R, Const (\<^const_syntax>\<open>Pair\<close>, _) $ a $ b] => (
+Const (\<^const_syntax>\<open>AOT_exe\<close>, dummyT) $ R $ (Const (\<^syntax_const>\<open>_AOT_exe_args\<close>, dummyT) $ a $ b))
+)]\<close>
+
 end

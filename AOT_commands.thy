@@ -13,6 +13,7 @@ theory AOT_commands
        and "AOT_have" :: prf_goal % "proof"
        and "AOT_hence" :: prf_goal % "proof"
        and "AOT_modally_strict {" :: prf_open % "proof"
+       and "AOT_actually {" :: prf_open % "proof"
        and "AOT_obtain" :: prf_asm_goal % "proof"
        and "AOT_show" :: prf_asm_goal % "proof"
        and "AOT_thus" :: prf_asm_goal % "proof"

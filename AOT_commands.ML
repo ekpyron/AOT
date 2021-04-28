@@ -470,6 +470,11 @@ val _ =
         val ctxt = AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt
         in ctxt end) (Proof.begin_block state)))));
 val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_actually {\<close> "begin explicit AOT modally-fragile proof block"
+    (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let
+        val ctxt = AOT_ProofData.put (SOME (@{const w\<^sub>0})) ctxt
+        in ctxt end) (Proof.begin_block state)))));
+val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_assume\<close> "assume AOT propositions"
     (structured_statement >> (fn stmt =>
       Toplevel.proof' (fn _ => fn state => (let

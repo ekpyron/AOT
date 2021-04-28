@@ -1,5 +1,5 @@
 theory AOT_model
-  imports Main
+  imports Main "IntensionalType"
 begin
 
 text\<open>We introduce a primitive type for (hyper)intensional propositions\<close>
@@ -29,7 +29,8 @@ lemma \<open>True\<close> nitpick[satisfy, user_axioms, expect = genuine] ..
 
 declare[[typedef_overloaded]]
 
-typedecl \<omega>
+intensional_type \<omega> \<supseteq> nat
+
 typedecl \<sigma>'
 consts \<sigma>'\<^sub>V :: \<sigma>'
 consts \<sigma>'\<^sub>0 :: \<sigma>'
