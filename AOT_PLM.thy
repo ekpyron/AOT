@@ -2177,7 +2177,7 @@ proof -
     using RM_2_prem by blast
   AOT_thus \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<diamond>\<psi>)\<close> using "\<rightarrow>I" by blast
 qed
-
+lemmas "K\<diamond>" = KBasic_13
 AOT_theorem KBasic_14: \<open>\<diamond>\<box>\<phi> \<equiv> \<not>\<box>\<diamond>\<not>\<phi>\<close>
   by (meson "RE\<diamond>" KBasic_11 KBasic_12 intro_elim_3_f oth_class_taut_3_a)
 AOT_theorem KBasic_15: \<open>(\<box>\<phi> \<or> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>
@@ -5445,7 +5445,7 @@ AOT_theorem oa_contingent_4: \<open>Contingent(O!)\<close>
 proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_1, THEN "\<equiv>E"(2)]; rule "&I")
   AOT_have \<open>\<diamond>\<exists>x E!x\<close> using thm_cont_e_3 .
   AOT_hence \<open>\<exists>x \<diamond>E!x\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
-  then AOT_obtain a where \<open>\<diamond>E!a\<close> using "\<exists>E"[rotated] by blast (* TODO: type hack *)
+  then AOT_obtain a where \<open>\<diamond>E!a\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>[\<lambda>x \<diamond>E!x]a\<close>
     by (rule beta_C_meta[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated]) cqt_2_lambda
   AOT_hence \<open>O!a\<close>
@@ -5469,7 +5469,7 @@ proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_2, THEN "\<equiv>E"(2)]; rul
 next
   AOT_have \<open>\<diamond>\<exists>x E!x\<close> using thm_cont_e_3 .
   AOT_hence \<open>\<exists>x \<diamond>E!x\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
-  then AOT_obtain a where \<open>\<diamond>E!a\<close> using "\<exists>E"[rotated] by blast (* TODO: type hack *)
+  then AOT_obtain a where \<open>\<diamond>E!a\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>[\<lambda>x \<diamond>E!x]a\<close>
     by (rule beta_C_meta[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated]) cqt_2_lambda
   AOT_hence \<open>O!a\<close>
@@ -5948,7 +5948,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by cqt_2_lambda
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: beta_C_meta[THEN "\<rightarrow>E", OF 1]) (* TODO: why so slow? *)
+  proof(safe intro!: "&I"; AOT_subst_using subst: beta_C_meta[THEN "\<rightarrow>E", OF 1])
     AOT_have \<open>\<^bold>\<A>\<not>([A!]b & \<not>q\<^sub>0)\<close>
       by (metis Act_Basic_1 Act_Basic_2 abstract_prop con_dis_i_e_2_a con_dis_i_e_4_b
                 intro_elim_3_a raa_cor_3)
@@ -5998,7 +5998,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by cqt_2_lambda
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: beta_C_meta[THEN "\<rightarrow>E", OF 1]) (* TODO: why so slow? *)
+  proof(safe intro!: "&I"; AOT_subst_using subst: beta_C_meta[THEN "\<rightarrow>E", OF 1])
     AOT_show \<open>\<not>\<^bold>\<A>([A!]b \<or> [E!]b)\<close>
       using Act_Basic_9 con_dis_i_e_4_b intro_elim_3_d not_act_abs_b not_act_concrete_b raa_cor_3 by blast
   next AOT_show \<open>\<^bold>\<Delta>([A!]b \<or> [E!]b)\<close>

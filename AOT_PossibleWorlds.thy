@@ -533,8 +533,6 @@ proof(rule noneq_infix[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   qed
 qed
 
-(* TODO: continue at (473) cond-prop PDF page 347, numbered page 502 *)
-
 definition cond_prop :: \<open>(<\<kappa>> \<Rightarrow> \<o>) \<Rightarrow> bool\<close> where
   \<open>cond_prop \<equiv> \<lambda> \<phi> . \<forall> v . [v \<Turnstile> \<forall>F (\<phi>{F} \<rightarrow> Propositional([F]))]\<close>
 
