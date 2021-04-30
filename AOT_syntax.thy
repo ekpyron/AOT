@@ -4,7 +4,6 @@ theory AOT_syntax
        and "AOT_register_metavariable_names" :: thy_decl
        and "AOT_register_premise_set_names" :: thy_decl
        and "AOT_register_type_constraints" :: thy_decl
-       and "AOT_register_restricted_type" :: thy_goal
      abbrevs "actually" = "\<^bold>\<A>"
          and "neccessarily" = "\<box>"
          and "possibly" = "\<diamond>"
@@ -78,7 +77,7 @@ fun AOT_binder_trans thy bnd syntaxConst =
 \<close>
 
 ML\<open>
-datatype AOT_VariableKind = AOT_Variable | AOT_MetaVariable
+datatype AOT_VariableKind = AOT_Variable of (term*term) option | AOT_MetaVariable
 structure AOT_VariablePrefix = Theory_Data (
   type T = (AOT_VariableKind*string) Symtab.table
   val empty = Symtab.empty
@@ -98,7 +97,7 @@ structure AOT_Constraints = Theory_Data (
   val merge = Symtab.merge (K true)
 )
 structure AOT_Restriction = Theory_Data (
-  type T = term Symtab.table
+  type T = (term*term) Symtab.table
   val empty = Symtab.empty
   val extend = I
   val merge = Symtab.merge (K true)
@@ -152,14 +151,18 @@ AOT_Constraints.map (Symtab.update (name, (unaryConstraint, naryConstraint))) th
 end
 )
 
-fun register_variable_name meta (category, prefices) =
-   fold (fn prefix => AOT_VariablePrefix.map (Symtab.update (prefix, (meta, category)))) prefices
+fun register_variable_name meta (category, prefices) thy =
+let
+val restr = (Symtab.lookup (AOT_Restriction.get thy) category)
+in
+   fold (fn prefix => AOT_VariablePrefix.map (Symtab.update (prefix, (if meta then AOT_MetaVariable else AOT_Variable restr, category)))) prefices thy
+end
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_variable_names\<close> "Register variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (fold (register_variable_name AOT_Variable))));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":" ) -- Scan.repeat1 Parse.short_ident)  >> (Toplevel.theory o (fold (register_variable_name false))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_metavariable_names\<close> "Register meta-variable names for type categories."
-    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (fold (register_variable_name AOT_MetaVariable))));
+    (Parse.and_list1 ((Parse.short_ident --| Parse.$$$ ":") -- Scan.repeat1 Parse.short_ident) >> (Toplevel.theory o (fold (register_variable_name true))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_register_premise_set_names\<close> "Register names for premise sets."
     (Scan.repeat1 Parse.short_ident >> (Toplevel.theory o fold (fn prefix => AOT_PremiseSetPrefix.map (Symtab.update (prefix,())))));
@@ -328,21 +331,32 @@ ML\<open>
 fun parseVar unary ctxt [var as Const ("_constrain", _) $ Free (x,_) $ Free _] =
         Const ("_constrain", dummyT) $ var $ (case fetchTermConstraint ctxt x unary of
             SOME (AOT_MetaVariable,_) => raise Term.TERM ("Expected variable prefix, but got metavariable prefix.", [var])
-          | SOME (AOT_Variable, constraint) => constraint
+          | SOME (AOT_Variable _, constraint) => constraint
           | _ => raise Term.TERM ("Unknown variable prefix.", [var]))
   | parseVar _ _ var = raise Term.TERM ("Expected constrained free variable.", var)
 
 fun constrainTrm ctxt forceMeta unary (Free (var, _)) = (fn trm =>
       case fetchTermConstraint ctxt var unary of
         SOME (AOT_MetaVariable,constraint) => Const ("_constrain", dummyT) $ trm $ constraint
-      | SOME (AOT_Variable, constraint) =>
+      | SOME (AOT_Variable restr, constraint) =>
           if forceMeta then Const ("_constrain", dummyT) $ trm $ constraint
-          else Const ("_constrain", dummyT) $ (Const (\<^const_syntax>\<open>AOT_term_of_var\<close>, dummyT) $ trm) $ constraint
+          else Const ("_constrain", dummyT) $ (Const (\<^const_name>\<open>AOT_term_of_var\<close>, dummyT) $ (case restr of SOME (_,r) => r $ trm | _ => trm)) $ constraint
       | _ => raise Term.TERM ("Unknown variable or metavariable prefix.", [trm]))
   | constrainTrm _ _ _ (Bound _) = (fn var => var)
   | constrainTrm _ _ _ trm = raise Term.TERM ("Expected free or bound variable.", [trm])
 fun isPremiseVar ctxt (Free (var, _)) = AOT_IsPremiseSetPrefix ctxt (hd (Symbol.explode var))
   | isPremiseVar _ _ = false
+fun getVarConstraint ctxt unary (Free (var, _)) = (case fetchTermConstraint ctxt var unary of
+        SOME (AOT_MetaVariable,_) => NONE
+      | SOME (AOT_Variable Rep_term,_) => Option.map fst Rep_term
+      | _ => NONE)
+  | getVarConstraint _ _ _ = NONE
+fun getVarConstraints ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (case (getVarConstraint ctxt true (dropConstraints v)) of SOME c => [(c,v)] | _ => [])
+  | getVarConstraints ctxt (Const ("_AOT_term_vars", _) $ v) = (case (getVarConstraint ctxt true (dropConstraints v)) of SOME c => [(c,v)] | _ => [])
+  | getVarConstraints _ (Const (\<^syntax_const>\<open>_AOT_verbatim\<close>, _) $ _) = []
+  | getVarConstraints ctxt (x $ y)  = getVarConstraints ctxt x @ getVarConstraints ctxt y
+  | getVarConstraints ctxt (Abs (_,_,z)) = getVarConstraints ctxt z
+  | getVarConstraints _ _ = []
 fun processFreesForceMeta forceMeta premiseVars ctxt (Const (\<^syntax_const>\<open>_AOT_term_var\<close>, _) $ v) = (
     if isPremiseVar ctxt (dropConstraints v) then (dropConstraints v, if List.find (fn x => x = v) premiseVars = NONE then v::premiseVars else premiseVars)
                          else (constrainTrm ctxt forceMeta true (dropConstraints v) v, premiseVars))
@@ -399,6 +413,15 @@ fun makePairs (x::[]) = x
 fun makeExeArgs y = makePairs (makeArgList y)
 fun parseExe ctxt [x,y] = (Const (\<^const_syntax>\<open>AOT_exe\<close>, dummyT) $ x $ makeExeArgs y)
 fun parseEnc ctxt [x,y] = (Const ("AOT_enc", dummyT) $ makeExeArgs x $ y)
+fun parseEquivDef ctxt lhs rhs = let
+val constraints = getVarConstraints ctxt lhs
+fun collectConstraints c [] = c
+ | collectConstraints NONE ((x,y)::xs) = collectConstraints (SOME (x $ y)) xs
+ | collectConstraints (SOME c) ((x,y)::xs) = collectConstraints (SOME (Const ("AOT_conj", dummyT) $  c $ (x $ y))) xs
+val rhs = (case collectConstraints NONE constraints of SOME c => Const ("AOT_conj", dummyT) $ c $ rhs | _ => rhs)
+in
+HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ processFreesAlwaysMeta ctxt lhs $ processFreesAlwaysMeta ctxt rhs)
+end
 in
 [
   (\<^syntax_const>\<open>_AOT_var\<close>, parseVar true),
@@ -442,7 +465,7 @@ in
   (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, fn ctxt => fn [_ $ var $ pos,trm] => let
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ (Const ("_constrainAbs", dummyT) $ Term.absfree (Term.dest_Free var) trm $ pos)
     in trm end),
-  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ processFreesAlwaysMeta ctxt x $ processFreesAlwaysMeta ctxt y)),
+  (\<^syntax_const>\<open>_AOT_equiv_def\<close>, fn ctxt => fn [x,y] => parseEquivDef ctxt x y),
   (\<^syntax_const>\<open>_AOT_exe\<close>, parseExe),
   (\<^syntax_const>\<open>_AOT_enc\<close>, parseEnc)
 ]
@@ -549,7 +572,7 @@ ML\<open>
 fun AOT_restricted_binder const connect = fn ctxt => (fn [a, b] => Ast.mk_appl (Ast.Constant const) [
 let
 val b = case a of (Ast.Appl [Ast.Constant "_AOT_var", var]) => (
-case fetchTermCategory ctxt (hd (Symbol.explode (fst (unconstrain_var var)))) of SOME (AOT_Variable, category) =>
+case fetchTermCategory ctxt (hd (Symbol.explode (fst (unconstrain_var var)))) of SOME (AOT_Variable _, category) =>
   let
   val (restr, _) = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_Restriction.get thy) category, thy)) ctxt
   in case restr of SOME _ => Ast.mk_appl (Ast.Constant connect) [Ast.mk_appl (Ast.mk_appl (Ast.Constant "_AOT_restriction") [Ast.Constant category]) [a], b] | _ => b end | _ => b) | _ => b
@@ -744,45 +767,10 @@ begin
 declare[[show_AOT_syntax=false, show_question_marks=true]]
 end
 
-locale AOT_restriction_condition =
-  fixes \<psi> :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
-  assumes strictly_nonempty: \<open>[v \<Turnstile> \<exists>\<alpha> \<psi>{\<alpha>}]\<close>
-  assumes strict_existential_import: \<open>[v \<Turnstile> \<psi>{\<tau>} \<rightarrow> \<tau>\<down>]\<close>
-
-ML\<open>
-fun register_restricted_type (name:string, restriction:string) thy =
-let
-val ctxt = thy
-val ctxt = setupStrictWorld ctxt
-val trm = Syntax.check_term ctxt (AOT_read_term @{nonterminal \<phi>'} ctxt restriction)
-val free = case (Term.add_frees trm []) of [f] => f | _ => raise Term.TERM ("Expected single free variable.", [trm])
-val trm = Term.absfree free trm
-val localeTerm = Const (\<^const_name>\<open>AOT_restriction_condition\<close>, dummyT) $ trm
-val localeTerm = Syntax.check_term ctxt localeTerm
-fun after_qed thms thy = let
-val st = Interpretation.global_interpretation (([(@{locale AOT_restriction_condition}, ((name, true),
-           (Expression.Named [("\<psi>", trm)], [])))], [])) [] thy
-val st = Proof.refine_insert (flat thms) st
-val thy = Proof.global_immediate_proof st
-
-val thy = Local_Theory.background_theory (AOT_Constraints.map (Symtab.update (name, (term_of (snd free), term_of (snd free))))) thy
-val thy = Local_Theory.background_theory (AOT_Restriction.map (Symtab.update (name, trm))) thy
-in thy end
-in
-Proof.theorem NONE after_qed [[(HOLogic.mk_Trueprop localeTerm, [])]] ctxt
-end
-
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_restricted_type\<close> "Register a restricted type."
-    (((Parse.short_ident --| Parse.$$$ ":") -- Parse.term) >> (Toplevel.local_theory_to_proof NONE NONE o register_restricted_type));
-
-\<close>
-
-
 parse_translation\<open>
 [("_AOT_restriction", fn ctxt => fn [Const (name,_)] =>
 let
-val (restr, ctxt) = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_Restriction.get thy) name, thy)) ctxt
+val (restr, ctxt) = Local_Theory.raw_theory_result (fn thy => (Option.map fst (Symtab.lookup (AOT_Restriction.get thy) name), thy)) ctxt
 val restr = case restr of SOME x => x | _ => raise Fail ("Unknown restricted type: " ^ name)
 in restr end
 )]

@@ -1,5 +1,5 @@
 theory AOT_PossibleWorlds
-  imports AOT_PLM AOT_BasicLogicalObjects
+  imports AOT_PLM AOT_BasicLogicalObjects AOT_RestrictedVariables
 begin
 
 AOT_define situation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Situation'(_')\<close>)
@@ -60,7 +60,7 @@ AOT_theorem possit_sit_4: \<open>\<^bold>\<A>Situation(x) \<equiv> Situation(x)\
   by (meson Act_Basic_5 Act_Sub_2 RA_2 intro_elim_3_a intro_elim_3_f possit_sit_2)
 
 
-AOT_register_restricted_type
+AOT_register_rigid_restricted_type
   Situation: \<open>Situation(\<kappa>)\<close>
 proof
   AOT_modally_strict {
@@ -80,12 +80,20 @@ next
       AOT_thus \<open>\<kappa>\<down>\<close> by (metis russell_axiom_exe_1.\<psi>_denotes_asm)
     qed
   }
+next
+  AOT_modally_strict {
+    fix \<alpha>
+    AOT_show \<open>\<box>(Situation(\<alpha>) \<rightarrow> \<box>Situation(\<alpha>))\<close>
+      using possit_sit_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1), THEN RN]
+      by blast
+  }
 qed
+
 AOT_register_variable_names
   Situation: s
 
 AOT_define true_in_s :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("(_ \<Turnstile>/ _)" [100, 40] 100)
-  \<open>x \<Turnstile> p \<equiv>\<^sub>d\<^sub>f Situation(x) & x\<^bold>\<Sigma>p\<close>
+  \<open>s \<Turnstile> p \<equiv>\<^sub>d\<^sub>f s\<^bold>\<Sigma>p\<close>
 
 notepad
 begin
@@ -124,179 +132,158 @@ next
     using true_in_s[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1 "&I" by blast
 qed
 
-AOT_theorem lem2_1:
-  assumes \<open>Situation(x)\<close>
-  shows \<open>x \<Turnstile> p \<equiv> \<box>x \<Turnstile> p\<close>
+AOT_theorem lem2_1: \<open>s \<Turnstile> p \<equiv> \<box>s \<Turnstile> p\<close>
 proof -
-  AOT_have \<open>x \<Turnstile> p \<equiv> x[\<lambda>y p]\<close>
-    using lem1[THEN "\<rightarrow>E", OF assms] by blast
-  also AOT_have \<open>\<dots> \<equiv> \<box>x[\<lambda>y p]\<close>
+  AOT_have sit: \<open>Situation(s)\<close>
+    by (simp add: Situation.\<psi>)
+  AOT_have \<open>s \<Turnstile> p \<equiv> s[\<lambda>y p]\<close>
+    using lem1[THEN "\<rightarrow>E", OF sit] by blast
+  also AOT_have \<open>\<dots> \<equiv> \<box>s[\<lambda>y p]\<close>
     by (rule en_eq_2_1[unvarify F]) cqt_2_lambda
-  also AOT_have \<open>\<dots> \<equiv> \<box>x \<Turnstile> p\<close>
-    using lem1[THEN RM, THEN "\<rightarrow>E", OF possit_sit_1[THEN "\<equiv>E"(1), OF assms]]
+  also AOT_have \<open>\<dots> \<equiv> \<box>s \<Turnstile> p\<close>
+    using lem1[THEN RM, THEN "\<rightarrow>E", OF possit_sit_1[THEN "\<equiv>E"(1), OF sit]]
     by (metis KBasic_6 intro_elim_3_b oth_class_taut_2_e vdash_properties_10)
   finally show ?thesis.
 qed
 
-AOT_theorem lem2_2:
-  assumes \<open>Situation(x)\<close>
-  shows \<open>\<diamond>x \<Turnstile> p \<equiv> x \<Turnstile> p\<close>
+AOT_theorem lem2_2: \<open>\<diamond>s \<Turnstile> p \<equiv> s \<Turnstile> p\<close>
 proof -
-  AOT_have \<open>\<box>(x \<Turnstile> p \<rightarrow> \<box>x \<Turnstile> p)\<close>
-    using possit_sit_1[THEN "\<equiv>E"(1), OF assms] lem2_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)]] RM[OF "\<rightarrow>I", THEN "\<rightarrow>E"] by blast
+  AOT_have \<open>\<box>(s \<Turnstile> p \<rightarrow> \<box>s \<Turnstile> p)\<close>
+    using possit_sit_1[THEN "\<equiv>E"(1), OF Situation.\<psi>] lem2_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)]] RM[OF "\<rightarrow>I", THEN "\<rightarrow>E"] by blast
   thus ?thesis by (metis "B\<diamond>" S5Basic_13 T_S5_fund_1 intro_elim_2 intro_elim_3_a vdash_properties_10)
 qed
 
-AOT_theorem lem2_3:
-  assumes \<open>Situation(x)\<close>
-  shows \<open>\<diamond>x \<Turnstile> p \<equiv> \<box>x \<Turnstile> p\<close>
-  using lem2_1[OF assms] lem2_2[OF assms] by (metis intro_elim_3_e)
+AOT_theorem lem2_3: \<open>\<diamond>s \<Turnstile> p \<equiv> \<box>s \<Turnstile> p\<close>
+  using lem2_1 lem2_2 by (metis intro_elim_3_e)
 
-AOT_theorem lem2_4:
-  assumes \<open>Situation(x)\<close>
-  shows \<open>\<^bold>\<A>(x \<Turnstile> p) \<equiv> x \<Turnstile> p\<close>
+AOT_theorem lem2_4: \<open>\<^bold>\<A>(s \<Turnstile> p) \<equiv> s \<Turnstile> p\<close>
 proof -
-  AOT_have \<open>\<box>(x \<Turnstile> p \<rightarrow> \<box>x \<Turnstile> p)\<close>
-    using possit_sit_1[THEN "\<equiv>E"(1), OF assms] lem2_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)]] RM[OF "\<rightarrow>I", THEN "\<rightarrow>E"] by blast
+  AOT_have \<open>\<box>(s \<Turnstile> p \<rightarrow> \<box>s \<Turnstile> p)\<close>
+    using possit_sit_1[THEN "\<equiv>E"(1), OF Situation.\<psi>]
+      lem2_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)]] RM[OF "\<rightarrow>I", THEN "\<rightarrow>E"] by blast
   thus ?thesis
     using sc_eq_fur_2[THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem lem2_5:
-  assumes \<open>Situation(x)\<close>
-  shows \<open>\<not>x \<Turnstile> p \<equiv> \<box>\<not>x \<Turnstile> p\<close>
-  by (metis KBasic2_1 assms contraposition_1_b deduction_theorem intro_elim_2 intro_elim_3_c intro_elim_3_d lem2_2)
+AOT_theorem lem2_5: \<open>\<not>s \<Turnstile> p \<equiv> \<box>\<not>s \<Turnstile> p\<close>
+  by (metis KBasic2_1 contraposition_1_b deduction_theorem intro_elim_2 intro_elim_3_c intro_elim_3_d lem2_2)
 
-AOT_theorem sit_identity:
-  assumes \<open>Situation(x)\<close> and \<open>Situation(x')\<close>
-  shows \<open>x = x' \<equiv> \<forall>p(x \<Turnstile> p \<equiv> x' \<Turnstile> p)\<close>
+AOT_theorem sit_identity: \<open>s = s' \<equiv> \<forall>p(s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
 proof(rule "\<equiv>I"; rule "\<rightarrow>I")
-  AOT_assume \<open>x = x'\<close>
-  moreover AOT_have \<open>\<forall>p(x \<Turnstile> p \<equiv> x \<Turnstile> p)\<close>
+  AOT_assume \<open>s = s'\<close>
+  moreover AOT_have \<open>\<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> p)\<close>
     by (simp add: oth_class_taut_3_a universal_cor)
-  ultimately AOT_show \<open>\<forall>p(x \<Turnstile> p \<equiv> x' \<Turnstile> p)\<close>
+  ultimately AOT_show \<open>\<forall>p(s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
     using "=E" by fast
 next
-  AOT_assume a: \<open>\<forall>p (x \<Turnstile> p \<equiv> x' \<Turnstile> p)\<close>
-  AOT_show \<open>x = x'\<close>
+  AOT_assume a: \<open>\<forall>p (s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
+  AOT_show \<open>s = s'\<close>
   proof(safe intro!: ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" GEN "\<equiv>I" "\<rightarrow>I")
-    AOT_show \<open>A!x\<close> using assms(1) "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a situations by blast
+    AOT_show \<open>A!s\<close> using Situation.\<psi> "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a situations by blast
   next
-    AOT_show \<open>A!x'\<close> using assms(2) "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a situations by blast
+    AOT_show \<open>A!s'\<close> using Situation.\<psi> "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a situations by blast
   next
     fix F
-    AOT_assume 0: \<open>x[F]\<close>
+    AOT_assume 0: \<open>s[F]\<close>
     AOT_hence \<open>\<exists>p (F = [\<lambda>y p])\<close>
-      using assms(1)[THEN situations[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=F], THEN "\<rightarrow>E"]
+      using Situation.\<psi>[THEN situations[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=F], THEN "\<rightarrow>E"]
             prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     then AOT_obtain p where F_def: \<open>F = [\<lambda>y p]\<close>
       using "\<exists>E" by metis
-    AOT_hence \<open>x[\<lambda>y p]\<close> using 0 "=E" by blast
-    AOT_hence \<open>x \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF assms(1), THEN "\<equiv>E"(2)] by blast
-    AOT_hence \<open>x' \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(1)] by blast
-    AOT_hence \<open>x'[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF assms(2), THEN "\<equiv>E"(1)] by blast
-    AOT_thus \<open>x'[F]\<close> using F_def[symmetric] "=E" by blast
+    AOT_hence \<open>s[\<lambda>y p]\<close> using 0 "=E" by blast
+    AOT_hence \<open>s \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)] by blast
+    AOT_hence \<open>s' \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>s'[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(1)] by blast
+    AOT_thus \<open>s'[F]\<close> using F_def[symmetric] "=E" by blast
   next
     fix F
-    AOT_assume 0: \<open>x'[F]\<close>
+    AOT_assume 0: \<open>s'[F]\<close>
     AOT_hence \<open>\<exists>p (F = [\<lambda>y p])\<close>
-      using assms(2)[THEN situations[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=F], THEN "\<rightarrow>E"]
+      using Situation.\<psi>[THEN situations[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=F], THEN "\<rightarrow>E"]
             prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     then AOT_obtain p where F_def: \<open>F = [\<lambda>y p]\<close>
       using "\<exists>E" by metis
-    AOT_hence \<open>x'[\<lambda>y p]\<close> using 0 "=E" by blast
-    AOT_hence \<open>x' \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF assms(2), THEN "\<equiv>E"(2)] by blast
-    AOT_hence \<open>x \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(2)] by blast
-    AOT_hence \<open>x[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF assms(1), THEN "\<equiv>E"(1)] by blast
-    AOT_thus \<open>x[F]\<close> using F_def[symmetric] "=E" by blast
+    AOT_hence \<open>s'[\<lambda>y p]\<close> using 0 "=E" by blast
+    AOT_hence \<open>s' \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)] by blast
+    AOT_hence \<open>s \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(2)] by blast
+    AOT_hence \<open>s[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(1)] by blast
+    AOT_thus \<open>s[F]\<close> using F_def[symmetric] "=E" by blast
   qed
 qed
 
 AOT_define sit_part_whole :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<unlhd>\<close> 80)
-  \<open>x \<unlhd> y \<equiv>\<^sub>d\<^sub>f Situation(x) & Situation(y) & \<forall>p (x \<Turnstile> p \<rightarrow> y \<Turnstile> p)\<close>
+  \<open>s \<unlhd> s' \<equiv>\<^sub>d\<^sub>f \<forall>p (s \<Turnstile> p \<rightarrow> s' \<Turnstile> p)\<close>
 
-AOT_theorem part_1: assumes \<open>Situation(x)\<close> shows \<open>x \<unlhd> x\<close>
+AOT_theorem part_1: \<open>s \<unlhd> s\<close>
   by (rule sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-     (safe intro!: "&I" assms GEN "\<rightarrow>I")
+     (safe intro!: "&I" Situation.\<psi> GEN "\<rightarrow>I")
 
-(* TODO: PLM: this is unnecessarily restricted to situations in PLM, which is implicit in \<unlhd> *)
-AOT_theorem part_2: \<open>x \<unlhd> y & x \<noteq> y \<rightarrow> \<not>(y \<unlhd> x)\<close>
+AOT_theorem part_2: \<open>s \<unlhd> s' & s \<noteq> s' \<rightarrow> \<not>(s' \<unlhd> s)\<close>
 proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule raa_cor_2)
-  AOT_assume 0: \<open>x \<unlhd> y\<close>
-  AOT_hence a: \<open>x \<Turnstile> p \<rightarrow> y \<Turnstile> p\<close> for p using "\<forall>E"(2) sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-  AOT_assume \<open>y \<unlhd> x\<close>
-  AOT_hence b: \<open>y \<Turnstile> p \<rightarrow> x \<Turnstile> p\<close> for p using "\<forall>E"(2) sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-  AOT_have \<open>\<forall>p (x \<Turnstile> p \<equiv> y \<Turnstile> p)\<close> using a b by (simp add: intro_elim_2 universal_cor)
-  AOT_hence 1: \<open>x = y\<close> using sit_identity[THEN "\<equiv>E"(2)]
-    using 0[THEN sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)] "&E" by blast
-  AOT_assume \<open>x \<noteq> y\<close>
-  AOT_hence \<open>\<not>(x = y)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
-  AOT_thus \<open>x = y & \<not>(x = y)\<close> using 1 "&I" by blast
+  AOT_assume 0: \<open>s \<unlhd> s'\<close>
+  AOT_hence a: \<open>s \<Turnstile> p \<rightarrow> s' \<Turnstile> p\<close> for p using "\<forall>E"(2) sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_assume \<open>s' \<unlhd> s\<close>
+  AOT_hence b: \<open>s' \<Turnstile> p \<rightarrow> s \<Turnstile> p\<close> for p using "\<forall>E"(2) sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close> using a b by (simp add: intro_elim_2 universal_cor)
+  AOT_hence 1: \<open>s = s'\<close> using sit_identity[THEN "\<equiv>E"(2)] by metis
+  AOT_assume \<open>s \<noteq> s'\<close>
+  AOT_hence \<open>\<not>(s = s')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
+  AOT_thus \<open>s = s' & \<not>(s = s')\<close> using 1 "&I" by blast
 qed
 
-(* TODO: PLM: this is unnecessarily restricted to situations in PLM, which is implicit in \<unlhd> *)
-AOT_theorem part_3: \<open>x \<unlhd> y & y \<unlhd> z \<rightarrow> x \<unlhd> z\<close>
-proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); safe intro!: "&I" GEN "\<rightarrow>I" sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  AOT_show \<open>Situation(x)\<close> if \<open>x \<unlhd> y\<close> using that[THEN sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "&E" by blast
-next
-  AOT_show \<open>Situation(z)\<close> if \<open>y \<unlhd> z\<close> using that[THEN sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "&E" by blast
-next
+AOT_theorem part_3: \<open>s \<unlhd> s' & s' \<unlhd> s'' \<rightarrow> s \<unlhd> s''\<close>
+proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); safe intro!: "&I" GEN "\<rightarrow>I" sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fI"] Situation.\<psi>)
   fix p
-  AOT_assume \<open>x \<Turnstile> p\<close>
-  moreover AOT_assume \<open>x \<unlhd> y\<close>
-  ultimately AOT_have \<open>y \<Turnstile> p\<close>
+  AOT_assume \<open>s \<Turnstile> p\<close>
+  moreover AOT_assume \<open>s \<unlhd> s'\<close>
+  ultimately AOT_have \<open>s' \<Turnstile> p\<close>
     using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<rightarrow>E"] by blast
-  moreover AOT_assume \<open>y \<unlhd> z\<close>
-  ultimately AOT_show \<open>z \<Turnstile> p\<close>
+  moreover AOT_assume \<open>s' \<unlhd> s''\<close>
+  ultimately AOT_show \<open>s'' \<Turnstile> p\<close>
     using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem sit_identity2_1: assumes \<open>Situation(x)\<close> and \<open>Situation(y)\<close>
-  shows \<open>x = y \<equiv> x \<unlhd> y & y \<unlhd> x\<close>
+AOT_theorem sit_identity2_1: \<open>s = s' \<equiv> s \<unlhd> s' & s' \<unlhd> s\<close>
 proof (safe intro!: "\<equiv>I" "&I" "\<rightarrow>I")
-  AOT_show \<open>x \<unlhd> y\<close> if \<open>x = y\<close>
-    using "rule=E" assms(1) part_1 that by blast
+  AOT_show \<open>s \<unlhd> s'\<close> if \<open>s = s'\<close>
+    using "rule=E" part_1 that by blast
 next
-  AOT_show \<open>y \<unlhd> x\<close> if \<open>x = y\<close>
-    using "rule=E" assms(2) part_1 that[symmetric] by blast
+  AOT_show \<open>s' \<unlhd> s\<close> if \<open>s = s'\<close>
+    using "rule=E" part_1 that[symmetric] by blast
 next
-  AOT_assume \<open>x \<unlhd> y & y \<unlhd> x\<close>
-  AOT_thus \<open>x = y\<close> using part_2[THEN "\<rightarrow>E", OF "&I"]
+  AOT_assume \<open>s \<unlhd> s' & s' \<unlhd> s\<close>
+  AOT_thus \<open>s = s'\<close> using part_2[THEN "\<rightarrow>E", OF "&I"]
     by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_2_a con_dis_i_e_2_b noneq_infix raa_cor_3)
 qed
 
-AOT_theorem sit_identity2_2: assumes \<open>Situation(x)\<close> and \<open>Situation(y)\<close>
-  shows \<open>x = y \<equiv> \<forall>s (s \<unlhd> x \<equiv> s \<unlhd> y)\<close>
-proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN sit_identity[THEN "\<equiv>E"(2), OF assms])
-  AOT_show \<open>s \<unlhd> y\<close> if \<open>s \<unlhd> x\<close> and \<open>x = y\<close> for s
+AOT_theorem sit_identity2_2: \<open>s = s' \<equiv> \<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" Situation.GEN sit_identity[THEN "\<equiv>E"(2)] GEN[where 'a=\<o>])
+  AOT_show \<open>s'' \<unlhd> s'\<close> if \<open>s'' \<unlhd> s\<close> and \<open>s = s'\<close> for s''
     using "rule=E" that by blast
 next
-  AOT_show \<open>s \<unlhd> x\<close> if \<open>s \<unlhd> y\<close> and \<open>x = y\<close> for s
+  AOT_show \<open>s'' \<unlhd> s\<close> if \<open>s'' \<unlhd> s'\<close> and \<open>s = s'\<close> for s''
     using "rule=E" id_sym that by blast
 next
-  AOT_show \<open>y \<Turnstile> p\<close> if \<open>x \<Turnstile> p\<close> and \<open>\<forall>s (s \<unlhd> x \<equiv> s \<unlhd> y)\<close> for p
-    using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", OF that(2)[THEN "\<forall>E"(2),
-          THEN "\<rightarrow>E", OF assms(1), THEN "\<equiv>E"(1), OF part_1[OF assms(1)]], THEN "&E"(2),
-          THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1)].
+  AOT_show \<open>s' \<Turnstile> p\<close> if \<open>s \<Turnstile> p\<close> and \<open>\<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close> for p
+    using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), OF that(2)[THEN "Situation.\<forall>E", THEN "\<equiv>E"(1), OF part_1], THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1)].
 next
-  AOT_show \<open>x \<Turnstile> p\<close> if \<open>y \<Turnstile> p\<close> and \<open>\<forall>s (s \<unlhd> x \<equiv> s \<unlhd> y)\<close> for p
-    using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", OF that(2)[THEN "\<forall>E"(2),
-          THEN "\<rightarrow>E", OF assms(2), THEN "\<equiv>E"(2), OF part_1[OF assms(2)]], THEN "&E"(2),
-          THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1)].
+  AOT_show \<open>s \<Turnstile> p\<close> if \<open>s' \<Turnstile> p\<close> and \<open>\<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close> for p
+    using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), OF that(2)[THEN "Situation.\<forall>E",
+          THEN "\<equiv>E"(2), OF part_1], THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1)].
 qed
 
 AOT_define Persistent :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>Persistent'(_')\<close>)
   persistent: \<open>Persistent(p) \<equiv>\<^sub>d\<^sub>f \<forall>s (s \<Turnstile> p \<rightarrow> \<forall>s' (s \<unlhd> s' \<rightarrow> s' \<Turnstile> p))\<close>
 
 AOT_theorem pers_prop: \<open>\<forall>p Persistent(p)\<close>
-  by (safe intro!: GEN persistent[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I")
+  by (safe intro!: GEN[where 'a=\<o>] Situation.GEN persistent[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I")
      (simp add: sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"])
 
 AOT_define NullSituation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NullSituation'(_')\<close>)
-  df_null_trivial_1: \<open>NullSituation(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<not>\<exists>p x \<Turnstile> p\<close>
+  df_null_trivial_1: \<open>NullSituation(s) \<equiv>\<^sub>d\<^sub>f \<not>\<exists>p s \<Turnstile> p\<close>
 
 AOT_define TrivialSituation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>TrivialSituation'(_')\<close>)
-  df_null_trivial_2: \<open>TrivialSituation(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<forall>p x \<Turnstile> p\<close>
+  df_null_trivial_2: \<open>TrivialSituation(s) \<equiv>\<^sub>d\<^sub>f \<forall>p s \<Turnstile> p\<close>
 
 AOT_theorem thm_null_trivial_1: \<open>\<exists>!x NullSituation(x)\<close>
 proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>NullSituation(\<kappa>)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> F \<noteq> F)\<guillemotright>\<close>)
@@ -424,7 +411,8 @@ proof(safe intro!: "\<rightarrow>I" dest!: df_null_trivial_1[THEN "\<equiv>\<^su
       by (metis "\<equiv>\<^sub>d\<^sub>fI" AOT_dia)
     AOT_hence \<open>\<exists>p \<diamond>(x \<Turnstile> p)\<close> by (metis "BF\<diamond>" "\<rightarrow>E")
     then AOT_obtain p where \<open>\<diamond>(x \<Turnstile> p)\<close> using "\<exists>E"[rotated] by blast
-    AOT_hence \<open>x \<Turnstile> p\<close> by (metis 0 intro_elim_3_a lem2_2)
+    AOT_hence \<open>x \<Turnstile> p\<close>
+      by (metis intro_elim_3_a lem2_2[unconstrain s, THEN "\<rightarrow>E", OF 0])
     AOT_hence \<open>\<exists>p x \<Turnstile> p\<close> using "\<exists>I" by fast
     AOT_thus \<open>\<exists>p x \<Turnstile> p & \<not>\<exists>p x \<Turnstile> p\<close> using 1 "&I" by blast
   qed
@@ -442,7 +430,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: df_null_trivial_2[THEN "\<equiv>\<^su
   AOT_hence 1: \<open>\<box>Situation(x)\<close> by (metis intro_elim_3_a possit_sit_1)
   AOT_assume \<open>\<forall>p x \<Turnstile> p\<close>
   AOT_hence \<open>x \<Turnstile> p\<close> for p using "\<forall>E" by blast
-  AOT_hence \<open>\<box>x \<Turnstile> p\<close> for p using  0 intro_elim_3_a lem2_1 by blast
+  AOT_hence \<open>\<box>x \<Turnstile> p\<close> for p using  0 intro_elim_3_a lem2_1[unconstrain s, THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<forall>p \<box>x \<Turnstile> p\<close> by (rule GEN)
   AOT_hence \<open>\<box>\<forall>p x \<Turnstile> p\<close> by (rule BF[THEN "\<rightarrow>E"])
   AOT_hence 2: \<open>\<box>(Situation(x) & \<forall>p x \<Turnstile> p)\<close>
@@ -606,7 +594,7 @@ AOT_theorem strict_sit:
 (* TODO: exercise (479) sit-lit *)
 
 AOT_define actual :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Actual'(_')\<close>)
-  \<open>Actual(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<forall>p (x \<Turnstile> p \<rightarrow> p)\<close>
+  \<open>Actual(s) \<equiv>\<^sub>d\<^sub>f \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
 
 AOT_theorem act_and_not_pos: \<open>\<exists>s (Actual(s) & \<diamond>\<not>Actual(s))\<close>
 proof -
@@ -619,16 +607,16 @@ proof -
         using "\<equiv>\<^sub>d\<^sub>fI" existential_2_a prop_prop1 that by fastforce
     }
   qed
-  then AOT_obtain s\<^sub>1 where s_prop: \<open>Situation(s\<^sub>1) & \<forall>F (s\<^sub>1[F] \<equiv> F = [\<lambda>y q\<^sub>1])\<close>
-    using "\<exists>E"[rotated] by blast
+  then AOT_obtain s\<^sub>1 where s_prop: \<open>\<forall>F (s\<^sub>1[F] \<equiv> F = [\<lambda>y q\<^sub>1])\<close>
+    using "Situation.\<exists>E"[rotated] by meson
   AOT_have \<open>Actual(s\<^sub>1)\<close>
-  proof(safe intro!: actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" GEN "\<rightarrow>I" s_prop[THEN "&E"(1)])
+  proof(safe intro!: actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" GEN "\<rightarrow>I" s_prop Situation.\<psi>)
     fix p
     AOT_assume \<open>s\<^sub>1 \<Turnstile> p\<close>
     AOT_hence \<open>s\<^sub>1[\<lambda>y p]\<close>
-      by (metis con_dis_taut_1 intro_elim_3_a lem1 s_prop vdash_properties_10)
+      by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b prop_enc true_in_s)
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close>
-      by (rule s_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) cqt_2_lambda
+      by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) cqt_2_lambda
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis intro_elim_3_b p_identity_thm2_3)
     AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
   qed
@@ -642,23 +630,22 @@ proof -
     AOT_hence \<open>\<box>(s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> q\<^sub>1)\<close> using "\<forall>E" by blast
     AOT_hence \<open>\<box>s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> \<box>q\<^sub>1\<close> by (metis "\<rightarrow>E" qml_1 vdash_properties_1_b)
     moreover AOT_have \<open>s\<^sub>1 \<Turnstile> q\<^sub>1\<close>
-      using s_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2),
-                   THEN lem1[THEN "\<rightarrow>E", OF s_prop[THEN "&E"(1)], THEN "\<equiv>E"(2)]]
+      using s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(2), THEN lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)]]
             "rule=I_1" prop_prop2_2 by blast
     ultimately AOT_have \<open>\<box>q\<^sub>1\<close>
       using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a intro_elim_3_a lem2_1 true_in_s vdash_properties_10 by fast
     AOT_thus \<open>\<diamond>\<not>q\<^sub>1 & \<not>\<diamond>\<not>q\<^sub>1\<close> using KBasic_12[THEN "\<equiv>E"(1)] q\<^sub>1_prop[THEN "&E"(2)] "&I" by blast
   qed
-  ultimately AOT_have \<open>Situation(s\<^sub>1) & (Actual(s\<^sub>1) & \<diamond>\<not>Actual(s\<^sub>1))\<close> using s_prop[THEN "&E"(1)] "&I" by blast
-  thus ?thesis by (rule "\<exists>I")
+  ultimately AOT_have \<open>(Actual(s\<^sub>1) & \<diamond>\<not>Actual(s\<^sub>1))\<close> using s_prop "&I" by blast
+  thus ?thesis by (rule "Situation.\<exists>I")
 qed
 
 AOT_theorem actual_s_1: \<open>\<exists>s Actual(s)\<close>
 proof -
-  AOT_obtain s where \<open>Situation(s) & (Actual(s) & \<diamond>\<not>Actual(s))\<close>
-    using act_and_not_pos "\<exists>E"[rotated] by blast
-  AOT_hence \<open>Situation(s) & Actual(s)\<close> using "&E" "&I" by metis
-  thus ?thesis by (rule "\<exists>I")
+  AOT_obtain s where \<open>(Actual(s) & \<diamond>\<not>Actual(s))\<close>
+    using act_and_not_pos "Situation.\<exists>E"[rotated] by meson
+  AOT_hence \<open>Actual(s)\<close> using "&E" "&I" by metis
+  thus ?thesis by (rule "Situation.\<exists>I")
 qed
 
 AOT_theorem actual_s_2: \<open>\<exists>s \<not>Actual(s)\<close>
@@ -687,7 +674,7 @@ proof -
   AOT_obtain p\<^sub>1 where notp\<^sub>1: \<open>\<not>p\<^sub>1\<close>
     by (metis "instantiation" existential_1 log_prop_prop_2 non_contradiction)
   AOT_have \<open>\<forall>s (Actual(s) \<rightarrow> \<not>(s \<Turnstile> p\<^sub>1))\<close>
-  proof (rule GEN; rule "\<rightarrow>I"; rule "\<rightarrow>I"; rule raa_cor_2)
+  proof (rule Situation.GEN; rule "\<rightarrow>I"; rule raa_cor_2)
     fix s
     AOT_assume \<open>Actual(s)\<close>
     moreover AOT_assume \<open>s \<Turnstile> p\<^sub>1\<close>
@@ -701,9 +688,7 @@ qed
  * It should probably have been \<exists>!s (s' \<unlhd> s & s'' \<unlhd> s & \<forall>s''' (s' \<unlhd> s''' & s'' \<unlhd> s''' \<rightarrow> s \<unlhd> s'''))
  * For the stated theorem the proof below is much simpler than the one given in PLM.
  *)
-AOT_theorem comp:
-  assumes \<open>Situation(s')\<close> and \<open>Situation(s'')\<close>
-  shows \<open>\<exists>s (s' \<unlhd> s & s'' \<unlhd> s)\<close>
+AOT_theorem comp: \<open>\<exists>s (s' \<unlhd> s & s'' \<unlhd> s)\<close>
 proof -
   AOT_have \<open>Situation(\<^bold>s\<^sub>V)\<close>
     by (meson "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a df_null_trivial_2 null_triv_ac_4)
@@ -715,7 +700,7 @@ proof -
   moreover AOT_have \<open>\<^bold>s\<^sub>V\<down>\<close>
     using df_the_null_sit_2 rule_id_def_2_b' thm_null_trivial_4 by blast
   ultimately show ?thesis
-    using "\<exists>I"(1) assms "&I" by metis
+    using "\<exists>I"(1) Situation.\<psi> "&I" by metis
 qed
 
 AOT_theorem act_sit_1: \<open>Actual(s) \<rightarrow> (s \<Turnstile> p \<rightarrow> [\<lambda>y p]s)\<close>
@@ -771,19 +756,19 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     }
   qed
 
-  AOT_have \<open>\<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))))\<down>\<close>
+  AOT_have desc_den: \<open>\<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))))\<down>\<close>
     by (rule can_sit_desc_1[OF cond_prop])
-  then AOT_obtain s\<^sub>0 where s\<^sub>0_prop1: \<open>s\<^sub>0 = \<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))))\<close>
-    by (metis (no_types, lifting) "instantiation" "rule=I_1" existential_1 id_sym)
-  AOT_hence s\<^sub>0_sit: \<open>Situation(s\<^sub>0)\<close>
+  AOT_obtain x\<^sub>0 where x\<^sub>0_prop1: \<open>x\<^sub>0 = \<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))))\<close>
+    by (metis (no_types, lifting) "instantiation" "rule=I_1" desc_den existential_1 id_sym)
+  AOT_hence x\<^sub>0_sit: \<open>Situation(x\<^sub>0)\<close>
     using actual_desc_3[THEN "\<rightarrow>E"] Act_Basic_2 con_dis_i_e_2_a intro_elim_3_a possit_sit_4 by blast
 
-  AOT_have 1: \<open>\<forall>F (s\<^sub>0[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p)))\<close>
-    using strict_sit[OF rigid, OF cond_prop, THEN "\<rightarrow>E", OF s\<^sub>0_prop1].
-  AOT_have 2: \<open>(s\<^sub>0 \<Turnstile> p) \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close> for p
+  AOT_have 1: \<open>\<forall>F (x\<^sub>0[F] \<equiv> \<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p)))\<close>
+    using strict_sit[OF rigid, OF cond_prop, THEN "\<rightarrow>E", OF x\<^sub>0_prop1].
+  AOT_have 2: \<open>(x\<^sub>0 \<Turnstile> p) \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close> for p
   proof (rule "\<equiv>I"; rule "\<rightarrow>I")
-    AOT_assume \<open>s\<^sub>0 \<Turnstile> p\<close>
-    AOT_hence \<open>s\<^sub>0[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF s\<^sub>0_sit, THEN "\<equiv>E"(1)] by blast
+    AOT_assume \<open>x\<^sub>0 \<Turnstile> p\<close>
+    AOT_hence \<open>x\<^sub>0[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF x\<^sub>0_sit, THEN "\<equiv>E"(1)] by blast
     then AOT_obtain q where \<open>[\<lambda>y p] = [\<lambda>y q] & (s' \<Turnstile> q \<or> s'' \<Turnstile> q)\<close>
       using 1[THEN "\<forall>E"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"], OF prop_prop2_2, THEN "\<equiv>E"(1)]
             "\<exists>E"[rotated] by blast
@@ -796,23 +781,23 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
       by (metis "rule=I_1" con_dis_i_e_1 prop_prop2_2) 
     AOT_hence \<open>\<exists>q ([\<lambda>y p] = [\<lambda>y q] & (s' \<Turnstile> q \<or> s'' \<Turnstile> q))\<close>
       by (rule "\<exists>I")
-    AOT_hence \<open>s\<^sub>0[\<lambda>y p]\<close>
+    AOT_hence \<open>x\<^sub>0[\<lambda>y p]\<close>
       using 1[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
-    AOT_thus \<open>s\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 ex_1_a prop_enc rule_ui_2_a s\<^sub>0_sit true_in_s)
+    AOT_thus \<open>x\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 ex_1_a prop_enc rule_ui_2_a x\<^sub>0_sit true_in_s)
   qed
 
-  AOT_have \<open>Actual(s\<^sub>0) & s' \<unlhd> s\<^sub>0 & s'' \<unlhd> s\<^sub>0\<close>
-  proof(safe intro!: "\<rightarrow>I" "&I" "\<exists>I"(1) actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] s\<^sub>0_sit GEN sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_have \<open>Actual(x\<^sub>0) & s' \<unlhd> x\<^sub>0 & s'' \<unlhd> x\<^sub>0\<close>
+  proof(safe intro!: "\<rightarrow>I" "&I" "\<exists>I"(1) actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] x\<^sub>0_sit GEN sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     fix p
-    AOT_assume \<open>s\<^sub>0 \<Turnstile> p\<close>
+    AOT_assume \<open>x\<^sub>0 \<Turnstile> p\<close>
     AOT_hence \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
       using 2 "\<equiv>E"(1) by metis
     AOT_thus \<open>p\<close> using act_s' act_s'' actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
       by (metis con_dis_i_e_4_c reductio_aa_1)
   next
-    AOT_show \<open>s\<^sub>0 \<Turnstile> p\<close> if \<open>s' \<Turnstile> p\<close> for p using 2[THEN "\<equiv>E"(2), OF "\<or>I"(1), OF that].
+    AOT_show \<open>x\<^sub>0 \<Turnstile> p\<close> if \<open>s' \<Turnstile> p\<close> for p using 2[THEN "\<equiv>E"(2), OF "\<or>I"(1), OF that].
   next
-    AOT_show \<open>s\<^sub>0 \<Turnstile> p\<close> if \<open>s'' \<Turnstile> p\<close> for p using 2[THEN "\<equiv>E"(2), OF "\<or>I"(2), OF that].
+    AOT_show \<open>x\<^sub>0 \<Turnstile> p\<close> if \<open>s'' \<Turnstile> p\<close> for p using 2[THEN "\<equiv>E"(2), OF "\<or>I"(2), OF that].
   next
     AOT_show \<open>Situation(s')\<close> using act_s'[THEN actual[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "&E" by blast
   next
@@ -823,12 +808,10 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
 qed
 
 AOT_define consistent :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Consistent'(_')\<close>)
-  cons: \<open>Consistent(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<not>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
+  cons: \<open>Consistent(s) \<equiv>\<^sub>d\<^sub>f \<not>\<exists>p (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
 
 AOT_theorem sit_cons: \<open>Actual(s) \<rightarrow> Consistent(s)\<close>
-proof(safe intro!: "\<rightarrow>I" cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" dest!: actual[THEN "\<equiv>\<^sub>d\<^sub>fE"]; frule "&E"(1); drule "&E"(2))
-  AOT_show \<open>Situation(s)\<close> if \<open>Situation(s)\<close> by (fact that)
-next
+proof(safe intro!: "\<rightarrow>I" cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" Situation.\<psi> dest!: actual[THEN "\<equiv>\<^sub>d\<^sub>fE"]; frule "&E"(1); drule "&E"(2))
   AOT_assume 0: \<open>\<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
   AOT_show \<open>\<not>\<exists>p (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
   proof (rule raa_cor_2)
@@ -843,20 +826,17 @@ next
 qed
 
 (* TODO: PLM: recheck use of substitution with restricted variables *)
-AOT_theorem cons_rigid_1:
-  assumes \<open>Situation(s)\<close>
-  shows \<open>\<not>Consistent(s) \<equiv> \<box>\<not>Consistent(s)\<close>
+AOT_theorem cons_rigid_1: \<open>\<not>Consistent(s) \<equiv> \<box>\<not>Consistent(s)\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>\<not>Consistent(s)\<close>
   AOT_hence \<open>\<exists>p (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
-    using cons[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF assms] by (metis raa_cor_3)
+    using cons[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF Situation.\<psi>] by (metis raa_cor_3)
   then AOT_obtain p where p_prop: \<open>s \<Turnstile> p & s \<Turnstile> \<not>p\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>s \<Turnstile> p\<close>
-    using T_S5_fund_1 assms "&E" intro_elim_3_a lem2_3 
-      modus_tollens_1 raa_cor_3 by blast
+    using con_dis_i_e_2_a intro_elim_3_a lem2_1 by blast
   moreover AOT_have \<open>\<box>s \<Turnstile> \<not>p\<close>
-    using p_prop T_S5_fund_1 assms "&E" intro_elim_3_a
+    using p_prop T_S5_fund_1 "&E" intro_elim_3_a
       modus_tollens_1 raa_cor_3 lem2_3[unvarify p]
       log_prop_prop_2 by metis
   ultimately AOT_have \<open>\<box>(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
@@ -865,13 +845,10 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
     by (rule "\<exists>I")
   AOT_hence \<open>\<box>\<exists>p(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
     by (metis sign_S5_thm_1 vdash_properties_10) 
-  AOT_hence \<open>\<box>(Situation(s) & \<exists>p(s \<Turnstile> p & s \<Turnstile> \<not>p))\<close>
-    using assms by (metis KBasic_3 df_simplify_1 intro_elim_3_a intro_elim_3_b possit_sit_1) 
   AOT_thus \<open>\<box>\<not>Consistent(s)\<close>
     apply (rule qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E", rotated])
     apply (rule RN)
-    apply (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule raa_cor_2)
-    using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b cons raa_cor_3 by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b cons deduction_theorem raa_cor_3 by blast
 next
   AOT_assume \<open>\<box>\<not>Consistent(s)\<close>
   AOT_thus \<open>\<not>Consistent(s)\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by auto
@@ -893,10 +870,10 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   proof (rule raa_cor_1)
     AOT_assume \<open>\<not>Consistent(x)\<close>
     AOT_hence \<open>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
-      using 0 "\<equiv>\<^sub>d\<^sub>fE" AOT_dia 2 cons_rigid_1 modus_tollens_1 raa_cor_3 intro_elim_3_d by meson
+      using 0 "\<equiv>\<^sub>d\<^sub>fE" AOT_dia 2 cons_rigid_1[unconstrain s, THEN "\<rightarrow>E"] modus_tollens_1 raa_cor_3 intro_elim_3_d by meson
     then AOT_obtain p where \<open>x \<Turnstile> p\<close> and 4: \<open>x \<Turnstile> \<not>p\<close> using "\<exists>E"[rotated] "&E" by blast
-    AOT_hence \<open>\<box>x \<Turnstile> p\<close> by (metis "2" intro_elim_3_a lem2_1)
-    moreover AOT_have \<open>\<box>x \<Turnstile> \<not>p\<close> using 4 lem2_1[unvarify p]  by (metis 2 intro_elim_3_a log_prop_prop_2)
+    AOT_hence \<open>\<box>x \<Turnstile> p\<close> by (metis "2" intro_elim_3_a lem2_1[unconstrain s, THEN "\<rightarrow>E"])
+    moreover AOT_have \<open>\<box>x \<Turnstile> \<not>p\<close> using 4 lem2_1[unconstrain s, unvarify p, THEN "\<rightarrow>E"]  by (metis 2 intro_elim_3_a log_prop_prop_2)
     ultimately AOT_have \<open>\<box>(x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_c raa_cor_3)
     AOT_hence \<open>\<exists>p \<box>(x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis existential_1 log_prop_prop_2)
     AOT_hence \<open>\<box>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis sign_S5_thm_1 vdash_properties_10)
@@ -908,20 +885,18 @@ next
 qed
 
 AOT_define possible :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Possible'(_')\<close>)
-  pos: \<open>Possible(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<diamond>Actual(x)\<close>
+  pos: \<open>Possible(s) \<equiv>\<^sub>d\<^sub>f \<diamond>Actual(s)\<close>
 
 AOT_theorem sit_pos_1: \<open>Actual(s) \<rightarrow> Possible(s)\<close>
   apply(rule "\<rightarrow>I"; rule pos[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "&I")
   apply (meson "\<equiv>\<^sub>d\<^sub>fE" actual con_dis_i_e_2_a)
   using T_S5_fund_1 vdash_properties_10 by blast
 
-AOT_theorem sit_pos_2:
-  assumes \<open>Situation(s)\<close>
-  shows \<open>\<exists>p ((s \<Turnstile> p) & \<not>\<diamond>p) \<rightarrow> \<not>Possible(s)\<close>
+AOT_theorem sit_pos_2: \<open>\<exists>p ((s \<Turnstile> p) & \<not>\<diamond>p) \<rightarrow> \<not>Possible(s)\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>p ((s \<Turnstile> p) & \<not>\<diamond>p)\<close>
   then AOT_obtain p where a: \<open>(s \<Turnstile> p) & \<not>\<diamond>p\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<box>(s \<Turnstile> p)\<close> using "&E" by (metis T_S5_fund_1 assms intro_elim_3_a lem2_3 vdash_properties_10)
+  AOT_hence \<open>\<box>(s \<Turnstile> p)\<close> using "&E" by (metis T_S5_fund_1 intro_elim_3_a lem2_3 vdash_properties_10)
   moreover AOT_have \<open>\<box>\<not>p\<close> using a[THEN "&E"(2)] by (metis KBasic2_1 intro_elim_3_b)
   ultimately AOT_have \<open>\<box>(s \<Turnstile> p & \<not>p)\<close> by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_c raa_cor_3)
   AOT_hence \<open>\<exists>p \<box>(s \<Turnstile> p & \<not>p)\<close> by (rule "\<exists>I")
@@ -954,40 +929,40 @@ proof -
   have rigid: \<open>rigid_condition (\<lambda> \<Pi> . \<guillemotleft>\<Pi> = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<guillemotright>)\<close>
     by (auto intro!: rigid_conditionI GEN "\<rightarrow>I" simp: id_nec_2[THEN "\<rightarrow>E"])
 
-  AOT_obtain s where s_prop: \<open>s = \<^bold>\<iota>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
+  AOT_obtain x where x_prop: \<open>x = \<^bold>\<iota>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
     using ex_1_b[THEN "\<forall>E"(1), OF can_sit_desc_1, OF cond_prop]
           "\<exists>E"[rotated] by blast    
-  AOT_hence 0: \<open>\<^bold>\<A>(Situation(s) & \<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
+  AOT_hence 0: \<open>\<^bold>\<A>(Situation(x) & \<forall>F (x[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
     using "\<rightarrow>E" actual_desc_2 by blast
-  AOT_hence \<open>\<^bold>\<A>(Situation(s))\<close> by (metis Act_Basic_2 con_dis_i_e_2_a intro_elim_3_a)
-  AOT_hence s_sit: \<open>Situation(s)\<close> by (metis intro_elim_3_a possit_sit_4)
-  AOT_have s_enc_prop: \<open>\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1])\<close>
-    using strict_sit[OF rigid, OF cond_prop, THEN "\<rightarrow>E", OF s_prop].
-  AOT_hence \<open>s[\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<close>
+  AOT_hence \<open>\<^bold>\<A>(Situation(x))\<close> by (metis Act_Basic_2 con_dis_i_e_2_a intro_elim_3_a)
+  AOT_hence s_sit: \<open>Situation(x)\<close> by (metis intro_elim_3_a possit_sit_4)
+  AOT_have s_enc_prop: \<open>\<forall>F (x[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1])\<close>
+    using strict_sit[OF rigid, OF cond_prop, THEN "\<rightarrow>E", OF x_prop].
+  AOT_hence \<open>x[\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<close>
     using "\<forall>E"(1)[rotated, OF prop_prop2_2] "rule=I_1"[OF prop_prop2_2] "\<equiv>E" by blast
-  AOT_hence \<open>s \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1)\<close>
+  AOT_hence \<open>x \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1)\<close>
     using lem1[THEN "\<rightarrow>E", OF s_sit, unvarify p, THEN "\<equiv>E"(2), OF log_prop_prop_2]
     by blast
-  AOT_hence \<open>\<box>(s \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1))\<close>
-    using lem2_1[OF s_sit, unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
-  moreover AOT_have \<open>\<box>(s \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1) \<rightarrow> \<not>Actual(s))\<close>
+  AOT_hence \<open>\<box>(x \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1))\<close>
+    using lem2_1[unconstrain s, THEN "\<rightarrow>E", OF s_sit, unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
+  moreover AOT_have \<open>\<box>(x \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1) \<rightarrow> \<not>Actual(x))\<close>
   proof(rule RN; rule "\<rightarrow>I"; rule raa_cor_2)
     AOT_modally_strict {
-      AOT_assume \<open>Actual(s)\<close>
-      AOT_hence \<open>\<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+      AOT_assume \<open>Actual(x)\<close>
+      AOT_hence \<open>\<forall>p (x \<Turnstile> p \<rightarrow> p)\<close>
         using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast
-      moreover AOT_assume \<open>s \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1)\<close>
+      moreover AOT_assume \<open>x \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1)\<close>
       ultimately AOT_show \<open>q\<^sub>1 & \<not>q\<^sub>1\<close> using "\<forall>E"(1)[rotated, OF log_prop_prop_2] "\<rightarrow>E" by metis
     }
   qed
-  ultimately AOT_have nec_not_actual_s: \<open>\<box>\<not>Actual(s)\<close>
+  ultimately AOT_have nec_not_actual_s: \<open>\<box>\<not>Actual(x)\<close>
     using qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
-  AOT_have 1: \<open>\<not>\<exists>p (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
+  AOT_have 1: \<open>\<not>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
   proof (rule raa_cor_2)
-    AOT_assume \<open>\<exists>p (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
-    then AOT_obtain p where \<open>s \<Turnstile> p & s \<Turnstile> \<not>p\<close>
+    AOT_assume \<open>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
+    then AOT_obtain p where \<open>x \<Turnstile> p & x \<Turnstile> \<not>p\<close>
       using "\<exists>E"[rotated] by blast
-    AOT_hence \<open>s[\<lambda>y p] & s[\<lambda>y \<not>p]\<close>
+    AOT_hence \<open>x[\<lambda>y p] & x[\<lambda>y \<not>p]\<close>
       using lem1[unvarify p, THEN "\<rightarrow>E", OF log_prop_prop_2, OF s_sit, THEN "\<equiv>E"(1)] "&I" "&E" by metis
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<close> and \<open>[\<lambda>y \<not>p] = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<close>
       by (auto intro!: prop_prop2_2 s_enc_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] elim: "&E")
@@ -1010,22 +985,21 @@ proof -
     }
     ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis raa_cor_1 raa_cor_3)
   qed
-  AOT_have 2: \<open>\<not>Possible(s)\<close>
+  AOT_have 2: \<open>\<not>Possible(x)\<close>
   proof(rule raa_cor_2)
-    AOT_assume \<open>Possible(s)\<close>
-    AOT_hence \<open>\<diamond>Actual(s)\<close>
+    AOT_assume \<open>Possible(x)\<close>
+    AOT_hence \<open>\<diamond>Actual(x)\<close>
       by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b pos)
-    moreover AOT_have \<open>\<not>\<diamond>Actual(s)\<close> using nec_not_actual_s
+    moreover AOT_have \<open>\<not>\<diamond>Actual(x)\<close> using nec_not_actual_s
       using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia reductio_aa_2 by blast
-    ultimately AOT_show \<open>\<diamond>Actual(s) & \<not>\<diamond>Actual(s)\<close> by (rule "&I")
+    ultimately AOT_show \<open>\<diamond>Actual(x) & \<not>\<diamond>Actual(x)\<close> by (rule "&I")
   qed
   show ?thesis
-    by(rule_tac \<beta>=s in "\<exists>I"(2); safe intro!: "&I" 2 s_sit cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1)
+    by(rule_tac \<beta>=x in "\<exists>I"(2); safe intro!: "&I" 2 s_sit cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1)
 qed
 
 (* TODO: PLM: all these use restricted variables, but also hold for arbitrary objects! *)
-AOT_theorem sit_classical_1:
-  shows \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q(s \<Turnstile> \<not>q \<equiv> \<not>s \<Turnstile> q)\<close>
+AOT_theorem sit_classical_1: \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q(s \<Turnstile> \<not>q \<equiv> \<not>s \<Turnstile> q)\<close>
 proof(rule "\<rightarrow>I"; rule GEN)
   fix q
   AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
@@ -1039,8 +1013,7 @@ qed
  * In the text it should probably also be "for all propositions q and r" instead of "for every proposition q".
  * The proof proves the intended statement.
  *)
-AOT_theorem sit_classical_2:
-  shows \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q\<forall>r((s \<Turnstile> (q \<rightarrow> r)) \<equiv> (s \<Turnstile> q \<rightarrow> s \<Turnstile> r))\<close>
+AOT_theorem sit_classical_2: \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q\<forall>r((s \<Turnstile> (q \<rightarrow> r)) \<equiv> (s \<Turnstile> q \<rightarrow> s \<Turnstile> r))\<close>
 proof(rule "\<rightarrow>I"; rule GEN; rule GEN)
   fix q r
   AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
@@ -1059,8 +1032,7 @@ proof(rule "\<rightarrow>I"; rule GEN; rule GEN)
   qed
 qed
 
-AOT_theorem sit_classical_3:
-  shows \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> \<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>})\<close>
+AOT_theorem sit_classical_3: \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> \<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>})\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
   AOT_hence \<theta>: \<open>s \<Turnstile> \<phi>{\<alpha>} \<equiv> \<phi>{\<alpha>}\<close> and \<xi>: \<open>s \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>} \<equiv> \<forall>\<alpha> \<phi>{\<alpha>}\<close> for \<alpha>
@@ -1080,8 +1052,7 @@ proof (rule "\<rightarrow>I")
   qed
 qed
 
-AOT_theorem sit_classical_4:
-  \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q (s \<Turnstile> \<box>q \<rightarrow> \<box>s \<Turnstile> q)\<close>
+AOT_theorem sit_classical_4: \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q (s \<Turnstile> \<box>q \<rightarrow> \<box>s \<Turnstile> q)\<close>
 proof(rule "\<rightarrow>I"; rule GEN; rule "\<rightarrow>I")
   fix q
   AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
@@ -1127,15 +1098,15 @@ proof -
     }
   qed
   AOT_have \<open>\<exists>s \<forall>F (s[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close> using comp_sit_1[OF cond_prop].
-  then AOT_obtain s\<^sub>0 where s\<^sub>0_prop: \<open>Situation(s\<^sub>0) & \<forall>F (s\<^sub>0[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
-    using "\<exists>E"[rotated] by blast
+  then AOT_obtain s\<^sub>0 where s\<^sub>0_prop: \<open>\<forall>F (s\<^sub>0[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
+    using "Situation.\<exists>E"[rotated] by meson
   AOT_have \<open>\<forall>p (s\<^sub>0 \<Turnstile> p \<equiv> p)\<close>
   proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
     fix p
     AOT_assume \<open>s\<^sub>0 \<Turnstile> p\<close> (* TODO: PLM: missing subscript in assumption and rest of proof (line below \<theta>) *)
-    AOT_hence \<open>s\<^sub>0[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF s\<^sub>0_prop[THEN "&E"(1)], THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>s\<^sub>0[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close>
-      using s\<^sub>0_prop[THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(1)] by blast
+      using s\<^sub>0_prop[THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(1)] by blast
     then AOT_obtain q\<^sub>1 where q\<^sub>1_prop: \<open>q\<^sub>1 & [\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis con_dis_i_e_2_b intro_elim_3_b p_identity_thm2_3)
     AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
@@ -1146,11 +1117,11 @@ proof -
     ultimately AOT_have \<open>p & [\<lambda>y p] = [\<lambda>y p]\<close> using "&I" by blast
     AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> by (rule "\<exists>I")
     AOT_hence \<open>s\<^sub>0[\<lambda>y p]\<close>
-      using s\<^sub>0_prop[THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(2)] by blast
-    AOT_thus \<open>s\<^sub>0 \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF s\<^sub>0_prop[THEN "&E"(1)], THEN "\<equiv>E"(2)] by blast
+      using s\<^sub>0_prop[THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(2)] by blast
+    AOT_thus \<open>s\<^sub>0 \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)] by blast
   qed
-  AOT_hence \<open>Situation(s\<^sub>0) & \<forall>p (s\<^sub>0 \<Turnstile> p \<equiv> p)\<close> using s\<^sub>0_prop[THEN "&E"(1)] "&I" by blast
-  AOT_thus \<open>\<exists>s \<forall>p (s \<Turnstile> p \<equiv> p)\<close> by (rule "\<exists>I")
+  AOT_hence \<open>\<forall>p (s\<^sub>0 \<Turnstile> p \<equiv> p)\<close> using "&I" by blast
+  AOT_thus \<open>\<exists>s \<forall>p (s \<Turnstile> p \<equiv> p)\<close> by (rule "Situation.\<exists>I")
 qed
 
 AOT_define PossibleWorld :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>PossibleWorld'(_')\<close>)
@@ -1231,29 +1202,30 @@ AOT_theorem rigid_pw_4: \<open>\<^bold>\<A>PossibleWorld(x) \<equiv> PossibleWor
   by (metis Act_Sub_3 deduction_theorem intro_elim_2 intro_elim_3_f nec_imp_act rigid_pw_1 rigid_pw_2)
 
 (* TODO: PLM: missing proof of existence of possible worlds! *)
-AOT_register_restricted_type
+AOT_register_rigid_restricted_type
   PossibleWorld: \<open>PossibleWorld(\<kappa>)\<close>
 proof
   AOT_modally_strict {
-    AOT_obtain s where s_prop: \<open>Situation(s) & \<forall>p (s \<Turnstile> p \<equiv> p)\<close>
-      using sit_classical_6 "\<exists>E"[rotated] by blast
+    AOT_obtain s where s_prop: \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
+      using sit_classical_6 "Situation.\<exists>E"[rotated] by meson
     AOT_have \<open>\<forall>p (s\<^bold>\<Sigma>p \<equiv> p)\<close>
     proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
       fix p
       AOT_assume \<open>s\<^bold>\<Sigma>p\<close>
-      AOT_hence \<open>s \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 con_dis_i_e_2_a s_prop true_in_s)
+      AOT_hence \<open>s \<Turnstile> p\<close>
+         by (metis "\<equiv>\<^sub>d\<^sub>fI" Situation.\<psi> con_dis_i_e_1 true_in_s)
       AOT_thus \<open>p\<close>
-        using s_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+        using s_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
     next
       fix p
       AOT_assume \<open>p\<close>
       AOT_hence \<open>s \<Turnstile> p\<close>
-        using s_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
+        using s_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
       AOT_thus \<open>s\<^bold>\<Sigma>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b true_in_s)
     qed
     AOT_hence \<open>\<diamond>\<forall>p (s\<^bold>\<Sigma>p \<equiv> p)\<close> by (metis T_S5_fund_1[THEN "\<rightarrow>E"])
-    AOT_hence \<open>Situation(s) & \<diamond>\<forall>p (s\<^bold>\<Sigma>p \<equiv> p)\<close> using s_prop[THEN "&E"(1)] "&I" by blast
-    AOT_hence \<open>PossibleWorld(s)\<close> using world[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+    AOT_hence \<open>\<diamond>\<forall>p (s\<^bold>\<Sigma>p \<equiv> p)\<close> using s_prop "&I" by blast
+    AOT_hence \<open>PossibleWorld(s)\<close> using world[THEN "\<equiv>\<^sub>d\<^sub>fI"] Situation.\<psi> "&I" by blast
     AOT_thus \<open>\<exists>x PossibleWorld(x)\<close> by (rule "\<exists>I")
   }
 next
@@ -1266,16 +1238,19 @@ next
       AOT_thus \<open>\<kappa>\<down>\<close> by (metis russell_axiom_exe_1.\<psi>_denotes_asm)
     qed
   }
+next
+  AOT_modally_strict {
+    AOT_show \<open>\<box>(PossibleWorld(\<alpha>) \<rightarrow> \<box>PossibleWorld(\<alpha>))\<close> for \<alpha>
+      by (meson RN deduction_theorem intro_elim_3_a rigid_pw_1) 
+  }
 qed
 AOT_register_variable_names
   PossibleWorld: w
 
-AOT_theorem world_pos:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>Possible(w)\<close>
-proof (safe intro!: pos[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<equiv>\<^sub>d\<^sub>fE"[OF world', OF assms, THEN "&E"(1)])
+AOT_theorem world_pos: \<open>Possible(w)\<close>
+proof (safe intro!: pos[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<equiv>\<^sub>d\<^sub>fE"[OF world', OF PossibleWorld.\<psi>, THEN "&E"(1)])
   AOT_have \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms, THEN "&E"(2)].
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>, THEN "&E"(2)].
   AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<rightarrow> p)\<close>
   proof (rule "RM\<diamond>"[THEN "\<rightarrow>E", rotated]; safe intro!: "\<rightarrow>I" GEN)
     AOT_modally_strict {
@@ -1287,28 +1262,26 @@ proof (safe intro!: pos[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<equiv>\<^sub>d
     }
   qed
   AOT_hence 0: \<open>\<diamond>(Situation(w) & \<forall>p (w \<Turnstile> p \<rightarrow> p))\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms, THEN "&E"(1), THEN possit_sit_1[THEN "\<equiv>E"(1)]]
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>, THEN "&E"(1), THEN possit_sit_1[THEN "\<equiv>E"(1)]]
     by (metis KBasic_16 con_dis_i_e_1 vdash_properties_10)
   AOT_show \<open>\<diamond>Actual(w)\<close>
     by (AOT_subst \<open>\<guillemotleft>Actual(w)\<guillemotright>\<close> \<open>\<guillemotleft>Situation(w) & \<forall>p (w \<Turnstile> p \<rightarrow> p)\<guillemotright>\<close>)
        (auto simp: actual rule_eq_df_1 0)
 qed
 
-AOT_theorem world_cons_1:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>Consistent(w)\<close>
-  using world_pos[OF assms] by (metis pos_cons_sit_1[THEN "\<rightarrow>E"])
+AOT_theorem world_cons_1: \<open>Consistent(w)\<close>
+  using world_pos
+  using pos_cons_sit_1[unconstrain s, THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+  by (meson "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a pos)
 
-AOT_theorem world_cons_2:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>\<not>TrivialSituation(w)\<close>
+AOT_theorem world_cons_2: \<open>\<not>TrivialSituation(w)\<close>
 proof(rule raa_cor_2)
   AOT_assume \<open>TrivialSituation(w)\<close>
   AOT_hence \<open>Situation(w) & \<forall>p w \<Turnstile> p\<close> using df_null_trivial_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence 0: \<open>\<box>w \<Turnstile> (\<exists>p (p & \<not>p))\<close> using "&E"
-    by (metis "Buridan\<diamond>" T_S5_fund_1 con_dis_i_e_2_b intro_elim_3_a lem2_3 log_prop_prop_2 rule_ui_1
+    by (metis "Buridan\<diamond>" T_S5_fund_1 con_dis_i_e_2_b intro_elim_3_a lem2_3[unconstrain s, THEN "\<rightarrow>E"] log_prop_prop_2 rule_ui_1
               universal_cor vdash_properties_10)
-  AOT_have \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using assms world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by metis
+  AOT_have \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using PossibleWorld.\<psi> world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by metis
   AOT_hence \<open>\<forall>p \<diamond>(w \<Turnstile> p \<equiv> p)\<close> using sign_S5_thm_2[THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (\<exists>p (p & \<not>p)) \<equiv> (\<exists>p (p & \<not>p)))\<close>
     by (metis log_prop_prop_2 rule_ui_1)
@@ -1321,38 +1294,26 @@ proof(rule raa_cor_2)
   ultimately AOT_show \<open>\<diamond>(\<exists>p (p & \<not>p)) & \<not>\<diamond>(\<exists>p (p & \<not>p))\<close> using "&I" by blast
 qed
 
-AOT_theorem rigid_truth_at_1:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> p \<equiv> \<box>w \<Turnstile> p\<close>
-  using lem2_1[OF assms[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
+AOT_theorem rigid_truth_at_1: \<open>w \<Turnstile> p \<equiv> \<box>w \<Turnstile> p\<close>
+  using lem2_1[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
 
-AOT_theorem rigid_truth_at_2:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>\<diamond>w \<Turnstile> p \<equiv> w \<Turnstile> p\<close>
-  using lem2_2[OF assms[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
+AOT_theorem rigid_truth_at_2: \<open>\<diamond>w \<Turnstile> p \<equiv> w \<Turnstile> p\<close>
+  using lem2_2[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
 
-AOT_theorem rigid_truth_at_3:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>\<diamond>w \<Turnstile> p \<equiv> \<box>w \<Turnstile> p\<close>
-  using lem2_3[OF assms[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
+AOT_theorem rigid_truth_at_3: \<open>\<diamond>w \<Turnstile> p \<equiv> \<box>w \<Turnstile> p\<close>
+  using lem2_3[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
 
-AOT_theorem rigid_truth_at_4:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>\<^bold>\<A>w \<Turnstile> p \<equiv> w \<Turnstile> p\<close>
-  using lem2_4[OF assms[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
+AOT_theorem rigid_truth_at_4: \<open>\<^bold>\<A>w \<Turnstile> p \<equiv> w \<Turnstile> p\<close>
+  using lem2_4[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
 
-AOT_theorem rigid_truth_at_5:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>\<not>w \<Turnstile> p \<equiv> \<box>\<not>w \<Turnstile> p\<close>
-  using lem2_5[OF assms[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
+AOT_theorem rigid_truth_at_5: \<open>\<not>w \<Turnstile> p \<equiv> \<box>\<not>w \<Turnstile> p\<close>
+  using lem2_5[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN world'[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)]].
 
 AOT_define Maximal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Maximal'(_')\<close>)
-  max: \<open>Maximal(x) \<equiv>\<^sub>d\<^sub>f Situation(x) & \<forall>p (x \<Turnstile> p \<or> x \<Turnstile> \<not>p)\<close>
+  max: \<open>Maximal(s) \<equiv>\<^sub>d\<^sub>f \<forall>p (s \<Turnstile> p \<or> s \<Turnstile> \<not>p)\<close>
 
-AOT_theorem world_max:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>Maximal(w)\<close>
-proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF max] "&I" assms[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(1)] GEN)
+AOT_theorem world_max: \<open>Maximal(w)\<close>
+proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF max] "&I" PossibleWorld.\<psi>[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(1)] GEN)
   fix q
   AOT_have \<open>\<diamond>(w \<Turnstile> q \<or> w \<Turnstile> \<not>q)\<close>
   proof(rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
@@ -1365,12 +1326,12 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF max] "&I" assms[THEN "\<equiv>
     }
   next
     AOT_show \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-      using assms[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(2)].
+      using PossibleWorld.\<psi>[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(2)].
   qed
   AOT_hence \<open>\<diamond>w \<Turnstile> q \<or> \<diamond>w \<Turnstile> \<not>q\<close>
     using KBasic2_2[THEN "\<equiv>E"(1)] by blast
   AOT_thus \<open>w \<Turnstile> q \<or> w \<Turnstile> \<not>q\<close>
-    using lem2_2[unvarify p, OF assms[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(1)], THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    using lem2_2[unconstrain s, THEN "\<rightarrow>E", unvarify p, OF PossibleWorld.\<psi>[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF world'], THEN "&E"(1)], THEN "\<equiv>E"(1), OF log_prop_prop_2]
     by (metis con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_c raa_cor_2)
 qed
 
@@ -1382,7 +1343,7 @@ proof (AOT_subst \<open>\<guillemotleft>Maximal(x)\<guillemotright>\<close> \<op
   AOT_assume \<open>\<forall>p (x \<Turnstile> p \<or> x \<Turnstile> \<not>p)\<close>
   AOT_hence \<open>x \<Turnstile> p \<or> x \<Turnstile> \<not>p\<close> for p using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast
   AOT_hence \<open>\<box>x \<Turnstile> p \<or> \<box>x \<Turnstile> \<not>p\<close> for p
-    using lem2_1[OF sit_x, unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)]
+    using lem2_1[unconstrain s, THEN "\<rightarrow>E", OF sit_x, unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)]
     by (metis con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b raa_cor_1)
   AOT_hence \<open>\<box>(x \<Turnstile> p \<or> x \<Turnstile> \<not>p)\<close> for p by (metis KBasic_15 vdash_properties_10)
   AOT_hence \<open>\<forall>p \<box>(x \<Turnstile> p \<or> x \<Turnstile> \<not>p)\<close> by (rule GEN)
@@ -1392,7 +1353,7 @@ proof (AOT_subst \<open>\<guillemotleft>Maximal(x)\<guillemotright>\<close> \<op
 qed
 
 AOT_theorem world_is_maxpos_2: \<open>PossibleWorld(x) \<equiv> Maximal(x) & Possible(x)\<close>
-proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I" world_pos world_max; frule "&E"(2); drule "&E"(1))
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I" world_pos[unconstrain w, THEN "\<rightarrow>E"] world_max[unconstrain w, THEN "\<rightarrow>E"]; frule "&E"(2); drule "&E"(1))
   AOT_assume pos_x: \<open>Possible(x)\<close>
   AOT_have \<open>\<diamond>(Situation(x) & \<forall>p(x \<Turnstile> p \<rightarrow> p))\<close>
     apply (AOT_subst_rev \<open>\<guillemotleft>Actual(x)\<guillemotright>\<close> \<open>\<guillemotleft>Situation(x) & \<forall>p(x \<Turnstile> p \<rightarrow> p)\<guillemotright>\<close>)
@@ -1497,9 +1458,7 @@ AOT_theorem world_close_lem_1_4: \<open>s \<Turnstile> p\<^sub>1 & s \<Turnstile
 
 (* TODO: PLM: discuss further - postpone for now *)
 
-AOT_theorem coherent_1:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> \<not>p \<equiv> \<not>w \<Turnstile> p\<close>
+AOT_theorem coherent_1: \<open>w \<Turnstile> \<not>p \<equiv> \<not>w \<Turnstile> p\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume 1: \<open>w \<Turnstile> \<not>p\<close>
   AOT_show \<open>\<not>w \<Turnstile> p\<close>
@@ -1508,62 +1467,68 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     AOT_hence \<open>w \<Turnstile> p & w \<Turnstile> \<not>p\<close> using 1 "&I" by blast
     AOT_hence \<open>\<exists>q (w \<Turnstile> q & w \<Turnstile> \<not>q)\<close> by (rule "\<exists>I")
     moreover AOT_have \<open>\<not>\<exists>q (w \<Turnstile> q & w \<Turnstile> \<not>q)\<close>
-      using world_cons_1[OF assms, THEN "\<equiv>\<^sub>d\<^sub>fE"[OF cons], THEN "&E"(2)].
+      using world_cons_1[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF cons], THEN "&E"(2)].
     ultimately AOT_show \<open>\<exists>q (w \<Turnstile> q & w \<Turnstile> \<not>q) & \<not>\<exists>q (w \<Turnstile> q & w \<Turnstile> \<not>q)\<close> using "&I" by blast
   qed
 next
   AOT_assume \<open>\<not>w \<Turnstile> p\<close>
   AOT_thus \<open>w \<Turnstile> \<not>p\<close>
-    using world_max[OF assms, THEN "\<equiv>\<^sub>d\<^sub>fE"[OF max], THEN "&E"(2)]
+    using world_max[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF max], THEN "&E"(2)]
     by (metis con_dis_i_e_4_b log_prop_prop_2 rule_ui_1)
 qed
 
-AOT_theorem coherent_2:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> p \<equiv> \<not>w \<Turnstile> \<not>p\<close>
-  by (metis assms coherent_1 deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b raa_cor_3)
+AOT_theorem coherent_2: \<open>w \<Turnstile> p \<equiv> \<not>w \<Turnstile> \<not>p\<close>
+  by (metis coherent_1 deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b raa_cor_3)
 
 AOT_theorem act_world_1: \<open>\<exists>w \<forall>p (w \<Turnstile> p \<equiv> p)\<close>
 proof -
-  AOT_obtain s where s_prop: \<open>Situation(s) & \<forall>p (s \<Turnstile> p \<equiv> p)\<close> using sit_classical_6 "\<exists>E"[rotated] by blast
-  AOT_hence \<open>Situation(s) & \<diamond>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
-    by (metis T_S5_fund_1 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b vdash_properties_10)
+  AOT_obtain s where s_prop: \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close> using sit_classical_6 "Situation.\<exists>E"[rotated] by meson
+  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
+    by (metis T_S5_fund_1 vdash_properties_10)
   AOT_hence \<open>PossibleWorld(s)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
-  AOT_hence \<open>PossibleWorld(s) & \<forall>p (s \<Turnstile> p \<equiv> p)\<close> using "&I" s_prop[THEN "&E"(2)] by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fI"] Situation.\<psi> "&I" by blast
+  AOT_hence \<open>PossibleWorld(s) & \<forall>p (s \<Turnstile> p \<equiv> p)\<close> using "&I" s_prop by blast
   thus ?thesis by (rule "\<exists>I")
 qed
 
 AOT_theorem act_world_2: \<open>\<exists>!w Actual(w)\<close>
 proof -
-  AOT_obtain s where s_prop: \<open>PossibleWorld(s) & \<forall>p (s \<Turnstile> p \<equiv> p)\<close> using act_world_1 "\<exists>E"[rotated] by blast
-  AOT_have sit_s: \<open>Situation(s)\<close> using s_prop[THEN "&E"(1)] world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)] by blast
+  AOT_obtain w where w_prop: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
+  AOT_have sit_s: \<open>Situation(w)\<close> using PossibleWorld.\<psi> world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)] by blast
   show ?thesis
-  proof (safe intro!: uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(2)[where \<beta>=s] "&I" GEN "\<rightarrow>I"
-                      s_prop[THEN "&E"(1)] actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] sit_s sit_identity[THEN "\<equiv>E"(2)] "\<equiv>I"
-                      s_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)])
-    fix w p
-    AOT_assume w_asm: \<open>PossibleWorld(w) & Actual(w)\<close>
-    AOT_assume \<open>s \<Turnstile> p\<close>
-    AOT_hence p: \<open>p\<close> using s_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
-    AOT_show \<open>w \<Turnstile> p\<close>
+  proof (safe intro!: uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(2) "&I" GEN "\<rightarrow>I"
+                      PossibleWorld.\<psi> actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] sit_s sit_identity[unconstrain s, unconstrain s', THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] "\<equiv>I"
+                      w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)])
+    AOT_show \<open>PossibleWorld(w)\<close> using PossibleWorld.\<psi>.
+  next
+    AOT_show \<open>Situation(w)\<close>
+      by (simp add: sit_s)
+  next
+    fix y p
+    AOT_assume w_asm: \<open>PossibleWorld(y) & Actual(y)\<close>
+    AOT_assume \<open>w \<Turnstile> p\<close>
+    AOT_hence p: \<open>p\<close> using w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+    AOT_show \<open>y \<Turnstile> p\<close>
     proof(rule raa_cor_1)
-      AOT_assume \<open>\<not>w \<Turnstile> p\<close>
-      AOT_hence \<open>w \<Turnstile> \<not>p\<close> by (metis coherent_1 con_dis_i_e_2_a intro_elim_3_b w_asm)
+      AOT_assume \<open>\<not>y \<Turnstile> p\<close>
+      AOT_hence \<open>y \<Turnstile> \<not>p\<close> by (metis coherent_1[unconstrain w, THEN "\<rightarrow>E"] con_dis_i_e_2_a intro_elim_3_b w_asm)
       AOT_hence \<open>\<not>p\<close>
         using w_asm[THEN "&E"(2), THEN actual[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(1), rotated, OF log_prop_prop_2]
               "\<rightarrow>E" by blast
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
     qed
   next
-    AOT_show \<open>s \<Turnstile> p\<close> if \<open>w \<Turnstile> p\<close> and \<open>PossibleWorld(w) & Actual(w)\<close> for p w
+    AOT_show \<open>w \<Turnstile> p\<close> if \<open>y \<Turnstile> p\<close> and \<open>PossibleWorld(y) & Actual(y)\<close> for p y
       using that(2)[THEN "&E"(2), THEN actual[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2),
                   THEN "\<rightarrow>E", OF that(1)]
-            s_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
+            w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
   next
-    AOT_show \<open>Situation(w)\<close> if \<open>PossibleWorld(w) & Actual(w)\<close> for w
+    AOT_show \<open>Situation(y)\<close> if \<open>PossibleWorld(y) & Actual(y)\<close> for y
       using that[THEN "&E"(1)] world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)] by blast
-  qed
+  next
+    AOT_show \<open>Situation(w)\<close>
+      using sit_s by blast
+  qed(simp)
 qed
 
 AOT_theorem pre_walpha: \<open>\<^bold>\<iota>w Actual(w)\<down>\<close>
@@ -1593,10 +1558,10 @@ proof -
   AOT_hence y_prop: \<open>PossibleWorld(y) & Actual(y)\<close>
     using "=E"[rotated, OF y_def[symmetric]] by fast
   AOT_hence y_sit: \<open>Situation(y)\<close>
-    by (meson "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a pos world_pos)
+    by (meson "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a pos world_pos[unconstrain w, THEN "\<rightarrow>E"])
 
   AOT_have \<open>x = y\<close>
-  proof(safe intro!: sit_identity[OF x_sit, OF y_sit, THEN "\<equiv>E"(2)] GEN "\<equiv>I" "\<rightarrow>I")
+  proof(safe intro!: sit_identity[unconstrain s, unconstrain s', THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF y_sit, OF x_sit, THEN "\<equiv>E"(2)] GEN "\<equiv>I" "\<rightarrow>I")
     fix p
     AOT_assume \<open>x \<Turnstile> p\<close>
     AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b prop_enc true_in_s)
@@ -1609,7 +1574,7 @@ proof -
     proof(rule raa_cor_1)
       AOT_assume \<open>\<not>y \<Turnstile> p\<close>
       AOT_hence \<open>y \<Turnstile> \<not>p\<close>
-        by (metis coherent_1 con_dis_i_e_2_a intro_elim_3_b y_prop) 
+        by (metis coherent_1[unconstrain w, THEN "\<rightarrow>E"] con_dis_i_e_2_a intro_elim_3_b y_prop) 
       AOT_hence \<open>\<not>p\<close>
         using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF log_prop_prop_2], THEN "\<rightarrow>E", OF y_prop[THEN "&E"(2)]] by blast
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
@@ -1671,7 +1636,7 @@ proof -
   then AOT_obtain x where x_def: \<open>x = \<^bold>w\<^sub>\<alpha>\<close>
     by (metis "instantiation" "rule=I_1" existential_1 id_sym)
   AOT_hence \<open>PossibleWorld(x)\<close> using alpha_world_1 "rule=E" id_sym by fast
-  AOT_hence \<open>Maximal(x)\<close> by (metis world_max) 
+  AOT_hence \<open>Maximal(x)\<close> by (metis world_max[unconstrain w, THEN "\<rightarrow>E"]) 
   AOT_thus \<open>Maximal(\<^bold>w\<^sub>\<alpha>)\<close> using x_def "rule=E" by blast
 qed
 
@@ -1687,7 +1652,7 @@ proof -
     by (meson "\<equiv>\<^sub>d\<^sub>fE" alpha_world_2 con_dis_i_e_2_a max)
   {
     fix p
-    AOT_have 2: \<open>Situation(x) \<rightarrow> (\<^bold>\<A>x \<Turnstile> p \<equiv> x \<Turnstile> p)\<close> for x using lem2_4 "\<rightarrow>I" by blast
+    AOT_have 2: \<open>Situation(x) \<rightarrow> (\<^bold>\<A>x \<Turnstile> p \<equiv> x \<Turnstile> p)\<close> for x using lem2_4[unconstrain s] by blast
     AOT_assume \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p\<close>
     AOT_hence \<theta>: \<open>\<^bold>\<A>\<^bold>w\<^sub>\<alpha> \<Turnstile> p\<close>
       using 2[unvarify x, OF walpha_den, THEN "\<rightarrow>E", OF walpha_sit, THEN "\<equiv>E"(2)] by argo
@@ -1724,9 +1689,7 @@ proof -
   qed
 qed
 
-AOT_act_theorem not_act:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<noteq> \<^bold>w\<^sub>\<alpha> \<rightarrow> \<not>Actual(w)\<close>
+AOT_act_theorem not_act: \<open>w \<noteq> \<^bold>w\<^sub>\<alpha> \<rightarrow> \<not>Actual(w)\<close>
 proof (rule "\<rightarrow>I"; rule raa_cor_2)
   AOT_assume \<open>w \<noteq> \<^bold>w\<^sub>\<alpha>\<close>
   AOT_hence 0: \<open>\<not>(w = \<^bold>w\<^sub>\<alpha>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
@@ -1737,7 +1700,7 @@ proof (rule "\<rightarrow>I"; rule raa_cor_2)
   AOT_assume act_w: \<open>Actual(w)\<close>
   AOT_hence w_sit: \<open>Situation(w)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" actual con_dis_i_e_2_a)
   AOT_have sid: \<open>Situation(x') \<rightarrow> (w = x' \<equiv> \<forall>p (w \<Turnstile> p \<equiv> x' \<Turnstile> p))\<close> for x'
-    using sit_identity[OF w_sit] "\<rightarrow>I" by blast
+    using sit_identity[unconstrain s', unconstrain s, THEN "\<rightarrow>E", OF w_sit] by blast
   AOT_have \<open>w = \<^bold>w\<^sub>\<alpha>\<close>
   proof(safe intro!: GEN sid[unvarify x', OF walpha_den, THEN "\<rightarrow>E", OF walpha_sit, THEN "\<equiv>E"(2)] "\<equiv>I" "\<rightarrow>I")
     fix p
@@ -1755,8 +1718,7 @@ proof (rule "\<rightarrow>I"; rule raa_cor_2)
     proof(rule raa_cor_1)
       AOT_assume \<open>\<not>w \<Turnstile> p\<close>
       AOT_hence \<open>w \<Turnstile> \<not>p\<close>
-        using assms[THEN world_max, THEN max[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)]
-        by (metis con_dis_i_e_4_b)
+        by (metis coherent_1 intro_elim_3_b)
       AOT_hence \<open>\<not>p\<close>
         using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", OF act_w, THEN "&E"(2), THEN "\<forall>E"(1), OF log_prop_prop_2, THEN "\<rightarrow>E"] by blast
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
@@ -1810,16 +1772,16 @@ qed
 AOT_theorem fund_lem_1: \<open>\<diamond>p \<rightarrow> \<diamond>\<exists>w (w \<Turnstile> p)\<close>
 proof (rule "RM\<diamond>"; rule "\<rightarrow>I"; rule raa_cor_1)
   AOT_modally_strict {
-    AOT_obtain w where w_prop: \<open>PossibleWorld(w) & \<forall>q (w \<Turnstile> q \<equiv> q)\<close>
-      using act_world_1 "\<exists>E"[rotated] by blast
+    AOT_obtain w where w_prop: \<open>\<forall>q (w \<Turnstile> q \<equiv> q)\<close>
+      using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
     AOT_assume p: \<open>p\<close>
     AOT_assume 0: \<open>\<not>\<exists>w (w \<Turnstile> p)\<close>
     AOT_have \<open>\<forall>w \<not>(w \<Turnstile> p)\<close>
       apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>PossibleWorld(\<kappa>) \<rightarrow> \<not>\<kappa> \<Turnstile> p\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>\<not>(PossibleWorld(\<kappa>) & \<kappa> \<Turnstile> p)\<guillemotright>\<close>)
       apply (metis con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b deduction_theorem intro_elim_2 modus_tollens_2)
       using "0" cqt_further_4 vdash_properties_10 by blast
-    AOT_hence \<open>\<not>(w \<Turnstile> p)\<close> using con_dis_i_e_2_a rule_ui_3 vdash_properties_10 w_prop by blast
-    AOT_hence \<open>\<not>p\<close> using w_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] 
+    AOT_hence \<open>\<not>(w \<Turnstile> p)\<close> using PossibleWorld.\<psi> rule_ui_3 vdash_properties_10 by blast
+    AOT_hence \<open>\<not>p\<close> using w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] 
       by (metis raa_cor_3)
     AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
   }
@@ -1828,20 +1790,16 @@ qed
 AOT_theorem fund_lem_2: \<open>\<diamond>\<exists>w (w \<Turnstile> p) \<rightarrow> \<exists>w (w \<Turnstile> p)\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<diamond>\<exists>w (w \<Turnstile> p)\<close>
-  AOT_hence \<open>\<exists>x \<diamond>(PossibleWorld(x) & x \<Turnstile> p)\<close> using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
-  then AOT_obtain w where \<open>\<diamond>(PossibleWorld(w) & w \<Turnstile> p)\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<diamond>PossibleWorld(w)\<close> and 1: \<open>\<diamond>(w \<Turnstile> p)\<close>
-    using "RM\<diamond>" con_dis_taut_1 con_dis_taut_2 vdash_properties_6 by blast+
-  AOT_hence pw_w: \<open>PossibleWorld(w)\<close> by (metis intro_elim_3_a rigid_pw_2) 
-  AOT_hence \<open>Situation(w)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a pos world_pos)
-  AOT_hence \<open>w \<Turnstile> p\<close>
-    using lem2_2 1 "\<equiv>E" by blast
-  AOT_hence \<open>PossibleWorld(w) & w \<Turnstile> p\<close> using pw_w "&I" by blast
-  AOT_thus \<open>\<exists>w w \<Turnstile> p\<close> by (rule "\<exists>I")
+  AOT_hence \<open>\<exists>w \<diamond>(w \<Turnstile> p)\<close> using PossibleWorld.res_var_bound_BF_3[THEN "\<rightarrow>E"] by auto
+  then AOT_obtain w where \<open>\<diamond>(w \<Turnstile> p)\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
+  moreover AOT_have \<open>Situation(w)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a pos world_pos)
+  ultimately AOT_have \<open>w \<Turnstile> p\<close>
+    using lem2_2[unconstrain s, THEN "\<rightarrow>E"]  "\<equiv>E" by blast
+  AOT_thus \<open>\<exists>w w \<Turnstile> p\<close> by (rule "PossibleWorld.\<exists>I")
 qed
 
 AOT_theorem fund_lem_3: \<open>p \<rightarrow> \<forall>s(\<forall>q (s \<Turnstile> q \<equiv> q) \<rightarrow> s \<Turnstile> p)\<close>
-proof(safe intro!: "\<rightarrow>I" GEN)
+proof(safe intro!: "\<rightarrow>I" Situation.GEN)
   fix s
   AOT_assume \<open>p\<close>
   moreover AOT_assume \<open>\<forall>q (s \<Turnstile> q \<equiv> q)\<close>
@@ -1852,27 +1810,21 @@ AOT_theorem fund_lem_4: \<open>\<box>p \<rightarrow> \<box>\<forall>s(\<forall>q
   using fund_lem_3 by (rule RM)
 
 AOT_theorem fund_lem_5: \<open>\<box>\<forall>s \<phi>{s} \<rightarrow> \<forall>s \<box>\<phi>{s}\<close>
-proof(safe intro!: "\<rightarrow>I" GEN)
+proof(safe intro!: "\<rightarrow>I" Situation.GEN)
   fix s
   AOT_assume \<open>\<box>\<forall>s \<phi>{s}\<close>
-  AOT_hence 1: \<open>\<forall>x \<box>(Situation(x) \<rightarrow> \<phi>{x})\<close> by (metis BFs_2 vdash_properties_10)
-  AOT_assume \<open>Situation(s)\<close>
-  AOT_hence \<open>\<box>Situation(s)\<close> by (metis intro_elim_3_a possit_sit_1)
+  AOT_hence \<open>\<forall>s \<box>\<phi>{s}\<close> using Situation.res_var_bound_reas_3[THEN "\<rightarrow>E"] by blast
   AOT_thus \<open>\<box>\<phi>{s}\<close>
-    using 1[THEN "\<forall>E"(2)[where \<beta>=s]]
-      qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+    using "Situation.\<forall>E" by fast
 qed
 
 AOT_theorem fund_lem_5': \<open>\<box>\<forall>w \<phi>{w} \<rightarrow> \<forall>w \<box>\<phi>{w}\<close>
-proof(safe intro!: "\<rightarrow>I" GEN)
-  fix s
+proof(safe intro!: "\<rightarrow>I" PossibleWorld.GEN)
+  fix w
   AOT_assume \<open>\<box>\<forall>w \<phi>{w}\<close>
-  AOT_hence 1: \<open>\<forall>x \<box>(PossibleWorld(x) \<rightarrow> \<phi>{x})\<close> by (metis BFs_2 vdash_properties_10)
-  AOT_assume \<open>PossibleWorld(s)\<close>
-  AOT_hence \<open>\<box>PossibleWorld(s)\<close> by (metis intro_elim_3_a rigid_pw_1) 
-  AOT_thus \<open>\<box>\<phi>{s}\<close>
-    using 1[THEN "\<forall>E"(2)[where \<beta>=s]]
-      qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<forall>w \<box>\<phi>{w}\<close> using PossibleWorld.res_var_bound_reas_3[THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>\<box>\<phi>{w}\<close>
+    using "PossibleWorld.\<forall>E" by fast
 qed
 
 AOT_theorem fund_lem_6: \<open>\<forall>w w \<Turnstile> p \<rightarrow> \<box>\<forall>w w \<Turnstile> p\<close>
@@ -1899,7 +1851,9 @@ proof(rule "\<rightarrow>I")
       by (metis KBasic2_3 vdash_properties_10)
     AOT_hence \<open>PossibleWorld(x)\<close>
       using con_dis_i_e_2_a intro_elim_3_a rigid_pw_2 by blast
-    AOT_hence \<open>\<box>(x \<Turnstile> p)\<close> using 2[THEN "&E"(2)]  "1" vdash_properties_6 by (metis intro_elim_3_a rigid_truth_at_1)
+    AOT_hence \<open>\<box>(x \<Turnstile> p)\<close> using 2[THEN "&E"(2)]  1[unconstrain w, THEN "\<rightarrow>E"] vdash_properties_6
+      using rigid_truth_at_1[unconstrain w, THEN "\<rightarrow>E"]
+      by (metis intro_elim_3_a)
     moreover AOT_have \<open>\<not>\<box>(x \<Turnstile> p)\<close> using 2[THEN "&E"(2)] by (metis "\<not>\<not>I" KBasic_12 intro_elim_3_d)
     ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis raa_cor_3)
   qed
@@ -1908,10 +1862,10 @@ qed
 AOT_theorem fund_lem_7: \<open>\<box>\<forall>w(w \<Turnstile> p) \<rightarrow> \<box>p\<close>
 proof(rule RM; rule "\<rightarrow>I")
   AOT_modally_strict {
-    AOT_obtain w where w_prop: \<open>PossibleWorld(w) & \<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "\<exists>E"[rotated] by blast
+    AOT_obtain w where w_prop: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
     AOT_assume \<open>\<forall>w (w \<Turnstile> p)\<close>
-    AOT_hence \<open>w \<Turnstile> p\<close> using "\<forall>E"(2) using w_prop[THEN "&E"(1)] "\<rightarrow>E" by blast
-    AOT_thus \<open>p\<close> using w_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)]  by blast
+    AOT_hence \<open>w \<Turnstile> p\<close> using "PossibleWorld.\<forall>E" by fast
+    AOT_thus \<open>p\<close> using w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
   }
 qed
 
@@ -1921,8 +1875,8 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_thus \<open>\<exists>w w \<Turnstile> p\<close> by (metis fund_lem_1 fund_lem_2 vdash_properties_10)
 next
   AOT_assume \<open>\<exists>w w \<Turnstile> p\<close>
-  then AOT_obtain w where w_prop: \<open>PossibleWorld(w) & w \<Turnstile> p\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] "&E" by blast
+  then AOT_obtain w where w_prop: \<open>w \<Turnstile> p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] PossibleWorld.\<psi> "&E" by blast
   AOT_hence \<open>\<forall>p \<diamond>(w \<Turnstile> p \<equiv> p)\<close> by (metis "Buridan\<diamond>" vdash_properties_10)
   AOT_hence 1: \<open>\<diamond>(w \<Turnstile> p \<equiv> p)\<close> by (metis log_prop_prop_2 rule_ui_1)
   AOT_have \<open>\<diamond>((w \<Turnstile> p \<rightarrow> p) & (p \<rightarrow> w \<Turnstile> p))\<close>
@@ -1931,7 +1885,7 @@ next
     by (fact 1)
   AOT_hence \<open>\<diamond>(w \<Turnstile> p \<rightarrow> p)\<close> by (metis "RM\<diamond>" con_dis_taut_1 vdash_properties_10)
   moreover AOT_have \<open>\<box>(w \<Turnstile> p)\<close>
-    using w_prop[THEN "&E"(2)] w_prop[THEN "&E"(1)] by (metis intro_elim_3_a rigid_truth_at_1)
+    using w_prop by (metis intro_elim_3_a rigid_truth_at_1)
   ultimately AOT_show \<open>\<diamond>p\<close>
     by (metis KBasic2_4 intro_elim_3_a vdash_properties_10)
 qed
@@ -1939,21 +1893,20 @@ qed
 AOT_theorem fund_2: \<open>\<box>p \<equiv> \<forall>w (w \<Turnstile> p)\<close>
 proof -
   AOT_have 0: \<open>\<forall>w (w \<Turnstile> \<not>p \<equiv> \<not>w \<Turnstile> p)\<close>
-    by (rule GEN; rule "\<rightarrow>I"; auto simp: coherent_1)
+    apply (rule PossibleWorld.GEN)
+    using coherent_1 by blast
   AOT_have \<open>\<diamond>\<not>p \<equiv> \<exists>w (w \<Turnstile> \<not>p)\<close> using fund_1[unvarify p, OF log_prop_prop_2] by blast
   also AOT_have \<open>\<dots> \<equiv> \<exists>w \<not>(w \<Turnstile> p)\<close>
   proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     AOT_assume \<open>\<exists>w w \<Turnstile> \<not>p\<close>
-    then AOT_obtain w where w_prop: \<open>PossibleWorld(w) & w \<Turnstile> \<not>p\<close> using "\<exists>E"[rotated] by blast
-    AOT_hence \<open>\<not>w \<Turnstile> p\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] "&E" by blast
-    AOT_hence \<open>PossibleWorld(w) & \<not>w \<Turnstile> p\<close> using w_prop[THEN "&E"(1)] "&I" by simp
-    AOT_thus \<open>\<exists>w \<not>w \<Turnstile> p\<close> by (rule "\<exists>I")
+    then AOT_obtain w where w_prop: \<open>w \<Turnstile> \<not>p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
+    AOT_hence \<open>\<not>w \<Turnstile> p\<close> using 0[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(1)] "&E" by blast
+    AOT_thus \<open>\<exists>w \<not>w \<Turnstile> p\<close> by (rule "PossibleWorld.\<exists>I")
   next
     AOT_assume \<open>\<exists>w \<not>w \<Turnstile> p\<close>
-    then AOT_obtain w where w_prop: \<open>PossibleWorld(w) & \<not>w \<Turnstile> p\<close> using "\<exists>E"[rotated] by blast
+    then AOT_obtain w where w_prop: \<open>\<not>w \<Turnstile> p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
     AOT_hence \<open>w \<Turnstile> \<not>p\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] "&E" by (metis coherent_1 intro_elim_3_b)
-    AOT_hence \<open>PossibleWorld(w) & w \<Turnstile> \<not>p\<close> using w_prop[THEN "&E"(1)] "&I" by simp
-    AOT_thus \<open>\<exists>w w \<Turnstile> \<not>p\<close> by (rule "\<exists>I")
+    AOT_thus \<open>\<exists>w w \<Turnstile> \<not>p\<close> by (rule "PossibleWorld.\<exists>I")
   qed
   finally AOT_have \<open>\<not>\<diamond>\<not>p \<equiv> \<not>\<exists>w \<not>w \<Turnstile> p\<close>
     by (meson intro_elim_3_a oth_class_taut_4_b)
@@ -2022,193 +1975,185 @@ proof -
   finally show ?thesis.
 qed
 
-AOT_theorem conj_dist_w_1:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (p & q) \<equiv> ((w \<Turnstile> p) & (w \<Turnstile> q))\<close>
+AOT_theorem conj_dist_w_1: \<open>w \<Turnstile> (p & q) \<equiv> ((w \<Turnstile> p) & (w \<Turnstile> q))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> (p & q)\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p & q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<phi> & \<psi>)) \<rightarrow> (s \<Turnstile> \<phi> & s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> & \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> & w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      AOT_hence \<open>s \<Turnstile> (\<phi> & \<psi>) \<equiv> (\<phi> & \<psi>)\<close> and \<open>s \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>s \<Turnstile> \<psi> \<equiv> \<psi>\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      AOT_hence \<open>w \<Turnstile> (\<phi> & \<psi>) \<equiv> (\<phi> & \<psi>)\<close> and \<open>w \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>w \<Turnstile> \<psi> \<equiv> \<psi>\<close>
         using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
-      moreover AOT_assume \<open>s \<Turnstile> (\<phi> & \<psi>)\<close>
-      ultimately AOT_show \<open>s \<Turnstile> \<phi> & s \<Turnstile> \<psi>\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<phi> & \<psi>)\<close>
+      ultimately AOT_show \<open>w \<Turnstile> \<phi> & w \<Turnstile> \<psi>\<close>
         by (metis con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b intro_elim_3_a intro_elim_3_b)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<phi> & \<psi>) \<rightarrow> s \<Turnstile> \<phi> & s \<Turnstile> \<psi>)\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<phi> & \<psi>) \<rightarrow> w \<Turnstile> \<phi> & w \<Turnstile> \<psi>)\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (p & q) \<rightarrow> w \<Turnstile> p & w \<Turnstile> q)\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> p) & \<diamond>(w \<Turnstile> q)\<close>
     by (metis 0 KBasic2_3 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> p & w \<Turnstile> q\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by meson
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by meson
 next
   AOT_assume \<open>w \<Turnstile> p & w \<Turnstile> q\<close>
   AOT_hence \<open>\<box>w \<Turnstile> p & \<box>w \<Turnstile> q\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
   AOT_hence 0: \<open>\<box>(w \<Turnstile> p & w \<Turnstile> q)\<close>
     by (metis KBasic_3 intro_elim_3_b)
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<phi> & s \<Turnstile> \<psi>) \<rightarrow> (s \<Turnstile> (\<phi> & \<psi>)))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> & w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> & \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      AOT_hence \<open>s \<Turnstile> (\<phi> & \<psi>) \<equiv> (\<phi> & \<psi>)\<close> and \<open>s \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>s \<Turnstile> \<psi> \<equiv> \<psi>\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      AOT_hence \<open>w \<Turnstile> (\<phi> & \<psi>) \<equiv> (\<phi> & \<psi>)\<close> and \<open>w \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>w \<Turnstile> \<psi> \<equiv> \<psi>\<close>
         using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
-      moreover AOT_assume \<open>s \<Turnstile> \<phi> & s \<Turnstile> \<psi>\<close>
-      ultimately AOT_show \<open>s \<Turnstile> (\<phi> & \<psi>)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> \<phi> & w \<Turnstile> \<psi>\<close>
+      ultimately AOT_show \<open>w \<Turnstile> (\<phi> & \<psi>)\<close>
         by (metis con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b intro_elim_3_a intro_elim_3_b)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((s \<Turnstile> \<phi> & s \<Turnstile> \<psi>) \<rightarrow> s \<Turnstile> (\<phi> & \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((w \<Turnstile> \<phi> & w \<Turnstile> \<psi>) \<rightarrow> w \<Turnstile> (\<phi> & \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((w \<Turnstile> p & w \<Turnstile> q) \<rightarrow> w \<Turnstile> (p & q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (p & q))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (p & q)\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_2:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (p \<rightarrow> q) \<equiv> ((w \<Turnstile> p) \<rightarrow> (w \<Turnstile> q))\<close>
+AOT_theorem conj_dist_w_2: \<open>w \<Turnstile> (p \<rightarrow> q) \<equiv> ((w \<Turnstile> p) \<rightarrow> (w \<Turnstile> q))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> (p \<rightarrow> q)\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p \<rightarrow> q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_assume \<open>w \<Turnstile> p\<close>
-  AOT_hence 1: \<open>\<box>w \<Turnstile> p\<close> by (metis T_S5_fund_1 assms intro_elim_3_a rigid_truth_at_3 vdash_properties_10)
+  AOT_hence 1: \<open>\<box>w \<Turnstile> p\<close> by (metis T_S5_fund_1 intro_elim_3_a rigid_truth_at_3 vdash_properties_10)
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<phi> \<rightarrow> \<psi>)) \<rightarrow> (s \<Turnstile> \<phi> \<rightarrow> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<rightarrow> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<rightarrow> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      AOT_hence \<open>s \<Turnstile> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<phi> \<rightarrow> \<psi>)\<close> and \<open>s \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>s \<Turnstile> \<psi> \<equiv> \<psi>\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      AOT_hence \<open>w \<Turnstile> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<phi> \<rightarrow> \<psi>)\<close> and \<open>w \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>w \<Turnstile> \<psi> \<equiv> \<psi>\<close>
         using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
-      moreover AOT_assume \<open>s \<Turnstile> (\<phi> \<rightarrow> \<psi>)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> \<phi>\<close>
-      ultimately AOT_show \<open>s \<Turnstile> \<psi>\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<phi> \<rightarrow> \<psi>)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> \<phi>\<close>
+      ultimately AOT_show \<open>w \<Turnstile> \<psi>\<close>
         by (metis intro_elim_3_a intro_elim_3_b vdash_properties_10)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<phi> \<rightarrow> \<psi>) \<rightarrow> (s \<Turnstile> \<phi> \<rightarrow> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<phi> \<rightarrow> \<psi>) \<rightarrow> (w \<Turnstile> \<phi> \<rightarrow> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (p \<rightarrow> q) \<rightarrow> (w \<Turnstile> p \<rightarrow> w \<Turnstile> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> p \<rightarrow> w \<Turnstile> q)\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_hence \<open>\<diamond>w \<Turnstile> q\<close> 
     by (metis 1 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> q\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by meson
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by meson
 next
   AOT_assume \<open>w \<Turnstile> p \<rightarrow> w \<Turnstile> q\<close>
   AOT_hence \<open>\<not>(w \<Turnstile> p) \<or> w \<Turnstile> q\<close>
     by (metis con_dis_i_e_3_a con_dis_i_e_3_b reductio_aa_1 vdash_properties_10)
   AOT_hence \<open>w \<Turnstile> \<not>p \<or> w \<Turnstile> q\<close>
-    by (metis assms coherent_1 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b intro_elim_3_b reductio_aa_1)
+    by (metis coherent_1 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b intro_elim_3_b reductio_aa_1)
   AOT_hence 0: \<open>\<box>(w \<Turnstile> \<not>p \<or> w \<Turnstile> q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
     by (metis KBasic_15 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b reductio_aa_1 vdash_properties_10)
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<not>\<phi> \<or> s \<Turnstile> \<psi>) \<rightarrow> (s \<Turnstile> (\<phi> \<rightarrow> \<psi>)))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<not>\<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<rightarrow> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> \<not>\<phi> \<or> s \<Turnstile> \<psi>\<close>
-      ultimately AOT_show \<open>s \<Turnstile> (\<phi> \<rightarrow> \<psi>)\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> \<not>\<phi> \<or> w \<Turnstile> \<psi>\<close>
+      ultimately AOT_show \<open>w \<Turnstile> (\<phi> \<rightarrow> \<psi>)\<close>
         by (metis con_dis_i_e_4_b deduction_theorem intro_elim_3_a intro_elim_3_b log_prop_prop_2 reductio_aa_1 rule_ui_1)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((s \<Turnstile> \<not>\<phi> \<or> s \<Turnstile> \<psi>) \<rightarrow> s \<Turnstile> (\<phi> \<rightarrow> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((w \<Turnstile> \<not>\<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> w \<Turnstile> (\<phi> \<rightarrow> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((w \<Turnstile> \<not>p \<or> w \<Turnstile> q) \<rightarrow> w \<Turnstile> (p \<rightarrow> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (p \<rightarrow> q))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (p \<rightarrow> q)\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_3:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (p \<or> q) \<equiv> ((w \<Turnstile> p) \<or> (w \<Turnstile> q))\<close>
+AOT_theorem conj_dist_w_3: \<open>w \<Turnstile> (p \<or> q) \<equiv> ((w \<Turnstile> p) \<or> (w \<Turnstile> q))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> (p \<or> q)\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p \<or> q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<phi> \<or> \<psi>)) \<rightarrow> (s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<or> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      AOT_hence \<open>s \<Turnstile> (\<phi> \<or> \<psi>) \<equiv> (\<phi> \<or> \<psi>)\<close> and \<open>s \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>s \<Turnstile> \<psi> \<equiv> \<psi>\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      AOT_hence \<open>w \<Turnstile> (\<phi> \<or> \<psi>) \<equiv> (\<phi> \<or> \<psi>)\<close> and \<open>w \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>w \<Turnstile> \<psi> \<equiv> \<psi>\<close>
         using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
-      moreover AOT_assume \<open>s \<Turnstile> (\<phi> \<or> \<psi>)\<close>
-      ultimately AOT_show \<open>s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<phi> \<or> \<psi>)\<close>
+      ultimately AOT_show \<open>w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>\<close>
         by (metis con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_c intro_elim_3_a intro_elim_3_b reductio_aa_1)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<phi> \<or> \<psi>) \<rightarrow> (s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<phi> \<or> \<psi>) \<rightarrow> (w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (p \<or> q) \<rightarrow> (w \<Turnstile> p \<or> w \<Turnstile> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> p \<or> w \<Turnstile> q)\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_hence \<open>\<diamond>w \<Turnstile> p \<or> \<diamond>w \<Turnstile> q\<close>
     using KBasic2_2[THEN "\<equiv>E"(1)] by blast
   AOT_thus \<open>w \<Turnstile> p \<or> w \<Turnstile> q\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
     by (metis con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b reductio_aa_1)
 next
   AOT_assume \<open>w \<Turnstile> p \<or> w \<Turnstile> q\<close>
   AOT_hence 0: \<open>\<box>(w \<Turnstile> p \<or> w \<Turnstile> q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
     by (metis KBasic_15 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b reductio_aa_1 vdash_properties_10)
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>) \<rightarrow> (s \<Turnstile> (\<phi> \<or> \<psi>)))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<or> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>\<close>
-      ultimately AOT_show \<open>s \<Turnstile> (\<phi> \<or> \<psi>)\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>\<close>
+      ultimately AOT_show \<open>w \<Turnstile> (\<phi> \<or> \<psi>)\<close>
         by (metis con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b intro_elim_3_a intro_elim_3_b
                   log_prop_prop_2 reductio_aa_1 rule_ui_1)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((s \<Turnstile> \<phi> \<or> s \<Turnstile> \<psi>) \<rightarrow> s \<Turnstile> (\<phi> \<or> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> w \<Turnstile> (\<phi> \<or> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((w \<Turnstile> p \<or> w \<Turnstile> q) \<rightarrow> w \<Turnstile> (p \<or> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (p \<or> q))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (p \<or> q)\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_4:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (p \<equiv> q) \<equiv> ((w \<Turnstile> p) \<equiv> (w \<Turnstile> q))\<close>
+AOT_theorem conj_dist_w_4: \<open>w \<Turnstile> (p \<equiv> q) \<equiv> ((w \<Turnstile> p) \<equiv> (w \<Turnstile> q))\<close>
 proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> (p \<equiv> q)\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p \<equiv> q)\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<phi> \<equiv> \<psi>)) \<rightarrow> (s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<equiv> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      AOT_hence \<open>s \<Turnstile> (\<phi> \<equiv> \<psi>) \<equiv> (\<phi> \<equiv> \<psi>)\<close> and \<open>s \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>s \<Turnstile> \<psi> \<equiv> \<psi>\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      AOT_hence \<open>w \<Turnstile> (\<phi> \<equiv> \<psi>) \<equiv> (\<phi> \<equiv> \<psi>)\<close> and \<open>w \<Turnstile> \<phi> \<equiv> \<phi>\<close> and \<open>w \<Turnstile> \<psi> \<equiv> \<psi>\<close>
         using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
-      moreover AOT_assume \<open>s \<Turnstile> (\<phi> \<equiv> \<psi>)\<close>
-      ultimately AOT_show \<open>s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<phi> \<equiv> \<psi>)\<close>
+      ultimately AOT_show \<open>w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>\<close>
         by (metis intro_elim_3_b intro_elim_3_e oth_class_taut_2_e)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<phi> \<equiv> \<psi>) \<rightarrow> (s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<phi> \<equiv> \<psi>) \<rightarrow> (w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (p \<equiv> q) \<rightarrow> (w \<Turnstile> p \<equiv> w \<Turnstile> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence 1: \<open>\<diamond>(w \<Turnstile> p \<equiv> w \<Turnstile> q)\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
@@ -2230,11 +2175,11 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<not>\<box>w \<Turnstile> p \<or> \<diamond>w \<Turnstile> q\<close> and \<open>\<not>\<box>w \<Turnstile> q \<or> \<diamond>w \<Turnstile> p\<close>
     by (metis KBasic_11 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_b intro_elim_3_b raa_cor_1)+
   AOT_thus \<open>w \<Turnstile> p \<equiv> w \<Turnstile> q\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
-    by (metis "\<not>\<not>I" T_S5_fund_1 assms con_dis_i_e_4_b deduction_theorem intro_elim_2 intro_elim_3_a rigid_truth_at_3)
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    by (metis "\<not>\<not>I" T_S5_fund_1 con_dis_i_e_4_b deduction_theorem intro_elim_2 intro_elim_3_a rigid_truth_at_3)
 next
-  AOT_have \<open>\<box>PossibleWorld(w)\<close> using assms
-    using intro_elim_3_a rigid_pw_1 by blast
+  AOT_have \<open>\<box>PossibleWorld(w)\<close>
+    using intro_elim_3_a rigid_pw_1 PossibleWorld.\<psi> by blast
   moreover {
     fix p
     AOT_modally_strict {
@@ -2250,96 +2195,92 @@ next
     using sc_eq_box_box_5[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"]
           by (metis "1")
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>) \<rightarrow> (s \<Turnstile> (\<phi> \<equiv> \<psi>)))\<close> for s \<phi> \<psi>
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<equiv> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>\<close>
-      ultimately AOT_show \<open>s \<Turnstile> (\<phi> \<equiv> \<psi>)\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>\<close>
+      ultimately AOT_show \<open>w \<Turnstile> (\<phi> \<equiv> \<psi>)\<close>
         by (metis intro_elim_3_b intro_elim_3_f log_prop_prop_2 rule_ui_1)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((s \<Turnstile> \<phi> \<equiv> s \<Turnstile> \<psi>) \<rightarrow> s \<Turnstile> (\<phi> \<equiv> \<psi>))\<close> for s \<phi> \<psi> by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>) \<rightarrow> w \<Turnstile> (\<phi> \<equiv> \<psi>))\<close> for w \<phi> \<psi> by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((w \<Turnstile> p \<equiv>  w \<Turnstile> q) \<rightarrow> w \<Turnstile> (p \<equiv> q))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (p \<equiv> q))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (p \<equiv> q)\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_5:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> (\<forall> \<alpha> (w \<Turnstile> \<phi>{\<alpha>}))\<close>
+AOT_theorem conj_dist_w_5: \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> (\<forall> \<alpha> (w \<Turnstile> \<phi>{\<alpha>}))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   AOT_assume \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>}))\<close> for s
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w
     proof(safe intro!: "\<rightarrow>I" GEN)
-      AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
-      ultimately AOT_show \<open>s \<Turnstile> \<phi>{\<alpha>}\<close> for \<alpha>
+      AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
+      ultimately AOT_show \<open>w \<Turnstile> \<phi>{\<alpha>}\<close> for \<alpha>
         by (metis intro_elim_3_a intro_elim_3_b log_prop_prop_2 rule_ui_1 rule_ui_3)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>}))\<close> for s by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>})\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_hence \<open>\<forall>\<alpha> \<diamond>w \<Turnstile> \<phi>{\<alpha>}\<close>
     by (metis "Buridan\<diamond>" vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> \<phi>{\<alpha>}\<close> for \<alpha>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2]
           "\<forall>E"(2) by blast
 next
   AOT_assume \<open>\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close>
   AOT_hence \<open>w \<Turnstile> \<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
   AOT_hence \<open>\<box>w \<Turnstile> \<phi>{\<alpha>}\<close> for \<alpha>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
   AOT_hence \<open>\<forall>\<alpha> \<box>w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule GEN)
   AOT_hence 0: \<open>\<box>\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule BF[THEN "\<rightarrow>E"])
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((\<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})))\<close> for s
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})))\<close> for w
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>\<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>}\<close>
-      ultimately AOT_show \<open>s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close>
+      ultimately AOT_show \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
         by (metis intro_elim_3_a intro_elim_3_b log_prop_prop_2 rule_ui_1 rule_ui_3 universal_cor)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((\<forall>\<alpha> s \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> s \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}))\<close> for s by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}))\<close> for w by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>}))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_6:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}) \<equiv> (\<exists> \<alpha> (w \<Turnstile> \<phi>{\<alpha>}))\<close>
+AOT_theorem conj_dist_w_6: \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}) \<equiv> (\<exists> \<alpha> (w \<Turnstile> \<phi>{\<alpha>}))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   AOT_assume \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
   AOT_hence 0: \<open>\<box>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<exists>\<alpha> s \<Turnstile> \<phi>{\<alpha>}))\<close> for s
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w
     proof(safe intro!: "\<rightarrow>I" GEN)
-      AOT_assume \<open>\<forall>p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
-      ultimately AOT_show \<open>\<exists> \<alpha> (s \<Turnstile> \<phi>{\<alpha>})\<close>
+      AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
+      ultimately AOT_show \<open>\<exists> \<alpha> (w \<Turnstile> \<phi>{\<alpha>})\<close>
         by (metis "instantiation" existential_2_a intro_elim_3_a intro_elim_3_b log_prop_prop_2 rule_ui_1) 
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<exists>\<alpha> s \<Turnstile> \<phi>{\<alpha>}))\<close> for s by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>(w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>(w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}) \<rightarrow> (\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>})\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
@@ -2347,42 +2288,39 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
     by (metis "BF\<diamond>" vdash_properties_10)
   then AOT_obtain \<alpha> where \<open>\<diamond>w \<Turnstile> \<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>w \<Turnstile> \<phi>{\<alpha>}\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
   AOT_thus \<open>\<exists> \<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule "\<exists>I")
 next
   AOT_assume \<open>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close>
   then AOT_obtain \<alpha> where \<open>w \<Turnstile> \<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>w \<Turnstile> \<phi>{\<alpha>}\<close>
-    using rigid_truth_at_1[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
+    using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] "&E" "&I" by blast
   AOT_hence \<open>\<exists>\<alpha> \<box>w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule "\<exists>I")
   AOT_hence 0: \<open>\<box>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (metis sign_S5_thm_1 vdash_properties_10)
   AOT_modally_strict {
-    AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> ((\<exists>\<alpha> s \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})))\<close> for s
+    AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})))\<close> for w
     proof(safe intro!: "\<rightarrow>I")
-      AOT_assume \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
-      moreover AOT_assume \<open>\<exists>\<alpha> s \<Turnstile> \<phi>{\<alpha>}\<close>
-      then AOT_obtain \<alpha> where \<open>s \<Turnstile> \<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
-      ultimately AOT_show \<open>s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
+      AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
+      moreover AOT_assume \<open>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close>
+      then AOT_obtain \<alpha> where \<open>w \<Turnstile> \<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
+      ultimately AOT_show \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
         by (metis existential_2_a intro_elim_3_a intro_elim_3_b log_prop_prop_2 rule_ui_1)
     qed
   }
-  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((\<exists>\<alpha> s \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> s \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}))\<close> for s by (rule "RM\<diamond>")
+  AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> \<diamond>((\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}))\<close> for w by (rule "RM\<diamond>")
   moreover AOT_have pos: \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF assms] "&E" by blast
+    using world'[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>] "&E" by blast
   ultimately AOT_have \<open>\<diamond>((\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}))\<close> using "\<rightarrow>E" by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>}))\<close>
     by (metis 0 KBasic2_4 intro_elim_3_a vdash_properties_10)
   AOT_thus \<open>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
-    using rigid_truth_at_2[OF assms, unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
+    using rigid_truth_at_2[unvarify p, THEN "\<equiv>E"(1), OF log_prop_prop_2] by blast
 qed
 
-AOT_theorem conj_dist_w_7:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>(w \<Turnstile> \<box>p) \<rightarrow> \<box>w \<Turnstile> p\<close>
+AOT_theorem conj_dist_w_7: \<open>(w \<Turnstile> \<box>p) \<rightarrow> \<box>w \<Turnstile> p\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> \<box>p\<close>
-  AOT_hence \<open>PossibleWorld(w) & w \<Turnstile> \<box>p\<close> using assms "&I" by blast
-  AOT_hence \<open>\<exists>w w \<Turnstile> \<box>p\<close> by (rule "\<exists>I")
+  AOT_hence \<open>\<exists>w w \<Turnstile> \<box>p\<close> by (rule "PossibleWorld.\<exists>I")
   AOT_hence \<open>\<diamond>\<box>p\<close> using fund_1[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(2)] by blast
   AOT_hence \<open>\<box>p\<close> by (metis T_S5_fund_2 vdash_properties_6)
   AOT_hence 1: \<open>\<box>\<box>p\<close> by (metis S5Basic_6 intro_elim_3_a)
@@ -2391,7 +2329,7 @@ proof(rule "\<rightarrow>I")
        (auto simp add: fund_2 1)
   AOT_hence \<open>\<forall>w \<box>w \<Turnstile> p\<close>
     using fund_lem_5'[THEN "\<rightarrow>E"] by simp
-  AOT_thus \<open>\<box>w \<Turnstile> p\<close> using assms "\<rightarrow>E" "\<forall>E"(2) by blast
+  AOT_thus \<open>\<box>w \<Turnstile> p\<close> using "\<rightarrow>E" "PossibleWorld.\<forall>E" by fast
 qed
 
 AOT_theorem conj_dist_w_8: \<open>\<exists>w\<exists>p((\<box>w \<Turnstile> p) & \<not>w \<Turnstile> \<box>p)\<close>
@@ -2401,59 +2339,53 @@ proof -
   AOT_hence B: \<open>\<not>\<box>r\<close> by (metis KBasic_11 intro_elim_3_b)
   AOT_have \<open>\<diamond>r\<close> using A "T\<diamond>"[THEN "\<rightarrow>E"] by simp
   AOT_hence \<open>\<exists>w w \<Turnstile> r\<close> using fund_1[THEN "\<equiv>E"(1)] by blast
-  then AOT_obtain w where w: \<open>PossibleWorld(w) & w \<Turnstile> r\<close> using "\<exists>E"[rotated] by blast
+  then AOT_obtain w where w: \<open>w \<Turnstile> r\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_hence \<open>\<box>w \<Turnstile> r\<close>
-    by (metis T_S5_fund_1 con_dis_taut_1 intro_elim_3_a oth_class_taut_2_a rigid_truth_at_3 vdash_properties_10)
+    by (metis T_S5_fund_1 intro_elim_3_a rigid_truth_at_3 vdash_properties_10)
   moreover AOT_have \<open>\<not>w \<Turnstile> \<box>r\<close>
   proof(rule raa_cor_2)
     AOT_assume \<open>w \<Turnstile> \<box>r\<close>
-    AOT_hence \<open>PossibleWorld(w) & w \<Turnstile> \<box>r\<close> using w[THEN "&E"(1)] "&I" by blast
-    AOT_hence \<open>\<exists>w w \<Turnstile> \<box>r\<close> by (rule "\<exists>I")
+    AOT_hence \<open>\<exists>w w \<Turnstile> \<box>r\<close> by (rule "PossibleWorld.\<exists>I")
     AOT_hence \<open>\<box>r\<close> by (metis intro_elim_3_b nec_dia_w_1)
     AOT_thus \<open>\<box>r & \<not>\<box>r\<close> using B "&I" by blast
   qed
   ultimately AOT_have \<open>\<box>w \<Turnstile> r & \<not>w \<Turnstile> \<box>r\<close> by (rule "&I")
   AOT_hence \<open>\<exists>p (\<box>w \<Turnstile> p & \<not>w \<Turnstile> \<box>p)\<close> by (rule "\<exists>I")
-  AOT_hence \<open>PossibleWorld(w) & \<exists>p (\<box>w \<Turnstile> p & \<not>w \<Turnstile> \<box>p)\<close> using w[THEN "&E"(1)] "&I" by blast
-  thus ?thesis by (rule "\<exists>I")
+  thus ?thesis by (rule "PossibleWorld.\<exists>I")
 qed
 
-AOT_theorem conj_dist_w_9:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>(\<diamond>w \<Turnstile> p) \<rightarrow> w \<Turnstile> \<diamond>p\<close>
+AOT_theorem conj_dist_w_9: \<open>(\<diamond>w \<Turnstile> p) \<rightarrow> w \<Turnstile> \<diamond>p\<close>
 proof(rule "\<rightarrow>I"; rule raa_cor_1)
   AOT_assume \<open>\<diamond>w \<Turnstile> p\<close>
-  AOT_hence 0: \<open>w \<Turnstile> p\<close> by (metis assms intro_elim_3_a rigid_truth_at_2)
+  AOT_hence 0: \<open>w \<Turnstile> p\<close> by (metis intro_elim_3_a rigid_truth_at_2)
   AOT_assume \<open>\<not>w \<Turnstile> \<diamond>p\<close>
   AOT_hence 1: \<open>w \<Turnstile> \<not>\<diamond>p\<close>
-    using coherent_1[OF assms, unvarify p, THEN "\<equiv>E"(2), OF log_prop_prop_2] by blast
+    using coherent_1[unvarify p, THEN "\<equiv>E"(2), OF log_prop_prop_2] by blast
   moreover AOT_have \<open>w \<Turnstile> (\<not>\<diamond>p \<rightarrow> \<not>p)\<close>
     using "T\<diamond>"[THEN contraposition_1_a, THEN RN]
-          fund_2[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1), THEN "\<forall>E"(2), THEN "\<rightarrow>E", rotated, OF assms]
+          fund_2[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1), THEN "\<forall>E"(2), THEN "\<rightarrow>E", rotated, OF PossibleWorld.\<psi>]
           by blast
   ultimately AOT_have \<open>w \<Turnstile> \<not>p\<close>
-    using conj_dist_w_2[OF assms, unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1), THEN "\<rightarrow>E"]
+    using conj_dist_w_2[unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1), THEN "\<rightarrow>E"]
     by blast
   AOT_hence \<open>w \<Turnstile> p & w \<Turnstile> \<not>p\<close> using 0 "&I" by blast
   AOT_thus \<open>p & \<not>p\<close>
-    by (metis assms coherent_1 con_dis_taut_1 con_dis_taut_2 intro_elim_3_d modus_tollens_1 raa_cor_3)
+    by (metis coherent_1 con_dis_taut_1 con_dis_taut_2 intro_elim_3_d modus_tollens_1 raa_cor_3)
 qed
 
 AOT_theorem conj_dist_w_10: \<open>\<exists>w\<exists>p((w \<Turnstile> \<diamond>p) & \<not>\<diamond>w \<Turnstile> p)\<close>
 proof -
-  AOT_obtain w where w: \<open>PossibleWorld(w) & \<forall>p (w \<Turnstile> p \<equiv> p)\<close>
-    using act_world_1 "\<exists>E"[rotated] by blast
+  AOT_obtain w where w: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
+    using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_obtain r where \<open>\<not>r\<close> and \<open>\<diamond>r\<close>
     using cont_tf_thm_2 cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<exists>E"[rotated] by metis
   AOT_hence \<open>w \<Turnstile> \<not>r\<close> and 0: \<open>w \<Turnstile> \<diamond>r\<close>
-    using w[THEN "&E"(2), THEN "\<forall>E"(1), OF log_prop_prop_2, THEN "\<equiv>E"(2)] by blast+
-  AOT_hence \<open>\<not>w \<Turnstile> r\<close> using coherent_1[OF w[THEN "&E"(1)], THEN "\<equiv>E"(1)] by blast
-  AOT_hence \<open>\<not>\<diamond>w \<Turnstile> r\<close> by (metis "\<equiv>E"(4) rigid_truth_at_2[OF w[THEN "&E"(1)]])
+    using w[THEN "\<forall>E"(1), OF log_prop_prop_2, THEN "\<equiv>E"(2)] by blast+
+  AOT_hence \<open>\<not>w \<Turnstile> r\<close> using coherent_1[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<not>\<diamond>w \<Turnstile> r\<close> by (metis "\<equiv>E"(4) rigid_truth_at_2)
   AOT_hence \<open>w \<Turnstile> \<diamond>r & \<not>\<diamond>w \<Turnstile> r\<close> using 0 "&I" by blast
   AOT_hence \<open>\<exists>p (w \<Turnstile> \<diamond>p & \<not>\<diamond>w \<Turnstile> p)\<close> by (rule "\<exists>I")
-  AOT_hence \<open>PossibleWorld(w) & \<exists>p (w \<Turnstile> \<diamond>p & \<not>\<diamond>w \<Turnstile> p)\<close>
-    using w[THEN "&E"(1)] "&I" by blast
-  thus ?thesis by (rule "\<exists>I")
+  thus ?thesis by (rule "PossibleWorld.\<exists>I")
 qed
 
 AOT_theorem two_worlds_exist_1: \<open>\<exists>p(ContingentlyTrue(p)) \<rightarrow> \<exists>w (\<not>Actual(w))\<close>
@@ -2462,17 +2394,16 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain p where \<open>ContingentlyTrue(p)\<close> using "\<exists>E"[rotated] by blast
   AOT_hence p: \<open>p & \<diamond>\<not>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" cont_tf_1)
   AOT_hence \<open>\<exists>w w \<Turnstile> \<not>p\<close> using fund_1[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] "&E" by blast
-  then AOT_obtain w where w: \<open>PossibleWorld(w) & w \<Turnstile> \<not>p\<close> using "\<exists>E"[rotated] by blast
-  moreover AOT_have \<open>\<not>Actual(w)\<close>
+  then AOT_obtain w where w: \<open>w \<Turnstile> \<not>p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
+  AOT_have \<open>\<not>Actual(w)\<close>
   proof(rule raa_cor_2)
     AOT_assume \<open>Actual(w)\<close>
     AOT_hence \<open>w \<Turnstile> p\<close> using p[THEN "&E"(1)] using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)]
-      by (metis con_dis_i_e_2_b log_prop_prop_2 raa_cor_3 rule_ui_1 vdash_properties_10 w)
-    moreover AOT_have \<open>\<not>(w \<Turnstile> p)\<close> using w[THEN "&E"(2)] by (metis coherent_1 con_dis_i_e_2_a intro_elim_3_d reductio_aa_2 w) 
+      by (metis log_prop_prop_2 raa_cor_3 rule_ui_1 vdash_properties_10 w)
+    moreover AOT_have \<open>\<not>(w \<Turnstile> p)\<close> by (metis coherent_1 intro_elim_3_d reductio_aa_2 w) 
     ultimately AOT_show \<open>w \<Turnstile> p & \<not>(w \<Turnstile> p)\<close> using "&I" by blast
   qed
-  ultimately AOT_have \<open>PossibleWorld(w) & \<not>Actual(w)\<close> using "&E" "&I" by blast
-  AOT_thus \<open>\<exists>w \<not>Actual(w)\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>w \<not>Actual(w)\<close> by (rule "PossibleWorld.\<exists>I")
 qed
 
 
@@ -2482,18 +2413,17 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain p where \<open>ContingentlyFalse(p)\<close> using "\<exists>E"[rotated] by blast
   AOT_hence p: \<open>\<not>p & \<diamond>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" cont_tf_2)
   AOT_hence \<open>\<exists>w w \<Turnstile> p\<close> using fund_1[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] "&E" by blast
-  then AOT_obtain w where w: \<open>PossibleWorld(w) & w \<Turnstile> p\<close> using "\<exists>E"[rotated] by blast
+  then AOT_obtain w where w: \<open>w \<Turnstile> p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
   moreover AOT_have \<open>\<not>Actual(w)\<close>
   proof(rule raa_cor_2)
     AOT_assume \<open>Actual(w)\<close>
     AOT_hence \<open>w \<Turnstile> \<not>p\<close> using p[THEN "&E"(1)] using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)]
-      by (metis con_dis_i_e_2_b log_prop_prop_2 raa_cor_3 rule_ui_1 vdash_properties_10 w)
+      by (metis log_prop_prop_2 raa_cor_3 rule_ui_1 vdash_properties_10 w)
     moreover AOT_have \<open>\<not>(w \<Turnstile> p)\<close>
-      using calculation by (metis coherent_1 con_dis_i_e_2_a intro_elim_3_d reductio_aa_2 w) 
-    AOT_thus \<open>w \<Turnstile> p & \<not>(w \<Turnstile> p)\<close> using w[THEN "&E"(2)]  "&I" by blast
+      using calculation by (metis coherent_1 intro_elim_3_d reductio_aa_2) 
+    AOT_thus \<open>w \<Turnstile> p & \<not>(w \<Turnstile> p)\<close> using "&I" w by metis
   qed
-  ultimately AOT_have \<open>PossibleWorld(w) & \<not>Actual(w)\<close> using "&E" "&I" by blast
-  AOT_thus \<open>\<exists>w \<not>Actual(w)\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>w \<not>Actual(w)\<close> by (rule "PossibleWorld.\<exists>I")
 qed
 
 AOT_theorem two_worlds_exist_3: \<open>\<exists>w \<not>Actual(w)\<close>
@@ -2501,38 +2431,31 @@ AOT_theorem two_worlds_exist_3: \<open>\<exists>w \<not>Actual(w)\<close>
 
 AOT_theorem two_worlds_exit_4: \<open>\<exists>w\<exists>w'(w \<noteq> w')\<close>
 proof -
-  AOT_obtain w where w: \<open>PossibleWorld(w) & Actual(w)\<close>
-    using act_world_2[THEN uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<exists>E"[rotated] "&E" by blast
-  moreover AOT_obtain w' where w': \<open>PossibleWorld(w') & \<not>Actual(w')\<close> using two_worlds_exist_3 "\<exists>E"[rotated] by blast
+  AOT_obtain w where w: \<open>Actual(w)\<close>
+    using act_world_2[THEN uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN cqt_further_5[THEN "\<rightarrow>E"]] "PossibleWorld.\<exists>E"[rotated] "&E"
+    by blast
+  moreover AOT_obtain w' where w': \<open>\<not>Actual(w')\<close> using two_worlds_exist_3 "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_have \<open>\<not>(w = w')\<close>
   proof(rule raa_cor_2)
     AOT_assume \<open>w = w'\<close>
     AOT_thus \<open>p & \<not>p\<close> for p using w w' "&E" by (metis "rule=E" raa_cor_3)
   qed
   AOT_hence \<open>w \<noteq> w'\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" noneq_infix)
-  AOT_hence \<open>PossibleWorld(w') & w \<noteq> w'\<close>
-    using w'[THEN "&E"(1)] "&I" by blast
-  AOT_hence \<open>\<exists>w' w \<noteq> w'\<close> by (rule "\<exists>I")
-  AOT_hence \<open>PossibleWorld(w) & \<exists>w' w \<noteq> w'\<close> using w[THEN "&E"(1)] "&I" by blast
-  thus ?thesis by (rule "\<exists>I")
+  AOT_hence \<open>\<exists>w' w \<noteq> w'\<close> by (rule "PossibleWorld.\<exists>I")
+  thus ?thesis by (rule "PossibleWorld.\<exists>I")
 qed
 
 (* TODO: more theorems *)
 
-AOT_theorem w_rel_1: 
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> [\<lambda>x w \<Turnstile> \<phi>{x}]\<down>\<close>
+AOT_theorem w_rel_1: \<open>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> [\<lambda>x w \<Turnstile> \<phi>{x}]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
   AOT_hence \<open>\<box>[\<lambda>x \<phi>{x}]\<down>\<close> by (metis exist_nec vdash_properties_10)
-  moreover AOT_have \<open>\<box>PossibleWorld(w)\<close> using assms by (meson intro_elim_3_a rigid_pw_1)
-  ultimately AOT_have \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & PossibleWorld(w))\<close>
-    by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_b)
-  moreover AOT_have \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & PossibleWorld(w)) \<rightarrow> \<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> ((w \<Turnstile> \<phi>{x}) \<equiv> ( w \<Turnstile> \<phi>{y})))\<close>
+  moreover AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> ((w \<Turnstile> \<phi>{x}) \<equiv> ( w \<Turnstile> \<phi>{y})))\<close>
   proof (rule RM; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
     AOT_modally_strict {
       fix x y
-      AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down> & PossibleWorld(w)\<close>
+      AOT_assume \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
       AOT_hence \<open>\<forall>x\<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(\<phi>{x} \<equiv> \<phi>{y}))\<close>
         using "&E" kirchner_thm_cor_1[THEN "\<rightarrow>E"] by blast
       AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(\<phi>{x} \<equiv> \<phi>{y})\<close> using "\<forall>E"(2) by blast
@@ -2541,9 +2464,9 @@ proof(rule "\<rightarrow>I")
       AOT_hence \<open>\<forall>w (w \<Turnstile> (\<phi>{x} \<equiv> \<phi>{y}))\<close>
         using fund_2[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
       AOT_hence \<open>w \<Turnstile> (\<phi>{x} \<equiv> \<phi>{y})\<close>
-        using "\<forall>E"(2) using 0[THEN "&E"(2)] "\<rightarrow>E" by blast
+        using "\<forall>E"(2) using PossibleWorld.\<psi> "\<rightarrow>E" by blast
       AOT_thus \<open>(w \<Turnstile> \<phi>{x}) \<equiv> (w \<Turnstile> \<phi>{y})\<close>
-          using conj_dist_w_4[OF 0[THEN "&E"(2)], unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
+          using conj_dist_w_4[unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
     }
   qed
   ultimately AOT_have \<open>\<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> ((w \<Turnstile> \<phi>{x}) \<equiv> ( w \<Turnstile> \<phi>{y})))\<close>
@@ -2552,20 +2475,15 @@ proof(rule "\<rightarrow>I")
     using kirchner_thm_1[THEN "\<equiv>E"(2)] by fast
 qed
 
-AOT_theorem w_rel_2: 
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
+AOT_theorem w_rel_2: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
   AOT_hence \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close> by (metis exist_nec vdash_properties_10)
-  moreover AOT_have \<open>\<box>PossibleWorld(w)\<close> using assms by (meson intro_elim_3_a rigid_pw_1)
-  ultimately AOT_have \<open>\<box>([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> & PossibleWorld(w))\<close>
-    by (metis KBasic_3 con_dis_i_e_1 intro_elim_3_b)
-  moreover AOT_have \<open>\<box>([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> & PossibleWorld(w)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n(\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> ((w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}) \<equiv> ( w \<Turnstile> \<phi>{y\<^sub>1...y\<^sub>n})))\<close>
+  moreover AOT_have \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n(\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> ((w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}) \<equiv> ( w \<Turnstile> \<phi>{y\<^sub>1...y\<^sub>n})))\<close>
   proof (rule RM; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
     AOT_modally_strict {
       fix x\<^sub>1x\<^sub>n y\<^sub>1y\<^sub>n
-      AOT_assume 0: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> & PossibleWorld(w)\<close>
+      AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
       AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n (\<forall>F ([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> \<box>(\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n}))\<close>
         using "&E" kirchner_thm_cor_2[THEN "\<rightarrow>E"] by blast
       AOT_hence \<open>\<forall>F ([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> \<box>(\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n})\<close> using "\<forall>E"(2) by blast
@@ -2574,9 +2492,9 @@ proof(rule "\<rightarrow>I")
       AOT_hence \<open>\<forall>w (w \<Turnstile> (\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n}))\<close>
         using fund_2[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
       AOT_hence \<open>w \<Turnstile> (\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n})\<close>
-        using "\<forall>E"(2) using 0[THEN "&E"(2)] "\<rightarrow>E" by blast
+        using "\<forall>E"(2) using PossibleWorld.\<psi> "\<rightarrow>E" by blast
       AOT_thus \<open>(w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}) \<equiv> (w \<Turnstile> \<phi>{y\<^sub>1...y\<^sub>n})\<close>
-          using conj_dist_w_4[OF 0[THEN "&E"(2)], unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
+          using conj_dist_w_4[unvarify p q, OF log_prop_prop_2, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
     }
   qed
   ultimately AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n(\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> ((w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}) \<equiv> ( w \<Turnstile> \<phi>{y\<^sub>1...y\<^sub>n})))\<close>
@@ -2585,10 +2503,8 @@ proof(rule "\<rightarrow>I")
     using kirchner_thm_2[THEN "\<equiv>E"(2)] by fast
 qed
 
-AOT_theorem w_rel_3: 
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
-  by (rule w_rel_2[OF assms, THEN "\<rightarrow>E"]) cqt_2_lambda
+AOT_theorem w_rel_3: \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
+  by (rule w_rel_2[THEN "\<rightarrow>E"]) cqt_2_lambda
 
 AOT_define w_index :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sub>_\<close>)
   \<open>[F]\<^sub>w =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<close>
@@ -2599,47 +2515,39 @@ AOT_define df_rigid_rel_1 :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>
 AOT_define df_rigid_rel_2 :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigidifies'(_,_')\<close>)
   \<open>Rigidifies(F, G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
 
-AOT_theorem rigid_der_1:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w \<Turnstile> [F]x\<^sub>1...x\<^sub>n\<close>
+AOT_theorem rigid_der_1: \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w \<Turnstile> [F]x\<^sub>1...x\<^sub>n\<close>
   apply (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index])
-   apply (fact w_rel_3[OF assms])
+   apply (fact w_rel_3)
   apply (rule beta_C_meta[THEN "\<rightarrow>E"])
-  by (fact w_rel_3[OF assms])
+  by (fact w_rel_3)
 
-AOT_theorem rigid_der_2:
-  assumes \<open>PossibleWorld(w)\<close>
-  shows \<open>Rigid([G]\<^sub>w)\<close>
+AOT_theorem rigid_der_2: \<open>Rigid([G]\<^sub>w)\<close>
 proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF df_rigid_rel_1] "&I")
   AOT_show \<open>[G]\<^sub>w\<down>\<close>
     by (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index])
-       (fact w_rel_3[OF assms])+
+       (fact w_rel_3)+
 next
-  AOT_have \<open>\<box>PossibleWorld(w)\<close>
-    using assms intro_elim_3_a rigid_pw_1 by blast
-  moreover AOT_have \<open>\<box>PossibleWorld(w) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close>
-  proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
+  AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close>
+  proof(rule RN; safe intro!: "\<rightarrow>I" GEN)
     AOT_modally_strict {
-      AOT_assume assms: \<open>PossibleWorld(w)\<close>
+      AOT_have assms: \<open>PossibleWorld(w)\<close> using PossibleWorld.\<psi>.
       AOT_hence nec_pw_w: \<open>\<box>PossibleWorld(w)\<close>
         using intro_elim_3_a rigid_pw_1 by blast
       fix x\<^sub>1x\<^sub>n
       AOT_assume \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-        using rule_id_def_2_a_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3[OF assms]]
+        using rule_id_def_2_a_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3]
         by fast
       AOT_hence \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
         by (metis betaC_1_a)
       AOT_hence \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
-        using rigid_truth_at_1[OF assms, unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
-      AOT_hence \<open>\<box>(w \<Turnstile> [G]x\<^sub>1...x\<^sub>n & PossibleWorld(w))\<close> using nec_pw_w by (metis KBasic_3 df_simplify_1 intro_elim_3_b)
-      moreover AOT_have \<open>\<box>(w \<Turnstile> [G]x\<^sub>1...x\<^sub>n & PossibleWorld(w)) \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-      proof (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
+        using rigid_truth_at_1[unvarify p, OF log_prop_prop_2, THEN "\<equiv>E"(1)] by blast
+      moreover AOT_have \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
+      proof (rule RM; rule "\<rightarrow>I")
         AOT_modally_strict {
-          AOT_assume assms: \<open>PossibleWorld(w)\<close>
           AOT_assume 1: \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
           AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-            by (rule betaC_2_a; fact w_rel_3[OF assms])
+            by (rule betaC_2_a; fact w_rel_3)
                (auto simp: 1 cqt_2_const_var vdash_properties_1_b)
         }
       qed
@@ -2647,42 +2555,42 @@ next
         using "\<rightarrow>E" by blast
       AOT_show \<open>\<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
         by (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index])
-           (auto simp: 1 w_rel_3[OF assms])
+           (auto simp: 1 w_rel_3)
     }
   qed
-  ultimately AOT_show \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close> using "\<rightarrow>E" by blast
+  AOT_thus \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close> using "\<rightarrow>E" by blast
 qed
 
 AOT_theorem rigid_der_3: \<open>\<exists>F Rigidifies(F, G)\<close>
 proof -
-  AOT_obtain w where w: \<open>PossibleWorld(w) & \<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "\<exists>E"[rotated] by blast
+  AOT_obtain w where w: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
   show ?thesis
   proof (rule_tac \<tau>="\<guillemotleft>[G]\<^sub>w\<guillemotright>" in "\<exists>I"(1))
     AOT_show \<open>Rigidifies([G]\<^sub>w, [G])\<close>
     proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF df_rigid_rel_2] "&I" GEN)
-      AOT_show \<open>Rigid([G]\<^sub>w)\<close> using rigid_der_2[OF w[THEN "&E"(1)]] by blast (* TODO: PLM misses to apply to thereom in proof of A *)
+      AOT_show \<open>Rigid([G]\<^sub>w)\<close> using rigid_der_2 by blast (* TODO: PLM misses to apply to thereom in proof of A *)
     next
       fix x\<^sub>1x\<^sub>n
       AOT_have \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
       proof(rule "\<equiv>I"; rule "\<rightarrow>I")
         AOT_assume \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
         AOT_thus \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-          by (rule rule_id_def_2_a_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3[OF w[THEN "&E"(1)]]])
+          by (rule rule_id_def_2_a_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3])
       next
         AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
         AOT_thus \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
-          by (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3[OF w[THEN "&E"(1)]]])
+          by (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3])
       qed
       also AOT_have \<open>\<dots> \<equiv> w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
         by (rule beta_C_meta[THEN "\<rightarrow>E"])
-           (fact w_rel_3[OF w[THEN "&E"(1)]])
-      also AOT_have \<open>\<dots> \<equiv> [G]x\<^sub>1...x\<^sub>n\<close> using w[THEN "&E"(2), THEN "\<forall>E"(1), OF log_prop_prop_2] by blast
+           (fact w_rel_3)
+      also AOT_have \<open>\<dots> \<equiv> [G]x\<^sub>1...x\<^sub>n\<close> using w[THEN "\<forall>E"(1), OF log_prop_prop_2] by blast
       finally AOT_show \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n\<close>.
     qed
   next
     AOT_show \<open>[G]\<^sub>w\<down>\<close>
       by (rule rule_id_def_2_b_2[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index])
-         (auto simp: w_rel_3[OF w[THEN "&E"(1)]])
+         (auto simp: w_rel_3)
   qed
 qed
 
