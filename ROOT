@@ -8,6 +8,11 @@ session "Thesis" = "HOL" +
     AOT_syntax
     AOT_semantics
     AOT_axioms
+    AOT_PLM
+    AOT_BasicLogicalObjects
+    AOT_RestrictedVariables
+    AOT_PossibleWorlds
+    AOT_NaturalNumbers
     Thesis
   document_files
     "root.tex"
