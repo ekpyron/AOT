@@ -4885,7 +4885,7 @@ AOT_theorem suc_den: shows \<open>n\<^bold>'\<down>\<close>
 (* TODO: not in PLM *)
 AOT_theorem suc_eq_desc: \<open>n\<^bold>' = \<^bold>\<iota>m([\<P>]nm)\<close>
   by (rule def_suc[THEN "=\<^sub>d\<^sub>fI"(1)])
-     (auto simp: suc_den' "rule=I_1" suc_den')
+     (auto simp: suc_den' "rule=I_1")
 
 (* TODO: PLM: with the lemmata above this is significantly easier to prove; even without them the
    strategy is much simpler *)
@@ -4966,5 +4966,575 @@ qed
 
 AOT_define numerals_1 :: \<open>\<kappa>\<^sub>s\<close> ("1")
   \<open>1 =\<^sub>d\<^sub>f 0\<^bold>'\<close>
+
+AOT_theorem AX:
+  assumes 0: \<open>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G]))\<close>
+  assumes G_prop: \<open>\<not>(x[G] \<equiv> y[G])\<close>
+  shows \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+proof -
+  {
+    AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
+    AOT_hence 0: \<open>\<forall>F \<not>([F]x & \<not>[F]y)\<close> by (metis cqt_further_4 vdash_properties_10)
+    AOT_have \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    proof (rule GEN; rule "\<equiv>I"; rule "\<rightarrow>I")
+      fix F
+      AOT_assume \<open>[F]x\<close>
+      moreover AOT_have \<open>\<not>([F]x & \<not>[F]y)\<close> using 0[THEN "\<forall>E"(2)] by blast
+      ultimately AOT_show \<open>[F]y\<close> by (metis con_dis_i_e_1 raa_cor_1) 
+    next
+      fix F
+      AOT_assume \<open>[F]y\<close>
+      AOT_hence \<open>\<not>[\<lambda>x \<not>[F]x]y\<close> by (metis "\<not>\<not>I" betaC_1_b)
+      moreover AOT_have \<open>\<not>([\<lambda>x \<not>[F]x]x & \<not>[\<lambda>x \<not>[F]x]y)\<close>
+        apply (rule 0[THEN "\<forall>E"(1)]) by cqt_2_lambda
+      ultimately AOT_have 1: \<open>\<not>[\<lambda>x \<not>[F]x]x\<close> by (metis con_dis_i_e_1 raa_cor_3)
+      {
+        AOT_assume 0: \<open>\<not>[F]x\<close>
+        AOT_have \<open>[\<lambda>x \<not>[F]x]x\<close>
+          apply (rule betaC_2_a; cqt_2_lambda)
+          by (simp add: 0 cqt_2_const_var[axiom_inst])+
+        AOT_hence \<open>p & \<not>p\<close> for p using 1 by (metis raa_cor_3)
+      }
+      AOT_thus \<open>[F]x\<close> by (metis raa_cor_1)
+    qed
+    AOT_hence \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> using ind_nec[THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close> by (metis BFs_2 vdash_properties_10)
+  } note indistI = this
+  {
+    AOT_assume G_prop: \<open>x[G] & \<not>y[G]\<close>
+    AOT_hence Ax: \<open>A!x\<close>
+      using "&E"(1) "\<exists>I"(2) "\<rightarrow>E" encoders_are_abstract by blast
+
+    {
+      AOT_assume Ay: \<open>A!y\<close>
+      {
+        fix F
+        {
+          AOT_assume \<open>\<forall>u([F]u \<equiv> [G]u)\<close>
+          AOT_hence \<open>x[F] \<equiv> x[G]\<close> using 0[THEN "\<forall>E"(2)] "\<equiv>E" "\<rightarrow>E" by meson
+          AOT_hence \<open>x[F]\<close> using G_prop "&E" "\<equiv>E" by blast
+        }
+        AOT_hence \<open>\<forall>u([F]u \<equiv> [G]u) \<rightarrow> x[F]\<close> by (rule "\<rightarrow>I")
+      }
+      AOT_hence xprop: \<open>\<forall>F(\<forall>u([F]u \<equiv> [G]u) \<rightarrow> x[F])\<close> by (rule GEN)
+      {
+        fix F
+        {
+          AOT_assume \<open>\<forall>u \<box>([F]u \<equiv> [G]u)\<close>
+          AOT_hence \<open>\<box>\<forall>u([F]u \<equiv> [G]u)\<close> by (metis Ordinary.res_var_bound_reas_2 vdash_properties_10)
+          AOT_hence \<open>\<forall>u([F]u \<equiv> [G]u)\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+          AOT_hence \<open>x[F]\<close> using xprop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+        }
+        AOT_hence \<open>\<forall>u \<box>([F]u \<equiv> [G]u) \<rightarrow> x[F]\<close> by (rule "\<rightarrow>I")
+      }
+      AOT_hence xprop: \<open>\<forall>F(\<forall>u \<box>([F]u \<equiv> [G]u) \<rightarrow> x[F])\<close> by (rule GEN)
+      moreover AOT_have yprop: \<open>\<not>\<forall>F(\<forall>u\<box>([F]u \<equiv> [G]u) \<rightarrow> y[F])\<close>
+      proof (rule raa_cor_2)
+        AOT_assume A: \<open>\<forall>F(\<forall>u\<box>([F]u \<equiv> [G]u) \<rightarrow> y[F])\<close>
+        moreover AOT_have \<open>\<forall>u\<box>([G]u \<equiv> [G]u)\<close>
+          by (simp add: RN oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_have \<open>y[G]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+        AOT_thus \<open>p & \<not>p\<close> for p using G_prop "&E" by (metis raa_cor_3)
+      qed
+      AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+      proof(rule raa_cor_1)
+        AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
+        AOT_hence indist: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close> using indistI by blast
+        AOT_have \<open>\<forall>F(\<forall>u\<box>([F]u \<equiv> [G]u) \<rightarrow> y[F])\<close>
+          using indistinguishable_ord_enc_all[axiom_inst, THEN "\<rightarrow>E", OF "&I", OF "&I", OF "&I", OF cqt_2_const_var[axiom_inst], OF Ax, OF Ay, OF indist, THEN "\<equiv>E"(1), OF xprop].
+        AOT_thus \<open>\<forall>F(\<forall>u\<box>([F]u \<equiv> [G]u) \<rightarrow> y[F]) & \<not>\<forall>F(\<forall>u\<box>([F]u \<equiv> [G]u) \<rightarrow> y[F])\<close> using yprop "&I" by blast
+      qed
+    }
+    moreover {
+      AOT_assume notAy: \<open>\<not>A!y\<close>
+      AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+        apply (rule_tac \<tau>=\<open>\<guillemotleft>A!\<guillemotright>\<close> in "\<exists>I"(1))
+        using Ax notAy "&I" apply blast
+        by (simp add: oa_exist_2)
+    }
+    ultimately AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>  by (metis raa_cor_1)
+  }
+  moreover {
+    AOT_assume G_prop: \<open>\<not>x[G] & y[G]\<close>
+    AOT_hence Ay: \<open>A!y\<close>
+      by (meson con_dis_i_e_2_b encoders_are_abstract existential_2_a vdash_properties_10)
+    AOT_hence notOy: \<open>\<not>O!y\<close>
+      using intro_elim_3_a oa_contingent_3 by blast
+    {
+      AOT_assume Ax: \<open>A!x\<close>
+      {
+        fix F
+        {
+          AOT_assume \<open>\<forall>u([F]u \<equiv> [G]u)\<close>
+          AOT_hence \<open>x[F] \<equiv> x[G]\<close> using 0[THEN "\<forall>E"(2)] "\<equiv>E" "\<rightarrow>E" by meson
+          AOT_hence \<open>\<not>x[F]\<close> using G_prop "&E" "\<equiv>E" by blast
+        }
+        AOT_hence \<open>\<forall>u([F]u \<equiv> [G]u) \<rightarrow> \<not>x[F]\<close> by (rule "\<rightarrow>I")
+      }
+      AOT_hence x_prop: \<open>\<forall>F(\<forall>u([F]u \<equiv> [G]u) \<rightarrow> \<not>x[F])\<close> by (rule GEN)
+      AOT_have x_prop: \<open>\<not>\<exists>F(\<forall>u \<box>([F]u \<equiv> [G]u) & x[F])\<close> 
+      proof (rule raa_cor_2)
+        AOT_assume \<open>\<exists>F(\<forall>u \<box>([F]u \<equiv> [G]u) & x[F])\<close>
+        then AOT_obtain F where F_prop: \<open>\<forall>u \<box>([F]u \<equiv> [G]u) & x[F]\<close> using "\<exists>E"[rotated] by blast
+        AOT_have \<open>\<box>([F]u \<equiv> [G]u)\<close> for u using F_prop[THEN "&E"(1), THEN "Ordinary.\<forall>E"].
+        AOT_hence \<open>([F]u \<equiv> [G]u)\<close> for u using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+        AOT_hence \<open>\<forall>u([F]u \<equiv> [G]u)\<close> by (rule Ordinary.GEN)
+        AOT_hence \<open>\<not>x[F]\<close> using x_prop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+        AOT_thus \<open>p & \<not>p\<close> for p using F_prop[THEN "&E"(2)] by (metis raa_cor_3)
+      qed
+      AOT_have y_prop: \<open>\<exists>F(\<forall>u \<box>([F]u \<equiv> [G]u) & y[F])\<close>
+      proof (rule raa_cor_1)
+        AOT_assume \<open>\<not>\<exists>F (\<forall>u \<box>([F]u \<equiv> [G]u) & y[F])\<close>
+        AOT_hence 0: \<open>\<forall>F \<not>(\<forall>u \<box>([F]u \<equiv> [G]u) & y[F])\<close> using cqt_further_4[THEN "\<rightarrow>E"] by blast
+        {
+          fix F
+          {
+            AOT_assume \<open>\<forall>u \<box>([F]u \<equiv> [G]u)\<close>
+            AOT_hence \<open>\<not>y[F]\<close> using 0[THEN "\<forall>E"(2)] using con_dis_i_e_1 raa_cor_1 by meson
+          }
+          AOT_hence \<open>(\<forall>u \<box>([F]u \<equiv> [G]u) \<rightarrow> \<not>y[F])\<close> by (rule "\<rightarrow>I")
+        }
+        AOT_hence A: \<open>\<forall>F(\<forall>u \<box>([F]u \<equiv> [G]u) \<rightarrow> \<not>y[F])\<close> by (rule GEN)
+        moreover AOT_have \<open>\<forall>u \<box>([G]u \<equiv> [G]u)\<close>
+          by (simp add: RN oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_have \<open>\<not>y[G]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+        AOT_thus \<open>p & \<not>p\<close> for p using G_prop "&E" by (metis raa_cor_3)
+      qed
+  
+      AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+      proof(rule raa_cor_1)
+        AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
+        AOT_hence indist: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+          using indistI by blast
+        AOT_thus \<open>\<exists>F(\<forall>u \<box>([F]u \<equiv> [G]u) & x[F]) & \<not>\<exists>F(\<forall>u \<box>([F]u \<equiv> [G]u) & x[F])\<close>
+          using indistinguishable_ord_enc_ex[axiom_inst, THEN "\<rightarrow>E", OF "&I", OF "&I", OF "&I", OF cqt_2_const_var[axiom_inst],
+OF Ax, OF Ay, OF indist, THEN "\<equiv>E"(2), OF y_prop] x_prop "&I" by blast
+      qed
+    }
+    moreover {
+      AOT_assume notAx: \<open>\<not>A!x\<close>
+      AOT_hence Ox: \<open>O!x\<close>
+        using con_dis_i_e_4_c oa_exist_3 by blast
+      AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+        apply (rule_tac \<tau>=\<open>\<guillemotleft>O!\<guillemotright>\<close> in "\<exists>I"(1))
+        using Ox notOy "&I" apply blast
+        by (simp add: oa_exist_1)
+    }
+    ultimately AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close> by (metis raa_cor_1)
+  }
+  ultimately AOT_show \<open>\<exists>F([F]x & \<not>[F]y)\<close>
+    using G_prop by (metis con_dis_i_e_1 deduction_theorem intro_elim_2 raa_cor_1)
+qed
+
+notepad
+begin
+  AOT_modally_strict {
+    AOT_have A: \<open>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G])) & \<not>(x[G] \<equiv> y[G]) \<rightarrow> \<exists>F([F]x & \<not>[F]y)\<close> for x y G
+      using AX "\<rightarrow>I" "&E" by blast
+
+    {
+      fix x y G
+      {
+        AOT_assume 0: \<open>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G]))\<close>
+        AOT_assume \<open>\<exists>H (\<forall>u([H]u \<equiv> [G]u) & \<not>(x[H] \<equiv> y[H]))\<close>
+        then AOT_obtain H where H_prop: \<open>\<forall>u([H]u \<equiv> [G]u) & \<not>(x[H] \<equiv> y[H])\<close> using "\<exists>E"[rotated] by blast
+        {
+          fix F
+          {
+            AOT_assume \<open>\<forall>u([F]u \<equiv> [H]u)\<close>
+            AOT_hence 1: \<open>[F]u \<equiv> [H]u\<close> for u using "Ordinary.\<forall>E" by fast
+            moreover AOT_hence 2: \<open>[F]u \<equiv> [G]u\<close> for u using H_prop[THEN "&E"(1), THEN "Ordinary.\<forall>E"]
+              by (metis intro_elim_3_e)
+            ultimately AOT_have 3: \<open>[H]u \<equiv> [G]u\<close> for u by (metis intro_elim_3_f)
+            AOT_hence \<open>\<forall>u([H]u \<equiv> [G]u)\<close> by (rule Ordinary.GEN)
+            AOT_hence \<open>x[H] \<equiv> x[G]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+            moreover {
+              AOT_have \<open>[F]u \<equiv> [G]u\<close> for u using 1 2 3
+                by meson
+              AOT_hence \<open>\<forall>u ([F]u \<equiv> [G]u)\<close> by (rule Ordinary.GEN)
+              AOT_hence \<open>x[F] \<equiv> x[G]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+            }
+            ultimately AOT_have \<open>x[F] \<equiv> x[H]\<close> by (metis deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b)
+          }
+          AOT_hence \<open>\<forall>u([F]u \<equiv> [H]u) \<rightarrow> (x[F] \<equiv> x[H])\<close> by (rule "\<rightarrow>I")
+        }
+        AOT_hence asm1: \<open>\<forall>F(\<forall>u([F]u \<equiv> [H]u) \<rightarrow> (x[F] \<equiv> x[H]))\<close> by (rule GEN)
+        AOT_have \<open>\<exists>F ([F]x & \<not>[F]y)\<close> using AX[OF asm1, OF H_prop[THEN "&E"(2)]] by blast
+      } note t = this
+
+      AOT_hence 0: \<open>\<not>\<exists>F([F]x & \<not>[F]y) \<rightarrow> \<not>(\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G])) & \<not>(x[G] \<equiv> y[G]))\<close>
+        for x y G using contraposition_1_a
+        using A by presburger
+      {
+        fix x y G
+        AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
+        AOT_hence \<open>\<not>(\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G])) & \<not>(x[G] \<equiv> y[G]))\<close> using 0[THEN "\<rightarrow>E"] by blast
+        AOT_hence \<open>\<not>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G])) \<or> (x[G] \<equiv> y[G])\<close>
+          using con_dis_i_e_1 con_dis_i_e_3_a con_dis_i_e_3_b reductio_aa_1 by meson
+        AOT_hence \<open>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G])) \<rightarrow> (x[G] \<equiv> y[G])\<close>
+          using "\<not>\<not>I" con_dis_i_e_4_b deduction_theorem by meson
+      }
+    }
+  }
+end
+
+AOT_theorem denotes_all': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]\<down>\<close>
+proof -
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
+      using ind_nec vdash_properties_10 by blast
+    AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+      using BFs_2 vdash_properties_10 by blast
+    AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close>
+    AOT_have \<open>x[F]\<close>
+      by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
+    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close>
+    proof(rule raa_cor_1)
+      AOT_assume \<open>\<not>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close>
+      AOT_hence \<open>\<exists>G \<not>(\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close> using cqt_further_2 vdash_properties_10 by blast
+      then AOT_obtain G where G_prop: \<open>\<not>(\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close> using "\<exists>E"[rotated] by blast
+      AOT_hence 1: \<open>\<forall>u ([G]u \<equiv> [F]u) & \<not>y[G]\<close> by (metis intro_elim_3_a oth_class_taut_1_b)
+      AOT_have xG: \<open>x[G]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] 1[THEN "&E"(1)] by blast
+      AOT_hence \<open>x[G] & \<not>y[G]\<close> using 1[THEN "&E"(2)] "&I" by blast
+      AOT_hence B: \<open>\<not>(x[G] \<equiv> y[G])\<close>
+        using con_dis_i_e_2_b intro_elim_3_a reductio_aa_1 xG by blast
+      {
+        fix H
+        {
+          AOT_assume 3: \<open>\<forall>u ([H]u \<equiv> [G]u)\<close>
+          {
+            fix u
+            AOT_have \<open>[H]u \<equiv> [G]u\<close> using 3[THEN "Ordinary.\<forall>E"] by blast
+            also AOT_have \<open>[G]u \<equiv> [F]u\<close> using 1[THEN "&E"(1), THEN "Ordinary.\<forall>E"] by blast
+            finally AOT_have \<open>[H]u \<equiv> [F]u\<close>.
+          }
+          AOT_hence \<open>\<forall>u ([H]u \<equiv> [F]u)\<close> by (rule Ordinary.GEN)
+          AOT_hence \<open>x[H]\<close> using 0[THEN "\<forall>E"(2)] "\<rightarrow>E" by blast
+          AOT_hence \<open>x[H] \<equiv> x[G]\<close> using xG "\<equiv>I" "\<rightarrow>I" by blast
+        }
+        AOT_hence \<open>\<forall>u ([H]u \<equiv> [G]u) \<rightarrow> (x[H] \<equiv> x[G])\<close> by (rule "\<rightarrow>I")
+      }
+      AOT_hence A: \<open>\<forall>H(\<forall>u ([H]u \<equiv> [G]u) \<rightarrow> (x[H] \<equiv> x[G]))\<close> by (rule GEN)
+      then AOT_obtain F where F_prop: \<open>[F]x & \<not>[F]y\<close> using AX[OF A, OF B] "\<exists>E"[rotated] by blast
+      moreover AOT_have \<open>[F]y\<close> using indist[THEN "\<forall>E"(2), THEN "\<equiv>E"(1), OF F_prop[THEN "&E"(1)]].
+      AOT_thus \<open>p & \<not>p\<close> for p using F_prop[THEN "&E"(2)] by (metis raa_cor_3)
+    qed
+  } note 0 = this
+  AOT_modally_strict {
+    fix x y
+    AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
+      by (metis calculation cqt_basic_11 intro_elim_3_b)
+    ultimately AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G]) \<equiv> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close>
+      using 0 "\<equiv>I" "\<rightarrow>I" by auto
+  } note 1 = this
+  AOT_show \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]\<down>\<close>
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+qed
+
+AOT_theorem denotes_ex': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]\<down>\<close>
+proof -
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
+      using ind_nec vdash_properties_10 by blast
+    AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+      using BFs_2 vdash_properties_10 by blast
+    AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])\<close>
+    AOT_have \<open>\<not>x[F]\<close>
+      by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
+    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close>
+    proof(rule raa_cor_1)
+      AOT_assume \<open>\<not>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close>
+      AOT_hence \<open>\<exists>G \<not>(\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close> using cqt_further_2 vdash_properties_10 by blast
+      then AOT_obtain G where G_prop: \<open>\<not>(\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close> using "\<exists>E"[rotated] by blast
+      AOT_hence 1: \<open>\<forall>u ([G]u \<equiv> [F]u) & \<not>\<not>y[G]\<close> by (metis intro_elim_3_a oth_class_taut_1_b)
+      AOT_hence yG: \<open>y[G]\<close>
+        using G_prop deduction_theorem raa_cor_3 by blast
+      moreover AOT_hence 12: \<open>\<not>x[G]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] 1[THEN "&E"(1)] by blast
+      ultimately AOT_have \<open>\<not>x[G] & y[G]\<close> using "&I" by blast
+      AOT_hence B: \<open>\<not>(x[G] \<equiv> y[G])\<close> by (metis "12" intro_elim_3_c raa_cor_3 yG)
+      {
+        fix H
+        {
+          AOT_assume 3: \<open>\<forall>u ([H]u \<equiv> [G]u)\<close>
+          {
+            fix u
+            AOT_have \<open>[H]u \<equiv> [G]u\<close> using 3[THEN "Ordinary.\<forall>E"] by blast
+            also AOT_have \<open>[G]u \<equiv> [F]u\<close> using 1[THEN "&E"(1), THEN "Ordinary.\<forall>E"] by blast
+            finally AOT_have \<open>[H]u \<equiv> [F]u\<close>.
+          }
+          AOT_hence \<open>\<forall>u ([H]u \<equiv> [F]u)\<close> by (rule Ordinary.GEN)
+          AOT_hence \<open>\<not>x[H]\<close> using 0[THEN "\<forall>E"(2)] "\<rightarrow>E" by blast
+          AOT_hence \<open>x[H] \<equiv> x[G]\<close> using 12 "\<equiv>I" "\<rightarrow>I" by (metis raa_cor_3)
+        }
+        AOT_hence \<open>\<forall>u ([H]u \<equiv> [G]u) \<rightarrow> (x[H] \<equiv> x[G])\<close> by (rule "\<rightarrow>I")
+      }
+      AOT_hence A: \<open>\<forall>H(\<forall>u ([H]u \<equiv> [G]u) \<rightarrow> (x[H] \<equiv> x[G]))\<close> by (rule GEN)
+      then AOT_obtain F where F_prop: \<open>[F]x & \<not>[F]y\<close> using AX[OF A, OF B] "\<exists>E"[rotated] by blast
+      moreover AOT_have \<open>[F]y\<close> using indist[THEN "\<forall>E"(2), THEN "\<equiv>E"(1), OF F_prop[THEN "&E"(1)]].
+      AOT_thus \<open>p & \<not>p\<close> for p using F_prop[THEN "&E"(2)] by (metis raa_cor_3)
+    qed
+  } note 0 = this
+  AOT_modally_strict {
+    fix x y
+    AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
+      by (metis calculation cqt_basic_11 intro_elim_3_b)
+    ultimately AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G]) \<equiv> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close>
+      using 0 "\<equiv>I" "\<rightarrow>I" by auto
+  } note 1 = this
+  AOT_show \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]\<down>\<close>
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+qed
+
+AOT_theorem denotes_equiv: \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))]\<down>\<close>
+proof -
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    {
+      AOT_assume xF: \<open>x[F]\<close>
+      AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F])) \<rightarrow> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+      proof(safe intro!: "\<rightarrow>I")
+        AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))\<close>
+        AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]\<down>\<close>
+          using denotes_all' by blast
+        AOT_hence \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]x \<equiv> [\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]y\<close>
+          using indist[THEN "\<forall>E"(1)] by blast
+        moreover AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]x\<close>
+        proof (rule betaC_2_a; simp add: denotes_all'; safe intro!: cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+          fix G
+          AOT_assume \<open>\<forall>u ([G]u \<equiv> [F]u)\<close>
+          AOT_hence \<open>x[G] \<equiv> x[F]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+          AOT_thus \<open>x[G]\<close> using xF by (metis intro_elim_3_b)
+        qed
+        ultimately AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]y\<close> using "\<equiv>E" by blast
+        AOT_hence 1: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close>
+          by (rule betaC_1_a)
+        moreover AOT_have \<open>\<forall>u ([F]u \<equiv> [F]u)\<close>
+          by (simp add: oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_have yF: \<open>y[F]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+        AOT_show \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+        proof (safe intro!: GEN "\<rightarrow>I")
+          fix G
+          AOT_assume \<open>\<forall>u ([G]u \<equiv> [F]u)\<close>
+          AOT_hence \<open>y[G]\<close> using 1[THEN "\<forall>E"(2)[where \<beta>=G], THEN "\<rightarrow>E"] by blast
+          AOT_thus \<open>y[G] \<equiv> y[F]\<close> using yF "\<equiv>I" "\<rightarrow>I" by blast
+        qed
+      qed
+    } 
+    moreover {
+      AOT_assume notxF: \<open>\<not>x[F]\<close>
+      AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F])) \<rightarrow> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+      proof(safe intro!: "\<rightarrow>I")
+        AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))\<close>
+        AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]\<down>\<close>
+          using denotes_ex' by blast
+        AOT_hence \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]x \<equiv> [\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]y\<close>
+          using indist[THEN "\<forall>E"(1)] by blast
+        moreover AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]x\<close>
+        proof (rule betaC_2_a; simp add: denotes_ex'; safe intro!: cqt_2_const_var[axiom_inst] GEN "\<rightarrow>I")
+          fix G
+          AOT_assume \<open>\<forall>u ([G]u \<equiv> [F]u)\<close>
+          AOT_hence \<open>x[G] \<equiv> x[F]\<close> using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+          AOT_thus \<open>\<not>x[G]\<close> using notxF by (metis intro_elim_3_d)
+        qed
+        ultimately AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]y\<close> using "\<equiv>E" by blast
+        AOT_hence 1: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>y[G])\<close>
+          by (rule betaC_1_a)
+        moreover AOT_have \<open>\<forall>u ([F]u \<equiv> [F]u)\<close>
+          by (simp add: oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_have notyF: \<open>\<not>y[F]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+        AOT_show \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+        proof (safe intro!: GEN "\<rightarrow>I")
+          fix G
+          AOT_assume \<open>\<forall>u ([G]u \<equiv> [F]u)\<close>
+          AOT_hence \<open>\<not>y[G]\<close> using 1[THEN "\<forall>E"(2)[where \<beta>=G], THEN "\<rightarrow>E"] by blast
+          AOT_thus \<open>y[G] \<equiv> y[F]\<close> using notyF "\<equiv>I" "\<rightarrow>I" by (metis raa_cor_3)
+        qed
+      qed
+    }
+    ultimately AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F])) \<rightarrow> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+      by (metis raa_cor_1)
+  } note 1 = this
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    AOT_hence indist': \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
+      by (metis cqt_basic_11 intro_elim_3_a)
+    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F])) \<equiv> \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close>
+      using 1[OF indist] 1[OF indist'] "\<equiv>I" by blast
+  } note 1 = this
+  show ?thesis
+    apply (safe intro!: RN GEN kirchner_thm_2[THEN "\<equiv>E"(2)] "\<rightarrow>I")
+    using 1 by blast
+qed
+
+AOT_theorem Comprehension:
+  assumes \<open>\<forall>F\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  shows \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
+proof -
+  AOT_modally_strict {
+    fix x y
+    AOT_assume assms: \<open>\<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    thm denotes_equiv
+    AOT_have \<open>\<forall>F (x[F] \<equiv> \<phi>{F}) \<rightarrow> \<forall>F (y[F] \<equiv> \<phi>{F})\<close>
+    proof(safe intro!: "\<rightarrow>I" GEN)
+      fix F
+      AOT_assume 0: \<open>\<forall>F (x[F] \<equiv> \<phi>{F})\<close>
+      {
+        fix G
+        {
+          AOT_assume \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
+          AOT_hence \<open>\<phi>{F} \<equiv> \<phi>{G}\<close> using assms[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+          moreover AOT_have \<open>x[F] \<equiv> \<phi>{F}\<close>  using 0[THEN "\<forall>E"(2)].
+          moreover AOT_have \<open>x[G] \<equiv> \<phi>{G}\<close>  using 0[THEN "\<forall>E"(2)].
+          ultimately AOT_have \<open>x[G] \<equiv> x[F]\<close> by (metis intro_elim_3_f oth_class_taut_3_a)
+        }
+        AOT_hence \<open>\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F])\<close> using "\<rightarrow>I" by blast
+      }
+      AOT_hence 1: \<open>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))\<close> by (rule GEN)
+      AOT_have \<open>[\<lambda>x \<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))]x\<close>
+        by (rule betaC_2_a; simp add: denotes_equiv; simp add: cqt_2_const_var[axiom_inst] 1)
+      AOT_hence \<open>[\<lambda>x \<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))]y\<close>
+        using indist[THEN "\<forall>E"(1), OF denotes_equiv, THEN "\<equiv>E"(1)] by blast
+      AOT_hence 2: \<open>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (y[G] \<equiv> y[F]))\<close> by (rule betaC_1_a)
+      AOT_show \<open>y[F] \<equiv> \<phi>{F}\<close>
+      proof (safe intro!: "\<equiv>I" "\<rightarrow>I")
+        AOT_assume yF: \<open>y[F]\<close>
+        {
+          fix G
+          {
+            AOT_assume \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
+            AOT_hence \<open>y[G]\<close> using 2[THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] yF by blast
+          }
+          AOT_hence \<open>\<forall>u([G]u \<equiv> [F]u) \<rightarrow> y[G]\<close> by (rule "\<rightarrow>I")
+        }
+        AOT_hence 3: \<open>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close> by (rule GEN)
+        AOT_have \<open>[\<lambda>y \<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> y[G])]y\<close>
+          by (rule betaC_2_a; simp add: denotes_all'; simp add: cqt_2_const_var[axiom_inst] 3)
+        AOT_hence \<open>[\<lambda>y \<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> y[G])]x\<close>
+          using indist[THEN "\<forall>E"(1), OF denotes_all', THEN "\<equiv>E"(2)] by blast
+        AOT_hence \<open>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close> by (rule betaC_1_a)
+        moreover AOT_have \<open>\<forall>u([F]u \<equiv> [F]u)\<close>
+          by (simp add: oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_have \<open>x[F]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+        AOT_thus \<open>\<phi>{F}\<close> using 0[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+      next
+        AOT_assume \<open>\<phi>{F}\<close>
+        AOT_hence xF: \<open>x[F]\<close> using 0[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
+        {
+          fix G
+          {
+            AOT_assume \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
+            AOT_hence \<open>x[G]\<close> using 1[THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] xF by blast
+          }
+          AOT_hence \<open>\<forall>u([G]u \<equiv> [F]u) \<rightarrow> x[G]\<close> by (rule "\<rightarrow>I")
+        }
+        AOT_hence 3: \<open>\<forall>G(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close> by (rule GEN)
+        AOT_have \<open>[\<lambda>x \<forall>G(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> x[G])]x\<close>
+          by (rule betaC_2_a; simp add: denotes_all'; simp add: cqt_2_const_var[axiom_inst] 3)
+        AOT_hence \<open>[\<lambda>x \<forall>G(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> x[G])]y\<close>
+          using indist[THEN "\<forall>E"(1), OF denotes_all', THEN "\<equiv>E"(1)] by blast
+        AOT_hence \<open>\<forall>G(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close> by (rule betaC_1_a)
+        moreover AOT_have \<open>\<forall>u([F]u \<equiv> [F]u)\<close>
+          by (simp add: oth_class_taut_3_a universal_cor vdash_properties_9)
+        ultimately AOT_show \<open>y[F]\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+      qed
+    qed
+  } note 1 = this
+  AOT_modally_strict {
+    AOT_assume 0: \<open>\<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+    {
+      fix x y
+      {
+        AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+        AOT_hence indist': \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
+          by (metis cqt_basic_11 intro_elim_3_a)
+        AOT_have \<open>\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})\<close>
+          using 1[OF 0, OF indist] 1[OF 0, OF indist'] "\<equiv>I" by blast
+      }
+      AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F}))\<close> using "\<rightarrow>I" by blast
+    }
+    AOT_hence \<open>\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close> for x
+      by (rule GEN)
+    AOT_hence \<open>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
+      by (rule GEN)
+  } note 1 = this
+  AOT_hence \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> \<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
+    by (rule "\<rightarrow>I")
+  AOT_hence \<open>\<box>\<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> \<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
+    by (rule RM)
+  moreover {
+    AOT_have \<open>\<forall>F\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> using assms by blast
+    AOT_hence \<open>\<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F G using "\<forall>E"(2) by blast
+    AOT_hence \<open>\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F by (rule GEN)
+    AOT_hence \<open>\<box>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F
+      using BFs_1 vdash_properties_10 by fast
+    AOT_hence \<open>\<forall>F \<box>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> by (rule GEN)
+    AOT_hence \<open>\<box>\<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+      using BFs_1 vdash_properties_10 by fast
+  }
+  ultimately AOT_have 1: \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
+    using "\<rightarrow>E" by blast
+  show ?thesis
+    apply (safe intro!: kirchner_thm_2[THEN "\<equiv>E"(2)])
+    using 1 by blast
+qed
+
+AOT_theorem denotes_equiv': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H]))]\<down>\<close>
+proof -
+  AOT_modally_strict {
+    AOT_have \<open>\<forall>F\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<forall>u ([F]u \<equiv> [H]u) \<equiv> \<forall>u ([G]u \<equiv> [H]u)))\<close>
+    proof (safe intro!: GEN RN "\<rightarrow>I")
+      AOT_modally_strict {
+        fix F G
+        AOT_assume 0: \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
+        AOT_show \<open>\<forall>u ([F]u \<equiv> [H]u) \<equiv> \<forall>u ([G]u \<equiv> [H]u)\<close>
+        proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+          AOT_assume \<open>\<forall>u ([F]u \<equiv> [H]u)\<close>
+          AOT_hence \<open>[F]u \<equiv> [H]u\<close> for u using "Ordinary.\<forall>E" by fast
+          moreover AOT_have \<open>[G]u \<equiv> [F]u\<close> for u using 0 "Ordinary.\<forall>E" by fast
+          ultimately AOT_have \<open>[G]u \<equiv> [H]u\<close> for u by (metis deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b)
+          AOT_thus \<open>\<forall>u ([G]u \<equiv> [H]u)\<close> by (rule Ordinary.GEN)
+        next
+          AOT_assume \<open>\<forall>u ([G]u \<equiv> [H]u)\<close>
+          AOT_hence \<open>[G]u \<equiv> [H]u\<close> for u using "Ordinary.\<forall>E" by fast
+          moreover AOT_have \<open>[G]u \<equiv> [F]u\<close> for u using 0 "Ordinary.\<forall>E" by fast
+          ultimately AOT_have \<open>[F]u \<equiv> [H]u\<close> for u by (metis deduction_theorem intro_elim_2 intro_elim_3_a intro_elim_3_b)
+          AOT_thus \<open>\<forall>u ([F]u \<equiv> [H]u)\<close> by (rule Ordinary.GEN)
+        qed
+      }
+    qed
+    AOT_hence \<open>[\<lambda>x \<forall>F(x[F] \<equiv> \<forall>u ([F]u \<equiv> [H]u))]\<down>\<close>
+      using Comprehension by simp
+  } note 0 = this
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H])) \<rightarrow> \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
+    proof(rule "\<rightarrow>I")
+      AOT_assume \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H]))\<close>
+      AOT_show \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
+        sorry
+    qed
+  } note 1 = this
+  AOT_modally_strict {
+    fix x y
+    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
+    AOT_hence indist': \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
+      by (metis cqt_basic_11 intro_elim_3_a)
+    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H])) \<equiv> \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
+      using 1[OF indist] 1[OF indist'] "\<equiv>I" by blast
+  } note 1 = this
+  show ?thesis
+    apply (safe intro!: RN GEN kirchner_thm_2[THEN "\<equiv>E"(2)] "\<rightarrow>I")
+    using 1 oops (* by blast *)
+
 
 end
