@@ -1,3 +1,4 @@
+(*<*)
 theory AOT_commands
   imports AOT_model "HOL-Eisbach.Eisbach_Tools"
   keywords "AOT_define" :: thy_decl
@@ -25,6 +26,9 @@ theory AOT_commands
        and "AOT_syntax_print_translations" :: thy_decl
        and "AOT_no_syntax_print_translations" :: thy_decl
 begin
+(*>*)
+
+section\<open>Outer Syntax Commands\<close>
 
 nonterminal AOT_prop
 nonterminal \<phi>
@@ -38,4 +42,6 @@ setup\<open>AOT_Theorems.setup\<close>
 setup\<open>AOT_Definitions.setup\<close>
 setup\<open>AOT_no_atp.setup\<close>
 
+(*<*)
 end
+(*>*)

@@ -1,6 +1,10 @@
+(*<*)
 theory AOT_PLM
   imports AOT_axioms
 begin
+(*>*)
+
+section\<open>The Deductive System PLM\<close>
 
 (* constrain sledgehammer to the abstraction layer *)
 unbundle AOT_no_atp
@@ -1478,8 +1482,6 @@ AOT_theorem RA_3: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<ph
   using assms by (meson AOT_sem_act imageI)
   (* This is not exactly right either. *)
 
-lemmas RA = RA_1 RA_2
-
 AOT_act_theorem ANeg_1: \<open>\<not>\<^bold>\<A>\<phi> \<equiv> \<not>\<phi>\<close>
   by (simp add: RA_1 contraposition_1_a deduction_theorem intro_elim_2 logic_actual[act_axiom_inst])
 
@@ -2245,7 +2247,7 @@ AOT_theorem rule_sub_lem_1_e:
 AOT_theorem rule_sub_lem_1_f:
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi> \<equiv> \<chi>)\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<psi> \<equiv> \<^bold>\<A>\<chi>\<close>
-  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms, THEN RA(2)]
+  using qml_2[axiom_inst, THEN "\<rightarrow>E", OF assms, THEN RA_2]
   by (metis Act_Basic_5 intro_elim_3_a)
 
 AOT_theorem rule_sub_lem_1_g:
@@ -5053,7 +5055,7 @@ proof-
   AOT_hence \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close>
     using eqnotnec_123_Aux_\<theta>[THEN oth_class_taut_4_b[THEN "\<equiv>E"(1)],
             THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
-            THEN RA(2), THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
+            THEN RA_2, THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
   moreover AOT_have \<open>\<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using eqnotnec_123_Aux_\<xi>'[THEN "\<rightarrow>E"] q\<^sub>0_prop[THEN "&E"(1)] by blast
   ultimately AOT_have \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x) & \<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using "&I" by blast
   AOT_hence \<open>\<exists>G (\<^bold>\<A>\<not>\<forall>x([L]x \<equiv> [G]x) & \<diamond>\<forall>x([L]x \<equiv> [G]x))\<close>
@@ -5312,7 +5314,7 @@ proof(rule GEN)
   qed
 
   AOT_have Aux_C: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<not>\<psi> \<rightarrow> \<^bold>\<A>\<not>\<forall>z([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close> for \<psi>
-  proof(rule act_cond[THEN "\<rightarrow>E"]; rule RA; rule "\<rightarrow>I"; rule raa_cor_2)
+  proof(rule act_cond[THEN "\<rightarrow>E"]; rule RA_2; rule "\<rightarrow>I"; rule raa_cor_2)
   AOT_modally_strict {
       AOT_assume 0: \<open>\<not>\<psi>\<close>
       AOT_assume \<open>\<forall>z ([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close>
@@ -6710,7 +6712,7 @@ AOT_theorem obj_oth_6: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<box
   using A_objects_unique by fast
 
 AOT_theorem A_descriptions: \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
-  by (rule A_Exists_2[THEN "\<equiv>E"(2)]; rule RA; rule A_objects_unique)
+  by (rule A_Exists_2[THEN "\<equiv>E"(2)]; rule RA_2; rule A_objects_unique)
 
 AOT_act_theorem thm_can_terms2: \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> (A!y & \<forall>F (y[F] \<equiv> \<phi>{F}))\<close>
   using y_in_2 by blast
@@ -7680,4 +7682,6 @@ proof(safe intro!: "\<rightarrow>I"; rule raa_cor_1)
   ultimately AOT_show \<open>\<^bold>\<A>\<psi> & \<not>\<^bold>\<A>\<psi>\<close> by (rule "&I")
 qed
 
+(*<*)
 end
+(*>*)

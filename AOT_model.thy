@@ -1,35 +1,43 @@
+(*<*)
 theory AOT_model
-  imports Main "IntensionalType"
+  imports Main
 begin
 
-text\<open>We introduce a primitive type for (hyper)intensional propositions\<close>
+declare[[typedef_overloaded]]
+(*>*)
+
+section\<open>Model for the Logic of AOT\<close>
+
+text\<open>We introduce a primitive type for hyperintensional propositions.\<close>
 typedecl \<o>
 
-text\<open>Propositions need to cover all extensions possible in usual modal logic, so we
-     axiomatize that there is a surjective function onto the boolean-valued functions
-     acting on possible worlds.\<close>
+text\<open>To be able to model modal operators following Kripke semantics, we introduce a primitive
+     type for possible worlds and assert, by axiom, that there is a surjective function mapping
+     propositions to the boolean-valued functions acting on possible worlds. We call the result
+     of applying this function to a proposition the Kripke-extension of the proposition.\<close>
 typedecl w \<comment>\<open>The primtive type of possible worlds.\<close>
 axiomatization AOT_model_d\<o> :: \<open>\<o>\<Rightarrow>(w\<Rightarrow>bool)\<close> where d\<o>_surj: \<open>surj AOT_model_d\<o>\<close>
+
+text\<open>Furthermore, the axioms of PLM require the existence of a non-actual world.\<close>
 consts w\<^sub>0 :: w \<comment>\<open>The designated actual world.\<close>
 axiomatization where AOT_model_nonactual_world: \<open>\<exists>w . w \<noteq> w\<^sub>0\<close>
 
-text\<open>Validity of a proposition in a world can now simply be defined by the means of the
-     just axiomatized surjective extension function.\<close>
+text\<open>Validity of a proposition in a given world can now be modelled as the result
+     of applying that world to the Kripke-extension of the proposition.\<close>
 definition AOT_model_valid_in :: \<open>w\<Rightarrow>\<o>\<Rightarrow>bool\<close> where \<open>AOT_model_valid_in w \<phi> \<equiv> AOT_model_d\<o> \<phi> w\<close>
 
-text\<open>The inverse of the extension function can be used to choose a proposition for a given extension.\<close>
+text\<open>By construction, we can choose a proposition for any given Kripke-extension, s.t.
+     the proposition is valid in a possible world is its Kripke-extension evaluates to true
+     at that world.\<close>
 definition AOT_model_proposition_choice :: \<open>(w\<Rightarrow>bool) \<Rightarrow> \<o>\<close> (binder \<open>\<epsilon>\<^sub>\<o> \<close> 8)
   where \<open>\<epsilon>\<^sub>\<o> w. \<phi> w \<equiv> (inv AOT_model_d\<o>) \<phi>\<close>
-text\<open>By definition validity and proposition choice combine to the identity.\<close>
 lemma AOT_model_proposition_choice_simp: \<open>AOT_model_valid_in w (\<epsilon>\<^sub>\<o> w. \<phi> w) = \<phi> w\<close>
   by (simp add: surj_f_inv_f[OF d\<o>_surj] AOT_model_valid_in_def AOT_model_proposition_choice_def)
 
-text\<open>There are models for the axiom above.\<close>
+text\<open>Nitpick can trivially show that there are models for the axioms above.\<close>
 lemma \<open>True\<close> nitpick[satisfy, user_axioms, expect = genuine] ..
 
-declare[[typedef_overloaded]]
-
-intensional_type \<omega> \<supseteq> nat
+typedecl \<omega>
 
 typedecl \<sigma>'
 consts \<sigma>'\<^sub>V :: \<sigma>'
@@ -1048,4 +1056,6 @@ lemma AOT_model_axiomI: assumes \<open>\<And>v . AOT_model_valid_in v \<phi>\<cl
 lemma AOT_model_act_axiomI: assumes \<open>AOT_model_valid_in w\<^sub>0 \<phi>\<close> shows \<open>AOT_model_act_axiom \<phi>\<close>
   unfolding AOT_model_act_axiom_def using assms .
 
+(*<*)
 end
+(*>*)

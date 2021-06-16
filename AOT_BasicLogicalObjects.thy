@@ -1,6 +1,10 @@
+(*<*)
 theory AOT_BasicLogicalObjects
   imports AOT_PLM
 begin
+(*>*)
+
+section\<open>Basic Logical Objects\<close>
 
 (* TODO: so far only the parts required for possible world theory *)
 
@@ -531,7 +535,7 @@ AOT_theorem ext_p_tv_2: \<open>\<^bold>\<iota>x(ExtensionOf(x, p))\<down>\<close
 AOT_theorem ext_p_tv_3: \<open>\<^bold>\<iota>x(ExtensionOf(x, p)) = \<circ>p\<close>
 proof -
   AOT_have 0: \<open>\<^bold>\<A>\<forall>x(ExtensionOf(x, p) \<equiv> TruthValueOf(x,p))\<close>
-    by (rule RA; rule GEN; rule extof_e)
+    by (rule RA_2; rule GEN; rule extof_e)
   AOT_have 1: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x,p)\<close>
     using rule_id_def_1 the_tv_p uni_tv by blast
   show ?thesis
@@ -544,4 +548,6 @@ qed
 AOT_theorem ext_p_tv_4: \<open>TruthValue(\<^bold>\<iota>x(ExtensionOf(x,p)))\<close>
   oops
 
+(*<*)
 end
+(*>*)

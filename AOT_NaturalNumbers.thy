@@ -1,8 +1,12 @@
+(*<*)
 theory AOT_NaturalNumbers
   imports AOT_PLM AOT_PossibleWorlds
   abbrevs one-to-one = \<open>\<^sub>1\<^sub>-\<^sub>1\<close>
       and onto = \<open>\<^sub>o\<^sub>n\<^sub>t\<^sub>o\<close>
 begin
+(*>*)
+
+section\<open>Natural Numbers\<close>
  
 AOT_define one_one_cor :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow> _\<close>)
   one_one_cor: \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow> G \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & G\<down> &
@@ -1845,7 +1849,7 @@ proof -
     by (auto simp: 1)
   (* TODO: PLM: refers to a rule of substitution, which is not applicable *)
   moreover AOT_have \<open>\<^bold>\<A>(F \<equiv>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z] \<rightarrow> F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z])\<close>
-    using apE_eqE_1[unvarify G, THEN RA(2), OF 2] by metis
+    using apE_eqE_1[unvarify G, THEN RA_2, OF 2] by metis
   ultimately AOT_show \<open>\<^bold>\<A>F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]\<close>
     by (metis act_cond vdash_properties_10)
 qed
@@ -2156,7 +2160,7 @@ proof (rule id_trans[OF num_can_1]; rule equiv_desc_eq_2[THEN "\<rightarrow>E"];
     AOT_have \<open>\<^bold>\<A>(F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z])\<close>
       by (simp add: actuallyF_1)
     moreover AOT_have \<open>\<^bold>\<A>((F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]) \<rightarrow> ([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G \<equiv> F \<approx>\<^sub>E G))\<close>
-      by (auto intro!: RA "\<rightarrow>I" "\<equiv>I"
+      by (auto intro!: RA_2 "\<rightarrow>I" "\<equiv>I"
                simp: eq_part_3[unvarify G, OF act_den, THEN "\<rightarrow>E", OF "&I"]
                      eq_part_3'[unvarify G, OF act_den, THEN "\<rightarrow>E", OF "&I"])
     ultimately AOT_have \<open>\<^bold>\<A>([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G \<equiv> F \<approx>\<^sub>E G)\<close>
@@ -2328,7 +2332,7 @@ proof -
   proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     AOT_assume \<open>\<^bold>\<A>Numbers(x, G)\<close>
     AOT_hence \<open>\<^bold>\<A>x = a\<close>
-      using 0[THEN RA(2), THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E", OF Act_Basic_2[THEN "\<equiv>E"(2)], OF "&I"]
+      using 0[THEN RA_2, THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E", OF Act_Basic_2[THEN "\<equiv>E"(2)], OF "&I"]
             act_a_num_G by blast
     AOT_hence \<open>x = a\<close> by (metis id_act_1 intro_elim_3_b)
     AOT_hence \<open>a = x\<close> using id_sym by auto
@@ -4015,6 +4019,10 @@ next
   }
 qed
 
+axiomatization \<omega>_nat :: \<open>\<omega> \<Rightarrow> nat\<close> where \<omega>_nat: \<open>surj \<omega>_nat\<close>
+lemma \<open>True\<close> nitpick[satisfy, user_axioms, card nat=1, expect = potential] ..
+
+
 (* TODO: clean up a lot of noise in this proof *)
 AOT_axiom modal_axiom: \<open>\<exists>x([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
 proof(rule AOT_model_axiomI)
@@ -4031,7 +4039,7 @@ proof(rule AOT_model_axiomI)
     
 
   have \<open>\<exists> choice :: nat \<Rightarrow> \<omega> . inj choice\<close>
-    using \<omega>.ext surj_imp_inj_inv by blast
+    using \<omega>_nat surj_imp_inj_inv by blast
   then obtain choice :: \<open>nat \<Rightarrow> \<omega>\<close> where inj_choice: \<open>inj choice\<close> by blast
   have rel_card_ex: \<open>\<forall>n. \<exists>r . urrel_card_n r n\<close>
   proof
@@ -4551,7 +4559,7 @@ proof(rule AOT_model_axiomI)
     ultimately have \<open>finite (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G)))\<close>
       by (metis "0")
     moreover have \<open>\<not>finite (UNIV::\<omega> set)\<close>
-      by (metis \<omega>.ext finite_imageI infinite_UNIV_nat)
+      by (metis \<omega>_nat finite_imageI infinite_UNIV_nat)
     ultimately have \<open>\<exists> x . x \<notin> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G))\<close>
       by (metis ex_new_if_finite)
     then obtain x where x_prop: \<open>x \<notin> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G))\<close> by blast
@@ -5486,7 +5494,7 @@ proof -
     apply (safe intro!: kirchner_thm_2[THEN "\<equiv>E"(2)])
     using 1 by blast
 qed
-
+(*
 AOT_theorem denotes_equiv': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H]))]\<down>\<close>
 proof -
   AOT_modally_strict {
@@ -5534,7 +5542,8 @@ proof -
   } note 1 = this
   show ?thesis
     apply (safe intro!: RN GEN kirchner_thm_2[THEN "\<equiv>E"(2)] "\<rightarrow>I")
-    using 1 oops (* by blast *)
+    using 1 oops *) (* by blast *)
 
-
+(*<*)
 end
+(*>*)

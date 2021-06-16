@@ -1,6 +1,10 @@
+(*<*)
 theory AOT_axioms
   imports AOT_semantics
 begin
+(*>*)
+
+section\<open>Axioms of PLM\<close>
 
 (* To enable meta syntax: *)
 interpretation AOT_meta_syntax.
@@ -521,4 +525,6 @@ proof (rule AOT_model_axiomI)
   }
 qed
 
+(*<*)
 end
+(*>*)

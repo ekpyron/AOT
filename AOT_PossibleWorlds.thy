@@ -1,6 +1,10 @@
+(*<*)
 theory AOT_PossibleWorlds
   imports AOT_PLM AOT_BasicLogicalObjects AOT_RestrictedVariables
 begin
+(*>*)
+
+section\<open>Possible Worlds\<close>
 
 AOT_define situation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Situation'(_')\<close>)
   situations: \<open>Situation(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>
@@ -582,7 +586,7 @@ AOT_theorem can_sit_desc_2:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
   shows \<open>\<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<phi>{F})) = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
   by (auto intro!: equiv_desc_eq_2[THEN "\<rightarrow>E", OF "&I", OF can_sit_desc_1[OF assms]]
-                   RA GEN pre_comp_sit[OF assms]) 
+                   RA_2 GEN pre_comp_sit[OF assms])
 
 AOT_theorem strict_sit:
   assumes \<open>RIGID_CONDITION(\<phi>)\<close>
@@ -2621,4 +2625,6 @@ AOT_theorem rigid_rel_thms_2: \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^su
 AOT_theorem rigid_rel_thms_3: \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
   oops (* TODO *)
 
+(*<*)
 end
+(*>*)

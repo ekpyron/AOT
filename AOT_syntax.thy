@@ -1,3 +1,4 @@
+(*<*)
 theory AOT_syntax
   imports AOT_commands
   keywords "AOT_register_variable_names" :: thy_decl
@@ -20,6 +21,10 @@ theory AOT_syntax
          and "df" = "\<^sub>d\<^sub>f"
          and "denotes" = "\<down>"
 begin
+(*>*)
+
+section\<open>Approximation of the Syntax of PLM\<close>
+
 
 locale AOT_meta_syntax
 begin
@@ -782,4 +787,6 @@ AOT_syntax_print_translations [
 Const (\<^const_syntax>\<open>AOT_exe\<close>, dummyT) $ R $ (Const (\<^syntax_const>\<open>_AOT_exe_args\<close>, dummyT) $ a $ b))
 )]\<close>
 
+(*<*)
 end
+(*>*)

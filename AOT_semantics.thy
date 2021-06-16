@@ -1,6 +1,10 @@
+(*<*)
 theory AOT_semantics
   imports AOT_syntax
 begin
+(*>*)
+
+section\<open>Semantics\<close>
 
 (* To enable meta syntax: *)
 (* interpretation AOT_meta_syntax. *)
@@ -1146,4 +1150,6 @@ AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^s
 AOT_register_type_constraints
   Individual: \<open>\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close>
 
+(*<*)
 end
+(*>*)
