@@ -195,7 +195,7 @@ proof -
       hence \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close> by blast
     }
     moreover {
-      assume \<open>fst (Rep_\<sigma> \<sigma>) \<noteq> UNIV\<close>
+      assume \<open>ordext_intersection (Rep_\<sigma> \<sigma>) \<noteq> UNIV\<close>
       assume \<open>ordext_union (Rep_\<sigma> \<sigma>) \<noteq> ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
       moreover have \<open>\<forall>x \<in> ordext_intersection (Rep_\<sigma> \<sigma>) . x \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
         by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def case_prod_unfold)
