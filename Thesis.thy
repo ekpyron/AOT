@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_axioms
+  imports AOT_PLM
 begin
 (*>*)
 
@@ -8,27 +8,26 @@ chapter\<open>Introduction\<close>
 
 section\<open>Motivation\<close>
 text\<open>
-
 While automated reasoning environments are already a vital part of the modern analysis
 of mathematics and formal systems and their importance can only be expected
 to increase in the future, building up a sound reasoning environment from scratch is a highly
-non-trivial task. Consequently, there is only few trusted systems that can offer sophisticated
+non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isablle/HOL (TODO: cite).
-Furthermore, most of these systems have at least parts of their logical foundation in common
-(for example they are all based on some variation of functional type theory).
+Furthermore, most of these systems have at least parts of their logical foundation in common,
+for example they are all based on some variation of functional type theory.
 
 On the other hand, there is still an ongoing debate about the most suitable logical system
 to be used for the foundations of mathematics (TODO: cite). While higher-order functional type
-theory is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink citation)
+theory is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink this point and the citation)
 and set theory has long been a prime choice for a common denominator of mathematical disciplines
-(TODO: cite), it's modern paradox free axiomatization following Zermelo-Fraenkel is often viewed as
+(TODO: cite), its modern paradox free axiomatization following Zermelo-Fraenkel is often viewed as
 complex and counter-intuitive, respectively lacking in philosophical grounding and justification (TODO: cite).
 
 While there is prominent research into alternative foundational approaches (e.g. homotopy type
-theory; TODO: cite - maybe something else, since homotopy type theory maps rather nicely to HOL...),
-a potential practical problem for such approaches and a pragmatic defense of set theory as foundation
-is the effort required in building up automated reasoning systems that are on par with the existing
-tools that are available for processing theories grounded in set theory.
+theory; TODO: cite - maybe something else/more examples), a practical problem for such approaches
+and a pragmatic defense of set theory as foundation is the effort required in building up automated
+reasoning systems that are on par with the existing tools that are available for processing theories
+grounded in set theory or traditional higher-order type theory.
 
 The following represents an attempt at overcoming this issue. We utilize the concept of a
 \emph{shallow semantic embedding} with abstraction layers (TODO: cite) to transfer the merits of
@@ -36,7 +35,7 @@ the sophisticated interactive and automated reasoning system Isabelle/HOL to a f
 different foundational system, namely to Abstract Object Theory (TODO: cite).
 
 While our method can potentially be applied to a multitude of logical systems, Abstract Object Theory
-is a particularly interesting target. On the one hand it aims to be a foundational metaphysical system
+is a particularly well-suited target. On the one hand it aims to be a foundational metaphysical system
 that can serve as the basis for mathematics, linguistics and the sciences (TODO: rethink, cite), while
 on the other hand it is based on logical foundations that differ from classical functional higher-order
 theory and were even argued to be incompatible (see \cite{rtt}).
@@ -45,14 +44,15 @@ models and semantics for such a system can be beneficial and vital for its sound
 During our continued work we could contribute to the evolution of Abstract Object Theory and
 simultaneously arrived at a faithful representation of its model structure, semantics and
 deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.
-As a prime result (TODO: hopefully... but I'm close.) we can show that the construction of Natural
-Numbers described in Principia Logico-Metaphysica is logically equivalent to the traditional
-set-based construction by proving its algebraic properties as defined in Isabelle/HOL's system
-of type classes.
-
+As a prime result, we can show that the construction of Natural Numbers described in Principia
+Logico-Metaphysica is verifiably sound. Furthermore, we can suggest the generalization of
+a specific additional axiom used for the derivation of Natural Numbers, that we believe strengthens
+the argument that the construction of Natural Numbers does not require any inherently mathematical axioms.
 \<close>
 
 section\<open>Previous Work\<close>
+
+subsection\<open>Previous Computational Analysis of Abstract Object Theory\<close>
 
 text\<open>
 
@@ -75,7 +75,10 @@ resulting representation increases for expressive, higher-order philosophical cl
 In general, this approach may be sufficient for analyzing concrete isolated arguments, but it becomes
 infeasible to construct a natural representation of an entire expressive higher-order theory and
 its full deductive system.
+\<close>
+subsection\<open>Previous Work involving Shallow Semantic Embeddings\<close>
 
+text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
 allows for a different approach, namely the analysis of arguments and theories directly in higher-order
 logic by constructing Shallow Semantic Embeddings (SSEs) \cite{UniversalReasoning}. In contrast to
@@ -89,7 +92,8 @@ representation in higher-order logic, this approach works well for any logical s
 has a semantics defined in terms of sets. The approach of shallow semantic embeddings is discussed in
 more detail in chapter~\ref{SSEs}.
 
-(TODO: citation is embedding in simple type theory, not Isabelle/HOL. Rethink.) In \cite{ModalLogics} Benzm\"uller and Paulson represented quantified modal logic using SSEs by means
+(TODO: citation is embedding in simple type theory, not Isabelle/HOL. Rethink.)
+In \cite{ModalLogics} Benzm\"uller and Paulson represented quantified modal logic using SSEs by means
 of embedding modal operators based on their Kripke semantics (TODO cite). This allowed for an
 extensive analysis of G\"odel's ontological argument in second-order S5 modal logic (TODO cite), followed
 by a range of studies of similar ontological arguments (TODO cite). TODO: newer work by Benzm\"uller.
@@ -104,32 +108,40 @@ These studies were still mainly concerned with case studies of concrete argument
 with conservative extensions of higher-order logic like functional higher-order modal logic.
 Furthermore, they relied heavily on the previously available completeness results of second-order modal
 logic with respect to Kripke models (TODO: cite).
+\<close>
 
-In our own previous work (in \cite{MScThesis}) we applied an extended version of this technique
-to AOT. For AOT no extensive prior analysis of canonical models - like Kripke models for higher-order
-modal logic - was available. While the so-called Aczel models of object theory (TODO: cite) provided
-an important building block for constructing models of AOT in HOL, no full set-theoretic model
-of object theory had been constructed. In \cite{MScThesis} we extended the existing Aczel models to
-a richer model structure that was capable of approximating the validity of statements of the most
-recent formulation of AOT in Principia Logico-Metaphysica (PLM). Furthermore, we introduced the new
-concept of \emph{abstraction layers}. An abstraction layer consists of a derivation of the axioms and
-deduction rules of a target system from a given semantics that is then considered as ground truth while
-"forgetting" the underlying semantic structure (i.e. the reasoning system is prevented from using the
-semantics for proofs, but configured to solely rely on the derived axioms and deduction rules).
+subsection\<open>Previous Work on AOT involving the SSE Approach\<close>
+
+text\<open>
+
+In our own previous work (in \cite{MScThesis}) we applied an extended version of the technique of
+SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to
+for example the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
+basis for previous work using SSE as mentioned above. While the so-called Aczel models of object theory
+(TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
+set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
+existing Aczel models to a richer model structure that was capable of approximating the validity
+of statements of the at the time most recent formulation of AOT in Principia Logico-Metaphysica (PLM).
+Furthermore, we introduced the new concept of \emph{abstraction layers}. An abstraction layer consists
+of a derivation of the axioms and deduction rules of a target system from a given semantics that is
+then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
+reasoning system is prevented from using the semantics for proofs, but instead configured to solely
+rely on the derived axioms and deduction rules.
 Abstraction layers turned out to be a helpful means for reasoning within a target theory without
 the danger of deriving artifactual theories, even in the absence of a formal completeness result
-about the used semantics. Furthermore, it can be used to analyze soundness and completeness of the semantics itself.
+about the used semantics.
+Furthermore, it can be used to analyze soundness and completeness of the semantics itself.
 
 A major result of \cite{MScThesis} was the discovery of an oversight in the formulation of AOT that
 allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
-of the foundations of AOT which culminated in the extension of the free logic AOT previously merely
-used for its individual terms to account for non-denoting definite descriptions to its relation
-terms as well. This reworking of AOT was accompanied by a continuous further development of its
+of the foundations of AOT which culminated in the extension of the free logic AOT to its relation
+terms as well, while previously it was restricted to its individual terms to account for non-denoting
+definite descriptions. This reworking of AOT was accompanied by a continuous further development of its
 embedding in Isabelle/HOL. This mutually beneficial mode of work was already partly described in
 (TODO cite Open Philosophy) and resulted in a now stabilized improved formulation of AOT and a
-matching embedding. The details of this process and its results is the main subject of this thesis. 
+matching embedding. The details of this process and its results are the main subject of this thesis. 
 
 \<close>
 
@@ -137,7 +149,7 @@ section\<open>Overview of the Following Chapters\<close>
 
 text\<open>
 In the following,  we first give a more detailed description of Shallow Semantical Embeddings and
-a brief introduction to Abstract Object Theory. Based on that we describe the constructed
+a brief introduction to Abstract Object Theory. Based on that, we describe the constructed
 embedding of Abstract Object Theory in Isabelle/HOL while highlighting the contributions
 of the embedding to the theory of abstract objects on the one hand and the techniques developed for
 its implementation on the other hand. Finally we present the results on Natural Numbers and
@@ -182,8 +194,8 @@ The deep embedding consists of a (usually recursive) algebraic datatype that cap
 the language to be embedded. This syntax is then given a semantics by means of an evaluation function
 that traverses this algebraic datatype.
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
-by its semantics. In our example, the semantic domain of expressions is the integers. Then the
-operations on the expressions are \emph{defined} directly by means of their semantics:
+by its semantics. In our example, the semantic domain of expressions is the integers. On this domain,
+the operations are then \emph{defined} directly by means of their semantics:
 \<close>
 
 (*<*)
@@ -209,14 +221,14 @@ lemma Deep_Shallow_Addition: \<open>Deep.eval (Deep.Addition x y) = Shallow.Addi
 (*>*)
 
 text\<open>
-Note that in the shallow embedding, the domain of \emph{expression}s is in fact shared with the
+Note that in the shallow embedding, the domain of \emph{expression}s is shared with the
 meta-language by directly representing expressions in the type to which they evaluate semantically
 in the deep embedding, namely \emph{int} in the example.
 
 There is a natural correspondence between the deep and shallow representations of this
 language. In particular @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
-@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold. So the semantic
-evaluation is implicit in the shallow embedding.
+@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold\footnote{TODO: Explain qualified names.}.
+So the semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representation. For example, in the
 deep embedding adding \emph{x} to \emph{y} results in an expression that is different from adding
 \emph{y} to \emph{x} for distinct \emph{x} and \emph{y}, even though they are equivalent under evaluation:
@@ -224,7 +236,7 @@ deep embedding adding \emph{x} to \emph{y} results in an expression that is diff
 @{thm[show_question_marks = false, names_short = false, display = true] Deep.CommutativeAdditionNonIdentity}
 @{thm[show_question_marks = false, names_short = false, display = true] Deep.CommutativeAdditionEquivalent}
 
-In contrast, the two additions are actually identical in the shallow embedding:
+In contrast, commuted additions are identical in the shallow embedding:
 
 @{thm[show_question_marks = false, names_short = false, display = true] Shallow.CommutativeAdditionIdentity}
 
@@ -241,16 +253,347 @@ section\<open>SSEs as Universal Reasoning Tools\<close>
 text\<open>
 
 In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using \emph{Shallow Semantic Embeddings} (SSEs)
-in classical higher-order logics as a means for universal reasoning. TODO: paraphraze the idea a bit.
+in classical higher-order logics as a means for universal reasoning. TODO: paraphrase the idea a bit.
+High-level concept and motivation here versus more technical details in the following sections.
 
 \<close>
 
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>
 text\<open>
 
-An example for non-classical logics that are used prominently in metaphysics is Quantified Higher-Order
-Modal Logic. In \cite{ModalLogics} Benzm\"uller and Paulson develop a sound and complete embedding
-of quantified higher-order modal logic into simple type theory.
+An examples of a non-classical logic that is used prominently in metaphysics is Quantified Higher-Order
+Modal Logic in various different axiomatizations. While there have been extensive studies of
+modal logics using SSEs in Isabelle/HOL (see: TODO: cite a good paper about QML in Isabelle/HOL
+maybe: http://page.mi.fu-berlin.de/cbenzmueller/papers/C47%2Epdf or similar), we restrict ourselves
+to the discussion of a simple embedding of S5 modal logic to further illustrate the general
+concept of SSEs.
+\<close>
+
+(*<*)
+locale SimpleS5 = AOT_no_meta_syntax
+begin
+(*>*)
+
+text\<open>
+A natural semantic basis for SSEs of any modal logic is its Kripke-semantics (TODO cite?).
+In general, a Kripke frame consists of a set of possible worlds and a binary relation on these worlds
+called \emph{accessibility relation}. For S5 there are two versions of semantics, one in which the
+accessibility relation is an equivalence relation and one in which there is no accessibility relation at
+all (TODO: cite M. Fitting "A Simple propositional S5 Tableau System"). For our purpose the simpler
+model suffices\footnote{We will later show that this is the only choice for the particular modal
+logic of Abstract Object Theory due to its additional actuality operator. TODO: actually do that.}.
+
+For possible worlds we can introduce a primitive type in Isabelle/HOL.
+\<close>
+
+typedecl w
+
+text\<open>
+A Kripke model further involves a relation between possible worlds and modal formulas that is
+usually read as a formula \emph{being satisfied at} a possible world. So the semantic domain of
+propositions is boolean-valued functions acting on (or, equivalently, sets of) possible worlds.
+In a SSE we use the semantic domains as type for the formulas themselves, so we can introduce
+a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
+to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
+world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.
+\<close>
+
+type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
+
+text\<open>
+A proposition is \emph{valid} in case it is satisfied in all worlds.
+\<close>
+
+definition valid :: \<open>\<o> \<Rightarrow> bool\<close> (\<open>\<Turnstile> _\<close> 100) where
+  \<open>valid p \<equiv> \<forall> w . p w\<close>
+
+text\<open>Now the classical logical operators can be defined as follows (note the bold print for the
+defined operators versus the non-bold print of the corresponding operators of the meta-logic):\<close>
+
+definition not :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<not>_\<close> [140] 140) where
+  \<open>\<^bold>\<not>p \<equiv> \<lambda> w . \<not>p w\<close>
+definition imp :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<rightarrow>\<close> 125) where
+  \<open>p \<^bold>\<rightarrow> q \<equiv> \<lambda> w . p w \<longrightarrow> q w\<close>
+definition conj :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<and>\<close> 135) where
+  \<open>p \<^bold>\<and> q \<equiv> \<lambda> w . p w \<and> q w\<close>
+definition disj :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<or>\<close> 130) where
+  \<open>p \<^bold>\<or> q \<equiv> \<lambda> w . p w \<or> q w\<close>
+
+text\<open>The additional modal operators, i.e. the box operator for \emph{necessity} and the
+     diamond operator for \emph{possibility}, can be further defined as:\<close>
+
+definition box :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<box>_\<close> [150] 150) where
+  \<open>\<^bold>\<box>p \<equiv> \<lambda> w . \<forall> v . p v\<close>
+definition dia :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<diamond>_\<close> [150] 150) where
+  \<open>\<^bold>\<diamond>p \<equiv> \<lambda> w . \<exists> v . p v\<close>
+
+text\<open>Now Isabelle can show automatically that the S5 axioms are valid:\<close>
+
+lemma K: \<open>\<Turnstile> \<^bold>\<box>(p \<^bold>\<rightarrow> q) \<^bold>\<rightarrow> (\<^bold>\<box>p \<^bold>\<rightarrow> \<^bold>\<box>q)\<close>
+  by (auto simp: box_def imp_def valid_def)
+lemma T: \<open>\<Turnstile> \<^bold>\<box>p \<^bold>\<rightarrow> p\<close>
+  by (auto simp: box_def imp_def valid_def)
+lemma 5: \<open>\<Turnstile> \<^bold>\<diamond>p \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<diamond>p\<close>
+  by (auto simp: box_def dia_def imp_def valid_def)
+
+text\<open>The proofs of both axioms are automatically found by @{command sledgehammer} (TODO cite?).
+So far we have constructed an embedding of propositional S5 modal logic. However it is straightforward
+to enrich it with quantification.
+\<close>
+
+definition forall :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<forall>\<close> 110) where
+  \<open>\<^bold>\<forall> x . \<phi> x \<equiv> \<lambda>w . \<forall> x . \<phi> x w\<close>
+definition exists :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<exists>\<close> 110) where
+  \<open>\<^bold>\<exists> x . \<phi> x \<equiv> \<lambda>w . \<exists> x . \<phi> x w\<close>
+
+text\<open>Note that we didn't have to introduce any particular type for individuals, but stated the
+definitions polymorphically relative to a type variable @{typ 'a}. This way the same quantifier
+can be used for propositions themselves, any desired type for individuals or even properties of
+any order.
+
+As an example of theorems involving quantifiers and modal logic, we derive the Barcan formulas.
+@{command sledgehammer} can again automatically provide proofs.\<close>
+
+lemma \<open>\<Turnstile> (\<^bold>\<forall>x . \<^bold>\<box>\<phi> x) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>x . \<phi> x)\<close>
+  by (auto simp: box_def forall_def imp_def valid_def)
+lemma \<open>\<Turnstile> \<^bold>\<diamond>(\<^bold>\<exists>x . \<phi> x) \<^bold>\<rightarrow> (\<^bold>\<exists>x . \<^bold>\<diamond>\<phi> x)\<close>
+  by (auto simp: dia_def exists_def imp_def valid_def)
+lemma \<open>\<Turnstile> \<^bold>\<box>(\<^bold>\<forall>x . \<phi> x) \<^bold>\<rightarrow>  (\<^bold>\<forall>x . \<^bold>\<box>\<phi> x)\<close>
+  by (auto simp: box_def forall_def imp_def valid_def)
+lemma \<open>\<Turnstile> (\<^bold>\<exists>x . \<^bold>\<diamond>\<phi> x) \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<exists>x . \<phi> x)\<close>
+  by (auto simp: dia_def exists_def imp_def valid_def)
+
+text\<open>
+However, note that the automatic proofs again unfold the semantic definitions. We have shown that
+the Barcan formulas are valid in the constructed embedding, but from the proofs we cannot tell
+which axioms are required for proving them.\footnote{As a matter of fact we did not even state any
+axioms governing implications nor quantifiers.}
+
+Depending on the application, it can be enough to be able to tell if a theorem is semantically
+valid or if a statement semantically follows from a set of assumptions. However, for the purpose
+of implementing a full logical theory including its own deductive system, semantic validity is
+not the primary concern, but rather derivability from the formal system.
+
+Fortunately, it is possible to restrict Isabelle's automated reasoning tools like
+@{command sledgehammer}, s.t. they may not unfold semantic definitions. If this is done
+at larger scale and in a reliable manner for the purpose of analyzing derivability in
+a given deductive system, we say that we introduce \emph{abstraction layers} to the SSE.
+\<close>
+
+(*<*)
+end
+(*>*)
+
+section\<open>SSEs with Abstraction Layers\<close>
+
+text\<open>The concept of enriching traditional SSEs with abstraction layers was first introduced
+in \cite{MScThesis}. The goal is to be able to use the automated reasoning tools provided
+by a system like Isabelle/HOL not merely to analyze semantic validity of statements in the
+embedded theory, but to reliably determine the derivability of a statement from the deductive
+system of the theory itself, while still retaining ensured soundness. While Isabelle provides
+its own mechanisms for abstract reasoning like type @{command class}es, @{command locale}s and
+@{command specification}s, those are not primarily designed for this exact purpose and come with
+limitations that can make them unsuitable to achieve that purpose entirely on their own,
+as described in more detail in the following section.
+
+TODO: more high-level description before technical details?
+
+The main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite again?).
+@{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
+the current proof goal. To that end, simply speaking\footnote{For the full and precise details of the process
+refer to TODO: cite.}, it collects all theorems derived in the current @{command theory} context
+together with all local assumptions, processes the resulting set of theorems heuristically to find
+a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
+theorems and assumptions in a format that can be consumed by external theorem provers like
+CVC4, E or SPASS (TODO: cite). This may, for example, involve a translation from higher-order problems
+to first order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
+tries to reconstruct a short proof using Isabelle's proving methods (e.g. @{method metis} or @{method blast} TODO: cite?)
+that can be directly inserted to prove the current goal.
+
+The relevant part of the process to consider for the purpose of constructing an abstraction layer is
+the initial selection of theorems from the @{command theory} context.
+We do not want @{command sledgehammer} to use the equational theorems that unfold our semantic definitions,
+but instead derive the goals from only the axioms and specific derivational rules we defined that correspond
+to the rules of the deductive system of the embedded theory.
+@{command sledgehammer} allows us to provide some guidance in its choice of theorems. It is possible
+to (1) indicate that a certain set of theorems is likely to be helpful in the proof (using @{text \<open>add:\<close>}),
+(2) prevent it from using certain theorems (either using @{text \<open>del:\<close>} or by marking the theorems with
+the special attribute @{attribute no_atp} or (3) to provide it with a specific set of theorems to use
+directly without taking any other theorems into account.
+
+Conceptually, option (3) is the best fit for the purpose of abstraction layers and was used in
+\cite{MScThesis}. However, @{command sledgehammer} will no longer employ its heuristics and machine
+learning algorithms to filter the provided theorems to find relevant theorems, but will directly use
+the provided set of theorems. Consequently, the proving power and therefore the usefulness of
+@{command sledgehammer} is significantly diminished, especially for larger theories.
+
+In our current implementation, we therefore use option (2) instead. However, this comes with
+some challenges. While the equational theorems introduced by simple @{command definition}s can
+easily be collected and marked, other more advanced constructions in Isabelle like type definitions
+or the @{command lift_definition}s (TODO: cite) introduce several theorems implicitly. While
+it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
+
+On the other hand, it is not possible to simply exclude \emph{all} theorems that were defined
+up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
+- among others - the construction of classical higher-order logic from Isabelle's more basic @{theory Pure}
+logic. This includes theorems @{command sledgehammer} relies on and disbarring them will leave it
+non-functional (conceptually, such theorems in question can be thought of as meta-theorems about
+derivations in our context TODO: rethink that, maybe collect examples).
+
+The solution used in the current embedding of Abstract Object Theory is the use of option (2), but
+it uses Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
+list. For convenience, an new command @{command AOT_sledgehammer} is introduced that internally
+configures @{command sledgehammer} to use the desired set of theorems and then passes the current
+proof state to it. With this method we can achieve significantly better proof automation than in
+the earlier version in \cite{MScThesis}.
+
+\<close>
+
+section\<open>Limitations of Isabelle's Native Abstraction Mechanisms\<close>
+
+text\<open>
+TODO: reformulate along the lines of "While for the purpose above constructing a minimal model
+would suffice, there are several reasons to..." plus "to that end we use Isabelle's abstraction mechanisms..."
+plus "However, the use of these mechanisms in turn is not sufficent to provide the same assurances as
+abstraction layers, respectively cannot sufficiently deal with polymorphic assumptions, etc.".
+Also: explain rationale of being able to judge extensions of the system with new axioms and
+using @{command nitpick}.
+
+Additionally, we attempt to keep the constructed embedding as abstract as possible and try to make it
+logically impossible for details of the used model to "bleed through" to the abstraction layer.
+To that end, for example, we extensively use @{command specification}s instead of definitions (TODO: cite).
+A @{command specification} is used to assert statements about previously uninterpreted constants
+(as introduced using @{command consts}). The @{command specification} command opens a proof context
+that requires the user to show that there exists a concrete instantiation for the given constants,
+for which the desired statements hold. Internally it then uses Isabelle's Hilbert-Epsilon-operator
+@{term \<open>SOME x. \<phi> x\<close>} to augment the given constants with a concrete definition. However, care
+has to be taken to ensure that there actually is a choice to be made.
+
+To illustrate this issue, we showcase the construction of a hyperintensional logic in which
+@{term \<open>p \<and> q\<close>} implies both @{term p} and @{term q} and vice-versa, but it does not hold
+that @{term \<open>(p \<and> q) = (q \<and> p)\<close>}.
+We first show a construction that will fail due to a choice of representation types that
+implies extensionality:
+\<close>
+
+typedef \<o>\<^sub>1 = \<open>UNIV::bool set\<close>.. \<comment> \<open>Introduce a type of propositions @{typ \<o>\<^sub>1} as a copy of the type of booleans.\<close>
+
+definition valid_\<o>\<^sub>1 :: \<open>\<o>\<^sub>1 \<Rightarrow> bool\<close> where
+  \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.\<close>
+
+consts \<o>\<^sub>1_conj :: \<open>\<o>\<^sub>1 \<Rightarrow> \<o>\<^sub>1 \<Rightarrow> \<o>\<^sub>1\<close> (infixl \<open>\<^bold>\<and>\<close> 100)
+
+specification (\<o>\<^sub>1_conj) \<comment> \<open>We specify our conjunction by introduction and elimination rules.\<close>
+  \<o>\<^sub>1_conjE1: \<open>valid_\<o>\<^sub>1 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>1 p\<close>
+  \<o>\<^sub>1_conjE2: \<open>valid_\<o>\<^sub>1 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>1 q\<close>
+  \<o>\<^sub>1_conjI: \<open>valid_\<o>\<^sub>1 p \<Longrightarrow> valid_\<o>\<^sub>1 q \<Longrightarrow> valid_\<o>\<^sub>1 (p \<^bold>\<and> q)\<close>
+text\<open>We need to prove that there is a term satisfying the above specification. The natural choice is
+     the lifted conjunction on the booleans.\<close>
+  by (rule_tac x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close> in exI)
+     (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
+
+text\<open>However, even though the identity of commuted conunctions not part of the @{command specification},
+     it is \emph{still} derivable.\<close>
+lemma \<open>p \<^bold>\<and> q = q \<^bold>\<and> p\<close>
+  by (metis Rep_\<o>\<^sub>1_inject \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 valid_\<o>\<^sub>1_def)
+
+(*<*)
+no_notation \<o>\<^sub>1_conj (infixl \<open>\<^bold>\<and>\<close> 100)
+(*>*)
+
+text\<open>The reason is that there is simply only one choice for a conjunction operator on the booleans
+and this choice is commutative.
+
+A way around this kind of issue is not to use booleans as underlying type for our propositions,
+but to introduce an opaque \emph{intensional type} that merely has a boolean \emph{extension}.
+This can, for example, be done as follows:
+\<close>
+
+typedecl \<o>\<^sub>2 \<comment> \<open>Introduce an abstract type for propositions.\<close>
+
+text\<open>Axiomatically introduce a surjective extension function mapping the abstract propositions
+to their boolean extension.\<close>
+axiomatization \<o>\<^sub>2_ext :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> where
+  \<o>\<^sub>2_ext_surj: \<open>surj \<o>\<^sub>2_ext\<close>
+
+definition valid_\<o>\<^sub>2 :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> where
+  \<open>valid_\<o>\<^sub>2 p \<equiv> \<o>\<^sub>2_ext p\<close> \<comment> \<open>Validity of a proposition is given by its boolean extension.\<close>
+
+consts \<o>\<^sub>2_conj :: \<open>\<o>\<^sub>2 \<Rightarrow> \<o>\<^sub>2 \<Rightarrow> \<o>\<^sub>2\<close> (infixl \<open>\<^bold>\<and>\<close> 100)
+
+specification (\<o>\<^sub>2_conj) \<comment> \<open>We specify our conjunction by introduction and elimination rules.\<close>
+  \<o>\<^sub>2_conjE1: \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>2 p\<close>
+  \<o>\<^sub>2_conjE2: \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>2 q\<close>
+  \<o>\<^sub>2_conjI: \<open>valid_\<o>\<^sub>2 p \<Longrightarrow> valid_\<o>\<^sub>2 q \<Longrightarrow> valid_\<o>\<^sub>2 (p \<^bold>\<and> q)\<close>
+  text\<open>We again need to prove the existence of a term satisfying the given specification.
+       For this it is important that we axiomatized the extension function to be surjective,
+       since otherwise there may not be an appropriate choice.\<close>
+  by (rule_tac x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close> in exI)
+     (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
+
+text\<open>Now as a consequence of our specification, our conjunction is still commutative \emph{under validity}:\<close>
+
+lemma \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) = valid_\<o>\<^sub>2 (q \<^bold>\<and> p)\<close>
+text\<open>Note that the proof (found by @{command sledgehammer}) now solely relies on the properties of
+     @{const \<o>\<^sub>2_conj} given in our specification.\<close>
+  using \<o>\<^sub>2_conjE1 \<o>\<^sub>2_conjE2 \<o>\<^sub>2_conjI by blast
+
+text\<open>However, commuted conjunctions are no longer identical. The model-finding tool @{command nitpick} (TODO: cite)
+     can provide a counter-example by constructing a model for @{typ \<o>\<^sub>2} that has more than two members.\<close>
+
+lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
+  nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q r, format = 2]
+  oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
+
+text\<open>The model chosen by nitpick\footnote{The precise model may vary for different versions of Isabelle, resp. nitpick.}
+     has a cardinality of 3 for type @{typ \<o>\<^sub>2}. We choose @{text p}, @{text q} and @{text r} as names for these elements.
+     @{const \<o>\<^sub>2_ext} is chosen as @{text \<open>(p := True, q := False, r := False)\<close>} and
+     @{const \<o>\<^sub>2_conj} as @{text \<open>((p, p) := p, (p, q) := q, (p, r) := r, (q, p) := r, (q, q) := q, (q, r) := r, (r, p) := r, (r, q) := r,
+     (r, r) := r)\<close>}.
+
+     This is indeed one of the minimal models for conjunctions without identity of commutations.
+     On the other hand, @{command nitpick} can also \emph{satisfy} the same statement by providing
+     a model with cardinality 2 for type @{type \<o>\<^sub>2}:
+\<close>
+
+lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
+  nitpick[satisfy, user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
+  oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
+
+text\<open>Note that for the above it is sufficient to find a concrete choice for @{term p} and @{term q},
+     s.t. the identity holds for those two propositions. However, nitpick can also produce
+     (in this case the same) model satisfying the identity for all propositions,
+     respectively - equivalently - refute the identity failing to hold.\<close>
+
+lemma \<open>\<forall>p q . (p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
+  nitpick[satisfy, user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
+  oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
+
+lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close>
+  nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
+  oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
+
+(*<*)
+no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
+(*>*)
+
+text\<open>TODO: explain limitations wrt polymorphic constants; move on to type classes and locales.\<close>
+
+section\<open>Reproducing the Syntax of the Target Theory\<close>
+
+text\<open>
+To achieve the goal of constructing a custom theorem proving environment for a new theory by the
+means of an embedding, the primary concern is achieving a faithful representation of its axioms
+and deductive system and to be able to faithfully reproduce the reasoning in the embedded system
+on top of this representation.
+
+However, for the embedding to be of actual practical use, it is equally important that the
+resulting representation is readable and, ideally, that a person that is familiar with the
+embedded theory, but has limited expertise in the particularities of the meta-logical system
+in which the theory is embedded, can still use the embedding to reason in the target system
+without a steep learning curve.
+
+Isabelle's \emph{Isar} (\emph{Intelligible semi-automated reasoning}) language
 
 \<close>
 
@@ -279,48 +622,15 @@ text\<open>
 
 section\<open>Examples of Applications\<close>
 
+section\<open>Implications for the Philosophy of Mathematics\<close>
+
 chapter\<open>SSE of AOT in Isabelle/HOL\<close>
 
 text\<open>
 
 \<close>
 
-chapter\<open>Meta-Analysis of the Embedding\<close>
-
-section\<open>Soundness\<close>
-
-text\<open>
-\<close>
-
-section\<open>Completeness\<close>
-
-text\<open>
-\<close>
-
-section\<open>Derivability\<close>
-
-text\<open>
-\<close>
-
 section\<open>Meta Theorems\<close>
-
-text\<open>
-
-\<close>
-
-chapter\<open>Natural Numbers in AOT\<close>
-
-text\<open>
-
-\<close>
-
-chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
-
-text\<open>
-
-\<close>
-
-chapter\<open>Conclusion\<close>
 
 text\<open>
 

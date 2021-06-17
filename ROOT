@@ -14,6 +14,7 @@ session "Thesis" = "HOL" +
     AOT_PossibleWorlds
     AOT_NaturalNumbers
     Thesis
+    ThesisNaturalNumbers
   document_files
     "root.tex"
     "logo.pdf"
