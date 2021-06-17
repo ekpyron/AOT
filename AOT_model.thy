@@ -67,10 +67,10 @@ consts AOT_model_concrete\<omega> :: \<open>\<omega> \<Rightarrow> w \<Rightarro
 specification (AOT_model_concrete\<omega>)
   AOT_model_\<omega>_concrete_in_some_world: \<open>\<exists> w . AOT_model_concrete\<omega> x w\<close>
   AOT_model_contingent_object: \<open>\<exists> x w . AOT_model_concrete\<omega> x w \<and> \<not>AOT_model_concrete\<omega> x w\<^sub>0\<close>
-  by (rule_tac x=\<open>\<lambda>_ w. w \<noteq> w\<^sub>0\<close> in exI) (auto simp: AOT_model_nonactual_world)
+  by (rule exI[where x=\<open>\<lambda>_ w. w \<noteq> w\<^sub>0\<close>]) (auto simp: AOT_model_nonactual_world)
 
 typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<phi> (null\<upsilon> x)) }\<close>
-  by (rule_tac x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close> in exI) (auto simp: AOT_model_proposition_choice_simp)
+  by (rule exI[where x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close>]) (auto simp: AOT_model_proposition_choice_simp)
 
 datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
@@ -256,7 +256,7 @@ proof -
              urrel_to_\<omega>rel urrel \<in> ordext_union (Rep_\<sigma> \<sigma>) \<and>
              (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) = (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
             urrel_to_\<omega>rel urrel = ordext\<close>
-            apply (rule_tac x=\<open>?\<sigma>_part ordext\<close> in exI)
+            apply (rule exI[where x=\<open>?\<sigma>_part ordext\<close>])
             apply (auto simp: ordext_simp ordext_in_union)
              apply (subst (asm) Abs_urrel_inverse)
             apply (auto simp: AOT_model_proposition_choice_simp)
@@ -279,7 +279,7 @@ urrel_to_\<omega>rel urrel
              urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
              (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) = (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
            (\<forall>w \<sigma>'. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) \<longrightarrow> snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>)))\<close>
-          apply (rule_tac x=\<open>?\<sigma>_part r\<close> in exI)
+          apply (rule exI[where x=\<open>?\<sigma>_part r\<close>])
           using \<sigma>_part_in_union \<sigma>_part_not_in_intersection
           by (smt (verit, del_insts) AOT_model_proposition_choice_simp Abs_urrel_inverse Quotient3_abs_rep UnE UnI2 \<alpha>\<sigma>_wit_intersection_def \<omega>rel_to_urrel_def \<upsilon>.simps(11) \<upsilon>.simps(12) mem_Collect_eq r_notin_intersection simp0 urrel_\<omega>rel_quot)
         {
@@ -379,7 +379,7 @@ urrel_to_\<omega>rel urrel
       by blast
   }
   ultimately show ?thesis
-    by (rule_tac x=\<alpha>\<sigma>_wit in exI) metis
+    by (safe intro!: exI[where x=\<alpha>\<sigma>_wit]; metis)
 qed
 
 section\<open>Restricted model version\<close>
@@ -391,8 +391,8 @@ specification (\<alpha>\<sigma>_restr)
 proof -
   obtain \<phi> where \<phi>_def: \<open>\<phi> = (\<lambda> \<sigma> u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> \<sigma>)\<close> by auto
   show ?thesis
-  proof (rule_tac x=\<open>\<lambda> x . THE \<sigma> . x = { Abs_urrel (\<phi> \<sigma>) }\<close> in exI;
-         rule_tac f=\<open>\<lambda> \<sigma> . { Abs_urrel (\<phi> \<sigma>) }\<close> in surjI)
+  proof (safe intro!: exI[where x=\<open>\<lambda> x . THE \<sigma> . x = { Abs_urrel (\<phi> \<sigma>) }\<close>]
+         surjI[where f=\<open>\<lambda> \<sigma> . { Abs_urrel (\<phi> \<sigma>) }\<close>])
     have \<open>(\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> x) = (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> \<sigma>) \<Longrightarrow> x = \<sigma>\<close> for x \<sigma>
       by (metis (mono_tags) \<upsilon>.inject(2) AOT_model_proposition_choice_simp)
     hence \<open>({Abs_urrel (\<phi> x)} = {Abs_urrel (\<phi> \<sigma>)}) = (x = \<sigma>)\<close> for x \<sigma>
@@ -499,13 +499,13 @@ instance proof
   have \<open>AOT_model_irregular (fix_special \<phi>) x = AOT_model_irregular \<phi> x\<close> for \<phi> and x :: 'a
     by (rule AOT_model_irregular_eqI) (simp add: fix_special_def)
   thus \<open>\<exists> x :: <'a> . AOT_model_denotes x\<close>
-    by (rule_tac x=\<open>Abs_rel (fix_special (\<lambda> x . \<epsilon>\<^sub>\<o> w . False))\<close> in exI; transfer)
+    by (safe intro!: exI[where x=\<open>Abs_rel (fix_special (\<lambda> x . \<epsilon>\<^sub>\<o> w . False))\<close>]; transfer)
        (auto simp: AOT_model_proposition_choice_simp fix_special_def AOT_model_irregular_equiv
                     AOT_model_term_equiv_regular AOT_model_irregular_false)
 next
   show \<open>\<exists>x :: <'a> . \<not>AOT_model_denotes x\<close>
-    by (rule_tac x=\<open>Abs_rel (\<lambda>x. \<epsilon>\<^sub>\<o> w . True)\<close> in exI)
-       (simp add: AOT_model_denotes_rel.abs_eq AOT_model_nondenoting_ex AOT_model_proposition_choice_simp)
+    by (rule exI[where x=\<open>Abs_rel (\<lambda>x. \<epsilon>\<^sub>\<o> w . True)\<close>];
+        auto simp: AOT_model_denotes_rel.abs_eq AOT_model_nondenoting_ex AOT_model_proposition_choice_simp)
 qed
 end
 
@@ -594,11 +594,11 @@ definition AOT_model_irregular_\<kappa> :: \<open>(\<kappa> \<Rightarrow> \<o>) 
   \<open>AOT_model_irregular_\<kappa> \<equiv> SOME \<phi> . AOT_model_irregular_spec \<phi> AOT_model_regular AOT_model_term_equiv\<close>
 instance proof
   show \<open>\<exists>x :: \<kappa>. AOT_model_denotes x\<close>
-    by (rule_tac x=\<open>\<omega>\<kappa> undefined\<close> in exI)
+    by (rule exI[where x=\<open>\<omega>\<kappa> undefined\<close>])
        (simp add: AOT_model_denotes_\<kappa>_def)
 next
   show \<open>\<exists>x :: \<kappa>. \<not>AOT_model_denotes x\<close>
-    by (rule_tac x=\<open>null\<kappa> undefined\<close> in exI)
+    by (rule exI[where x=\<open>null\<kappa> undefined\<close>])
        (simp add: AOT_model_denotes_\<kappa>_def AOT_model_regular_\<kappa>_def)
 next
   show "\<not>AOT_model_regular x \<Longrightarrow> \<not> AOT_model_denotes x" for x :: \<kappa>
@@ -690,7 +690,7 @@ lemma AOT_meta_a_objects_\<kappa>:
   \<open>\<exists>x :: \<kappa>. AOT_model_denotes x \<and>
             (\<forall>w. \<not> AOT_model_concrete w x) \<and>
             (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close> for \<phi>
-  apply (rule_tac x=\<open>\<alpha>\<kappa> {f . \<phi> (urrel_to_rel f)}\<close> in exI)
+  apply (rule exI[where x=\<open>\<alpha>\<kappa> {f . \<phi> (urrel_to_rel f)}\<close>])
   apply (simp add: AOT_model_enc_\<kappa>_def AOT_model_denotes_\<kappa>_def)
   by (metis (no_types, lifting) AOT_rel_equiv_def Quotient_rep_abs_fold_unmap urrel_quotient)
 
@@ -746,7 +746,7 @@ next
     using AOT_model_proposition_choice_simp a_def b_def by force+
   assume \<Pi>_den: \<open>AOT_model_denotes \<Pi>\<close>
   have \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
-    apply (rule_tac x=\<open>rel_to_urrel \<Pi>\<close> in exI)
+    apply (rule exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
     apply auto
     unfolding rel_to_urrel_def
     apply (subst Abs_urrel_inverse)
@@ -805,7 +805,7 @@ next
     using AOT_model_proposition_choice_simp a_def b_def by force+
   assume \<Pi>_den: \<open>AOT_model_denotes \<Pi>\<close>
   have \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
-    apply (rule_tac x=\<open>rel_to_urrel \<Pi>\<close> in exI)
+    apply (rule exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
     apply auto
     unfolding rel_to_urrel_def
     apply (subst Abs_urrel_inverse)
@@ -850,7 +850,7 @@ next
   ultimately show \<open>\<exists>\<Pi>'. AOT_model_denotes \<Pi>' \<and>
              AOT_model_enc \<kappa>' \<Pi>' \<and>
              (\<forall>v x. (\<exists>w. AOT_model_concrete w x) \<longrightarrow> AOT_model_valid_in v (Rep_rel \<Pi>' x) = AOT_model_valid_in v (Rep_rel \<Pi> x))\<close>
-    apply (rule_tac x=\<Pi>'' in exI)
+    apply (safe intro!: exI[where x=\<Pi>''])
     by auto
 qed
 end
@@ -1034,12 +1034,12 @@ lemmas AOT_var_of_term_inverse = AOT_var_of_term_inverse[simplified]
 consts AOT_model_equiv_def :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> bool\<close>
 specification(AOT_model_equiv_def)
   AOT_model_equiv_def: \<open>AOT_model_equiv_def \<phi> \<psi> = (\<forall> v . AOT_model_valid_in v \<phi> = AOT_model_valid_in v \<psi>)\<close>
-  by (rule_tac x=\<open>\<lambda> \<phi> \<psi> . \<forall> v . AOT_model_valid_in v \<phi> = AOT_model_valid_in v \<psi>\<close> in exI) simp
+  by (rule exI[where x=\<open>\<lambda> \<phi> \<psi> . \<forall> v . AOT_model_valid_in v \<phi> = AOT_model_valid_in v \<psi>\<close>]) simp
 
 consts AOT_model_id_def :: \<open>('b \<Rightarrow> 'a::AOT_Term) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool\<close>
 specification(AOT_model_id_def)
   AOT_model_id_def: \<open>(AOT_model_id_def \<tau> \<sigma>) = (\<forall> \<alpha> . if AOT_model_denotes (\<sigma> \<alpha>) then \<tau> \<alpha> = \<sigma> \<alpha> else \<not>AOT_model_denotes (\<tau> \<alpha>))\<close>
-  by (rule_tac x="\<lambda> \<tau> \<sigma> . \<forall> \<alpha> . if AOT_model_denotes (\<sigma> \<alpha>) then \<tau> \<alpha> = \<sigma> \<alpha> else \<not>AOT_model_denotes (\<tau> \<alpha>)" in exI)
+  by (rule exI[where x="\<lambda> \<tau> \<sigma> . \<forall> \<alpha> . if AOT_model_denotes (\<sigma> \<alpha>) then \<tau> \<alpha> = \<sigma> \<alpha> else \<not>AOT_model_denotes (\<tau> \<alpha>)"])
      blast
 
 definition AOT_model_nondenoting :: \<open>'a::AOT_IncompleteTerm\<close> where

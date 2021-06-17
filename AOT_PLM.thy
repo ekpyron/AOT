@@ -1270,7 +1270,7 @@ AOT_theorem term_out_1: \<open>\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<bet
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume asm: \<open>\<phi>{\<alpha>}\<close>
   AOT_show \<open>\<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
-    by (rule_tac \<beta>=\<alpha> in "\<exists>I"(2); rule "&I")
+    by (rule "\<exists>I"(2)[where \<beta>=\<alpha>]; rule "&I")
        (auto simp: id_eq_1 asm)
 next
   AOT_assume 0: \<open>\<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
@@ -1655,11 +1655,11 @@ proof -
     ultimately AOT_have \<open>\<phi>{a} & \<forall>z(\<phi>{z} \<rightarrow> z = a)\<close> using "\<equiv>E" by blast
     moreover AOT_have \<open>\<psi>{a}\<close>
     proof - 
-      AOT_have \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
+      AOT_have 1: \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
         by (simp add: id_eq_2 universal_cor)
-      AOT_hence \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
-        by (rule_tac \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>" in "\<forall>E"(1); rule_tac \<beta>=a in "\<forall>E"(2))
-           (auto simp: d universal_cor)
+      AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
+        by (rule "\<forall>E"(1)[where \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>"]; rule "\<forall>E"(2)[where \<beta>=a])
+           (auto simp: 1 d universal_cor)
       AOT_thus \<open>\<psi>{a}\<close>
         using a_def c "=E" "\<rightarrow>E" by blast
     qed
@@ -1899,11 +1899,11 @@ proof -
     ultimately AOT_have \<open>\<^bold>\<A>\<phi>{a} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = a)\<close> using "\<equiv>E" by blast
     moreover AOT_have \<open>\<psi>{a}\<close>
     proof - 
-      AOT_have \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
+      AOT_have 1: \<open>\<forall>x\<forall>y(x = y \<rightarrow> y = x)\<close>
         by (simp add: id_eq_2 universal_cor)
-      AOT_hence \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
-        by (rule_tac \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>" in "\<forall>E"(1); rule_tac \<beta>=a in "\<forall>E"(2))
-           (auto simp: d universal_cor)
+      AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<rightarrow>  \<^bold>\<iota>x \<phi>{x} = a\<close>
+        by (rule "\<forall>E"(1)[where \<tau>="\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>"]; rule "\<forall>E"(2)[where \<beta>=a])
+           (auto simp: d universal_cor 1)
       AOT_thus \<open>\<psi>{a}\<close>
         using a_def c "=E" "\<rightarrow>E" by metis
     qed
@@ -3499,7 +3499,7 @@ qed
 AOT_theorem relations_1:
   assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
   shows \<open>\<exists>F \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
-  apply (rule_tac \<tau>="\<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<guillemotright>" in "\<exists>I"(1))
+  apply (rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<guillemotright>"])
   using cqt_2_lambda[OF assms, axiom_inst] beta_C_cor_2[THEN "\<rightarrow>E", THEN RN] by blast+
 
 AOT_theorem relations_2:

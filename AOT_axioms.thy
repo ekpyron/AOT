@@ -317,8 +317,8 @@ proof(rule AOT_model_axiomI)
                      AOT_sem_not AOT_sem_dia AOT_sem_denotes AOT_sem_equiv AOT_concrete_sem) blast
     AOT_thus \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
       unfolding AOT_sem_exists
-      by (rule_tac x=\<kappa> in exI)
-         (auto simp: AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes]
+      by (auto intro!: exI[where x=\<kappa>]
+               simp: AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes]
                      AOT_sem_box AOT_sem_dia AOT_sem_not AOT_sem_denotes AOT_var_of_term_inverse
                      AOT_sem_equiv AOT_sem_forall AOT_sem_conj AOT_sem_abstract AOT_concrete_sem)
   }

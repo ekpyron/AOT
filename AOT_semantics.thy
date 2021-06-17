@@ -18,7 +18,7 @@ unbundle AOT_syntax
 
 specification(AOT_denotes)
   AOT_sem_denotes: \<open>[w \<Turnstile> \<tau>\<down>] = AOT_model_denotes \<tau>\<close>
-  by (rule_tac x=\<open>\<lambda> \<tau> . \<epsilon>\<^sub>\<o> w . AOT_model_denotes \<tau>\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<tau> . \<epsilon>\<^sub>\<o> w . AOT_model_denotes \<tau>\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_var_induct[induct type: AOT_var]:
@@ -28,22 +28,22 @@ lemma AOT_sem_var_induct[induct type: AOT_var]:
 
 specification(AOT_imp)
   AOT_sem_imp: \<open>[w \<Turnstile> \<phi> \<rightarrow> \<psi>] = ([w \<Turnstile> \<phi>] \<longrightarrow> [w \<Turnstile> \<psi>])\<close>
-  by (rule_tac x=\<open>\<lambda> \<phi> \<psi> . \<epsilon>\<^sub>\<o> w . ([w \<Turnstile> \<phi>] \<longrightarrow> [w \<Turnstile> \<psi>])\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<phi> \<psi> . \<epsilon>\<^sub>\<o> w . ([w \<Turnstile> \<phi>] \<longrightarrow> [w \<Turnstile> \<psi>])\<close>])
     (simp add: AOT_model_proposition_choice_simp)
 
 specification(AOT_not)
   AOT_sem_not: \<open>[w \<Turnstile> \<not>\<phi>] = (\<not>[w \<Turnstile> \<phi>])\<close>
-  by (rule_tac x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<not>[w \<Turnstile> \<phi>]\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<not>[w \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 specification(AOT_box)
   AOT_sem_box: \<open>[w \<Turnstile> \<box>\<phi>] = (\<forall> w . [w \<Turnstile> \<phi>])\<close>
-  by (rule_tac x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<forall> w . [w \<Turnstile> \<phi>]\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<forall> w . [w \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 specification(AOT_act)
   AOT_sem_act: \<open>[w \<Turnstile> \<^bold>\<A>\<phi>] = [w\<^sub>0 \<Turnstile> \<phi>]\<close>
-  by (rule_tac x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . [w\<^sub>0 \<Turnstile> \<phi>]\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . [w\<^sub>0 \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_conj: \<open>[w \<Turnstile> \<phi> & \<psi>] = ([w \<Turnstile> \<phi>] \<and> [w \<Turnstile> \<psi>])\<close>
@@ -60,7 +60,7 @@ lemma AOT_sem_dia: \<open>[w \<Turnstile> \<diamond>\<phi>] = (\<exists> w . [w 
 
 specification(AOT_forall)
   AOT_sem_forall: \<open>[w \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>}] = (\<forall> \<tau> . [w \<Turnstile> \<tau>\<down>] \<longrightarrow> [w \<Turnstile> \<phi>{\<tau>}])\<close>
-  by (rule_tac x=\<open>\<lambda> op . \<epsilon>\<^sub>\<o> w . \<forall> \<tau> . [w \<Turnstile> \<tau>\<down>] \<longrightarrow> [w \<Turnstile> \<guillemotleft>op \<tau>\<guillemotright>]\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> op . \<epsilon>\<^sub>\<o> w . \<forall> \<tau> . [w \<Turnstile> \<tau>\<down>] \<longrightarrow> [w \<Turnstile> \<guillemotleft>op \<tau>\<guillemotright>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_exists: \<open>[w \<Turnstile> \<exists>\<alpha> \<phi>{\<alpha>}] = (\<exists> \<tau> . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<phi>{\<tau>}])\<close>
@@ -69,7 +69,7 @@ lemma AOT_sem_exists: \<open>[w \<Turnstile> \<exists>\<alpha> \<phi>{\<alpha>}]
 
 specification(AOT_eq)
   AOT_sem_eq: \<open>[w \<Turnstile> \<tau> = \<tau>'] = ([w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>')\<close>
-  by (rule_tac x=\<open>\<lambda> \<tau> \<tau>' . \<epsilon>\<^sub>\<o> w . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>'\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> \<tau> \<tau>' . \<epsilon>\<^sub>\<o> w . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>'\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
 specification(AOT_desc)
@@ -104,7 +104,7 @@ proof -
   moreover have \<open>(\<And> x . [w\<^sub>0 \<Turnstile> \<guillemotleft>\<phi> x\<guillemotright>] = [w\<^sub>0 \<Turnstile> \<guillemotleft>\<psi> x\<guillemotright>]) \<Longrightarrow> desc \<phi> = desc \<psi>\<close> for \<phi> \<psi>
     unfolding desc_def by (auto simp: nondenoting)
   ultimately show ?thesis
-    by (rule_tac x=desc in exI) presburger
+    by (safe intro!: exI[where x=desc]; presburger)
 qed
 
 specification(AOT_exe AOT_lambda)
@@ -118,7 +118,7 @@ specification(AOT_exe AOT_lambda)
   AOT_sem_lambda_eq_prop_eq: \<open>\<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>]\<guillemotright> = \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>]\<guillemotright> \<Longrightarrow> \<phi> = \<psi>\<close>
 proof -
   have \<open>\<exists> x :: <'a> . \<not>AOT_model_denotes x\<close>
-    by (rule_tac x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w. True)\<close> in exI)
+    by (rule exI[where x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w. True)\<close>])
        (meson AOT_model_denotes_rel.abs_eq AOT_model_nondenoting_ex AOT_model_proposition_choice_simp)
   then obtain nondenoting_rel :: \<open><'a>\<close> where nondenoting_rel: \<open>\<not>AOT_model_denotes nondenoting_rel\<close> by blast
   obtain exe :: \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close> where exe_def: \<open>exe \<equiv> \<lambda> \<Pi> \<kappa>s . if AOT_model_denotes \<Pi> then Rep_rel \<Pi> \<kappa>s else (\<epsilon>\<^sub>\<o> w . False)\<close> by blast
@@ -184,8 +184,7 @@ proof -
        (meson AOT_model_irregular_nondenoting AOT_model_denoting_ex)+
   note calculation = calculation this
   show ?thesis
-    apply (rule_tac x=exe in exI; rule_tac x=lambda in exI)
-    apply safe
+    apply (safe intro!: exI[where x=exe] exI[where x=lambda])
     using calculation apply simp_all
     using lambda_denotes_simp by blast+
 qed
@@ -232,13 +231,13 @@ qed
 
 specification (AOT_lambda0)
   AOT_sem_lambda0: "AOT_lambda0 \<phi> = \<phi>"
-  by (rule_tac x="\<lambda>x. x" in exI) simp
+  by (rule exI[where x=\<open>\<lambda>x. x\<close>]) simp
 
 consts AOT_sem_concrete :: \<open><'a::AOT_UnaryIndividualTerm>\<close>
 specification(AOT_sem_concrete)
   AOT_sem_concrete: \<open>AOT_model_valid_in w (AOT_exe AOT_sem_concrete \<kappa>) = AOT_model_concrete w \<kappa>\<close>
   AOT_sem_concrete_denotes: \<open>AOT_model_valid_in w (AOT_denotes AOT_sem_concrete)\<close>
-  by (rule_tac x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w . AOT_model_concrete w x)\<close> in exI)
+  by (rule exI[where x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w . AOT_model_concrete w x)\<close>])
      (auto simp: AOT_model_no_special_nondenoting AOT_model_concrete_denotes AOT_model_concrete_equiv AOT_model_regular_\<kappa>_def
                  AOT_model_proposition_choice_simp AOT_sem_exe Abs_rel_inverse AOT_model_denotes_rel_def AOT_sem_denotes)
 specification(AOT_concrete)
@@ -555,8 +554,8 @@ definition AOT_proj_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> (\<kappa> \<Ri
 lemma AOT_enc_\<kappa>_meta: \<open>[v \<Turnstile> \<kappa>[\<Pi>]] = (AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close> for \<kappa>::\<kappa>
 proof -
   have AOT_enc_\<kappa>_ex: \<open>\<exists> \<phi> . \<forall> v (\<kappa>::\<kappa>) \<Pi> . [v \<Turnstile> \<guillemotleft>\<phi> \<kappa> \<Pi>\<guillemotright>] = (AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close>
-    apply (rule_tac x=\<open>\<lambda> \<kappa> \<Pi> . \<epsilon>\<^sub>\<o> w . AOT_model_enc \<kappa> \<Pi>\<close> in exI)
-    by (simp add: AOT_model_proposition_choice_simp AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if)
+    by (rule exI[where x=\<open>\<lambda> \<kappa> \<Pi> . \<epsilon>\<^sub>\<o> w . AOT_model_enc \<kappa> \<Pi>\<close>])
+       (simp add: AOT_model_proposition_choice_simp AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if)
   show ?thesis using someI_ex[OF AOT_enc_\<kappa>_ex] unfolding AOT_enc_\<kappa>_def
     by (simp add: AOT_model_denotes_\<kappa>_def AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if \<kappa>.distinct_disc(5))
 qed
@@ -600,7 +599,7 @@ next
     by (simp add: AOT_enc_\<kappa>_meta AOT_proj_enc_\<kappa>_def)
 next
   show \<open>\<exists>\<kappa>::\<kappa>. [v \<Turnstile> \<kappa>\<down>] \<and> (\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow>  [v \<Turnstile> \<kappa>[\<Pi>]]) \<and> (\<forall> \<phi> . [v \<Turnstile> [\<lambda>z \<phi>{z}]\<down>] \<longrightarrow>  [v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa> \<phi>\<guillemotright>])\<close> for v
-    by (rule_tac x=\<open>\<alpha>\<kappa> UNIV\<close> in exI)
+    by (rule exI[where x=\<open>\<alpha>\<kappa> UNIV\<close>])
        (simp add: AOT_sem_denotes AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def AOT_model_denotes_\<kappa>_def  AOT_proj_enc_\<kappa>_def)
 qed
 end
@@ -856,8 +855,7 @@ next
       using \<Pi>''_prop by (metis AOT_sem_exe_denoting \<Pi>_den' calculation(1)) 
   qed
   ultimately show \<open>\<exists>\<Pi>'. [v \<Turnstile> \<Pi>'\<down>] \<and> [v \<Turnstile> \<kappa>'[\<Pi>']] \<and> (\<forall>\<kappa>\<^sub>0. [v \<Turnstile> [\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0] \<longrightarrow> (\<forall>w. [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>0]))\<close>
-    apply (rule_tac x=\<Pi>'' in exI)
-    by blast
+    by (safe intro!: exI[where x=\<Pi>'']) blast+
 qed
 end
 
@@ -917,7 +915,7 @@ next
     by (auto simp: AOT_sem_denotes AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def AOT_model_denotes_\<kappa>_def
                    AOT_enc_prod_def AOT_proj_enc_prod_def AOT_sem_conj AOT_model_denotes_prod_def)
   show \<open>\<exists>\<kappa>\<^sub>1\<kappa>\<^sub>n::'a\<times>'b. [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> (\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow>  [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]]) \<and> (\<forall> \<phi> . [v \<Turnstile> [\<lambda>z\<^sub>1...z\<^sub>n \<guillemotleft>\<phi> z\<^sub>1z\<^sub>n\<guillemotright>]\<down>] \<longrightarrow>  [v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>])\<close>
-    apply (rule_tac x=\<open>(\<kappa>,\<kappa>\<^sub>1'\<kappa>\<^sub>n')\<close> in exI) using 1 2 by blast
+    apply (rule exI[where x=\<open>(\<kappa>,\<kappa>\<^sub>1'\<kappa>\<^sub>n')\<close>]) using 1 2 by blast
 qed
 end
 

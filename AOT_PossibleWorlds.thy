@@ -378,7 +378,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TrivialSituation(\<
         AOT_have \<open>x[\<lambda>y p] \<equiv> \<exists>q [\<lambda>y p] = [\<lambda>y q]\<close> for p
           by (rule 1[unvarify F, where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]) cqt_2_lambda
         moreover AOT_have \<open>\<exists>q [\<lambda>y p] = [\<lambda>y q]\<close> for p
-          by (rule_tac \<beta>=p in "\<exists>I"(2))
+          by (rule "\<exists>I"(2)[where \<beta>=p])
              (simp add: "rule=I_1" prop_prop2_2)
         ultimately AOT_have \<open>x[\<lambda>y p]\<close> for p by (metis intro_elim_3_b)
         AOT_thus \<open>x \<Turnstile> p\<close> for p
@@ -653,7 +653,7 @@ proof -
 qed
 
 AOT_theorem actual_s_2: \<open>\<exists>s \<not>Actual(s)\<close>
-proof(rule_tac \<tau>="\<guillemotleft>\<^bold>s\<^sub>V\<guillemotright>" in "\<exists>I"(1); (rule "&I")?)
+proof(rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>\<^bold>s\<^sub>V\<guillemotright>\<close>]; (rule "&I")?)
   AOT_show \<open>Situation(\<^bold>s\<^sub>V)\<close>
     using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a df_null_trivial_2 null_triv_ac_4 by blast
 next
@@ -999,7 +999,7 @@ proof -
     ultimately AOT_show \<open>\<diamond>Actual(x) & \<not>\<diamond>Actual(x)\<close> by (rule "&I")
   qed
   show ?thesis
-    by(rule_tac \<beta>=x in "\<exists>I"(2); safe intro!: "&I" 2 s_sit cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1)
+    by(rule "\<exists>I"(2)[where \<beta>=x]; safe intro!: "&I" 2 s_sit cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1)
 qed
 
 (* TODO: PLM: all these use restricted variables, but also hold for arbitrary objects! *)
@@ -2569,7 +2569,7 @@ AOT_theorem rigid_der_3: \<open>\<exists>F Rigidifies(F, G)\<close>
 proof -
   AOT_obtain w where w: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
   show ?thesis
-  proof (rule_tac \<tau>="\<guillemotleft>[G]\<^sub>w\<guillemotright>" in "\<exists>I"(1))
+  proof (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[G]\<^sub>w\<guillemotright>\<close>])
     AOT_show \<open>Rigidifies([G]\<^sub>w, [G])\<close>
     proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF df_rigid_rel_2] "&I" GEN)
       AOT_show \<open>Rigid([G]\<^sub>w)\<close> using rigid_der_2 by blast (* TODO: PLM misses to apply to thereom in proof of A *)

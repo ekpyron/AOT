@@ -63,7 +63,7 @@ next
   AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-    by (rule_tac \<beta>=p in "\<exists>I"(2))
+    by (rule "\<exists>I"(2)[where \<beta>=p])
        (simp add: "rule=I_1" con_dis_i_e_1 oth_class_taut_3_a prop_prop2_2)
   ultimately AOT_have \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
@@ -93,7 +93,7 @@ next
   AOT_hence \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-    by (rule_tac \<beta>=p in "\<exists>I"(2))
+    by (rule "\<exists>I"(2)[where \<beta>=p])
        (simp add: "rule=I_1" con_dis_i_e_1 oth_class_taut_3_a prop_prop2_2)
   ultimately AOT_have \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
@@ -236,7 +236,7 @@ proof -
                      false_prop[THEN "&E"(1)] "\<or>I"(1) "\<exists>I"(1))
     AOT_show \<open>\<top>[\<lambda>y p]\<close>
       apply (rule true_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2])
-      apply (rule_tac \<beta>=p in "\<exists>I"(2))
+      apply (rule "\<exists>I"(2)[where \<beta>=p])
       by (simp add: "rule=I_1" con_dis_i_e_1 p prop_prop2_2)
   next
     AOT_show \<open>\<not>\<bottom>[\<lambda>y p]\<close>
@@ -260,7 +260,7 @@ proof -
   AOT_obtain p where p: p
     by (metis log_prop_prop_2 raa_cor_3 rule_ui_1 universal_cor)
   show ?thesis
-  proof(rule_tac \<beta>=a in "\<exists>I"(2); rule_tac \<beta>=b in "\<exists>I"(2); safe intro!: "&I" GEN "\<rightarrow>I")
+  proof(rule "\<exists>I"(2)[where \<beta>=a]; rule "\<exists>I"(2)[where \<beta>=b]; safe intro!: "&I" GEN "\<rightarrow>I")
     AOT_show \<open>TruthValue(a)\<close>
       using TV_lem2_1 a_prop vdash_properties_10 by blast
   next
@@ -270,7 +270,7 @@ proof -
     AOT_show \<open>a \<noteq> b\<close>
     proof(rule ab_obey_2[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF a_prop[THEN "&E"(1)], OF b_prop[THEN "&E"(1)], OF "\<or>I"(1)])
       AOT_show \<open>\<exists>F (a[F] & \<not>b[F])\<close>
-      proof(rule_tac \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>" in "\<exists>I"(1); rule "&I" prop_prop2_2)
+      proof(rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]; rule "&I" prop_prop2_2)
         AOT_show \<open>a[\<lambda>y p]\<close>
           by(safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2]
                           "\<exists>I"(2)[where \<beta>=p] "&I" p "rule=I_1"[OF prop_prop2_2])
