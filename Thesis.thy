@@ -489,7 +489,7 @@ specification (\<o>\<^sub>1_conj) \<comment> \<open>We specify our conjunction b
   \<o>\<^sub>1_conjI: \<open>valid_\<o>\<^sub>1 p \<Longrightarrow> valid_\<o>\<^sub>1 q \<Longrightarrow> valid_\<o>\<^sub>1 (p \<^bold>\<and> q)\<close>
 text\<open>We need to prove that there is a term satisfying the above specification. The natural choice is
      the lifted conjunction on the booleans.\<close>
-  by (rule_tac x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close>])
      (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
 
 text\<open>However, even though the identity of commuted conunctions not part of the @{command specification},
@@ -528,7 +528,7 @@ specification (\<o>\<^sub>2_conj) \<comment> \<open>We specify our conjunction b
   text\<open>We again need to prove the existence of a term satisfying the given specification.
        For this it is important that we axiomatized the extension function to be surjective,
        since otherwise there may not be an appropriate choice.\<close>
-  by (rule_tac x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close> in exI)
+  by (rule exI[where x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close>])
      (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
 
 text\<open>Now as a consequence of our specification, our conjunction is still commutative \emph{under validity}:\<close>
