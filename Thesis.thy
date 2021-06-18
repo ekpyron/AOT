@@ -14,18 +14,20 @@ to increase in the future, building up a sound reasoning environment from scratc
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isablle/HOL (TODO: cite).
 Furthermore, most of these systems have at least parts of their logical foundation in common,
-for example they are all based on some variation of functional type theory.
+for example they are all based on some variation of functional type theory (TODO: make sure this
+can actually be stated as such).
 
 On the other hand, there is still an ongoing debate about the most suitable logical system
 to be used for the foundations of mathematics (TODO: cite). While higher-order functional type
-theory is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink this point and the citation)
+theory is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink this point and the citation;
+also note e.g. the opposite statement \url{https://kwarc.info/people/frabe/Research/RI_isabelle_10.pdf})
 and set theory has long been a prime choice for a common denominator of mathematical disciplines
 (TODO: cite), its modern paradox free axiomatization following Zermelo-Fraenkel is often viewed as
 complex and counter-intuitive, respectively lacking in philosophical grounding and justification (TODO: cite).
 
 While there is prominent research into alternative foundational approaches (e.g. homotopy type
 theory; TODO: cite - maybe something else/more examples), a practical problem for such approaches
-and a pragmatic defense of set theory as foundation is the effort required in building up automated
+and a pragmatic defense of the use of set theory or HOL as foundation is the effort required in building up automated
 reasoning systems that are on par with the existing tools that are available for processing theories
 grounded in set theory or traditional higher-order type theory.
 
@@ -46,8 +48,9 @@ simultaneously arrived at a faithful representation of its model structure, sema
 deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.
 As a prime result, we can show that the construction of Natural Numbers described in Principia
 Logico-Metaphysica is verifiably sound. Furthermore, we can suggest the generalization of
-a specific additional axiom used for the derivation of Natural Numbers, that we believe strengthens
-the argument that the construction of Natural Numbers does not require any inherently mathematical axioms.
+an additional axiom required for the derivation of Natural Numbers, that we believe strengthens
+the argument that the construction of Natural Numbers in AOT does not require any inherently
+mathematical axioms.
 \<close>
 
 section\<open>Previous Work\<close>
@@ -98,11 +101,11 @@ of embedding modal operators based on their Kripke semantics (TODO cite). This a
 extensive analysis of G\"odel's ontological argument in second-order S5 modal logic (TODO cite), followed
 by a range of studies of similar ontological arguments (TODO cite). TODO: newer work by Benzm\"uller.
 
-The advantage of these studies using SSEs compared to the earlier use of Prover9 is that arguments
+The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
 proving environments are capable of automatically transforming statements into a suitable first-order
 representation on the fly to allow first-order theorem provers like E or SPASS (TODO: cite) to perform
-proof search much like Prover9 was able to do on a manually constructed first-order representation.
+proof search much like e.g. Prover9 was able to do on a manually constructed first-order representation.
 
 These studies were still mainly concerned with case studies of concrete arguments or
 with conservative extensions of higher-order logic like functional higher-order modal logic.
@@ -121,24 +124,25 @@ basis for previous work using SSE as mentioned above. While the so-called Aczel 
 (TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
-of statements of the at the time most recent formulation of AOT in Principia Logico-Metaphysica (PLM).
+of statements of the at the time most recent formulation of AOT in Principia Logico-Metaphysica (PLM) (TODO: cite).
 Furthermore, we introduced the new concept of \emph{abstraction layers}. An abstraction layer consists
 of a derivation of the axioms and deduction rules of a target system from a given semantics that is
 then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
-reasoning system is prevented from using the semantics for proofs, but instead configured to solely
+reasoning system is prevented from using the semantics for proofs, but is instead configured to solely
 rely on the derived axioms and deduction rules.
 Abstraction layers turned out to be a helpful means for reasoning within a target theory without
 the danger of deriving artifactual theories, even in the absence of a formal completeness result
 about the used semantics.
-Furthermore, it can be used to analyze soundness and completeness of the semantics itself.
+Furthermore, it can be used to analyze soundness and completeness of the semantics itself. (TODO: rethink; maybe
+reformulate differently)
 
 A major result of \cite{MScThesis} was the discovery of an oversight in the formulation of AOT that
 allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
-of the foundations of AOT which culminated in the extension of the free logic AOT to its relation
-terms as well, while previously it was restricted to its individual terms to account for non-denoting
-definite descriptions. This reworking of AOT was accompanied by a continuous further development of its
+of the foundations of AOT which culminated in the extension of the free logic of AOT to its relation
+terms as well, while previously it was restricted to its individual terms only (to account for non-denoting
+definite descriptions). This reworking of AOT was accompanied by a continuous further development of its
 embedding in Isabelle/HOL. This mutually beneficial mode of work was already partly described in
 (TODO cite Open Philosophy) and resulted in a now stabilized improved formulation of AOT and a
 matching embedding. The details of this process and its results are the main subject of this thesis. 
@@ -154,7 +158,8 @@ embedding of Abstract Object Theory in Isabelle/HOL while highlighting the contr
 of the embedding to the theory of abstract objects on the one hand and the techniques developed for
 its implementation on the other hand. Finally we present the results on Natural Numbers and
 discuss the issue of extending the current system to encompass the full higher-order
-type-theoretic version of Abstract Object Theory.
+type-theoretic version of Abstract Object Theory. TODO: explicitly mention the fact that the embedding
+deals with the second-order fragment only earlier and restate here.
 \<close>
 
 
@@ -165,7 +170,7 @@ text\<open>
 
 In computer science, deep and shallow embeddings have been a traditional means to implement domain-specific
 languages by embedding them into general-purpose host languages (see for example \cite{DomainSpecificLanguages}).
-A simple example is a language of \emph{expressions} that can be either integer constants, resp. literals
+A simple example is a language of \emph{expressions} that can be either integer constants, resp. literals,
 or the addition of two other expressions.
 If we consider Isabelle/HOL as the host language in this process, the following would constitute a
 \emph{deep} embedding of this language:
@@ -192,7 +197,10 @@ end
 text\<open>
 The deep embedding consists of a (usually recursive) algebraic datatype that captures the syntax of
 the language to be embedded. This syntax is then given a semantics by means of an evaluation function
-that traverses this algebraic datatype.
+that traverses this algebraic datatype.\footnote{In the setting of logical theories this evaluation
+function would usually depend on interpretations and assignment functions of a model. Since the simple
+language of expression used as example here neither involves constants nor variables, however, this is not
+necessary. TODO: rethink.}
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
 by its semantics. In our example, the semantic domain of expressions is the integers. On this domain,
 the operations are then \emph{defined} directly by means of their semantics:
@@ -227,7 +235,8 @@ in the deep embedding, namely \emph{int} in the example.
 
 There is a natural correspondence between the deep and shallow representations of this
 language. In particular @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
-@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold\footnote{TODO: Explain qualified names.}.
+@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold\footnote{TODO: Explain
+qualified names; mention that this gets more complex when involving interpretation and assignment functions.}.
 So the semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representation. For example, in the
 deep embedding adding \emph{x} to \emph{y} results in an expression that is different from adding
@@ -241,7 +250,8 @@ In contrast, commuted additions are identical in the shallow embedding:
 @{thm[show_question_marks = false, names_short = false, display = true] Shallow.CommutativeAdditionIdentity}
 
 In fact, the shallow embedding can be thought of as a \emph{quotient} of the deep embedding under
-semantic evaluation. TODO: something formal about this?
+semantic evaluation. TODO: something formal about this? Or rather instead refer to the section
+about models and embeddings?
 
 While there are several advantages and disadvantages of using shallow vs. deep embeddings for
 Domain-Specific languages, we forgo a detailed discussion of them here (TODO: maybe citation?) and
@@ -258,13 +268,13 @@ High-level concept and motivation here versus more technical details in the foll
 
 \<close>
 
-section\<open>SSE of Quantified Higher-Order Modal Logic\<close>
+section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>
 text\<open>
 
 An examples of a non-classical logic that is used prominently in metaphysics is Quantified Higher-Order
 Modal Logic in various different axiomatizations. While there have been extensive studies of
 modal logics using SSEs in Isabelle/HOL (see: TODO: cite a good paper about QML in Isabelle/HOL
-maybe: http://page.mi.fu-berlin.de/cbenzmueller/papers/C47%2Epdf or similar), we restrict ourselves
+maybe: \url{http://page.mi.fu-berlin.de/cbenzmueller/papers/C47.pdf} or similar), we restrict ourselves
 to the discussion of a simple embedding of S5 modal logic to further illustrate the general
 concept of SSEs.
 \<close>
@@ -292,7 +302,7 @@ text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula \emph{being satisfied at} a possible world. So the semantic domain of
 propositions is boolean-valued functions acting on (or, equivalently, sets of) possible worlds.
-In a SSE we use the semantic domains as type for the formulas themselves, so we can introduce
+In an SSE we use the semantic domains as type for the formulas themselves, so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
 world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.
@@ -301,11 +311,14 @@ world, yielding @{term True}, if the proposition is true at that world or @{term
 type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
 
 text\<open>
-A proposition is \emph{valid} in case it is satisfied in all worlds.
+A proposition is \emph{valid} in case it is satisfied in all worlds.\footnote{The specification
+in parentheses after the type @{typ \<open>\<o> \<Rightarrow> bool\<close>} is \emph{mixfix notation} used to introduce
+the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid}. The ability to
+introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.}
 \<close>
 
 definition valid :: \<open>\<o> \<Rightarrow> bool\<close> (\<open>\<Turnstile> _\<close> 100) where
-  \<open>valid p \<equiv> \<forall> w . p w\<close>
+  \<open>\<Turnstile> p \<equiv> \<forall> w . p w\<close>
 
 text\<open>Now the classical logical operators can be defined as follows (note the bold print for the
 defined operators versus the non-bold print of the corresponding operators of the meta-logic):\<close>
@@ -337,6 +350,7 @@ lemma 5: \<open>\<Turnstile> \<^bold>\<diamond>p \<^bold>\<rightarrow> \<^bold>\
   by (auto simp: box_def dia_def imp_def valid_def)
 
 text\<open>The proofs of both axioms are automatically found by @{command sledgehammer} (TODO cite?).
+
 So far we have constructed an embedding of propositional S5 modal logic. However it is straightforward
 to enrich it with quantification.
 \<close>
@@ -347,7 +361,7 @@ definition exists :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (
   \<open>\<^bold>\<exists> x . \<phi> x \<equiv> \<lambda>w . \<exists> x . \<phi> x w\<close>
 
 text\<open>Note that we didn't have to introduce any particular type for individuals, but stated the
-definitions polymorphically relative to a type variable @{typ 'a}. This way the same quantifier
+polymorphic definitions relative to a type variable @{typ 'a}. This way the same quantifier
 can be used for propositions themselves, any desired type for individuals or even properties of
 any order.
 
@@ -367,7 +381,7 @@ text\<open>
 However, note that the automatic proofs again unfold the semantic definitions. We have shown that
 the Barcan formulas are valid in the constructed embedding, but from the proofs we cannot tell
 which axioms are required for proving them.\footnote{As a matter of fact we did not even state any
-axioms governing implications nor quantifiers.}
+axioms governing implications or quantifiers in the embedded logic.}
 
 Depending on the application, it can be enough to be able to tell if a theorem is semantically
 valid or if a statement semantically follows from a set of assumptions. However, for the purpose
@@ -432,6 +446,7 @@ some challenges. While the equational theorems introduced by simple @{command de
 easily be collected and marked, other more advanced constructions in Isabelle like type definitions
 or the @{command lift_definition}s (TODO: cite) introduce several theorems implicitly. While
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
+TODO: cite sledgehammer user guide section 6.1.
 
 On the other hand, it is not possible to simply exclude \emph{all} theorems that were defined
 up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
@@ -449,12 +464,12 @@ the earlier version in \cite{MScThesis}.
 
 \<close>
 
-section\<open>Limitations of Isabelle's Native Abstraction Mechanisms\<close>
+section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>
 
 text\<open>
 TODO: reformulate along the lines of "While for the purpose above constructing a minimal model
 would suffice, there are several reasons to..." plus "to that end we use Isabelle's abstraction mechanisms..."
-plus "However, the use of these mechanisms in turn is not sufficent to provide the same assurances as
+plus "However, the use of these mechanisms in turn is not sufficient to provide the same assurances as
 abstraction layers, respectively cannot sufficiently deal with polymorphic assumptions, etc.".
 Also: explain rationale of being able to judge extensions of the system with new axioms and
 using @{command nitpick}.
@@ -474,6 +489,7 @@ To illustrate this issue, we showcase the construction of a hyperintensional log
 that @{term \<open>(p \<and> q) = (q \<and> p)\<close>}.
 We first show a construction that will fail due to a choice of representation types that
 implies extensionality:
+(TODO: consider moving these sections to different theory files to get rid of the subscripts)
 \<close>
 
 typedef \<o>\<^sub>1 = \<open>UNIV::bool set\<close>.. \<comment> \<open>Introduce a type of propositions @{typ \<o>\<^sub>1} as a copy of the type of booleans.\<close>
@@ -579,13 +595,39 @@ no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 
 text\<open>TODO: explain limitations wrt polymorphic constants; move on to type classes and locales.\<close>
 
-section\<open>Reproducing the Syntax of the Target Theory\<close>
+
+section\<open>Implicit Interpretation and Assignment Function in SSEs\<close>
+
+text\<open>TODO: This section will be important and will need a lot of care. Current plan:
+
+Propose a simplified general model of Isabelle/HOL with domains for types, interpretations
+of constants and variable assignments.
+
+Similarly, describe a model of higher-order S5 modal logic.
+
+Show that the substructure of the embedding with the defined validity is equivalent to
+validity in the model of S5 modal logic.
+
+Thereby explain that the SSE does not need interpretation and assignment functions, if the representation
+types in the embedding are chosen general enough, s.t. any domain in any S5 model is covered, and
+restrictions of the interpretation and assignment functions of the HOL model to the domains of a given S5 model
+cover all interpretations and assignment functions of any S5 model.
+
+Note that the part of the S5 models that remains implicit in the embedding is solely possible worlds.
+
+Describe the problem with defining validity in the embedding using quantification over all worlds,
+which prevents reasoning relative to an arbitrary but fixed world.
+
+Hint at the syntactic solution to this issue that avoids having to manage these arbitrary but fixed
+worlds - this might be described in the next section or in a section about the embedding of AOT.
+\<close>
+
+section\<open>Reproducing the Syntax of the Target Theory\<close>text\<open>\label{SSESyntax}\<close>
 
 text\<open>
 To achieve the goal of constructing a custom theorem proving environment for a new theory by the
 means of an embedding, the primary concern is achieving a faithful representation of its axioms
-and deductive system and to be able to faithfully reproduce the reasoning in the embedded system
-on top of this representation.
+and deductive system and, thereby, to be able to faithfully reproduce reasoning in the embedded system.
 
 However, for the embedding to be of actual practical use, it is equally important that the
 resulting representation is readable and, ideally, that a person that is familiar with the
@@ -593,8 +635,109 @@ embedded theory, but has limited expertise in the particularities of the meta-lo
 in which the theory is embedded, can still use the embedding to reason in the target system
 without a steep learning curve.
 
-Isabelle's \emph{Isar} (\emph{Intelligible semi-automated reasoning}) language
+Isabelle's \emph{Isar} (\emph{Intelligible semi-automated reasoning}) language itself is, as the
+name suggests, specifically tailored towards being readable (TODO: cite isar-ref).
+Isar makes up the \emph{outer syntax} of an Isabelle theory file and consists of commands that
+specify theorems and structured proofs acting on Isabelle's system of terms and types, which are
+formulated in \emph{inner syntax}.
+\emph{Inner syntax} is highly customizable. In the examples in the previous sections we already
+made use of the ability to define new (bold) operators using \emph{mixfix} notation (TODO cite).
+However, we only used the mechanism to provide symbols to be used inside the grammar tree of
+Isabelle/HOL's own term structure.
+In general Isabelle's inner syntax is described by a context-free priority grammar.
+It consists of a set of \emph{terminal symbols}, an extensible set of
+\emph{non-terminal symbols} and a set of \emph{productions} (TODO cite: isar-ref 8.4).
+For the purpose of embedding the syntax of a target theory during the construction of SSEs, it
+stands to reason to use the defined validity as root for the grammar subtree of the embedded
+language.
 
+Reusing the example of the simple modal logic in section~\ref{SimpleS5}, this can be done as follows:
+\<close>
+
+type_synonym \<o>\<^sub>3 = \<open>w \<Rightarrow> bool\<close>
+
+text\<open>This time we do not use mixfix notation to directly introduce syntax for the validity context.\<close>
+definition valid_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> bool\<close> where \<open>valid_\<o>\<^sub>3 p \<equiv> \<forall> w . p w\<close>
+
+text\<open>Instead, we introduce a @{command nonterminal} as grammar root for the syntax of the embedded language.
+     The nonterminal then serves as the purely syntactic type for propositions in the grammar of our
+     sub-language.\<close>
+nonterminal prop\<o>\<^sub>3 
+text\<open>The nonterminal can be used as (purely syntactic) type in @{command syntax} definitions.\<close>
+syntax valid_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> bool\<close>  (\<open>\<Turnstile> _\<close> 1)
+
+text\<open>Furthermore we need to specify how propositions can be produced from terminals in the grammar.
+We want to use simple identifiers to refer to proposition variables. To that end we introduce a
+\emph{copy-production} rule (a rule that is not tied to a constant). The terminal
+@{typ id_position} is used for identifiers with additional markup information (TODO: reference and cite PIDE markup).
+\<close>
+syntax "" :: \<open>id_position \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>_\<close>)
+
+text\<open>Now we can already construct a simple term in our new syntax:\<close>
+term \<open>\<Turnstile> p\<close>
+
+text\<open>Since we introduce an entirely new grammar subtree that is independent of the usual HOL inner syntax,
+we can now reuse the same symbols for logical connectives as used in HOL (compared to having to use
+bold versions in the previous section).
+We first define the connectives without syntax (here the symbols refer to connectives and operators
+in the language of HOL):
+\<close>
+
+definition not_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>not_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<not>p w\<close>
+definition imp_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>imp_\<o>\<^sub>3 p q \<equiv> \<lambda>w . p w \<longrightarrow> q w\<close>
+definition conj_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>conj_\<o>\<^sub>3 p q \<equiv> \<lambda>w . p w \<and> q w\<close>
+definition disj_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>disj_\<o>\<^sub>3 p q \<equiv> \<lambda>w . p w \<or> q w\<close>
+definition box_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>box_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<forall>v . p v\<close>
+definition dia_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>dia_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<exists>v . p v\<close>
+
+text\<open>And then define syntax for them in our grammar subtree. We can reuse the same symbols
+used in the syntax of HOL, since they will apply only be used for parsing the sublanguage, i.e.
+terms behind the marker @{text \<Turnstile>} introduced above.\<close>
+
+syntax not_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>\<not>_\<close> [40] 40)
+syntax imp_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (infixl \<open>\<longrightarrow>\<close> 25)
+syntax conj_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (infixl \<open>\<and>\<close> 35)
+syntax disj_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (infixl \<open>\<or>\<close> 30)
+syntax box_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>\<box>_\<close> [50] 50)
+syntax dia_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>\<diamond>_\<close> [50] 50)
+
+text\<open>Now we can start to produce complex terms in our new syntax:\<close>
+term \<open>\<Turnstile> \<box>p \<longrightarrow> q \<or> \<diamond>r\<close>
+
+text\<open>However, it is noteworthy that, since the introduced grammar subtree is independent of the
+usual HOL grammar, a lot of details need to be considered. For example, without further work it is
+not possible to specify the types of terms in our grammar sub-tree.
+For that to work the @{text \<open>::\<close>} syntax would need to be reintroduced, which involves becoming
+more familiar with Isabelle's internals like the purely syntactic constant @{text \<open>_constrain\<close>}
+(TODO: cite isar-ref 8.5.4). TODO: hint at the fact that only scarce documentation is available
+for any of this and this usually involves reading through the theory files of Isabelle/Pure
+and/or Isabelle/HOL as reference.
+
+As a simpler example, we also need to introduce parentheses explicitly in our grammar subtree:\<close>
+
+syntax "" :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>'(_')\<close>)
+term \<open>\<Turnstile> p \<and> (\<diamond>q \<longrightarrow> p)\<close> \<comment> \<open>Without the above this would not parse.\<close>
+
+text\<open>Note that it is still possible to mix the usual HOL syntax with our newly defined subgrammar
+to argue about validity:\<close>
+
+lemma \<open>(\<Turnstile> \<diamond>p \<longrightarrow> q) \<longrightarrow> (\<not>(\<Turnstile> p) \<or> (\<Turnstile> q))\<close>
+  using dia_\<o>\<^sub>3_def imp_\<o>\<^sub>3_def valid_\<o>\<^sub>3_def by auto
+
+text\<open>Note that in the above the left-most implication is the implication of the embedded logic,
+while the other logical connectives are the ones of the meta-logic (i.e. of HOL).
+
+While the mechanisms described above are sufficient to introduce an accurate representation
+of the syntax of most target theories that are compatible with the lexical syntax of
+Isabelle/Pure\footnote{Note that \emph{Abstract Object Theory} does not fall into this category
+and requires additional and more complex means to arrive at a good approximation of its syntax as
+described in (TODO: refer to later section.).}, \emph{reasoning} in the logic of the target theory
+entails additional challenges (TODO: refer to last section - in particular reasoning relative to
+a fixed but arbitrary possible world and the need to mention this world syntactically).
+
+Chapter~\ref{SSEofAOT} describes these challenges in more detail and presents the
+embedding of Abstract Object Theory in Isabelle/HOL as an example of a successful,
+albeit technically complex, solution. TODO: adjust references.
 \<close>
 
 chapter\<open>Abstract Object Theory\<close>
@@ -624,7 +767,13 @@ section\<open>Examples of Applications\<close>
 
 section\<open>Implications for the Philosophy of Mathematics\<close>
 
-chapter\<open>SSE of AOT in Isabelle/HOL\<close>
+text\<open>
+TODO: Mention the use of higher-order AOT as logical meta-theory to argue for
+logicism. Refer to the derivation of Natural Numbers claiming to be a "purely logical" derivation
+in constract to a construction e.g. based on ZFC.
+\<close>
+
+chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<close>
 
 text\<open>
 
