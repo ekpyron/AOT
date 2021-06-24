@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM
+  imports AOT_PLM "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar"
 begin
 (*>*)
 
@@ -728,10 +728,10 @@ text\<open>Note that in the above the left-most implication is the implication o
 while the other logical connectives are the ones of the meta-logic (i.e. of HOL).
 
 While the mechanisms described above are sufficient to introduce an accurate representation
-of the syntax of most target theories that are compatible with the lexical syntax of
-Isabelle/Pure\footnote{Note that \emph{Abstract Object Theory} does not fall into this category
+of the syntax of most target theories\footnote{Note that \emph{Abstract Object Theory} does not fall into this category
 and requires additional and more complex means to arrive at a good approximation of its syntax as
-described in (TODO: refer to later section.).}, \emph{reasoning} in the logic of the target theory
+described in (TODO: refer to later section.).} that are compatible with the lexical syntax of
+Isabelle/Pure, \emph{reasoning} in the logic of the target theory
 entails additional challenges (TODO: refer to last section - in particular reasoning relative to
 a fixed but arbitrary possible world and the need to mention this world syntactically).
 
@@ -742,12 +742,105 @@ albeit technically complex, solution. TODO: adjust references.
 
 chapter\<open>Abstract Object Theory\<close>
 
-section\<open>Overview and Motivation\<close>
+section\<open>Overview\<close>
 
 text\<open>
 
 Abstract Object Theory (AOT or \emph{object theory}) is a meta-physical theory inspired by ideas of
 Ernst Mally and formalized by Edward Zalta. 
+While the theory has been evolving for decades (see TODO: cite), its most recent canonical
+presentation is given in \emph{Principia Logico-Metaphysica} (PLM), which is continuously
+developed further and the most recent version of which can be accessed as online monograph (TODO cite).
+
+TODO: the following is pretty much the section of the Review of Symbolic Logic Paper.
+
+AOT draws two fundamental distinctions, one between \emph{abstract} and
+\emph{ordinary} objects, and one between two modes of predication, namely,
+classical \emph{exemplification}  ($[F^1]x$, or more generally, $[F^n]x_1\ldots x_n$) and
+\emph{encoding} ($x[F^1]$).\footnote{Note that we use additional square brackets around any property term.
+This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
+In AOT's usual notation these square brackets would be omitted, i.e. exemplification would be written as
+$F^nx_1\ldots x_n$ and encoding as $xF^1$.} The variables $x,y,z,\ldots$ range over both ordinary and
+abstract objects and we can distinguish claims about these two kinds of objects by using the exemplification 
+predications $[O!]x$ or $[A!]x$ to assert, respectively, that $x$ exemplifies \emph{being ordinary} or
+$x$ exemplifies \emph{being abstract}. Whereas ordinary objects are characterized only by the
+properties they exemplify, abstract objects may be characterized by
+both the properties they exemplify and the properties they encode. But
+only the latter play a role in their identity conditions:
+$A!x \:\&\: A!y \to \allowbreak (x\! =\! y \equiv \Box \forall F(xF \equiv yF))$, i.e,
+abstract objects are  identical if and only if they necessarily
+encode the same properties. The identity for ordinary objects on the other hand is
+classical: $O!x \:\&\: O!y \to \allowbreak (x\! =\! y \equiv \Box \forall F(Fx \equiv Fy))$, i.e.,
+ordinary objects $x$ and $y$ are identical if and only if they necessarily exemplify the same properties.
+It is axiomatic that ordinary objects necessarily fail to encode properties ($O!x \to \Box \neg \exists FxF)$,
+and so only abstract objects can be the subject of true encoding predications.
+For example, whereas Pinkerton (a real American detective) exemplifies being a detective and
+all his other properties (and doesn't encode any properties), Sherlock Holmes encodes
+\emph{being a detective} (and all the other properties attributed to him in the novels),
+but doesn't exemplify \emph{being a detective}. Holmes, on the other hand, intuitively exemplifies
+being a fictional character (but doesn't encode this property) and exemplifies any property necessarily
+implied by \emph{being abstract} (e.g., he exemplifies \emph{not having a mass}, \emph{not having a shape}, etc.).
+\footnote{He encodes \emph{having a mass}, \emph{having a shape}, etc., since these 
+are properties attributed to him, at least implicitly, in the story.
+As an abstract object, however, he does \emph{not} exemplify these properties,
+and so exemplifies their negations.}
+
+The key axiom of AOT is the comprehension principle for abstract
+objects. It asserts, for every expressible condition on properties (i.e.,
+for every expressible set of properties), that there exists
+an abstract object that encodes exactly the properties that satisfy the
+condition; formally:
+
+@{thm a_objects[axiom_inst, of _ \<phi>, print_as_theorem]}
+
+Test:
+
+\begin{itemize}
+  \item[] $\exists x(A!x \;\&\;\allowbreak \forall F (xF
+\equiv\allowbreak \phi))$,\end{itemize}
+%
+where $\phi$ is any condition on $F$ in which  $x$ doesn't occur free. Therefore, abstract objects can be modeled as elements
+of the power set of properties: every abstract object uniquely
+corresponds to a specific set of properties.
+
+Given this basic theory of abstract objects, AOT can elegantly define
+a wide variety of objects that have been postulated in philosophy or
+presupposed in the sciences, including Leibnizian concepts, Platonic
+forms, possible worlds, natural numbers, logically-defined sets, etc.
+
+Another interesting aspect of the theory is its hyperintensionality.
+Relation identity is defined in terms of encoding rather than
+in terms of exemplification. Two properties $F$ and $G$ are stipulated to be identical if they are
+necessarily \emph{encoded} by the same abstract objects (\mbox{$F\! =\! G \equiv \Box \forall x(xF \equiv xG)$}).  However, the theory does not impose
+any restrictions on the properties encoded by a particular abstract
+object. For example, the fact that an abstract object encodes the
+property $[\lambda x\, Fx\; \&\; Gx]$ does not imply that
+it also encodes either the property $F$, or $G$ or even $[\lambda x\, Gx\; \&\; Fx]$ (which, although extensionally equivalent to $[\lambda x\, Fx\; \&\; Gx]$, is a distinct intensional entity).
+
+Therefore, without additional axioms, pairs of materially equivalent
+properties (in the exemplification sense), and even necessarily equivalent properties, are not forced
+to be identical. This is a key aspect of the theory that makes it
+possible to represent the contents of human thought much more
+accurately than classical exemplification logic would allow.  For instance, the
+properties \emph{being a creature with a heart} and \emph{being a
+  creature with a kidney} may be regarded as distinct properties
+despite the fact that they are extensionally equivalent.  And \emph{being a barber
+  who shaves all and only those persons who don't shave themselves}
+and \emph{being a set of all those sets that aren't members of
+  themselves} may be regarded as distinct properties, although they
+are necessarily equivalent (both necessarily fail to be exemplified).
+
+A full description of the theory goes beyond the scope of this paper,
+but detailed descriptions are available in two books \cite{zalta1983abstract,zalta1988intensional} and
+various papers by Zalta.  A
+regularly updated, online monograph titled \emph{Principia
+  Logico-Metaphysica} (\cite{PM}) contains the latest
+formulation of the theory and serves to compile, in one location, both new theorems and theorems from many of the published books and papers.
+The mechanization described below follows the presentation of AOT in PLM.
+
+The complexity and versatility of AOT, as well as its
+philosophical ambitions, make it an ideal candidate to test the
+universality of the SSE approach.  However, recent work \cite{rtt} has posed a challenge for any embedding of AOT in functional type theory. In the next section, we briefly discuss this challenge.
 
 \<close>
 
