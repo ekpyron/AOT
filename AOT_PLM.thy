@@ -1196,87 +1196,87 @@ qed
 
 lemmas "=\<^sub>d\<^sub>fI" = "rule-id-def:2:b" "rule-id-def:2:b[zero]"
 
-AOT_theorem free_thms_1: \<open>\<tau>\<down> \<equiv> \<exists>\<beta> (\<beta> = \<tau>)\<close>
+AOT_theorem "free-thms:1": \<open>\<tau>\<down> \<equiv> \<exists>\<beta> (\<beta> = \<tau>)\<close>
   by (metis "\<exists>E" "rule=I:1" "t=t-proper:2" "\<rightarrow>I" "\<exists>I"(1) "\<equiv>I" "\<rightarrow>E")
 
-AOT_theorem free_thms_2: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<exists>\<beta> (\<beta> = \<tau>) \<rightarrow> \<phi>{\<tau>})\<close>
+AOT_theorem "free-thms:2": \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<exists>\<beta> (\<beta> = \<tau>) \<rightarrow> \<phi>{\<tau>})\<close>
   by (metis "\<exists>E" "rule=E" "cqt:2[const_var]"[axiom_inst] "\<rightarrow>I" "\<forall>E"(1))
 
-AOT_theorem free_thms_3_a: \<open>\<exists>\<beta> (\<beta> = \<alpha>)\<close>
+AOT_theorem "free-thms:3[const_var]": \<open>\<exists>\<beta> (\<beta> = \<alpha>)\<close>
   by (meson "\<exists>I"(2) "id-eq:1")
 
-AOT_theorem free_thms_3_b: assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close> shows \<open>\<exists>\<beta> (\<beta> = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}])\<close>
+AOT_theorem "free-thms:3[lambda]": assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close> shows \<open>\<exists>\<beta> (\<beta> = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}])\<close>
   by (meson "=I"(3) assms "cqt:2[lambda]"[axiom_inst] "existential:1")
 
-AOT_theorem free_thms_4_a: \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+AOT_theorem "free-thms:4[rel]": \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
   by (metis "rule=I:1" "&E"(1) "\<or>E"(1) "cqt:5:a"[axiom_inst] "cqt:5:b"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
 
 (* TODO: this is a rather weird way to formulate this and we don't have tuple-existential-elimination
          or tuple-equality-elimination in the theory... Splitting them is also a bit unfortunate, though.*)
-AOT_theorem free_thms_4_b: \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta>\<^sub>1...\<exists>\<beta>\<^sub>n (\<beta>\<^sub>1...\<beta>\<^sub>n = \<kappa>\<^sub>1...\<kappa>\<^sub>n)\<close>
+AOT_theorem "free-thms:4[vars]": \<open>([\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<or> \<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>]) \<rightarrow> \<exists>\<beta>\<^sub>1...\<exists>\<beta>\<^sub>n (\<beta>\<^sub>1...\<beta>\<^sub>n = \<kappa>\<^sub>1...\<kappa>\<^sub>n)\<close>
   by (metis "rule=I:1" "&E"(2) "\<or>E"(1) "cqt:5:a"[axiom_inst] "cqt:5:b"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
 
-AOT_theorem free_thms_4_b_1_0: \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+AOT_theorem "free-thms:4[1,rel]": \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
   by (metis "rule=I:1" "&E"(1) "\<or>E"(1) "cqt:5:a"[axiom_inst] "cqt:5:b"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_1_1: \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>)\<close>
+AOT_theorem "free-thms:4[1,1]": \<open>([\<Pi>]\<kappa> \<or> \<kappa>[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>)\<close>
   by (metis "rule=I:1" "&E"(2) "\<or>E"(1) "cqt:5:a"[axiom_inst] "cqt:5:b"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
 
-AOT_theorem free_thms_4_b_2_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+AOT_theorem "free-thms:4[2,rel]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
   by (metis "rule=I:1" "&E"(1) "\<or>E"(1) "cqt:5:a[2]"[axiom_inst] "cqt:5:b[2]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_2_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+AOT_theorem "free-thms:4[2,1]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[2]"[axiom_inst] "cqt:5:b[2]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_2_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+AOT_theorem "free-thms:4[2,2]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
   by (metis "rule=I:1" "&E"(2) "\<or>E"(1) "cqt:5:a[2]"[axiom_inst] "cqt:5:b[2]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_3_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+AOT_theorem "free-thms:4[3,rel]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
   by (metis "rule=I:1" "&E"(1) "\<or>E"(1) "cqt:5:a[3]"[axiom_inst] "cqt:5:b[3]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_3_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+AOT_theorem "free-thms:4[3,1]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[3]"[axiom_inst] "cqt:5:b[3]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_3_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+AOT_theorem "free-thms:4[3,2]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[3]"[axiom_inst] "cqt:5:b[3]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_3_3: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
+AOT_theorem "free-thms:4[3,3]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
   by (metis "rule=I:1" "&E"(2) "\<or>E"(1) "cqt:5:a[3]"[axiom_inst] "cqt:5:b[3]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_4_0: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
+AOT_theorem "free-thms:4[4,rel]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<Pi>)\<close>
   by (metis "rule=I:1" "&E"(1) "\<or>E"(1) "cqt:5:a[4]"[axiom_inst] "cqt:5:b[4]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_4_1: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
+AOT_theorem "free-thms:4[4,1]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>1)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[4]"[axiom_inst] "cqt:5:b[4]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_4_2: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
+AOT_theorem "free-thms:4[4,2]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>2)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[4]"[axiom_inst] "cqt:5:b[4]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_4_3: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
+AOT_theorem "free-thms:4[4,3]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>3)\<close>
   by (metis "rule=I:1" "&E" "\<or>E"(1) "cqt:5:a[4]"[axiom_inst] "cqt:5:b[4]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
-AOT_theorem free_thms_4_b_4_4: \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>4)\<close>
+AOT_theorem "free-thms:4[4,4]": \<open>([\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<or> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>]) \<rightarrow> \<exists>\<beta> (\<beta> = \<kappa>\<^sub>4)\<close>
   by (metis "rule=I:1" "&E"(2) "\<or>E"(1) "cqt:5:a[4]"[axiom_inst] "cqt:5:b[4]"[axiom_inst] "\<rightarrow>I" "\<exists>I"(1))
 
-AOT_theorem ex_1_a: \<open>\<forall>\<alpha> \<alpha>\<down>\<close>
+AOT_theorem "ex:1:a": \<open>\<forall>\<alpha> \<alpha>\<down>\<close>
   by (rule GEN) (fact "cqt:2[const_var]"[axiom_inst])
-AOT_theorem ex_1_b: \<open>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
-  by (rule GEN) (fact free_thms_3_a)
+AOT_theorem "ex:1:b": \<open>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule GEN) (fact "free-thms:3[const_var]")
 
-AOT_theorem ex_2_a: \<open>\<box>\<alpha>\<down>\<close>
+AOT_theorem "ex:2:a": \<open>\<box>\<alpha>\<down>\<close>
   by (rule RN) (fact "cqt:2[const_var]"[axiom_inst])
-AOT_theorem ex_2_b: \<open>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
-  by (rule RN) (fact free_thms_3_a)
+AOT_theorem "ex:2:b": \<open>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (fact "free-thms:3[const_var]")
 
-AOT_theorem ex_3_a: \<open>\<box>\<forall>\<alpha> \<alpha>\<down>\<close>
-  by (rule RN) (fact ex_1_a)
-AOT_theorem ex_3_b: \<open>\<box>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
-  by (rule RN) (fact ex_1_b)
+AOT_theorem "ex:3:a": \<open>\<box>\<forall>\<alpha> \<alpha>\<down>\<close>
+  by (rule RN) (fact "ex:1:a")
+AOT_theorem "ex:3:b": \<open>\<box>\<forall>\<alpha>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (fact "ex:1:b")
 
-AOT_theorem ex_4_a: \<open>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
+AOT_theorem "ex:4:a": \<open>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
   by (rule GEN; rule RN) (fact "cqt:2[const_var]"[axiom_inst])
-AOT_theorem ex_4_b: \<open>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
-  by (rule GEN; rule RN) (fact free_thms_3_a)
+AOT_theorem "ex:4:b": \<open>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule GEN; rule RN) (fact "free-thms:3[const_var]")
 
-AOT_theorem ex_5_a: \<open>\<box>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
-  by (rule RN) (simp add: ex_4_a)
-AOT_theorem ex_5_b: \<open>\<box>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
-  by (rule RN) (simp add: ex_4_b)
+AOT_theorem "ex:5:a": \<open>\<box>\<forall>\<alpha> \<box>\<alpha>\<down>\<close>
+  by (rule RN) (simp add: "ex:4:a")
+AOT_theorem "ex:5:b": \<open>\<box>\<forall>\<alpha>\<box>\<exists>\<beta>(\<beta> = \<alpha>)\<close>
+  by (rule RN) (simp add: "ex:4:b")
 
-AOT_theorem "all-self=_1": \<open>\<box>\<forall>\<alpha>(\<alpha> = \<alpha>)\<close>
+AOT_theorem "all-self=:1": \<open>\<box>\<forall>\<alpha>(\<alpha> = \<alpha>)\<close>
   by (rule RN; rule GEN) (fact "id-eq:1")
-AOT_theorem "all-self=_2": \<open>\<forall>\<alpha>\<box>(\<alpha> = \<alpha>)\<close>
+AOT_theorem "all-self=:2": \<open>\<forall>\<alpha>\<box>(\<alpha> = \<alpha>)\<close>
   by (rule GEN; rule RN) (fact "id-eq:1")
 
-AOT_theorem id_nec_1: \<open>\<alpha> = \<beta> \<rightarrow> \<box>(\<alpha> = \<beta>)\<close>
+AOT_theorem "id-nec:1": \<open>\<alpha> = \<beta> \<rightarrow> \<box>(\<alpha> = \<beta>)\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<alpha> = \<beta>\<close>
   moreover AOT_have \<open>\<box>(\<alpha> = \<alpha>)\<close>
@@ -1284,17 +1284,17 @@ proof(rule "\<rightarrow>I")
   ultimately AOT_show \<open>\<box>(\<alpha> = \<beta>)\<close> using "=E" by fast
 qed
 
-AOT_theorem id_nec_2: \<open>\<tau> = \<sigma> \<rightarrow> \<box>(\<tau> = \<sigma>)\<close>
+AOT_theorem "id-nec:2": \<open>\<tau> = \<sigma> \<rightarrow> \<box>(\<tau> = \<sigma>)\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume asm: \<open>\<tau> = \<sigma>\<close>
   moreover AOT_have \<open>\<tau>\<down>\<close>
     using calculation "t=t-proper:1" "\<rightarrow>E" by blast
   moreover AOT_have \<open>\<box>(\<tau> = \<tau>)\<close>
-    using calculation "all-self=_2" "\<forall>E"(1) by blast
+    using calculation "all-self=:2" "\<forall>E"(1) by blast
   ultimately AOT_show \<open>\<box>(\<tau> = \<sigma>)\<close> using "=E" by fast
 qed
 
-AOT_theorem term_out_1: \<open>\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
+AOT_theorem "term-out:1": \<open>\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume asm: \<open>\<phi>{\<alpha>}\<close>
   AOT_show \<open>\<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>})\<close>
@@ -1308,17 +1308,17 @@ next
   AOT_thus \<open>\<phi>{\<alpha>}\<close> using "&E" "=E" by blast
 qed
 
-AOT_theorem term_out_2: \<open>\<tau>\<down> \<rightarrow> (\<phi>{\<tau>} \<equiv> \<exists>\<alpha>(\<alpha> = \<tau> & \<phi>{\<alpha>}))\<close>
+AOT_theorem "term-out:2": \<open>\<tau>\<down> \<rightarrow> (\<phi>{\<tau>} \<equiv> \<exists>\<alpha>(\<alpha> = \<tau> & \<phi>{\<alpha>}))\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<tau>\<down>\<close>
   moreover AOT_have \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<equiv> \<exists>\<beta> (\<beta> = \<alpha> & \<phi>{\<beta>}))\<close>
-    by (rule GEN) (fact term_out_1)
+    by (rule GEN) (fact "term-out:1")
   ultimately AOT_show \<open>\<phi>{\<tau>} \<equiv> \<exists>\<alpha>(\<alpha> = \<tau> & \<phi>{\<alpha>})\<close>
     using "\<forall>E" by blast
 qed
 
 (* TODO: example of an apply-style proof. Keep or reformulate? *)
-AOT_theorem term_out_3: \<open>(\<phi>{\<alpha>} & \<forall>\<beta>(\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)) \<equiv> \<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+AOT_theorem "term-out:3": \<open>(\<phi>{\<alpha>} & \<forall>\<beta>(\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)) \<equiv> \<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
   apply (rule "\<equiv>I"; rule "\<rightarrow>I")
    apply (frule "&E"(1)) apply (drule "&E"(2))
    apply (rule GEN; rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -1329,12 +1329,12 @@ AOT_theorem term_out_3: \<open>(\<phi>{\<alpha>} & \<forall>\<beta>(\<phi>{\<bet
   apply (rule GEN; rule "\<rightarrow>I")
   using "\<equiv>E"(1) "rule-ui:2[const_var]" by blast
 
-AOT_theorem term_out_4: \<open>(\<phi>{\<beta>} & \<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<alpha> = \<beta>)) \<equiv> \<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<alpha> = \<beta>)\<close>
-  using term_out_3 . (* TODO: same as above - another instance of the generalized alphabetic variant rule... *)
+AOT_theorem "term-out:4": \<open>(\<phi>{\<beta>} & \<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<alpha> = \<beta>)) \<equiv> \<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<alpha> = \<beta>)\<close>
+  using "term-out:3" . (* TODO: same as above - another instance of the generalized alphabetic variant rule... *)
 
 (* TODO: would of course be nice to define it without the syntax magic *)
 AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>
-  uniqueness_1: \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
+  "uniqueness:1": \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
 syntax "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>!_ _" [1,40])
 AOT_syntax_print_translations
   "_AOT_exists_unique \<tau> \<phi>" <= "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
@@ -1358,36 +1358,31 @@ begin
 no_notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
 end
 
-AOT_theorem uniqueness_2: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-proof(rule AOT_sem_equiv_defI) (* NOTE: appeal to semantics to accommodate PLMs double definition *)
-  (* TODO: hard to spot that AOT_modally_strict is needed here *)
-  AOT_modally_strict {
+AOT_theorem "uniqueness:2": \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
     AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
-      using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fE" by blast
+      using "uniqueness:1" "\<equiv>\<^sub>d\<^sub>fE" by blast
     then AOT_obtain \<alpha> where \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
-    AOT_hence \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> using term_out_3 "\<equiv>E" by blast
+    AOT_hence \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> using "term-out:3" "\<equiv>E" by blast
     AOT_thus \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
       using "\<exists>I" by fast
-  }
 next
-  AOT_modally_strict {
     AOT_assume \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     then AOT_obtain \<alpha> where \<open>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
-    AOT_hence \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using term_out_3 "\<equiv>E" by blast
+    AOT_hence \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using "term-out:3" "\<equiv>E" by blast
     AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
       using "\<exists>I" by fast
     AOT_thus \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
-      using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fI" by blast
-  }
+      using "uniqueness:1" "\<equiv>\<^sub>d\<^sub>fI" by blast
 qed
 
-AOT_theorem uni_most: \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<beta>\<forall>\<gamma>((\<phi>{\<beta>} & \<phi>{\<gamma>}) \<rightarrow> \<beta> = \<gamma>)\<close>
+AOT_theorem "uni-most": \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<beta>\<forall>\<gamma>((\<phi>{\<beta>} & \<phi>{\<gamma>}) \<rightarrow> \<beta> = \<gamma>)\<close>
 proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
   fix \<beta> \<gamma>
   AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
   AOT_hence \<open>\<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    using uniqueness_2 "\<equiv>\<^sub>d\<^sub>fE" by blast
+    using "uniqueness:2" "\<equiv>E" by blast
   then AOT_obtain \<alpha> where \<open>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     using "instantiation"[rotated] by blast
   moreover AOT_assume \<open>\<phi>{\<beta>} & \<phi>{\<gamma>}\<close>
@@ -1401,7 +1396,7 @@ AOT_theorem "nec-exist-!": \<open>\<forall>\<alpha>(\<phi>{\<alpha>} \<rightarro
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_assume a: \<open>\<forall>\<alpha>(\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   AOT_assume \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close>
-  AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close> using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fE" by blast
+  AOT_hence \<open>\<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close> using "uniqueness:1" "\<equiv>\<^sub>d\<^sub>fE" by blast
   then AOT_obtain \<alpha> where \<xi>: \<open>\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>)\<close> using "instantiation"[rotated] by blast
   AOT_have \<open>\<box>\<phi>{\<alpha>}\<close>
     using \<xi> a "&E" "\<forall>E" "\<rightarrow>E" by fast
@@ -1411,14 +1406,14 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   ultimately AOT_have \<open>(\<box>\<phi>{\<alpha>} & \<forall>\<beta> (\<box>\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
     using "&I" by blast
   AOT_thus \<open>\<exists>!\<alpha> \<box>\<phi>{\<alpha>}\<close>
-    using uniqueness_1 "\<equiv>\<^sub>d\<^sub>fI" "\<exists>I" by fast
+    using "uniqueness:1" "\<equiv>\<^sub>d\<^sub>fI" "\<exists>I" by fast
 qed
 
-AOT_theorem act_cond: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
+AOT_theorem "act-cond": \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
   using "\<rightarrow>I" "\<equiv>E"(1) "logic-actual-nec:2"[axiom_inst] by blast
 
-AOT_theorem nec_imp_act: \<open>\<box>\<phi> \<rightarrow> \<^bold>\<A>\<phi>\<close>
-  by (metis act_cond "contraposition:1[2]" "\<equiv>E"(4) "qml:2"[THEN act_closure, axiom_inst] "qml-act:2"[axiom_inst] RAA(1) "\<rightarrow>E" "\<rightarrow>I")
+AOT_theorem "nec-imp-act": \<open>\<box>\<phi> \<rightarrow> \<^bold>\<A>\<phi>\<close>
+  by (metis "act-cond" "contraposition:1[2]" "\<equiv>E"(4) "qml:2"[THEN act_closure, axiom_inst] "qml-act:2"[axiom_inst] RAA(1) "\<rightarrow>E" "\<rightarrow>I")
 
 AOT_theorem act_conj_act_1: \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<rightarrow> \<phi>)\<close>
   using "\<rightarrow>I" "\<equiv>E"(2) "logic-actual-nec:2"[axiom_inst] "logic-actual-nec:4"[axiom_inst] by blast
@@ -1431,11 +1426,11 @@ proof -
   AOT_have \<open>\<box>(\<phi> \<rightarrow> (\<psi> \<rightarrow> (\<phi> & \<psi>)))\<close>
     by (rule RN) (fact Adjunction)
   AOT_hence \<open>\<^bold>\<A>(\<phi> \<rightarrow> (\<psi> \<rightarrow> (\<phi> & \<psi>)))\<close>
-    using nec_imp_act "\<rightarrow>E" by blast
+    using "nec-imp-act" "\<rightarrow>E" by blast
   AOT_hence \<open>\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>(\<psi> \<rightarrow> (\<phi> & \<psi>))\<close>
-    using act_cond "\<rightarrow>E" by blast
+    using "act-cond" "\<rightarrow>E" by blast
   moreover AOT_have \<open>\<^bold>\<A>(\<psi> \<rightarrow> (\<phi> & \<psi>)) \<rightarrow> (\<^bold>\<A>\<psi> \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>))\<close>
-    by (fact act_cond)
+    by (fact "act-cond")
   ultimately AOT_have \<open>\<^bold>\<A>\<phi> \<rightarrow> (\<^bold>\<A>\<psi> \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>))\<close>
     using "\<rightarrow>I" "\<rightarrow>E" by metis
   AOT_thus \<open>(\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>) \<rightarrow> \<^bold>\<A>(\<phi> & \<psi>)\<close>
@@ -1453,7 +1448,7 @@ proof -
   AOT_have \<open>\<^bold>\<A>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
     using AOT_equiv[THEN "df-rules-formulas[2]", THEN act_closure, axiom_inst] by blast
   AOT_hence \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
-    using act_cond "\<rightarrow>E" by blast
+    using "act-cond" "\<rightarrow>E" by blast
   AOT_thus \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close> using \<zeta> "\<rightarrow>E" by blast
 qed
 
@@ -1505,7 +1500,7 @@ AOT_theorem RA_1: assumes \<open>\<^bold>\<turnstile> \<phi>\<close> shows \<ope
   using "\<not>\<not>E" assms "\<equiv>E"(3) "logic-actual"[act_axiom_inst] "logic-actual-nec:1"[axiom_inst] "modus-tollens:2" by blast
 AOT_theorem RA_2: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<phi>\<close>
   (* This is actually \<Gamma> \<turnstile>\<^sub>\<box> \<phi> \<Longrightarrow> \<box>\<Gamma> \<turnstile>\<^sub>\<box> \<A>\<phi>*)
-  using RN assms nec_imp_act "vdash-properties:5" by blast
+  using RN assms "nec-imp-act" "vdash-properties:5" by blast
 AOT_theorem RA_3: assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>
   using assms by (meson AOT_sem_act imageI)
   (* This is not exactly right either. *)
@@ -1527,7 +1522,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   moreover AOT_have \<open>\<^bold>\<A>((\<phi> & \<psi>) \<rightarrow> \<psi>)\<close>
     by (simp add: RA_2 "Conjunction Simplification"(2))
   ultimately AOT_show \<open>\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>\<close>
-    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
+    using "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
 next
   AOT_assume \<open>\<^bold>\<A>\<phi> & \<^bold>\<A>\<psi>\<close>
   AOT_thus \<open>\<^bold>\<A>(\<phi> & \<psi>)\<close>
@@ -1542,7 +1537,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   moreover AOT_have \<open>\<^bold>\<A>((\<phi> \<equiv> \<psi>) \<rightarrow> (\<psi> \<rightarrow> \<phi>))\<close>
     by (simp add: RA_2 "deduction-theorem" "\<equiv>E"(2))
   ultimately AOT_show \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
-    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
+    using "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by metis
 next
   AOT_assume \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
   AOT_hence \<open>\<^bold>\<A>((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
@@ -1550,14 +1545,14 @@ next
   moreover AOT_have \<open>\<^bold>\<A>(((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)) \<rightarrow> (\<phi> \<equiv> \<psi>))\<close>
     by (simp add: AOT_equiv RA_2 "df-rules-formulas[2]" "vdash-properties:1[2]")
   ultimately AOT_show \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>)\<close>
-    using act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by metis
+    using "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by metis
 qed
 
 AOT_theorem Act_Basic_4: \<open>(\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)) \<equiv> (\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>)\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume 0: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
   AOT_show \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>\<close>
-    using 0 "&E" act_cond[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "\<equiv>I" "\<rightarrow>I" by metis
+    using 0 "&E" "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "\<equiv>I" "\<rightarrow>I" by metis
 next
   AOT_assume \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<psi>\<close>
   AOT_thus \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) & \<^bold>\<A>(\<psi> \<rightarrow> \<phi>)\<close>
@@ -1571,10 +1566,10 @@ AOT_theorem Act_Basic_6: \<open>\<^bold>\<A>\<phi> \<equiv> \<box>\<^bold>\<A>\<
   by (simp add: "\<equiv>I" "qml:2"[axiom_inst] "qml-act:1"[axiom_inst])
 
 AOT_theorem Act_Basic_7: \<open>\<^bold>\<A>\<box>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
-  by (metis Act_Basic_6 "\<rightarrow>I" "\<rightarrow>E" "\<equiv>E"(1,2) nec_imp_act "qml-act:2"[axiom_inst])
+  by (metis Act_Basic_6 "\<rightarrow>I" "\<rightarrow>E" "\<equiv>E"(1,2) "nec-imp-act" "qml-act:2"[axiom_inst])
 
 AOT_theorem Act_Basic_8: \<open>\<box>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
-  using "Hypothetical Syllogism" nec_imp_act "qml-act:1"[axiom_inst] by blast
+  using "Hypothetical Syllogism" "nec-imp-act" "qml-act:1"[axiom_inst] by blast
 
 AOT_theorem Act_Basic_9: \<open>\<^bold>\<A>(\<phi> \<or> \<psi>) \<equiv> (\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>)\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -1599,7 +1594,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
 next
   AOT_assume \<open>\<^bold>\<A>\<phi> \<or> \<^bold>\<A>\<psi>\<close>
   AOT_thus \<open>\<^bold>\<A>(\<phi> \<or> \<psi>)\<close>
-    by (meson RA_2 act_cond "\<or>I"(1) "\<or>E"(1) "Disjunction Addition"(1) "Disjunction Addition"(2))
+    by (meson RA_2 "act-cond" "\<or>I"(1) "\<or>E"(1) "Disjunction Addition"(1) "Disjunction Addition"(2))
 qed
 
 AOT_theorem Act_Basic_10: \<open>\<^bold>\<A>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
@@ -1662,7 +1657,7 @@ AOT_act_theorem fund_cont_desc: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> 
   using descriptions[axiom_inst] act_quant_uniq "\<equiv>E"(5) by fast
 
 AOT_act_theorem hintikka: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close>
-  using "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] term_out_3 fund_cont_desc "\<equiv>E"(5) by blast
+  using "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] "term-out:3" fund_cont_desc "\<equiv>E"(5) by blast
 
 
 locale russel_axiom =
@@ -1758,18 +1753,18 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
   AOT_hence \<open>\<phi>{a} & \<forall>z (\<phi>{z} \<rightarrow> z = a)\<close> using hintikka "\<equiv>E" by blast
   AOT_hence \<open>\<exists>x (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close> by (rule "\<exists>I")
-  AOT_thus \<open>\<exists>!x \<phi>{x}\<close> using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
+  AOT_thus \<open>\<exists>!x \<phi>{x}\<close> using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
 next
   AOT_assume \<open>\<exists>!x \<phi>{x}\<close>
   AOT_hence \<open>\<exists>x (\<phi>{x} & \<forall>z (\<phi>{z} \<rightarrow> z = x))\<close>
-    using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   then AOT_obtain b where \<open>\<phi>{b} & \<forall>z (\<phi>{z} \<rightarrow> z = b)\<close> using "instantiation"[rotated] by blast
   AOT_hence \<open>b = \<^bold>\<iota>x \<phi>{x}\<close> using hintikka "\<equiv>E" by blast
   AOT_thus \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close> by (metis "t=t-proper:2" "vdash-properties:6")
 qed
 
 AOT_act_theorem "!-exists_2": \<open>\<exists>y(y=\<^bold>\<iota>x \<phi>{x}) \<equiv> \<exists>!x \<phi>{x}\<close>
-  using "!-exists_1" free_thms_1 "\<equiv>E"(6) by blast
+  using "!-exists_1" "free-thms:1" "\<equiv>E"(6) by blast
 
 AOT_act_theorem y_in_1: \<open>x = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{x}\<close>
   using "&E"(1) "\<rightarrow>I" hintikka "\<equiv>E"(1) by blast
@@ -1786,7 +1781,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_act_theorem y_in_4: \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x}) \<rightarrow> \<phi>{\<^bold>\<iota>x \<phi>{x}}\<close>
-  using y_in_3[THEN "\<rightarrow>E"] free_thms_1[THEN "\<equiv>E"(2)] "\<rightarrow>I" by blast
+  using y_in_3[THEN "\<rightarrow>E"] "free-thms:1"[THEN "\<equiv>E"(2)] "\<rightarrow>I" by blast
 
 
 AOT_theorem act_quant_nec: \<open>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>) \<equiv> \<forall>\<beta>(\<^bold>\<A>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
@@ -1837,7 +1832,7 @@ AOT_theorem nec_hintikka_scheme: \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> 
 proof -
   AOT_have \<open>x = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close> using descriptions[axiom_inst] by blast
   also AOT_have \<open>\<dots> \<equiv> (\<^bold>\<A>\<phi>{x} & \<forall>z(\<^bold>\<A>\<phi>{z} \<rightarrow> z = x))\<close>
-    using "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] term_out_3 by fast
+    using "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] "term-out:3" by fast
   finally show ?thesis.
 qed
 
@@ -1874,7 +1869,7 @@ proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<^bold>\<A>\<forall>x(\<phi>{x} \<equiv> \<psi>{x})\<close>
   AOT_hence 0: \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> and
             1: \<open>\<forall>x (x = \<^bold>\<iota>x \<phi>{x} \<equiv> x = \<^bold>\<iota>x \<psi>{x})\<close>
-    using "&E" free_thms_1[THEN "\<equiv>E"(1)] equiv_desc_eq_1 "\<rightarrow>E" by blast+
+    using "&E" "free-thms:1"[THEN "\<equiv>E"(1)] equiv_desc_eq_1 "\<rightarrow>E" by blast+
   then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
   moreover AOT_have \<open>a = \<^bold>\<iota>x \<psi>{x}\<close> using calculation 1 "\<forall>E" "\<equiv>E"(1) by fast
   ultimately AOT_show \<open>\<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
@@ -1882,7 +1877,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem equiv_desc_eq_3: \<open>\<^bold>\<iota>x \<phi>{x}\<down> & \<box>\<forall>x(\<phi>{x} \<equiv> \<psi>{x}) \<rightarrow> \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x}\<close>
-  using "\<rightarrow>I" equiv_desc_eq_2[THEN "\<rightarrow>E", OF "&I"] "&E" nec_imp_act[THEN "\<rightarrow>E"] by metis
+  using "\<rightarrow>I" equiv_desc_eq_2[THEN "\<rightarrow>E", OF "&I"] "&E" "nec-imp-act"[THEN "\<rightarrow>E"] by metis
 
 (* TODO: this is part of "exist-nec" *)
 AOT_theorem equiv_desc_eq_4: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<box>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
@@ -1891,7 +1886,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I:1" "existential:1")
   then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
   AOT_thus \<open>\<box>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
-    using ex_2_a "=E" by fast
+    using "ex:2:a" "=E" by fast
 qed
 
 AOT_theorem equiv_desc_eq_5: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<rightarrow> \<exists>y \<box>(y = \<^bold>\<iota>x \<phi>{x})\<close>
@@ -1899,7 +1894,7 @@ proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
   AOT_hence \<open>\<exists>y (y = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "rule=I:1" "existential:1")
   then AOT_obtain a where \<open>a = \<^bold>\<iota>x \<phi>{x}\<close> using "instantiation"[rotated] by blast
-  AOT_hence \<open>\<box>(a = \<^bold>\<iota>x \<phi>{x})\<close> by (metis id_nec_2 "vdash-properties:10")
+  AOT_hence \<open>\<box>(a = \<^bold>\<iota>x \<phi>{x})\<close> by (metis "id-nec:2" "vdash-properties:10")
   AOT_thus \<open>\<exists>y \<box>(y = \<^bold>\<iota>x \<phi>{x})\<close> by (rule "\<exists>I")
 qed
 
@@ -1959,11 +1954,11 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
     using "\<equiv>E" by blast
   AOT_hence \<open>\<exists>x\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close>
-    using uniqueness_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
+    using "uniqueness:2"[THEN "\<equiv>E"(2)] by fast
 next
   AOT_assume \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close>
   AOT_hence \<open>\<exists>x\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
-    using uniqueness_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by fast
+    using "uniqueness:2"[THEN "\<equiv>E"(1)] by fast
   then AOT_obtain a where \<open>\<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close> using "instantiation"[rotated] by blast
   moreover AOT_have \<open>a = \<^bold>\<iota>x \<phi>{x} \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = a)\<close>
     using descriptions[axiom_inst] by blast
@@ -2032,7 +2027,7 @@ AOT_theorem "!box-desc_1": \<open>\<exists>!x \<box>\<phi>{x} \<rightarrow> \<fo
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>!x \<box>\<phi>{x}\<close>
   AOT_hence \<zeta>: \<open>\<exists>x (\<box>\<phi>{x} & \<forall>z (\<box>\<phi>{z} \<rightarrow> z = x))\<close>
-    using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   then AOT_obtain b where \<theta>: \<open>\<box>\<phi>{b} & \<forall>z (\<box>\<phi>{z} \<rightarrow> z = b)\<close> using "instantiation"[rotated] by blast
   AOT_show \<open>\<forall>y (y = \<^bold>\<iota>x \<phi>{x} \<rightarrow> \<phi>{y})\<close>
   proof(rule GEN; rule "\<rightarrow>I")
@@ -2040,7 +2035,7 @@ proof(rule "\<rightarrow>I")
     AOT_assume \<open>y = \<^bold>\<iota>x \<phi>{x}\<close>
     AOT_hence \<open>\<^bold>\<A>\<phi>{y} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = y)\<close> using nec_hintikka_scheme[THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<^bold>\<A>\<phi>{b} \<rightarrow> b = y\<close> using "&E" "\<forall>E" by blast
-    moreover AOT_have \<open>\<^bold>\<A>\<phi>{b}\<close> using \<theta>[THEN "&E"(1)]  by (metis nec_imp_act "\<rightarrow>E")
+    moreover AOT_have \<open>\<^bold>\<A>\<phi>{b}\<close> using \<theta>[THEN "&E"(1)]  by (metis "nec-imp-act" "\<rightarrow>E")
     ultimately AOT_have \<open>b = y\<close> using "\<rightarrow>E" by blast
     moreover AOT_have \<open>\<phi>{b}\<close> using \<theta>[THEN "&E"(1)]  by (metis "qml:2"[axiom_inst] "\<rightarrow>E") 
     ultimately AOT_show \<open>\<phi>{y}\<close> using "=E" by blast
@@ -2624,7 +2619,7 @@ AOT_theorem Act_Sub_2: \<open>\<diamond>\<phi> \<equiv> \<^bold>\<A>\<diamond>\<
 AOT_theorem Act_Sub_3: \<open>\<^bold>\<A>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
    apply (simp add: AOT_dia "\<equiv>Df")
-  by (metis Act_Sub_1 "deduction-theorem" "\<equiv>E"(4) nec_imp_act "reductio-aa:2" "vdash-properties:6")
+  by (metis Act_Sub_1 "deduction-theorem" "\<equiv>E"(4) "nec-imp-act" "reductio-aa:2" "vdash-properties:6")
 
 
 AOT_theorem Act_Sub_4: \<open>\<^bold>\<A>\<phi> \<equiv> \<diamond>\<^bold>\<A>\<phi>\<close>
@@ -2857,7 +2852,7 @@ proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>}\<close>
   then AOT_obtain \<alpha> where \<open>\<box>\<phi>{\<alpha>}\<close> using "\<exists>E" by metis
   moreover AOT_have \<open>\<box>\<alpha>\<down>\<close>
-    by (simp add: ex_1_a "rule-ui:2[const_var]" RN)
+    by (simp add: "ex:1:a" "rule-ui:2[const_var]" RN)
   moreover AOT_have \<open>\<box>\<phi>{\<tau>}, \<box>\<tau>\<down> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close> for \<tau>
   proof -
     AOT_have \<open>\<phi>{\<tau>}, \<tau>\<down> \<^bold>\<turnstile>\<^sub>\<box> \<exists>\<alpha> \<phi>{\<alpha>}\<close> using "existential:1" by blast
@@ -2916,16 +2911,16 @@ AOT_theorem "exist-nec2:1": \<open>\<diamond>\<tau>\<down> \<rightarrow> \<tau>\
   using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" "exist-nec" by blast
 
 AOT_theorem exists_nec2_2: \<open>\<diamond>\<tau>\<down> \<equiv> \<box>\<tau>\<down>\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" "exist-nec" "exist-nec2:1" "\<equiv>I" nec_imp_act)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" "exist-nec" "exist-nec2:1" "\<equiv>I" "nec-imp-act")
 
 AOT_theorem exists_nec2_3: \<open>\<not>\<tau>\<down> \<rightarrow> \<box>\<not>\<tau>\<down>\<close>
   using KBasic2_1 "deduction-theorem" "exist-nec2:1" "\<equiv>E"(2) "modus-tollens:1" by blast
 
 AOT_theorem exists_nec2_4: \<open>\<diamond>\<not>\<tau>\<down> \<equiv> \<box>\<not>\<tau>\<down>\<close>
-  by (metis Act_Sub_3 KBasic_12 "deduction-theorem" "exist-nec" exists_nec2_3 "\<equiv>I" "\<equiv>E"(4) nec_imp_act "reductio-aa:1")
+  by (metis Act_Sub_3 KBasic_12 "deduction-theorem" "exist-nec" exists_nec2_3 "\<equiv>I" "\<equiv>E"(4) "nec-imp-act" "reductio-aa:1")
 
 AOT_theorem id_nec2_1: \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<alpha> = \<beta>\<close>
-  using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" id_nec_1 by blast
+  using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" "id-nec:1" by blast
 
 AOT_theorem id_nec2_2: \<open>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<alpha> \<noteq> \<beta>\<close>
   apply (AOT_subst_using subst: "=-infix"[THEN "\<equiv>Df"])
@@ -2933,10 +2928,10 @@ AOT_theorem id_nec2_2: \<open>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<al
 
 AOT_theorem id_nec2_3: \<open>\<diamond>\<alpha> \<noteq> \<beta> \<rightarrow> \<alpha> \<noteq> \<beta>\<close>
   apply (AOT_subst_using subst: "=-infix"[THEN "\<equiv>Df"])
-  by (metis KBasic_11 "deduction-theorem" id_nec_2 "\<equiv>E"(3) "reductio-aa:2" "vdash-properties:6")
+  by (metis KBasic_11 "deduction-theorem" "id-nec:2" "\<equiv>E"(3) "reductio-aa:2" "vdash-properties:6")
 
 AOT_theorem id_nec2_4: \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<box>\<alpha> = \<beta>\<close>
-  using "Hypothetical Syllogism" id_nec2_1 id_nec_1 by blast
+  using "Hypothetical Syllogism" id_nec2_1 "id-nec:1" by blast
 
 AOT_theorem id_nec2_5: \<open>\<diamond>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<alpha> \<noteq> \<beta>\<close>
   using id_nec2_3 id_nec2_2 "\<rightarrow>I" "\<rightarrow>E" by metis
@@ -2947,7 +2942,7 @@ AOT_theorem sc_eq_box_box_1: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<
   by (metis KBasic2_1 KBasic_1 KBasic_2 S5Basic_13 "\<equiv>E"(2) "raa-cor:5" "vdash-properties:6")
 
 AOT_theorem sc_eq_box_box_2: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<or> (\<diamond>\<phi> \<rightarrow> \<box>\<phi>)) \<rightarrow> (\<diamond>\<phi> \<equiv> \<box>\<phi>)\<close>
-  by (metis Act_Sub_3 KBasic_13 T_S5_fund_2 "\<or>E"(2) "deduction-theorem" "\<equiv>I" nec_imp_act "raa-cor:2" "vdash-properties:10")
+  by (metis Act_Sub_3 KBasic_13 T_S5_fund_2 "\<or>E"(2) "deduction-theorem" "\<equiv>I" "nec-imp-act" "raa-cor:2" "vdash-properties:10")
 
 AOT_theorem sc_eq_box_box_3: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> (\<not>\<box>\<phi> \<equiv> \<box>\<not>\<phi>)\<close>
 proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -3006,7 +3001,7 @@ AOT_theorem sc_eq_fur_1: \<open>\<diamond>\<^bold>\<A>\<phi> \<equiv> \<box>\<^b
   using Act_Basic_6 Act_Sub_4 "\<equiv>E"(6) by blast
 
 AOT_theorem sc_eq_fur_2: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
-  by (metis "B\<diamond>" Act_Sub_3 KBasic_13 T_S5_fund_1 "Hypothetical Syllogism" "deduction-theorem" "\<equiv>I" nec_imp_act)
+  by (metis "B\<diamond>" Act_Sub_3 KBasic_13 T_S5_fund_1 "Hypothetical Syllogism" "deduction-theorem" "\<equiv>I" "nec-imp-act")
 
 AOT_theorem sc_eq_fur_3: \<open>\<box>\<forall>x (\<phi>{x} \<rightarrow> \<box>\<phi>{x}) \<rightarrow> (\<exists>!x \<phi>{x} \<rightarrow> \<^bold>\<iota>x \<phi>{x}\<down>)\<close>
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
@@ -3014,9 +3009,9 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_hence A: \<open>\<forall>x \<box>(\<phi>{x} \<rightarrow> \<box>\<phi>{x})\<close> using CBF "\<rightarrow>E" by blast
   AOT_assume \<open>\<exists>!x \<phi>{x}\<close>
   then AOT_obtain a where a_def: \<open>\<phi>{a} & \<forall>y (\<phi>{y} \<rightarrow> y = a)\<close>
-    using "\<exists>E"[rotated 1, OF uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"]] by blast
+    using "\<exists>E"[rotated 1, OF "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"]] by blast
   moreover AOT_have \<open>\<box>\<phi>{a}\<close> using calculation A "\<forall>E"(2) "qml:2"[axiom_inst] "\<rightarrow>E" "&E"(1) by blast
-  AOT_hence \<open>\<^bold>\<A>\<phi>{a}\<close> using nec_imp_act "vdash-properties:6" by blast
+  AOT_hence \<open>\<^bold>\<A>\<phi>{a}\<close> using "nec-imp-act" "vdash-properties:6" by blast
   moreover AOT_have \<open>\<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = a)\<close>
   proof (rule "\<forall>I"; rule "\<rightarrow>I")
     fix b
@@ -3037,7 +3032,7 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   ultimately AOT_have \<open>\<^bold>\<A>\<phi>{a} & \<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = a)\<close>
     using "&I" by blast
   AOT_hence \<open>\<exists>x (\<^bold>\<A>\<phi>{x} & \<forall>y (\<^bold>\<A>\<phi>{y} \<rightarrow> y = x))\<close> using "\<exists>I" by fast
-  AOT_hence \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close> using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
+  AOT_hence \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close> using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] by fast
   AOT_thus \<open>\<^bold>\<iota>x \<phi>{x}\<down>\<close>
     using actual_desc_1[THEN "\<equiv>E"(2)] by blast
 qed
@@ -3074,7 +3069,7 @@ proof (rule "\<rightarrow>I")
 qed
 
 AOT_theorem id_act_1: \<open>\<alpha> = \<beta> \<equiv> \<^bold>\<A>\<alpha> = \<beta>\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" id_nec2_1 id_nec_2 "\<equiv>I" nec_imp_act)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" id_nec2_1 "id-nec:2" "\<equiv>I" "nec-imp-act")
 
 AOT_theorem id_act_2: \<open>\<alpha> \<noteq> \<beta> \<equiv> \<^bold>\<A>\<alpha> \<noteq> \<beta>\<close>
 proof (AOT_subst "\<guillemotleft>\<alpha> \<noteq> \<beta>\<guillemotright>" "\<guillemotleft>\<not>(\<alpha> = \<beta>)\<guillemotright>")
@@ -3101,7 +3096,7 @@ qed
 AOT_theorem A_Exists_1: \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
 proof -
   AOT_have \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<exists>\<alpha>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    by (AOT_subst_using subst: uniqueness_2[THEN "\<equiv>Df"])
+    by (AOT_subst_using subst: "uniqueness:2")
        (simp add: "oth-class-taut:3:a")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     by (simp add: Act_Basic_10)
@@ -3116,7 +3111,7 @@ proof -
      apply (meson id_act_1 "\<equiv>E"(6) "oth-class-taut:3:a")
     by (simp add: "cqt-further:7")
   also AOT_have \<open>... \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
-    using uniqueness_2[THEN "\<equiv>Df"] "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] by fast
+    using "uniqueness:2" "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] by fast
   finally show ?thesis .
 qed
 
@@ -3346,13 +3341,13 @@ AOT_theorem en_eq_9_4: \<open>\<diamond>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub
   using en_eq_7_4 en_eq_8_4 "\<equiv>E"(5) by blast
 
 AOT_theorem en_eq_10_1: \<open>\<^bold>\<A>x\<^sub>1[F] \<equiv> x\<^sub>1[F]\<close>
-  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) nec_imp_act en_eq_3_1 pre_en_eq_1_1)
+  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "nec-imp-act" en_eq_3_1 pre_en_eq_1_1)
 AOT_theorem en_eq_10_2: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2[F] \<equiv> x\<^sub>1x\<^sub>2[F]\<close>
-  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) nec_imp_act en_eq_3_2 pre_en_eq_1_2)
+  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "nec-imp-act" en_eq_3_2 pre_en_eq_1_2)
 AOT_theorem en_eq_10_3: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
-  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) nec_imp_act en_eq_3_3 pre_en_eq_1_3)
+  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "nec-imp-act" en_eq_3_3 pre_en_eq_1_3)
 AOT_theorem en_eq_10_4: \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
-  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) nec_imp_act en_eq_3_4 pre_en_eq_1_4)
+  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "nec-imp-act" en_eq_3_4 pre_en_eq_1_4)
 
 AOT_theorem oa_facts_1: \<open>O!x \<rightarrow> \<box>O!x\<close>
 proof(rule "\<rightarrow>I")
@@ -3399,16 +3394,16 @@ AOT_theorem oa_facts_4: \<open>\<diamond>A!x \<rightarrow> A!x\<close>
   using oa_facts_2 "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" by blast
 
 AOT_theorem oa_facts_5: \<open>\<diamond>O!x \<equiv> \<box>O!x\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" nec_imp_act oa_facts_1 oa_facts_3)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" "nec-imp-act" oa_facts_1 oa_facts_3)
 
 AOT_theorem oa_facts_6: \<open>\<diamond>A!x \<equiv> \<box>A!x\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" nec_imp_act oa_facts_2 oa_facts_4)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" "nec-imp-act" oa_facts_2 oa_facts_4)
 
 AOT_theorem oa_facts_7: \<open>O!x \<equiv> \<^bold>\<A>O!x\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" nec_imp_act oa_facts_1 oa_facts_3)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" "nec-imp-act" oa_facts_1 oa_facts_3)
 
 AOT_theorem oa_facts_8: \<open>A!x \<equiv> \<^bold>\<A>A!x\<close>
-  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" nec_imp_act oa_facts_2 oa_facts_4)
+  by (meson Act_Sub_3 "Hypothetical Syllogism" "\<equiv>I" "nec-imp-act" oa_facts_2 oa_facts_4)
 
 AOT_theorem beta_C_meta: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> \<rightarrow> ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n})\<close>
   using "lambda-predicates:2"[axiom_inst] by blast
@@ -3754,7 +3749,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
     next
       AOT_assume A: \<open>\<exists>!y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
       AOT_obtain a where a_1: \<open>a = x & \<exists>H (x[H] & \<not>[H]x)\<close> and a_2: \<open>\<forall>z (z = x & \<exists>H (x[H] & \<not>[H]x) \<rightarrow> z = a)\<close>
-        using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
       AOT_have a_3: \<open>[G]a\<close>
         using antecedant "\<forall>E" by blast
       AOT_show \<open>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
@@ -3766,7 +3761,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
     proof (rule "\<equiv>I"; rule "\<rightarrow>I")
       AOT_assume A: \<open>\<exists>!y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
       AOT_obtain a where \<open>a = x & \<exists>H (x[H] & \<not>[H]x)\<close>
-        using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
       AOT_thus \<open>\<exists>H (x[H] & \<not>[H]x)\<close> using "&E" by blast
     next
       AOT_assume \<open>\<exists>H (x[H] & \<not>[H]x)\<close>
@@ -3775,7 +3770,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
       moreover AOT_have \<open>\<forall>z (z = x & \<exists>H (x[H] & \<not>[H]x) \<rightarrow> z = x)\<close>
         by (simp add: "Conjunction Simplification"(1) "universal-cor")
       ultimately AOT_show \<open>\<exists>!y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
-        using uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<exists>I"(2) by fast
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<exists>I"(2) by fast
     qed
     finally AOT_show \<open>([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x))\<close> .
   qed
@@ -4630,7 +4625,7 @@ next
   AOT_hence \<open>\<box>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
     using KBasic_12[THEN "\<equiv>E"(2)] by blast
   AOT_thus \<open>\<^bold>\<A>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
-    using nec_imp_act[THEN "\<rightarrow>E"] by blast
+    using "nec-imp-act"[THEN "\<rightarrow>E"] by blast
 qed
 
 AOT_theorem pos_not_pna_3: \<open>\<exists>x (\<diamond>E!x & \<not>\<^bold>\<A>E!x)\<close>
@@ -5083,7 +5078,7 @@ proof-
   AOT_hence \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close>
     using eqnotnec_123_Aux_\<theta>[THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
             THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
-            THEN RA_2, THEN act_cond[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
+            THEN RA_2, THEN "act-cond"[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
   moreover AOT_have \<open>\<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using eqnotnec_123_Aux_\<xi>'[THEN "\<rightarrow>E"] q\<^sub>0_prop[THEN "&E"(1)] by blast
   ultimately AOT_have \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x) & \<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using "&I" by blast
   AOT_hence \<open>\<exists>G (\<^bold>\<A>\<not>\<forall>x([L]x \<equiv> [G]x) & \<diamond>\<forall>x([L]x \<equiv> [G]x))\<close>
@@ -5342,7 +5337,7 @@ proof(rule GEN)
   qed
 
   AOT_have Aux_C: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<not>\<psi> \<rightarrow> \<^bold>\<A>\<not>\<forall>z([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close> for \<psi>
-  proof(rule act_cond[THEN "\<rightarrow>E"]; rule RA_2; rule "\<rightarrow>I"; rule "raa-cor:2")
+  proof(rule "act-cond"[THEN "\<rightarrow>E"]; rule RA_2; rule "\<rightarrow>I"; rule "raa-cor:2")
   AOT_modally_strict {
       AOT_assume 0: \<open>\<not>\<psi>\<close>
       AOT_assume \<open>\<forall>z ([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close>
@@ -5643,7 +5638,7 @@ proof (rule df_cont_nec[THEN "\<equiv>Df", THEN "oth-class-taut:4:b"[THEN "\<equ
   AOT_hence 1: \<open>\<diamond>E!a & \<diamond>\<not>\<^bold>\<A>E!a\<close> using KBasic2_3[THEN "\<rightarrow>E"] by simp
   moreover AOT_assume \<open>\<forall>x (\<diamond>[E!]x \<rightarrow> \<box>[E!]x)\<close>
   ultimately AOT_have \<open>\<box>E!a\<close> using "&E" "\<forall>E" "\<rightarrow>E" by fast
-  AOT_hence \<open>\<^bold>\<A>E!a\<close> using nec_imp_act[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<^bold>\<A>E!a\<close> using "nec-imp-act"[THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<box>\<^bold>\<A>E!a\<close> using "qml-act:1"[axiom_inst, THEN "\<rightarrow>E"] by blast
   moreover AOT_have \<open>\<not>\<box>\<^bold>\<A>E!a\<close> using KBasic_11[THEN "\<equiv>E"(2)] 1[THEN "&E"(2)] by meson
   ultimately AOT_have \<open>\<box>\<^bold>\<A>E!a & \<not>\<box>\<^bold>\<A>E!a\<close> using "&I" by blast
@@ -5881,9 +5876,9 @@ proof -
   AOT_have \<open>[L\<^sup>-]\<down>\<close> by (simp add: rel_neg_T_3)
   moreover AOT_have \<open>\<not>\<^bold>\<A>[L\<^sup>-]b & \<not>\<^bold>\<Delta>[L\<^sup>-]b & \<not>\<^bold>\<A>[L\<^sup>-]a & \<not>\<^bold>\<Delta>[L\<^sup>-]a\<close>
   proof (safe intro!: "&I")
-    AOT_show \<open>\<not>\<^bold>\<A>[L\<^sup>-]b\<close> by (meson "\<equiv>E"(1) "logic-actual-nec:1"[axiom_inst] nec_imp_act nec_not_L_neg "\<rightarrow>E")
+    AOT_show \<open>\<not>\<^bold>\<A>[L\<^sup>-]b\<close> by (meson "\<equiv>E"(1) "logic-actual-nec:1"[axiom_inst] "nec-imp-act" nec_not_L_neg "\<rightarrow>E")
     AOT_show \<open>\<not>\<^bold>\<Delta>[L\<^sup>-]b\<close> by (meson Delta_pos KBasic2_1 "\<equiv>E"(1) "modus-tollens:1" nec_not_L_neg)
-    AOT_show \<open>\<not>\<^bold>\<A>[L\<^sup>-]a\<close> by (meson "\<equiv>E"(1) "logic-actual-nec:1"[axiom_inst] nec_imp_act nec_not_L_neg "\<rightarrow>E")
+    AOT_show \<open>\<not>\<^bold>\<A>[L\<^sup>-]a\<close> by (meson "\<equiv>E"(1) "logic-actual-nec:1"[axiom_inst] "nec-imp-act" nec_not_L_neg "\<rightarrow>E")
     AOT_show \<open>\<not>\<^bold>\<Delta>[L\<^sup>-]a\<close> using Delta_pos KBasic2_1 "\<equiv>E"(1) "modus-tollens:1" nec_not_L_neg by blast
   qed
   ultimately AOT_obtain F\<^sub>0 where \<open>\<not>\<^bold>\<A>[F\<^sub>0]b & \<not>\<^bold>\<Delta>[F\<^sub>0]b & \<not>\<^bold>\<A>[F\<^sub>0]a & \<not>\<^bold>\<Delta>[F\<^sub>0]a\<close>
@@ -6239,9 +6234,9 @@ proof -
   moreover AOT_have \<open>\<^bold>\<A>[L]b & \<^bold>\<Delta>[L]b & \<^bold>\<A>[L]a & \<^bold>\<Delta>[L]a\<close>
   proof (safe intro!: "&I")
     AOT_show \<open>\<^bold>\<A>[L]b\<close>
-      by (meson nec_L nec_imp_act "vdash-properties:10")
+      by (meson nec_L "nec-imp-act" "vdash-properties:10")
     next AOT_show \<open>\<^bold>\<Delta>[L]b\<close> using nec_L nec_delta by blast
-    next AOT_show \<open>\<^bold>\<A>[L]a\<close> by (meson nec_L nec_imp_act "vdash-properties:10")
+    next AOT_show \<open>\<^bold>\<A>[L]a\<close> by (meson nec_L "nec-imp-act" "vdash-properties:10")
     next AOT_show \<open>\<^bold>\<Delta>[L]a\<close> using nec_L nec_delta by blast
   qed
   ultimately AOT_obtain F\<^sub>1\<^sub>5 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>5]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>5]b & \<^bold>\<A>[F\<^sub>1\<^sub>5]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>5]a\<close>
@@ -6688,22 +6683,22 @@ AOT_theorem denote_eq_2d: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\
   by (rule GEN; rule "existence:2[4]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
 AOT_theorem denote_eq_3: \<open>\<exists>x x[\<Pi>] \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using "existence:2[1]" free_thms_1 "\<equiv>E"(2) "\<equiv>E"(5) "Commutativity of \<equiv>" "\<equiv>Df" by blast
+  using "existence:2[1]" "free-thms:1" "\<equiv>E"(2) "\<equiv>E"(5) "Commutativity of \<equiv>" "\<equiv>Df" by blast
 
 AOT_theorem denote_eq_4: \<open>(\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using "existence:2" free_thms_1 "\<equiv>E"(6) "\<equiv>Df" by blast
+  using "existence:2" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
 AOT_theorem denote_eq_4b: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using "existence:2[2]" free_thms_1 "\<equiv>E"(6) "\<equiv>Df" by blast
+  using "existence:2[2]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
 AOT_theorem denote_eq_4c: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using "existence:2[3]" free_thms_1 "\<equiv>E"(6) "\<equiv>Df" by blast
+  using "existence:2[3]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
 AOT_theorem denote_eq_4d: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using "existence:2[4]" free_thms_1 "\<equiv>E"(6) "\<equiv>Df" by blast
+  using "existence:2[4]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
 AOT_theorem A_objects_unique: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<phi>{F})\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by blast
   AOT_have \<open>(A!\<beta> & \<forall>F (\<beta>[F] \<equiv> \<phi>{F})) \<rightarrow> \<beta> = a\<close> for \<beta>
@@ -6784,7 +6779,7 @@ qed
 
 AOT_theorem Box_desc_encode_1: \<open>\<box>\<phi>{G} \<rightarrow> \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close>
   by (rule "\<rightarrow>I"; rule desc_nec_encode[THEN "\<equiv>E"(2)])
-     (meson nec_imp_act "vdash-properties:10")
+     (meson "nec-imp-act" "vdash-properties:10")
 
 AOT_theorem Box_desc_encode_2: \<open>\<box>\<phi>{G} \<rightarrow> \<box>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G})\<close>
 proof(rule CP)
@@ -6861,7 +6856,7 @@ AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Universal'(
   df_null_uni_2: \<open>Universal(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F x[F]\<close>
 
 AOT_theorem null_uni_uniq_1: \<open>\<exists>!x Null(x)\<close>
-proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<not>(F = F))\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_have a_null: \<open>\<not>a[F]\<close> for F
@@ -6896,7 +6891,7 @@ proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
 qed
 
 AOT_theorem null_uni_uniq_2: \<open>\<exists>!x Universal(x)\<close>
-proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> F = F)\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_hence aF: \<open>a[F]\<close> for F using "&E" "\<forall>E" "\<equiv>E" "id-eq:1" by fast
@@ -6994,7 +6989,7 @@ proof (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3];
   AOT_obtain x where nullx: \<open>Null(x)\<close>
     by (metis "instantiation" df_null_uni_terms_1 "existential:1" null_uni_facts_3
               null_uni_uniq_3 "rule-id-def:2:b[zero]")
-  AOT_hence act_null: \<open>\<^bold>\<A>Null(x)\<close> by (metis nec_imp_act null_uni_facts_1 "vdash-properties:10")
+  AOT_hence act_null: \<open>\<^bold>\<A>Null(x)\<close> by (metis "nec-imp-act" null_uni_facts_1 "vdash-properties:10")
   AOT_assume \<open>\<^bold>\<iota>x Null(x) = \<^bold>\<iota>x Universal(x)\<close>
   AOT_hence \<open>\<^bold>\<A>\<forall>x(Null(x) \<equiv> Universal(x))\<close>
     using actual_desc_5[THEN "\<rightarrow>E"] by blast
@@ -7223,7 +7218,7 @@ proof -
      apply (fact "cqt:2[const_var]"[axiom_inst])
     apply (rule betaC_2_a)
       apply "cqt:2[lambda]"
-    apply (simp add: "&I" ex_1_a prod_denotesI "rule-ui:3")
+    apply (simp add: "&I" "ex:1:a" prod_denotesI "rule-ui:3")
     by (simp add: "oth-class-taut:3:a" "universal-cor")
   AOT_hence \<open>[\<lambda>z [\<lambda>xy \<forall>F ([F]x \<equiv> [F]y)]zy]x\<close>
     by (rule "rule=E"[rotated, OF 0[THEN "&E"(2)]])
@@ -7436,7 +7431,7 @@ proof(rule "\<rightarrow>I")
   AOT_assume \<open>Propositional([F])\<close>
   AOT_hence \<open>\<exists>p(F = [\<lambda>y p])\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF prop_prop1] by blast
   then AOT_obtain p where \<open>F = [\<lambda>y p]\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> using id_nec_2 "modus-tollens:1" "raa-cor:3" by blast
+  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> using "id-nec:2" "modus-tollens:1" "raa-cor:3" by blast
   AOT_hence \<open>\<exists>p \<box>(F = [\<lambda>y p])\<close> using "\<exists>I" by fast
   AOT_hence 0: \<open>\<box>\<exists>p (F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
   AOT_show \<open>\<box>Propositional([F])\<close>
@@ -7480,7 +7475,7 @@ proof (rule "\<rightarrow>I")
   AOT_hence 0: \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF contingent_properties_1] by blast
   AOT_show \<open>Indiscriminate([F])\<close>
     by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF prop_indis])
-       (metis "0" KBasic_1 "&I" ex_1_a "rule-ui:2[const_var]" "vdash-properties:6") 
+       (metis "0" KBasic_1 "&I" "ex:1:a" "rule-ui:2[const_var]" "vdash-properties:6") 
 qed
 
 AOT_theorem prop_in_f_2: \<open>Impossible([F]) \<rightarrow> Indiscriminate([F])\<close>
@@ -7496,7 +7491,7 @@ proof (rule "\<rightarrow>I")
   AOT_hence 1: \<open>\<box>(\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close> using 0 "\<rightarrow>E" by blast
   AOT_show \<open>Indiscriminate([F])\<close>
     by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF prop_indis]; rule "&I")
-       (simp add: ex_1_a "rule-ui:2[const_var]" 1)+
+       (simp add: "ex:1:a" "rule-ui:2[const_var]" 1)+
 qed
 
 AOT_theorem prop_in_f_3_a: \<open>\<not>Indiscriminate([E!])\<close>
@@ -7597,7 +7592,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>p \<diamond>(F = [\<lambda>y p])\<close>
     by (metis "BF\<diamond>" "vdash-properties:10")
   then AOT_obtain p where \<open>\<diamond>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>F = [\<lambda>y p]\<close> by (metis derived_S5_rules_2 emptyE id_nec_2 "vdash-properties:6")
+  AOT_hence \<open>F = [\<lambda>y p]\<close> by (metis derived_S5_rules_2 emptyE "id-nec:2" "vdash-properties:6")
   AOT_thus \<open>\<exists>p(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
 qed
 
@@ -7616,7 +7611,7 @@ AOT_theorem prop_prop_nec_3: \<open>\<exists>p (F = [\<lambda>y p]) \<rightarrow
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>p (F = [\<lambda>y p])\<close>
   then AOT_obtain p where \<open>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> by (metis id_nec_2 "vdash-properties:6")
+  AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> by (metis "id-nec:2" "vdash-properties:6")
   AOT_hence \<open>\<exists>p\<box>(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<box>\<exists>p(F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
 qed

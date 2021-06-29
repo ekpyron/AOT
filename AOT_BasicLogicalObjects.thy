@@ -480,7 +480,7 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
       using \<theta>[THEN "&E"(1), THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
     then AOT_obtain q where q_prop: \<open>F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>x[\<lambda>y q]\<close> using 0 "rule=E" by blast
-    AOT_hence \<open>x\<^bold>\<Sigma>q\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc "rule-ui:3")
+    AOT_hence \<open>x\<^bold>\<Sigma>q\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" prop_enc "rule-ui:3")
     AOT_hence \<open>q \<equiv> p\<close> using \<theta>[THEN "&E"(2)] "\<forall>E"(2) "\<equiv>E"(1) by blast
     AOT_hence \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close> using q_prop "&I" by blast
     AOT_thus \<open>\<exists>q ((q \<equiv> p) & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
@@ -520,7 +520,7 @@ next
         by (metis "rule=I:1" "\<equiv>S"(1) "\<equiv>E"(2) "Commutativity of &" prop_prop2_2)
       AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I")
       AOT_hence \<open>x[\<lambda>y r]\<close> using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
-      AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc "rule-ui:3")
+      AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" prop_enc "rule-ui:3")
     qed
   qed
 qed

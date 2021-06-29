@@ -295,8 +295,8 @@ proof(safe intro!: "\<rightarrow>I" GEN)
     by (metis "\<equiv>E"(1) "logic-actual-nec:3" "vdash-properties:1[2]")
   AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "rule-ui:3")
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
-  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
-  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond "vdash-properties:6")
+  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis "nec-imp-act" "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
+  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis "act-cond" "vdash-properties:6")
 qed
 
 AOT_theorem res_var_bound_Buridan: \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>

@@ -715,7 +715,7 @@ proof (safe intro!: "\<rightarrow>I")
   ultimately AOT_have p: p by blast
   AOT_show \<open>[\<lambda>y p]s\<close>
     by (rule betaC_2_a; "cqt:2[lambda]")
-       (auto simp: p ex_1_a "rule-ui:2[const_var]")
+       (auto simp: p "ex:1:a" "rule-ui:2[const_var]")
 qed
 
 AOT_theorem act_sit_2: \<open>(Actual(s') & Actual(s'')) \<rightarrow> \<exists>x (Actual(x) & s' \<unlhd> x & s'' \<unlhd> x)\<close>
@@ -739,7 +739,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
       then AOT_obtain p\<^sub>1 where p\<^sub>1_prop: \<open>F = [\<lambda>y p\<^sub>1] & (s' \<Turnstile> p\<^sub>1 \<or> s'' \<Turnstile> p\<^sub>1)\<close>
         using "\<exists>E"[rotated] by blast
       AOT_hence \<open>\<box>(F = [\<lambda>y p\<^sub>1])\<close>
-        using "&E"(1) id_nec_2 "vdash-properties:10" by blast
+        using "&E"(1) "id-nec:2" "vdash-properties:10" by blast
       moreover AOT_have \<open>\<box>(s' \<Turnstile> p\<^sub>1 \<or> s'' \<Turnstile> p\<^sub>1)\<close>
       proof(rule "\<or>E"; (rule "\<rightarrow>I"; rule KBasic_15[THEN "\<rightarrow>E"])?)
         AOT_show \<open>s' \<Turnstile> p\<^sub>1 \<or> s'' \<Turnstile> p\<^sub>1\<close> using p\<^sub>1_prop "&E" by blast
@@ -787,7 +787,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
       by (rule "\<exists>I")
     AOT_hence \<open>x\<^sub>0[\<lambda>y p]\<close>
       using 1[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
-    AOT_thus \<open>x\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc "rule-ui:2[const_var]" x\<^sub>0_sit true_in_s)
+    AOT_thus \<open>x\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" prop_enc "rule-ui:2[const_var]" x\<^sub>0_sit true_in_s)
   qed
 
   AOT_have \<open>Actual(x\<^sub>0) & s' \<unlhd> x\<^sub>0 & s'' \<unlhd> x\<^sub>0\<close>
@@ -931,10 +931,10 @@ proof -
     by (auto intro!: cond_propI GEN "\<rightarrow>I" prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fI"]
                      "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>q\<^sub>1 & \<not>q\<^sub>1\<guillemotright>\<close>, rotated, OF "log-prop-prop:2"])
   have rigid: \<open>rigid_condition (\<lambda> \<Pi> . \<guillemotleft>\<Pi> = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<guillemotright>)\<close>
-    by (auto intro!: rigid_conditionI GEN "\<rightarrow>I" simp: id_nec_2[THEN "\<rightarrow>E"])
+    by (auto intro!: rigid_conditionI GEN "\<rightarrow>I" simp: "id-nec:2"[THEN "\<rightarrow>E"])
 
   AOT_obtain x where x_prop: \<open>x = \<^bold>\<iota>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
-    using ex_1_b[THEN "\<forall>E"(1), OF can_sit_desc_1, OF cond_prop]
+    using "ex:1:b"[THEN "\<forall>E"(1), OF can_sit_desc_1, OF cond_prop]
           "\<exists>E"[rotated] by blast    
   AOT_hence 0: \<open>\<^bold>\<A>(Situation(x) & \<forall>F (x[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
     using "\<rightarrow>E" actual_desc_2 by blast
@@ -1203,7 +1203,7 @@ AOT_theorem rigid_pw_3: \<open>\<diamond>PossibleWorld(x) \<equiv> \<box>Possibl
   using rigid_pw_1 rigid_pw_2 by (meson "\<equiv>E"(5))
 
 AOT_theorem rigid_pw_4: \<open>\<^bold>\<A>PossibleWorld(x) \<equiv> PossibleWorld(x)\<close>
-  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(6) nec_imp_act rigid_pw_1 rigid_pw_2)
+  by (metis Act_Sub_3 "deduction-theorem" "\<equiv>I" "\<equiv>E"(6) "nec-imp-act" rigid_pw_1 rigid_pw_2)
 
 (* TODO: PLM: missing proof of existence of possible worlds! *)
 AOT_register_rigid_restricted_type
@@ -1500,7 +1500,7 @@ proof -
   AOT_obtain w where w_prop: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_have sit_s: \<open>Situation(w)\<close> using PossibleWorld.\<psi> world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)] by blast
   show ?thesis
-  proof (safe intro!: uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(2) "&I" GEN "\<rightarrow>I"
+  proof (safe intro!: "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(2) "&I" GEN "\<rightarrow>I"
                       PossibleWorld.\<psi> actual[THEN "\<equiv>\<^sub>d\<^sub>fI"] sit_s sit_identity[unconstrain s, unconstrain s', THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] "\<equiv>I"
                       w_prop[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)])
     AOT_show \<open>PossibleWorld(w)\<close> using PossibleWorld.\<psi>.
@@ -1670,7 +1670,7 @@ proof -
     AOT_hence \<open>\<forall>q \<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> q \<rightarrow> q)\<close>
       using "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<rightarrow> p)\<close> using "\<forall>E"(2) by blast
-    AOT_hence \<open>\<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> p) \<rightarrow> \<^bold>\<A>p\<close> by (metis act_cond "vdash-properties:10")
+    AOT_hence \<open>\<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> p) \<rightarrow> \<^bold>\<A>p\<close> by (metis "act-cond" "vdash-properties:10")
     AOT_hence \<open>\<^bold>\<A>p\<close> using \<theta> "\<rightarrow>E" by blast
   }
   AOT_hence 2: \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<rightarrow> \<^bold>\<A>p\<close> for p by (rule "\<rightarrow>I")
@@ -2436,7 +2436,7 @@ AOT_theorem two_worlds_exist_3: \<open>\<exists>w \<not>Actual(w)\<close>
 AOT_theorem two_worlds_exit_4: \<open>\<exists>w\<exists>w'(w \<noteq> w')\<close>
 proof -
   AOT_obtain w where w: \<open>Actual(w)\<close>
-    using act_world_2[THEN uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "cqt-further:5"[THEN "\<rightarrow>E"]] "PossibleWorld.\<exists>E"[rotated] "&E"
+    using act_world_2[THEN "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "cqt-further:5"[THEN "\<rightarrow>E"]] "PossibleWorld.\<exists>E"[rotated] "&E"
     by blast
   moreover AOT_obtain w' where w': \<open>\<not>Actual(w')\<close> using two_worlds_exist_3 "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_have \<open>\<not>(w = w')\<close>
