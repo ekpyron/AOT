@@ -220,7 +220,7 @@ AOT_theorem "instantiation":
 proof -
   AOT_have \<open>\<phi>{\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>} \<rightarrow> \<chi>\<close> for \<alpha>
     using assms(1)
-    by (simp add: deduction_theorem)
+    by (simp add: "deduction-theorem")
   AOT_hence 0: \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> (\<phi>{\<alpha>} \<rightarrow> \<chi>))\<close>
     using GEN by simp
   moreover AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<phi>{\<alpha>}\<close> using assms(2) "\<exists>E"[rotated] by blast
@@ -260,20 +260,20 @@ AOT_theorem res_var_bound_reas_2: \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<ri
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
-  AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_2 rigid_condition vdash_properties_6)
+  AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_2 rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_1 vdash_properties_6)
+  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_1 "vdash-properties:6")
 qed
 
 AOT_theorem res_var_bound_reas_3: \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_2 vdash_properties_6)
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_2 "vdash-properties:6")
   AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> using "\<forall>E"(2) by blast
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
-    by (metis "B\<diamond>" T_S5_fund_1 rigid_condition vdash_properties_6)
+    by (metis "B\<diamond>" T_S5_fund_1 rigid_condition "vdash-properties:6")
   AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
 qed
 
@@ -281,9 +281,9 @@ AOT_theorem res_var_bound_reas_4: \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<r
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
-  AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_4 rigid_condition vdash_properties_6)
+  AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_4 rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b "logic-actual-nec:3" vdash_properties_1_b)
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b "logic-actual-nec:3" "vdash-properties:1[2]")
 qed
 
 
@@ -292,11 +292,11 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-    by (metis intro_elim_3_a "logic-actual-nec:3" vdash_properties_1_b)
+    by (metis intro_elim_3_a "logic-actual-nec:3" "vdash-properties:1[2]")
   AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis rule_ui_3)
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
-  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition vdash_properties_1_b vdash_properties_6)
-  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond vdash_properties_6)
+  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
+  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond "vdash-properties:6")
 qed
 
 AOT_theorem res_var_bound_Buridan: \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
@@ -305,7 +305,7 @@ proof (rule "\<rightarrow>I")
   then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
     by (metis KBasic_11 KBasic_3 T_S5_fund_1 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b
-              intro_elim_3_b reductio_aa_1 rigid_condition vdash_properties_6)
+              intro_elim_3_b reductio_aa_1 rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
 qed
@@ -318,8 +318,8 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain \<alpha> where \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<diamond>\<psi>{\<alpha>}\<close> and \<open>\<diamond>\<phi>{\<alpha>}\<close>
-    using KBasic2_3 "&E" vdash_properties_10 by blast+
-  moreover AOT_have \<open>\<psi>{\<alpha>}\<close> using calculation rigid_condition by (metis "B\<diamond>" "K\<diamond>" vdash_properties_10)
+    using KBasic2_3 "&E" "vdash-properties:10" by blast+
+  moreover AOT_have \<open>\<psi>{\<alpha>}\<close> using calculation rigid_condition by (metis "B\<diamond>" "K\<diamond>" "vdash-properties:10")
   ultimately AOT_have \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close> using "&I" by blast
   AOT_thus \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
     by (rule "\<exists>I")
