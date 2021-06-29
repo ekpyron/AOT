@@ -37,7 +37,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     using situations[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have 1: \<open>\<box>(A!x & \<forall>F (x[F] \<rightarrow> Propositional([F])))\<close>
   proof(rule "KBasic:3"[THEN "\<equiv>E"(2)]; rule "&I")
-    AOT_show \<open>\<box>A!x\<close> using 0[THEN "&E"(1)] by (metis oa_facts_2[THEN "\<rightarrow>E"])
+    AOT_show \<open>\<box>A!x\<close> using 0[THEN "&E"(1)] by (metis "oa-facts:2"[THEN "\<rightarrow>E"])
   next
     AOT_have \<open>\<forall>F (x[F] \<rightarrow> Propositional([F])) \<rightarrow> \<box>\<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>
       by (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>p (\<Pi> = [\<lambda>y p])\<guillemotright>\<close>)
@@ -143,7 +143,7 @@ proof -
   AOT_have \<open>s \<Turnstile> p \<equiv> s[\<lambda>y p]\<close>
     using lem1[THEN "\<rightarrow>E", OF sit] by blast
   also AOT_have \<open>\<dots> \<equiv> \<box>s[\<lambda>y p]\<close>
-    by (rule en_eq_2_1[unvarify F]) "cqt:2[lambda]"
+    by (rule "en-eq:2[1]"[unvarify F]) "cqt:2[lambda]"
   also AOT_have \<open>\<dots> \<equiv> \<box>s \<Turnstile> p\<close>
     using lem1[THEN RM, THEN "\<rightarrow>E", OF possit_sit_1[THEN "\<equiv>E"(1), OF sit]]
     by (metis "KBasic:6" "\<equiv>E"(2) "Commutativity of \<equiv>" "vdash-properties:10")
@@ -166,7 +166,7 @@ proof -
     using possit_sit_1[THEN "\<equiv>E"(1), OF Situation.\<psi>]
       lem2_1[THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)]] RM[OF "\<rightarrow>I", THEN "\<rightarrow>E"] by blast
   thus ?thesis
-    using sc_eq_fur_2[THEN "\<rightarrow>E"] by blast
+    using "sc-eq-fur:2"[THEN "\<rightarrow>E"] by blast
 qed
 
 AOT_theorem lem2_5: \<open>\<not>s \<Turnstile> p \<equiv> \<box>\<not>s \<Turnstile> p\<close>
@@ -392,10 +392,10 @@ next
 qed
 
 AOT_theorem thm_null_trivial_3: \<open>\<^bold>\<iota>x NullSituation(x)\<down>\<close>
-  by (meson A_Exists_2 "RA[2]" "\<equiv>E"(2) thm_null_trivial_1)
+  by (meson "A-Exists:2" "RA[2]" "\<equiv>E"(2) thm_null_trivial_1)
 
 AOT_theorem thm_null_trivial_4: \<open>\<^bold>\<iota>x TrivialSituation(x)\<down>\<close>
-  using A_Exists_2 "RA[2]" "\<equiv>E"(2) thm_null_trivial_2 by blast
+  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) thm_null_trivial_2 by blast
 
 AOT_define df_the_null_sit_1 :: \<open>\<kappa>\<^sub>s\<close> (\<open>\<^bold>s\<^sub>\<emptyset>\<close>)
   \<open>\<^bold>s\<^sub>\<emptyset> =\<^sub>d\<^sub>f \<^bold>\<iota>x NullSituation(x)\<close>
@@ -580,7 +580,7 @@ AOT_theorem comp_sit_2:
 AOT_theorem can_sit_desc_1:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
   shows \<open>\<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<phi>{F}))\<down>\<close>
-  using comp_sit_2[OF assms] A_Exists_2 "RA[2]" "\<equiv>E"(2) by blast
+  using comp_sit_2[OF assms] "A-Exists:2" "RA[2]" "\<equiv>E"(2) by blast
 
 AOT_theorem can_sit_desc_2:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
@@ -714,7 +714,7 @@ proof (safe intro!: "\<rightarrow>I")
   moreover AOT_assume \<open>s \<Turnstile> p\<close>
   ultimately AOT_have p: p by blast
   AOT_show \<open>[\<lambda>y p]s\<close>
-    by (rule betaC_2_a; "cqt:2[lambda]")
+    by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]")
        (auto simp: p "ex:1:a" "rule-ui:2[const_var]")
 qed
 
@@ -974,18 +974,18 @@ proof -
     {
       AOT_assume 0: \<open>p\<close>
       AOT_have \<open>[\<lambda>y p]x\<close> for x
-        by (rule betaC_2_a; "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
+        by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
       AOT_hence \<open>[\<lambda>y \<not>p]x\<close> for x using i "rule=E" by fast
       AOT_hence \<open>\<not>p\<close>
-        using betaC_1_a by auto
+        using "\<beta>\<rightarrow>C"(1) by auto
     }
     moreover {
       AOT_assume 0: \<open>\<not>p\<close>
       AOT_have \<open>[\<lambda>y \<not>p]x\<close> for x
-        by (rule betaC_2_a; "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
+        by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
       AOT_hence \<open>[\<lambda>y p]x\<close> for x using i[symmetric] "rule=E" by fast
       AOT_hence \<open>p\<close>
-        using betaC_1_a by auto
+        using "\<beta>\<rightarrow>C"(1) by auto
     }
     ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "raa-cor:1" "raa-cor:3")
   qed
@@ -1536,7 +1536,7 @@ proof -
 qed
 
 AOT_theorem pre_walpha: \<open>\<^bold>\<iota>w Actual(w)\<down>\<close>
-  using A_Exists_2 "RA[2]" act_world_2 "\<equiv>E"(2) by blast
+  using "A-Exists:2" "RA[2]" act_world_2 "\<equiv>E"(2) by blast
 
 AOT_define w_alpha :: \<open>\<kappa>\<^sub>s\<close> (\<open>\<^bold>w\<^sub>\<alpha>\<close>)
   \<open>\<^bold>w\<^sub>\<alpha> =\<^sub>d\<^sub>f \<^bold>\<iota>w Actual(w)\<close>
@@ -1759,14 +1759,14 @@ qed
 
 AOT_act_theorem act_world2_1: \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<equiv> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
   apply (AOT_subst \<open>\<guillemotleft>[\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<guillemotright>\<close> \<open>AOT_term_of_var p\<close>)
-   apply (rule beta_C_meta[THEN "\<rightarrow>E", OF prop_prop2_2, unvarify \<nu>\<^sub>1\<nu>\<^sub>n])
+   apply (rule "beta-C-meta"[THEN "\<rightarrow>E", OF prop_prop2_2, unvarify \<nu>\<^sub>1\<nu>\<^sub>n])
   using pre_walpha "rule-id-def:2:b[zero]" w_alpha apply blast
   using "\<equiv>E"(2) "Commutativity of \<equiv>" truth_at_alpha by blast
 
 AOT_act_theorem act_world2_2: \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
 proof -
   AOT_have \<open>p \<equiv> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
-    apply (rule beta_C_meta[THEN "\<rightarrow>E", OF prop_prop2_2, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, symmetric])
+    apply (rule "beta-C-meta"[THEN "\<rightarrow>E", OF prop_prop2_2, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, symmetric])
     using pre_walpha "rule-id-def:2:b[zero]" w_alpha by blast
   also AOT_have \<open>\<dots> \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
     by (meson "log-prop-prop:2" "rule-ui:1" truth_at_alpha "universal-cor")
@@ -2522,7 +2522,7 @@ AOT_define df_rigid_rel_2 :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<
 AOT_theorem rigid_der_1: \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w \<Turnstile> [F]x\<^sub>1...x\<^sub>n\<close>
   apply (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index])
    apply (fact w_rel_3)
-  apply (rule beta_C_meta[THEN "\<rightarrow>E"])
+  apply (rule "beta-C-meta"[THEN "\<rightarrow>E"])
   by (fact w_rel_3)
 
 AOT_theorem rigid_der_2: \<open>Rigid([G]\<^sub>w)\<close>
@@ -2543,7 +2543,7 @@ next
         using "rule-id-def:2:a[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3]
         by fast
       AOT_hence \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
-        by (metis betaC_1_a)
+        by (metis "\<beta>\<rightarrow>C"(1))
       AOT_hence \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
         using rigid_truth_at_1[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
       moreover AOT_have \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
@@ -2551,7 +2551,7 @@ next
         AOT_modally_strict {
           AOT_assume 1: \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
           AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-            by (rule betaC_2_a; fact w_rel_3)
+            by (rule "\<beta>\<leftarrow>C"(1); fact w_rel_3)
                (auto simp: 1 "cqt:2[const_var]" "vdash-properties:1[2]")
         }
       qed
@@ -2586,7 +2586,7 @@ proof -
           by (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF w_index, OF w_rel_3])
       qed
       also AOT_have \<open>\<dots> \<equiv> w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
-        by (rule beta_C_meta[THEN "\<rightarrow>E"])
+        by (rule "beta-C-meta"[THEN "\<rightarrow>E"])
            (fact w_rel_3)
       also AOT_have \<open>\<dots> \<equiv> [G]x\<^sub>1...x\<^sub>n\<close> using w[THEN "\<forall>E"(1), OF "log-prop-prop:2"] by blast
       finally AOT_show \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n\<close>.

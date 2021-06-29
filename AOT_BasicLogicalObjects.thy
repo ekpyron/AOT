@@ -24,7 +24,7 @@ AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
 
 
 AOT_theorem uni_tv: \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
-  using A_Exists_2 "RA[2]" "\<equiv>E"(2) p_has_tv_2 by blast
+  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) p_has_tv_2 by blast
 
 AOT_define the_tv_p :: \<open>\<phi> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>\<circ>_\<close> [100] 100)
   \<open>\<circ>p =\<^sub>d\<^sub>f \<^bold>\<iota>x TruthValueOf(x,p)\<close>
@@ -530,7 +530,7 @@ AOT_theorem ext_p_tv_1: \<open>\<exists>!x ExtensionOf(x, p)\<close>
      (auto simp: extof_e p_has_tv_2)
 
 AOT_theorem ext_p_tv_2: \<open>\<^bold>\<iota>x(ExtensionOf(x, p))\<down>\<close>
-  using A_Exists_2 "RA[2]" ext_p_tv_1 "\<equiv>E"(2) by blast
+  using "A-Exists:2" "RA[2]" ext_p_tv_1 "\<equiv>E"(2) by blast
 
 AOT_theorem ext_p_tv_3: \<open>\<^bold>\<iota>x(ExtensionOf(x, p)) = \<circ>p\<close>
 proof -
