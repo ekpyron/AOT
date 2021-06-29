@@ -24,7 +24,7 @@ AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
 
 
 AOT_theorem uni_tv: \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
-  using A_Exists_2 RA_2 intro_elim_3_b p_has_tv_2 by blast
+  using A_Exists_2 RA_2 "\<equiv>E"(2) p_has_tv_2 by blast
 
 AOT_define the_tv_p :: \<open>\<phi> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>\<circ>_\<close> [100] 100)
   \<open>\<circ>p =\<^sub>d\<^sub>f \<^bold>\<iota>x TruthValueOf(x,p)\<close>
@@ -48,7 +48,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   then AOT_obtain q where \<open>q & F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   moreover AOT_assume p
   ultimately AOT_have \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close>
-    by (metis "&I" "&E"(1) "&E"(2) "deduction-theorem" intro_elim_2)
+    by (metis "&I" "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I")
   AOT_thus \<open>\<exists>q ((q \<equiv> p) & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
 next
   fix F
@@ -56,7 +56,7 @@ next
   then AOT_obtain q where \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   moreover AOT_assume p
   ultimately AOT_have \<open>q & F = [\<lambda>y q]\<close>
-    by (metis "&I" "&E"(1) "&E"(2) intro_elim_3_b)
+    by (metis "&I" "&E"(1) "&E"(2) "\<equiv>E"(2))
   AOT_thus \<open>\<exists>q (q & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
 next
   AOT_assume \<open>\<forall>F (\<exists>q (q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -68,7 +68,7 @@ next
   ultimately AOT_have \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym intro_elim_3_b identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
 qed
 
 AOT_theorem TV_lem1_2: \<open>\<not>p \<equiv> \<forall>F(\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -78,7 +78,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   then AOT_obtain q where \<open>\<not>q & F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   moreover AOT_assume \<open>\<not>p\<close>
   ultimately AOT_have \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close>
-    by (metis "&I" "&E"(1) "&E"(2) "deduction-theorem" intro_elim_2 "raa-cor:3")
+    by (metis "&I" "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I" "raa-cor:3")
   AOT_thus \<open>\<exists>q ((q \<equiv> p) & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
 next
   fix F
@@ -86,7 +86,7 @@ next
   then AOT_obtain q where \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   moreover AOT_assume \<open>\<not>p\<close>
   ultimately AOT_have \<open>\<not>q & F = [\<lambda>y q]\<close>
-    by (metis "&I" "&E"(1) "&E"(2) intro_elim_3_a "raa-cor:3")
+    by (metis "&I" "&E"(1) "&E"(2) "\<equiv>E"(1) "raa-cor:3")
   AOT_thus \<open>\<exists>q (\<not>q & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
 next
   AOT_assume \<open>\<forall>F (\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -98,7 +98,7 @@ next
   ultimately AOT_have \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym intro_elim_3_b identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
 qed
 
 
@@ -133,22 +133,22 @@ proof -
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> using \<theta> "\<equiv>E"(1) by blast
     then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     moreover AOT_have \<open>r = q\<close> using calculation
-      using "&E"(2) intro_elim_3_b identity_thm2_3 by blast
+      using "&E"(2) "\<equiv>E"(2) identity_thm2_3 by blast
     ultimately AOT_show \<open>r \<equiv> p\<close>
-      by (metis "rule=E" "&E"(1) intro_elim_3_f "oth-class-taut:3:a")
+      by (metis "rule=E" "&E"(1) "\<equiv>E"(6) "oth-class-taut:3:a")
   next
     AOT_assume \<open>r \<equiv> p\<close>
     moreover AOT_have \<open>[\<lambda>y r] = [\<lambda>y r]\<close>
       by (simp add: "rule=I_1" prop_prop2_2)
     ultimately AOT_have \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close> using "&I" by blast
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I"(2)[where \<beta>=r])
-    AOT_hence \<open>\<circ>p[\<lambda>y r]\<close> using \<theta> intro_elim_3_b by blast
+    AOT_hence \<open>\<circ>p[\<lambda>y r]\<close> using \<theta> "\<equiv>E"(2) by blast
     AOT_thus \<open>\<circ>p\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" prop_enc russell_axiom_enc_1.\<psi>_denotes_asm)
   qed
 qed
 
 AOT_act_theorem T_lem_4: \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-  using T_lem_3 intro_elim_3_b "oth-class-taut:3:a" by blast
+  using T_lem_3 "\<equiv>E"(2) "oth-class-taut:3:a" by blast
 
 AOT_act_theorem T_lem_5: \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close>
 proof -
@@ -159,7 +159,7 @@ proof -
   ultimately AOT_have \<open>(\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)) \<equiv> \<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>\<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
-    using intro_elim_3_a rule_id_def_1 the_tv_p uni_tv by blast
+    using "\<equiv>E"(1) rule_id_def_1 the_tv_p uni_tv by blast
   AOT_thus \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close> using "\<forall>E"(2) by blast
 qed
 
@@ -172,7 +172,7 @@ proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<forall>p (p \<rightarrow> p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<phi>\<close>)
-      apply (metis (full_types) "deduction-theorem" intro_elim_2 intro_elim_3_b universal_cor)
+      apply (metis (full_types) "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) universal_cor)
     by (auto simp add: cqt_further_7 0)
 qed
 
@@ -182,7 +182,7 @@ proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (\<not>q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<exists>p (p & \<not>p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<guillemotleft>\<not>\<phi>\<guillemotright>\<close>)
-      apply (metis "instantiation" "deduction-theorem" intro_elim_2 intro_elim_3_a "raa-cor:1" "raa-cor:3")
+      apply (metis "instantiation" "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "raa-cor:1" "raa-cor:3")
     by (auto simp add: cqt_further_7 0)
 qed
 
@@ -244,7 +244,7 @@ proof -
       AOT_assume \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close>
       then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
       AOT_hence \<open>\<not>p\<close>
-        by (metis "rule=E" "&E"(1) "&E"(2) intro_elim_3_b "modus-tollens:1"
+        by (metis "rule=E" "&E"(1) "&E"(2) "\<equiv>E"(2) "modus-tollens:1"
                   "oth-class-taut:1:a" identity_thm2_3 "raa-cor:1")
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
     qed
@@ -282,8 +282,8 @@ proof -
             using b_prop[THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF prop_prop2_2, THEN "\<equiv>E"(1)]] by blast
           then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
           AOT_hence \<open>\<not>p\<close>
-            by (metis "rule=E" "&E"(1) "&E"(2) "deduction-theorem" intro_elim_2
-                      intro_elim_3_b identity_thm2_3 "raa-cor:3")
+            by (metis "rule=E" "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I"
+                      "\<equiv>E"(2) identity_thm2_3 "raa-cor:3")
           AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
         qed
       qed
@@ -406,7 +406,7 @@ AOT_act_theorem q_True_2: \<open>\<not>p \<equiv> (\<circ>p = \<bottom>)\<close>
 AOT_act_theorem q_True_3: \<open>p \<equiv> \<top>\<^bold>\<Sigma>p\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume p
-  AOT_hence \<open>\<circ>p = \<top>\<close> by (metis intro_elim_3_a q_True_1)
+  AOT_hence \<open>\<circ>p = \<top>\<close> by (metis "\<equiv>E"(1) q_True_1)
   moreover AOT_have \<open>\<circ>p\<^bold>\<Sigma>p\<close>
     by (simp add: T_lem_4)
   ultimately AOT_show \<open>\<top>\<^bold>\<Sigma>p\<close>
@@ -425,14 +425,14 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym intro_elim_3_b identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
 qed
 
 
 AOT_act_theorem q_True_5: \<open>\<not>p \<equiv> \<bottom>\<^bold>\<Sigma>p\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>\<not>p\<close>
-  AOT_hence \<open>\<circ>p = \<bottom>\<close> by (metis intro_elim_3_a q_True_2)
+  AOT_hence \<open>\<circ>p = \<bottom>\<close> by (metis "\<equiv>E"(1) q_True_2)
   moreover AOT_have \<open>\<circ>p\<^bold>\<Sigma>p\<close>
     by (simp add: T_lem_4)
   ultimately AOT_show \<open>\<bottom>\<^bold>\<Sigma>p\<close>
@@ -451,15 +451,15 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym intro_elim_3_b identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
 qed
 
 AOT_act_theorem q_True_4: \<open>p \<equiv> \<not>(\<bottom>\<^bold>\<Sigma>p)\<close>
   using q_True_5
-  by (metis "deduction-theorem" intro_elim_2 intro_elim_3_b intro_elim_3_d "raa-cor:3")
+  by (metis "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) "\<equiv>E"(4) "raa-cor:3")
 
 AOT_act_theorem q_True_6: \<open>\<not>p \<equiv> \<not>(\<top>\<^bold>\<Sigma>p)\<close>
-  using intro_elim_3_a "oth-class-taut:4:b" q_True_3 by blast
+  using "\<equiv>E"(1) "oth-class-taut:4:b" q_True_3 by blast
 
 AOT_define exten_p :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>ExtensionOf'(_,_')\<close>)
   \<open>ExtensionOf(x,p) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q ((x\<^bold>\<Sigma>q) \<equiv> (q \<equiv> p))\<close>
@@ -470,7 +470,7 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
   AOT_assume 1: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
   AOT_have \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>)
-     using intro_elim_3_b "Commutativity of \<equiv>" prop_prop1 rule_eq_df_1 apply blast
+     using "\<equiv>E"(2) "Commutativity of \<equiv>" prop_prop1 rule_eq_df_1 apply blast
     by (simp add: 1)
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   proof(safe intro!: "&I" GEN 1[THEN "&E"(1), THEN "&E"(1)] "\<equiv>I" "\<rightarrow>I")
@@ -513,11 +513,11 @@ next
       then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close>
         using "\<exists>E"[rotated] by blast
       AOT_thus \<open>r \<equiv> p\<close>
-        by (metis "rule=E" "&E"(1) "&E"(2) id_sym intro_elim_3_b "Commutativity of \<equiv>" identity_thm2_3)
+        by (metis "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "Commutativity of \<equiv>" identity_thm2_3)
     next
       AOT_assume \<open>r \<equiv> p\<close>
       AOT_hence \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close>
-        by (metis "rule=I_1" df_simplify_1 intro_elim_3_b "Commutativity of &" prop_prop2_2)
+        by (metis "rule=I_1" df_simplify_1 "\<equiv>E"(2) "Commutativity of &" prop_prop2_2)
       AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I")
       AOT_hence \<open>x[\<lambda>y r]\<close> using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
       AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc rule_ui_3)
@@ -530,7 +530,7 @@ AOT_theorem ext_p_tv_1: \<open>\<exists>!x ExtensionOf(x, p)\<close>
      (auto simp: extof_e p_has_tv_2)
 
 AOT_theorem ext_p_tv_2: \<open>\<^bold>\<iota>x(ExtensionOf(x, p))\<down>\<close>
-  using A_Exists_2 RA_2 ext_p_tv_1 intro_elim_3_b by blast
+  using A_Exists_2 RA_2 ext_p_tv_1 "\<equiv>E"(2) by blast
 
 AOT_theorem ext_p_tv_3: \<open>\<^bold>\<iota>x(ExtensionOf(x, p)) = \<circ>p\<close>
 proof -

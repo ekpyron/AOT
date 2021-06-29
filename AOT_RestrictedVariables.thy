@@ -283,7 +283,7 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
   AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_4 rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b "logic-actual-nec:3" "vdash-properties:1[2]")
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "\<equiv>E"(2) "logic-actual-nec:3" "vdash-properties:1[2]")
 qed
 
 
@@ -292,7 +292,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-    by (metis intro_elim_3_a "logic-actual-nec:3" "vdash-properties:1[2]")
+    by (metis "\<equiv>E"(1) "logic-actual-nec:3" "vdash-properties:1[2]")
   AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis rule_ui_3)
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
@@ -305,7 +305,7 @@ proof (rule "\<rightarrow>I")
   then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
     by (metis KBasic_11 KBasic_3 T_S5_fund_1 "&I" "&E"(1) "&E"(2)
-              intro_elim_3_b "reductio-aa:1" rigid_condition "vdash-properties:6")
+              "\<equiv>E"(2) "reductio-aa:1" rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
 qed
