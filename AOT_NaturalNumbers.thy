@@ -1407,7 +1407,7 @@ proof -
       AOT_modally_strict {
         AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_show \<open>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
-        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] "rel-neg-T:3" "&I")
           AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
         next
           AOT_show \<open>\<not>\<exists>u [L\<^sup>-]u\<close>
@@ -1415,7 +1415,7 @@ proof -
             AOT_assume \<open>\<exists>u [L\<^sup>-]u\<close>
             then AOT_obtain u where \<open>[L\<^sup>-]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
             moreover AOT_have \<open>\<not>[L\<^sup>-]u\<close>
-              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              using "thm-noncont-e-e:2"[THEN "contingent-properties:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
               by (metis "qml:2" "rule-ui:3" "vdash-properties:10" "vdash-properties:1[2]")
             ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis  "raa-cor:3")
           qed
@@ -1436,7 +1436,7 @@ proof -
       AOT_modally_strict {
         AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close>
-        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] "rel-neg-T:3" "&I")
           AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
         next
           AOT_obtain x where Px: \<open>[\<guillemotleft>?P\<guillemotright>]x\<close> using A "\<exists>E" by blast
@@ -1456,7 +1456,7 @@ proof -
             AOT_assume \<open>\<exists>u [L\<^sup>-]u\<close>
             then AOT_obtain u where \<open>[L\<^sup>-]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
             moreover AOT_have \<open>\<not>[L\<^sup>-]u\<close>
-              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              using "thm-noncont-e-e:2"[THEN "contingent-properties:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
               by (metis "qml:2" "rule-ui:3" "vdash-properties:10" "vdash-properties:1[2]")
             ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis  "raa-cor:3")
           qed
@@ -1467,7 +1467,7 @@ proof -
           AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close>
             apply (rule eq_part_2[unvarify F G, THEN "\<rightarrow>E", rotated 2])
              apply "cqt:2[lambda]"
-            by (simp add: rel_neg_T_3)
+            by (simp add: "rel-neg-T:3")
           AOT_thus \<open>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>- & \<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close> using B "&I" by blast
         qed
       }
@@ -1479,7 +1479,7 @@ proof -
     AOT_show \<open>[\<lambda>x [E!]x & \<not>\<^bold>\<A>[E!]x]\<down>\<close> by "cqt:2[lambda]"
   next
     AOT_show \<open>[L]\<^sup>-\<down>\<close>
-      by (simp add: rel_neg_T_3)
+      by (simp add: "rel-neg-T:3")
   qed
 qed
 
@@ -1502,7 +1502,7 @@ proof -
       AOT_modally_strict {
         AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_show \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
-        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+        proof (safe intro!: empty_approx_1[unvarify F H, THEN "\<rightarrow>E"] "rel-neg-T:3" "&I")
           AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
         next
           AOT_show \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]u\<close>
@@ -1512,7 +1512,7 @@ proof -
             AOT_hence \<open>\<^bold>\<A>[L\<^sup>-]u\<close>
               using "\<beta>\<rightarrow>C"(1) "&E" by blast
             moreover AOT_have \<open>\<box>\<not>[L\<^sup>-]u\<close>
-              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              using "thm-noncont-e-e:2"[THEN "contingent-properties:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
               by (metis RN "qml:2" "rule-ui:3" "vdash-properties:10" "vdash-properties:1[2]")
             ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "Act-Sub:3" "KBasic2:1" "\<equiv>E"(1) "raa-cor:3" "vdash-properties:10")
           qed
@@ -1535,7 +1535,7 @@ proof -
       AOT_modally_strict {
         AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<close>
-        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] rel_neg_T_3 "&I")
+        proof (safe intro!: empty_approx_2[unvarify F H, THEN "\<rightarrow>E"] "rel-neg-T:3" "&I")
           AOT_show \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
         next
           AOT_obtain x where Px: \<open>[\<guillemotleft>?P\<guillemotright>]x\<close> using A "\<exists>E" by blast
@@ -1556,7 +1556,7 @@ proof -
             AOT_hence \<open>\<^bold>\<A>[L\<^sup>-]u\<close>
               using "\<beta>\<rightarrow>C"(1) "&E" by blast
             moreover AOT_have \<open>\<box>\<not>[L\<^sup>-]u\<close>
-              using thm_noncont_e_e_2[THEN contingent_properties_2[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+              using "thm-noncont-e-e:2"[THEN "contingent-properties:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
               by (metis RN "qml:2" "rule-ui:3" "vdash-properties:10" "vdash-properties:1[2]")
             ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "Act-Sub:3" "KBasic2:1" "\<equiv>E"(1) "raa-cor:3" "vdash-properties:10")
           qed
@@ -1580,7 +1580,7 @@ proof -
     AOT_show \<open>[\<lambda>x [E!]x & \<not>\<^bold>\<A>[E!]x]\<down>\<close> by "cqt:2[lambda]"
   next
     AOT_show \<open>[L]\<^sup>-\<down>\<close>
-      by (simp add: rel_neg_T_3)
+      by (simp add: "rel-neg-T:3")
   qed
 qed
 
@@ -5059,7 +5059,7 @@ proof -
     AOT_hence Ay: \<open>A!y\<close>
       by (meson "&E"(2) encoders_are_abstract "existential:2[const_var]" "vdash-properties:10")
     AOT_hence notOy: \<open>\<not>O!y\<close>
-      using "\<equiv>E"(1) oa_contingent_3 by blast
+      using "\<equiv>E"(1) "oa-contingent:3" by blast
     {
       AOT_assume Ax: \<open>A!x\<close>
       {

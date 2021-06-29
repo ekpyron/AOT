@@ -603,7 +603,7 @@ AOT_define actual :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Actual'(
 AOT_theorem act_and_not_pos: \<open>\<exists>s (Actual(s) & \<diamond>\<not>Actual(s))\<close>
 proof -
   AOT_obtain q\<^sub>1 where q\<^sub>1_prop: \<open>q\<^sub>1 & \<diamond>\<not>q\<^sub>1\<close>
-    by (metis "\<equiv>\<^sub>d\<^sub>fE" "instantiation" cont_tf_1 cont_tf_thm_1)
+    by (metis "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1")
   AOT_have \<open>\<exists>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1]))\<close>
   proof (safe intro!: comp_sit_1 cond_propI GEN "\<rightarrow>I")
     AOT_modally_strict {
@@ -926,7 +926,7 @@ AOT_theorem pos_cons_sit_1: \<open>Possible(s) \<rightarrow> Consistent(s)\<clos
 AOT_theorem pos_cons_sit_2: \<open>\<exists>s (Consistent(s) & \<not>Possible(s))\<close>
 proof -
   AOT_obtain q\<^sub>1 where \<open>q\<^sub>1 & \<diamond>\<not>q\<^sub>1\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" "instantiation" cont_tf_1 cont_tf_thm_1 by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1" by blast
   have cond_prop: \<open>cond_prop (\<lambda> \<Pi> . \<guillemotleft>\<Pi> = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<guillemotright>)\<close>
     by (auto intro!: cond_propI GEN "\<rightarrow>I" prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fI"]
                      "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>q\<^sub>1 & \<not>q\<^sub>1\<guillemotright>\<close>, rotated, OF "log-prop-prop:2"])
@@ -1073,7 +1073,7 @@ AOT_theorem sit_classical_5:
   \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<exists>q(\<box>(s \<Turnstile> q) & \<not>(s \<Turnstile> \<box> q))\<close>
 proof (rule "\<rightarrow>I")
   AOT_obtain r where A: \<open>r\<close> and \<open>\<diamond>\<not>r\<close>
-    by (metis "&E"(1) "&E"(2) "\<equiv>\<^sub>d\<^sub>fE" "instantiation" cont_tf_1 cont_tf_thm_1)
+    by (metis "&E"(1) "&E"(2) "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1")
   AOT_hence B: \<open>\<not>\<box>r\<close>
     using "KBasic:11" "\<equiv>E"(2) by blast
   moreover AOT_assume asm: \<open>\<forall> p (s \<Turnstile> p \<equiv> p)\<close>
@@ -2339,7 +2339,7 @@ qed
 AOT_theorem conj_dist_w_8: \<open>\<exists>w\<exists>p((\<box>w \<Turnstile> p) & \<not>w \<Turnstile> \<box>p)\<close>
 proof -
   AOT_obtain r where A: r and \<open>\<diamond>\<not>r\<close>
-    by (metis "&E"(1) "&E"(2) "\<equiv>\<^sub>d\<^sub>fE" "instantiation" cont_tf_1 cont_tf_thm_1)
+    by (metis "&E"(1) "&E"(2) "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1")
   AOT_hence B: \<open>\<not>\<box>r\<close> by (metis "KBasic:11" "\<equiv>E"(2))
   AOT_have \<open>\<diamond>r\<close> using A "T\<diamond>"[THEN "\<rightarrow>E"] by simp
   AOT_hence \<open>\<exists>w w \<Turnstile> r\<close> using fund_1[THEN "\<equiv>E"(1)] by blast
@@ -2382,7 +2382,7 @@ proof -
   AOT_obtain w where w: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
     using act_world_1 "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_obtain r where \<open>\<not>r\<close> and \<open>\<diamond>r\<close>
-    using cont_tf_thm_2 cont_tf_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<exists>E"[rotated] by metis
+    using "cont-tf-thm:2" "cont-tf:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<exists>E"[rotated] by metis
   AOT_hence \<open>w \<Turnstile> \<not>r\<close> and 0: \<open>w \<Turnstile> \<diamond>r\<close>
     using w[THEN "\<forall>E"(1), OF "log-prop-prop:2", THEN "\<equiv>E"(2)] by blast+
   AOT_hence \<open>\<not>w \<Turnstile> r\<close> using coherent_1[THEN "\<equiv>E"(1)] by blast
@@ -2396,7 +2396,7 @@ AOT_theorem two_worlds_exist_1: \<open>\<exists>p(ContingentlyTrue(p)) \<rightar
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>p ContingentlyTrue(p)\<close>
   then AOT_obtain p where \<open>ContingentlyTrue(p)\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence p: \<open>p & \<diamond>\<not>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" cont_tf_1)
+  AOT_hence p: \<open>p & \<diamond>\<not>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "cont-tf:1")
   AOT_hence \<open>\<exists>w w \<Turnstile> \<not>p\<close> using fund_1[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] "&E" by blast
   then AOT_obtain w where w: \<open>w \<Turnstile> \<not>p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
   AOT_have \<open>\<not>Actual(w)\<close>
@@ -2415,7 +2415,7 @@ AOT_theorem two_worlds_exist_2: \<open>\<exists>p(ContingentlyFalse(p)) \<righta
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>p ContingentlyFalse(p)\<close>
   then AOT_obtain p where \<open>ContingentlyFalse(p)\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence p: \<open>\<not>p & \<diamond>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" cont_tf_2)
+  AOT_hence p: \<open>\<not>p & \<diamond>p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "cont-tf:2")
   AOT_hence \<open>\<exists>w w \<Turnstile> p\<close> using fund_1[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] "&E" by blast
   then AOT_obtain w where w: \<open>w \<Turnstile> p\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
   moreover AOT_have \<open>\<not>Actual(w)\<close>
@@ -2431,7 +2431,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem two_worlds_exist_3: \<open>\<exists>w \<not>Actual(w)\<close>
-  using cont_tf_thm_1 two_worlds_exist_1 "vdash-properties:10" by blast
+  using "cont-tf-thm:1" two_worlds_exist_1 "vdash-properties:10" by blast
 
 AOT_theorem two_worlds_exit_4: \<open>\<exists>w\<exists>w'(w \<noteq> w')\<close>
 proof -
