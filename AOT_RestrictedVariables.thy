@@ -273,7 +273,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> using "\<forall>E"(2) by blast
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
-    by (metis "B\<diamond>" T_S5_fund_1 rigid_condition "vdash-properties:6")
+    by (metis "B\<diamond>" "T\<diamond>" rigid_condition "vdash-properties:6")
   AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
 qed
 
@@ -304,7 +304,7 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>})\<close>
   then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
-    by (metis KBasic_11 KBasic_3 T_S5_fund_1 "&I" "&E"(1) "&E"(2)
+    by (metis "KBasic:11" "KBasic:3" "T\<diamond>" "&I" "&E"(1) "&E"(2)
               "\<equiv>E"(2) "reductio-aa:1" rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
@@ -318,7 +318,7 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain \<alpha> where \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<diamond>\<psi>{\<alpha>}\<close> and \<open>\<diamond>\<phi>{\<alpha>}\<close>
-    using KBasic2_3 "&E" "vdash-properties:10" by blast+
+    using "KBasic2:3" "&E" "vdash-properties:10" by blast+
   moreover AOT_have \<open>\<psi>{\<alpha>}\<close> using calculation rigid_condition by (metis "B\<diamond>" "K\<diamond>" "vdash-properties:10")
   ultimately AOT_have \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close> using "&I" by blast
   AOT_thus \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
