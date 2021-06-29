@@ -68,7 +68,7 @@ next
   ultimately AOT_have \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b p_identity_thm2_3 by fast
+    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b identity_thm2_3 by fast
 qed
 
 AOT_theorem TV_lem1_2: \<open>\<not>p \<equiv> \<forall>F(\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -98,7 +98,7 @@ next
   ultimately AOT_have \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b p_identity_thm2_3 by fast
+    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b identity_thm2_3 by fast
 qed
 
 
@@ -133,7 +133,7 @@ proof -
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> using \<theta> "\<equiv>E"(1) by blast
     then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     moreover AOT_have \<open>r = q\<close> using calculation
-      using con_dis_i_e_2_b intro_elim_3_b p_identity_thm2_3 by blast
+      using con_dis_i_e_2_b intro_elim_3_b identity_thm2_3 by blast
     ultimately AOT_show \<open>r \<equiv> p\<close>
       by (metis "rule=E" con_dis_i_e_2_a intro_elim_3_f oth_class_taut_3_a)
   next
@@ -245,7 +245,7 @@ proof -
       then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
       AOT_hence \<open>\<not>p\<close>
         by (metis "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b intro_elim_3_b modus_tollens_1
-                  oth_class_taut_1_a p_identity_thm2_3 raa_cor_1)
+                  oth_class_taut_1_a identity_thm2_3 raa_cor_1)
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
     qed
   qed(cqt_2_lambda)
@@ -283,7 +283,7 @@ proof -
           then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
           AOT_hence \<open>\<not>p\<close>
             by (metis "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b deduction_theorem intro_elim_2
-                      intro_elim_3_b p_identity_thm2_3 raa_cor_3)
+                      intro_elim_3_b identity_thm2_3 raa_cor_3)
           AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
         qed
       qed
@@ -425,7 +425,7 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b p_identity_thm2_3 by fast
+    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b identity_thm2_3 by fast
 qed
 
 
@@ -451,7 +451,7 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b p_identity_thm2_3 by fast
+    using "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b identity_thm2_3 by fast
 qed
 
 AOT_act_theorem q_True_4: \<open>p \<equiv> \<not>(\<bottom>\<^bold>\<Sigma>p)\<close>
@@ -513,7 +513,7 @@ next
       then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close>
         using "\<exists>E"[rotated] by blast
       AOT_thus \<open>r \<equiv> p\<close>
-        by (metis "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b oth_class_taut_2_e p_identity_thm2_3)
+        by (metis "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b id_sym intro_elim_3_b oth_class_taut_2_e identity_thm2_3)
     next
       AOT_assume \<open>r \<equiv> p\<close>
       AOT_hence \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close>

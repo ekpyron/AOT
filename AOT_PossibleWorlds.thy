@@ -247,7 +247,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); safe intro!: "&I" GEN
     using sit_part_whole[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem sit_identity2_1: \<open>s = s' \<equiv> s \<unlhd> s' & s' \<unlhd> s\<close>
+AOT_theorem sit_identity_2_1: \<open>s = s' \<equiv> s \<unlhd> s' & s' \<unlhd> s\<close>
 proof (safe intro!: "\<equiv>I" "&I" "\<rightarrow>I")
   AOT_show \<open>s \<unlhd> s'\<close> if \<open>s = s'\<close>
     using "rule=E" part_1 that by blast
@@ -260,7 +260,7 @@ next
     by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_2_a con_dis_i_e_2_b noneq_infix raa_cor_3)
 qed
 
-AOT_theorem sit_identity2_2: \<open>s = s' \<equiv> \<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close>
+AOT_theorem sit_identity_2_2: \<open>s = s' \<equiv> \<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" Situation.GEN sit_identity[THEN "\<equiv>E"(2)] GEN[where 'a=\<o>])
   AOT_show \<open>s'' \<unlhd> s'\<close> if \<open>s'' \<unlhd> s\<close> and \<open>s = s'\<close> for s''
     using "rule=E" that by blast
@@ -621,7 +621,7 @@ proof -
       by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b prop_enc true_in_s)
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close>
       by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) cqt_2_lambda
-    AOT_hence \<open>p = q\<^sub>1\<close> by (metis intro_elim_3_b p_identity_thm2_3)
+    AOT_hence \<open>p = q\<^sub>1\<close> by (metis intro_elim_3_b identity_thm2_3)
     AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
   qed
   moreover AOT_have \<open>\<diamond>\<not>Actual(s\<^sub>1)\<close>
@@ -778,7 +778,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
             "\<exists>E"[rotated] by blast
     AOT_thus \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
       by (metis "rule=E" con_dis_i_e_2_a con_dis_i_e_2_b con_dis_i_e_3_a con_dis_i_e_3_b
-                con_dis_i_e_4_a deduction_theorem id_sym intro_elim_3_b p_identity_thm2_3)
+                con_dis_i_e_4_a deduction_theorem id_sym intro_elim_3_b identity_thm2_3)
   next
     AOT_assume \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close>
@@ -1112,7 +1112,7 @@ proof -
     AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close>
       using s\<^sub>0_prop[THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(1)] by blast
     then AOT_obtain q\<^sub>1 where q\<^sub>1_prop: \<open>q\<^sub>1 & [\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close> using "\<exists>E"[rotated] by blast
-    AOT_hence \<open>p = q\<^sub>1\<close> by (metis con_dis_i_e_2_b intro_elim_3_b p_identity_thm2_3)
+    AOT_hence \<open>p = q\<^sub>1\<close> by (metis con_dis_i_e_2_b intro_elim_3_b identity_thm2_3)
     AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
   next
     fix p

@@ -661,7 +661,7 @@ AOT_theorem log_prop_prop_1: \<open>[\<lambda> \<phi>]\<down>\<close>
   using cqt_2_lambda0[axiom_inst] by auto
 
 AOT_theorem log_prop_prop_2: \<open>\<phi>\<down>\<close>
-  by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF existence_3]) cqt_2_lambda
+  by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF "existence:3"]) cqt_2_lambda
 
 AOT_theorem exist_nec: \<open>\<tau>\<down> \<rightarrow> \<box>\<tau>\<down>\<close>
 proof -
@@ -683,7 +683,7 @@ proof
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<kappa> = \<kappa>'\<close>
       AOT_hence \<open>O!\<kappa> \<or> A!\<kappa>\<close>
-        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF identity]])
+        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:1"]])
            (meson "\<rightarrow>I" "\<or>I"(1) "&E"(1))+
       AOT_thus \<open>\<kappa>\<down>\<close>
         by (rule "\<or>E"(1))
@@ -696,7 +696,7 @@ next
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<kappa> = \<kappa>'\<close>
       AOT_hence \<open>O!\<kappa>' \<or> A!\<kappa>'\<close>
-        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF identity]])
+        by (rule "\<or>I"(3)[OF "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:1"]])
            (meson "\<rightarrow>I" "\<or>I" "&E")+
       AOT_thus \<open>\<kappa>'\<down>\<close>
         by (rule "\<or>E"(1))
@@ -711,7 +711,7 @@ proof
     AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close> (* TODO: how to get rid of the fixes? *)
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<Pi> = \<Pi>'\<close>
-      AOT_thus \<open>\<Pi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
+      AOT_thus \<open>\<Pi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:3"[of \<Pi> \<Pi>']] "&E" by blast
     qed
   }
 next
@@ -719,7 +719,7 @@ next
     AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>'\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close> (* TODO: how to get rid of the fixes? *)
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<Pi> = \<Pi>'\<close>
-      AOT_thus \<open>\<Pi>'\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_2_generic[of \<Pi> \<Pi>']] "&E" by blast
+      AOT_thus \<open>\<Pi>'\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:3"[of \<Pi> \<Pi>']] "&E" by blast
     qed
   }
 qed
@@ -731,7 +731,7 @@ proof
     AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<phi>\<down>\<close>
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<phi> = \<psi>\<close>
-      AOT_thus \<open>\<phi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
+      AOT_thus \<open>\<phi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:4"[of \<phi> \<psi>]] "&E" by blast
     qed
   }
 next
@@ -740,7 +740,7 @@ next
     AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<psi>\<down>\<close>
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<phi> = \<psi>\<close>
-      AOT_thus \<open>\<psi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF p_identity_3[of \<phi> \<psi>]] "&E" by blast
+      AOT_thus \<open>\<psi>\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF "identity:4"[of \<phi> \<psi>]] "&E" by blast
     qed
   }
 qed
@@ -753,7 +753,7 @@ proof
     proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
       fix \<tau>\<^sub>1 \<tau>\<^sub>1' :: 'a and \<tau>\<^sub>2  \<tau>\<^sub>2' :: 'b
       AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<close>
-      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity)
+      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity_1)
       AOT_hence \<open>\<tau>\<^sub>1\<down>\<close> and \<open>\<tau>\<^sub>2\<down>\<close> using "t=t-proper_1" "&E" vdash_properties_10 by blast+
       AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright>\<down>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_denotes)
     qed
@@ -765,7 +765,7 @@ next
     proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
       fix \<tau>\<^sub>1 \<tau>\<^sub>1' :: 'a and \<tau>\<^sub>2  \<tau>\<^sub>2' :: 'b
       AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<close>
-      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity)
+      AOT_hence \<open>(\<tau>\<^sub>1 = \<tau>\<^sub>1') & (\<tau>\<^sub>2 = \<tau>\<^sub>2')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" tuple_identity_1)
       AOT_hence \<open>\<tau>\<^sub>1'\<down>\<close> and \<open>\<tau>\<^sub>2'\<down>\<close> using "t=t-proper_2" "&E" vdash_properties_10 by blast+
       AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1', \<tau>\<^sub>2')\<guillemotright>\<down>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_denotes)
     qed
@@ -786,7 +786,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<Pi>\<down>\<close> and \<open>\<Pi>'\<down>\<close>
     using "t=t-proper_1" "t=t-proper_2" MP by blast+
   moreover AOT_have \<open>\<forall>F\<forall>G (F = G \<rightarrow> ((\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> [F]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)))\<close>
-    apply (rule GEN)+ using l_identity[axiom_inst] by force
+    apply (rule GEN)+ using "l-identity"[axiom_inst] by force
   ultimately AOT_have \<open>\<Pi> = \<Pi>' \<rightarrow> ((\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n))\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>(\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>]x\<^sub>1...x\<^sub>n)) \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<equiv> [\<Pi>']x\<^sub>1...x\<^sub>n)\<close>
@@ -803,7 +803,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<phi>\<down>\<close> and \<open>\<psi>\<down>\<close>
     using "t=t-proper_1" "t=t-proper_2" MP by blast+
   moreover AOT_have \<open>\<forall>p\<forall>q (p = q \<rightarrow> ((\<box>(p \<equiv> p) \<rightarrow> \<box>(p \<equiv> q))))\<close>
-    apply (rule GEN)+ using l_identity[axiom_inst] by force
+    apply (rule GEN)+ using "l-identity"[axiom_inst] by force
   ultimately AOT_have \<open>\<phi> = \<psi> \<rightarrow> (\<box>(\<phi> \<equiv> \<phi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>\<box>(\<phi> \<equiv> \<phi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
@@ -818,7 +818,7 @@ AOT_theorem "rule=E": assumes \<open>\<phi>{\<tau>}\<close> and \<open>\<tau> = 
 proof -
   AOT_have \<open>\<tau>\<down>\<close> and \<open>\<sigma>\<down>\<close> using assms(2) "t=t-proper_1" "t=t-proper_2" "\<rightarrow>E" by blast+
   moreover AOT_have \<open>\<forall>\<alpha>\<forall>\<beta>(\<alpha> = \<beta> \<rightarrow> (\<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>}))\<close>
-    apply (rule GEN)+ using l_identity[axiom_inst] by blast
+    apply (rule GEN)+ using "l-identity"[axiom_inst] by blast
   ultimately AOT_have \<open>\<tau> = \<sigma> \<rightarrow> (\<phi>{\<tau>} \<rightarrow> \<phi>{\<sigma>})\<close>
     using "\<forall>E"(1) by blast
   AOT_thus \<open>\<phi>{\<sigma>}\<close> using assms "\<rightarrow>E" by blast
@@ -849,14 +849,14 @@ AOT_theorem propositions_lemma_6: \<open>(\<phi> \<equiv> \<psi>) \<equiv> ([\<l
 AOT_theorem oa_exist_1: \<open>O!\<down>\<close>
 proof -
   AOT_have \<open>[\<lambda>x \<diamond>[E!]x]\<down>\<close> by cqt_2_lambda
-  AOT_hence 1: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_1, THEN "&E"(1)] "\<rightarrow>E" by blast
+  AOT_hence 1: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close> using df_rules_terms_2[OF "oa:1", THEN "&E"(1)] "\<rightarrow>E" by blast
   AOT_show \<open>O!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
 qed
 
 AOT_theorem oa_exist_2: \<open>A!\<down>\<close>
 proof -
   AOT_have \<open>[\<lambda>x \<not>\<diamond>[E!]x]\<down>\<close> by cqt_2_lambda
-  AOT_hence 1: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close> using df_rules_terms_2[OF oa_2, THEN "&E"(1)] "\<rightarrow>E" by blast
+  AOT_hence 1: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close> using df_rules_terms_2[OF "oa:2", THEN "&E"(1)] "\<rightarrow>E" by blast
   AOT_show \<open>A!\<down>\<close> using "t=t-proper_1"[THEN "\<rightarrow>E", OF 1] by simp
 qed
 
@@ -866,9 +866,9 @@ proof(rule raa_cor_1)
   AOT_hence A: \<open>\<not>O!x\<close> and B: \<open>\<not>A!x\<close>
     using con_dis_taut_3 modus_tollens_1 con_dis_i_e_3_b raa_cor_5 by blast+
   AOT_have C: \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close>
-    by (rule df_rules_terms_2[OF oa_1, THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
+    by (rule df_rules_terms_2[OF "oa:1", THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_have D: \<open>A! = [\<lambda>x \<not>\<diamond>[E!]x]\<close>
-    by (rule df_rules_terms_2[OF oa_2, THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
+    by (rule df_rules_terms_2[OF "oa:2", THEN "&E"(1), THEN "\<rightarrow>E"]) cqt_2_lambda
   AOT_have E: \<open>\<not>[\<lambda>x \<diamond>[E!]x]x\<close>
     using A C "=E" by fast
   AOT_have F: \<open>\<not>[\<lambda>x \<not>\<diamond>[E!]x]x\<close>
@@ -880,62 +880,62 @@ proof(rule raa_cor_1)
   AOT_show \<open>\<not>\<diamond>[E!]x & \<not>\<not>\<diamond>[E!]x\<close> using G E "\<equiv>E" H F "\<equiv>E" "&I" by metis
 qed
 
-AOT_theorem p_identity_thm2_1: \<open>F = G \<equiv> \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
+AOT_theorem identity_thm2_1: \<open>F = G \<equiv> \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
 proof -
   AOT_have \<open>F = G \<equiv> F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
-    using p_identity df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:2" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>F\<down>\<close> and \<open>G\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately AOT_show \<open>F = G \<equiv> \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
     using df_simplify_1 "&I" by blast
 qed
 
-AOT_theorem p_identity_thm2_2_a: \<open>F = G \<equiv> \<forall>y\<^sub>1([\<lambda>x [F]xy\<^sub>1] = [\<lambda>x [G]xy\<^sub>1] & [\<lambda>x [F]y\<^sub>1x] = [\<lambda>x [G]y\<^sub>1x])\<close>
+AOT_theorem identity_thm2_2_a: \<open>F = G \<equiv> \<forall>y\<^sub>1([\<lambda>x [F]xy\<^sub>1] = [\<lambda>x [G]xy\<^sub>1] & [\<lambda>x [F]y\<^sub>1x] = [\<lambda>x [G]y\<^sub>1x])\<close>
 proof -
   AOT_have \<open>F = G \<equiv> F\<down> & G\<down> & \<forall>y\<^sub>1([\<lambda>x [F]xy\<^sub>1] = [\<lambda>x [G]xy\<^sub>1] & [\<lambda>x [F]y\<^sub>1x] = [\<lambda>x [G]y\<^sub>1x])\<close>
-    using p_identity_2_a df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:3[2]" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>F\<down>\<close> and \<open>G\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately show ?thesis
     using df_simplify_1 "&I" by blast
 qed
     
-AOT_theorem p_identity_thm2_2_b: \<open>F = G \<equiv> \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>x [F]xy\<^sub>1y\<^sub>2] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2] & [\<lambda>x [F]y\<^sub>1y\<^sub>2x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2x])\<close>
+AOT_theorem identity_thm2_2_b: \<open>F = G \<equiv> \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>x [F]xy\<^sub>1y\<^sub>2] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2] & [\<lambda>x [F]y\<^sub>1y\<^sub>2x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2x])\<close>
 proof -
   AOT_have \<open>F = G \<equiv> F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>x [F]xy\<^sub>1y\<^sub>2] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2] & [\<lambda>x [F]y\<^sub>1y\<^sub>2x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2x])\<close>
-    using p_identity_2_b df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:3[3]" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>F\<down>\<close> and \<open>G\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately show ?thesis
     using df_simplify_1 "&I" by blast
 qed
 
-AOT_theorem p_identity_thm2_2_c: \<open>F = G \<equiv> \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>x [F]xy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2y\<^sub>3] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2xy\<^sub>3] = [\<lambda>x [G]y\<^sub>1y\<^sub>2xy\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2y\<^sub>3x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2y\<^sub>3x])\<close>
+AOT_theorem identity_thm2_2_c: \<open>F = G \<equiv> \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>x [F]xy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2y\<^sub>3] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2xy\<^sub>3] = [\<lambda>x [G]y\<^sub>1y\<^sub>2xy\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2y\<^sub>3x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2y\<^sub>3x])\<close>
 proof -
   AOT_have \<open>F = G \<equiv> F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>x [F]xy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>x [G]xy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1xy\<^sub>2y\<^sub>3] = [\<lambda>x [G]y\<^sub>1xy\<^sub>2y\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2xy\<^sub>3] = [\<lambda>x [G]y\<^sub>1y\<^sub>2xy\<^sub>3] & [\<lambda>x [F]y\<^sub>1y\<^sub>2y\<^sub>3x] = [\<lambda>x [G]y\<^sub>1y\<^sub>2y\<^sub>3x])\<close>
-    using p_identity_2_c df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:3[4]" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>F\<down>\<close> and \<open>G\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately show ?thesis
     using df_simplify_1 "&I" by blast
 qed
 
-AOT_theorem p_identity_thm2_2_generic:
+AOT_theorem identity_thm2_2_generic:
   \<open>F = G \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . \<guillemotleft>[F]\<tau>\<guillemotright>) (\<lambda> \<tau> . \<guillemotleft>[G]\<tau>\<guillemotright>)\<guillemotright>\<close>
 proof -
   AOT_have \<open>F = G \<equiv> F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . \<guillemotleft>[F]\<tau>\<guillemotright>) (\<lambda> \<tau> . \<guillemotleft>[G]\<tau>\<guillemotright>)\<guillemotright>\<close>
-    using p_identity_2_generic df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:3" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>F\<down>\<close> and \<open>G\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately show ?thesis
     using df_simplify_1 "&I" by blast
 qed
 
-AOT_theorem p_identity_thm2_3:
+AOT_theorem identity_thm2_3:
   \<open>p = q \<equiv> [\<lambda>x p] = [\<lambda>x q]\<close>
 proof -
   AOT_have \<open>p = q \<equiv> p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
-    using p_identity_3 df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
+    using "identity:4" df_rules_formulas_1 df_rules_formulas_2 "\<rightarrow>E" "&E" "\<equiv>I" "\<rightarrow>I" by blast
   moreover AOT_have \<open>p\<down>\<close> and \<open>q\<down>\<close>
     by (auto simp: cqt_2_const_var[axiom_inst])
   ultimately show ?thesis
@@ -963,7 +963,7 @@ proof
     ultimately AOT_have \<open>(O!x & O!x & \<box>\<forall>F([F]x \<equiv> [F]x)) \<or> (A!x & A!x & \<box>\<forall>F(x[F] \<equiv> x[F]))\<close>
       using oa_exist_3 con_dis_i_e_3_a con_dis_i_e_3_b con_dis_i_e_4_c raa_cor_1 by blast
     AOT_thus \<open>x = x\<close>
-      using identity[THEN df_rules_formulas_2] "\<rightarrow>E" by blast
+      using "identity:1"[THEN df_rules_formulas_2] "\<rightarrow>E" by blast
   }
 qed
 
@@ -1008,7 +1008,7 @@ proof
         AOT_assume \<open>\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>\<down>\<close>
         AOT_hence \<open>\<tau>\<^sub>1\<down>\<close> and \<open>\<tau>\<^sub>2\<down>\<close> using "\<equiv>\<^sub>d\<^sub>fE" "&E" tuple_denotes by blast+
         AOT_hence \<open>\<tau>\<^sub>1 = \<tau>\<^sub>1\<close> and \<open>\<tau>\<^sub>2 = \<tau>\<^sub>2\<close> using id_eq_1[unvarify \<alpha>] by blast+
-        AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_identity)
+        AOT_thus \<open>\<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright> = \<guillemotleft>(\<tau>\<^sub>1, \<tau>\<^sub>2)\<guillemotright>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_1 tuple_identity_1)
       qed
     qed
   }
@@ -1030,7 +1030,7 @@ proof -
   have "(\<exists>\<phi>. [v \<Turnstile> ~\<beta> = \<alpha> \<rightarrow> ~\<phi>] \<and> [v \<Turnstile> \<alpha> = \<beta> \<rightarrow> \<phi>]) \<or> (\<exists>\<phi>. \<not> [v \<Turnstile> \<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>}])"
     by meson
   then show ?thesis
-    by (meson contraposition_2_a ded_thm_cor_1 deduction_theorem l_identity useful_tautologies_1)
+    by (meson contraposition_2_a ded_thm_cor_1 deduction_theorem l_"identity:1" useful_tautologies_1)
 qed
 *)
 (*  by (meson "rule=E" deduction_theorem) *)
@@ -3097,7 +3097,7 @@ AOT_theorem A_Exists_2: \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<^bol
      (simp add: actual_desc_1)
 
 AOT_theorem id_act_desc_1: \<open>\<^bold>\<iota>x (x = y)\<down>\<close>
-proof(rule existence_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
+proof(rule "existence:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
   AOT_show \<open>[\<lambda>x E!x \<rightarrow> E!x]\<^bold>\<iota>x (x = y)\<close>
   proof (rule russell_axiom_exe_1.nec_russell_axiom[THEN "\<equiv>E"(2)]; rule "\<exists>I"; (rule "&I")+)
     AOT_show \<open>\<^bold>\<A>y = y\<close> by (simp add: RA_2 id_eq_1)
@@ -3493,7 +3493,7 @@ next
   AOT_hence \<open>\<box>(x[F] \<equiv> x[G])\<close> for x using en_eq_6_1[THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>\<forall>x \<box>(x[F] \<equiv> x[G])\<close> by (rule GEN)
   AOT_hence \<open>\<box>\<forall>x (x[F] \<equiv> x[G])\<close> using BF[THEN "\<rightarrow>E"] by fast
-  AOT_thus "F = G" using p_identity_thm2_1[THEN "\<equiv>E"(2)] by blast
+  AOT_thus "F = G" using identity_thm2_1[THEN "\<equiv>E"(2)] by blast
 qed
 
 AOT_theorem relations_1:
@@ -3803,10 +3803,10 @@ proof (rule "\<rightarrow>I")
     AOT_have \<open>\<not>(\<phi>{F} \<equiv> \<phi>{G}) \<rightarrow> \<not>(F = G)\<close>
     proof (rule "\<rightarrow>I"; rule raa_cor_2)
       AOT_assume 1: \<open>F = G\<close>
-      AOT_hence \<open>\<phi>{F} \<rightarrow> \<phi>{G}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<phi>{F} \<rightarrow> \<phi>{G}\<close> using "l-identity"[axiom_inst, THEN "\<rightarrow>E"] by blast
       moreover {
         AOT_have \<open>G = F\<close> using 1 id_sym by blast
-        AOT_hence \<open>\<phi>{G} \<rightarrow> \<phi>{F}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+        AOT_hence \<open>\<phi>{G} \<rightarrow> \<phi>{F}\<close> using "l-identity"[axiom_inst, THEN "\<rightarrow>E"] by blast
       }
       ultimately AOT_have \<open>\<phi>{F} \<equiv> \<phi>{G}\<close> using "\<equiv>I" by blast
       moreover AOT_assume \<open>\<not>(\<phi>{F} \<equiv> \<phi>{G})\<close>
@@ -3831,10 +3831,10 @@ proof (rule "\<rightarrow>I")
     AOT_have \<open>\<not>(\<phi>{p} \<equiv> \<phi>{q}) \<rightarrow> \<not>(p = q)\<close>
     proof (rule "\<rightarrow>I"; rule raa_cor_2)
       AOT_assume 1: \<open>p = q\<close>
-      AOT_hence \<open>\<phi>{p} \<rightarrow> \<phi>{q}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<phi>{p} \<rightarrow> \<phi>{q}\<close> using "l-identity"[axiom_inst, THEN "\<rightarrow>E"] by blast
       moreover {
         AOT_have \<open>q = p\<close> using 1 id_sym by blast
-        AOT_hence \<open>\<phi>{q} \<rightarrow> \<phi>{p}\<close> using l_identity[axiom_inst, THEN "\<rightarrow>E"] by blast
+        AOT_hence \<open>\<phi>{q} \<rightarrow> \<phi>{p}\<close> using "l-identity"[axiom_inst, THEN "\<rightarrow>E"] by blast
       }
       ultimately AOT_have \<open>\<phi>{p} \<equiv> \<phi>{q}\<close> using "\<equiv>I" by blast
       moreover AOT_assume \<open>\<not>(\<phi>{p} \<equiv> \<phi>{q})\<close>
@@ -6324,7 +6324,7 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>x =\<^sub>E y\<close>
   AOT_hence \<open>O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)\<close> using eq_E_simple_1[THEN "\<equiv>E"(1)] by blast
   AOT_thus \<open>x = y\<close>
-    using "\<equiv>\<^sub>d\<^sub>fI"[OF identity] "\<or>I" by blast
+    using "\<equiv>\<^sub>d\<^sub>fI"[OF "identity:1"] "\<or>I" by blast
 qed
 
 AOT_theorem id_nec3_1: \<open>x =\<^sub>E y \<equiv> \<box>(x =\<^sub>E y)\<close>
@@ -6617,7 +6617,7 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> y[F])\<close> by (rule GEN)
   AOT_hence \<open>\<box>\<forall>F (x[F] \<equiv> y[F])\<close> by (rule BF[THEN "\<rightarrow>E"])
   AOT_thus \<open>x = y\<close>
-    using "\<equiv>\<^sub>d\<^sub>fI"[OF identity, OF "\<or>I"(2)] 1 "&I" by blast
+    using "\<equiv>\<^sub>d\<^sub>fI"[OF "identity:1", OF "\<or>I"(2)] 1 "&I" by blast
 qed
 
 (* TODO_PLM: precondition not needed *)
@@ -6645,34 +6645,34 @@ AOT_theorem encoders_are_abstract: \<open>\<exists>F x[F] \<rightarrow> A!x\<clo
             oa_contingent_3 vdash_properties_1_b)
 
 AOT_theorem denote_eq_1: \<open>\<forall>H\<exists>x x[H]\<close>
-  by (rule GEN; rule existence_2a[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
+  by (rule GEN; rule "existence:2[1]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
 
 AOT_theorem denote_eq_2: \<open>\<forall>G\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[H]\<close>
-  by (rule GEN; rule existence_2[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
+  by (rule GEN; rule "existence:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
 
 AOT_theorem denote_eq_2b: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[H]\<close>
-  by (rule GEN; rule existence_2b[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
+  by (rule GEN; rule "existence:2[2]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
 
 AOT_theorem denote_eq_2c: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[H]\<close>
-  by (rule GEN; rule existence_2c[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
+  by (rule GEN; rule "existence:2[3]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
 
 AOT_theorem denote_eq_2d: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[H]\<close>
-  by (rule GEN; rule existence_2d[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
+  by (rule GEN; rule "existence:2[4]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact cqt_2_const_var[axiom_inst])
 
 AOT_theorem denote_eq_3: \<open>\<exists>x x[\<Pi>] \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using existence_2a free_thms_1 intro_elim_3_b intro_elim_3_e oth_class_taut_2_e rule_eq_df_1 by blast
+  using "existence:2[1]" free_thms_1 intro_elim_3_b intro_elim_3_e oth_class_taut_2_e rule_eq_df_1 by blast
 
 AOT_theorem denote_eq_4: \<open>(\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using existence_2 free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
+  using "existence:2" free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
 
 AOT_theorem denote_eq_4b: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using existence_2b free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
+  using "existence:2[2]" free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
 
 AOT_theorem denote_eq_4c: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using existence_2c free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
+  using "existence:2[3]" free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
 
 AOT_theorem denote_eq_4d: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
-  using existence_2d free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
+  using "existence:2[4]" free_thms_1 intro_elim_3_f rule_eq_df_1 by blast
 
 AOT_theorem A_objects_unique: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
 proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
@@ -7166,7 +7166,7 @@ proof(rule GEN)
   AOT_have \<open>[\<lambda> [R]a] = [\<lambda> [R]b]\<close>
     apply (rule "rule=E"[rotated, OF a[THEN id_sym]])
     apply (rule "rule=E"[rotated, OF b[THEN id_sym]])
-    apply (rule p_identity_3[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", rotated])
+    apply (rule "identity:4"[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", rotated])
      apply (rule "rule=E"[rotated, OF S_def])
     using b_prop "&E" apply blast
     apply (safe intro!: "&I")
