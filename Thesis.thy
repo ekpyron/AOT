@@ -791,7 +791,7 @@ for every expressible set of properties), that there exists
 an abstract object that encodes exactly the properties that satisfy the
 condition; formally:
 
-@{thm a_objects[axiom_inst, of _ \<phi>, print_as_theorem]}
+@{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem]}
 
 Test:
 
