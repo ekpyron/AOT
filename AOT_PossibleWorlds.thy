@@ -178,7 +178,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   moreover AOT_have \<open>\<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> p)\<close>
     by (simp add: "oth-class-taut:3:a" "universal-cor")
   ultimately AOT_show \<open>\<forall>p(s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
-    using "=E" by fast
+    using "rule=E" by fast
 next
   AOT_assume a: \<open>\<forall>p (s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
   AOT_show \<open>s = s'\<close>
@@ -194,11 +194,11 @@ next
             prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     then AOT_obtain p where F_def: \<open>F = [\<lambda>y p]\<close>
       using "\<exists>E" by metis
-    AOT_hence \<open>s[\<lambda>y p]\<close> using 0 "=E" by blast
+    AOT_hence \<open>s[\<lambda>y p]\<close> using 0 "rule=E" by blast
     AOT_hence \<open>s \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)] by blast
     AOT_hence \<open>s' \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>s'[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(1)] by blast
-    AOT_thus \<open>s'[F]\<close> using F_def[symmetric] "=E" by blast
+    AOT_thus \<open>s'[F]\<close> using F_def[symmetric] "rule=E" by blast
   next
     fix F
     AOT_assume 0: \<open>s'[F]\<close>
@@ -207,11 +207,11 @@ next
             prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     then AOT_obtain p where F_def: \<open>F = [\<lambda>y p]\<close>
       using "\<exists>E" by metis
-    AOT_hence \<open>s'[\<lambda>y p]\<close> using 0 "=E" by blast
+    AOT_hence \<open>s'[\<lambda>y p]\<close> using 0 "rule=E" by blast
     AOT_hence \<open>s' \<Turnstile> p\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)] by blast
     AOT_hence \<open>s \<Turnstile> p\<close> using a[THEN "\<forall>E"(2)[where \<beta>=p], THEN "\<equiv>E"(2)] by blast
     AOT_hence \<open>s[\<lambda>y p]\<close> using lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(1)] by blast
-    AOT_thus \<open>s[F]\<close> using F_def[symmetric] "=E" by blast
+    AOT_thus \<open>s[F]\<close> using F_def[symmetric] "rule=E" by blast
   qed
 qed
 
@@ -520,7 +520,7 @@ proof(rule "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_show \<open>\<not>(\<^bold>s\<^sub>V = a\<^sub>V)\<close>
   proof (rule "raa-cor:2")
     AOT_assume \<open>\<^bold>s\<^sub>V = a\<^sub>V\<close>
-    AOT_hence \<open>\<^bold>s\<^sub>V[A!]\<close> using 0 "=E" id_sym by fast
+    AOT_hence \<open>\<^bold>s\<^sub>V[A!]\<close> using 0 "rule=E" id_sym by fast
     AOT_thus \<open>\<^bold>s\<^sub>V[A!] & \<not>\<^bold>s\<^sub>V[A!]\<close> using 1 "&I" by blast
   qed
 qed
@@ -592,7 +592,7 @@ AOT_theorem strict_sit:
   assumes \<open>RIGID_CONDITION(\<phi>)\<close>
       and \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
     shows \<open>y = \<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<phi>{F})) \<rightarrow> \<forall>F (y[F] \<equiv> \<phi>{F})\<close>
-  using "=E"[rotated, OF can_sit_desc_2[OF assms(2), symmetric]]
+  using "rule=E"[rotated, OF can_sit_desc_2[OF assms(2), symmetric]]
         box_phi_a_2[OF assms(1)] "\<rightarrow>E" "\<rightarrow>I" "&E" by fast
 
 (* TODO: exercise (479) sit-lit *)
@@ -622,7 +622,7 @@ proof -
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close>
       by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) "cqt:2[lambda]"
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis "\<equiv>E"(2) "p-identity-thm2:3")
-    AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
+    AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "rule=E" id_sym by fast
   qed
   moreover AOT_have \<open>\<diamond>\<not>Actual(s\<^sub>1)\<close>
   proof(rule "raa-cor:1"; drule "KBasic:12"[THEN "\<equiv>E"(2)])
@@ -1113,7 +1113,7 @@ proof -
       using s\<^sub>0_prop[THEN "\<forall>E"(1)[rotated, OF prop_prop2_2], THEN "\<equiv>E"(1)] by blast
     then AOT_obtain q\<^sub>1 where q\<^sub>1_prop: \<open>q\<^sub>1 & [\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis "&E"(2) "\<equiv>E"(2) "p-identity-thm2:3")
-    AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
+    AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "rule=E" id_sym by fast
   next
     fix p
     AOT_assume \<open>p\<close>
@@ -1549,7 +1549,7 @@ proof -
   AOT_have \<open>Situation(\<top>)\<close>
     using T_T_value_1 T_sit[unvarify x, OF true_den, THEN "\<rightarrow>E"] by blast
   AOT_hence x_sit: \<open>Situation(x)\<close>
-    using "=E"[rotated, OF x_def[symmetric]] by blast
+    using "rule=E"[rotated, OF x_def[symmetric]] by blast
 
   AOT_have w_alpha_def: \<open>\<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>w Actual(w)\<close>
     by (simp add: pre_walpha "rule-id-def:1[zero]" w_alpha)
@@ -1560,7 +1560,7 @@ proof -
   AOT_have \<open>PossibleWorld(\<^bold>w\<^sub>\<alpha>) & Actual(\<^bold>w\<^sub>\<alpha>)\<close>
     using "y-in:2"[unvarify z, OF w_alpha_den, THEN "\<rightarrow>E", OF w_alpha_def].
   AOT_hence y_prop: \<open>PossibleWorld(y) & Actual(y)\<close>
-    using "=E"[rotated, OF y_def[symmetric]] by fast
+    using "rule=E"[rotated, OF y_def[symmetric]] by fast
   AOT_hence y_sit: \<open>Situation(y)\<close>
     by (meson "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) pos world_pos[unconstrain w, THEN "\<rightarrow>E"])
 
@@ -1594,7 +1594,7 @@ proof -
       by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" true_in_s x_sit)
   qed
   AOT_thus \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
-    using "=E"[rotated, OF x_def] "=E"[rotated, OF y_def] by (metis id_sym)
+    using "rule=E"[rotated, OF x_def] "rule=E"[rotated, OF y_def] by (metis id_sym)
 qed
 
 AOT_act_theorem T_world_2: \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>x (ExtensionOf(x, p))\<close>

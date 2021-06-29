@@ -355,7 +355,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
   next
     AOT_assume \<open>x = \<top>\<close>
     AOT_hence d: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using "=E" \<theta>[THEN "&E"(2)] by fast
+      using "rule=E" \<theta>[THEN "&E"(2)] by fast
     AOT_have \<open>\<forall>F (\<exists>q (q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
       using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b[THEN "cqt-basic:11"[THEN "\<equiv>E"(1)]], OF d].
     AOT_thus p using TV_lem1_1[THEN "\<equiv>E"(2)] by blast
@@ -388,7 +388,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
   next
     AOT_assume \<open>x = \<bottom>\<close>
     AOT_hence d: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using "=E" \<theta>[THEN "&E"(2)] by fast
+      using "rule=E" \<theta>[THEN "&E"(2)] by fast
     AOT_have \<open>\<forall>F (\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
       using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b[THEN "cqt-basic:11"[THEN "\<equiv>E"(1)]], OF d].
     AOT_thus \<open>\<not>p\<close> using TV_lem1_2[THEN "\<equiv>E"(2)] by blast
