@@ -13,13 +13,13 @@ AOT_define TruthValueOf :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<ph
 
 AOT_theorem p_has_tv_1: \<open>\<exists>x TruthValueOf(x,p)\<close>
   apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
-   using rule_eq_df_1 tv_p apply blast
+   using "\<equiv>Df" tv_p apply blast
   by (fact "A-objects"[where \<phi>=\<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv>p) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>, axiom_inst])
 
 
 AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
   apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
-   using rule_eq_df_1 tv_p apply presburger
+   using "\<equiv>Df" tv_p apply presburger
   by (simp add: A_objects_unique)
 
 
@@ -64,11 +64,11 @@ next
     using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     by (rule "\<exists>I"(2)[where \<beta>=p])
-       (simp add: "rule=I_1" "&I" "oth-class-taut:3:a" prop_prop2_2)
+       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" prop_prop2_2)
   ultimately AOT_have \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
 qed
 
 AOT_theorem TV_lem1_2: \<open>\<not>p \<equiv> \<forall>F(\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -94,11 +94,11 @@ next
     using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     by (rule "\<exists>I"(2)[where \<beta>=p])
-       (simp add: "rule=I_1" "&I" "oth-class-taut:3:a" prop_prop2_2)
+       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" prop_prop2_2)
   ultimately AOT_have \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
 qed
 
 
@@ -113,9 +113,9 @@ AOT_define prop_enc :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<
 AOT_act_theorem T_lem_1: \<open>TruthValueOf(\<circ>p, p)\<close>
 proof -
   AOT_have \<theta>: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)\<close>
-    using rule_id_def_1 the_tv_p uni_tv by blast
+    using "rule-id-def:1" the_tv_p uni_tv by blast
   moreover AOT_have \<open>\<circ>p\<down>\<close>
-    using "t=t-proper_1" calculation "vdash-properties:10" by blast
+    using "t=t-proper:1" calculation "vdash-properties:10" by blast
   ultimately show ?thesis by (metis "rule=E" id_sym "vdash-properties:10" y_in_3)
 qed
 
@@ -133,13 +133,13 @@ proof -
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> using \<theta> "\<equiv>E"(1) by blast
     then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     moreover AOT_have \<open>r = q\<close> using calculation
-      using "&E"(2) "\<equiv>E"(2) identity_thm2_3 by blast
+      using "&E"(2) "\<equiv>E"(2) "p-identity-thm2:3" by blast
     ultimately AOT_show \<open>r \<equiv> p\<close>
       by (metis "rule=E" "&E"(1) "\<equiv>E"(6) "oth-class-taut:3:a")
   next
     AOT_assume \<open>r \<equiv> p\<close>
     moreover AOT_have \<open>[\<lambda>y r] = [\<lambda>y r]\<close>
-      by (simp add: "rule=I_1" prop_prop2_2)
+      by (simp add: "rule=I:1" prop_prop2_2)
     ultimately AOT_have \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close> using "&I" by blast
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I"(2)[where \<beta>=r])
     AOT_hence \<open>\<circ>p[\<lambda>y r]\<close> using \<theta> "\<equiv>E"(2) by blast
@@ -159,7 +159,7 @@ proof -
   ultimately AOT_have \<open>(\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)) \<equiv> \<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>\<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
-    using "\<equiv>E"(1) rule_id_def_1 the_tv_p uni_tv by blast
+    using "\<equiv>E"(1) "rule-id-def:1" the_tv_p uni_tv by blast
   AOT_thus \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close> using "\<forall>E"(2) by blast
 qed
 
@@ -167,23 +167,23 @@ qed
 (* TODO more theorems *)
 
 AOT_theorem TV_lem2_1: \<open>(A!x & \<forall>F (x[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))) \<rightarrow> TruthValue(x)\<close>
-proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF log_prop_prop_2] tv_p[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF "log-prop-prop:2"] tv_p[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_assume 0: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<forall>p (p \<rightarrow> p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<phi>\<close>)
-      apply (metis (full_types) "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) universal_cor)
-    by (auto simp add: cqt_further_7 0)
+      apply (metis (full_types) "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) "universal-cor")
+    by (auto simp add: "cqt-further:7" 0)
 qed
 
 AOT_theorem TV_lem2_2: \<open>(A!x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))) \<rightarrow> TruthValue(x)\<close>
-proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF log_prop_prop_2] tv_p[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof(safe intro!: "\<rightarrow>I" T_value[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF "log-prop-prop:2"] tv_p[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_assume 0: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q]))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (\<not>q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
      apply (AOT_subst \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<exists>p (p & \<not>p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<guillemotleft>\<not>\<phi>\<guillemotright>\<close>)
       apply (metis "instantiation" "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "raa-cor:1" "raa-cor:3")
-    by (auto simp add: cqt_further_7 0)
+    by (auto simp add: "cqt-further:7" 0)
 qed
 
 AOT_define TheTrue :: \<kappa>\<^sub>s (\<open>\<top>\<close>)
@@ -194,9 +194,9 @@ AOT_define TheFalse :: \<kappa>\<^sub>s (\<open>\<bottom>\<close>)
 AOT_act_theorem T_T_value_1: \<open>TruthValue(\<top>)\<close>
 proof -
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_1)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<top>)\<close>
     using y_in_2[unvarify z, OF true_den, THEN "\<rightarrow>E", OF true_def]
           TV_lem2_1[unvarify x, OF true_den, THEN "\<rightarrow>E"] by blast
@@ -205,9 +205,9 @@ qed
 AOT_act_theorem T_T_value_2: \<open>TruthValue(\<bottom>)\<close>
 proof -
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_2)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<bottom>)\<close>
     using y_in_2[unvarify z, OF false_den, THEN "\<rightarrow>E", OF false_def]
           TV_lem2_2[unvarify x, OF false_den, THEN "\<rightarrow>E"] by blast
@@ -216,19 +216,19 @@ qed
 AOT_act_theorem T_T_value_3: \<open>\<top> \<noteq> \<bottom>\<close>
 proof -
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_1)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
   moreover AOT_have true_den: \<open>\<top>\<down>\<close>
-    by (meson "t=t-proper_1" A_descriptions rule_id_def_1_b the_true_1 "vdash-properties:10")
+    by (meson "t=t-proper:1" A_descriptions "rule-id-def:1[zero]" the_true_1 "vdash-properties:10")
   ultimately AOT_have true_prop: \<open>A!\<top> & \<forall>F (\<top>[F] \<equiv> \<exists>p(p & F = [\<lambda>y p]))\<close>
     using y_in_2[unvarify z, THEN "\<rightarrow>E"] by blast
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_2)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
   moreover AOT_have false_den: \<open>\<bottom>\<down>\<close>
-    by (meson "\<rightarrow>E" "t=t-proper_1" A_descriptions rule_id_def_1_b the_true_2)
+    by (meson "\<rightarrow>E" "t=t-proper:1" A_descriptions "rule-id-def:1[zero]" the_true_2)
   ultimately AOT_have false_prop: \<open>A!\<bottom> & \<forall>F (\<bottom>[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p]))\<close>
     using y_in_2[unvarify z, THEN "\<rightarrow>E"] by blast
   AOT_obtain p where p: p
-    by (metis "instantiation" act_conj_act_4 existential_1 log_prop_prop_2 "logic-actual"
+    by (metis "instantiation" act_conj_act_4 "existential:1" "log-prop-prop:2" "logic-actual"
               "vdash-properties:1[1]" "vdash-properties:6")
   show ?thesis
   proof(safe intro!: ab_obey_2[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
@@ -237,7 +237,7 @@ proof -
     AOT_show \<open>\<top>[\<lambda>y p]\<close>
       apply (rule true_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2])
       apply (rule "\<exists>I"(2)[where \<beta>=p])
-      by (simp add: "rule=I_1" "&I" p prop_prop2_2)
+      by (simp add: "rule=I:1" "&I" p prop_prop2_2)
   next
     AOT_show \<open>\<not>\<bottom>[\<lambda>y p]\<close>
     proof (rule false_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(4), OF prop_prop2_2]; rule "raa-cor:2")
@@ -245,7 +245,7 @@ proof -
       then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
       AOT_hence \<open>\<not>p\<close>
         by (metis "rule=E" "&E"(1) "&E"(2) "\<equiv>E"(2) "modus-tollens:1"
-                  "oth-class-taut:1:a" identity_thm2_3 "raa-cor:1")
+                  "oth-class-taut:1:a" "p-identity-thm2:3" "raa-cor:1")
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
     qed
   qed("cqt:2[lambda]")
@@ -258,7 +258,7 @@ proof -
   AOT_obtain b where b_prop: \<open>A!b & \<forall>F (b[F] \<equiv> \<exists>p (\<not>p & F = [\<lambda>y p]))\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_obtain p where p: p
-    by (metis log_prop_prop_2 "raa-cor:3" rule_ui_1 universal_cor)
+    by (metis "log-prop-prop:2" "raa-cor:3" "rule-ui:1" "universal-cor")
   show ?thesis
   proof(rule "\<exists>I"(2)[where \<beta>=a]; rule "\<exists>I"(2)[where \<beta>=b]; safe intro!: "&I" GEN "\<rightarrow>I")
     AOT_show \<open>TruthValue(a)\<close>
@@ -273,7 +273,7 @@ proof -
       proof(rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]; rule "&I" prop_prop2_2)
         AOT_show \<open>a[\<lambda>y p]\<close>
           by(safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2]
-                          "\<exists>I"(2)[where \<beta>=p] "&I" p "rule=I_1"[OF prop_prop2_2])
+                          "\<exists>I"(2)[where \<beta>=p] "&I" p "rule=I:1"[OF prop_prop2_2])
       next
         AOT_show \<open>\<not>b[\<lambda>y p]\<close>
         proof (rule "raa-cor:2")
@@ -283,7 +283,7 @@ proof -
           then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
           AOT_hence \<open>\<not>p\<close>
             by (metis "rule=E" "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I"
-                      "\<equiv>E"(2) identity_thm2_3 "raa-cor:3")
+                      "\<equiv>E"(2) "p-identity-thm2:3" "raa-cor:3")
           AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
         qed
       qed
@@ -333,11 +333,11 @@ AOT_act_theorem valueof_facts_1: \<open>TruthValueOf(x, p) \<rightarrow> (p \<eq
 proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   AOT_assume \<theta>: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   AOT_have a: \<open>A!\<top>\<close>
-    using "\<exists>E" T_T_value_1 T_value "&E"(1) rule_eq_df_2 tv_p by blast
+    using "\<exists>E" T_T_value_1 T_value "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" tv_p by blast
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_1)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
     using y_in_2[unvarify z, OF true_den, THEN "\<rightarrow>E", OF true_def] "&E" by blast
   AOT_show \<open>p \<equiv> x = \<top>\<close>
@@ -345,11 +345,11 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_assume p
     AOT_hence \<open>\<forall>F (\<exists>q (q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close> using TV_lem1_1[THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<forall>F(\<top>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using b cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF b] by fast
+      using b "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b] by fast
     AOT_hence c: \<open>\<forall>F(\<exists>q((q \<equiv> p) & F = [\<lambda>y q]) \<equiv> \<top>[F])\<close>
-      using cqt_basic_11[THEN "\<equiv>E"(1)] by fast
+      using "cqt-basic:11"[THEN "\<equiv>E"(1)] by fast
     AOT_hence \<open>\<forall>F (x[F] \<equiv> \<top>[F])\<close>
-      using cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
+      using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
     AOT_thus \<open>x = \<top>\<close>
       by (rule ab_obey_1[unvarify y, OF true_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
   next
@@ -357,7 +357,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_hence d: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
       using "=E" \<theta>[THEN "&E"(2)] by fast
     AOT_have \<open>\<forall>F (\<exists>q (q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF b[THEN cqt_basic_11[THEN "\<equiv>E"(1)]], OF d].
+      using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b[THEN "cqt-basic:11"[THEN "\<equiv>E"(1)]], OF d].
     AOT_thus p using TV_lem1_1[THEN "\<equiv>E"(2)] by blast
   qed
 qed
@@ -366,11 +366,11 @@ AOT_act_theorem valueof_facts_2: \<open>TruthValueOf(x, p) \<rightarrow> (\<not>
 proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   AOT_assume \<theta>: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   AOT_have a: \<open>A!\<bottom>\<close>
-    using "\<exists>E" T_T_value_2 T_value "&E"(1) rule_eq_df_2 tv_p by blast
+    using "\<exists>E" T_T_value_2 T_value "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" tv_p by blast
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_2)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
     using y_in_2[unvarify z, OF false_den, THEN "\<rightarrow>E", OF false_def] "&E" by blast
   AOT_show \<open>\<not>p \<equiv> x = \<bottom>\<close>
@@ -378,11 +378,11 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_assume \<open>\<not>p\<close>
     AOT_hence \<open>\<forall>F (\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close> using TV_lem1_2[THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<forall>F(\<bottom>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using b cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF b] by fast
+      using b "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b] by fast
     AOT_hence c: \<open>\<forall>F(\<exists>q((q \<equiv> p) & F = [\<lambda>y q]) \<equiv> \<bottom>[F])\<close>
-      using cqt_basic_11[THEN "\<equiv>E"(1)] by fast
+      using "cqt-basic:11"[THEN "\<equiv>E"(1)] by fast
     AOT_hence \<open>\<forall>F (x[F] \<equiv> \<bottom>[F])\<close>
-      using cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
+      using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
     AOT_thus \<open>x = \<bottom>\<close>
       by (rule ab_obey_1[unvarify y, OF false_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
   next
@@ -390,7 +390,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_hence d: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
       using "=E" \<theta>[THEN "&E"(2)] by fast
     AOT_have \<open>\<forall>F (\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-      using cqt_basic_10[THEN "\<rightarrow>E", OF "&I", OF b[THEN cqt_basic_11[THEN "\<equiv>E"(1)]], OF d].
+      using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF b[THEN "cqt-basic:11"[THEN "\<equiv>E"(1)]], OF d].
     AOT_thus \<open>\<not>p\<close> using TV_lem1_2[THEN "\<equiv>E"(2)] by blast
   qed
 qed
@@ -413,9 +413,9 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" T_lem_4 by fast
 next
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_1)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
     using y_in_2[unvarify z, OF true_den, THEN "\<rightarrow>E", OF true_def] "&E" by blast
 
@@ -425,7 +425,7 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
 qed
 
 
@@ -439,9 +439,9 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" T_lem_4 by fast
 next
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions rule_id_def_1_b the_true_2)
+    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
-    using "t=t-proper_1" "vdash-properties:6" by blast
+    using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
     using y_in_2[unvarify z, OF false_den, THEN "\<rightarrow>E", OF false_def] "&E" by blast
 
@@ -451,7 +451,7 @@ next
     using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
-    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) identity_thm2_3 by fast
+    using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
 qed
 
 AOT_act_theorem q_True_4: \<open>p \<equiv> \<not>(\<bottom>\<^bold>\<Sigma>p)\<close>
@@ -470,7 +470,7 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
   AOT_assume 1: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
   AOT_have \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>)
-     using "\<equiv>E"(2) "Commutativity of \<equiv>" prop_prop1 rule_eq_df_1 apply blast
+     using "\<equiv>E"(2) "Commutativity of \<equiv>" prop_prop1 "\<equiv>Df" apply blast
     by (simp add: 1)
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   proof(safe intro!: "&I" GEN 1[THEN "&E"(1), THEN "&E"(1)] "\<equiv>I" "\<rightarrow>I")
@@ -480,7 +480,7 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
       using \<theta>[THEN "&E"(1), THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
     then AOT_obtain q where q_prop: \<open>F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>x[\<lambda>y q]\<close> using 0 "rule=E" by blast
-    AOT_hence \<open>x\<^bold>\<Sigma>q\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc rule_ui_3)
+    AOT_hence \<open>x\<^bold>\<Sigma>q\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc "rule-ui:3")
     AOT_hence \<open>q \<equiv> p\<close> using \<theta>[THEN "&E"(2)] "\<forall>E"(2) "\<equiv>E"(1) by blast
     AOT_hence \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close> using q_prop "&I" by blast
     AOT_thus \<open>\<exists>q ((q \<equiv> p) & F = [\<lambda>y q])\<close> by (rule "\<exists>I")
@@ -513,14 +513,14 @@ next
       then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close>
         using "\<exists>E"[rotated] by blast
       AOT_thus \<open>r \<equiv> p\<close>
-        by (metis "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "Commutativity of \<equiv>" identity_thm2_3)
+        by (metis "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "Commutativity of \<equiv>" "p-identity-thm2:3")
     next
       AOT_assume \<open>r \<equiv> p\<close>
       AOT_hence \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close>
-        by (metis "rule=I_1" df_simplify_1 "\<equiv>E"(2) "Commutativity of &" prop_prop2_2)
+        by (metis "rule=I:1" "\<equiv>S"(1) "\<equiv>E"(2) "Commutativity of &" prop_prop2_2)
       AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I")
       AOT_hence \<open>x[\<lambda>y r]\<close> using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
-      AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc rule_ui_3)
+      AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" ex_1_a prop_enc "rule-ui:3")
     qed
   qed
 qed
@@ -537,10 +537,10 @@ proof -
   AOT_have 0: \<open>\<^bold>\<A>\<forall>x(ExtensionOf(x, p) \<equiv> TruthValueOf(x,p))\<close>
     by (rule RA_2; rule GEN; rule extof_e)
   AOT_have 1: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x,p)\<close>
-    using rule_id_def_1 the_tv_p uni_tv by blast
+    using "rule-id-def:1" the_tv_p uni_tv by blast
   show ?thesis
     apply (rule equiv_desc_eq_1[THEN "\<rightarrow>E", OF 0, THEN "\<forall>E"(1)[where \<tau>=\<open>\<guillemotleft>\<circ>p\<guillemotright>\<close>], THEN "\<equiv>E"(2), symmetric])
-    using "1" "t=t-proper_1" "vdash-properties:10" apply blast
+    using "1" "t=t-proper:1" "vdash-properties:10" apply blast
     by (fact 1)
 qed
 

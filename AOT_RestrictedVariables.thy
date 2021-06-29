@@ -230,7 +230,7 @@ lemmas "\<exists>E" = "instantiation"
 
 AOT_theorem existential: assumes \<open>\<phi>{\<guillemotleft>AOT_term_of_var (Rep \<beta>)\<guillemotright>}\<close>
   shows \<open>\<exists> \<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
-  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms "&I" existential_2_a)
+  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms "&I" "existential:2[const_var]")
 lemmas "\<exists>I" = existential
 end
 
@@ -293,7 +293,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
     by (metis "\<equiv>E"(1) "logic-actual-nec:3" "vdash-properties:1[2]")
-  AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis rule_ui_3)
+  AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "rule-ui:3")
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
   AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond "vdash-properties:6")
