@@ -2052,7 +2052,7 @@ AOT_theorem num_1: \<open>\<exists>x Numbers(x,G)\<close>
 
 AOT_theorem num_2: \<open>\<exists>!x Numbers(x,G)\<close>
   by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>,G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>[A!]\<kappa> & \<forall>F (\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<guillemotright>\<close>)
-     (auto simp: A_objects_unique numbers_den[OF "cqt:2[const_var]"[axiom_inst]])
+     (auto simp: "A-objects!" numbers_den[OF "cqt:2[const_var]"[axiom_inst]])
 
 AOT_theorem num_cont_1: \<open>\<exists>x\<exists>G(Numbers(x, G) & \<not>\<box>Numbers(x, G))\<close>
 proof -
@@ -2147,7 +2147,7 @@ qed
 
 AOT_theorem num_can_2: \<open>#G = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G))\<close>
 proof (rule id_trans[OF num_can_1]; rule "equiv-desc-eq:2"[THEN "\<rightarrow>E"];
-       safe intro!: "&I" A_descriptions "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(2)]
+       safe intro!: "&I" "A-descriptions" "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(2)]
                     GEN "Act-Basic:5"[THEN "\<equiv>E"(2)])
   AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2[lambda]"
   AOT_have eq_part_3': \<open>\<^bold>\<turnstile>\<^sub>\<box> F \<approx>\<^sub>E G & F \<approx>\<^sub>E H \<rightarrow> G \<approx>\<^sub>E H\<close> for F G H
@@ -3188,7 +3188,7 @@ proof -
     AOT_assume 0: \<open>\<forall>G (\<forall>u \<box>([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close>
     AOT_have \<open>x[F]\<close>
       by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
-    AOT_hence Ax: \<open>A!x\<close> by (metis encoders_are_abstract "existential:2[const_var]" "\<rightarrow>E")
+    AOT_hence Ax: \<open>A!x\<close> by (metis "encoders-are-abstract" "existential:2[const_var]" "\<rightarrow>E")
     AOT_hence Ay: \<open>A!y\<close> using indist "\<forall>E"(1) "\<equiv>E"(1) "oa-exist:2" by blast
     AOT_have \<open>\<forall>G (\<forall>u \<box>([G]u \<equiv> [F]u) \<rightarrow> y[G])\<close>
         using indistinguishable_ord_enc_all[axiom_inst, THEN "\<rightarrow>E", OF "&I", OF "&I", OF "&I",
@@ -3218,7 +3218,7 @@ proof -
     AOT_assume 0: \<open>\<exists>G (\<forall>u \<box>([G]u \<equiv> [F]u) & x[G])\<close>
     then AOT_obtain G where \<open>\<forall>u \<box>([G]u \<equiv> [F]u) & x[G]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>x[G]\<close> using "&E" by blast
-    AOT_hence Ax: \<open>A!x\<close> by (metis encoders_are_abstract "existential:2[const_var]" "\<rightarrow>E")
+    AOT_hence Ax: \<open>A!x\<close> by (metis "encoders-are-abstract" "existential:2[const_var]" "\<rightarrow>E")
     AOT_hence Ay: \<open>A!y\<close> using indist "\<forall>E"(1) "\<equiv>E"(1) "oa-exist:2" by blast
     AOT_have \<open>\<exists>G (\<forall>u \<box>([G]u \<equiv> [F]u) & y[G])\<close>
       using indistinguishable_ord_enc_ex[axiom_inst, THEN "\<rightarrow>E", OF "&I", OF "&I", OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF Ax,
@@ -4545,7 +4545,7 @@ proof(rule AOT_model_axiomI)
     ultimately AOT_have mG: \<open>x[G]\<close>
       using card_en[THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
     AOT_hence \<open>A!x\<close>
-      using "\<exists>I"(2) encoders_are_abstract "vdash-properties:6" by blast
+      using "\<exists>I"(2) "encoders-are-abstract" "vdash-properties:6" by blast
     then obtain a where m_def: \<open>AOT_term_of_var x = \<alpha>\<kappa> a\<close> by (metis AOT_model_abstract_\<alpha>\<kappa>)
     moreover have \<open>rel_to_urrel (AOT_term_of_var G) \<in> a\<close>
       using mG unfolding m_def
@@ -5003,7 +5003,7 @@ proof -
   {
     AOT_assume G_prop: \<open>x[G] & \<not>y[G]\<close>
     AOT_hence Ax: \<open>A!x\<close>
-      using "&E"(1) "\<exists>I"(2) "\<rightarrow>E" encoders_are_abstract by blast
+      using "&E"(1) "\<exists>I"(2) "\<rightarrow>E" "encoders-are-abstract" by blast
 
     {
       AOT_assume Ay: \<open>A!y\<close>
@@ -5057,7 +5057,7 @@ proof -
   moreover {
     AOT_assume G_prop: \<open>\<not>x[G] & y[G]\<close>
     AOT_hence Ay: \<open>A!y\<close>
-      by (meson "&E"(2) encoders_are_abstract "existential:2[const_var]" "vdash-properties:10")
+      by (meson "&E"(2) "encoders-are-abstract" "existential:2[const_var]" "vdash-properties:10")
     AOT_hence notOy: \<open>\<not>O!y\<close>
       using "\<equiv>E"(1) "oa-contingent:3" by blast
     {

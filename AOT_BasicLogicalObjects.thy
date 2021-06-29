@@ -20,7 +20,7 @@ AOT_theorem p_has_tv_1: \<open>\<exists>x TruthValueOf(x,p)\<close>
 AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
   apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
    using "\<equiv>Df" tv_p apply presburger
-  by (simp add: A_objects_unique)
+  by (simp add: "A-objects!")
 
 
 AOT_theorem uni_tv: \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
@@ -194,7 +194,7 @@ AOT_define TheFalse :: \<kappa>\<^sub>s (\<open>\<bottom>\<close>)
 AOT_act_theorem T_T_value_1: \<open>TruthValue(\<top>)\<close>
 proof -
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<top>)\<close>
@@ -205,7 +205,7 @@ qed
 AOT_act_theorem T_T_value_2: \<open>TruthValue(\<bottom>)\<close>
 proof -
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<bottom>)\<close>
@@ -216,15 +216,15 @@ qed
 AOT_act_theorem T_T_value_3: \<open>\<top> \<noteq> \<bottom>\<close>
 proof -
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_1)
   moreover AOT_have true_den: \<open>\<top>\<down>\<close>
-    by (meson "t=t-proper:1" A_descriptions "rule-id-def:1[zero]" the_true_1 "vdash-properties:10")
+    by (meson "t=t-proper:1" "A-descriptions" "rule-id-def:1[zero]" the_true_1 "vdash-properties:10")
   ultimately AOT_have true_prop: \<open>A!\<top> & \<forall>F (\<top>[F] \<equiv> \<exists>p(p & F = [\<lambda>y p]))\<close>
     using "y-in:2"[unvarify z, THEN "\<rightarrow>E"] by blast
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_2)
   moreover AOT_have false_den: \<open>\<bottom>\<down>\<close>
-    by (meson "\<rightarrow>E" "t=t-proper:1" A_descriptions "rule-id-def:1[zero]" the_true_2)
+    by (meson "\<rightarrow>E" "t=t-proper:1" "A-descriptions" "rule-id-def:1[zero]" the_true_2)
   ultimately AOT_have false_prop: \<open>A!\<bottom> & \<forall>F (\<bottom>[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p]))\<close>
     using "y-in:2"[unvarify z, THEN "\<rightarrow>E"] by blast
   AOT_obtain p where p: p
@@ -335,7 +335,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
   AOT_have a: \<open>A!\<top>\<close>
     using "\<exists>E" T_T_value_1 T_value "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" tv_p by blast
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
@@ -368,7 +368,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
   AOT_have a: \<open>A!\<bottom>\<close>
     using "\<exists>E" T_T_value_2 T_value "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" tv_p by blast
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
@@ -413,7 +413,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" T_lem_4 by fast
 next
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_1)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_1)
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
@@ -439,7 +439,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" T_lem_4 by fast
 next
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: A_descriptions "rule-id-def:1[zero]" the_true_2)
+    by (simp add: "A-descriptions" "rule-id-def:1[zero]" the_true_2)
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>

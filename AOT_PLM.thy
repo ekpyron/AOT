@@ -6656,41 +6656,41 @@ proof (rule "\<rightarrow>I"; rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"]; ru
   ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "\<or>E"(3) "raa-cor:1")
 qed
 
-AOT_theorem encoders_are_abstract: \<open>\<exists>F x[F] \<rightarrow> A!x\<close>
+AOT_theorem "encoders-are-abstract": \<open>\<exists>F x[F] \<rightarrow> A!x\<close>
   by (meson "deduction-theorem" "\<equiv>E"(2) "modus-tollens:2" nocoder
             "oa-contingent:3" "vdash-properties:1[2]")
 
-AOT_theorem denote_eq_1: \<open>\<forall>H\<exists>x x[H]\<close>
+AOT_theorem "denote=:1": \<open>\<forall>H\<exists>x x[H]\<close>
   by (rule GEN; rule "existence:2[1]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
-AOT_theorem denote_eq_2: \<open>\<forall>G\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[H]\<close>
+AOT_theorem "denote=:2": \<open>\<forall>G\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[H]\<close>
   by (rule GEN; rule "existence:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
-AOT_theorem denote_eq_2b: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[H]\<close>
+AOT_theorem "denote=:2[2]": \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[H]\<close>
   by (rule GEN; rule "existence:2[2]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
-AOT_theorem denote_eq_2c: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[H]\<close>
+AOT_theorem "denote=:2[3]": \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[H]\<close>
   by (rule GEN; rule "existence:2[3]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
-AOT_theorem denote_eq_2d: \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[H]\<close>
+AOT_theorem "denote=:2[4]": \<open>\<forall>G\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[H]\<close>
   by (rule GEN; rule "existence:2[4]"[THEN "\<equiv>\<^sub>d\<^sub>fE"]; fact "cqt:2[const_var]"[axiom_inst])
 
-AOT_theorem denote_eq_3: \<open>\<exists>x x[\<Pi>] \<equiv> \<exists>H (H = \<Pi>)\<close>
+AOT_theorem "denote=:3": \<open>\<exists>x x[\<Pi>] \<equiv> \<exists>H (H = \<Pi>)\<close>
   using "existence:2[1]" "free-thms:1" "\<equiv>E"(2) "\<equiv>E"(5) "Commutativity of \<equiv>" "\<equiv>Df" by blast
 
-AOT_theorem denote_eq_4: \<open>(\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
+AOT_theorem "denote=:4": \<open>(\<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
   using "existence:2" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
-AOT_theorem denote_eq_4b: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
+AOT_theorem "denote=:4[2]": \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2 x\<^sub>1x\<^sub>2[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
   using "existence:2[2]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
-AOT_theorem denote_eq_4c: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
+AOT_theorem "denote=:4[3]": \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3 x\<^sub>1x\<^sub>2x\<^sub>3[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
   using "existence:2[3]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
-AOT_theorem denote_eq_4d: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
+AOT_theorem "denote=:4[4]": \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]) \<equiv> \<exists>H (H = \<Pi>)\<close>
   using "existence:2[4]" "free-thms:1" "\<equiv>E"(6) "\<equiv>Df" by blast
 
-AOT_theorem A_objects_unique: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
+AOT_theorem "A-objects!": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
 proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<phi>{F})\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by blast
@@ -6709,31 +6709,31 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     using "\<exists>I" using a_prop "&I" by fast
 qed
 
-AOT_theorem obj_oth_1: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:1": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem obj_oth_2: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y & [F]z))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:2": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y & [F]z))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem obj_oth_3: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y \<or> [F]z))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:3": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> [F]y \<or> [F]z))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem obj_oth_4: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<box>[F]y))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:4": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<box>[F]y))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem obj_oth_5: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> F = G))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:5": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> F = G))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem obj_oth_6: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<box>\<forall>y([G]y \<rightarrow> [F]y)))\<close>
-  using A_objects_unique by fast
+AOT_theorem "obj-oth:6": \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<box>\<forall>y([G]y \<rightarrow> [F]y)))\<close>
+  using "A-objects!" by fast
 
-AOT_theorem A_descriptions: \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
-  by (rule "A-Exists:2"[THEN "\<equiv>E"(2)]; rule "RA[2]"; rule A_objects_unique)
+AOT_theorem "A-descriptions": \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
+  by (rule "A-Exists:2"[THEN "\<equiv>E"(2)]; rule "RA[2]"; rule "A-objects!")
 
-AOT_act_theorem thm_can_terms2: \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> (A!y & \<forall>F (y[F] \<equiv> \<phi>{F}))\<close>
+AOT_act_theorem "thm-can-terms2": \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> (A!y & \<forall>F (y[F] \<equiv> \<phi>{F}))\<close>
   using "y-in:2" by blast
 
-AOT_theorem can_ab2: \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow>  A!y\<close>
+AOT_theorem "can-ab2": \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow>  A!y\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
   AOT_hence \<open>\<^bold>\<A>(A!y & \<forall>F (y[F] \<equiv> \<phi>{F}))\<close>
@@ -6742,20 +6742,20 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>A!y\<close> by (metis "\<equiv>E"(2) "oa-facts:8")
 qed
 
-AOT_act_theorem desc_encode: \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
+AOT_act_theorem "desc-encode": \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
 proof -
   AOT_have \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
   AOT_hence \<open>A!\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) & \<forall>F (\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F})\<close>
     using "y-in:3"[THEN "\<rightarrow>E"] by blast
   AOT_thus \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
     using "&E" "\<forall>E" by blast
 qed
 
-AOT_theorem desc_nec_encode: \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
+AOT_theorem "desc-nec-encode": \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
 proof -
   AOT_have 0: \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
   AOT_hence \<open>\<^bold>\<A>(A!\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) & \<forall>F (\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F}))\<close>
     using "actual-desc:4"[THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<^bold>\<A>\<forall>F (\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F})\<close>
@@ -6770,11 +6770,11 @@ proof -
     using "en-eq:10[1]"[unvarify x\<^sub>1, OF 0] "\<equiv>E"(6) by blast
 qed
 
-AOT_theorem Box_desc_encode_1: \<open>\<box>\<phi>{G} \<rightarrow> \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close>
-  by (rule "\<rightarrow>I"; rule desc_nec_encode[THEN "\<equiv>E"(2)])
+AOT_theorem "Box-desc-encode:1": \<open>\<box>\<phi>{G} \<rightarrow> \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close>
+  by (rule "\<rightarrow>I"; rule "desc-nec-encode"[THEN "\<equiv>E"(2)])
      (meson "nec-imp-act" "vdash-properties:10")
 
-AOT_theorem Box_desc_encode_2: \<open>\<box>\<phi>{G} \<rightarrow> \<box>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G})\<close>
+AOT_theorem "Box-desc-encode:2": \<open>\<box>\<phi>{G} \<rightarrow> \<box>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G})\<close>
 proof(rule CP)
   AOT_assume \<open>\<box>\<phi>{G}\<close>
   AOT_hence \<open>\<box>\<box>\<phi>{G}\<close> by (metis "S5Basic:6" "\<equiv>E"(1))
@@ -6782,7 +6782,7 @@ proof(rule CP)
   proof (rule RM; rule "\<rightarrow>I")
     AOT_modally_strict {
       AOT_assume 1: \<open>\<box>\<phi>{G}\<close>
-      AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close> using Box_desc_encode_1 "\<rightarrow>E" by blast
+      AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close> using "Box-desc-encode:1" "\<rightarrow>E" by blast
       moreover AOT_have \<open>\<phi>{G}\<close> using 1 by (meson "qml:2" "vdash-properties:10" "vdash-properties:1[2]")
       ultimately AOT_show \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G}\<close>
         using "deduction-theorem" "\<equiv>I" by simp
@@ -6794,23 +6794,23 @@ qed
 definition rigid_condition where \<open>rigid_condition \<phi> \<equiv> \<forall>v . [v \<Turnstile> \<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})]\<close>
 syntax rigid_condition :: \<open>id_position \<Rightarrow> AOT_prop\<close> ("RIGID'_CONDITION'(_')")
 
-AOT_theorem rigid_conditionE: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+AOT_theorem "strict-can:1[E]": assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   using assms[unfolded rigid_condition_def] by auto
 
-AOT_theorem rigid_conditionI:
+AOT_theorem "strict-can:1[I]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   shows \<open>RIGID_CONDITION(\<phi>)\<close>
   using assms rigid_condition_def by auto
 
-AOT_theorem box_phi_a_1: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+AOT_theorem "box-phi-a:1": assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>(A!x  & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> \<box>(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume a: \<open>A!x & \<forall>F (x[F] \<equiv> \<phi>{F})\<close>
   AOT_hence b: \<open>\<box>A!x\<close> by (metis "Conjunction Simplification"(1) "oa-facts:2" "vdash-properties:10")
   AOT_have \<open>x[F] \<equiv> \<phi>{F}\<close> for F using a[THEN "&E"(2)] "\<forall>E" by blast
   moreover AOT_have \<open>\<box>(x[F] \<rightarrow> \<box>x[F])\<close> for F by (meson "pre-en-eq:1[1]" RN)
-  moreover AOT_have \<open>\<box>(\<phi>{F} \<rightarrow> \<box>\<phi>{F})\<close> for F using RN rigid_conditionE[OF assms] "\<forall>E" by blast
+  moreover AOT_have \<open>\<box>(\<phi>{F} \<rightarrow> \<box>\<phi>{F})\<close> for F using RN "strict-can:1[E]"[OF assms] "\<forall>E" by blast
   ultimately AOT_have \<open>\<box>(x[F] \<equiv> \<phi>{F})\<close> for F
     by (metis "&I" "sc-eq-box-box:5" "vdash-properties:6")
   AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> \<phi>{F})\<close> by (rule GEN)
@@ -6819,7 +6819,7 @@ proof (rule "\<rightarrow>I")
     using b "KBasic:3" "\<equiv>S"(1) "\<equiv>E"(2) by blast
 qed
 
-AOT_theorem box_phi_a_2: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+AOT_theorem "box-phi-a:2": assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) \<rightarrow> (A!y & \<forall>F (y[F] \<equiv> \<phi>{F}))\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>y = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
@@ -6830,25 +6830,25 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<^bold>\<A>(y[F] \<equiv> \<phi>{F})\<close> for F using "\<forall>E" by blast
   AOT_hence \<open>\<^bold>\<A>y[F] \<equiv> \<^bold>\<A>\<phi>{F}\<close> for F by (metis "Act-Basic:5" "\<equiv>E"(1)) 
   AOT_hence \<open>y[F] \<equiv> \<phi>{F}\<close> for F
-    using "sc-eq-fur:2"[THEN "\<rightarrow>E", OF rigid_conditionE[OF assms, THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
+    using "sc-eq-fur:2"[THEN "\<rightarrow>E", OF "strict-can:1[E]"[OF assms, THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
     by (metis "en-eq:10[1]" "\<equiv>E"(6))
   AOT_hence \<open>\<forall>F (y[F] \<equiv> \<phi>{F})\<close> by (rule GEN)
   AOT_thus \<open>[A!]y & \<forall>F (y[F] \<equiv> \<phi>{F})\<close> using abs "&I" "\<equiv>E"(2) "oa-facts:8" by blast
 qed
 
-AOT_theorem box_phi_a_3: assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+AOT_theorem "box-phi-a:3": assumes \<open>RIGID_CONDITION(\<phi>)\<close>
   shows \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
-  using desc_nec_encode 
-    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF rigid_conditionE[OF assms, THEN "\<forall>E"(2)[where \<beta>=G], THEN RN]]
+  using "desc-nec-encode" 
+    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF "strict-can:1[E]"[OF assms, THEN "\<forall>E"(2)[where \<beta>=G], THEN RN]]
     "\<equiv>E"(5) by blast
 
 AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Null'(_')") 
-  df_null_uni_1: \<open>Null(x) \<equiv>\<^sub>d\<^sub>f A!x & \<not>\<exists>F x[F]\<close>
+  "df-null-uni:1": \<open>Null(x) \<equiv>\<^sub>d\<^sub>f A!x & \<not>\<exists>F x[F]\<close>
 
 AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Universal'(_')")
-  df_null_uni_2: \<open>Universal(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F x[F]\<close>
+  "df-null-uni:2": \<open>Universal(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F x[F]\<close>
 
-AOT_theorem null_uni_uniq_1: \<open>\<exists>!x Null(x)\<close>
+AOT_theorem "null-uni-uniq:1": \<open>\<exists>!x Null(x)\<close>
 proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<not>(F = F))\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
@@ -6863,19 +6863,19 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   proof (rule "&I")
     AOT_have \<open>\<not>\<exists>F a[F]\<close> using a_null by (metis "instantiation" "reductio-aa:1")
     AOT_thus \<open>Null(a)\<close>
-      using df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] a_prop[THEN "&E"(1)] "&I" by metis
+      using "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] a_prop[THEN "&E"(1)] "&I" by metis
   next
     AOT_show \<open>\<forall>\<beta> (Null(\<beta>) \<rightarrow> \<beta> = a)\<close>
     proof (rule GEN; rule "\<rightarrow>I")
       fix \<beta>
       AOT_assume a: \<open>Null(\<beta>)\<close>
       AOT_hence \<open>\<not>\<exists>F \<beta>[F]\<close>
-        using df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+        using "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
       AOT_hence \<beta>_null: \<open>\<not>\<beta>[F]\<close> for F by (metis "existential:2[const_var]" "reductio-aa:1")
       AOT_have \<open>\<forall>F (\<beta>[F] \<equiv> a[F])\<close>
         apply (rule GEN; rule "\<equiv>I"; rule CP)
         using "raa-cor:3" \<beta>_null a_null by blast+
-      moreover AOT_have \<open>A!\<beta>\<close> using a df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+      moreover AOT_have \<open>A!\<beta>\<close> using a "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
       ultimately AOT_show \<open>\<beta> = a\<close>
         using a_prop[THEN "&E"(1)] "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by blast
     qed
@@ -6883,18 +6883,18 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_thus \<open>\<exists>\<alpha> (Null(\<alpha>) & \<forall>\<beta> (Null(\<beta>) \<rightarrow> \<beta> = \<alpha>))\<close> using "\<exists>I"(2) by fast
 qed
 
-AOT_theorem null_uni_uniq_2: \<open>\<exists>!x Universal(x)\<close>
+AOT_theorem "null-uni-uniq:2": \<open>\<exists>!x Universal(x)\<close>
 proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> F = F)\<close>
     using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_hence aF: \<open>a[F]\<close> for F using "&E" "\<forall>E" "\<equiv>E" "id-eq:1" by fast
   AOT_hence \<open>Universal(a)\<close>
-    using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" a_prop[THEN "&E"(1)] GEN by blast
+    using "df-null-uni:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" a_prop[THEN "&E"(1)] GEN by blast
   moreover AOT_have \<open>\<forall>\<beta> (Universal(\<beta>) \<rightarrow> \<beta> = a)\<close>
   proof (rule GEN; rule "\<rightarrow>I")
     fix \<beta>
     AOT_assume \<open>Universal(\<beta>)\<close>
-    AOT_hence abs_\<beta>: \<open>A!\<beta>\<close> and \<open>\<beta>[F]\<close> for F using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<forall>E" by blast+
+    AOT_hence abs_\<beta>: \<open>A!\<beta>\<close> and \<open>\<beta>[F]\<close> for F using "df-null-uni:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<forall>E" by blast+
     AOT_hence \<open>\<beta>[F] \<equiv> a[F]\<close> for F using aF by (metis "deduction-theorem" "\<equiv>I")
     AOT_hence \<open>\<forall>F (\<beta>[F] \<equiv> a[F])\<close> by (rule GEN)
     AOT_thus \<open>\<beta> = a\<close>
@@ -6904,23 +6904,23 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     using "&I" "\<exists>I" by fast
 qed
 
-AOT_theorem null_uni_uniq_3: \<open>\<^bold>\<iota>x Null(x)\<down>\<close>
-  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) null_uni_uniq_1 by blast
+AOT_theorem "null-uni-uniq:3": \<open>\<^bold>\<iota>x Null(x)\<down>\<close>
+  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) "null-uni-uniq:1" by blast
 
-AOT_theorem null_uni_uniq_4: \<open>\<^bold>\<iota>x Universal(x)\<down>\<close>
-  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) null_uni_uniq_2 by blast
+AOT_theorem "null-uni-uniq:4": \<open>\<^bold>\<iota>x Universal(x)\<down>\<close>
+  using "A-Exists:2" "RA[2]" "\<equiv>E"(2) "null-uni-uniq:2" by blast
 
 AOT_define Null_object :: \<open>\<kappa>\<^sub>s\<close> (\<open>a\<^sub>\<emptyset>\<close>)
-  df_null_uni_terms_1: \<open>a\<^sub>\<emptyset> =\<^sub>d\<^sub>f \<^bold>\<iota>x Null(x)\<close>
+  "df-null-uni-terms:1": \<open>a\<^sub>\<emptyset> =\<^sub>d\<^sub>f \<^bold>\<iota>x Null(x)\<close>
 
 AOT_define Universal_object :: \<open>\<kappa>\<^sub>s\<close> (\<open>a\<^sub>V\<close>)
-  df_null_uni_terms_2: \<open>a\<^sub>V =\<^sub>d\<^sub>f \<^bold>\<iota>x Universal(x)\<close>
+  "df-null-uni-terms:2": \<open>a\<^sub>V =\<^sub>d\<^sub>f \<^bold>\<iota>x Universal(x)\<close>
 
 AOT_theorem null_uni_facts_1: \<open>Null(x) \<rightarrow> \<box>Null(x)\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>Null(x)\<close>
   AOT_hence x_abs: \<open>A!x\<close> and x_null: \<open>\<not>\<exists>F x[F]\<close>
-    using df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+    using "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
   AOT_have \<open>\<not>x[F]\<close> for F using x_null
     using "existential:2[const_var]" "reductio-aa:1"
     by metis
@@ -6939,14 +6939,14 @@ proof (rule "\<rightarrow>I")
     by (metis "KBasic:3" "&I" "\<equiv>E"(3) "raa-cor:3")
   AOT_show \<open>\<box>Null(x)\<close>
     by (AOT_subst "\<guillemotleft>Null(x)\<guillemotright>" "\<guillemotleft>A!x & \<not>\<exists>F x[F]\<guillemotright>")
-       (auto simp: df_null_uni_1 "\<equiv>Df" r)
+       (auto simp: "df-null-uni:1" "\<equiv>Df" r)
 qed  
 
 AOT_theorem null_uni_facts_2: \<open>Universal(x) \<rightarrow> \<box>Universal(x)\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>Universal(x)\<close>
   AOT_hence x_abs: \<open>A!x\<close> and x_univ: \<open>\<forall>F x[F]\<close>
-    using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
+    using "df-null-uni:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
   AOT_have \<open>x[F]\<close> for F using x_univ "\<forall>E" by blast
   AOT_hence \<open>\<box>x[F]\<close> for F by (metis "en-eq:2[1]" "\<equiv>E"(1))
   AOT_hence \<open>\<forall>F \<box>x[F]\<close> by (rule GEN)
@@ -6957,31 +6957,31 @@ proof (rule "\<rightarrow>I")
     by (metis "KBasic:3" "&I" "\<equiv>E"(3) "raa-cor:3")
   AOT_show \<open>\<box>Universal(x)\<close>
     by (AOT_subst "\<guillemotleft>Universal(x)\<guillemotright>" "\<guillemotleft>A!x & \<forall>F x[F]\<guillemotright>")
-       (auto simp add: df_null_uni_2 "\<equiv>Df" r)
+       (auto simp add: "df-null-uni:2" "\<equiv>Df" r)
 qed
 
 AOT_theorem null_uni_facts_3: \<open>Null(a\<^sub>\<emptyset>)\<close>
-  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1])
-   apply (simp add: null_uni_uniq_3)
-  using "actual-desc:4"[THEN "\<rightarrow>E", OF null_uni_uniq_3]
-    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF null_uni_facts_1[unvarify x, THEN RN, OF null_uni_uniq_3], THEN "\<equiv>E"(1)]
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1"])
+   apply (simp add: "null-uni-uniq:3")
+  using "actual-desc:4"[THEN "\<rightarrow>E", OF "null-uni-uniq:3"]
+    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF null_uni_facts_1[unvarify x, THEN RN, OF "null-uni-uniq:3"], THEN "\<equiv>E"(1)]
   by blast
 
 AOT_theorem null_uni_facts_4: \<open>Universal(a\<^sub>V)\<close>
-  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_2])
-   apply (simp add: null_uni_uniq_4)
-  using "actual-desc:4"[THEN "\<rightarrow>E", OF null_uni_uniq_4]
-    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF null_uni_facts_2[unvarify x, THEN RN, OF null_uni_uniq_4], THEN "\<equiv>E"(1)]
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2"])
+   apply (simp add: "null-uni-uniq:4")
+  using "actual-desc:4"[THEN "\<rightarrow>E", OF "null-uni-uniq:4"]
+    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF null_uni_facts_2[unvarify x, THEN RN, OF "null-uni-uniq:4"], THEN "\<equiv>E"(1)]
   by blast
 
 AOT_theorem null_uni_facts_5: \<open>a\<^sub>\<emptyset> \<noteq> a\<^sub>V\<close>
-proof (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3];
-    rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_2, OF null_uni_uniq_4];
+proof (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"];
+    rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"];
     rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"];
     rule "raa-cor:2")
   AOT_obtain x where nullx: \<open>Null(x)\<close>
-    by (metis "instantiation" df_null_uni_terms_1 "existential:1" null_uni_facts_3
-              null_uni_uniq_3 "rule-id-def:2:b[zero]")
+    by (metis "instantiation" "df-null-uni-terms:1" "existential:1" null_uni_facts_3
+              "null-uni-uniq:3" "rule-id-def:2:b[zero]")
   AOT_hence act_null: \<open>\<^bold>\<A>Null(x)\<close> by (metis "nec-imp-act" null_uni_facts_1 "vdash-properties:10")
   AOT_assume \<open>\<^bold>\<iota>x Null(x) = \<^bold>\<iota>x Universal(x)\<close>
   AOT_hence \<open>\<^bold>\<A>\<forall>x(Null(x) \<equiv> Universal(x))\<close>
@@ -6992,41 +6992,41 @@ proof (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3];
     using "Act-Basic:5" "\<equiv>E"(1) "rule-ui:3" by blast
   AOT_hence \<open>\<^bold>\<A>Universal(x)\<close> using act_null "\<equiv>E" by blast
   AOT_hence \<open>Universal(x)\<close> by (metis RN "\<equiv>E"(1) null_uni_facts_2 "sc-eq-fur:2" "vdash-properties:10")
-  AOT_hence \<open>\<forall>F x[F]\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF df_null_uni_2] "&E" by metis
-  moreover AOT_have \<open>\<not>\<exists>F x[F]\<close> using nullx "\<equiv>\<^sub>d\<^sub>fE"[OF df_null_uni_1] "&E" by metis
+  AOT_hence \<open>\<forall>F x[F]\<close> using "\<equiv>\<^sub>d\<^sub>fE"[OF "df-null-uni:2"] "&E" by metis
+  moreover AOT_have \<open>\<not>\<exists>F x[F]\<close> using nullx "\<equiv>\<^sub>d\<^sub>fE"[OF "df-null-uni:1"] "&E" by metis
   ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "cqt-further:1" "raa-cor:3" "vdash-properties:10")
 qed
 
 AOT_theorem null_uni_facts_6: \<open>a\<^sub>\<emptyset> = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
 proof (rule "ab-obey:1"[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
   AOT_show \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
 next
   AOT_show \<open>a\<^sub>\<emptyset>\<down>\<close>
-    by (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3])
-       (simp add: null_uni_uniq_3)
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"])
+       (simp add: "null-uni-uniq:3")
 next
   AOT_have \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
   AOT_hence 1: \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F)) = \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
     using "rule=I:1" by blast
   AOT_show \<open>[A!]a\<^sub>\<emptyset> & [A!]\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
-    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3]; rule "&I")
-    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) df_null_uni_1 df_null_uni_terms_1 null_uni_facts_3 null_uni_uniq_3 "rule-id-def:2:a[zero]" "vdash-properties:10")
-    using can_ab2[unvarify y, OF A_descriptions, THEN "\<rightarrow>E", OF 1].
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"]; rule "&I")
+    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:1" "df-null-uni-terms:1" null_uni_facts_3 "null-uni-uniq:3" "rule-id-def:2:a[zero]" "vdash-properties:10")
+    using "can-ab2"[unvarify y, OF "A-descriptions", THEN "\<rightarrow>E", OF 1].
 next
   AOT_show \<open>\<forall>F (a\<^sub>\<emptyset>[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F])\<close>
   proof (rule GEN)
     fix F
     AOT_have \<open>\<not>a\<^sub>\<emptyset>[F]\<close>
-      by (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3])
+      by (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"])
          (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "\<or>I"(2) "\<or>E"(3)
-                df_null_uni_1 df_null_uni_terms_1 "existential:2[const_var]" null_uni_facts_3
+                "df-null-uni:1" "df-null-uni-terms:1" "existential:2[const_var]" null_uni_facts_3
                 "raa-cor:2" "rule-id-def:2:a[zero]" "russell-axiom[enc,1].\<psi>_denotes_asm")
     moreover AOT_have \<open>\<not>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
     proof(rule "raa-cor:2")
       AOT_assume 0: \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
-      AOT_hence \<open>\<^bold>\<A>(F \<noteq> F)\<close> using desc_nec_encode[THEN "\<equiv>E"(1), OF 0] by blast
+      AOT_hence \<open>\<^bold>\<A>(F \<noteq> F)\<close> using "desc-nec-encode"[THEN "\<equiv>E"(1), OF 0] by blast
       moreover AOT_have \<open>\<not>\<^bold>\<A>(F \<noteq> F)\<close>
         using "\<equiv>\<^sub>d\<^sub>fE" "id-act:2" "id-eq:1" "\<equiv>E"(2) "=-infix" "raa-cor:3" by blast
       ultimately AOT_show \<open>\<^bold>\<A>(F \<noteq> F) & \<not>\<^bold>\<A>(F \<noteq> F)\<close> by (rule "&I")
@@ -7039,29 +7039,29 @@ qed
 AOT_theorem null_uni_facts_7: \<open>a\<^sub>V = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> F = F))\<close>
 proof (rule "ab-obey:1"[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
   AOT_show \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
 next
   AOT_show \<open>a\<^sub>V\<down>\<close>
-    by (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_2, OF null_uni_uniq_4])
-       (simp add: null_uni_uniq_4)
+    by (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"])
+       (simp add: "null-uni-uniq:4")
 next
   AOT_have \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<down>\<close>
-    by (simp add: A_descriptions)
+    by (simp add: "A-descriptions")
   AOT_hence 1: \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F)) = \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<close>
     using "rule=I:1" by blast
   AOT_show \<open>[A!]a\<^sub>V & [A!]\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<close>
-    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_2, OF null_uni_uniq_4]; rule "&I")
-    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) df_null_uni_2 df_null_uni_terms_2 null_uni_facts_4 null_uni_uniq_4 "rule-id-def:2:a[zero]" "vdash-properties:10")
-    using can_ab2[unvarify y, OF A_descriptions, THEN "\<rightarrow>E", OF 1].
+    apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"]; rule "&I")
+    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:2" "df-null-uni-terms:2" null_uni_facts_4 "null-uni-uniq:4" "rule-id-def:2:a[zero]" "vdash-properties:10")
+    using "can-ab2"[unvarify y, OF "A-descriptions", THEN "\<rightarrow>E", OF 1].
 next
   AOT_show \<open>\<forall>F (a\<^sub>V[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F])\<close>
   proof (rule GEN)
     fix F
     AOT_have \<open>a\<^sub>V[F]\<close>
-      apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_2, OF null_uni_uniq_4])
-      using "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) df_null_uni_2 df_null_uni_terms_2 null_uni_facts_4 null_uni_uniq_4 "rule-id-def:2:a[zero]" "rule-ui:3" by blast
+      apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"])
+      using "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "df-null-uni:2" "df-null-uni-terms:2" null_uni_facts_4 "null-uni-uniq:4" "rule-id-def:2:a[zero]" "rule-ui:3" by blast
     moreover AOT_have \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>
-      using "RA[2]" desc_nec_encode "id-eq:1" "\<equiv>E"(2) by fastforce
+      using "RA[2]" "desc-nec-encode" "id-eq:1" "\<equiv>E"(2) by fastforce
     ultimately AOT_show \<open>a\<^sub>V[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>
       using "deduction-theorem" "\<equiv>I" by simp
   qed

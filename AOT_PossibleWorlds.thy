@@ -341,7 +341,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>NullSituation(\<kap
   }
 next
   AOT_show \<open>\<exists>!x ([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
-    by (simp add: A_objects_unique)
+    by (simp add: "A-objects!")
 qed
 
 
@@ -388,7 +388,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TrivialSituation(\<
   }
 next
   AOT_show \<open>\<exists>!x ([A!]x & \<forall>F (x[F] \<equiv> \<exists>p F = [\<lambda>y p]))\<close>
-    by (simp add: A_objects_unique)
+    by (simp add: "A-objects!")
 qed
 
 AOT_theorem thm_null_trivial_3: \<open>\<^bold>\<iota>x NullSituation(x)\<down>\<close>
@@ -457,8 +457,8 @@ AOT_theorem null_triv_ac_4: \<open>TrivialSituation(\<^bold>s\<^sub>V)\<close>
                                  OF "\<forall>I", OF null_triv_ac_2, THEN "\<forall>E"(1), THEN "\<rightarrow>E"])
 
 AOT_theorem null_triv_facts_1: \<open>NullSituation(x) \<equiv> Null(x)\<close>
-proof (safe intro!: "\<equiv>I" "\<rightarrow>I" df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] df_null_trivial_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]
-            dest!: df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] df_null_trivial_1[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+proof (safe intro!: "\<equiv>I" "\<rightarrow>I" "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] df_null_trivial_1[THEN "\<equiv>\<^sub>d\<^sub>fI"]
+            dest!: "df-null-uni:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] df_null_trivial_1[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   AOT_assume 0: \<open>Situation(x) & \<not>\<exists>p x \<Turnstile> p\<close>
   AOT_have 1: \<open>x[F] \<rightarrow> \<exists>p F = [\<lambda>y p]\<close> for F
     using 0[THEN "&E"(1), THEN situations[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)]
@@ -493,8 +493,8 @@ qed
 AOT_theorem null_triv_facts_2: \<open>\<^bold>s\<^sub>\<emptyset> = a\<^sub>\<emptyset>\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_the_null_sit_1])
    apply (fact thm_null_trivial_3)
-  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1])
-   apply (fact null_uni_uniq_3)
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1"])
+   apply (fact "null-uni-uniq:3")
   apply (rule "equiv-desc-eq:3"[THEN "\<rightarrow>E"])
   apply (rule "&I")
    apply (fact thm_null_trivial_3)
@@ -505,7 +505,7 @@ proof(rule "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_have \<open>Universal(a\<^sub>V)\<close>
     by (simp add: null_uni_facts_4)
   AOT_hence 0: \<open>a\<^sub>V[A!]\<close>
-    using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<forall>E"(1)
+    using "df-null-uni:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<forall>E"(1)
     by (metis "cqt:5:a" "vdash-properties:10" "vdash-properties:1[2]")
   moreover AOT_have 1: \<open>\<not>\<^bold>s\<^sub>V[A!]\<close>
   proof(rule "raa-cor:2")
@@ -575,7 +575,7 @@ AOT_theorem comp_sit_2:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
   shows \<open>\<exists>!s \<forall>F(s[F] \<equiv> \<phi>{F})\<close>
   by (AOT_subst \<open>\<lambda>\<kappa> . \<guillemotleft>Situation(\<kappa>) & \<forall>F(\<kappa>[F] \<equiv> \<phi>{F})\<guillemotright>\<close> \<open>\<lambda>\<kappa>. \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<phi>{F})\<guillemotright>\<close>)
-     (auto simp: assms pre_comp_sit  pre_comp_sit[OF assms] A_objects_unique)
+     (auto simp: assms pre_comp_sit  pre_comp_sit[OF assms] "A-objects!")
 
 AOT_theorem can_sit_desc_1:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
@@ -593,7 +593,7 @@ AOT_theorem strict_sit:
       and \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
     shows \<open>y = \<^bold>\<iota>s(\<forall>F (s[F] \<equiv> \<phi>{F})) \<rightarrow> \<forall>F (y[F] \<equiv> \<phi>{F})\<close>
   using "rule=E"[rotated, OF can_sit_desc_2[OF assms(2), symmetric]]
-        box_phi_a_2[OF assms(1)] "\<rightarrow>E" "\<rightarrow>I" "&E" by fast
+        "box-phi-a:2"[OF assms(1)] "\<rightarrow>E" "\<rightarrow>I" "&E" by fast
 
 (* TODO: exercise (479) sit-lit *)
 
@@ -732,7 +732,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     }
   qed
   have rigid: \<open>rigid_condition (\<lambda> \<Pi> . \<guillemotleft>\<exists>p (\<Pi> = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<guillemotright>)\<close>
-  proof(safe intro!: rigid_conditionI "\<rightarrow>I" GEN)
+  proof(safe intro!: "strict-can:1[I]" "\<rightarrow>I" GEN)
     AOT_modally_strict {
       fix F
       AOT_assume \<open>\<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
@@ -931,7 +931,7 @@ proof -
     by (auto intro!: cond_propI GEN "\<rightarrow>I" prop_prop1[THEN "\<equiv>\<^sub>d\<^sub>fI"]
                      "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>q\<^sub>1 & \<not>q\<^sub>1\<guillemotright>\<close>, rotated, OF "log-prop-prop:2"])
   have rigid: \<open>rigid_condition (\<lambda> \<Pi> . \<guillemotleft>\<Pi> = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]\<guillemotright>)\<close>
-    by (auto intro!: rigid_conditionI GEN "\<rightarrow>I" simp: "id-nec:2"[THEN "\<rightarrow>E"])
+    by (auto intro!: "strict-can:1[I]" GEN "\<rightarrow>I" simp: "id-nec:2"[THEN "\<rightarrow>E"])
 
   AOT_obtain x where x_prop: \<open>x = \<^bold>\<iota>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1 & \<not>q\<^sub>1]))\<close>
     using "ex:1:b"[THEN "\<forall>E"(1), OF can_sit_desc_1, OF cond_prop]
@@ -1543,7 +1543,7 @@ AOT_define w_alpha :: \<open>\<kappa>\<^sub>s\<close> (\<open>\<^bold>w\<^sub>\<
 
 AOT_act_theorem T_world_1: \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
 proof -
-  AOT_have true_den: \<open>\<top>\<down>\<close> using A_descriptions "rule-id-def:2:b[zero]" the_true_1 "vdash-properties:10" by fast
+  AOT_have true_den: \<open>\<top>\<down>\<close> using "A-descriptions" "rule-id-def:2:b[zero]" the_true_1 "vdash-properties:10" by fast
   AOT_obtain x where x_def: \<open>x = \<top>\<close>
     by (metis "instantiation" "rule=I:1" "existential:1" id_sym true_den)
   AOT_have \<open>Situation(\<top>)\<close>
