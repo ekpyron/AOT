@@ -3203,7 +3203,7 @@ proof -
       using 0 "\<equiv>I" "\<rightarrow>I" by auto
   } note 1 = this
   AOT_show \<open>[\<lambda>x \<forall>G (\<forall>u \<box>([G]u \<equiv> [F]u) \<rightarrow> x[G])]\<down>\<close>
-    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem denotes_ex: \<open>[\<lambda>x \<exists>G (\<forall>u \<box>([G]u \<equiv> [F]u) & x[G])]\<down>\<close>
@@ -3233,7 +3233,7 @@ proof -
       using 0 "\<equiv>I" "\<rightarrow>I" by auto
   } note 1 = this
   AOT_show \<open>[\<lambda>x \<exists>G (\<forall>u \<box>([G]u \<equiv> [F]u) & x[G])]\<down>\<close>
-    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem numbers_prop_den: \<open>[\<lambda>x Numbers(x, F)]\<down>\<close>
@@ -3344,7 +3344,7 @@ proof -
       using 0 "\<equiv>I" by simp
   } note 0 = this
   AOT_show \<open>[\<lambda>x Numbers(x,F)]\<down>\<close>
-    apply (rule kirchner_thm_2[THEN "\<equiv>E"(2)]; rule RN)
+    apply (rule "kirchner-thm:2"[THEN "\<equiv>E"(2)]; rule RN)
     apply (rule GEN)
     apply (rule GEN)
     using 0 "\<rightarrow>I" by simp
@@ -3421,7 +3421,7 @@ proof -
       using 0 "\<equiv>I" "\<rightarrow>E" by auto
   } note 0 = this
   AOT_show \<open>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<down>\<close>
-    apply (rule kirchner_thm_2[THEN "\<equiv>E"(2)]; rule RN)
+    apply (rule "kirchner-thm:2"[THEN "\<equiv>E"(2)]; rule RN)
     apply (rule tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     apply (rule GEN)
     apply (rule GEN)
@@ -5231,7 +5231,7 @@ proof -
       using 0 "\<equiv>I" "\<rightarrow>I" by auto
   } note 1 = this
   AOT_show \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])]\<down>\<close>
-    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem denotes_ex': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]\<down>\<close>
@@ -5288,7 +5288,7 @@ proof -
       using 0 "\<equiv>I" "\<rightarrow>I" by auto
   } note 1 = this
   AOT_show \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])]\<down>\<close>
-    by (safe intro!: RN GEN "\<rightarrow>I" 1 kirchner_thm_2[THEN "\<equiv>E"(2)])
+    by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem denotes_equiv: \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> (x[G] \<equiv> x[F]))]\<down>\<close>
@@ -5370,7 +5370,7 @@ proof -
       using 1[OF indist] 1[OF indist'] "\<equiv>I" by blast
   } note 1 = this
   show ?thesis
-    apply (safe intro!: RN GEN kirchner_thm_2[THEN "\<equiv>E"(2)] "\<rightarrow>I")
+    apply (safe intro!: RN GEN "kirchner-thm:2"[THEN "\<equiv>E"(2)] "\<rightarrow>I")
     using 1 by blast
 qed
 
@@ -5483,7 +5483,7 @@ proof -
   ultimately AOT_have 1: \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
     using "\<rightarrow>E" by blast
   show ?thesis
-    apply (safe intro!: kirchner_thm_2[THEN "\<equiv>E"(2)])
+    apply (safe intro!: "kirchner-thm:2"[THEN "\<equiv>E"(2)])
     using 1 by blast
 qed
 (*
@@ -5533,7 +5533,7 @@ proof -
       using 1[OF indist] 1[OF indist'] "\<equiv>I" by blast
   } note 1 = this
   show ?thesis
-    apply (safe intro!: RN GEN kirchner_thm_2[THEN "\<equiv>E"(2)] "\<rightarrow>I")
+    apply (safe intro!: RN GEN "kirchner-thm:2"[THEN "\<equiv>E"(2)] "\<rightarrow>I")
     using 1 oops *) (* by blast *)
 
 (*<*)

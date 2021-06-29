@@ -61,10 +61,10 @@ next
 next
   AOT_assume \<open>\<forall>F (\<exists>q (q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-    using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
+    using "\<forall>E"(1)[rotated, OF "prop-prop2:2"] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     by (rule "\<exists>I"(2)[where \<beta>=p])
-       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" prop_prop2_2)
+       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" "prop-prop2:2")
   ultimately AOT_have \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
@@ -91,10 +91,10 @@ next
 next
   AOT_assume \<open>\<forall>F (\<exists>q (\<not>q & F = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   AOT_hence \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q]) \<equiv> \<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-    using "\<forall>E"(1)[rotated, OF prop_prop2_2] by blast
+    using "\<forall>E"(1)[rotated, OF "prop-prop2:2"] by blast
   moreover AOT_have \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
     by (rule "\<exists>I"(2)[where \<beta>=p])
-       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" prop_prop2_2)
+       (simp add: "rule=I:1" "&I" "oth-class-taut:3:a" "prop-prop2:2")
   ultimately AOT_have \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close> using "\<equiv>E"(2) by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
@@ -125,7 +125,7 @@ AOT_act_theorem T_lem_2: \<open>\<forall>F (\<circ>p[F] \<equiv> \<exists>q((q \
 AOT_act_theorem T_lem_3: \<open>\<circ>p\<^bold>\<Sigma>r \<equiv> (r \<equiv> p)\<close>
 proof -
   AOT_have \<theta>: \<open>\<circ>p[\<lambda>y r] \<equiv> \<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close>
-    using T_lem_2[THEN "\<forall>E"(1), OF prop_prop2_2].
+    using T_lem_2[THEN "\<forall>E"(1), OF "prop-prop2:2"].
   show ?thesis
   proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_assume \<open>\<circ>p\<^bold>\<Sigma>r\<close>
@@ -139,7 +139,7 @@ proof -
   next
     AOT_assume \<open>r \<equiv> p\<close>
     moreover AOT_have \<open>[\<lambda>y r] = [\<lambda>y r]\<close>
-      by (simp add: "rule=I:1" prop_prop2_2)
+      by (simp add: "rule=I:1" "prop-prop2:2")
     ultimately AOT_have \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close> using "&I" by blast
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I"(2)[where \<beta>=r])
     AOT_hence \<open>\<circ>p[\<lambda>y r]\<close> using \<theta> "\<equiv>E"(2) by blast
@@ -235,12 +235,12 @@ proof -
                      false_den true_den true_prop[THEN "&E"(1)] "&I"
                      false_prop[THEN "&E"(1)] "\<or>I"(1) "\<exists>I"(1))
     AOT_show \<open>\<top>[\<lambda>y p]\<close>
-      apply (rule true_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2])
+      apply (rule true_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF "prop-prop2:2"])
       apply (rule "\<exists>I"(2)[where \<beta>=p])
-      by (simp add: "rule=I:1" "&I" p prop_prop2_2)
+      by (simp add: "rule=I:1" "&I" p "prop-prop2:2")
   next
     AOT_show \<open>\<not>\<bottom>[\<lambda>y p]\<close>
-    proof (rule false_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(4), OF prop_prop2_2]; rule "raa-cor:2")
+    proof (rule false_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(4), OF "prop-prop2:2"]; rule "raa-cor:2")
       AOT_assume \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close>
       then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
       AOT_hence \<open>\<not>p\<close>
@@ -270,16 +270,16 @@ proof -
     AOT_show \<open>a \<noteq> b\<close>
     proof(rule "ab-obey:2"[THEN "\<rightarrow>E", OF "\<or>I"(1)])
       AOT_show \<open>\<exists>F (a[F] & \<not>b[F])\<close>
-      proof(rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]; rule "&I" prop_prop2_2)
+      proof(rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]; rule "&I" "prop-prop2:2")
         AOT_show \<open>a[\<lambda>y p]\<close>
-          by(safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF prop_prop2_2]
-                          "\<exists>I"(2)[where \<beta>=p] "&I" p "rule=I:1"[OF prop_prop2_2])
+          by(safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF "prop-prop2:2"]
+                          "\<exists>I"(2)[where \<beta>=p] "&I" p "rule=I:1"[OF "prop-prop2:2"])
       next
         AOT_show \<open>\<not>b[\<lambda>y p]\<close>
         proof (rule "raa-cor:2")
           AOT_assume \<open>b[\<lambda>y p]\<close>
           AOT_hence \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close>
-            using b_prop[THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF prop_prop2_2, THEN "\<equiv>E"(1)]] by blast
+            using b_prop[THEN "&E"(2), THEN "\<forall>E"(1)[rotated, OF "prop-prop2:2", THEN "\<equiv>E"(1)]] by blast
           then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
           AOT_hence \<open>\<not>p\<close>
             by (metis "rule=E" "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I"
@@ -422,7 +422,7 @@ next
   AOT_assume \<open>\<top>\<^bold>\<Sigma>p\<close>
   AOT_hence \<open>\<top>[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc)
   AOT_hence \<open>\<exists>q (q & [\<lambda>y p] = [\<lambda>y q])\<close>
-    using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
+    using b[THEN "\<forall>E"(1), OF "prop-prop2:2", THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>p\<close>
     using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
@@ -448,7 +448,7 @@ next
   AOT_assume \<open>\<bottom>\<^bold>\<Sigma>p\<close>
   AOT_hence \<open>\<bottom>[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc)
   AOT_hence \<open>\<exists>q (\<not>q & [\<lambda>y p] = [\<lambda>y q])\<close>
-    using b[THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
+    using b[THEN "\<forall>E"(1), OF "prop-prop2:2", THEN "\<equiv>E"(1)] by blast
   then AOT_obtain q where \<open>\<not>q & [\<lambda>y p] = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
   AOT_thus \<open>\<not>p\<close>
     using "rule=E" "&E"(1) "&E"(2) id_sym "\<equiv>E"(2) "p-identity-thm2:3" by fast
@@ -470,7 +470,7 @@ proof (safe intro!: "\<equiv>I" "\<rightarrow>I" tv_p[THEN "\<equiv>\<^sub>d\<^s
   AOT_assume 1: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
   AOT_have \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
     apply (AOT_subst \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>)
-     using "\<equiv>E"(2) "Commutativity of \<equiv>" prop_prop1 "\<equiv>Df" apply blast
+     using "\<equiv>E"(2) "Commutativity of \<equiv>" "prop-prop1" "\<equiv>Df" apply blast
     by (simp add: 1)
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   proof(safe intro!: "&I" GEN 1[THEN "&E"(1), THEN "&E"(1)] "\<equiv>I" "\<rightarrow>I")
@@ -502,14 +502,14 @@ next
     then AOT_obtain q where \<open>(q \<equiv> p) & F = [\<lambda>y q]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>F = [\<lambda>y q]\<close> using "&E"(2) by blast
     AOT_hence \<open>\<exists>q F = [\<lambda>y q]\<close> by (rule "\<exists>I")
-    AOT_thus \<open>Propositional([F])\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" prop_prop1)
+    AOT_thus \<open>Propositional([F])\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "prop-prop1")
   next
     AOT_show \<open>x\<^bold>\<Sigma>r \<equiv> (r \<equiv> p)\<close> for r
     proof(rule "\<equiv>I"; rule "\<rightarrow>I")
       AOT_assume \<open>x\<^bold>\<Sigma>r\<close>
       AOT_hence \<open>x[\<lambda>y r]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc)
       AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> 
-        using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(1)] by blast
+        using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF "prop-prop2:2", THEN "\<equiv>E"(1)] by blast
       then AOT_obtain q where \<open>(q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q]\<close>
         using "\<exists>E"[rotated] by blast
       AOT_thus \<open>r \<equiv> p\<close>
@@ -517,9 +517,9 @@ next
     next
       AOT_assume \<open>r \<equiv> p\<close>
       AOT_hence \<open>(r \<equiv> p) & [\<lambda>y r] = [\<lambda>y r]\<close>
-        by (metis "rule=I:1" "\<equiv>S"(1) "\<equiv>E"(2) "Commutativity of &" prop_prop2_2)
+        by (metis "rule=I:1" "\<equiv>S"(1) "\<equiv>E"(2) "Commutativity of &" "prop-prop2:2")
       AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y r] = [\<lambda>y q])\<close> by (rule "\<exists>I")
-      AOT_hence \<open>x[\<lambda>y r]\<close> using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF prop_prop2_2, THEN "\<equiv>E"(2)] by blast
+      AOT_hence \<open>x[\<lambda>y r]\<close> using 0[THEN "&E"(2), THEN "\<forall>E"(1), OF "prop-prop2:2", THEN "\<equiv>E"(2)] by blast
       AOT_thus \<open>x\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" prop_enc "rule-ui:3")
     qed
   qed
