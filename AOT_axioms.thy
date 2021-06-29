@@ -117,7 +117,7 @@ AOT_theorem "identity:4":
 declare "identity:4"[AOT_defs]
 
 AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>" 50)
-  noneq_infix: \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
+  "=-infix": \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
 
 context AOT_meta_syntax
 begin
@@ -128,58 +128,58 @@ begin
 no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
-AOT_axiom pl_1: \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<phi>)\<close>
+AOT_axiom "pl:1": \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<phi>)\<close>
   by (auto simp: AOT_sem_imp AOT_model_axiomI)
-AOT_axiom pl_2: \<open>(\<phi> \<rightarrow> (\<psi> \<rightarrow> \<chi>)) \<rightarrow> ((\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<phi> \<rightarrow> \<chi>))\<close>
+AOT_axiom "pl:2": \<open>(\<phi> \<rightarrow> (\<psi> \<rightarrow> \<chi>)) \<rightarrow> ((\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<phi> \<rightarrow> \<chi>))\<close>
   by (auto simp: AOT_sem_imp AOT_model_axiomI)
-AOT_axiom pl_3: \<open>(\<not>\<phi> \<rightarrow> \<not>\<psi>) \<rightarrow> ((\<not>\<phi> \<rightarrow> \<psi>) \<rightarrow> \<phi>)\<close>
+AOT_axiom "pl:3": \<open>(\<not>\<phi> \<rightarrow> \<not>\<psi>) \<rightarrow> ((\<not>\<phi> \<rightarrow> \<psi>) \<rightarrow> \<phi>)\<close>
   by (auto simp: AOT_sem_imp AOT_sem_not AOT_model_axiomI)
 
-AOT_axiom cqt_1: \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<tau>\<down> \<rightarrow> \<phi>{\<tau>})\<close>
+AOT_axiom "cqt:1": \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<tau>\<down> \<rightarrow> \<phi>{\<tau>})\<close>
   by (auto simp: AOT_sem_denotes AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
 
-AOT_axiom cqt_2_const_var: \<open>\<alpha>\<down>\<close> using AOT_sem_vars_denote by (rule AOT_model_axiomI)
-AOT_axiom cqt_2_lambda:
+AOT_axiom "cqt:2[const_var]": \<open>\<alpha>\<down>\<close> using AOT_sem_vars_denote by (rule AOT_model_axiomI)
+AOT_axiom "cqt:2[lambda]":
   assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
   shows \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
   using assms by (simp add: AOT_sem_denotes AOT_instance_of_cqt_2_def AOT_model_axiomI)
-AOT_axiom cqt_2_lambda0:
+AOT_axiom "cqt:2[lambda0]":
   shows \<open>[\<lambda> \<phi>]\<down>\<close>
   apply (rule AOT_model_axiomI)
   using AOT_model_equiv_def AOT_sem_lambda_denotes "existence:3" by fastforce
-AOT_axiom cqt_2_concrete: \<open>E!\<down>\<close>
+AOT_axiom "cqt:2[concrete]": \<open>E!\<down>\<close>
   apply (rule AOT_model_axiomI)
   using AOT_sem_concrete_denotes AOT_concrete_sem by auto
 
-AOT_axiom cqt_3: \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
+AOT_axiom "cqt:3": \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
-AOT_axiom cqt_4: \<open>\<phi> \<rightarrow> \<forall>\<alpha> \<phi>\<close>
+AOT_axiom "cqt:4": \<open>\<phi> \<rightarrow> \<forall>\<alpha> \<phi>\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
-AOT_axiom cqt_5a: \<open>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
+AOT_axiom "cqt:5:a": \<open>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
   by (simp add: AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp AOT_model_axiomI)
-AOT_axiom cqt_5a_1: \<open>[\<Pi>]\<kappa> \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
-  using cqt_5a AOT_model_axiomI by blast
-AOT_axiom cqt_5a_2: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
+AOT_axiom "cqt:5:a[1]": \<open>[\<Pi>]\<kappa> \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
+  using "cqt:5:a" AOT_model_axiomI by blast
+AOT_axiom "cqt:5:a[2]": \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
-AOT_axiom cqt_5a_3: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
+AOT_axiom "cqt:5:a[3]": \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
-AOT_axiom cqt_5a_4: \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
+AOT_axiom "cqt:5:a[4]": \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4 \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
-AOT_axiom cqt_5b: \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
+AOT_axiom "cqt:5:b": \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
   by (rule AOT_model_axiomI)
      (insert AOT_sem_enc_denotes; auto simp: AOT_sem_conj AOT_sem_denotes AOT_sem_imp)
-AOT_axiom cqt_5b_1: \<open>\<kappa>[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
-  using cqt_5b AOT_model_axiomI by blast
-AOT_axiom cqt_5b_2: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
+AOT_axiom "cqt:5:b[1]": \<open>\<kappa>[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
+  using "cqt:5:b" AOT_model_axiomI by blast
+AOT_axiom "cqt:5:b[2]": \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
-AOT_axiom cqt_5b_3: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
+AOT_axiom "cqt:5:b[3]": \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
-AOT_axiom cqt_5b_4: \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
+AOT_axiom "cqt:5:b[4]": \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3\<kappa>\<^sub>4[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down> & \<kappa>\<^sub>3\<down> & \<kappa>\<^sub>4\<down>)\<close>
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_imp case_prodD)
 

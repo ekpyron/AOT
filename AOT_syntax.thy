@@ -752,7 +752,7 @@ end
 
 (* TODO for AOT syntax printing mode (not exhaustive):
 
-\<equiv>\<^sub>d\<^sub>f; =\<^sub>d\<^sub>f ; sth \<^bold>\<turnstile> sth ; sth \<^bold>\<turnstile>\<^sub>\<box> sth ; INSTANCE_OF_CQT_2 ; ellipses; invalid term names ; cqt_2_const_var[axiom_inst];
+\<equiv>\<^sub>d\<^sub>f; =\<^sub>d\<^sub>f ; sth \<^bold>\<turnstile> sth ; sth \<^bold>\<turnstile>\<^sub>\<box> sth ; INSTANCE_OF_CQT_2 ; ellipses; invalid term names ; "cqt:2[const_var]"[axiom_inst];
 
 \<And>v \<tau> \<tau>'. [v \<Turnstile> \<tau> = \<tau>' \<rightarrow> \<tau>'\<down>] (additional Pure.all quantified variables)
 

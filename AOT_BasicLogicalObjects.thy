@@ -248,7 +248,7 @@ proof -
                   oth_class_taut_1_a identity_thm2_3 raa_cor_1)
       AOT_thus \<open>p & \<not>p\<close> using p "&I" by blast
     qed
-  qed(cqt_2_lambda)
+  qed("cqt:2[lambda]")
 qed
 
 AOT_theorem \<open>\<exists>x\<exists>y(TruthValue(x) & TruthValue(y) & x \<noteq> y & \<forall>z (TruthValue(z) \<rightarrow> z = x \<or> z = y))\<close>

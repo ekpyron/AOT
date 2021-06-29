@@ -131,7 +131,7 @@ next
   AOT_assume 1: \<open>Situation(x)\<close>
   AOT_assume \<open>x[\<lambda>y p]\<close>
   AOT_hence \<open>x\<^bold>\<Sigma>p\<close>
-    using prop_enc[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF cqt_2_const_var[axiom_inst]] by blast
+    using prop_enc[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF "cqt:2[const_var]"[axiom_inst]] by blast
   AOT_thus \<open>x \<Turnstile> p\<close>
     using true_in_s[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1 "&I" by blast
 qed
@@ -143,7 +143,7 @@ proof -
   AOT_have \<open>s \<Turnstile> p \<equiv> s[\<lambda>y p]\<close>
     using lem1[THEN "\<rightarrow>E", OF sit] by blast
   also AOT_have \<open>\<dots> \<equiv> \<box>s[\<lambda>y p]\<close>
-    by (rule en_eq_2_1[unvarify F]) cqt_2_lambda
+    by (rule en_eq_2_1[unvarify F]) "cqt:2[lambda]"
   also AOT_have \<open>\<dots> \<equiv> \<box>s \<Turnstile> p\<close>
     using lem1[THEN RM, THEN "\<rightarrow>E", OF possit_sit_1[THEN "\<equiv>E"(1), OF sit]]
     by (metis KBasic_6 intro_elim_3_b oth_class_taut_2_e vdash_properties_10)
@@ -231,7 +231,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule raa_cor_2)
   AOT_have \<open>\<forall>p (s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close> using a b by (simp add: intro_elim_2 universal_cor)
   AOT_hence 1: \<open>s = s'\<close> using sit_identity[THEN "\<equiv>E"(2)] by metis
   AOT_assume \<open>s \<noteq> s'\<close>
-  AOT_hence \<open>\<not>(s = s')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
+  AOT_hence \<open>\<not>(s = s')\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "=-infix")
   AOT_thus \<open>s = s' & \<not>(s = s')\<close> using 1 "&I" by blast
 qed
 
@@ -257,7 +257,7 @@ next
 next
   AOT_assume \<open>s \<unlhd> s' & s' \<unlhd> s\<close>
   AOT_thus \<open>s = s'\<close> using part_2[THEN "\<rightarrow>E", OF "&I"]
-    by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_2_a con_dis_i_e_2_b noneq_infix raa_cor_3)
+    by (metis "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_2_a con_dis_i_e_2_b "=-infix" raa_cor_3)
 qed
 
 AOT_theorem sit_identity_2_2: \<open>s = s' \<equiv> \<forall>s'' (s'' \<unlhd> s \<equiv> s'' \<unlhd> s')\<close>
@@ -312,7 +312,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>NullSituation(\<kap
       next
         fix F :: \<open><\<kappa>> AOT_var\<close>
         AOT_assume \<open>F \<noteq> F\<close>
-        AOT_hence \<open>\<not>(F = F)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
+        AOT_hence \<open>\<not>(F = F)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "=-infix")
         moreover AOT_have \<open>F = F\<close>
           by (simp add: id_eq_1)
         ultimately AOT_show \<open>x[F]\<close> using "&I" raa_cor_1 by blast
@@ -321,7 +321,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>NullSituation(\<kap
       AOT_assume 0: \<open>A!x & \<forall>F (x[F] \<equiv> F \<noteq> F)\<close>
       AOT_hence \<open>x[F] \<equiv> F \<noteq> F\<close> for F using "\<forall>E" "&E" by blast
       AOT_hence 1: \<open>\<not>x[F]\<close> for F
-        using "\<equiv>\<^sub>d\<^sub>fE" id_eq_1 noneq_infix reductio_aa_1 intro_elim_3_a by blast
+        using "\<equiv>\<^sub>d\<^sub>fE" id_eq_1 "=-infix" reductio_aa_1 intro_elim_3_a by blast
       AOT_show \<open>Situation(x) & \<not>\<exists>p x \<Turnstile> p\<close>
       proof (safe intro!: "&I" situations[THEN "\<equiv>\<^sub>d\<^sub>fI"] 0[THEN "&E"(1)] GEN "\<rightarrow>I")
         AOT_show \<open>Propositional([F])\<close> if \<open>x[F]\<close> for F using that 1 "&I" raa_cor_1 by fast
@@ -333,7 +333,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>NullSituation(\<kap
           AOT_hence \<open>x[\<lambda>y p]\<close>
             using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a intro_elim_3_a lem1 modus_tollens_1 raa_cor_3 true_in_s by fast
           moreover AOT_have \<open>\<not>x[\<lambda>y p]\<close>
-            by (rule 1[unvarify F]) cqt_2_lambda
+            by (rule 1[unvarify F]) "cqt:2[lambda]"
           ultimately AOT_show \<open>p & \<not>p\<close> for p using "&I" raa_cor_1 by blast
         qed
       qed
@@ -376,7 +376,7 @@ proof (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TrivialSituation(\<
       AOT_show \<open>Situation(x) & \<forall>p (x \<Turnstile> p)\<close>
       proof (safe intro!: "&I" 2 0[THEN "&E"(1)] GEN "\<rightarrow>I")
         AOT_have \<open>x[\<lambda>y p] \<equiv> \<exists>q [\<lambda>y p] = [\<lambda>y q]\<close> for p
-          by (rule 1[unvarify F, where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]) cqt_2_lambda
+          by (rule 1[unvarify F, where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]) "cqt:2[lambda]"
         moreover AOT_have \<open>\<exists>q [\<lambda>y p] = [\<lambda>y q]\<close> for p
           by (rule "\<exists>I"(2)[where \<beta>=p])
              (simp add: "rule=I_1" prop_prop2_2)
@@ -484,7 +484,7 @@ next
     AOT_assume \<open>\<exists>p x \<Turnstile> p\<close>
     then AOT_obtain p where \<open>x \<Turnstile> p\<close> by (metis "instantiation")
     AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b prop_enc true_in_s)
-    AOT_hence \<open>\<exists>F x[F]\<close> by (rule "\<exists>I") cqt_2_lambda
+    AOT_hence \<open>\<exists>F x[F]\<close> by (rule "\<exists>I") "cqt:2[lambda]"
     AOT_thus \<open>\<exists>F x[F] & \<not>\<exists>F x[F]\<close> using 0[THEN "&E"(2)] "&I" by blast
   qed
   ultimately AOT_show \<open>Situation(x) & \<not>\<exists>p x \<Turnstile> p\<close> using "&I" by blast
@@ -501,12 +501,12 @@ AOT_theorem null_triv_facts_2: \<open>\<^bold>s\<^sub>\<emptyset> = a\<^sub>\<em
   by (rule RN; rule GEN; rule null_triv_facts_1)
 
 AOT_theorem null_triv_facts_3: \<open>\<^bold>s\<^sub>V \<noteq> a\<^sub>V\<close>
-proof(rule noneq_infix[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof(rule "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_have \<open>Universal(a\<^sub>V)\<close>
     by (simp add: null_uni_facts_4)
   AOT_hence 0: \<open>a\<^sub>V[A!]\<close>
     using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" "\<forall>E"(1)
-    by (metis cqt_5a vdash_properties_10 vdash_properties_1_b)
+    by (metis "cqt:5:a" vdash_properties_10 vdash_properties_1_b)
   moreover AOT_have 1: \<open>\<not>\<^bold>s\<^sub>V[A!]\<close>
   proof(rule raa_cor_2)
     AOT_have \<open>Situation(\<^bold>s\<^sub>V)\<close>
@@ -620,7 +620,7 @@ proof -
     AOT_hence \<open>s\<^sub>1[\<lambda>y p]\<close>
       by (metis "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b prop_enc true_in_s)
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close>
-      by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) cqt_2_lambda
+      by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) "cqt:2[lambda]"
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis intro_elim_3_b identity_thm2_3)
     AOT_thus \<open>p\<close> using q\<^sub>1_prop[THEN "&E"(1)] "=E" id_sym by fast
   qed
@@ -714,7 +714,7 @@ proof (safe intro!: "\<rightarrow>I")
   moreover AOT_assume \<open>s \<Turnstile> p\<close>
   ultimately AOT_have p: p by blast
   AOT_show \<open>[\<lambda>y p]s\<close>
-    by (rule betaC_2_a; cqt_2_lambda)
+    by (rule betaC_2_a; "cqt:2[lambda]")
        (auto simp: p ex_1_a rule_ui_2_a)
 qed
 
@@ -974,7 +974,7 @@ proof -
     {
       AOT_assume 0: \<open>p\<close>
       AOT_have \<open>[\<lambda>y p]x\<close> for x
-        by (rule betaC_2_a; cqt_2_lambda; auto intro!: 0 cqt_2_const_var[axiom_inst])
+        by (rule betaC_2_a; "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
       AOT_hence \<open>[\<lambda>y \<not>p]x\<close> for x using i "rule=E" by fast
       AOT_hence \<open>\<not>p\<close>
         using betaC_1_a by auto
@@ -982,7 +982,7 @@ proof -
     moreover {
       AOT_assume 0: \<open>\<not>p\<close>
       AOT_have \<open>[\<lambda>y \<not>p]x\<close> for x
-        by (rule betaC_2_a; cqt_2_lambda; auto intro!: 0 cqt_2_const_var[axiom_inst])
+        by (rule betaC_2_a; "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
       AOT_hence \<open>[\<lambda>y p]x\<close> for x using i[symmetric] "rule=E" by fast
       AOT_hence \<open>p\<close>
         using betaC_1_a by auto
@@ -1696,7 +1696,7 @@ qed
 AOT_act_theorem not_act: \<open>w \<noteq> \<^bold>w\<^sub>\<alpha> \<rightarrow> \<not>Actual(w)\<close>
 proof (rule "\<rightarrow>I"; rule raa_cor_2)
   AOT_assume \<open>w \<noteq> \<^bold>w\<^sub>\<alpha>\<close>
-  AOT_hence 0: \<open>\<not>(w = \<^bold>w\<^sub>\<alpha>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" noneq_infix)
+  AOT_hence 0: \<open>\<not>(w = \<^bold>w\<^sub>\<alpha>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "=-infix")
   AOT_have walpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
     using pre_walpha rule_id_def_2_b' w_alpha by blast
   AOT_have walpha_sit: \<open>Situation(\<^bold>w\<^sub>\<alpha>)\<close>
@@ -2444,7 +2444,7 @@ proof -
     AOT_assume \<open>w = w'\<close>
     AOT_thus \<open>p & \<not>p\<close> for p using w w' "&E" by (metis "rule=E" raa_cor_3)
   qed
-  AOT_hence \<open>w \<noteq> w'\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" noneq_infix)
+  AOT_hence \<open>w \<noteq> w'\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "=-infix")
   AOT_hence \<open>\<exists>w' w \<noteq> w'\<close> by (rule "PossibleWorld.\<exists>I")
   thus ?thesis by (rule "PossibleWorld.\<exists>I")
 qed
@@ -2508,7 +2508,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem w_rel_3: \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
-  by (rule w_rel_2[THEN "\<rightarrow>E"]) cqt_2_lambda
+  by (rule w_rel_2[THEN "\<rightarrow>E"]) "cqt:2[lambda]"
 
 AOT_define w_index :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sub>_\<close>)
   \<open>[F]\<^sub>w =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<close>
@@ -2552,7 +2552,7 @@ next
           AOT_assume 1: \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
           AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
             by (rule betaC_2_a; fact w_rel_3)
-               (auto simp: 1 cqt_2_const_var vdash_properties_1_b)
+               (auto simp: 1 "cqt:2[const_var]" vdash_properties_1_b)
         }
       qed
       ultimately AOT_have 1: \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
