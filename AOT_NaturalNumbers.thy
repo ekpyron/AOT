@@ -1951,7 +1951,7 @@ next
   AOT_hence Ay: \<open>A!y\<close> and yF: \<open>\<forall>F (y[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E H)\<close> using numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
   AOT_assume G_approx_H: \<open>G \<approx>\<^sub>E H\<close>
   AOT_show \<open>x = y\<close>
-  proof(rule ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF Ax, OF Ay]; rule GEN)
+  proof(rule "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF Ax, OF Ay]; rule GEN)
     fix F
     AOT_have \<open>x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G\<close> using xF[THEN "\<forall>E"(2)].
     also AOT_have \<open>\<dots> \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E H\<close> using eq_part_5'[THEN "\<equiv>E"(1), OF G_approx_H, THEN "\<forall>E"(2)].

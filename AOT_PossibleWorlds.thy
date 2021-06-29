@@ -182,7 +182,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
 next
   AOT_assume a: \<open>\<forall>p (s \<Turnstile> p \<equiv> s' \<Turnstile> p)\<close>
   AOT_show \<open>s = s'\<close>
-  proof(safe intro!: ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" GEN "\<equiv>I" "\<rightarrow>I")
+  proof(safe intro!: "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" GEN "\<equiv>I" "\<rightarrow>I")
     AOT_show \<open>A!s\<close> using Situation.\<psi> "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) situations by blast
   next
     AOT_show \<open>A!s'\<close> using Situation.\<psi> "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) situations by blast

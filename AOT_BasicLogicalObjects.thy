@@ -231,7 +231,7 @@ proof -
     by (metis "instantiation" "act-conj-act:4" "existential:1" "log-prop-prop:2" "logic-actual"
               "vdash-properties:1[1]" "vdash-properties:6")
   show ?thesis
-  proof(safe intro!: ab_obey_2[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
+  proof(safe intro!: "ab-obey:2"[unvarify x y, THEN "\<rightarrow>E"]
                      false_den true_den true_prop[THEN "&E"(1)] "&I"
                      false_prop[THEN "&E"(1)] "\<or>I"(1) "\<exists>I"(1))
     AOT_show \<open>\<top>[\<lambda>y p]\<close>
@@ -268,7 +268,7 @@ proof -
       using TV_lem2_2 b_prop "vdash-properties:10" by blast
   next
     AOT_show \<open>a \<noteq> b\<close>
-    proof(rule ab_obey_2[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF a_prop[THEN "&E"(1)], OF b_prop[THEN "&E"(1)], OF "\<or>I"(1)])
+    proof(rule "ab-obey:2"[THEN "\<rightarrow>E", OF "\<or>I"(1)])
       AOT_show \<open>\<exists>F (a[F] & \<not>b[F])\<close>
       proof(rule "\<exists>I"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"]; rule "&I" prop_prop2_2)
         AOT_show \<open>a[\<lambda>y p]\<close>
@@ -299,7 +299,7 @@ proof -
     {
       AOT_assume p: \<open>p\<close>
       AOT_have \<open>z = a\<close>
-      proof(rule ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF z_prop[THEN "&E"(1)], OF a_prop[THEN "&E"(1)]]; rule GEN)
+      proof(rule "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF z_prop[THEN "&E"(1)], OF a_prop[THEN "&E"(1)]]; rule GEN)
         fix G
         AOT_have \<open>z[G] \<equiv> \<exists>q ((q \<equiv> p) & G = [\<lambda>y q])\<close>
           using z_prop[THEN "&E"(2)] "\<forall>E"(2) by blast
@@ -313,7 +313,7 @@ proof -
     moreover {
       AOT_assume notp: \<open>\<not>p\<close>
       AOT_have \<open>z = b\<close>
-      proof(rule ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF z_prop[THEN "&E"(1)], OF b_prop[THEN "&E"(1)]]; rule GEN)
+      proof(rule "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF z_prop[THEN "&E"(1)], OF b_prop[THEN "&E"(1)]]; rule GEN)
         fix G
         AOT_have \<open>z[G] \<equiv> \<exists>q ((q \<equiv> p) & G = [\<lambda>y q])\<close>
           using z_prop[THEN "&E"(2)] "\<forall>E"(2) by blast
@@ -351,7 +351,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_hence \<open>\<forall>F (x[F] \<equiv> \<top>[F])\<close>
       using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
     AOT_thus \<open>x = \<top>\<close>
-      by (rule ab_obey_1[unvarify y, OF true_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
+      by (rule "ab-obey:1"[unvarify y, OF true_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
   next
     AOT_assume \<open>x = \<top>\<close>
     AOT_hence d: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -384,7 +384,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"
     AOT_hence \<open>\<forall>F (x[F] \<equiv> \<bottom>[F])\<close>
       using "cqt-basic:10"[THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(2)]] by fast
     AOT_thus \<open>x = \<bottom>\<close>
-      by (rule ab_obey_1[unvarify y, OF false_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
+      by (rule "ab-obey:1"[unvarify y, OF false_den, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I", OF \<theta>[THEN "&E"(1)], OF a])
   next
     AOT_assume \<open>x = \<bottom>\<close>
     AOT_hence d: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>

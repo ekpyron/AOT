@@ -6546,7 +6546,7 @@ proof(rule "\<rightarrow>I")
     using "\<beta>\<rightarrow>C"(1) by blast
 qed
 
-AOT_theorem ord_eq_E_1: \<open>(O!x & O!y) \<rightarrow> (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> x =\<^sub>E y)\<close>
+AOT_theorem "ord=E:1": \<open>(O!x & O!y) \<rightarrow> (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> x =\<^sub>E y)\<close>
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
   AOT_hence \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close>
@@ -6557,16 +6557,16 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_thus \<open>x =\<^sub>E y\<close> using "=E-simple:1"[THEN "\<equiv>E"(2)] by blast
 qed
 
-AOT_theorem ord_eq_E_2: \<open>(O!x & O!y) \<rightarrow> (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> x = y)\<close>
+AOT_theorem "ord=E:2": \<open>(O!x & O!y) \<rightarrow> (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> x = y)\<close>
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_assume \<open>O!x & O!y\<close>
   moreover AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
   ultimately AOT_have \<open>x =\<^sub>E y\<close>
-    using ord_eq_E_1 "\<rightarrow>E" by blast
+    using "ord=E:1" "\<rightarrow>E" by blast
   AOT_thus \<open>x = y\<close> using "=E-simple:2"[THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem ord_eq_E2_1: \<open>(O!x & O!y) \<rightarrow> (x \<noteq> y \<equiv> [\<lambda>z z =\<^sub>E x] \<noteq> [\<lambda>z z =\<^sub>E y])\<close>
+AOT_theorem "ord=E2:1": \<open>(O!x & O!y) \<rightarrow> (x \<noteq> y \<equiv> [\<lambda>z z =\<^sub>E x] \<noteq> [\<lambda>z z =\<^sub>E y])\<close>
 proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"]; rule "raa-cor:2")
   AOT_assume 0: \<open>O!x & O!y\<close>
   AOT_assume \<open>x \<noteq> y\<close>
@@ -6594,7 +6594,7 @@ next
     using 0 "&I" by blast
 qed
 
-AOT_theorem ord_eq_E2_2: \<open>(O!x & O!y) \<rightarrow> (x \<noteq> y \<equiv> [\<lambda>z z = x] \<noteq> [\<lambda>z z = y])\<close>
+AOT_theorem "ord=E2:2": \<open>(O!x & O!y) \<rightarrow> (x \<noteq> y \<equiv> [\<lambda>z z = x] \<noteq> [\<lambda>z z = y])\<close>
 proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"]; rule "raa-cor:2")
   AOT_assume 0: \<open>O!x & O!y\<close>
   AOT_assume \<open>x \<noteq> y\<close>
@@ -6625,7 +6625,7 @@ qed
 AOT_theorem ordnecfail: \<open>O!x \<rightarrow> \<box>\<not>\<exists>F x[F]\<close>
   by (meson "RM:1" "deduction-theorem" nocoder "oa-facts:1" "vdash-properties:10" "vdash-properties:1[2]")
 
-AOT_theorem ab_obey_1: \<open>(A!x & A!y) \<rightarrow> (\<forall>F (x[F] \<equiv> y[F]) \<rightarrow> x = y)\<close>
+AOT_theorem "ab-obey:1": \<open>(A!x & A!y) \<rightarrow> (\<forall>F (x[F] \<equiv> y[F]) \<rightarrow> x = y)\<close>
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_assume 1: \<open>A!x & A!y\<close>
   AOT_assume \<open>\<forall>F (x[F] \<equiv> y[F])\<close>
@@ -6637,9 +6637,8 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
     using "\<equiv>\<^sub>d\<^sub>fI"[OF "identity:1", OF "\<or>I"(2)] 1 "&I" by blast
 qed
 
-(* TODO_PLM: precondition not needed *)
-AOT_theorem ab_obey_2: \<open>(A!x & A!y) \<rightarrow> ((\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])) \<rightarrow> x \<noteq> y)\<close>
-proof (rule "\<rightarrow>I"; rule "\<rightarrow>I"; rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"]; rule "raa-cor:2")
+AOT_theorem "ab-obey:2": \<open>(\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])) \<rightarrow> x \<noteq> y\<close>
+proof (rule "\<rightarrow>I"; rule "\<equiv>\<^sub>d\<^sub>fI"[OF "=-infix"]; rule "raa-cor:2")
   AOT_assume 1: \<open>x = y\<close>
   AOT_assume \<open>\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])\<close>
   moreover {
@@ -6703,7 +6702,7 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
       using a_prop[THEN "&E"(2)] "\<forall>E" "\<equiv>E"(2) "\<equiv>E"(5) "Commutativity of \<equiv>" by fast
     AOT_hence \<open>\<forall>F (\<beta>[F] \<equiv> a[F])\<close> by (rule GEN)
     AOT_thus \<open>\<beta> = a\<close>
-      using ab_obey_1[THEN "\<rightarrow>E", OF "&I"[OF \<beta>_prop[THEN "&E"(1)], OF a_prop[THEN "&E"(1)]], THEN "\<rightarrow>E"] by blast
+      using "ab-obey:1"[THEN "\<rightarrow>E", OF "&I"[OF \<beta>_prop[THEN "&E"(1)], OF a_prop[THEN "&E"(1)]], THEN "\<rightarrow>E"] by blast
   qed
   AOT_hence \<open>\<forall>\<beta> ((A!\<beta> & \<forall>F (\<beta>[F] \<equiv> \<phi>{F})) \<rightarrow> \<beta> = a)\<close> by (rule GEN)
   AOT_thus \<open>\<exists>\<alpha> ([A!]\<alpha> & \<forall>F (\<alpha>[F] \<equiv> \<phi>{F}) & \<forall>\<beta> ([A!]\<beta> & \<forall>F (\<beta>[F] \<equiv> \<phi>{F}) \<rightarrow> \<beta> = \<alpha>)) \<close>
@@ -6878,7 +6877,7 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
         using "raa-cor:3" \<beta>_null a_null by blast+
       moreover AOT_have \<open>A!\<beta>\<close> using a df_null_uni_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
       ultimately AOT_show \<open>\<beta> = a\<close>
-        using a_prop[THEN "&E"(1)] ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by blast
+        using a_prop[THEN "&E"(1)] "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" by blast
     qed
   qed
   AOT_thus \<open>\<exists>\<alpha> (Null(\<alpha>) & \<forall>\<beta> (Null(\<beta>) \<rightarrow> \<beta> = \<alpha>))\<close> using "\<exists>I"(2) by fast
@@ -6899,7 +6898,7 @@ proof (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     AOT_hence \<open>\<beta>[F] \<equiv> a[F]\<close> for F using aF by (metis "deduction-theorem" "\<equiv>I")
     AOT_hence \<open>\<forall>F (\<beta>[F] \<equiv> a[F])\<close> by (rule GEN)
     AOT_thus \<open>\<beta> = a\<close>
-      using a_prop[THEN "&E"(1)] ab_obey_1[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" abs_\<beta> by blast
+      using a_prop[THEN "&E"(1)] "ab-obey:1"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "&I" abs_\<beta> by blast
   qed
   ultimately AOT_show \<open>\<exists>\<alpha> (Universal(\<alpha>) & \<forall>\<beta> (Universal(\<beta>) \<rightarrow> \<beta> = \<alpha>))\<close>
     using "&I" "\<exists>I" by fast
@@ -6999,7 +6998,7 @@ proof (rule "=\<^sub>d\<^sub>fI"(2)[OF df_null_uni_terms_1, OF null_uni_uniq_3];
 qed
 
 AOT_theorem null_uni_facts_6: \<open>a\<^sub>\<emptyset> = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
-proof (rule ab_obey_1[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
+proof (rule "ab-obey:1"[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
   AOT_show \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<down>\<close>
     by (simp add: A_descriptions)
 next
@@ -7038,7 +7037,7 @@ next
 qed
 
 AOT_theorem null_uni_facts_7: \<open>a\<^sub>V = \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> F = F))\<close>
-proof (rule ab_obey_1[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
+proof (rule "ab-obey:1"[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
   AOT_show \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<down>\<close>
     by (simp add: A_descriptions)
 next
