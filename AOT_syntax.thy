@@ -787,6 +787,16 @@ AOT_syntax_print_translations [
 Const (\<^const_syntax>\<open>AOT_exe\<close>, dummyT) $ R $ (Const (\<^syntax_const>\<open>_AOT_exe_args\<close>, dummyT) $ a $ b))
 )]\<close>
 
+text\<open>Special marker for printing propositions as theorems.\<close>
+definition print_as_theorem :: \<open>\<o> \<Rightarrow> bool\<close> where \<open>print_as_theorem \<equiv> \<lambda> \<phi> . \<forall>v . [v \<Turnstile> \<phi>]\<close>
+lemma print_as_theoremI: assumes \<open>\<And> v . [v \<Turnstile> \<phi>]\<close> shows \<open>print_as_theorem \<phi>\<close>
+  using assms by (simp add: print_as_theorem_def)
+attribute_setup print_as_theorem =
+  \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm RS @{thm print_as_theoremI})))\<close>
+  "Instantiate axiom as theorem."
+print_translation\<open>AOT_syntax_print_translations [(\<^const_syntax>\<open>print_as_theorem\<close>, fn ctxt => fn [x] => 
+(Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x))]\<close>
+
 (*<*)
 end
 (*>*)
