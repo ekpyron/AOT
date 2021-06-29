@@ -699,7 +699,7 @@ next
     using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have H_rigid: \<open>\<box>\<forall>x ([H]x \<rightarrow> \<box>[H]x)\<close> using H[THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)].
   AOT_hence \<open>\<forall>x \<box>([H]x \<rightarrow> \<box>[H]x)\<close>
-    using BFs_2 "vdash-properties:10" by blast
+    using "CBF" "vdash-properties:10" by blast
   AOT_hence \<open>\<box>([H]x \<rightarrow> \<box>[H]x)\<close> for x using "\<forall>E"(2) by blast
   AOT_hence rigid: \<open>[H]x \<equiv> \<^bold>\<A>[H]x\<close> for x
      by (metis "\<equiv>E"(6) "oth-class-taut:3:a" sc_eq_fur_2 "vdash-properties:10")
@@ -1642,7 +1642,7 @@ AOT_theorem approx_nec_2: \<open>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
   AOT_hence \<open>\<box>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x))\<close>
-    using "&E"(1) "&E"(2) "KBasic:3" "S5Basic:5" "&I" "\<equiv>E"(2) "vdash-properties:10" by meson
+    using "&E"(1) "&E"(2) "KBasic:3" "4" "&I" "\<equiv>E"(2) "vdash-properties:10" by meson
   moreover AOT_have \<open>\<box>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)) \<rightarrow> \<box>(F \<approx>\<^sub>E G \<rightarrow> \<box>F \<approx>\<^sub>E G)\<close>
   proof(rule RM; rule "\<rightarrow>I"; rule "\<rightarrow>I")
     AOT_modally_strict {
@@ -1815,7 +1815,7 @@ proof (rule "\<rightarrow>I")
       AOT_hence \<open>\<exists>R \<box>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
         by (rule "\<exists>I"(2))
       AOT_hence 1: \<open>\<box>\<exists>R R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G\<close>
-        by (metis sign_S5_thm_1 "vdash-properties:10")
+        by (metis Buridan "vdash-properties:10")
       AOT_show \<open>\<box>F \<approx>\<^sub>E G\<close>
         by (AOT_subst_using subst: equi_3[THEN "\<equiv>Df"])
            (fact 1)
@@ -2061,7 +2061,7 @@ proof -
   then AOT_obtain F where \<open>\<exists>G \<diamond>([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using "\<exists>E"[rotated] by blast
   then AOT_obtain G where \<open>\<diamond>([\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<theta>: \<open>\<diamond>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G\<close> and \<zeta>: \<open>\<diamond>\<not>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G\<close>
-    using "KBasic2:3"[THEN "\<rightarrow>E"] "&E" "S5Basic:7"[THEN "\<rightarrow>E"] by blast+
+    using "KBasic2:3"[THEN "\<rightarrow>E"] "&E" "4\<diamond>"[THEN "\<rightarrow>E"] by blast+
   AOT_obtain a where \<open>Numbers(a, G)\<close> using num_1 "\<exists>E"[rotated] by blast
   moreover AOT_have \<open>\<not>\<box>Numbers(a, G)\<close>
   proof (rule "raa-cor:2")
@@ -2213,7 +2213,7 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain G where \<open>x = #G\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>x = #G\<close> by (metis "id-nec:2" "vdash-properties:10")
   AOT_hence \<open>\<exists>G \<box>x = #G\<close> by (rule "\<exists>I")
-  AOT_hence 1: \<open>\<box>\<exists>G x = #G\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+  AOT_hence 1: \<open>\<box>\<exists>G x = #G\<close> by (metis Buridan "vdash-properties:10")
   AOT_show \<open>\<box>NaturalCardinal(x)\<close>
     by (AOT_subst_using subst: card[THEN "\<equiv>Df"]) (fact 1)
 qed
@@ -2659,7 +2659,7 @@ proof(rule "\<rightarrow>I")
     by (AOT_subst_rev \<open>\<guillemotleft>x = y\<guillemotright>\<close> \<open>\<guillemotleft>\<box>x = y\<guillemotright>\<close>)
        (auto simp: 1 "id-nec:2" "\<equiv>I" "qml:2" "vdash-properties:1[2]")
   AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE", OF RigidR] "&E" by blast
-  AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using BFs_2[THEN "\<rightarrow>E"] by fast
+  AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using "CBF"[THEN "\<rightarrow>E"] by fast
   AOT_hence \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 \<box>([R]x\<^sub>1x\<^sub>2 \<rightarrow> \<box>[R]x\<^sub>1x\<^sub>2)\<close> using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>\<box>([R]xy \<rightarrow> \<box>[R]xy)\<close> for x y using "\<forall>E"(2) by blast
   AOT_hence \<open>\<box>(([R]xz \<rightarrow> \<box>[R]xz) & ([R]yz \<rightarrow> \<box>[R]yz))\<close> for x y z by (metis "KBasic:3" "&I" "\<equiv>E"(3) "raa-cor:3")
@@ -3184,7 +3184,7 @@ proof -
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
       using ind_nec "vdash-properties:10" by blast
     AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
-      using BFs_2 "vdash-properties:10" by blast
+      using "CBF" "vdash-properties:10" by blast
     AOT_assume 0: \<open>\<forall>G (\<forall>u \<box>([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close>
     AOT_have \<open>x[F]\<close>
       by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
@@ -3214,7 +3214,7 @@ proof -
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
       using ind_nec "vdash-properties:10" by blast
     AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
-      using BFs_2 "vdash-properties:10" by blast
+      using "CBF" "vdash-properties:10" by blast
     AOT_assume 0: \<open>\<exists>G (\<forall>u \<box>([G]u \<equiv> [F]u) & x[G])\<close>
     then AOT_obtain G where \<open>\<forall>u \<box>([G]u \<equiv> [F]u) & x[G]\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>x[G]\<close> using "&E" by blast
@@ -3618,7 +3618,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>F \<box>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     by (rule "\<exists>I")
   AOT_hence 0: \<open>\<box>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
-    using sign_S5_thm_1 "vdash-properties:10" by fast
+    using Buridan "vdash-properties:10" by fast
   AOT_show \<open>\<box>[\<P>]xy\<close>
     by (AOT_subst \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<guillemotright>\<close>; simp add: pred_thm_2 0)
 qed
@@ -4998,7 +4998,7 @@ proof -
       AOT_thus \<open>[F]x\<close> by (metis "raa-cor:1")
     qed
     AOT_hence \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> using ind_nec[THEN "\<rightarrow>E"] by blast
-    AOT_hence \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close> by (metis BFs_2 "vdash-properties:10")
+    AOT_hence \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close> by (metis "CBF" "vdash-properties:10")
   } note indistI = this
   {
     AOT_assume G_prop: \<open>x[G] & \<not>y[G]\<close>
@@ -5186,7 +5186,7 @@ proof -
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
       using ind_nec "vdash-properties:10" by blast
     AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
-      using BFs_2 "vdash-properties:10" by blast
+      using "CBF" "vdash-properties:10" by blast
     AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> x[G])\<close>
     AOT_have \<open>x[F]\<close>
       by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
@@ -5242,7 +5242,7 @@ proof -
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
       using ind_nec "vdash-properties:10" by blast
     AOT_hence indist_nec: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
-      using BFs_2 "vdash-properties:10" by blast
+      using "CBF" "vdash-properties:10" by blast
     AOT_assume 0: \<open>\<forall>G (\<forall>u ([G]u \<equiv> [F]u) \<rightarrow> \<not>x[G])\<close>
     AOT_have \<open>\<not>x[F]\<close>
       by (safe intro!: 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] GEN "\<rightarrow>I" RN "\<equiv>I")
@@ -5475,10 +5475,10 @@ proof -
     AOT_hence \<open>\<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F G using "\<forall>E"(2) by blast
     AOT_hence \<open>\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F by (rule GEN)
     AOT_hence \<open>\<box>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> for F
-      using BFs_1 "vdash-properties:10" by fast
+      using "BF" "vdash-properties:10" by fast
     AOT_hence \<open>\<forall>F \<box>\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close> by (rule GEN)
     AOT_hence \<open>\<box>\<forall>F\<forall>G (\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-      using BFs_1 "vdash-properties:10" by fast
+      using "BF" "vdash-properties:10" by fast
   }
   ultimately AOT_have 1: \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<equiv> \<phi>{F}) \<equiv> \<forall>F (y[F] \<equiv> \<phi>{F})))\<close>
     using "\<rightarrow>E" by blast

@@ -630,7 +630,7 @@ proof -
     AOT_hence \<open>\<box>(Situation(s\<^sub>1) & \<forall>p (s\<^sub>1 \<Turnstile> p \<rightarrow> p))\<close>
       using actual[THEN "\<equiv>Df", THEN AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1), THEN RM, THEN "\<rightarrow>E"] by blast
     AOT_hence \<open>\<box>\<forall>p (s\<^sub>1 \<Turnstile> p \<rightarrow> p)\<close> by (metis "RM:1" "Conjunction Simplification"(2) "vdash-properties:10")
-    AOT_hence \<open>\<forall>p \<box>(s\<^sub>1 \<Turnstile> p \<rightarrow> p)\<close> by (metis BFs_2 "vdash-properties:10")
+    AOT_hence \<open>\<forall>p \<box>(s\<^sub>1 \<Turnstile> p \<rightarrow> p)\<close> by (metis "CBF" "vdash-properties:10")
     AOT_hence \<open>\<box>(s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> q\<^sub>1)\<close> using "\<forall>E" by blast
     AOT_hence \<open>\<box>s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> \<box>q\<^sub>1\<close> by (metis "\<rightarrow>E" "qml:1" "vdash-properties:1[2]")
     moreover AOT_have \<open>s\<^sub>1 \<Turnstile> q\<^sub>1\<close>
@@ -756,7 +756,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
         by (metis "KBasic:3" "&I" "\<equiv>E"(2))
       AOT_hence \<open>\<exists>p \<box>(F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close> by (rule "\<exists>I")
       AOT_thus \<open>\<box>\<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
-        using sign_S5_thm_1[THEN "\<rightarrow>E"] by fast
+        using Buridan[THEN "\<rightarrow>E"] by fast
     }
   qed
 
@@ -848,7 +848,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>p \<box>(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
     by (rule "\<exists>I")
   AOT_hence \<open>\<box>\<exists>p(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
-    by (metis sign_S5_thm_1 "vdash-properties:10") 
+    by (metis Buridan "vdash-properties:10") 
   AOT_thus \<open>\<box>\<not>Consistent(s)\<close>
     apply (rule "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E", rotated])
     apply (rule RN)
@@ -880,7 +880,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
     moreover AOT_have \<open>\<box>x \<Turnstile> \<not>p\<close> using 4 lem2_1[unconstrain s, unvarify p, THEN "\<rightarrow>E"]  by (metis 2 "\<equiv>E"(1) "log-prop-prop:2")
     ultimately AOT_have \<open>\<box>(x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis "KBasic:3" "&I" "\<equiv>E"(3) "raa-cor:3")
     AOT_hence \<open>\<exists>p \<box>(x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis "existential:1" "log-prop-prop:2")
-    AOT_hence \<open>\<box>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+    AOT_hence \<open>\<box>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close> by (metis Buridan "vdash-properties:10")
     AOT_thus \<open>p & \<not>p\<close> for p using 3 "&I"  by (metis "raa-cor:3")
   qed
 next
@@ -904,7 +904,7 @@ proof(rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>\<not>p\<close> using a[THEN "&E"(2)] by (metis "KBasic2:1" "\<equiv>E"(2))
   ultimately AOT_have \<open>\<box>(s \<Turnstile> p & \<not>p)\<close> by (metis "KBasic:3" "&I" "\<equiv>E"(3) "raa-cor:3")
   AOT_hence \<open>\<exists>p \<box>(s \<Turnstile> p & \<not>p)\<close> by (rule "\<exists>I")
-  AOT_hence 1: \<open>\<box>\<exists>q (s \<Turnstile> q & \<not>q)\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+  AOT_hence 1: \<open>\<box>\<exists>q (s \<Turnstile> q & \<not>q)\<close> by (metis Buridan "vdash-properties:10")
   AOT_have \<open>\<box>\<not>\<forall>q (s \<Turnstile> q \<rightarrow> q)\<close>
     apply (AOT_subst \<open>\<lambda>\<phi> . \<guillemotleft>s \<Turnstile> \<phi> \<rightarrow> \<phi>\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<guillemotleft>\<not>(s \<Turnstile> \<phi> & \<not>\<phi>)\<guillemotright>\<close>)
      apply (simp add: "oth-class-taut:1:a")
@@ -1286,7 +1286,7 @@ proof(rule "raa-cor:2")
     by (metis "Buridan\<diamond>" "T\<diamond>" "&E"(2) "\<equiv>E"(1) lem2_3[unconstrain s, THEN "\<rightarrow>E"] "log-prop-prop:2" "rule-ui:1"
               "universal-cor" "vdash-properties:10")
   AOT_have \<open>\<diamond>\<forall>p (w \<Turnstile> p \<equiv> p)\<close> using PossibleWorld.\<psi> world'[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by metis
-  AOT_hence \<open>\<forall>p \<diamond>(w \<Turnstile> p \<equiv> p)\<close> using sign_S5_thm_2[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<forall>p \<diamond>(w \<Turnstile> p \<equiv> p)\<close> using "Buridan\<diamond>"[THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>\<diamond>(w \<Turnstile> (\<exists>p (p & \<not>p)) \<equiv> (\<exists>p (p & \<not>p)))\<close>
     by (metis "log-prop-prop:2" "rule-ui:1")
   AOT_hence \<open>\<diamond>(w \<Turnstile> (\<exists>p (p & \<not>p)) \<rightarrow> (\<exists>p (p & \<not>p)))\<close>
@@ -2300,7 +2300,7 @@ next
   AOT_hence \<open>\<box>w \<Turnstile> \<phi>{\<alpha>}\<close>
     using rigid_truth_at_1[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"] "&E" "&I" by blast
   AOT_hence \<open>\<exists>\<alpha> \<box>w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule "\<exists>I")
-  AOT_hence 0: \<open>\<box>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+  AOT_hence 0: \<open>\<box>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (metis Buridan "vdash-properties:10")
   AOT_modally_strict {
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})))\<close> for w
     proof(safe intro!: "\<rightarrow>I")
@@ -2616,7 +2616,7 @@ next
   AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n by (metis "\<equiv>E"(2) sc_eq_box_box_1)
   AOT_hence 0: \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> by (rule GEN)
   AOT_thus \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n))\<close>
-    using BFs_1 "vdash-properties:10" by blast
+    using "BF" "vdash-properties:10" by blast
 qed
 
 AOT_theorem rigid_rel_thms_2: \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>

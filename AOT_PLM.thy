@@ -2660,11 +2660,11 @@ AOT_theorem "S5Basic:4": \<open>\<diamond>\<box>\<phi> \<rightarrow> \<phi>\<clo
 lemmas "B\<diamond>" = "S5Basic:4"
 
 AOT_theorem "S5Basic:5": \<open>\<box>\<phi> \<rightarrow> \<box>\<box>\<phi>\<close>
-  using "RM:1" "S5Basic:3" "5\<diamond>" "Hypothetical Syllogism" by blast
+  using "RM:1" "B" "5\<diamond>" "Hypothetical Syllogism" by blast
 lemmas "4" = "S5Basic:5"
 
 AOT_theorem "S5Basic:6": \<open>\<box>\<phi> \<equiv> \<box>\<box>\<phi>\<close>
-  by (simp add: "S5Basic:5" "\<equiv>I" "qml:2"[axiom_inst])
+  by (simp add: "4" "\<equiv>I" "qml:2"[axiom_inst])
 
 AOT_theorem "S5Basic:7": \<open>\<diamond>\<diamond>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<diamond>\<phi>\<guillemotright>")
@@ -2680,12 +2680,12 @@ AOT_theorem "S5Basic:7": \<open>\<diamond>\<diamond>\<phi> \<rightarrow> \<diamo
 lemmas "4\<diamond>" = "S5Basic:7"
 
 AOT_theorem "S5Basic:8": \<open>\<diamond>\<diamond>\<phi> \<equiv> \<diamond>\<phi>\<close>
-  by (simp add: "S5Basic:7" "T\<diamond>" "\<equiv>I")
+  by (simp add: "4\<diamond>" "T\<diamond>" "\<equiv>I")
 
 AOT_theorem "S5Basic:9": \<open>\<box>(\<phi> \<or> \<box>\<psi>) \<equiv> (\<box>\<phi> \<or> \<box>\<psi>)\<close>
   apply (rule "\<equiv>I"; rule "\<rightarrow>I")
   using "KBasic2:6" "5\<diamond>" "\<or>I"(3) "if-p-then-p" "vdash-properties:10" apply blast
-  by (meson "KBasic:15" "S5Basic:5" "\<or>I"(3) "\<or>E"(1) "Disjunction Addition"(1) "con-dis-taut:7"
+  by (meson "KBasic:15" "4" "\<or>I"(3) "\<or>E"(1) "Disjunction Addition"(1) "con-dis-taut:7"
             "intro-elim:1" "Commutativity of \<or>")
 
 AOT_theorem "S5Basic:10": \<open>\<box>(\<phi> \<or> \<diamond>\<psi>) \<equiv> (\<box>\<phi> \<or> \<diamond>\<psi>)\<close>
@@ -2695,11 +2695,11 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<box>\<phi> \<or> \<diamond>\<diamond>\<psi>\<close>
     by (meson "KBasic2:6" "\<or>I"(2) "\<or>E"(1))
   AOT_thus \<open>\<box>\<phi> \<or> \<diamond>\<psi>\<close>
-    by (meson "S5Basic:4" "S5Basic:5" "S5Basic:7" "T\<diamond>" "\<or>I"(3))
+    by (meson "B\<diamond>" "4" "4\<diamond>" "T\<diamond>" "\<or>I"(3))
 next
   AOT_assume \<open>\<box>\<phi> \<or> \<diamond>\<psi>\<close>
   AOT_hence \<open>\<box>\<phi> \<or> \<box>\<diamond>\<psi>\<close>
-    by (meson "S5Basic:1" "S5Basic:4" "S5Basic:6" "T\<diamond>" "5\<diamond>" "\<or>I"(3) "intro-elim:1")
+    by (meson "S5Basic:1" "B\<diamond>" "S5Basic:6" "T\<diamond>" "5\<diamond>" "\<or>I"(3) "intro-elim:1")
   AOT_thus \<open>\<box>(\<phi> \<or> \<diamond>\<psi>)\<close>
     by (meson "KBasic:15" "\<or>I"(3) "\<or>E"(1) "Disjunction Addition"(1) "Disjunction Addition"(2))
 qed
@@ -2739,7 +2739,7 @@ next
     by (AOT_subst "\<guillemotleft>\<phi> & \<box>\<psi>\<guillemotright>" "\<guillemotleft>\<box>\<psi> & \<phi>\<guillemotright>")
        (auto simp: "Commutativity of &" "KBasic:16")
   ultimately AOT_show \<open>\<diamond>(\<phi> & \<box>\<psi>)\<close>
-    by (metis "S5Basic:5" "&I" "Conjunction Simplification"(1) "Conjunction Simplification"(2) "vdash-properties:6")
+    by (metis "4" "&I" "Conjunction Simplification"(1) "Conjunction Simplification"(2) "vdash-properties:6")
 qed
 
 
@@ -2747,33 +2747,33 @@ AOT_theorem "S5Basic:13": \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<equ
 proof (rule "\<equiv>I")
   AOT_modally_strict {
     AOT_have \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
-      by (meson "KBasic:13" "S5Basic:4" "Hypothetical Syllogism" "deduction-theorem")
+      by (meson "KBasic:13" "B\<diamond>" "Hypothetical Syllogism" "deduction-theorem")
   }
   AOT_hence \<open>\<box>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
     by (rule RM)
   AOT_thus  \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
-    using "S5Basic:5" "Hypothetical Syllogism" by blast
+    using "4" "Hypothetical Syllogism" by blast
 next
   AOT_modally_strict {
     AOT_have \<open>\<box>(\<diamond>\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<phi> \<rightarrow> \<box>\<psi>)\<close>
-      by (meson "S5Basic:3" "Hypothetical Syllogism" "deduction-theorem" "qml:1" "vdash-properties:1[2]")
+      by (meson "B" "Hypothetical Syllogism" "deduction-theorem" "qml:1" "vdash-properties:1[2]")
   }
   AOT_hence  \<open>\<box>\<box>(\<diamond>\<phi> \<rightarrow> \<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<box>\<psi>)\<close>
     by (rule RM)
   AOT_thus \<open>\<box>(\<diamond>\<phi> \<rightarrow> \<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<box>\<psi>)\<close>
-    using "S5Basic:5" "Hypothetical Syllogism" by blast
+    using "4" "Hypothetical Syllogism" by blast
 qed
 
-AOT_theorem derived_S5_rules_1:
+AOT_theorem "derived-S5-rules:1":
   assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close>
 proof -
   AOT_have \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<diamond>\<phi> \<rightarrow> \<box>\<psi>\<close>
     using assms by (rule "RM:1[prem]")
   AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close>
-    using "S5Basic:3" "Hypothetical Syllogism" by blast
+    using "B" "Hypothetical Syllogism" by blast
 qed
 
-AOT_theorem derived_S5_rules_2:
+AOT_theorem "derived-S5-rules:2":
   assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<box>\<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close>
 proof -
   AOT_have \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<box>\<psi>\<close>
@@ -2781,7 +2781,8 @@ proof -
   AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<psi>\<close>
     using "B\<diamond>" "Hypothetical Syllogism" by blast
 qed
-AOT_theorem BFs_1: \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
+
+AOT_theorem "BFs:1": \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
 proof -
   AOT_modally_strict {
     AOT_modally_strict {
@@ -2791,18 +2792,18 @@ proof -
     AOT_hence \<open>\<diamond>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<phi>{\<alpha>}\<close>
       using "B\<diamond>" "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
   }
-  thus ?thesis using derived_S5_rules_1 by blast
+  thus ?thesis using "derived-S5-rules:1" by blast
 qed
-lemmas "BF" = BFs_1
+lemmas "BF" = "BFs:1"
 
-AOT_theorem BFs_2: \<open>\<box>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<box>\<phi>{\<alpha>}\<close>
+AOT_theorem "BFs:2": \<open>\<box>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<box>\<phi>{\<alpha>}\<close>
 proof -
   AOT_have \<open>\<box>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using RM "cqt-orig:3" by metis
   thus ?thesis using  "cqt-orig:2"[THEN "\<rightarrow>E"] "\<forall>I" by metis
 qed
-lemmas "CBF" = BFs_2
+lemmas "CBF" = "BFs:2"
 
-AOT_theorem BFs_3: \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+AOT_theorem "BFs:3": \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
 proof(rule "\<rightarrow>I")
   AOT_modally_strict {
     AOT_have \<open>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>} \<equiv> \<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
@@ -2829,9 +2830,9 @@ proof(rule "\<rightarrow>I")
      apply (simp add: AOT_dia "\<equiv>Df")
     using 0 by blast
 qed
-lemmas "BF\<diamond>" = "BFs_3"
+lemmas "BF\<diamond>" = "BFs:3"
 
-AOT_theorem BFs_4: \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>} \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+AOT_theorem "BFs:4": \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>} \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
   AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<diamond>\<phi>{\<alpha>}\<close>
@@ -2840,7 +2841,7 @@ proof(rule "\<rightarrow>I")
     apply - apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<diamond>\<phi>{\<tau>}\<guillemotright>")
     by (simp add: "KBasic2:1")
   moreover AOT_have \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>} \<equiv> \<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
-    using "\<equiv>I" BFs_1 BFs_2 by metis
+    using "\<equiv>I" "BF" "CBF" by metis
   ultimately AOT_have 1: \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     using "\<equiv>E"(3) by blast
   AOT_show \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
@@ -2850,9 +2851,9 @@ proof(rule "\<rightarrow>I")
     apply (AOT_subst "\<guillemotleft>\<not>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
     by (auto simp: 1 "\<equiv>I" "useful-tautologies:1" "useful-tautologies:2")
 qed
-lemmas "CBF\<diamond>" = BFs_4
+lemmas "CBF\<diamond>" = "BFs:4"
 
-AOT_theorem sign_S5_thm_1: \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+AOT_theorem "sign-S5-thm:1": \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> \<box>\<phi>{\<alpha>}\<close>
   then AOT_obtain \<alpha> where \<open>\<box>\<phi>{\<alpha>}\<close> using "\<exists>E" by metis
@@ -2866,29 +2867,27 @@ proof(rule "\<rightarrow>I")
   qed
   ultimately AOT_show \<open>\<box>\<exists>\<alpha> \<phi>{\<alpha>}\<close> by blast
 qed
+lemmas Buridan = "sign-S5-thm:1"
 
-lemmas "Buridan" = sign_S5_thm_1
-
-AOT_theorem sign_S5_thm_2: \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+AOT_theorem "sign-S5-thm:2": \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
 proof -
   AOT_have \<open>\<forall>\<alpha> (\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<diamond>\<phi>{\<alpha>})\<close>
     by (simp add: "RM\<diamond>" "cqt-orig:3" "\<forall>I")
   AOT_thus \<open>\<diamond>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
     using "\<forall>E"(4) "\<forall>I" "\<rightarrow>E" "\<rightarrow>I" by metis
 qed
+lemmas "Buridan\<diamond>" = "sign-S5-thm:2"
 
-lemmas "Buridan\<diamond>" = sign_S5_thm_2
-
-AOT_theorem sign_S5_thm_3: \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>(\<exists>\<alpha> \<phi>{\<alpha>} & \<exists>\<alpha> \<psi>{\<alpha>})\<close>
+AOT_theorem "sign-S5-thm:3": \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>(\<exists>\<alpha> \<phi>{\<alpha>} & \<exists>\<alpha> \<psi>{\<alpha>})\<close>
   apply (rule "RM:2")
   by (metis (no_types, lifting) "instantiation" "&I" "&E"(1)
                                 "&E"(2) "deduction-theorem" "existential:2[const_var]")
 
-AOT_theorem sign_S5_thm_4: \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
+AOT_theorem "sign-S5-thm:4": \<open>\<diamond>\<exists>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   apply (rule "RM:2")
   by (meson "instantiation" "&E"(1) "deduction-theorem" "existential:2[const_var]")
 
-AOT_theorem sign_S5_thm_5: \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})\<close>
+AOT_theorem "sign-S5-thm:5": \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<chi>{\<alpha>})\<close>
 proof -
   {
     fix \<phi>' \<psi>' \<chi>'
@@ -2900,7 +2899,7 @@ proof -
   show ?thesis by (rule R; fact AOT)
 qed
 
-AOT_theorem sign_S5_thm_6: \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
+AOT_theorem "sign-S5-thm:6": \<open>(\<box>\<forall>\<alpha> (\<phi>{\<alpha>} \<equiv> \<psi>{\<alpha>}) & \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})) \<rightarrow> \<box>\<forall>\<alpha>(\<phi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
 proof -
   {
     fix \<phi>' \<psi>' \<chi>'
@@ -2915,14 +2914,14 @@ qed
 AOT_theorem "exist-nec2:1": \<open>\<diamond>\<tau>\<down> \<rightarrow> \<tau>\<down>\<close>
   using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" "exist-nec" by blast
 
-AOT_theorem exists_nec2_2: \<open>\<diamond>\<tau>\<down> \<equiv> \<box>\<tau>\<down>\<close>
+AOT_theorem "exists-nec2:2": \<open>\<diamond>\<tau>\<down> \<equiv> \<box>\<tau>\<down>\<close>
   by (meson "Act-Sub:3" "Hypothetical Syllogism" "exist-nec" "exist-nec2:1" "\<equiv>I" "nec-imp-act")
 
-AOT_theorem exists_nec2_3: \<open>\<not>\<tau>\<down> \<rightarrow> \<box>\<not>\<tau>\<down>\<close>
+AOT_theorem "exists-nec2:3": \<open>\<not>\<tau>\<down> \<rightarrow> \<box>\<not>\<tau>\<down>\<close>
   using "KBasic2:1" "deduction-theorem" "exist-nec2:1" "\<equiv>E"(2) "modus-tollens:1" by blast
 
-AOT_theorem exists_nec2_4: \<open>\<diamond>\<not>\<tau>\<down> \<equiv> \<box>\<not>\<tau>\<down>\<close>
-  by (metis "Act-Sub:3" "KBasic:12" "deduction-theorem" "exist-nec" exists_nec2_3 "\<equiv>I" "\<equiv>E"(4) "nec-imp-act" "reductio-aa:1")
+AOT_theorem "exists-nec2:4": \<open>\<diamond>\<not>\<tau>\<down> \<equiv> \<box>\<not>\<tau>\<down>\<close>
+  by (metis "Act-Sub:3" "KBasic:12" "deduction-theorem" "exist-nec" "exists-nec2:3" "\<equiv>I" "\<equiv>E"(4) "nec-imp-act" "reductio-aa:1")
 
 AOT_theorem id_nec2_1: \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<alpha> = \<beta>\<close>
   using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" "id-nec:1" by blast
@@ -3267,13 +3266,13 @@ AOT_theorem en_eq_2_4: \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> \
   by (simp add: "\<equiv>I" pre_en_eq_1_4 "qml:2"[axiom_inst])
 
 AOT_theorem en_eq_3_1: \<open>\<diamond>x\<^sub>1[F] \<equiv> x\<^sub>1[F]\<close>
-  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_1] "\<equiv>I" by blast
+  using "T\<diamond>" "derived-S5-rules:2"[where \<Gamma>="{}", OF pre_en_eq_1_1] "\<equiv>I" by blast
 AOT_theorem en_eq_3_2: \<open>\<diamond>x\<^sub>1x\<^sub>2[F] \<equiv> x\<^sub>1x\<^sub>2[F]\<close>
-  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_2] "\<equiv>I" by blast
+  using "T\<diamond>" "derived-S5-rules:2"[where \<Gamma>="{}", OF pre_en_eq_1_2] "\<equiv>I" by blast
 AOT_theorem en_eq_3_3: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
-  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_3] "\<equiv>I" by blast
+  using "T\<diamond>" "derived-S5-rules:2"[where \<Gamma>="{}", OF pre_en_eq_1_3] "\<equiv>I" by blast
 AOT_theorem en_eq_3_4: \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
-  using "T\<diamond>" derived_S5_rules_2[where \<Gamma>="{}", OF pre_en_eq_1_4] "\<equiv>I" by blast
+  using "T\<diamond>" "derived-S5-rules:2"[where \<Gamma>="{}", OF pre_en_eq_1_4] "\<equiv>I" by blast
 
 AOT_theorem en_eq_4_1: \<open>(x\<^sub>1[F] \<equiv> y\<^sub>1[G]) \<equiv> (\<box>x\<^sub>1[F] \<equiv> \<box>y\<^sub>1[G])\<close>
   apply (rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -3382,7 +3381,7 @@ proof(rule "\<rightarrow>I")
     by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_abstract, rotated 1]) "cqt:2[lambda]"
   AOT_hence \<open>\<not>\<diamond>E!x\<close> using \<theta>[THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>\<box>\<not>E!x\<close> using "KBasic2:1"[THEN "\<equiv>E"(2)] by blast
-  AOT_hence 0: \<open>\<box>\<box>\<not>E!x\<close> using "S5Basic:5"[THEN "\<rightarrow>E"] by blast
+  AOT_hence 0: \<open>\<box>\<box>\<not>E!x\<close> using "4"[THEN "\<rightarrow>E"] by blast
   AOT_have 1: \<open>\<box>\<not>\<diamond>E!x\<close>
     apply (AOT_subst "\<guillemotleft>\<not>\<diamond>E!x\<guillemotright>" "\<guillemotleft>\<box>\<not>E!x\<guillemotright>")
     using "KBasic2:1"[symmetric] apply blast
@@ -7438,7 +7437,7 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain p where \<open>F = [\<lambda>y p]\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> using "id-nec:2" "modus-tollens:1" "raa-cor:3" by blast
   AOT_hence \<open>\<exists>p \<box>(F = [\<lambda>y p])\<close> using "\<exists>I" by fast
-  AOT_hence 0: \<open>\<box>\<exists>p (F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+  AOT_hence 0: \<open>\<box>\<exists>p (F = [\<lambda>y p])\<close> by (metis Buridan "vdash-properties:10")
   AOT_show \<open>\<box>Propositional([F])\<close>
     apply (AOT_subst \<open>\<guillemotleft>Propositional([F])\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>p (F = [\<lambda>y p])\<guillemotright>\<close>)
      using prop_prop1 "\<equiv>Df" apply presburger
@@ -7533,7 +7532,7 @@ proof (rule "=E"[rotated, OF rel_neg_T_2[symmetric]]; rule "raa-cor:2")
     apply (rule beta_C_meta[THEN "\<rightarrow>E"])
      apply "cqt:2[lambda]"
     by (fact 1)
-  AOT_hence \<open>\<forall>x \<box>\<not>[E!]x\<close> by (metis BFs_2 "vdash-properties:10")
+  AOT_hence \<open>\<forall>x \<box>\<not>[E!]x\<close> by (metis "CBF" "vdash-properties:10")
   moreover AOT_obtain a where abs_a: \<open>O!a\<close>
     using "instantiation" o_objects_exist_1 "qml:2" "vdash-properties:1[2]" "vdash-properties:6" by blast
   ultimately AOT_have \<open>\<box>\<not>[E!]a\<close> using "\<forall>E" by blast
@@ -7597,7 +7596,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>p \<diamond>(F = [\<lambda>y p])\<close>
     by (metis "BF\<diamond>" "vdash-properties:10")
   then AOT_obtain p where \<open>\<diamond>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>F = [\<lambda>y p]\<close> by (metis derived_S5_rules_2 emptyE "id-nec:2" "vdash-properties:6")
+  AOT_hence \<open>F = [\<lambda>y p]\<close> by (metis "derived-S5-rules:2" emptyE "id-nec:2" "vdash-properties:6")
   AOT_thus \<open>\<exists>p(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
 qed
 
@@ -7618,7 +7617,7 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain p where \<open>(F = [\<lambda>y p])\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(F = [\<lambda>y p])\<close> by (metis "id-nec:2" "vdash-properties:6")
   AOT_hence \<open>\<exists>p\<box>(F = [\<lambda>y p])\<close> by (rule "\<exists>I")
-  AOT_thus \<open>\<box>\<exists>p(F = [\<lambda>y p])\<close> by (metis sign_S5_thm_1 "vdash-properties:10")
+  AOT_thus \<open>\<box>\<exists>p(F = [\<lambda>y p])\<close> by (metis Buridan "vdash-properties:10")
 qed
 
 AOT_theorem prop_prop_nec_4: \<open>\<diamond>\<forall>p (F \<noteq> [\<lambda>y p]) \<rightarrow> \<forall>p(F \<noteq> [\<lambda>y p])\<close>
@@ -7648,7 +7647,7 @@ proof(rule "\<rightarrow>I"; rule GEN; rule "\<rightarrow>I")
 qed
 
 AOT_theorem enc_prop_nec_2: \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<box>\<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
-  using derived_S5_rules_1[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
+  using "derived-S5-rules:1"[where \<Gamma>="{}", simplified, OF enc_prop_nec_1]
   by blast
 
 
@@ -7657,7 +7656,7 @@ AOT_theorem kir_ext_1: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<righta
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<phi> \<rightarrow> \<box>\<psi>\<close>
   AOT_hence \<open>\<box>(\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
-    by (metis "B\<diamond>" "KBasic2:1" "KBasic:1" "KBasic:2" "S5Basic:5" "\<equiv>E"(2) "modus-tollens:1" "reductio-aa:1")
+    by (metis "B\<diamond>" "KBasic2:1" "KBasic:1" "KBasic:2" "4" "\<equiv>E"(2) "modus-tollens:1" "reductio-aa:1")
   moreover AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
   ultimately AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>))\<close>
     by (metis "KBasic:3" "&I" "\<equiv>E"(2))
@@ -7670,7 +7669,7 @@ AOT_theorem kir_ext_2: \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<righta
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<phi> \<rightarrow> \<box>\<psi>\<close>
   AOT_hence \<open>\<box>(\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
-    by (metis "B\<diamond>" "KBasic2:1" "KBasic:1" "KBasic:2" "S5Basic:5" "\<equiv>E"(2) "modus-tollens:1" "reductio-aa:1")
+    by (metis "B\<diamond>" "KBasic2:1" "KBasic:1" "KBasic:2" "4" "\<equiv>E"(2) "modus-tollens:1" "reductio-aa:1")
   moreover AOT_assume \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>)\<close>
   ultimately AOT_have \<open>\<box>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<phi> \<rightarrow> \<box>\<phi>))\<close>
     by (metis "KBasic:3" "&I" "\<equiv>E"(2))

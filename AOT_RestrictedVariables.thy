@@ -262,14 +262,14 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_2 rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_1 "vdash-properties:6")
+  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "BF" "vdash-properties:6")
 qed
 
 AOT_theorem res_var_bound_reas_3: \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis BFs_2 "vdash-properties:6")
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "CBF" "vdash-properties:6")
   AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> using "\<forall>E"(2) by blast
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
