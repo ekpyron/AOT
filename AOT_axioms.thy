@@ -187,44 +187,44 @@ AOT_axiom "l-identity": \<open>\<alpha> = \<beta> \<rightarrow> (\<phi>{\<alpha>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_eq AOT_sem_imp)
 
-AOT_act_axiom logic_actual: \<open>\<^bold>\<A>\<phi> \<rightarrow> \<phi>\<close>
+AOT_act_axiom "logic-actual": \<open>\<^bold>\<A>\<phi> \<rightarrow> \<phi>\<close>
   by (rule AOT_model_act_axiomI)
      (simp add: AOT_sem_act AOT_sem_imp)
 
-AOT_axiom logic_actual_nec_1: \<open>\<^bold>\<A>\<not>\<phi> \<equiv> \<not>\<^bold>\<A>\<phi>\<close>
+AOT_axiom "logic-actual-nec:1": \<open>\<^bold>\<A>\<not>\<phi> \<equiv> \<not>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_equiv AOT_sem_not)
-AOT_axiom logic_actual_nec_2: \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
+AOT_axiom "logic-actual-nec:2": \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_equiv AOT_sem_imp)
 
-AOT_axiom logic_actual_nec_3: \<open>\<^bold>\<A>(\<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> \<forall>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
+AOT_axiom "logic-actual-nec:3": \<open>\<^bold>\<A>(\<forall>\<alpha> \<phi>{\<alpha>}) \<equiv> \<forall>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_equiv AOT_sem_forall AOT_sem_denotes)
-AOT_axiom logic_actual_nec_4: \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<^bold>\<A>\<phi>\<close>
+AOT_axiom "logic-actual-nec:4": \<open>\<^bold>\<A>\<phi> \<equiv> \<^bold>\<A>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_equiv)
 
-AOT_axiom qml_1: \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
+AOT_axiom "qml:1": \<open>\<box>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<box>\<phi> \<rightarrow> \<box>\<psi>)\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_box AOT_sem_imp)
-AOT_axiom qml_2: \<open>\<box>\<phi> \<rightarrow> \<phi>\<close>
+AOT_axiom "qml:2": \<open>\<box>\<phi> \<rightarrow> \<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_box AOT_sem_imp)
-AOT_axiom qml_3: \<open>\<diamond>\<phi> \<rightarrow> \<box>\<diamond>\<phi>\<close>
+AOT_axiom "qml:3": \<open>\<diamond>\<phi> \<rightarrow> \<box>\<diamond>\<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_box AOT_sem_dia AOT_sem_imp)
 
-AOT_axiom qml_4: \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
+AOT_axiom "qml:4": \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
   apply (rule AOT_model_axiomI)
   using AOT_sem_concrete AOT_model_contingent
   by (auto simp: AOT_sem_box AOT_sem_dia AOT_sem_imp AOT_sem_exists AOT_sem_denotes
                  AOT_sem_conj AOT_sem_not AOT_sem_act AOT_sem_exe AOT_concrete_sem)
 
-AOT_axiom qml_act_1: \<open>\<^bold>\<A>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
+AOT_axiom "qml-act:1": \<open>\<^bold>\<A>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_box AOT_sem_imp)
-AOT_axiom qml_act_2: \<open>\<box>\<phi> \<equiv> \<^bold>\<A>\<box>\<phi>\<close>
+AOT_axiom "qml-act:2": \<open>\<box>\<phi> \<equiv> \<^bold>\<A>\<box>\<phi>\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_box AOT_sem_equiv)
 
@@ -237,47 +237,47 @@ proof (rule AOT_model_axiomI)
   }
 qed
 
-AOT_axiom lambda_predicates_1: \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<close>
+AOT_axiom "lambda-predicates:1": \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_denotes AOT_sem_eq AOT_sem_imp)
-AOT_axiom lambda_predicates_1_b: \<open>[\<lambda> p]\<down> \<rightarrow> [\<lambda> p] = [\<lambda> p]\<close>
+AOT_axiom "lambda-predicates:1[zero]": \<open>[\<lambda> p]\<down> \<rightarrow> [\<lambda> p] = [\<lambda> p]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_denotes AOT_sem_eq AOT_sem_imp)
-AOT_axiom lambda_predicates_2: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
+AOT_axiom "lambda-predicates:2": \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
     AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
       by induct (simp add: AOT_sem_denotes AOT_sem_equiv AOT_sem_imp AOT_sem_lambda_beta)
   }
 qed
-AOT_axiom lambda_predicates_3: \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
+AOT_axiom "lambda-predicates:3": \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
     AOT_show \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
       by induct (simp add: AOT_sem_denotes AOT_sem_lambda_eta AOT_sem_vars_denote)
   }
 qed
-AOT_axiom lambda_predicates_3_b: \<open>[\<lambda> p] = p\<close>
+AOT_axiom "lambda-predicates:3[zero]": \<open>[\<lambda> p] = p\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
     AOT_show \<open>[\<lambda> p] = p\<close>
       by induct (simp add: AOT_sem_eq AOT_sem_lambda0)
   }
 qed
-AOT_axiom safe_ext: \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
+AOT_axiom "safe-ext": \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
   apply (rule AOT_model_axiomI)
   using AOT_sem_lambda_coex
   by (simp add: AOT_sem_imp AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box AOT_sem_forall) blast
-AOT_axiom safe_ext_2: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down>\<close>
-  using safe_ext[where \<phi>="\<lambda>(x,y). \<phi> x y"]
+AOT_axiom "safe-ext[2]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down>\<close>
+  using "safe-ext"[where \<phi>="\<lambda>(x,y). \<phi> x y"]
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
                 AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
-AOT_axiom safe_ext_3: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down>\<close>
-  using safe_ext[where \<phi>="\<lambda>(x,y,z). \<phi> x y z"]
+AOT_axiom "safe-ext[3]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3}]\<down>\<close>
+  using "safe-ext"[where \<phi>="\<lambda>(x,y,z). \<phi> x y z"]
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
                 AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
-AOT_axiom safe_ext_4: \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3\<forall>\<nu>\<^sub>4 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down>\<close>
-  using safe_ext[where \<phi>="\<lambda>(x,y,z,w). \<phi> x y z w"]
+AOT_axiom "safe-ext[4]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2\<forall>\<nu>\<^sub>3\<forall>\<nu>\<^sub>4 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2, \<nu>\<^sub>3, \<nu>\<^sub>4})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub>3\<nu>\<^sub>4 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2,\<nu>\<^sub>3,\<nu>\<^sub>4}]\<down>\<close>
+  using "safe-ext"[where \<phi>="\<lambda>(x,y,z,w). \<phi> x y z w"]
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
                 AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
 

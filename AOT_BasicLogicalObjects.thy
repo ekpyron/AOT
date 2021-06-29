@@ -228,7 +228,7 @@ proof -
   ultimately AOT_have false_prop: \<open>A!\<bottom> & \<forall>F (\<bottom>[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p]))\<close>
     using y_in_2[unvarify z, THEN "\<rightarrow>E"] by blast
   AOT_obtain p where p: p
-    by (metis "instantiation" act_conj_act_4 existential_1 log_prop_prop_2 logic_actual
+    by (metis "instantiation" act_conj_act_4 existential_1 log_prop_prop_2 "logic-actual"
               vdash_properties_1_a vdash_properties_6)
   show ?thesis
   proof(safe intro!: ab_obey_2[unvarify x y, THEN "\<rightarrow>E", THEN "\<rightarrow>E"]

@@ -274,7 +274,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
     by (metis "B\<diamond>" T_S5_fund_1 rigid_condition vdash_properties_6)
-  AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
 qed
 
 AOT_theorem res_var_bound_reas_4: \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
@@ -283,7 +283,7 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
   AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis kir_ext_4 rigid_condition vdash_properties_6)
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b logic_actual_nec_3 vdash_properties_1_b)
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis intro_elim_3_b "logic-actual-nec:3" vdash_properties_1_b)
 qed
 
 
@@ -292,10 +292,10 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-    by (metis intro_elim_3_a logic_actual_nec_3 vdash_properties_1_b)
+    by (metis intro_elim_3_a "logic-actual-nec:3" vdash_properties_1_b)
   AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis rule_ui_3)
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
-  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act qml_2 rigid_condition vdash_properties_1_b vdash_properties_6)
+  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis nec_imp_act "qml:2" rigid_condition vdash_properties_1_b vdash_properties_6)
   AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis act_cond vdash_properties_6)
 qed
 

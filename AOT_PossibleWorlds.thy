@@ -50,7 +50,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
        (auto simp: 1 rule_eq_df_1 situations)
 next
   AOT_show \<open>Situation(x)\<close> if \<open>\<box>Situation(x)\<close>
-    using qml_2[axiom_inst, THEN "\<rightarrow>E", OF that].
+    using "qml:2"[axiom_inst, THEN "\<rightarrow>E", OF that].
 qed
 
 AOT_theorem possit_sit_2: \<open>\<diamond>Situation(x) \<equiv> Situation(x)\<close>
@@ -632,7 +632,7 @@ proof -
     AOT_hence \<open>\<box>\<forall>p (s\<^sub>1 \<Turnstile> p \<rightarrow> p)\<close> by (metis RM_1 con_dis_taut_2 vdash_properties_10)
     AOT_hence \<open>\<forall>p \<box>(s\<^sub>1 \<Turnstile> p \<rightarrow> p)\<close> by (metis BFs_2 vdash_properties_10)
     AOT_hence \<open>\<box>(s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> q\<^sub>1)\<close> using "\<forall>E" by blast
-    AOT_hence \<open>\<box>s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> \<box>q\<^sub>1\<close> by (metis "\<rightarrow>E" qml_1 vdash_properties_1_b)
+    AOT_hence \<open>\<box>s\<^sub>1 \<Turnstile> q\<^sub>1 \<rightarrow> \<box>q\<^sub>1\<close> by (metis "\<rightarrow>E" "qml:1" vdash_properties_1_b)
     moreover AOT_have \<open>s\<^sub>1 \<Turnstile> q\<^sub>1\<close>
       using s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(2), THEN lem1[THEN "\<rightarrow>E", OF Situation.\<psi>, THEN "\<equiv>E"(2)]]
             "rule=I_1" prop_prop2_2 by blast
@@ -850,12 +850,12 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<box>\<exists>p(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
     by (metis sign_S5_thm_1 vdash_properties_10) 
   AOT_thus \<open>\<box>\<not>Consistent(s)\<close>
-    apply (rule qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E", rotated])
+    apply (rule "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E", rotated])
     apply (rule RN)
     using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_b cons deduction_theorem raa_cor_3 by blast
 next
   AOT_assume \<open>\<box>\<not>Consistent(s)\<close>
-  AOT_thus \<open>\<not>Consistent(s)\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by auto
+  AOT_thus \<open>\<not>Consistent(s)\<close> using "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by auto
 qed
 
 AOT_theorem cons_rigid_2: \<open>\<diamond>Consistent(x) \<equiv> Consistent(x)\<close>
@@ -960,7 +960,7 @@ proof -
     }
   qed
   ultimately AOT_have nec_not_actual_s: \<open>\<box>\<not>Actual(x)\<close>
-    using qml_1[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+    using "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
   AOT_have 1: \<open>\<not>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
   proof (rule raa_cor_2)
     AOT_assume \<open>\<exists>p (x \<Turnstile> p & x \<Turnstile> \<not>p)\<close>
@@ -1064,7 +1064,7 @@ proof(rule "\<rightarrow>I"; rule GEN; rule "\<rightarrow>I")
     using "\<forall>E"(1)[rotated, OF log_prop_prop_2] by blast+
   AOT_assume \<open>s \<Turnstile> \<box>q\<close>
   AOT_hence \<open>\<box>q\<close> using \<xi> "\<equiv>E"(1) by blast
-  AOT_hence \<open>q\<close> using qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>q\<close> using "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
   AOT_hence \<open>s \<Turnstile> q\<close> using \<theta> "\<equiv>E"(2) by blast
   AOT_thus \<open>\<box>s \<Turnstile> q\<close> using "\<equiv>\<^sub>d\<^sub>fE" con_dis_i_e_2_a intro_elim_3_a lem2_1 true_in_s by blast
 qed
@@ -1193,7 +1193,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
        (auto simp: rule_eq_df_1 world' 0)
 next
   AOT_show \<open>PossibleWorld(x)\<close> if \<open>\<box>PossibleWorld(x)\<close>
-    using that qml_2[axiom_inst, THEN "\<rightarrow>E"] by blast
+    using that "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
 qed
 
 AOT_theorem rigid_pw_2: \<open>\<diamond>PossibleWorld(x) \<equiv> PossibleWorld(x)\<close>
@@ -1668,7 +1668,7 @@ proof -
       by (fact 3)
     AOT_hence \<open>\<^bold>\<A>\<forall>q(\<^bold>w\<^sub>\<alpha> \<Turnstile> q \<rightarrow> q)\<close> by (metis Act_Basic_2 con_dis_i_e_2_b intro_elim_3_a)
     AOT_hence \<open>\<forall>q \<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> q \<rightarrow> q)\<close>
-      using logic_actual_nec_3[axiom_inst, THEN "\<equiv>E"(1)] by blast
+      using "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(1)] by blast
     AOT_hence \<open>\<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<rightarrow> p)\<close> using "\<forall>E"(2) by blast
     AOT_hence \<open>\<^bold>\<A>(\<^bold>w\<^sub>\<alpha> \<Turnstile> p) \<rightarrow> \<^bold>\<A>p\<close> by (metis act_cond vdash_properties_10)
     AOT_hence \<open>\<^bold>\<A>p\<close> using \<theta> "\<rightarrow>E" by blast
@@ -1717,7 +1717,7 @@ proof (rule "\<rightarrow>I"; rule raa_cor_2)
     fix p
     AOT_assume \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p\<close>
     AOT_hence \<open>\<^bold>\<A>p\<close> using t_at_alpha_strict[THEN "\<equiv>E"(1)] by blast
-    AOT_hence p: \<open>p\<close> using logic_actual[act_axiom_inst, THEN "\<rightarrow>E"] by blast
+    AOT_hence p: \<open>p\<close> using "logic-actual"[act_axiom_inst, THEN "\<rightarrow>E"] by blast
     AOT_show \<open>w \<Turnstile> p\<close>
     proof(rule raa_cor_1)
       AOT_assume \<open>\<not>w \<Turnstile> p\<close>
@@ -1955,7 +1955,7 @@ qed
 AOT_theorem nec_dia_w_2: \<open>\<box>p \<equiv> \<forall>w w \<Turnstile> \<box>p\<close>
 proof -
   AOT_have \<open>\<box>p \<equiv> \<box>\<box>p\<close>
-    using 4 qml_2[axiom_inst] "\<equiv>I" by blast
+    using 4 "qml:2"[axiom_inst] "\<equiv>I" by blast
   also AOT_have \<open>... \<equiv> \<forall>w w \<Turnstile> \<box>p\<close>
     using fund_2[unvarify p, OF log_prop_prop_2] by blast
   finally show ?thesis.
