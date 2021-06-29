@@ -523,7 +523,7 @@ end
 
 class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
   assumes AOT_sem_enc_eq: \<open>[v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>\<nu> (\<nu>[\<Pi>] \<equiv> \<nu>[\<Pi>']) \<rightarrow> \<Pi> = \<Pi>']\<close>
-      and AOT_sem_a_objects: \<open>[v \<Turnstile> \<exists>x (\<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x & \<forall>F (x[F] \<equiv> \<phi>{F}))]\<close>
+      and AOT_sem_A_objects: \<open>[v \<Turnstile> \<exists>x (\<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x & \<forall>F (x[F] \<equiv> \<phi>{F}))]\<close>
       and AOT_sem_unary_proj_enc: \<open>AOT_proj_enc x \<psi> = AOT_enc x \<guillemotleft>[\<lambda>z \<psi>{z}]\<guillemotright>\<close>
       and AOT_sem_nocoder: \<open>[v \<Turnstile> [\<guillemotleft>AOT_sem_concrete\<guillemotright>]\<kappa>] \<Longrightarrow> \<not>[w \<Turnstile> \<guillemotleft>AOT_enc \<kappa> \<Pi>\<guillemotright>]\<close>
       and AOT_sem_ind_eq: \<open>([v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<kappa>'\<down>] \<and> \<kappa> = \<kappa>') =
@@ -610,11 +610,11 @@ instance proof
   fix v and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
   show \<open>[v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>\<nu> (\<nu>[\<Pi>] \<equiv> \<nu>[\<Pi>']) \<rightarrow> \<Pi> = \<Pi>']\<close>
     apply (simp add: AOT_sem_forall AOT_sem_eq AOT_sem_imp AOT_sem_equiv AOT_enc_\<kappa>_meta AOT_sem_conj AOT_sem_denotes AOT_sem_box)
-    using AOT_meta_a_objects_\<kappa> by fastforce
+    using AOT_meta_A_objects_\<kappa> by fastforce
 next
   fix v and \<phi>:: \<open><\<kappa>> \<Rightarrow> \<o>\<close>
   show \<open>[v \<Turnstile> \<exists>x (\<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x & \<forall>F (x[F] \<equiv> \<phi>{F}))]\<close>
-    using AOT_model_a_objects[of "\<lambda> \<Pi> . [v \<Turnstile> \<phi>{\<Pi>}]"]
+    using AOT_model_A_objects[of "\<lambda> \<Pi> . [v \<Turnstile> \<phi>{\<Pi>}]"]
     by (auto simp: AOT_sem_denotes AOT_sem_exists AOT_sem_conj AOT_sem_not AOT_sem_dia AOT_sem_concrete AOT_enc_\<kappa>_meta AOT_sem_equiv AOT_sem_forall)
 next
   show \<open>AOT_proj_enc x \<psi> = AOT_enc x (AOT_lambda \<psi>)\<close> for x :: \<kappa> and \<psi>

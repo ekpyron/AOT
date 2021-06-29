@@ -1971,10 +1971,10 @@ proof (rule "\<rightarrow>I")
   AOT_hence not_c_eqE_d: \<open>\<not>c =\<^sub>E d\<close>
     using intro_elim_3_a thm_neg_eq_E by blast
   AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>x x =\<^sub>E c]))\<close>
-    by (simp add: a_objects vdash_properties_1_b)
+    by (simp add: "A-objects" vdash_properties_1_b)
   then AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>x x =\<^sub>E c])\<close> using "\<exists>E"[rotated] by blast
   AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>x x =\<^sub>E d]))\<close>
-    by (simp add: a_objects vdash_properties_1_b)
+    by (simp add: "A-objects" vdash_properties_1_b)
   then AOT_obtain b where b_prop: \<open>A!b & \<forall>F (b[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E [\<lambda>x x =\<^sub>E d])\<close> using "\<exists>E"[rotated] by blast
   AOT_have num_a_eq_c: \<open>Numbers(a, [\<lambda>x x =\<^sub>E c])\<close>
     by (safe intro!: numbers[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" a_prop[THEN "&E"(1)] a_prop[THEN "&E"(2)]) "cqt:2[lambda]"
@@ -2048,7 +2048,7 @@ qed
 
 AOT_theorem num_1: \<open>\<exists>x Numbers(x,G)\<close>
   by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>,G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>[A!]\<kappa> & \<forall>F (\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<guillemotright>\<close>)
-     (auto simp: numbers_den[OF "cqt:2[const_var]"[axiom_inst]] a_objects[axiom_inst])
+     (auto simp: numbers_den[OF "cqt:2[const_var]"[axiom_inst]] "A-objects"[axiom_inst])
 
 AOT_theorem num_2: \<open>\<exists>!x Numbers(x,G)\<close>
   by (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>Numbers(\<kappa>,G)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>[A!]\<kappa> & \<forall>F (\<kappa>[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<guillemotright>\<close>)

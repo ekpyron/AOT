@@ -281,15 +281,15 @@ AOT_axiom "safe-ext[4]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
                 AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
 
-AOT_axiom nary_encoding_2: \<open>xy[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>y] & y[\<lambda>\<nu> [F]x\<nu>]\<close>
+AOT_axiom "nary_encoding[2]": \<open>xy[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>y] & y[\<lambda>\<nu> [F]x\<nu>]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
-AOT_axiom nary_encoding_3: \<open>xyz[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>yz] & y[\<lambda>\<nu> [F]x\<nu>z] & z[\<lambda>\<nu> [F]xy\<nu>]\<close>
+AOT_axiom "nary_encoding[3]": \<open>xyz[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>yz] & y[\<lambda>\<nu> [F]x\<nu>z] & z[\<lambda>\<nu> [F]xy\<nu>]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
-AOT_axiom nary_encoding_4: \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1[\<lambda>\<nu> [F]\<nu>x\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>\<nu> [F]x\<^sub>1\<nu>x\<^sub>3x\<^sub>4] &
+AOT_axiom "nary_encoding[4]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1[\<lambda>\<nu> [F]\<nu>x\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>\<nu> [F]x\<^sub>1\<nu>x\<^sub>3x\<^sub>4] &
                                            x\<^sub>3[\<lambda>\<nu> [F]x\<^sub>1x\<^sub>2\<nu>x\<^sub>4] & x\<^sub>4[\<lambda>\<nu> [F]x\<^sub>1x\<^sub>2x\<^sub>3\<nu>]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
@@ -307,11 +307,11 @@ AOT_axiom nocoder: \<open>O!x \<rightarrow> \<not>\<exists>F x[F]\<close>
                                      OF AOT_sem_vars_denote])
      (metis AOT_sem_nocoder)
 
-AOT_axiom a_objects: \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
+AOT_axiom "A-objects": \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
 proof(rule AOT_model_axiomI)
   AOT_modally_strict {
     AOT_obtain \<kappa> where \<open>\<kappa>\<down> & \<box>\<not>E!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<phi>{F})\<close>
-      using AOT_sem_a_objects[of _ \<phi>]
+      using AOT_sem_A_objects[of _ \<phi>]
       by (auto simp: AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_exists AOT_sem_conj
                      AOT_sem_not AOT_sem_dia AOT_sem_denotes AOT_sem_equiv AOT_concrete_sem) blast
     AOT_thus \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>

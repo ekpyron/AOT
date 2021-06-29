@@ -555,7 +555,7 @@ class AOT_UnaryIndividualTerm =
          AOT_model_denotes G \<Longrightarrow>
          (\<And> x . AOT_model_enc x F \<longleftrightarrow> AOT_model_enc x G)
          \<Longrightarrow> F = G\<close>
-      and AOT_model_a_objects:
+      and AOT_model_A_objects:
         \<open>\<exists>x . AOT_model_denotes x \<and>
               (\<forall>w. \<not> AOT_model_concrete w x) \<and>
               (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close>
@@ -686,7 +686,7 @@ primrec AOT_model_concrete_\<kappa> :: \<open>w \<Rightarrow> \<kappa> \<Rightar
 | \<open>AOT_model_concrete_\<kappa> w (\<alpha>\<kappa> x) = False\<close>
 | \<open>AOT_model_concrete_\<kappa> w (null\<kappa> x) = False\<close>
 
-lemma AOT_meta_a_objects_\<kappa>:
+lemma AOT_meta_A_objects_\<kappa>:
   \<open>\<exists>x :: \<kappa>. AOT_model_denotes x \<and>
             (\<forall>w. \<not> AOT_model_concrete w x) \<and>
             (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close> for \<phi>
@@ -703,13 +703,13 @@ next
   moreover assume \<open>AOT_model_denotes G\<close>
   moreover assume \<open>\<And>x. AOT_model_enc x F = AOT_model_enc x G\<close>
   moreover obtain x where \<open>\<forall>G. AOT_model_denotes G \<longrightarrow> AOT_model_enc x G = (F = G)\<close>
-    using AOT_meta_a_objects_\<kappa> by blast
+    using AOT_meta_A_objects_\<kappa> by blast
   ultimately show \<open>F = G\<close> by blast
 next
   show \<open>\<exists>x :: \<kappa>. AOT_model_denotes x \<and>
                  (\<forall>w. \<not> AOT_model_concrete w x) \<and>
                  (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close> for \<phi>
-    using AOT_meta_a_objects_\<kappa> .
+    using AOT_meta_A_objects_\<kappa> .
 next
   show \<open>\<exists> (x::\<kappa>) w. AOT_model_concrete w x \<and> \<not> AOT_model_concrete w\<^sub>0 x\<close>
     using AOT_model_concrete_\<kappa>.simps(1) AOT_model_contingent_object by blast

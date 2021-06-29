@@ -14,7 +14,7 @@ AOT_define TruthValueOf :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<ph
 AOT_theorem p_has_tv_1: \<open>\<exists>x TruthValueOf(x,p)\<close>
   apply (AOT_subst \<open>\<lambda> \<kappa> . \<guillemotleft>TruthValueOf(\<kappa>,p)\<guillemotright>\<close> \<open>\<lambda> \<kappa> . \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<guillemotright>\<close>)
    using rule_eq_df_1 tv_p apply blast
-  by (fact a_objects[where \<phi>=\<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv>p) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>, axiom_inst])
+  by (fact "A-objects"[where \<phi>=\<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv>p) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>, axiom_inst])
 
 
 AOT_theorem p_has_tv_2: \<open>\<exists>!x TruthValueOf(x,p)\<close>
@@ -254,9 +254,9 @@ qed
 AOT_theorem \<open>\<exists>x\<exists>y(TruthValue(x) & TruthValue(y) & x \<noteq> y & \<forall>z (TruthValue(z) \<rightarrow> z = x \<or> z = y))\<close>
 proof -
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>p (p & F = [\<lambda>y p]))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_obtain b where b_prop: \<open>A!b & \<forall>F (b[F] \<equiv> \<exists>p (\<not>p & F = [\<lambda>y p]))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_obtain p where p: p
     by (metis log_prop_prop_2 raa_cor_3 rule_ui_1 universal_cor)
   show ?thesis

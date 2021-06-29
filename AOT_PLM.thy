@@ -3130,7 +3130,7 @@ AOT_theorem pre_en_eq_1_2: \<open>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>x\<^
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
-    using nary_encoding_2[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+    using "nary_encoding[2]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by "cqt:2[lambda]"
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
@@ -3139,14 +3139,14 @@ proof (rule "\<rightarrow>I")
   AOT_hence \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2] & x\<^sub>2[\<lambda>y [F]x\<^sub>1y])\<close>
     using KBasic_3[THEN intro_elim_3_b] "&I" by blast
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2[F]\<close>
-    by (rule nary_encoding_2[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary_encoding[2]"[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem pre_en_eq_1_3: \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
-    using nary_encoding_3[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+    using "nary_encoding[3]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by "cqt:2[lambda]"
@@ -3156,14 +3156,14 @@ proof (rule "\<rightarrow>I")
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y])\<close>
     by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
-    by (rule nary_encoding_3[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary_encoding[3]"[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem pre_en_eq_1_4: \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and  \<open>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
-    using nary_encoding_4[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
+    using "nary_encoding[4]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
@@ -3174,7 +3174,7 @@ proof (rule "\<rightarrow>I")
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4] & x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y])\<close>
     by (rule KBasic_3[THEN intro_elim_3_b] "&I" A)+
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
-    by (rule nary_encoding_4[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary_encoding[4]"[axiom_inst, THEN RN, THEN KBasic_6[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem pre_en_eq_2_1: \<open>\<not>x\<^sub>1[F] \<rightarrow> \<box>\<not>x\<^sub>1[F]\<close>
@@ -3512,7 +3512,7 @@ proof(rule RAA(2))
   let ?\<phi>="\<lambda> \<tau>. \<guillemotleft>\<exists>G (\<tau>[G] & \<not>[G]\<tau>)\<guillemotright>"
   AOT_assume A: \<open>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<down>\<close>
   AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]))\<close>
-    using a_objects[axiom_inst] by fast
+    using "A-objects"[axiom_inst] by fast
   then AOT_obtain a where \<xi>: \<open>A!a & \<forall>F (a[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>])\<close>
     using "\<exists>E"[rotated] by blast
   AOT_show \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
@@ -3544,7 +3544,7 @@ proof(rule RAA(2))
   AOT_assume \<open>\<exists>F \<forall>x ([F]x \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close>
   then AOT_obtain F where F_prop: \<open>\<forall>x ([F]x \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close> using "\<exists>E"[rotated] by blast
   AOT_have \<open>\<exists>x (A!x & \<forall>G (x[G] \<equiv> G = F))\<close>
-    using a_objects[axiom_inst] by fast
+    using "A-objects"[axiom_inst] by fast
   then AOT_obtain a where \<xi>: \<open>A!a & \<forall>G (a[G] \<equiv> G = F)\<close>
     using "\<exists>E"[rotated] by blast
   AOT_show \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close>
@@ -3576,7 +3576,7 @@ AOT_theorem block_paradox_3: \<open>\<not>\<forall>y [\<lambda>z z = y]\<down>\<
 proof(rule RAA(2))
   AOT_assume \<theta>: \<open>\<forall>y [\<lambda>z z = y]\<down>\<close>
   AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> \<exists>y(F = [\<lambda>z z = y] & \<not>y[F])))\<close>
-    using a_objects[axiom_inst] by force
+    using "A-objects"[axiom_inst] by force
   then AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y (F = [\<lambda>z z = y] & \<not>y[F]))\<close>
     using "\<exists>E"[rotated] by blast
   AOT_have \<zeta>: \<open>a[\<lambda>z z = a] \<equiv> \<exists>y ([\<lambda>z z = a] = [\<lambda>z z = y] & \<not>y[\<lambda>z z = a])\<close>
@@ -3615,7 +3615,7 @@ AOT_theorem block_paradox_4: \<open>\<not>\<forall>y \<exists>F \<forall>x([F]x 
 proof(rule RAA(2))
   AOT_assume \<theta>: \<open>\<forall>y \<exists>F \<forall>x([F]x \<equiv> x = y)\<close>
   AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> \<exists>z (\<forall>y([F]y \<equiv> y = z) & \<not>z[F])))\<close>
-    using a_objects[axiom_inst] by force
+    using "A-objects"[axiom_inst] by force
   then AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>z (\<forall>y([F]y \<equiv> y = z) & \<not>z[F]))\<close>
     using "\<exists>E"[rotated] by blast
   AOT_obtain F where F_prop: \<open>\<forall>x ([F]x \<equiv> x = a)\<close> using \<theta>[THEN "\<forall>E"(2)] "\<exists>E"[rotated] by blast
@@ -5456,7 +5456,7 @@ proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_1, THEN "\<equiv>E"(2)]; rul
   AOT_thus \<open>\<diamond>\<exists>x O!x\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 next
   AOT_obtain a where \<open>A!a\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] "&E" by blast
   AOT_hence \<open>\<not>O!a\<close> using oa_contingent_3[THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>\<exists>x \<not>O!x\<close> using "\<exists>I" by fast
   AOT_thus \<open>\<diamond>\<exists>x \<not>O!x\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
@@ -5465,7 +5465,7 @@ qed
 AOT_theorem oa_contingent_5: \<open>Contingent(A!)\<close>
 proof (rule thm_cont_prop_2[unvarify F, OF oa_exist_2, THEN "\<equiv>E"(2)]; rule "&I")
   AOT_obtain a where \<open>A!a\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] "&E" by blast
   AOT_hence \<open>\<exists>x A!x\<close> using "\<exists>I" by fast
   AOT_thus \<open>\<diamond>\<exists>x A!x\<close> using "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 next
@@ -5764,7 +5764,7 @@ proof -
     using "\<equiv>\<^sub>d\<^sub>fI" con_dis_i_e_3_a necessary_or_contingently_false that by blast
 
   AOT_obtain a where a_prop: \<open>A!a\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] "&E" by blast
   AOT_obtain b where b_prop: \<open>\<diamond>[E!]b & \<not>\<^bold>\<A>[E!]b\<close>
     using pos_not_pna_3 using "\<exists>E"[rotated] by blast
 
@@ -6260,7 +6260,7 @@ AOT_theorem o_objects_exist_2: \<open>\<box>\<exists>x A!x\<close>
 proof (rule RN)
   AOT_modally_strict {
     AOT_obtain a where \<open>[A!]a\<close>
-      using a_objects[axiom_inst] "\<exists>E"[rotated] "&E" by blast
+      using "A-objects"[axiom_inst] "\<exists>E"[rotated] "&E" by blast
     AOT_thus \<open>\<exists>x A!x\<close> using "\<exists>I" by blast
   }
 qed
@@ -6677,7 +6677,7 @@ AOT_theorem denote_eq_4d: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x
 AOT_theorem A_objects_unique: \<open>\<exists>!x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
 proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<phi>{F})\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by blast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by blast
   AOT_have \<open>(A!\<beta> & \<forall>F (\<beta>[F] \<equiv> \<phi>{F})) \<rightarrow> \<beta> = a\<close> for \<beta>
   proof (rule "\<rightarrow>I")
     AOT_assume \<beta>_prop: \<open>[A!]\<beta> & \<forall>F (\<beta>[F] \<equiv> \<phi>{F})\<close>
@@ -6835,7 +6835,7 @@ AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Universal'(
 AOT_theorem null_uni_uniq_1: \<open>\<exists>!x Null(x)\<close>
 proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<not>(F = F))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_have a_null: \<open>\<not>a[F]\<close> for F
   proof (rule raa_cor_2)
     AOT_assume \<open>a[F]\<close>
@@ -6870,7 +6870,7 @@ qed
 AOT_theorem null_uni_uniq_2: \<open>\<exists>!x Universal(x)\<close>
 proof (rule uniqueness_1[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> F = F)\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_hence aF: \<open>a[F]\<close> for F using "&E" "\<forall>E" "\<equiv>E" id_eq_1 by fast
   AOT_hence \<open>Universal(a)\<close>
     using df_null_uni_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" a_prop[THEN "&E"(1)] GEN by blast
@@ -7055,7 +7055,7 @@ AOT_theorem aclassical_1: \<open>\<forall>R\<exists>x\<exists>y(A!x & A!y & x \<
 proof(rule GEN)
   fix R
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y(A!y & F = [\<lambda>z [R]zy] & \<not>y[F]))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_have a_enc: \<open>a[\<lambda>z [R]za]\<close>
   proof (rule raa_cor_1)
     AOT_assume 0: \<open>\<not>a[\<lambda>z [R]za]\<close>
@@ -7092,7 +7092,7 @@ AOT_theorem aclassical_2: \<open>\<forall>R\<exists>x\<exists>y(A!x & A!y & x \<
 proof(rule GEN)
   fix R
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y(A!y & F = [\<lambda>z [R]yz] & \<not>y[F]))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_have a_enc: \<open>a[\<lambda>z [R]az]\<close>
   proof (rule raa_cor_1)
     AOT_assume 0: \<open>\<not>a[\<lambda>z [R]az]\<close>
@@ -7129,7 +7129,7 @@ AOT_theorem aclassical_3: \<open>\<forall>F\<exists>x\<exists>y(A!x & A!y & x \<
 proof(rule GEN)
   fix R
   AOT_obtain a where a_prop: \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y(A!y & F = [\<lambda>z [R]y] & \<not>y[F]))\<close>
-    using a_objects[axiom_inst] "\<exists>E"[rotated] by fast
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
   AOT_have \<open>[\<lambda>z [R]a]\<down>\<close> by "cqt:2[lambda]"
   (* TODO: S should no longer be necessary *)
   then AOT_obtain S where S_def: \<open>S = [\<lambda>z [R]a]\<close>

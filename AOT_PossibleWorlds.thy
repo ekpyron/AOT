@@ -569,7 +569,7 @@ AOT_theorem comp_sit_1:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
   shows \<open>\<exists>s \<forall>F(s[F] \<equiv> \<phi>{F})\<close>
   by (AOT_subst \<open>\<lambda>\<kappa> . \<guillemotleft>Situation(\<kappa>) & \<forall>F(\<kappa>[F] \<equiv> \<phi>{F})\<guillemotright>\<close> \<open>\<lambda>\<kappa>. \<guillemotleft>A!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<phi>{F})\<guillemotright>\<close>)
-     (auto simp: pre_comp_sit[OF assms] a_objects[where \<phi>=\<phi>, axiom_inst])
+     (auto simp: pre_comp_sit[OF assms] "A-objects"[where \<phi>=\<phi>, axiom_inst])
 
 AOT_theorem comp_sit_2:
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>
