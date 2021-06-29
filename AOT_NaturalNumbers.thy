@@ -1679,7 +1679,7 @@ proof (rule "\<rightarrow>I")
           AOT_hence A: \<open>\<diamond>[F]u & \<diamond>\<not>\<exists>!v ([G]v & [R']uv)\<close>
             using "KBasic2:3" "vdash-properties:10" by blast
           AOT_hence \<open>\<box>[F]u\<close>
-            using F_nec "&E"(1) "\<equiv>E"(1) sc_eq_box_box_1 "vdash-properties:6" by blast
+            using F_nec "&E"(1) "\<equiv>E"(1) "sc-eq-box-box:1" "vdash-properties:6" by blast
           AOT_hence \<open>[F]u\<close> by (metis "qml:2" "vdash-properties:10" "vdash-properties:1[2]")
           AOT_hence \<open>\<exists>!v ([G]v & [R]uv)\<close> using C1[THEN "Ordinary.\<forall>E", THEN "\<rightarrow>E"] by blast
           AOT_hence \<open>\<exists>v ([G]v & [R]uv & \<forall>v' ([G]v' & [R]uv' \<rightarrow> v' =\<^sub>E v))\<close>
@@ -1747,7 +1747,7 @@ proof (rule "\<rightarrow>I")
           AOT_hence A: \<open>\<diamond>[G]v & \<diamond>\<not>\<exists>!u ([F]u & [R']uv)\<close>
             using "KBasic2:3" "vdash-properties:10" by blast
           AOT_hence \<open>\<box>[G]v\<close>
-            using G_nec "&E"(1) "\<equiv>E"(1) sc_eq_box_box_1 "vdash-properties:6" by blast
+            using G_nec "&E"(1) "\<equiv>E"(1) "sc-eq-box-box:1" "vdash-properties:6" by blast
           AOT_hence \<open>[G]v\<close> by (metis "qml:2" "vdash-properties:10" "vdash-properties:1[2]")
           AOT_hence \<open>\<exists>!u ([F]u & [R]uv)\<close> using C2[THEN "Ordinary.\<forall>E", THEN "\<rightarrow>E"] by blast
           AOT_hence \<open>\<exists>u ([F]u & [R]uv & \<forall>u' ([F]u' & [R]u'v \<rightarrow> u' =\<^sub>E u))\<close>
@@ -2109,7 +2109,7 @@ proof(rule "\<rightarrow>I")
         using approx_nec_2[unvarify F, OF act_den, THEN "\<rightarrow>E", OF "&I", OF actuallyF_2', OF G_nec].
       moreover AOT_have \<open>\<box>(x[F] \<rightarrow> \<box>x[F])\<close> for F by (simp add: RN pre_en_eq_1_1)
       ultimately AOT_have \<open>\<box>(x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> for F
-        using sc_eq_box_box_5[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"] by blast
+        using "sc-eq-box-box:5"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"] by blast
       AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> by (rule "\<forall>I")
       AOT_hence 1: \<open>\<box>\<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using BF[THEN "\<rightarrow>E"] by fast
       AOT_have \<open>\<box>G\<down>\<close> by (simp add: "ex:2:a")
@@ -2666,7 +2666,7 @@ proof(rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>(([R]xz \<rightarrow> \<box>[R]xz) & ([R]yz \<rightarrow> \<box>[R]yz)) \<rightarrow> \<box>(([R]xz & [R]yz) \<rightarrow> \<box>([R]xz & [R]yz))\<close> for x y z
     by (rule RM) (metis "\<rightarrow>I" "KBasic:3" "&I" "&E"(1) "&E"(2) "\<equiv>E"(2) "vdash-properties:10")
   ultimately AOT_have 2: \<open>\<box>(([R]xz & [R]yz) \<rightarrow> \<box>([R]xz & [R]yz))\<close> for x y z using "\<rightarrow>E" by blast
-  AOT_hence 3: \<open>\<box>([R]xz & [R]yz \<rightarrow> x = y)\<close> for x y z using kir_ext_2[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF 2, OF 1] by blast
+  AOT_hence 3: \<open>\<box>([R]xz & [R]yz \<rightarrow> x = y)\<close> for x y z using "sc-eq-box-box:6"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF 2, OF 1] by blast
   AOT_show \<open>\<box>\<forall>x\<forall>y\<forall>z([R]xz & [R]yz \<rightarrow> x = y)\<close>
     by (safe intro!: GEN BF[THEN "\<rightarrow>E"] 3)
 qed
@@ -4655,7 +4655,7 @@ proof(rule AOT_model_axiomI)
           AOT_have 0: \<open>\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y\<close>
             using y_prop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] Ordinary.\<psi> by blast
           AOT_show \<open>\<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-            apply (rule kir_ext_2[THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
+            apply (rule "sc-eq-box-box:6"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
              apply (simp add: RN "qml-act:1" "vdash-properties:1[2]")
             using 0
             by (metis "deduction-theorem" id_nec_4_1 "\<equiv>E"(1) "vdash-properties:10")

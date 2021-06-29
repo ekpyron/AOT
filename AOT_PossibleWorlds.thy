@@ -2196,7 +2196,7 @@ next
   ultimately AOT_have 1: \<open>\<box>(w \<Turnstile> p \<rightarrow> \<box>w \<Turnstile> p)\<close> for p by (metis "vdash-properties:10")
   AOT_assume \<open>w \<Turnstile> p \<equiv> w \<Turnstile> q\<close>
   AOT_hence 0: \<open>\<box>(w \<Turnstile> p \<equiv> w \<Turnstile> q)\<close>
-    using sc_eq_box_box_5[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"]
+    using "sc-eq-box-box:5"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"]
           by (metis "1")
   AOT_modally_strict {
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<equiv> \<psi>)))\<close> for w \<phi> \<psi>
@@ -2607,13 +2607,13 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
     using "\<forall>E"(2) by blast
   AOT_hence \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n\<close>
-    by (metis "\<equiv>E"(1) sc_eq_box_box_1)
+    by (metis "\<equiv>E"(1) "sc-eq-box-box:1")
   moreover AOT_assume \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n\<close>
   ultimately AOT_show \<open>\<box>[F]x\<^sub>1...x\<^sub>n\<close> using "\<rightarrow>E" by blast
 next
   AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n (\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
   AOT_hence \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E"(2) by blast
-  AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n by (metis "\<equiv>E"(2) sc_eq_box_box_1)
+  AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n by (metis "\<equiv>E"(2) "sc-eq-box-box:1")
   AOT_hence 0: \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close> by (rule GEN)
   AOT_thus \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n))\<close>
     using "BF" "vdash-properties:10" by blast
