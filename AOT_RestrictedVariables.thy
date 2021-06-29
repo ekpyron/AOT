@@ -230,7 +230,7 @@ lemmas "\<exists>E" = "instantiation"
 
 AOT_theorem existential: assumes \<open>\<phi>{\<guillemotleft>AOT_term_of_var (Rep \<beta>)\<guillemotright>}\<close>
   shows \<open>\<exists> \<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
-  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms con_dis_i_e_1 existential_2_a)
+  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms "&I" existential_2_a)
 lemmas "\<exists>I" = existential
 end
 
@@ -304,8 +304,8 @@ proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>})\<close>
   then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
-    by (metis KBasic_11 KBasic_3 T_S5_fund_1 con_dis_i_e_1 con_dis_i_e_2_a con_dis_i_e_2_b
-              intro_elim_3_b reductio_aa_1 rigid_condition "vdash-properties:6")
+    by (metis KBasic_11 KBasic_3 T_S5_fund_1 "&I" "&E"(1) "&E"(2)
+              intro_elim_3_b "reductio-aa:1" rigid_condition "vdash-properties:6")
   AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
   AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
 qed
