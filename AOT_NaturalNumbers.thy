@@ -694,10 +694,10 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_thus \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close> by (rule eq_part_5[THEN "\<rightarrow>E"])
 next
   AOT_assume 0: \<open>\<forall>H ([\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G)\<close>
-  AOT_obtain H where \<open>Rigidifies(H,F)\<close> using rigid_der_3 "\<exists>E" by metis
+  AOT_obtain H where \<open>Rigidifies(H,F)\<close> using "rigid-der:3" "\<exists>E" by metis
   AOT_hence H: \<open>Rigid(H) & \<forall>x ([H]x \<equiv> [F]x)\<close>
-    using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  AOT_have H_rigid: \<open>\<box>\<forall>x ([H]x \<rightarrow> \<box>[H]x)\<close> using H[THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)].
+    using "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  AOT_have H_rigid: \<open>\<box>\<forall>x ([H]x \<rightarrow> \<box>[H]x)\<close> using H[THEN "&E"(1), THEN "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)].
   AOT_hence \<open>\<forall>x \<box>([H]x \<rightarrow> \<box>[H]x)\<close>
     using "CBF" "vdash-properties:10" by blast
   AOT_hence \<open>\<box>([H]x \<rightarrow> \<box>[H]x)\<close> for x using "\<forall>E"(2) by blast
@@ -1657,11 +1657,11 @@ proof (rule "\<rightarrow>I")
       AOT_hence C1: \<open>\<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R]uv))\<close> and C2: \<open>\<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R]uv))\<close>
         using equi_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
       AOT_obtain R' where \<open>Rigidifies(R', R)\<close>
-        using rigid_der_3 "\<exists>E"[rotated] by blast
-      AOT_hence 1: \<open>Rigid(R') & \<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<equiv> [R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-      AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+        using "rigid-der:3" "\<exists>E"[rotated] by blast
+      AOT_hence 1: \<open>Rigid(R') & \<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<equiv> [R]x\<^sub>1...x\<^sub>n)\<close> using "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+      AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close> using "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
       AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n (\<diamond>[R']x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R']x\<^sub>1...x\<^sub>n)\<close>
-        using "\<equiv>E"(1) rigid_rel_thms_1 by blast
+        using "\<equiv>E"(1) "rigid-rel-thms:1" by blast
       AOT_hence D: \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 (\<diamond>[R']x\<^sub>1x\<^sub>2 \<rightarrow> \<box>[R']x\<^sub>1x\<^sub>2)\<close>
         using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
       AOT_have E: \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 ([R']x\<^sub>1x\<^sub>2 \<equiv> [R]x\<^sub>1x\<^sub>2)\<close> using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE", OF 1[THEN "&E"(2)]] by blast
@@ -2385,10 +2385,10 @@ AOT_theorem eq_num_6: \<open>Numbers(x, G) \<rightarrow> NaturalCardinal(x)\<clo
 proof(rule "\<rightarrow>I")
   AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2[lambda]"
   AOT_obtain F where \<open>Rigidifies(F, G)\<close>
-    by (metis "instantiation" rigid_der_3)
+    by (metis "instantiation" "rigid-der:3")
   AOT_hence \<theta>: \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x)\<close> and \<open>\<forall>x([F]x \<equiv> [G]x)\<close>
-    using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)]
-          df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+    using "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)]
+          "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
     by blast+
   AOT_hence \<open>F \<equiv>\<^sub>E G\<close>
     by (auto intro!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I" elim: "\<forall>E"(2))
@@ -2658,7 +2658,7 @@ proof(rule "\<rightarrow>I")
   AOT_have 1: \<open>[R]xz & [R]yz \<rightarrow> \<box>x = y\<close> for x y z
     by (AOT_subst_rev \<open>\<guillemotleft>x = y\<guillemotright>\<close> \<open>\<guillemotleft>\<box>x = y\<guillemotright>\<close>)
        (auto simp: 1 "id-nec:2" "\<equiv>I" "qml:2" "vdash-properties:1[2]")
-  AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE", OF RigidR] "&E" by blast
+  AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF RigidR] "&E" by blast
   AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([R]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[R]x\<^sub>1...x\<^sub>n)\<close> using "CBF"[THEN "\<rightarrow>E"] by fast
   AOT_hence \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 \<box>([R]x\<^sub>1x\<^sub>2 \<rightarrow> \<box>[R]x\<^sub>1x\<^sub>2)\<close> using tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>\<box>([R]xy \<rightarrow> \<box>[R]xy)\<close> for x y using "\<forall>E"(2) by blast
@@ -2678,7 +2678,7 @@ proof
     AOT_show \<open>\<exists>\<alpha> Rigid\<^sub>1\<^sub>-\<^sub>1(\<alpha>)\<close>
     proof (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>(=\<^sub>E)\<guillemotright>\<close>])
       AOT_show \<open>Rigid\<^sub>1\<^sub>-\<^sub>1((=\<^sub>E))\<close>
-      proof (safe intro!: df_1_1_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" df_1_1_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] GEN "\<rightarrow>I" df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "=E[denotes]")
+      proof (safe intro!: df_1_1_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" df_1_1_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] GEN "\<rightarrow>I" "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "=E[denotes]")
         fix x y z
         AOT_assume \<open>x =\<^sub>E z & y =\<^sub>E z\<close>
         AOT_thus \<open>x = y\<close>
@@ -2719,10 +2719,10 @@ next
           apply (AOT_subst_using subst: df_1_1_1[THEN "\<equiv>Df"])
           using "2" "3" "KBasic:3" "\<equiv>S"(2) "\<equiv>E"(2) by blast
         AOT_have \<open>Rigid(\<Pi>)\<close> using 0 "\<equiv>\<^sub>d\<^sub>fE"[OF df_1_1_2] "&E" by blast
-        AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<Pi>]x\<^sub>1...x\<^sub>n)\<close> using  df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+        AOT_hence \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<Pi>]x\<^sub>1...x\<^sub>n)\<close> using  "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
         AOT_hence 5: \<open>\<box>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<Pi>]x\<^sub>1...x\<^sub>n)\<close> by (metis "S5Basic:6" "\<equiv>E"(1))
         AOT_have 6: \<open>\<box>Rigid(\<Pi>)\<close>
-          apply (AOT_subst_using subst: df_rigid_rel_1[THEN "\<equiv>Df"])
+          apply (AOT_subst_using subst: "df-rigid-rel:1"[THEN "\<equiv>Df"])
           using 2 5 "KBasic:3" "\<equiv>S"(2) "\<equiv>E"(2) by blast
         AOT_show \<open>\<box>Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>)\<close>
           apply (AOT_subst_using subst: df_1_1_2[THEN "\<equiv>Df"])
@@ -3515,10 +3515,10 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain u where props: \<open>[F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<close>
     using "Ordinary.\<exists>E"[rotated] by meson
   AOT_obtain G where Ridigifies_G_F: \<open>Rigidifies(G, F)\<close>
-    by (metis "instantiation" rigid_der_3)
+    by (metis "instantiation" "rigid-der:3")
   AOT_hence \<xi>: \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close> and \<zeta>: \<open>\<forall>x([G]x \<equiv> [F]x)\<close>
-    using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "\<equiv>\<^sub>d\<^sub>fE"[OF df_rigid_rel_1], THEN "&E"(2)]
-          df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast+
+    using "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "\<equiv>\<^sub>d\<^sub>fE"[OF "df-rigid-rel:1"], THEN "&E"(2)]
+          "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast+
 
   AOT_have rigid_num_nec: \<open>Numbers(x,F) & Rigidifies(G,F) \<rightarrow> \<box>Numbers(x,G)\<close> for x G F
   proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
@@ -3526,8 +3526,8 @@ proof(rule "\<rightarrow>I")
     AOT_assume Numbers_xF: \<open>Numbers(x,F)\<close>
     AOT_assume \<open>Rigidifies(G,F)\<close>
     AOT_hence \<xi>: \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close> and \<zeta>: \<open>\<forall>x([G]x \<equiv> [F]x)\<close>
-      using df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "\<equiv>\<^sub>d\<^sub>fE"[OF df_rigid_rel_1], THEN "&E"(2)]
-            df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast+
+      using "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "\<equiv>\<^sub>d\<^sub>fE"[OF "df-rigid-rel:1"], THEN "&E"(2)]
+            "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast+
     AOT_thus \<open>\<box>Numbers(x,G)\<close>
     proof (safe intro!:
           num_cont_2[THEN "\<rightarrow>E", OF \<xi>, THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
@@ -3542,7 +3542,7 @@ proof(rule "\<rightarrow>I")
     using rigid_num_nec[THEN "\<rightarrow>E", OF "&I", OF props[THEN "&E"(1), THEN "&E"(2)], OF Ridigifies_G_F].
   moreover {
     AOT_have \<open>Rigidifies([G]\<^sup>-\<^sup>u, [F]\<^sup>-\<^sup>u)\<close>
-    proof (safe intro!: df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] df_rigid_rel_2[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" F_minus_u_den GEN "\<equiv>I" "\<rightarrow>I")
+    proof (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "df-rigid-rel:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" F_minus_u_den GEN "\<equiv>I" "\<rightarrow>I")
       AOT_have \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x) \<rightarrow> \<box>\<forall>x([[G]\<^sup>-\<^sup>u]x \<rightarrow> \<box>[[G]\<^sup>-\<^sup>u]x)\<close>
       proof (rule RM; safe intro!: "\<rightarrow>I" GEN)
         AOT_modally_strict {
@@ -3624,7 +3624,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem pred_1_1_2: \<open>Rigid(\<P>)\<close>
-  by (safe intro!: df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] pred_denotes "&I" RN tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fI"];
+  by (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] pred_denotes "&I" RN tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fI"];
       safe intro!: GEN pred_1_1_1)
 
 AOT_theorem pred_1_1_3: \<open>1-1(\<P>)\<close>
@@ -3792,7 +3792,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem mod_col_num_2: \<open>Rigid(\<nat>)\<close>
-  by (safe intro!: df_rigid_rel_1[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" RN GEN mod_col_num_1 nnumber_den)
+  by (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" RN GEN mod_col_num_1 nnumber_den)
 
 AOT_register_rigid_restricted_type
   Number: \<open>[\<nat>]\<kappa>\<close>

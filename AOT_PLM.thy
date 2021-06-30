@@ -369,7 +369,7 @@ lemmas Permutation = "oth-class-taut:8:a"
 AOT_theorem "oth-class-taut:8:b": \<open>(\<phi> \<rightarrow> \<psi>) \<rightarrow> ((\<phi> \<rightarrow> \<chi>) \<rightarrow> (\<phi> \<rightarrow> (\<psi> & \<chi>)))\<close>
   by (metis "&I" "\<rightarrow>E" "\<rightarrow>I")
 lemmas Composition = "oth-class-taut:8:b"
-AOT_theorem "oth-class-taut:8:c": \<open>(\<phi> \<rightarrow> \<chi>) \<rightarrow> ((\<psi> \<rightarrow> \<chi>) \<rightarrow> ((\<psi> \<or> \<chi>) \<rightarrow> \<chi>))\<close>
+AOT_theorem "oth-class-taut:8:c": \<open>(\<phi> \<rightarrow> \<chi>) \<rightarrow> ((\<psi> \<rightarrow> \<chi>) \<rightarrow> ((\<phi> \<or> \<psi>) \<rightarrow> \<chi>))\<close>
   by (metis "\<or>E"(2) "\<rightarrow>E" "\<rightarrow>I" RAA(1))
 AOT_theorem "oth-class-taut:8:d": \<open>((\<phi> \<rightarrow> \<psi>) & (\<chi> \<rightarrow> \<Theta>)) \<rightarrow> ((\<phi> & \<chi>) \<rightarrow> (\<psi> & \<Theta>))\<close>
   by (metis "&E" "&I" "\<rightarrow>E" "\<rightarrow>I")
