@@ -1139,7 +1139,7 @@ proof(rule AOT_sem_equiv_defI) (* TODO: appeal to semantics due to double defini
     AOT_hence 0: \<open>Situation(\<kappa>) & \<diamond>\<forall>p(\<kappa>\<^bold>\<Sigma>p \<equiv> p)\<close> using world[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
     AOT_hence 1: \<open>\<box>Situation(\<kappa>)\<close>
       using possit_sit_1[unvarify x]
-      by (metis Situation.strict_existential_import "&E"(1) "\<equiv>E"(1) "vdash-properties:10")
+      by (metis "Situation.res-var:3" "&E"(1) "\<equiv>E"(1) "vdash-properties:10")
     AOT_have \<open>\<diamond>\<forall>p (\<kappa> \<Turnstile> p \<equiv> p)\<close>
     proof(safe intro!: "RM:2[prem]"[where \<Gamma>="{\<guillemotleft>Situation(\<kappa>)\<guillemotright>}", simplified, THEN "\<rightarrow>E", rotated, OF 1, OF 0[THEN "&E"(2)]] "\<rightarrow>I" GEN)
       fix p
@@ -1160,7 +1160,7 @@ next
     AOT_assume 0: \<open>Situation(\<kappa>) & \<diamond>\<forall>p (\<kappa> \<Turnstile> p \<equiv> p)\<close>
     AOT_hence 1: \<open>\<box>Situation(\<kappa>)\<close>
       using possit_sit_1[unvarify x]
-      by (metis Situation.strict_existential_import "&E"(1) "\<equiv>E"(1) "vdash-properties:10")
+      by (metis "Situation.res-var:3" "&E"(1) "\<equiv>E"(1) "vdash-properties:10")
     AOT_have \<open>\<diamond>\<forall>p (\<kappa>\<^bold>\<Sigma>p \<equiv> p)\<close>
     proof(safe intro!: "RM:2[prem]"[where \<Gamma>="{\<guillemotleft>Situation(\<kappa>)\<guillemotright>}", simplified, THEN "\<rightarrow>E", rotated, OF 1, OF 0[THEN "&E"(2)]] "\<rightarrow>I" GEN)
       fix p
@@ -1794,7 +1794,7 @@ qed
 AOT_theorem fund_lem_2: \<open>\<diamond>\<exists>w (w \<Turnstile> p) \<rightarrow> \<exists>w (w \<Turnstile> p)\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<diamond>\<exists>w (w \<Turnstile> p)\<close>
-  AOT_hence \<open>\<exists>w \<diamond>(w \<Turnstile> p)\<close> using PossibleWorld.res_var_bound_BF_3[THEN "\<rightarrow>E"] by auto
+  AOT_hence \<open>\<exists>w \<diamond>(w \<Turnstile> p)\<close> using "PossibleWorld.res-var-bound-reas[BF\<diamond>]"[THEN "\<rightarrow>E"] by auto
   then AOT_obtain w where \<open>\<diamond>(w \<Turnstile> p)\<close> using "PossibleWorld.\<exists>E"[rotated] by meson
   moreover AOT_have \<open>Situation(w)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) pos world_pos)
   ultimately AOT_have \<open>w \<Turnstile> p\<close>
@@ -1817,7 +1817,7 @@ AOT_theorem fund_lem_5: \<open>\<box>\<forall>s \<phi>{s} \<rightarrow> \<forall
 proof(safe intro!: "\<rightarrow>I" Situation.GEN)
   fix s
   AOT_assume \<open>\<box>\<forall>s \<phi>{s}\<close>
-  AOT_hence \<open>\<forall>s \<box>\<phi>{s}\<close> using Situation.res_var_bound_reas_3[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<forall>s \<box>\<phi>{s}\<close> using "Situation.res-var-bound-reas[CBF]"[THEN "\<rightarrow>E"] by blast
   AOT_thus \<open>\<box>\<phi>{s}\<close>
     using "Situation.\<forall>E" by fast
 qed
@@ -1826,7 +1826,7 @@ AOT_theorem fund_lem_5': \<open>\<box>\<forall>w \<phi>{w} \<rightarrow> \<foral
 proof(safe intro!: "\<rightarrow>I" PossibleWorld.GEN)
   fix w
   AOT_assume \<open>\<box>\<forall>w \<phi>{w}\<close>
-  AOT_hence \<open>\<forall>w \<box>\<phi>{w}\<close> using PossibleWorld.res_var_bound_reas_3[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<forall>w \<box>\<phi>{w}\<close> using "PossibleWorld.res-var-bound-reas[CBF]"[THEN "\<rightarrow>E"] by blast
   AOT_thus \<open>\<box>\<phi>{w}\<close>
     using "PossibleWorld.\<forall>E" by fast
 qed

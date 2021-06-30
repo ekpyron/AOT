@@ -10,8 +10,8 @@ section\<open>Restricted Variables\<close>
 
 locale AOT_restriction_condition =
   fixes \<psi> :: \<open>'a::AOT_Term_id_2 \<Rightarrow> \<o>\<close>
-  assumes strictly_nonempty[AOT]: \<open>[v \<Turnstile> \<exists>\<alpha> \<psi>{\<alpha>}]\<close>
-  assumes strict_existential_import[AOT]: \<open>[v \<Turnstile> \<psi>{\<tau>} \<rightarrow> \<tau>\<down>]\<close>
+  assumes "res-var:2"[AOT]: \<open>[v \<Turnstile> \<exists>\<alpha> \<psi>{\<alpha>}]\<close>
+  assumes "res-var:3"[AOT]: \<open>[v \<Turnstile> \<psi>{\<tau>} \<rightarrow> \<tau>\<down>]\<close>
 
 ML\<open>
 fun register_restricted_type (name:string, restriction:string) thy =
@@ -47,7 +47,7 @@ locale AOT_rigid_restriction_condition = AOT_restriction_condition +
   assumes rigid_condition[AOT]: \<open>[v \<Turnstile> \<box>(\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>})]\<close>
 begin
 lemma type_set_nonempty[AOT_no_atp, no_atp]: \<open>\<exists>x . x \<in> { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close>
-  by (metis "instantiation" mem_Collect_eq strictly_nonempty)
+  by (metis "instantiation" mem_Collect_eq "res-var:2")
 end
 
 locale AOT_restricted_type = AOT_rigid_restriction_condition +
@@ -60,7 +60,7 @@ proof -
     using AOT_restricted_type_definition.
   AOT_actually {
     AOT_have \<open>\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>\<down>\<close> and \<open>\<psi>{\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>}\<close>
-      using AOT_sem_imp Rep strict_existential_import by auto
+      using AOT_sem_imp Rep "res-var:3" by auto
   }
   moreover AOT_actually {
     AOT_have \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>}\<close> for \<alpha>
@@ -203,7 +203,7 @@ attribute_setup "unconstrain" =
 context AOT_restricted_type
 begin
 
-AOT_theorem rule_ui:
+AOT_theorem "rule-ui":
   assumes \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   shows \<open>\<phi>{\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>}\<close>
 proof -
@@ -212,7 +212,7 @@ proof -
     by (auto simp:  \<psi>)
   ultimately show ?thesis by blast
 qed
-lemmas "\<forall>E" = rule_ui
+lemmas "\<forall>E" = "rule-ui"
 
 AOT_theorem "instantiation":
   assumes \<open>for arbitrary \<beta>: \<phi>{\<guillemotleft>AOT_term_of_var (Rep \<beta>)\<guillemotright>} \<^bold>\<turnstile> \<chi>\<close> and \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
@@ -238,7 +238,7 @@ end
 context AOT_rigid_restriction_condition
 begin
 
-AOT_theorem res_var_bound_reas_1: \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}) \<equiv> \<forall>\<beta>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
+AOT_theorem "res-var-bound-reas[1]": \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}) \<equiv> \<forall>\<beta>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   fix \<beta> \<alpha>
   AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>})\<close>
@@ -256,7 +256,7 @@ next
 qed
 
 (* TODO: PLM: easier proof with lemmas above *)
-AOT_theorem res_var_bound_reas_2: \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[BF]": \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
@@ -265,7 +265,7 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "BF" "vdash-properties:6")
 qed
 
-AOT_theorem res_var_bound_reas_3: \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[CBF]": \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
@@ -277,7 +277,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem res_var_bound_reas_4: \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[2]": \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
@@ -287,7 +287,7 @@ proof(safe intro!: "\<rightarrow>I")
 qed
 
 
-AOT_theorem res_var_bound_reas_5: \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[3]": \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
@@ -299,7 +299,7 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis "act-cond" "vdash-properties:6")
 qed
 
-AOT_theorem res_var_bound_Buridan: \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[Buridan]": \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>})\<close>
   then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
@@ -310,7 +310,7 @@ proof (rule "\<rightarrow>I")
   AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
 qed
 
-AOT_theorem res_var_bound_BF_3: \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<rightarrow> \<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[BF\<diamond>]": \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<rightarrow> \<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<exists>\<alpha> \<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>

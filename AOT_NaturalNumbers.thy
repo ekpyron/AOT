@@ -1615,7 +1615,7 @@ AOT_theorem approx_nec_1': \<open>\<box>\<forall>u ([F]u \<rightarrow> \<box>[F]
 proof(rule "\<rightarrow>I")
   AOT_assume A: \<open>\<box>\<forall>u ([F]u \<rightarrow> \<box>[F]u)\<close>
   AOT_hence 0: \<open>\<forall>u \<box>([F]u \<rightarrow> \<box>[F]u)\<close>
-    by (metis Ordinary.res_var_bound_reas_3 "vdash-properties:10")
+    by (metis "Ordinary.res-var-bound-reas[CBF]" "vdash-properties:10")
   AOT_hence 1: \<open>\<forall>u ([F]u \<rightarrow> \<box>[F]u)\<close> using A "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
   AOT_have act_F_den: \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> by "cqt:2[lambda]"
   AOT_show \<open>F \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z]\<close>
@@ -1723,10 +1723,10 @@ proof (rule "\<rightarrow>I")
               ultimately AOT_show \<open>\<box>(v' =\<^sub>E a) & \<not>\<box>(v' =\<^sub>E a)\<close> using "&I" by blast
             qed
             AOT_thus \<open>\<box>\<forall>v'([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E a)\<close>
-              using Ordinary.res_var_bound_reas_2 "vdash-properties:10" by fast
+              using "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10" by fast
           qed
           AOT_hence 1: \<open>\<box>\<exists>v ([G]v & [R']uv & \<forall>v' ([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E v))\<close>
-            using Ordinary.res_var_bound_Buridan "vdash-properties:10" by fast
+            using "Ordinary.res-var-bound-reas[Buridan]" "vdash-properties:10" by fast
           AOT_have \<open>\<box>\<exists>!v ([G]v & [R']uv)\<close>
             by (AOT_subst \<open>\<guillemotleft>\<exists>!v ([G]v & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>v ([G]v & [R']uv & \<forall>v' ([G]v' & [R']uv' \<rightarrow> v' =\<^sub>E v))\<guillemotright>\<close>)
                (auto simp: 1 equi_1[THEN "\<equiv>Df"])
@@ -1791,10 +1791,10 @@ proof (rule "\<rightarrow>I")
               ultimately AOT_show \<open>\<box>(u' =\<^sub>E a) & \<not>\<box>(u' =\<^sub>E a)\<close> using "&I" by blast
             qed
             AOT_thus \<open>\<box>\<forall>u'([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E a)\<close>
-              using Ordinary.res_var_bound_reas_2 "vdash-properties:10" by fast
+              using "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10" by fast
           qed
           AOT_hence 1: \<open>\<box>\<exists>u ([F]u & [R']uv & \<forall>u' ([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E u))\<close>
-            using Ordinary.res_var_bound_Buridan "vdash-properties:10" by fast
+            using "Ordinary.res-var-bound-reas[Buridan]" "vdash-properties:10" by fast
           AOT_have \<open>\<box>\<exists>!u ([F]u & [R']uv)\<close>
             by (AOT_subst \<open>\<guillemotleft>\<exists>!u ([F]u & [R']uv)\<guillemotright>\<close> \<open>\<guillemotleft>\<exists>u ([F]u & [R']uv & \<forall>u' ([F]u' & [R']u'v \<rightarrow> u' =\<^sub>E u))\<guillemotright>\<close>)
                (auto simp: 1 equi_1[THEN "\<equiv>Df"])
@@ -1804,7 +1804,7 @@ proof (rule "\<rightarrow>I")
         qed
       qed
       AOT_hence \<open>\<box>\<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv))\<close> and \<open>\<box>\<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv))\<close>
-        using Ordinary.res_var_bound_reas_2[THEN "\<rightarrow>E"] by auto
+        using "Ordinary.res-var-bound-reas[BF]"[THEN "\<rightarrow>E"] by auto
       moreover AOT_have \<open>\<box>[R']\<down>\<close> and \<open>\<box>[F]\<down>\<close> and \<open>\<box>[G]\<down>\<close>
         by (simp_all add: "ex:2:a")
       ultimately AOT_have 1: \<open>\<box>([R']\<down> & [F]\<down> & [G]\<down> & \<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R']uv)) & \<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R']uv)))\<close>
@@ -1837,7 +1837,7 @@ proof -
   AOT_hence \<open>\<forall>u \<^bold>\<A>([F]u \<equiv> [\<lambda>z \<^bold>\<A>[F]z]u)\<close>
     using "\<forall>I" by fast
   AOT_hence 1: \<open>\<^bold>\<A>\<forall>u ([F]u \<equiv> [\<lambda>z \<^bold>\<A>[F]z]u)\<close>
-    by (metis Ordinary.res_var_bound_reas_4 "vdash-properties:10")
+    by (metis "Ordinary.res-var-bound-reas[2]" "vdash-properties:10")
   AOT_modally_strict {
     AOT_have \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> by "cqt:2[lambda]"
   } note 2 = this
@@ -3264,9 +3264,9 @@ proof -
           fix H
           AOT_assume \<open>\<forall>u \<box>([H]u \<equiv> [G]u)\<close>
           AOT_hence \<open>\<box>\<forall>u ([H]u \<equiv> [G]u)\<close>
-            by (metis Ordinary.res_var_bound_reas_2 "\<rightarrow>E")
+            by (metis "Ordinary.res-var-bound-reas[BF]" "\<rightarrow>E")
           AOT_hence \<open>\<^bold>\<A>\<forall>u ([H]u \<equiv> [G]u)\<close> by (metis "nec-imp-act" "vdash-properties:6")
-          AOT_hence 0: \<open>\<forall>u \<^bold>\<A>([H]u \<equiv> [G]u)\<close>  by (metis Ordinary.res_var_bound_reas_5 "vdash-properties:10")
+          AOT_hence 0: \<open>\<forall>u \<^bold>\<A>([H]u \<equiv> [G]u)\<close>  by (metis "Ordinary.res-var-bound-reas[3]" "vdash-properties:10")
           {
             fix u
             AOT_have \<open>\<^bold>\<A>([H]u \<equiv> [G]u)\<close> using 0 "Ordinary.\<forall>E" by fast
@@ -3310,11 +3310,11 @@ proof -
         AOT_have actH_equinum_F: \<open>[\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E F\<close>
           using "\<equiv>E"(1) x_enc_H x_enc_cond by blast
         AOT_have \<open>\<box>\<forall>u ([H]u \<equiv> [G]u)\<close>
-          by (metis H_eq_G Ordinary.res_var_bound_reas_2 "vdash-properties:10")
+          by (metis H_eq_G "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10")
         AOT_hence \<open>\<^bold>\<A>\<forall>u ([H]u \<equiv> [G]u)\<close>
           by (metis "nec-imp-act" "vdash-properties:6")
         AOT_hence \<open>\<forall>u \<^bold>\<A>([H]u \<equiv> [G]u)\<close>
-          by (metis Ordinary.res_var_bound_reas_5 "vdash-properties:10")
+          by (metis "Ordinary.res-var-bound-reas[3]" "vdash-properties:10")
         AOT_hence \<open>\<^bold>\<A>([H]u \<equiv> [G]u)\<close> if \<open>O!u\<close> for u using that "\<forall>E"(2) "\<rightarrow>E" by fast
         AOT_hence \<open>\<^bold>\<A>[H]u \<equiv> \<^bold>\<A>[G]u\<close> if \<open>O!u\<close> for u
           by (metis "Act-Basic:5" "\<equiv>E"(1) that)
@@ -3614,7 +3614,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<exists>u (\<box>([G]u & Numbers(y,G) & Numbers(x,[G]\<^sup>-\<^sup>u)))\<close>
     by (rule "Ordinary.\<exists>I")
   AOT_hence \<open>\<box>\<exists>u ([G]u & Numbers(y,G) & Numbers(x,[G]\<^sup>-\<^sup>u))\<close>
-    using Ordinary.res_var_bound_Buridan "vdash-properties:10" by fast
+    using "Ordinary.res-var-bound-reas[Buridan]" "vdash-properties:10" by fast
   AOT_hence \<open>\<exists>F \<box>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     by (rule "\<exists>I")
   AOT_hence 0: \<open>\<box>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
@@ -4609,7 +4609,7 @@ proof(rule AOT_model_axiomI)
     AOT_hence \<open>\<^bold>\<A>O!y\<close> and 1: \<open>\<^bold>\<A>\<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
       using "Act-Basic:2" "&E" "\<equiv>E"(1) by blast+
     AOT_hence Oy: \<open>O!y\<close> by (metis "\<equiv>E"(2) "oa-facts:7")
-    AOT_have 2: \<open>\<forall>u\<^bold>\<A>([G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close> using 1 Ordinary.res_var_bound_reas_5 "vdash-properties:10" by fastforce
+    AOT_have 2: \<open>\<forall>u\<^bold>\<A>([G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close> using 1 "Ordinary.res-var-bound-reas[3]" "vdash-properties:10" by fastforce
     {
       fix b
       AOT_assume \<open>O!b\<close>
@@ -4662,7 +4662,7 @@ proof(rule AOT_model_axiomI)
         qed
         AOT_hence \<open>\<forall>u \<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close> by (rule Ordinary.GEN)
         AOT_hence \<open>\<box>\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-          using Ordinary.res_var_bound_reas_2 "vdash-properties:10" by fast
+          using "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10" by fast
       }
       ultimately AOT_have \<open>\<diamond>(\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y) & E!y)\<close>
         using "KBasic:16" "&I" "vdash-properties:6" by blast
@@ -4734,7 +4734,7 @@ proof(rule AOT_model_axiomI)
           qed
           AOT_hence \<open>\<forall>u \<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close> by (rule Ordinary.GEN)
           AOT_hence \<open>\<box>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-            using Ordinary.res_var_bound_reas_2 "vdash-properties:10" by fast
+            using "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10" by fast
         }
         ultimately AOT_have \<open>\<diamond>(\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v) & E!v)\<close>
           using "KBasic:16" "&I" "vdash-properties:10" by fast
@@ -5021,7 +5021,7 @@ proof -
         fix F
         {
           AOT_assume \<open>\<forall>u \<box>([F]u \<equiv> [G]u)\<close>
-          AOT_hence \<open>\<box>\<forall>u([F]u \<equiv> [G]u)\<close> by (metis Ordinary.res_var_bound_reas_2 "vdash-properties:10")
+          AOT_hence \<open>\<box>\<forall>u([F]u \<equiv> [G]u)\<close> by (metis "Ordinary.res-var-bound-reas[BF]" "vdash-properties:10")
           AOT_hence \<open>\<forall>u([F]u \<equiv> [G]u)\<close> using "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
           AOT_hence \<open>x[F]\<close> using xprop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
         }
