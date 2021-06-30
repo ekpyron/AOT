@@ -13,10 +13,10 @@ AOT_theorem T_sit: \<open>TruthValue(x) \<rightarrow> Situation(x)\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>TruthValue(x)\<close>
   AOT_hence \<open>\<exists>p TruthValueOf(x,p)\<close>
-    using T_value[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "T-value"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   then AOT_obtain p where \<open>TruthValueOf(x,p)\<close> using "\<exists>E"[rotated] by blast
   AOT_hence \<theta>: \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
-    using tv_p[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_show \<open>Situation(x)\<close>
   proof(rule situations[THEN "\<equiv>\<^sub>d\<^sub>fI"]; safe intro!: "&I" GEN "\<rightarrow>I" \<theta>[THEN "&E"(1)])
     fix F
@@ -69,9 +69,9 @@ AOT_register_rigid_restricted_type
 proof
   AOT_modally_strict {
     fix p
-    AOT_obtain x where \<open>TruthValueOf(x,p)\<close> by (metis "instantiation" p_has_tv_1)
+    AOT_obtain x where \<open>TruthValueOf(x,p)\<close> by (metis "instantiation" "p-has-!tv:1")
     AOT_hence \<open>\<exists>p TruthValueOf(x,p)\<close> by (rule "\<exists>I")
-    AOT_hence \<open>TruthValue(x)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" T_value)
+    AOT_hence \<open>TruthValue(x)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "T-value")
     AOT_hence \<open>Situation(x)\<close> using T_sit[THEN "\<rightarrow>E"] by blast
     AOT_thus \<open>\<exists>x Situation(x)\<close> by (rule "\<exists>I")
   }
@@ -126,12 +126,12 @@ proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>x \<Turnstile> p\<close>
   AOT_hence \<open>x\<^bold>\<Sigma>p\<close>
     using true_in_s[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-  AOT_thus \<open>x[\<lambda>y p]\<close> using prop_enc[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_thus \<open>x[\<lambda>y p]\<close> using "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
 next
   AOT_assume 1: \<open>Situation(x)\<close>
   AOT_assume \<open>x[\<lambda>y p]\<close>
   AOT_hence \<open>x\<^bold>\<Sigma>p\<close>
-    using prop_enc[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF "cqt:2[const_var]"[axiom_inst]] by blast
+    using "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I", OF "cqt:2[const_var]"[axiom_inst]] by blast
   AOT_thus \<open>x \<Turnstile> p\<close>
     using true_in_s[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1 "&I" by blast
 qed
@@ -483,7 +483,7 @@ next
   proof (rule "raa-cor:2")
     AOT_assume \<open>\<exists>p x \<Turnstile> p\<close>
     then AOT_obtain p where \<open>x \<Turnstile> p\<close> by (metis "instantiation")
-    AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc true_in_s)
+    AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "prop-enc" true_in_s)
     AOT_hence \<open>\<exists>F x[F]\<close> by (rule "\<exists>I") "cqt:2[lambda]"
     AOT_thus \<open>\<exists>F x[F] & \<not>\<exists>F x[F]\<close> using 0[THEN "&E"(2)] "&I" by blast
   qed
@@ -618,7 +618,7 @@ proof -
     fix p
     AOT_assume \<open>s\<^sub>1 \<Turnstile> p\<close>
     AOT_hence \<open>s\<^sub>1[\<lambda>y p]\<close>
-      by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc true_in_s)
+      by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "prop-enc" true_in_s)
     AOT_hence \<open>[\<lambda>y p] = [\<lambda>y q\<^sub>1]\<close>
       by (rule s_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1), rotated]) "cqt:2[lambda]"
     AOT_hence \<open>p = q\<^sub>1\<close> by (metis "\<equiv>E"(2) "p-identity-thm2:3")
@@ -787,7 +787,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
       by (rule "\<exists>I")
     AOT_hence \<open>x\<^sub>0[\<lambda>y p]\<close>
       using 1[THEN "\<forall>E"(1), OF "prop-prop2:2", THEN "\<equiv>E"(2)] by blast
-    AOT_thus \<open>x\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" prop_enc "rule-ui:2[const_var]" x\<^sub>0_sit true_in_s)
+    AOT_thus \<open>x\<^sub>0 \<Turnstile> p\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "ex:1:a" "prop-enc" "rule-ui:2[const_var]" x\<^sub>0_sit true_in_s)
   qed
 
   AOT_have \<open>Actual(x\<^sub>0) & s' \<unlhd> x\<^sub>0 & s'' \<unlhd> x\<^sub>0\<close>
@@ -1543,11 +1543,11 @@ AOT_define w_alpha :: \<open>\<kappa>\<^sub>s\<close> (\<open>\<^bold>w\<^sub>\<
 
 AOT_act_theorem T_world_1: \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
 proof -
-  AOT_have true_den: \<open>\<top>\<down>\<close> using "A-descriptions" "rule-id-def:2:b[zero]" the_true_1 "vdash-properties:10" by fast
+  AOT_have true_den: \<open>\<top>\<down>\<close> using "A-descriptions" "rule-id-def:2:b[zero]" "the-true:1" "vdash-properties:10" by fast
   AOT_obtain x where x_def: \<open>x = \<top>\<close>
     by (metis "instantiation" "rule=I:1" "existential:1" id_sym true_den)
   AOT_have \<open>Situation(\<top>)\<close>
-    using T_T_value_1 T_sit[unvarify x, OF true_den, THEN "\<rightarrow>E"] by blast
+    using "T-T-value:1" T_sit[unvarify x, OF true_den, THEN "\<rightarrow>E"] by blast
   AOT_hence x_sit: \<open>Situation(x)\<close>
     using "rule=E"[rotated, OF x_def[symmetric]] by blast
 
@@ -1568,12 +1568,12 @@ proof -
   proof(safe intro!: sit_identity[unconstrain s, unconstrain s', THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF y_sit, OF x_sit, THEN "\<equiv>E"(2)] GEN "\<equiv>I" "\<rightarrow>I")
     fix p
     AOT_assume \<open>x \<Turnstile> p\<close>
-    AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) prop_enc true_in_s)
+    AOT_hence \<open>x[\<lambda>y p]\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "prop-enc" true_in_s)
     AOT_hence \<open>\<top>[\<lambda>y p]\<close>
       using "rule=E"[rotated, OF x_def] by fast
     AOT_hence \<open>\<top>\<^bold>\<Sigma>p\<close> 
-      by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" prop_enc true_den)
-    AOT_hence p: \<open>p\<close> using q_True_3 by (metis "\<equiv>E"(2)) 
+      by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "prop-enc" true_den)
+    AOT_hence p: \<open>p\<close> using "q-True:3" by (metis "\<equiv>E"(2)) 
     AOT_show \<open>y \<Turnstile> p\<close>
     proof(rule "raa-cor:1")
       AOT_assume \<open>\<not>y \<Turnstile> p\<close>
@@ -1588,7 +1588,7 @@ proof -
     AOT_assume \<open>y \<Turnstile> p\<close>
     AOT_hence \<open>p\<close>
       using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF y_prop[THEN "&E"(2)]] by blast
-    AOT_hence \<open>\<top>\<^bold>\<Sigma>p\<close> by (metis "\<equiv>E"(1) q_True_3)
+    AOT_hence \<open>\<top>\<^bold>\<Sigma>p\<close> by (metis "\<equiv>E"(1) "q-True:3")
     AOT_hence \<open>x\<^bold>\<Sigma>p\<close> using "rule=E"[rotated, OF x_def[symmetric]] by fast
     AOT_thus \<open>x \<Turnstile> p\<close>
       by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" true_in_s x_sit)
@@ -1598,8 +1598,8 @@ proof -
 qed
 
 AOT_act_theorem T_world_2: \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>x (ExtensionOf(x, p))\<close>
-  by (metis "rule=E" T_world_1 "deduction-theorem" ext_p_tv_3 id_sym "\<equiv>I"
-            "\<equiv>E"(1) "\<equiv>E"(2) q_True_1)
+  by (metis "rule=E" T_world_1 "deduction-theorem" "ext-p-tv:3" id_sym "\<equiv>I"
+            "\<equiv>E"(1) "\<equiv>E"(2) "q-True:1")
 
 AOT_act_theorem truth_at_alpha: \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> p\<close>
 proof -
@@ -1609,7 +1609,7 @@ proof -
   AOT_have w_alpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
     using pre_walpha "rule-id-def:2:b[zero]" w_alpha by blast
   AOT_have \<open>p \<equiv> \<top>\<^bold>\<Sigma>p\<close>
-    using q_True_3 by force
+    using "q-True:3" by force
   moreover AOT_have \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
     using T_world_1 by auto
   ultimately AOT_have \<open>p \<equiv> \<^bold>w\<^sub>\<alpha>\<^bold>\<Sigma>p\<close> using "rule=E" by fast
