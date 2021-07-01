@@ -47,16 +47,16 @@ specification(AOT_act)
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_conj: \<open>[w \<Turnstile> \<phi> & \<psi>] = ([w \<Turnstile> \<phi>] \<and> [w \<Turnstile> \<psi>])\<close>
-  using AOT_conj AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
+  using "conventions:1" AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
 
 lemma AOT_sem_equiv: \<open>[w \<Turnstile> \<phi> \<equiv> \<psi>] = ([w \<Turnstile> \<phi>] = [w \<Turnstile> \<psi>])\<close>
-  using AOT_equiv AOT_sem_conj AOT_model_equiv_def AOT_sem_imp by auto
+  using "conventions:3" AOT_sem_conj AOT_model_equiv_def AOT_sem_imp by auto
 
 lemma AOT_sem_disj: \<open>[w \<Turnstile> \<phi> \<or> \<psi>] = ([w \<Turnstile> \<phi>] \<or> [w \<Turnstile> \<psi>])\<close>
-  using AOT_disj AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
+  using "conventions:2" AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
 
 lemma AOT_sem_dia: \<open>[w \<Turnstile> \<diamond>\<phi>] = (\<exists> w . [w \<Turnstile> \<phi>])\<close>
-  using AOT_dia AOT_sem_box AOT_model_equiv_def AOT_sem_not by auto
+  using "conventions:5" AOT_sem_box AOT_model_equiv_def AOT_sem_not by auto
 
 specification(AOT_forall)
   AOT_sem_forall: \<open>[w \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>}] = (\<forall> \<tau> . [w \<Turnstile> \<tau>\<down>] \<longrightarrow> [w \<Turnstile> \<phi>{\<tau>}])\<close>
@@ -64,7 +64,7 @@ specification(AOT_forall)
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_exists: \<open>[w \<Turnstile> \<exists>\<alpha> \<phi>{\<alpha>}] = (\<exists> \<tau> . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<phi>{\<tau>}])\<close>
-  unfolding AOT_exists[unfolded AOT_model_equiv_def, THEN spec]
+  unfolding "conventions:4"[unfolded AOT_model_equiv_def, THEN spec]
   by (simp add: AOT_sem_forall AOT_sem_not)
 
 specification(AOT_eq)

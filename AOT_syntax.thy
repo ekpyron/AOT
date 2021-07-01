@@ -553,10 +553,10 @@ in
 end
 \<close>
 
-AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
-AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
-AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
+AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
+AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) "conventions:3": \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
 
 context AOT_meta_syntax
 begin
@@ -591,8 +591,7 @@ parse_ast_translation\<open>
  (\<^syntax_const>\<open>_AOT_desc\<close>, AOT_restricted_binder \<^const_name>\<open>AOT_desc\<close> \<^const_name>\<open>AOT_conj\<close>)]
 \<close>
 
-
-AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> "conventions:4": \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
 syntax "_AOT_exists" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40])
 
 AOT_syntax_print_translations

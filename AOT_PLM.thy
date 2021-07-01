@@ -179,29 +179,29 @@ AOT_theorem "reductio-aa:2":
 lemmas "RAA" = "reductio-aa:1" "reductio-aa:2"
 
 AOT_theorem "exc-mid": \<open>\<phi> \<or> \<not>\<phi>\<close>
-  using "df-rules-formulas[4]" "if-p-then-p" MP AOT_disj by blast
+  using "df-rules-formulas[4]" "if-p-then-p" MP "conventions:2" by blast
 
 AOT_theorem "non-contradiction": \<open>\<not>(\<phi> & \<not>\<phi>)\<close>
-  using "df-rules-formulas[3]" MT(2) "useful-tautologies:2" AOT_conj by blast
+  using "df-rules-formulas[3]" MT(2) "useful-tautologies:2" "conventions:1" by blast
 
 AOT_theorem "con-dis-taut:1": \<open>(\<phi> & \<psi>) \<rightarrow> \<phi>\<close>
-  by (meson "\<rightarrow>I" "df-rules-formulas[3]" MP RAA(1) AOT_conj)
+  by (meson "\<rightarrow>I" "df-rules-formulas[3]" MP RAA(1) "conventions:1")
 AOT_theorem "con-dis-taut:2": \<open>(\<phi> & \<psi>) \<rightarrow> \<psi>\<close>
-  by (metis "\<rightarrow>I" "df-rules-formulas[3]" MT(2) RAA(2) "\<not>\<not>E" AOT_conj)
+  by (metis "\<rightarrow>I" "df-rules-formulas[3]" MT(2) RAA(2) "\<not>\<not>E" "conventions:1")
 lemmas "Conjunction Simplification" = "con-dis-taut:1" "con-dis-taut:2"
 
 AOT_theorem "con-dis-taut:3": \<open>\<phi> \<rightarrow> (\<phi> \<or> \<psi>)\<close>
-  by (meson "contraposition:1[2]" "df-rules-formulas[4]" MP "\<rightarrow>I" AOT_disj)
+  by (meson "contraposition:1[2]" "df-rules-formulas[4]" MP "\<rightarrow>I" "conventions:2")
 AOT_theorem "con-dis-taut:4": \<open>\<psi> \<rightarrow> (\<phi> \<or> \<psi>)\<close>
-  using "Hypothetical Syllogism" "df-rules-formulas[4]" "pl:1"[axiom_inst] AOT_disj by blast
+  using "Hypothetical Syllogism" "df-rules-formulas[4]" "pl:1"[axiom_inst] "conventions:2" by blast
 lemmas "Disjunction Addition" = "con-dis-taut:3" "con-dis-taut:4"
 
 AOT_theorem "con-dis-taut:5": \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> (\<phi> & \<psi>))\<close>
-  by (metis "contraposition:2" "Hypothetical Syllogism" "\<rightarrow>I" "df-rules-formulas[4]" AOT_conj)
+  by (metis "contraposition:2" "Hypothetical Syllogism" "\<rightarrow>I" "df-rules-formulas[4]" "conventions:1")
 lemmas Adjunction = "con-dis-taut:5"
 
 AOT_theorem "con-dis-taut:6": \<open>(\<phi> & \<phi>) \<equiv> \<phi>\<close>
-  by (metis Adjunction "\<rightarrow>I" "df-rules-formulas[4]" MP "Conjunction Simplification"(1) AOT_equiv)
+  by (metis Adjunction "\<rightarrow>I" "df-rules-formulas[4]" MP "Conjunction Simplification"(1) "conventions:3")
 lemmas "Idempotence of &" = "con-dis-taut:6"
 
 AOT_theorem "con-dis-taut:7": \<open>(\<phi> \<or> \<phi>) \<equiv> \<phi>\<close>
@@ -209,7 +209,7 @@ proof -
   {
     AOT_assume \<open>\<phi> \<or> \<phi>\<close>
     AOT_hence \<open>\<not>\<phi> \<rightarrow> \<phi>\<close>
-      using AOT_disj[THEN "df-rules-formulas[3]"] MP by blast
+      using "conventions:2"[THEN "df-rules-formulas[3]"] MP by blast
     AOT_hence \<open>\<phi>\<close> using "if-p-then-p" RAA(1) MP by blast
   }
   moreover {
@@ -217,7 +217,7 @@ proof -
     AOT_hence \<open>\<phi> \<or> \<phi>\<close> using "Disjunction Addition"(1) MP by blast
   }
   ultimately AOT_show \<open>(\<phi> \<or> \<phi>) \<equiv> \<phi>\<close>
-    using AOT_equiv[THEN "df-rules-formulas[4]"] MP
+    using "conventions:3"[THEN "df-rules-formulas[4]"] MP
     by (metis Adjunction "\<rightarrow>I")
 qed
 lemmas "Idempotence of \<or>" = "con-dis-taut:7"
@@ -238,11 +238,11 @@ AOT_theorem "con-dis-i-e:3:a": assumes \<open>\<phi>\<close> shows \<open>\<phi>
 AOT_theorem "con-dis-i-e:3:b": assumes \<open>\<psi>\<close> shows \<open>\<phi> \<or> \<psi>\<close>
   using "Disjunction Addition"(2) MP assms by blast
 AOT_theorem "con-dis-i-e:3:c": assumes \<open>\<phi> \<or> \<psi>\<close> and \<open>\<phi> \<rightarrow> \<chi>\<close> and \<open>\<psi> \<rightarrow> \<Theta>\<close> shows \<open>\<chi> \<or> \<Theta>\<close>
-  by (metis "con-dis-i-e:3:a" "Disjunction Addition"(2) "df-rules-formulas[3]" MT(1) RAA(1) AOT_disj assms)
+  by (metis "con-dis-i-e:3:a" "Disjunction Addition"(2) "df-rules-formulas[3]" MT(1) RAA(1) "conventions:2" assms)
 lemmas "\<or>I" = "con-dis-i-e:3:a" "con-dis-i-e:3:b" "con-dis-i-e:3:c"
 
 AOT_theorem "con-dis-i-e:4:a": assumes \<open>\<phi> \<or> \<psi>\<close> and \<open>\<phi> \<rightarrow> \<chi>\<close> and \<open>\<psi> \<rightarrow> \<chi>\<close> shows \<open>\<chi>\<close>
-  by (metis MP RAA(2) "df-rules-formulas[3]" AOT_disj assms)
+  by (metis MP RAA(2) "df-rules-formulas[3]" "conventions:2" assms)
 AOT_theorem "con-dis-i-e:4:b": assumes \<open>\<phi> \<or> \<psi>\<close> and \<open>\<not>\<phi>\<close> shows \<open>\<psi>\<close>
   using "con-dis-i-e:4:a" RAA(1) "\<rightarrow>I" assms by blast
 AOT_theorem "con-dis-i-e:4:c": assumes \<open>\<phi> \<or> \<psi>\<close> and \<open>\<not>\<psi>\<close> shows \<open>\<phi>\<close>
@@ -264,96 +264,96 @@ AOT_theorem "raa-cor:6": assumes \<open>\<not>\<phi>\<close> and \<open>\<psi> \
 
 (* TODO: note these need manual introduction rules *)
 AOT_theorem "oth-class-taut:1:a": \<open>(\<phi> \<rightarrow> \<psi>) \<equiv> \<not>(\<phi> & \<not>\<psi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&E" "&I" "raa-cor:3" "\<rightarrow>I" MP)
 AOT_theorem "oth-class-taut:1:b": \<open>\<not>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<phi> & \<not>\<psi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&E" "&I" "raa-cor:3" "\<rightarrow>I" MP)
 AOT_theorem "oth-class-taut:1:c": \<open>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<phi> \<or> \<psi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&I" "\<or>I"(1, 2) "\<or>E"(3) "\<rightarrow>I" MP "raa-cor:1")
 
 AOT_theorem "oth-class-taut:2:a": \<open>(\<phi> & \<psi>) \<equiv> (\<psi> & \<phi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (meson "&I" "&E" "\<rightarrow>I")
 lemmas "Commutativity of &" = "oth-class-taut:2:a"
 AOT_theorem "oth-class-taut:2:b": \<open>(\<phi> & (\<psi> & \<chi>)) \<equiv> ((\<phi> & \<psi>) & \<chi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&I" "&E" "\<rightarrow>I")
 lemmas "Associativity of &" = "oth-class-taut:2:b"
 AOT_theorem "oth-class-taut:2:c": \<open>(\<phi> \<or> \<psi>) \<equiv> (\<psi> \<or> \<phi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&I" "\<or>I"(1, 2) "\<or>E"(1) "\<rightarrow>I")
 lemmas "Commutativity of \<or>" = "oth-class-taut:2:c"
 AOT_theorem "oth-class-taut:2:d": \<open>(\<phi> \<or> (\<psi> \<or> \<chi>)) \<equiv> ((\<phi> \<or> \<psi>) \<or> \<chi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"])
      (metis "&I" "\<or>I"(1, 2) "\<or>E"(1) "\<rightarrow>I")
 lemmas "Associativity of \<or>" = "oth-class-taut:2:d"
 AOT_theorem "oth-class-taut:2:e": \<open>(\<phi> \<equiv> \<psi>) \<equiv> (\<psi> \<equiv> \<phi>)\<close>
-  by (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I";
-      metis "&I" "df-rules-formulas[4]" AOT_equiv "&E" "Hypothetical Syllogism" "\<rightarrow>I" "df-rules-formulas[3]")
+  by (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I";
+      metis "&I" "df-rules-formulas[4]" "conventions:3" "&E" "Hypothetical Syllogism" "\<rightarrow>I" "df-rules-formulas[3]")
 lemmas "Commutativity of \<equiv>" = "oth-class-taut:2:e"
 AOT_theorem "oth-class-taut:2:f": \<open>(\<phi> \<equiv> (\<psi> \<equiv> \<chi>)) \<equiv> ((\<phi> \<equiv> \<psi>) \<equiv> \<chi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I"
   by metis
 lemmas "Associativity of \<equiv>" = "oth-class-taut:2:f"
 
 AOT_theorem "oth-class-taut:3:a": \<open>\<phi> \<equiv> \<phi>\<close>
-  using "&I" "vdash-properties:6" "if-p-then-p" "df-rules-formulas[4]" AOT_equiv by blast
+  using "&I" "vdash-properties:6" "if-p-then-p" "df-rules-formulas[4]" "conventions:3" by blast
 AOT_theorem "oth-class-taut:3:b": \<open>\<phi> \<equiv> \<not>\<not>\<phi>\<close>
-  using "&I" "useful-tautologies:1" "useful-tautologies:2" "vdash-properties:6" "df-rules-formulas[4]" AOT_equiv by blast
+  using "&I" "useful-tautologies:1" "useful-tautologies:2" "vdash-properties:6" "df-rules-formulas[4]" "conventions:3" by blast
 AOT_theorem "oth-class-taut:3:c": \<open>\<not>(\<phi> \<equiv> \<not>\<phi>)\<close>
-  by (metis "&E" "\<rightarrow>E" RAA "df-rules-formulas[3]" AOT_equiv)
+  by (metis "&E" "\<rightarrow>E" RAA "df-rules-formulas[3]" "conventions:3")
 
 AOT_theorem "oth-class-taut:4:a": \<open>(\<phi> \<rightarrow> \<psi>) \<rightarrow> ((\<psi> \<rightarrow> \<chi>) \<rightarrow> (\<phi> \<rightarrow> \<chi>))\<close>
   by (metis "\<rightarrow>E" "\<rightarrow>I")
 AOT_theorem "oth-class-taut:4:b": \<open>(\<phi> \<equiv> \<psi>) \<equiv> (\<not>\<phi> \<equiv> \<not>\<psi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" RAA by metis
 AOT_theorem "oth-class-taut:4:c": \<open>(\<phi> \<equiv> \<psi>) \<rightarrow> ((\<phi> \<rightarrow> \<chi>) \<equiv> (\<psi> \<rightarrow> \<chi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
 AOT_theorem "oth-class-taut:4:d": \<open>(\<phi> \<equiv> \<psi>) \<rightarrow> ((\<chi> \<rightarrow> \<phi>) \<equiv> (\<chi> \<rightarrow> \<psi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
 AOT_theorem "oth-class-taut:4:e": \<open>(\<phi> \<equiv> \<psi>) \<rightarrow> ((\<phi> & \<chi>) \<equiv> (\<psi> & \<chi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
 AOT_theorem "oth-class-taut:4:f": \<open>(\<phi> \<equiv> \<psi>) \<rightarrow> ((\<chi> & \<phi>) \<equiv> (\<chi> & \<psi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
 (* TODO: nicer proof *)
 AOT_theorem "oth-class-taut:4:g": \<open>(\<phi> \<equiv> \<psi>) \<equiv> ((\<phi> & \<psi>) \<or> (\<not>\<phi> & \<not>\<psi>))\<close>
-  apply (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
-   apply (drule AOT_equiv[THEN "df-rules-formulas[3]", THEN "\<rightarrow>E"])
+  apply (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
+   apply (drule "conventions:3"[THEN "df-rules-formulas[3]", THEN "\<rightarrow>E"])
    apply (metis "&I" "&E" "\<or>I"(1,2) MT(1) "raa-cor:3")
-  apply (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
+  apply (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
   using "&E" "\<or>E"(2) "raa-cor:3" by blast+
 AOT_theorem "oth-class-taut:4:h": \<open>\<not>(\<phi> \<equiv> \<psi>) \<equiv> ((\<phi> & \<not>\<psi>) \<or> (\<not>\<phi> & \<psi>))\<close>
-  apply (rule AOT_equiv[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
-  apply (metis "&I" "\<or>I"(1, 2) "\<rightarrow>I" MT(1) "df-rules-formulas[4]" "raa-cor:3" AOT_equiv)
-  by (metis "&E" "\<or>E"(2) "\<rightarrow>E" "df-rules-formulas[3]" "raa-cor:3" AOT_equiv)
+  apply (rule "conventions:3"[THEN "df-rules-formulas[4]", THEN "\<rightarrow>E"]; rule "&I"; rule "\<rightarrow>I")
+  apply (metis "&I" "\<or>I"(1, 2) "\<rightarrow>I" MT(1) "df-rules-formulas[4]" "raa-cor:3" "conventions:3")
+  by (metis "&E" "\<or>E"(2) "\<rightarrow>E" "df-rules-formulas[3]" "raa-cor:3" "conventions:3")
 AOT_theorem "oth-class-taut:5:a": \<open>(\<phi> & \<psi>) \<equiv> \<not>(\<not>\<phi> \<or> \<not>\<psi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 AOT_theorem "oth-class-taut:5:b": \<open>(\<phi> \<or> \<psi>) \<equiv> \<not>(\<not>\<phi> & \<not>\<psi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 AOT_theorem "oth-class-taut:5:c": \<open>\<not>(\<phi> & \<psi>) \<equiv> (\<not>\<phi> \<or> \<not>\<psi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 AOT_theorem "oth-class-taut:5:d": \<open>\<not>(\<phi> \<or> \<psi>) \<equiv> (\<not>\<phi> & \<not>\<psi>)\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 
 lemmas DeMorgan = "oth-class-taut:5:c" "oth-class-taut:5:d"
 
 AOT_theorem "oth-class-taut:6:a": \<open>(\<phi> & (\<psi> \<or> \<chi>)) \<equiv> ((\<phi> & \<psi>) \<or> (\<phi> & \<chi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 AOT_theorem "oth-class-taut:6:b": \<open>(\<phi> \<or> (\<psi> & \<chi>)) \<equiv> ((\<phi> \<or> \<psi>) & (\<phi> \<or> \<chi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"]
+  using "conventions:3"[THEN "df-rules-formulas[4]"]
         "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E" RAA by metis
 
 AOT_theorem "oth-class-taut:7:a": \<open>((\<phi> & \<psi>) \<rightarrow> \<chi>) \<rightarrow> (\<phi> \<rightarrow> (\<psi> \<rightarrow> \<chi>))\<close>
@@ -364,7 +364,7 @@ AOT_theorem "oth-class-taut:7:b": \<open>(\<phi> \<rightarrow> (\<psi> \<rightar
 lemmas Importation = "oth-class-taut:7:b"
 
 AOT_theorem "oth-class-taut:8:a": \<open>(\<phi> \<rightarrow> (\<psi> \<rightarrow> \<chi>)) \<equiv> (\<psi> \<rightarrow> (\<phi> \<rightarrow> \<chi>))\<close>
-  using AOT_equiv[THEN "df-rules-formulas[4]"] "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
+  using "conventions:3"[THEN "df-rules-formulas[4]"] "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" by metis
 lemmas Permutation = "oth-class-taut:8:a"
 AOT_theorem "oth-class-taut:8:b": \<open>(\<phi> \<rightarrow> \<psi>) \<rightarrow> ((\<phi> \<rightarrow> \<chi>) \<rightarrow> (\<phi> \<rightarrow> (\<psi> & \<chi>)))\<close>
   by (metis "&I" "\<rightarrow>E" "\<rightarrow>I")
@@ -375,26 +375,26 @@ AOT_theorem "oth-class-taut:8:d": \<open>((\<phi> \<rightarrow> \<psi>) & (\<chi
   by (metis "&E" "&I" "\<rightarrow>E" "\<rightarrow>I")
 lemmas "Double Composition" = "oth-class-taut:8:d"
 AOT_theorem "oth-class-taut:8:e": \<open>((\<phi> & \<psi>) \<equiv> (\<phi> & \<chi>)) \<equiv> (\<phi> \<rightarrow> (\<psi> \<equiv> \<chi>))\<close>
-  by (metis AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  by (metis "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
             "\<rightarrow>I" "\<rightarrow>E" "&E" "&I")
 AOT_theorem "oth-class-taut:8:f": \<open>((\<phi> & \<psi>) \<equiv> (\<chi> & \<psi>)) \<equiv> (\<psi> \<rightarrow> (\<phi> \<equiv> \<chi>))\<close>
-  by (metis AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  by (metis "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
             "\<rightarrow>I" "\<rightarrow>E" "&E" "&I")
 AOT_theorem "oth-class-taut:8:g": \<open>(\<psi> \<equiv> \<chi>) \<rightarrow> ((\<phi> \<or> \<psi>) \<equiv> (\<phi> \<or> \<chi>))\<close>
-  by (metis AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  by (metis "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
             "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E"(1))
 AOT_theorem "oth-class-taut:8:h": \<open>(\<psi> \<equiv> \<chi>) \<rightarrow> ((\<psi> \<or> \<phi>) \<equiv> (\<chi> \<or> \<phi>))\<close>
-  by (metis AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  by (metis "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
             "\<rightarrow>I" "\<rightarrow>E" "&E" "&I" "\<or>I" "\<or>E"(1))
 AOT_theorem "oth-class-taut:8:i": \<open>(\<phi> \<equiv> (\<psi> & \<chi>)) \<rightarrow> (\<psi> \<rightarrow> (\<phi> \<equiv> \<chi>))\<close>
-  by (metis AOT_equiv[THEN "df-rules-formulas[4]"] AOT_equiv[THEN "df-rules-formulas[3]"]
+  by (metis "conventions:3"[THEN "df-rules-formulas[4]"] "conventions:3"[THEN "df-rules-formulas[3]"]
             "\<rightarrow>I" "\<rightarrow>E" "&E" "&I")
 
 AOT_theorem "intro-elim:1": assumes \<open>\<phi> \<or> \<psi>\<close> and \<open>\<phi> \<equiv> \<chi>\<close> and \<open>\<psi> \<equiv> \<Theta>\<close> shows \<open>\<chi> \<or> \<Theta>\<close>
-  by (metis assms "\<or>I"(1, 2) "\<or>E"(1) AOT_equiv[THEN "df-rules-formulas[3]"] "\<rightarrow>I" "\<rightarrow>E" "&E"(1))
+  by (metis assms "\<or>I"(1, 2) "\<or>E"(1) "conventions:3"[THEN "df-rules-formulas[3]"] "\<rightarrow>I" "\<rightarrow>E" "&E"(1))
 
 AOT_theorem "intro-elim:2": assumes \<open>\<phi> \<rightarrow> \<psi>\<close> and \<open>\<psi> \<rightarrow> \<phi>\<close> shows \<open>\<phi> \<equiv> \<psi>\<close>
-  by (meson "&I" AOT_equiv "df-rules-formulas[4]" MP assms)
+  by (meson "&I" "conventions:3" "df-rules-formulas[4]" MP assms)
 lemmas "\<equiv>I" = "intro-elim:2"
 
 AOT_theorem "intro-elim:3:a": assumes \<open>\<phi> \<equiv> \<psi>\<close> and \<open>\<phi>\<close> shows \<open>\<psi>\<close>
@@ -621,7 +621,7 @@ AOT_theorem "existential:1": assumes \<open>\<phi>{\<tau>}\<close> and \<open>\<
 proof(rule "raa-cor:1")
   AOT_assume \<open>\<not>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   AOT_hence \<open>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
-    using "\<equiv>\<^sub>d\<^sub>fI" AOT_exists RAA "&I" by blast
+    using "\<equiv>\<^sub>d\<^sub>fI" "conventions:4" RAA "&I" by blast
   AOT_hence \<open>\<not>\<phi>{\<tau>}\<close> using assms(2) "\<forall>E"(1) "\<rightarrow>E" by blast
   AOT_thus \<open>\<phi>{\<tau>} & \<not>\<phi>{\<tau>}\<close> using assms(1) "&I" by blast
 qed
@@ -638,7 +638,7 @@ lemmas "\<exists>I" = "existential:1" "existential:2[const_var]" "existential:2[
 AOT_theorem "instantiation":
   assumes \<open>for arbitrary \<beta>: \<phi>{\<beta>} \<^bold>\<turnstile> \<psi>\<close> and \<open>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   shows \<open>\<psi>\<close>
-  by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" GEN "raa-cor:3" AOT_exists assms)
+  by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" GEN "raa-cor:3" "conventions:4" assms)
 lemmas "\<exists>E" = "instantiation"
 
 AOT_theorem "cqt-further:1": \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<phi>{\<alpha>}\<close>
@@ -1445,7 +1445,7 @@ proof -
   ultimately AOT_have \<zeta>: \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>))\<close>
     using "\<rightarrow>E" by blast
   AOT_have \<open>\<^bold>\<A>(((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> (\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
-    using AOT_equiv[THEN "df-rules-formulas[2]", THEN act_closure, axiom_inst] by blast
+    using "conventions:3"[THEN "df-rules-formulas[2]", THEN act_closure, axiom_inst] by blast
   AOT_hence \<open>\<^bold>\<A>((\<^bold>\<A>\<phi> \<rightarrow> \<phi>) & (\<phi> \<rightarrow> \<^bold>\<A>\<phi>)) \<rightarrow> \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close>
     using "act-cond" "\<rightarrow>E" by blast
   AOT_thus \<open>\<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>)\<close> using \<zeta> "\<rightarrow>E" by blast
@@ -1542,7 +1542,7 @@ next
   AOT_hence \<open>\<^bold>\<A>((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
     by (metis "act-conj-act:3" "vdash-properties:10")
   moreover AOT_have \<open>\<^bold>\<A>(((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)) \<rightarrow> (\<phi> \<equiv> \<psi>))\<close>
-    by (simp add: AOT_equiv "RA[2]" "df-rules-formulas[2]" "vdash-properties:1[2]")
+    by (simp add: "conventions:3" "RA[2]" "df-rules-formulas[2]" "vdash-properties:1[2]")
   ultimately AOT_show \<open>\<^bold>\<A>(\<phi> \<equiv> \<psi>)\<close>
     using "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by metis
 qed
@@ -1605,15 +1605,15 @@ proof -
     by (rule "oth-class-taut:4:b"[THEN "\<equiv>E"(1)])
        (rule "logic-actual-nec:1"[THEN universal_closure, axiom_inst, THEN "cqt-basic:3"[THEN "\<rightarrow>E"]])
   AOT_have \<open>\<^bold>\<A>(\<exists>\<alpha> \<phi>{\<alpha>}) \<equiv> \<^bold>\<A>(\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>})\<close>
-    using AOT_exists[THEN "df-rules-formulas[1]", THEN act_closure, axiom_inst]
-          AOT_exists[THEN "df-rules-formulas[2]", THEN act_closure, axiom_inst]
+    using "conventions:4"[THEN "df-rules-formulas[1]", THEN act_closure, axiom_inst]
+          "conventions:4"[THEN "df-rules-formulas[2]", THEN act_closure, axiom_inst]
     "Act-Basic:4"[THEN "\<equiv>E"(1)] "&I" "Act-Basic:5"[THEN "\<equiv>E"(2)] by metis
   also AOT_have \<open>\<dots> \<equiv> \<not>\<^bold>\<A>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     by (simp add: "logic-actual-nec:1" "vdash-properties:1[2]")
   also AOT_have \<open>\<dots> \<equiv> \<not>\<forall>\<alpha> \<^bold>\<A> \<not>\<phi>{\<alpha>}\<close> using \<theta> by blast
   also AOT_have \<open>\<dots> \<equiv> \<not>\<forall>\<alpha> \<not>\<^bold>\<A> \<phi>{\<alpha>}\<close> using \<xi> by blast
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A> \<phi>{\<alpha>}\<close>
-    using AOT_exists[THEN "\<equiv>Df"] by (metis "\<equiv>E"(6) "oth-class-taut:3:a")
+    using "conventions:4"[THEN "\<equiv>Df"] by (metis "\<equiv>E"(6) "oth-class-taut:3:a")
   finally AOT_show \<open>\<^bold>\<A>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close> .
 qed
 
@@ -2073,7 +2073,7 @@ proof -
     by (simp add: "contraposition:1[1]")
   AOT_hence \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<not>\<psi> \<rightarrow> \<box>\<not>\<phi>\<close> using "RM:1[prem]" by blast
   AOT_thus \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
-    by (meson "\<equiv>\<^sub>d\<^sub>fE" "\<equiv>\<^sub>d\<^sub>fI" AOT_dia "deduction-theorem" "modus-tollens:1")
+    by (meson "\<equiv>\<^sub>d\<^sub>fE" "\<equiv>\<^sub>d\<^sub>fI" "conventions:5" "deduction-theorem" "modus-tollens:1")
 qed
 
 AOT_theorem "RM:2": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<phi> \<rightarrow> \<diamond>\<psi>\<close>
@@ -2131,7 +2131,7 @@ proof -
     by (fact "KBasic:3")
   AOT_modally_strict {
     AOT_have \<open>(\<phi> \<equiv> \<psi>) \<equiv> ((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
-      by (fact AOT_equiv[THEN "\<equiv>Df"])
+      by (fact "conventions:3"[THEN "\<equiv>Df"])
   }
   AOT_hence \<xi>: \<open>\<box>(\<phi> \<equiv> \<psi>) \<equiv> \<box>((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
     by (rule RE)
@@ -2148,7 +2148,7 @@ proof -
   ultimately AOT_have \<open>(\<box>(\<phi> \<rightarrow> \<psi>) & \<box>(\<psi> \<rightarrow> \<phi>)) \<rightarrow> ((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<box>\<psi> \<rightarrow> \<box>\<phi>))\<close>
     by (metis "&I" MP "Double Composition")
   moreover AOT_have \<open>((\<box>\<phi> \<rightarrow> \<box>\<psi>) & (\<box>\<psi> \<rightarrow> \<box>\<phi>)) \<rightarrow> (\<box>\<phi> \<equiv> \<box>\<psi>)\<close>
-    using AOT_equiv[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I" by blast
+    using "conventions:3"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I" by blast
   ultimately AOT_show \<open>(\<box>(\<phi> \<rightarrow> \<psi>) & \<box>(\<psi> \<rightarrow> \<phi>)) \<rightarrow> (\<box>\<phi> \<equiv> \<box>\<psi>)\<close>
     by (metis "Hypothetical Syllogism")
 qed
@@ -2183,10 +2183,10 @@ AOT_theorem "KBasic:10": \<open>\<box>\<phi> \<equiv> \<box>\<not>\<not>\<phi>\<
 AOT_theorem "KBasic:11": \<open>\<not>\<box>\<phi> \<equiv> \<diamond>\<not>\<phi>\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_show \<open>\<diamond>\<not>\<phi>\<close> if \<open>\<not>\<box>\<phi>\<close>
-    using that "\<equiv>\<^sub>d\<^sub>fI" AOT_dia "KBasic:10" "\<equiv>E"(3) by blast
+    using that "\<equiv>\<^sub>d\<^sub>fI" "conventions:5" "KBasic:10" "\<equiv>E"(3) by blast
 next
   AOT_show \<open>\<not>\<box>\<phi>\<close> if \<open>\<diamond>\<not>\<phi>\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia "KBasic:10" "\<equiv>E"(4) that by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" "KBasic:10" "\<equiv>E"(4) that by blast
 qed
 AOT_theorem "KBasic:12": \<open>\<box>\<phi> \<equiv> \<not>\<diamond>\<not>\<phi>\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
@@ -2519,7 +2519,7 @@ AOT_theorem "rule-sub-remark:7[2]":
   by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
 
 AOT_theorem "KBasic2:1": \<open>\<box>\<not>\<phi> \<equiv> \<not>\<diamond>\<phi>\<close>
-  by (meson AOT_dia "contraposition:2" "Hypothetical Syllogism" "df-rules-formulas[3]"
+  by (meson "conventions:5" "contraposition:2" "Hypothetical Syllogism" "df-rules-formulas[3]"
             "df-rules-formulas[4]" "\<equiv>I" "useful-tautologies:1")
 
 AOT_theorem "KBasic2:2": \<open>\<diamond>(\<phi> \<or> \<psi>) \<equiv> (\<diamond>\<phi> \<or> \<diamond>\<psi>)\<close>
@@ -2562,9 +2562,9 @@ qed
 
 AOT_theorem "KBasic2:5": \<open>\<diamond>\<diamond>\<phi> \<equiv> \<not>\<box>\<box>\<not>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   apply (AOT_subst "\<guillemotleft>\<diamond>\<not>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>"  "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
    apply (simp add: "oth-class-taut:3:b")
   by (simp add: "oth-class-taut:3:a")
@@ -2575,7 +2575,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:1")
   AOT_assume \<open>\<box>(\<phi> \<or> \<psi>)\<close>
   AOT_hence \<open>\<box>(\<not>\<phi> \<rightarrow> \<psi>)\<close>
     apply - apply (AOT_subst_rev "\<guillemotleft>\<phi> \<or> \<psi>\<guillemotright>" "\<guillemotleft>\<not>\<phi> \<rightarrow> \<psi>\<guillemotright>")
-    by (simp add: AOT_disj "\<equiv>Df")
+    by (simp add: "conventions:2" "\<equiv>Df")
   AOT_hence 1: \<open>\<diamond>\<not>\<phi> \<rightarrow> \<diamond>\<psi>\<close> using "KBasic:13" "vdash-properties:10" by blast
   AOT_assume \<open>\<not>(\<box>\<phi> \<or> \<diamond>\<psi>)\<close>
   AOT_hence \<open>\<not>\<box>\<phi>\<close> and \<open>\<not>\<diamond>\<psi>\<close> using "&E" "\<equiv>E"(1) "oth-class-taut:5:d" by blast+
@@ -2593,7 +2593,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
 qed
 
 AOT_theorem "T-S5-fund:1": \<open>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
-  by (meson "\<equiv>\<^sub>d\<^sub>fI" AOT_dia "contraposition:2" "Hypothetical Syllogism" "deduction-theorem" "qml:2"[axiom_inst])
+  by (meson "\<equiv>\<^sub>d\<^sub>fI" "conventions:5" "contraposition:2" "Hypothetical Syllogism" "deduction-theorem" "qml:2"[axiom_inst])
 lemmas "T\<diamond>" = "T-S5-fund:1"
 
 AOT_theorem "T-S5-fund:2": \<open>\<diamond>\<box>\<phi> \<rightarrow> \<box>\<phi>\<close>
@@ -2616,13 +2616,13 @@ AOT_theorem "Act-Sub:1": \<open>\<^bold>\<A>\<phi> \<equiv> \<not>\<^bold>\<A>\<
 
 AOT_theorem "Act-Sub:2": \<open>\<diamond>\<phi> \<equiv> \<^bold>\<A>\<diamond>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   by (metis "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "\<equiv>E"(2) "\<equiv>E"(3)
             "logic-actual-nec:1"[axiom_inst] "qml-act:2"[axiom_inst])
 
 AOT_theorem "Act-Sub:3": \<open>\<^bold>\<A>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   by (metis "Act-Sub:1" "deduction-theorem" "\<equiv>E"(4) "nec-imp-act" "reductio-aa:2" "vdash-properties:6")
 
 
@@ -2633,7 +2633,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
 next
   AOT_assume \<open>\<diamond>\<^bold>\<A>\<phi>\<close>
   AOT_hence \<open>\<not>\<box>\<not>\<^bold>\<A>\<phi>\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" by blast
   AOT_hence \<open>\<not>\<box>\<^bold>\<A>\<not>\<phi>\<close>
     apply - apply (AOT_subst "\<guillemotleft>\<^bold>\<A>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<^bold>\<A>\<phi>\<guillemotright>")
     by (simp add: "logic-actual-nec:1"[axiom_inst])
@@ -2667,9 +2667,9 @@ AOT_theorem "S5Basic:6": \<open>\<box>\<phi> \<equiv> \<box>\<box>\<phi>\<close>
 
 AOT_theorem "S5Basic:7": \<open>\<diamond>\<diamond>\<phi> \<rightarrow> \<diamond>\<phi>\<close>
   apply (AOT_subst "\<guillemotleft>\<diamond>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<diamond>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-   apply (simp add: AOT_dia "\<equiv>Df")
+   apply (simp add: "conventions:5" "\<equiv>Df")
   apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<not>\<box>\<not>\<phi>\<guillemotright>")
    apply (simp add: "oth-class-taut:3:b")
   apply (AOT_subst_rev "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>" "\<guillemotleft>\<box>\<box>\<not>\<phi>\<guillemotright>")
@@ -2811,10 +2811,10 @@ proof(rule "\<rightarrow>I")
 
   AOT_assume \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
   AOT_hence \<open>\<not>\<box>\<not>(\<exists>\<alpha> \<phi>{\<alpha>})\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" by blast
   AOT_hence \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     apply - apply (AOT_subst "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<not>(\<exists>\<alpha> \<phi>{\<alpha>})\<guillemotright>")
-    using "\<equiv>\<^sub>d\<^sub>fI" AOT_equiv AOT_exists "&I" "contraposition:2" "cqt-further:4"
+    using "\<equiv>\<^sub>d\<^sub>fI" "conventions:3" "conventions:4" "&I" "contraposition:2" "cqt-further:4"
           "df-rules-formulas[1]" "vdash-properties:1[2]" by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
     apply - apply (AOT_subst_using_rev subst: \<theta>)
@@ -2823,10 +2823,10 @@ proof(rule "\<rightarrow>I")
     apply - apply (AOT_subst_rev "\<lambda> \<tau>. \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>"  "\<lambda> \<tau>. \<guillemotleft>\<not>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
     by (simp add: "oth-class-taut:3:b")
   AOT_hence 0: \<open>\<exists>\<alpha> \<not>\<box>\<not>\<phi>{\<alpha>}\<close>
-    by (rule AOT_exists[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    by (rule "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_show \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
     apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<diamond>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
-     apply (simp add: AOT_dia "\<equiv>Df")
+     apply (simp add: "conventions:5" "\<equiv>Df")
     using 0 by blast
 qed
 lemmas "BF\<diamond>" = "BFs:3"
@@ -2835,7 +2835,7 @@ AOT_theorem "BFs:4": \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>} \<right
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
   AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<diamond>\<phi>{\<alpha>}\<close>
-    using AOT_exists[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
     apply - apply (AOT_subst "\<lambda> \<tau> . \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<diamond>\<phi>{\<tau>}\<guillemotright>")
     by (simp add: "KBasic2:1")
@@ -2844,9 +2844,9 @@ proof(rule "\<rightarrow>I")
   ultimately AOT_have 1: \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     using "\<equiv>E"(3) by blast
   AOT_show \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>}\<close>
-    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    apply (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     apply (AOT_subst "\<guillemotleft>\<exists>\<alpha> \<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
-     apply (simp add: AOT_exists "\<equiv>Df")
+     apply (simp add: "conventions:4" "\<equiv>Df")
     apply (AOT_subst "\<guillemotleft>\<not>\<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>" "\<guillemotleft>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<guillemotright>")
     by (auto simp: 1 "\<equiv>I" "useful-tautologies:1" "useful-tautologies:2")
 qed
@@ -3244,7 +3244,7 @@ AOT_theorem "pre-en-eq:2[1]": \<open>\<not>x\<^sub>1[F] \<rightarrow> \<box>\<no
 proof (rule "\<rightarrow>I"; rule "raa-cor:1")
   AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1[F]\<close>
   AOT_hence \<open>\<diamond>x\<^sub>1[F]\<close>
-    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    by (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_hence \<open>x\<^sub>1[F]\<close>
     by(rule "S5Basic:13"[THEN "\<equiv>E"(1), OF  "pre-en-eq:1[1]"[THEN RN], THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
   moreover AOT_assume \<open>\<not>x\<^sub>1[F]\<close>
@@ -3254,7 +3254,7 @@ AOT_theorem "pre-en-eq:2[2]": \<open>\<not>x\<^sub>1x\<^sub>2[F] \<rightarrow> \
 proof (rule "\<rightarrow>I"; rule "raa-cor:1")
   AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2[F]\<close>
-    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    by (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_hence \<open>x\<^sub>1x\<^sub>2[F]\<close>
     by(rule "S5Basic:13"[THEN "\<equiv>E"(1), OF  "pre-en-eq:1[2]"[THEN RN], THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
   moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2[F]\<close>
@@ -3265,7 +3265,7 @@ AOT_theorem "pre-en-eq:2[3]": \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<righ
 proof (rule "\<rightarrow>I"; rule "raa-cor:1")
   AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
   AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
-    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    by (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_hence \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
     by(rule "S5Basic:13"[THEN "\<equiv>E"(1), OF  "pre-en-eq:1[3]"[THEN RN], THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
   moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
@@ -3276,7 +3276,7 @@ AOT_theorem "pre-en-eq:2[4]": \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[
 proof (rule "\<rightarrow>I"; rule "raa-cor:1")
   AOT_assume \<open>\<not>\<box>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   AOT_hence \<open>\<diamond>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
-    by (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+    by (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_hence \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
     by(rule "S5Basic:13"[THEN "\<equiv>E"(1), OF  "pre-en-eq:1[4]"[THEN RN], THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
   moreover AOT_assume \<open>\<not>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
@@ -4126,12 +4126,12 @@ proof -
     AOT_have \<open>\<not>Impossible([F]) \<equiv> \<not>\<box>\<not> \<exists>x [F]x\<close>
       apply (rule "oth-class-taut:4:b"[THEN "\<equiv>E"(1)])
       apply (AOT_subst "\<guillemotleft>\<exists>x [F]x\<guillemotright>" "\<guillemotleft>\<not> \<forall>x \<not>[F]x\<guillemotright>")
-       apply (simp add: AOT_exists "\<equiv>Df")
+       apply (simp add: "conventions:4" "\<equiv>Df")
       apply (AOT_subst_rev "\<guillemotleft>\<forall>x \<not>[F]x\<guillemotright>" "\<guillemotleft>\<not>\<not>\<forall>x \<not>[F]x\<guillemotright>" )
        apply (simp add: "oth-class-taut:3:b")
       using "contingent-properties:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst]] by blast
     also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]x\<close>
-      using AOT_dia[THEN "\<equiv>Df", symmetric] by blast
+      using "conventions:5"[THEN "\<equiv>Df", symmetric] by blast
     finally AOT_show \<open>\<not>Impossible([F]) \<equiv> \<diamond>\<exists>x [F]x\<close> .
   qed
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]x & \<diamond>\<exists>x \<not>[F]x\<close>
@@ -4139,13 +4139,13 @@ proof -
     AOT_have \<open>\<not>Necessary([F]) \<equiv> \<not>\<box>\<not>\<exists>x \<not>[F]x\<close>
       apply (rule "oth-class-taut:4:b"[THEN "\<equiv>E"(1)])
       apply (AOT_subst "\<guillemotleft>\<exists>x \<not>[F]x\<guillemotright>" "\<guillemotleft>\<not> \<forall>x \<not>\<not>[F]x\<guillemotright>")
-       apply (simp add: AOT_exists "\<equiv>Df")
+       apply (simp add: "conventions:4" "\<equiv>Df")
       apply (AOT_subst_rev "\<lambda> \<kappa> . \<guillemotleft>[F]\<kappa>\<guillemotright>" "\<lambda> \<kappa> . \<guillemotleft>\<not>\<not>[F]\<kappa>\<guillemotright>")
        apply (simp add: "oth-class-taut:3:b")
       apply (AOT_subst_rev "\<guillemotleft>\<forall>x [F]x\<guillemotright>" "\<guillemotleft>\<not>\<not>\<forall>x [F]x\<guillemotright>")
       by (auto simp: "oth-class-taut:3:b" "contingent-properties:1" "\<equiv>Df")
     also AOT_have \<open>... \<equiv> \<diamond>\<exists>x \<not>[F]x\<close>
-      using AOT_dia[THEN "\<equiv>Df", symmetric] by blast
+      using "conventions:5"[THEN "\<equiv>Df", symmetric] by blast
     finally AOT_show \<open>\<not>Necessary([F]) \<equiv> \<diamond>\<exists>x \<not>[F]x\<close>.
   qed
   finally show ?thesis.
@@ -4522,7 +4522,7 @@ proof -
     by (fact AOT)
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<phi> & \<diamond>\<not>\<phi>\<close>
     apply (AOT_subst "\<guillemotleft>\<diamond>\<phi>\<guillemotright>" "\<guillemotleft>\<not>\<box>\<not>\<phi>\<guillemotright>")
-     apply (simp add: AOT_dia "\<equiv>Df")
+     apply (simp add: "conventions:5" "\<equiv>Df")
     apply (AOT_subst "\<guillemotleft>Impossible0(\<phi>)\<guillemotright>" "\<guillemotleft>\<box>\<not>\<phi>\<guillemotright>")
      apply (simp add: "contingent-properties:2[zero]" "\<equiv>Df")
     apply (AOT_subst_rev "\<guillemotleft>\<not>\<box>\<phi>\<guillemotright>" "\<guillemotleft>\<diamond>\<not>\<phi>\<guillemotright>")
@@ -4675,12 +4675,12 @@ AOT_theorem "basic-prop:3": \<open>Contingent0(((q\<^sub>0)\<^sup>-))\<close>
   apply (rule "oth-class-taut:5:d"[THEN "\<equiv>E"(2)])
   apply (rule "&I")
    apply (rule "contingent-properties:1[zero]"[THEN "df-rules-formulas[3]", THEN "useful-tautologies:5"[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
-   apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+   apply (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
    apply (rule "=\<^sub>d\<^sub>fE"(2)[OF q\<^sub>0_def])
     apply (rule "log-prop-prop:2")
    apply (rule q\<^sub>0_prop[THEN "&E"(1)])
   apply (rule "contingent-properties:2[zero]"[THEN "df-rules-formulas[3]", THEN "useful-tautologies:5"[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"])
-  apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+  apply (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   by (rule q\<^sub>0_prop[THEN "&E"(2)])
 
 AOT_theorem "basic-prop:4": \<open>\<exists>p\<exists>q (p \<noteq> q & Contingent0(p) & Contingent0(q))\<close>
@@ -4772,7 +4772,7 @@ proof(rule "\<rightarrow>I")
     using 2 "KBasic:11"[THEN "\<equiv>E"(2)] by blast
   moreover AOT_have \<open>\<not>Impossible0((p))\<close>
     apply (rule "contingent-properties:2[zero]"[THEN "\<equiv>Df", THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
-    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+    apply (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
     using "T\<diamond>"[THEN "\<rightarrow>E", OF 1].
   ultimately AOT_have \<open>\<not>(Necessary0((p)) \<or> Impossible0((p)))\<close>
     using DeMorgan(2)[THEN "\<equiv>E"(2)] "&I" by blast
@@ -4789,7 +4789,7 @@ proof(rule "\<rightarrow>I")
     using "KBasic:11"[THEN "\<equiv>E"(2)] "T\<diamond>"[THEN "\<rightarrow>E", OF 1] by blast
   moreover AOT_have \<open>\<not>Impossible0((p))\<close>
     apply (rule "contingent-properties:2[zero]"[THEN "\<equiv>Df", THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(2)])
-    apply (rule AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+    apply (rule "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
     using 2.
   ultimately AOT_have \<open>\<not>(Necessary0((p)) \<or> Impossible0((p)))\<close>
     using DeMorgan(2)[THEN "\<equiv>E"(2)] "&I" by blast
@@ -4870,7 +4870,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule "raa-cor:1")
   AOT_hence \<open>\<diamond>p\<close>
     using "cont-tf:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
   AOT_hence 1: \<open>\<not>\<box>\<not>p\<close>
-    using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_assume \<open>Impossible0((q))\<close>
   moreover AOT_assume \<open>\<not>(p \<noteq> q)\<close>
   AOT_hence \<open>p = q\<close>
@@ -5028,9 +5028,9 @@ next
   finally AOT_show \<open>\<phi>\<close> using "\<equiv>E" "if-p-then-p" by fast
 qed
 private lemmas eqnotnec_123_Aux_\<xi> =  eqnotnec_123_Aux_\<theta>[THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
-                      THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
+                      THEN "conventions:3"[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
                       THEN "RM\<diamond>"]
-private lemmas eqnotnec_123_Aux_\<xi>' = eqnotnec_123_Aux_\<theta>[THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)], THEN "RM\<diamond>"]
+private lemmas eqnotnec_123_Aux_\<xi>' = eqnotnec_123_Aux_\<theta>[THEN "conventions:3"[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)], THEN "RM\<diamond>"]
 
 AOT_theorem "eqnotnec:1": \<open>\<exists>F\<exists>G(\<forall>x([F]x \<equiv> [G]x) & \<diamond>\<not>\<forall>x([F]x \<equiv> [G]x))\<close>
 proof-
@@ -5070,7 +5070,7 @@ proof-
     using "logic-actual-nec:1"[axiom_inst, THEN "\<equiv>E"(2)] by blast
   AOT_hence \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close>
     using eqnotnec_123_Aux_\<theta>[THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
-            THEN AOT_equiv[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
+            THEN "conventions:3"[THEN "\<equiv>Df", THEN "\<equiv>E"(1), THEN "&E"(1)],
             THEN "RA[2]", THEN "act-cond"[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
   moreover AOT_have \<open>\<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using eqnotnec_123_Aux_\<xi>'[THEN "\<rightarrow>E"] q\<^sub>0_prop[THEN "&E"(1)] by blast
   ultimately AOT_have \<open>\<^bold>\<A>\<not>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x) & \<diamond>\<forall>x ([L]x \<equiv> [\<lambda>z q\<^sub>0]x)\<close> using "&I" by blast
@@ -5560,7 +5560,7 @@ proof -
         by (AOT_subst_rev "\<guillemotleft>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>\<not>[F]x\<guillemotright>")
            (auto simp add: "thm-relation-negation:1" 3)
       AOT_hence \<open>\<diamond>[F]x\<close>
-        using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
+        using "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
       AOT_hence \<open>\<box>[F]x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
       AOT_thus \<open>\<box>[F]x & \<not>\<box>[F]x\<close> using "&I" 2 by blast
     qed
@@ -5580,7 +5580,7 @@ proof -
         by (AOT_subst "\<guillemotleft>\<not>[F]\<^sup>-x\<guillemotright>" "\<guillemotleft>[F]x\<guillemotright>")
            (auto simp add: "thm-relation-negation:2" 3)
       AOT_hence \<open>\<diamond>[F]\<^sup>-x\<close>
-        using AOT_dia[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
+        using "conventions:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"] by simp
       AOT_hence \<open>\<box>[F]\<^sup>-x\<close> using 0 "\<forall>E" "\<rightarrow>E" by fast
       AOT_thus \<open>\<box>[F]\<^sup>-x & \<not>\<box>[F]\<^sup>-x\<close> using "&I" 2 by blast
     qed
@@ -5864,7 +5864,7 @@ proof -
   qed
   AOT_have act_not_q_zero: \<open>\<^bold>\<A>\<not>q\<^sub>0\<close> using "Act-Basic:1" "\<or>E"(2) not_act_q_zero by blast
   AOT_have not_delta_not_q_zero: \<open>\<not>\<^bold>\<Delta>\<not>q\<^sub>0\<close>
-      using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia "Act-Basic:1" act_and_not_nec_not_delta "&E"(1) "\<or>E"(2) not_act_q_zero q\<^sub>0_prop by blast
+      using "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" "Act-Basic:1" act_and_not_nec_not_delta "&E"(1) "\<or>E"(2) not_act_q_zero q\<^sub>0_prop by blast
 
   AOT_have \<open>[L\<^sup>-]\<down>\<close> by (simp add: "rel-neg-T:3")
   moreover AOT_have \<open>\<not>\<^bold>\<A>[L\<^sup>-]b & \<not>\<^bold>\<Delta>[L\<^sup>-]b & \<not>\<^bold>\<A>[L\<^sup>-]a & \<not>\<^bold>\<Delta>[L\<^sup>-]a\<close>
@@ -5996,7 +5996,7 @@ proof -
         by (metis "Act-Basic:1" "Act-Basic:2" "Act-Basic:9" act_abs_a "&I" "\<or>I"(2) "\<or>E"(2) "\<equiv>E"(3) not_act_q_zero "raa-cor:1")
     next
       AOT_have \<open>\<box>\<not>[E!]a\<close>
-        by (metis "\<equiv>\<^sub>d\<^sub>fI" AOT_dia "&I" "\<or>I"(2) necessary_or_contingently_false not_act_concrete_a not_delta_concrete_a "raa-cor:3")
+        by (metis "\<equiv>\<^sub>d\<^sub>fI" "conventions:5" "&I" "\<or>I"(2) necessary_or_contingently_false not_act_concrete_a not_delta_concrete_a "raa-cor:3")
       moreover AOT_have \<open>\<diamond>\<not>([A!]a & \<not>q\<^sub>0)\<close>
         by (metis "KBasic2:1" "KBasic:11" "KBasic:3" "&E"(1) "&E"(2) "\<equiv>E"(1) q\<^sub>0_prop "raa-cor:3")
       ultimately AOT_have \<open>\<diamond>(\<not>[E!]a & \<not>([A!]a & \<not>q\<^sub>0))\<close> by (metis "KBasic:16" "&I" "vdash-properties:10")
@@ -6049,7 +6049,7 @@ proof -
     AOT_show \<open>\<^bold>\<A>([O!]b & \<not>[E!]b)\<close>
       by (metis "Act-Basic:1" "Act-Basic:2" act_ord_b "&I" "\<or>E"(2) "\<equiv>E"(3) not_act_concrete_b "raa-cor:3")
   next AOT_show \<open>\<not>\<^bold>\<Delta>([O!]b & \<not>[E!]b)\<close>
-      by (metis (no_types, hide_lams) AOT_dia "Act-Sub:1" "RM:1" act_and_not_nec_not_delta "act-conj-act:3"
+      by (metis (no_types, hide_lams) "conventions:5" "Act-Sub:1" "RM:1" act_and_not_nec_not_delta "act-conj-act:3"
                 act_ord_b b_prop "&I" "&E"(1) "Conjunction Simplification"(2) "df-rules-formulas[3]"
                 "\<equiv>E"(3) "raa-cor:1" "\<rightarrow>E")
   next AOT_show \<open>\<not>\<^bold>\<A>([O!]a & \<not>[E!]a)\<close>
@@ -6134,7 +6134,7 @@ proof -
     AOT_show \<open>\<^bold>\<A>\<not>[E!]b\<close>
       using "Act-Basic:1" "\<or>E"(2) not_act_concrete_b by blast
   next AOT_show \<open>\<not>\<^bold>\<Delta>\<not>[E!]b\<close>
-      using "\<equiv>\<^sub>d\<^sub>fE" AOT_dia "Act-Basic:1" act_and_not_nec_not_delta b_prop "&E"(1) "\<or>E"(2) not_act_concrete_b by blast
+      using "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" "Act-Basic:1" act_and_not_nec_not_delta b_prop "&E"(1) "\<or>E"(2) not_act_concrete_b by blast
   next AOT_show \<open>\<^bold>\<A>\<not>[E!]a\<close>
       using "Act-Basic:1" "\<or>E"(2) not_act_concrete_a by blast
   next AOT_show \<open>\<^bold>\<Delta>\<not>[E!]a\<close>
@@ -7499,7 +7499,7 @@ proof(rule "raa-cor:2")
   ultimately AOT_have \<open>\<diamond>\<forall>x [E!]x\<close>
     by (metis "vdash-properties:6")
   AOT_thus \<open>p & \<not>p\<close> for p
-    by (metis "\<equiv>\<^sub>d\<^sub>fE" AOT_dia "o-objects-exist:5" "reductio-aa:1")
+    by (metis "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" "o-objects-exist:5" "reductio-aa:1")
 qed
 
 AOT_theorem "prop-in-f:3:b": \<open>\<not>Indiscriminate([E!]\<^sup>-)\<close>
@@ -7525,7 +7525,7 @@ proof (rule "rule=E"[rotated, OF "rel-neg-T:2"[symmetric]]; rule "raa-cor:2")
   moreover AOT_obtain a where abs_a: \<open>O!a\<close>
     using "instantiation" "o-objects-exist:1" "qml:2" "vdash-properties:1[2]" "vdash-properties:6" by blast
   ultimately AOT_have \<open>\<box>\<not>[E!]a\<close> using "\<forall>E" by blast
-  AOT_hence 2: \<open>\<not>\<diamond>[E!]a\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" AOT_dia "reductio-aa:1")
+  AOT_hence 2: \<open>\<not>\<diamond>[E!]a\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "conventions:5" "reductio-aa:1")
   AOT_have \<open>A!a\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_abstract])
      apply "cqt:2[lambda]"
@@ -7638,7 +7638,6 @@ qed
 AOT_theorem "enc-prop-nec:2": \<open>\<forall>F (x[F] \<rightarrow> \<exists>p(F = [\<lambda>y p])) \<rightarrow> \<box>\<forall>F(x[F] \<rightarrow> \<exists>p (F = [\<lambda>y p]))\<close>
   using "derived-S5-rules:1"[where \<Gamma>="{}", simplified, OF "enc-prop-nec:1"]
   by blast
-
 
 (*<*)
 end

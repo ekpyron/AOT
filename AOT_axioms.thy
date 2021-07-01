@@ -21,19 +21,19 @@ notepad
 begin
   fix \<phi> \<psi> \<chi>
 
-  AOT_have "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
-    using AOT_conj .
-  AOT_have "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-    using AOT_disj .
-  AOT_have "conventions:3": \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
-    using AOT_equiv .
+  AOT_have \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
+    using "conventions:1" .
+  AOT_have \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
+    using "conventions:2" .
+  AOT_have \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+    using "conventions:3" .
   {
     fix \<phi> :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
-    AOT_have "conventions:4": \<open>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
-      using AOT_exists .
+    AOT_have \<open>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+      using "conventions:4" .
   }
-  AOT_have "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
-    using AOT_dia .
+  AOT_have \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
+    using "conventions:5" .
 
   have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close> by blast
   have "conventions3[2]": \<open>\<guillemotleft>\<phi> & \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
