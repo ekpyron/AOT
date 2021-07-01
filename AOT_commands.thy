@@ -37,6 +37,7 @@ nonterminal \<tau>
 nonterminal \<tau>'
 nonterminal "AOT_axiom"
 nonterminal "AOT_act_axiom"
+ML_file AOT_keys.ML
 ML_file AOT_commands.ML
 setup\<open>AOT_Theorems.setup\<close>
 setup\<open>AOT_Definitions.setup\<close>

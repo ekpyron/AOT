@@ -1,3 +1,5 @@
+fun AOT_item_by_name name = Option.map fst (List.find (fn (_,n) => n = name) AOT_items)
+fun AOT_name_of_item id = Option.map snd (List.find (fn (i,_) => id = i) AOT_items)
 
 val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
 local
@@ -9,6 +11,16 @@ val AOT_syntax_typed_print_translations = map (fn (n,f:Proof.context -> typ -> t
 val AOT_syntax_print_ast_translations = map (fn (n,f:Proof.context -> Ast.ast list -> Ast.ast) => AOT_map_translation true (n,f))
 end
 
+fun AOT_get_item_number name = let
+val name = hd (String.fields (equal #"[") name)
+val name = String.fields (equal #":") name
+in case (AOT_item_by_name (hd name)) of (SOME id) => SOME (
+fold (fn sub => fn str => str ^ "." ^ sub) (tl name) (Int.toString id)
+) | _ => NONE end
+
+fun AOT_print_item_number (name:string) =
+  case (AOT_get_item_number name) of SOME str => Pretty.writeln (Pretty.str ("PLM item number (" ^ str ^ ")"))
+  | _ => ()
 
 fun add_AOT_print_rule AOTsyntax raw_rules thy = let
   val rules = map (fn (r, s) => let
@@ -230,6 +242,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
             raise Term.TERM ("Expected AOT definition.", [trm])
       | _ => raise Term.TERM ("Expected AOT definition.", [trm])
     val thmbind = if Binding.is_empty thmbind then bnd else thmbind
+    val _ = AOT_print_item_number (Binding.name_of thmbind)
     val ctxt = ctxt |> Local_Theory.note ((thmbind, thmattrs), [thm]) |> snd
     val ctxt = AOT_note_theorems [[thm]] ctxt
     val ctxt = AOT_note_definitions [[thm]] ctxt
@@ -412,6 +425,8 @@ fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding includes assump
   val ctxt = Bundle.includes_cmd includes ctxt
   val ctxt = if modallyStrict then setupStrictWorld ctxt else setupWeakWorld ctxt
   val (stmts,assumptions,ctxt) = read_statement (if axiom then (if modallyStrict then @{nonterminal "AOT_axiom"} else @{nonterminal "AOT_act_axiom"}) else @{nonterminal AOT_prop}) @{nonterminal AOT_prop} assumptions shows ctxt
+  val _ = AOT_print_item_number (Binding.name_of (fst thmBinding))
+  val _ = fold (fn ((bnd,_),_) => fn _ => AOT_print_item_number (Binding.name_of bnd)) stmts ()
 in Specification.theorem long "AOT_theorem" NONE afterQed thmBinding [] assumptions (Element.Shows stmts) int ctxt end)
 
 fun AOT_theorem spec note axiom modallyStrict descr =
@@ -567,7 +582,8 @@ local
 
 fun readTermPattern ctxt str = (let
   val trm = case try (AOT_read_term @{nonterminal \<tau>'} ctxt) str of SOME x => x
-            | NONE => AOT_read_term @{nonterminal \<phi>'} ctxt str
+            | NONE => (case try (AOT_read_term @{nonterminal \<phi>'} ctxt) str of SOME x => x
+            | NONE => (AOT_read_term @{nonterminal AOT_prop} ctxt) str)
   val trm = Syntax.check_term ctxt trm
   fun varifyTerm (Const (\<^const_name>\<open>AOT_term_of_var\<close>, Type ("fun", [_, t])) $ Free (x, _)) = Var ((x, 0), t)
     | varifyTerm (Free (x,t)) = Var ((x, 0), t)
@@ -603,7 +619,9 @@ fun pretty_criterion ctxt (b, c) =
         [Syntax.pretty_term ctxt (Term.show_dummy_patterns pat)])
   end;
 
-fun pretty_theorems ctxt opt_lim rem_dups spec =
+datatype query = Criterion of (bool*string Find_Theorems.criterion) list | Item of (int*string list)
+
+fun pretty_theorems ctxt opt_lim rem_dups raw_spec =
 let
   fun pretty_ref ctxt thmref =
     let
@@ -611,20 +629,47 @@ let
         (case thmref of
           Facts.Named ((name, _), sel) => (name, sel)
         | Facts.Fact _ => raise Fail "Illegal literal fact");
+      (* TODO: This only works if the theorem is referred to by a proper key as name,
+               which might not be the case for abbreviations (like CP). *)
+      val item = case AOT_get_item_number (Binding.name_of (Binding.qualified_name name)) of SOME str =>
+        [Pretty.str ("("^str^")"), Pretty.str ":", Pretty.brk 1] | _ => []
     in
-      [Pretty.marks_str (#1 (Proof_Context.markup_extern_fact ctxt name), name),
+      item @ [Pretty.marks_str (#1 (Proof_Context.markup_extern_fact ctxt name), name),
         Pretty.str (Facts.string_of_selection sel), Pretty.str ":", Pretty.brk 1]
     end;
+  fun tailToStr delim tail = (fold (fn field => fn str => str^delim^field) tail "")
+  fun pretty_item (id, sub) = Pretty.str (
+    "item: "^quote (Int.toString id^tailToStr "." sub)^
+    " (name: "^quote ((the (AOT_name_of_item id))^tailToStr ":" sub)^")")
   fun pretty_thm ctxt (thmref, thm) =
-    Pretty.block (pretty_ref ctxt thmref @ [Thm.pretty_thm ctxt thm]);
-  val criteria = (map (apsnd (parseCriterion ctxt)) spec)
-  val (opt_found, theorems) = Find_Theorems.find_theorems ctxt NONE opt_lim rem_dups criteria
+    Pretty.block (pretty_ref ctxt thmref @ [Thm.pretty_thm ctxt thm])
+  val (spec, prefix) = (case raw_spec of Item (item, tail) =>
+      (case AOT_name_of_item item of SOME name =>
+          let val fullName = name^tailToStr ":" tail
+          in ([(true, Find_Theorems.Name fullName)], SOME fullName) end
+          | _ => raise Fail "Unknown PLM item number.")
+      | Criterion spec => (spec, NONE))
+  val criteria = map (apsnd (parseCriterion ctxt)) spec
+  val (opt_found, _) = Find_Theorems.find_theorems ctxt NONE (SOME 0) rem_dups criteria
+  val (_, theorems) = Find_Theorems.find_theorems ctxt NONE opt_found rem_dups criteria
+  val lim = the_default (Options.default_int \<^system_option>\<open>find_theorems_limit\<close>) opt_lim;
+  val theorems = filter (fn (_,thm) => AOT_Theorems.member ctxt thm) theorems
+  val theorems = case prefix of SOME prefix =>
+    filter (fn (Facts.Named ((name, _), _), _) =>
+      let val unqualified = (Binding.name_of (Binding.qualified_name name))
+      in
+      String.isPrefix prefix unqualified
+      andalso (String.size unqualified <= String.size prefix orelse
+        let val delim = String.sub (unqualified, String.size prefix) in delim = #":" orelse delim = #"[" end)
+      end
+      | _ => false) theorems
+    | _ => theorems
+  val found = length theorems
+  val theorems = drop (Int.max (found - lim, 0)) theorems
   val returned = length theorems
     val tally_msg =
-      (case opt_found of
-        NONE => "displaying " ^ string_of_int returned ^ " theorem(s)"
-      | SOME found =>
-          "found " ^ string_of_int found ^ " theorem(s)" ^
+      (if found <= lim then "displaying " ^ string_of_int returned ^ " theorem(s)"
+      else "found " ^ string_of_int found ^ " theorem(s)" ^
             (if returned < found
              then " (" ^ string_of_int returned ^ " displayed)"
              else ""));
@@ -632,7 +677,8 @@ let
   val pretty = Pretty.block
         (Pretty.fbreaks
           (Pretty.mark position_markup (Pretty.keyword1 "AOT_find_theorems") ::
-            map (pretty_criterion ctxt) criteria)) ::
+            ((case raw_spec of Item (id, sub) =>
+              [pretty_item (id, sub)] | _ => map (pretty_criterion ctxt) criteria)))) ::
     Pretty.str "" ::
     (if null theorems then [Pretty.str "found nothing"]
      else
@@ -648,15 +694,25 @@ val options =
       Parse.!!! (Scan.option Parse.nat --
         Scan.optional (Parse.reserved "with_dups" >> K false) true --| Parse.$$$ ")"))
     (NONE, true);
+
+val item_parser = (Parse.nat >> (fn n => (n,[]))  || (Parse.string >> (
+  fn str => let
+    val fields = String.fields (equal #".") str
+    val n = case (Int.fromString (hd fields)) of (SOME n) => n | _ => 0
+    in (n, tl fields) end )))
+
+val query_parser = ((Parse.reserved "item" |-- Parse.!!! (Parse.$$$ ":" |-- item_parser) >> Item) ||
+(Find_Theorems.query_parser >> Criterion))
+fun find_theorems ((opt_lim, rem_dups), spec) st =
+   (Pretty.writeln
+          (pretty_theorems (AOT_ProofData.put (SOME (Var (("ws", 0), @{typ w})))
+                            (Proof.context_of (Find_Theorems.proof_state st)))
+                           opt_lim rem_dups spec))
 in
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_find_theorems\<close>
     "find theorems meeting specified criteria"
-    (options -- Find_Theorems.query_parser >> (fn ((opt_lim, rem_dups), spec) =>
-      Toplevel.keep (fn st =>
-        Pretty.writeln
-          (pretty_theorems (AOT_ProofData.put (SOME (Var (("ws", 0), @{typ w})))
-                            (Proof.context_of (Find_Theorems.proof_state st)))
-                           opt_lim rem_dups spec))));
+    (options -- query_parser >> (fn query =>
+      Toplevel.keep (fn st => find_theorems query st)));
 
 end
