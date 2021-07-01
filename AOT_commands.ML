@@ -1,3 +1,4 @@
+(* This file contains modified parts of the Isabelle/ML sources. See COPYRIGHT_Isabelle. *)
 fun AOT_item_by_name name = Option.map fst (List.find (fn (_,n) => n = name) AOT_items)
 fun AOT_name_of_item id = Option.map snd (List.find (fn (i,_) => id = i) AOT_items)
 
