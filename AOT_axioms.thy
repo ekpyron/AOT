@@ -7,14 +7,14 @@ begin
 section\<open>Axioms of PLM\<close>
 
 (* To enable meta syntax: *)
-interpretation AOT_meta_syntax.
-(* To disable meta syntax: *)
+(* interpretation AOT_meta_syntax. *)
+(* To disable meta syntax: TODO: enabling and disabling seems to adversely affect AOT_syntax (binders) *)
 (* interpretation AOT_no_meta_syntax. *)
 
 (* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-(* unbundle AOT_syntax *)
+unbundle AOT_syntax
 (* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_no_syntax
+(* unbundle AOT_no_syntax *)
 
 (* conventions - these are already defined, resp. valid, so just note them here again *)
 notepad

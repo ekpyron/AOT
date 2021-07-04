@@ -504,14 +504,68 @@ parse_ast_translation\<open>
 ]
 \<close>
 
+ML\<open>
+datatype PrintVarKind = SingleVariable of string | Ellipses of string*string | Verbatim of string
+
+fun printVarKind name = let
+fun splitFormulaParts x = x |> Symbol.explode |>
+   Scan.finite Symbol.stopper (Scan.repeat (
+  (Scan.one (Symbol.is_letter) --
+  (((Scan.repeat ($$ "\<^sub>" -- (Scan.one (Symbol.is_char)) >> (fn (x,y) => [x,y])) >> List.concat )
+  -- (Scan.repeat ($$ "'"))) >> (fn (x,y) => x@y)))))
+val parts = splitFormulaParts (Name.clean name)
+val isSingleVariableName = case parts of
+        ([_],[]) => true | _ => false
+(* TODO: ellipses handling is very fragile *)
+val (isEllipses,s,e) = case parts of
+        ([(n,s),(m,e)],[]) => (n = m, n^String.concat s, m^String.concat e) | _ => (false,"","")
+in
+if isSingleVariableName then SingleVariable name else
+if isEllipses then Ellipses (s,e)
+else Verbatim name
+end
+\<close>
+
+ML\<open>
+fun AOT_preserve_binder_abs_tr' constName syntaxConst (ellipseConst,includesSyntaxConst) = 
+(constName, fn ctxt => fn terms =>
+let
+val term_opt = case terms of Abs (name, T, trm)::trms => 
+let
+val trm = case printVarKind name of SingleVariable name =>
+    snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+  | Ellipses (s,e) =>
+let
+ (* TODO: ellipses that are fix'ed loose their markup - try to circumvent *)
+val body = Term.subst_bound (Const (\<^syntax_const>\<open>_AOT_free_var_ellipse\<close>, dummyT) $ Syntax_Trans.mark_bound_body (s,dummyT) $ Syntax_Trans.mark_bound_body (e,dummyT),
+trm)
+in
+  if includesSyntaxConst then
+    list_comb (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
+    Syntax_Trans.mark_bound_abs (e,dummyT) $ body, trms)
+  else
+    list_comb (Syntax.const syntaxConst $ (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
+    Syntax_Trans.mark_bound_abs (e,dummyT)) $ body, trms)
+end
+  | Verbatim _ => (* TODO *)
+    snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+in SOME trm end
+| _ => NONE
+in
+case term_opt of SOME trm => trm | _ =>
+snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+end
+)
+\<close>
+
 print_translation \<open>
 AOT_syntax_print_translations
  [
-  Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close>,
+  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close> (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, true),
   AOT_binder_trans @{theory} @{binding "AOT_forall_binder"} \<^syntax_const>\<open>_AOT_all\<close>,
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_desc\<close> \<^syntax_const>\<open>_AOT_desc\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_desc_binder"} \<^syntax_const>\<open>_AOT_desc\<close>,
-  Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close>,
+  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close> (\<^syntax_const>\<open>_AOT_lambda_arg_ellipse\<close>, false),
   AOT_binder_trans @{theory} @{binding "AOT_lambda_binder"} \<^syntax_const>\<open>_AOT_lambda\<close>
  ]
 \<close> \<comment> \<open>to avoid eta-contraction\<close>
@@ -617,7 +671,7 @@ syntax
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists") [Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]])]\<close>
 print_translation\<open>AOT_syntax_print_translations
-  [Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>_AOT_exists\<close>,
+  [AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>_AOT_exists\<close> (\<^syntax_const>\<open>_AOT_exists_ellipse\<close>,true),
   AOT_binder_trans @{theory} @{binding "AOT_exists_binder"} \<^syntax_const>\<open>_AOT_exists\<close>]
 \<close>
 
@@ -642,8 +696,6 @@ readThisRHS trm
 end
 )]
 \<close>
-
-
 
 (* TODO: experimental printing mode: *)
 
@@ -688,17 +740,13 @@ let
 fun handleTermOfVar x kind name = (
 let
 val _ = case kind of "_free" => () | "_var" => () | "_bound" => () | _ => raise Match
-fun splitFormulaParts x = x |> Symbol.explode |>
-   Scan.finite Symbol.stopper (Scan.repeat (
-  (Scan.one (Symbol.is_letter) --
-  (((Scan.repeat ($$ "\<^sub>" -- (Scan.one (Symbol.is_digit)) >> (fn (x,y) => [x,y])) >> List.concat )
-  -- (Scan.repeat ($$ "'"))) >> (fn (x,y) => x@y)))))
-val isSingleVariableName = case (splitFormulaParts (Name.clean name)) of
-        ([v],[]) => true | _ => false
 in
-  if isSingleVariableName
-        then Ast.Appl [Ast.Constant "_constrain", Ast.Appl [Ast.Constant kind, Ast.Variable name], Ast.Variable name]
-        else Ast.mk_appl (Ast.Constant "_AOT_quoted") [Ast.mk_appl (Ast.Constant "_AOT_term_of_var") [x]]
+  case printVarKind name of (SingleVariable name) => Ast.Appl [Ast.Constant kind, Ast.Variable name]
+    | (Ellipses (s, e)) =>  Ast.Appl [Ast.Constant "_AOT_free_var_ellipse",
+    Ast.Appl [Ast.Constant kind, Ast.Variable s],
+    Ast.Appl [Ast.Constant kind, Ast.Variable e]
+      ]
+  | Verbatim name => Ast.mk_appl (Ast.Constant "_AOT_quoted") [Ast.mk_appl (Ast.Constant "_AOT_term_of_var") [x]]
 end
 )
 in
