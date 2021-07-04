@@ -4,6 +4,7 @@ theory Thesis
 begin
 (*>*)
 
+
 chapter\<open>Introduction\<close>
 
 section\<open>Motivation\<close>
@@ -32,7 +33,7 @@ reasoning systems that are on par with the existing tools that are available for
 grounded in set theory or traditional higher-order type theory.
 
 The following represents an attempt at overcoming this issue. We utilize the concept of a
-\emph{shallow semantic embedding} with abstraction layers (TODO: cite) to transfer the merits of
+@{emph \<open>shallow semantic embedding\<close>} with abstraction layers (TODO: cite) to transfer the merits of
 the sophisticated interactive and automated reasoning system Isabelle/HOL to a fundamentally
 different foundational system, namely to Abstract Object Theory (TODO: cite).
 
@@ -67,7 +68,7 @@ about Platonic Forms that was left as an exercise.
 Other work with Prover9 that does not target AOT includes the simplification of the reconstruction
 of Anselm's ontological argument (in \cite{OppenheimerZalta2011}, Oppenheimer and Zalta show that
 only one of the three premises they used in \cite{OppenheimerZalta1991} is sufficient) or the
-reconstruction of theorems in Spinoza's \emph{Ethics} in \cite{SpinozaProver9}.
+reconstruction of theorems in Spinoza's @{emph \<open>Ethics\<close>} in \cite{SpinozaProver9}.
 
 However, there are inherent limitations to the approach of analyzing higher-order theories like AOT
 with the help of first-order provers. While it is possible to reason about the first order truth
@@ -85,11 +86,11 @@ text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
 allows for a different approach, namely the analysis of arguments and theories directly in higher-order
 logic by constructing Shallow Semantic Embeddings (SSEs) \cite{UniversalReasoning}. In contrast to
-a \emph{deep semantic embedding} which defines the syntax of a target system using an inductive data
+a @{emph \<open>deep semantic embedding\<close>} which defines the syntax of a target system using an inductive data
 structure and evaluates statements semantically by recursively traversing this data structure,
-a \emph{shallow} semantic embedding instead provides a syntactic translation from the target logic
+a @{emph \<open>shallow\<close>} semantic embedding instead provides a syntactic translation from the target logic
 to the meta-logic. This is done by reusing as much of the infrastructure of the meta-logic as possible,
-while \emph{defining} the syntactic elements of the target logic that are not part of
+while @{emph \<open>defining\<close>} the syntactic elements of the target logic that are not part of
 the meta-logic by means of a representation of their semantics. Since sets have a natural
 representation in higher-order logic, this approach works well for any logical system that
 has a semantics defined in terms of sets. The approach of shallow semantic embeddings is discussed in
@@ -125,7 +126,7 @@ basis for previous work using SSE as mentioned above. While the so-called Aczel 
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
 of statements of the at the time most recent formulation of AOT in Principia Logico-Metaphysica (PLM) (TODO: cite).
-Furthermore, we introduced the new concept of \emph{abstraction layers}. An abstraction layer consists
+Furthermore, we introduced the new concept of @{emph \<open>abstraction layers\<close>}. An abstraction layer consists
 of a derivation of the axioms and deduction rules of a target system from a given semantics that is
 then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
 reasoning system is prevented from using the semantics for proofs, but is instead configured to solely
@@ -170,10 +171,10 @@ text\<open>
 
 In computer science, deep and shallow embeddings have been a traditional means to implement domain-specific
 languages by embedding them into general-purpose host languages (see for example \cite{DomainSpecificLanguages}).
-A simple example is a language of \emph{expressions} that can be either integer constants, resp. literals,
+A simple example is a language of @{emph \<open>expressions\<close>} that can be either integer constants, resp. literals,
 or the addition of two other expressions.
 If we consider Isabelle/HOL as the host language in this process, the following would constitute a
-\emph{deep} embedding of this language:
+@{emph \<open>deep\<close>} embedding of this language:
 \<close>
 
 (*<*)
@@ -197,13 +198,13 @@ end
 text\<open>
 The deep embedding consists of a (usually recursive) algebraic datatype that captures the syntax of
 the language to be embedded. This syntax is then given a semantics by means of an evaluation function
-that traverses this algebraic datatype.\footnote{In the setting of logical theories this evaluation
+that traverses this algebraic datatype.@{footnote \<open>In the setting of logical theories this evaluation
 function would usually depend on interpretations and assignment functions of a model. Since the simple
 language of expression used as example here neither involves constants nor variables, however, this is not
-necessary. TODO: rethink.}
+necessary. TODO: rethink.\<close>}
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
 by its semantics. In our example, the semantic domain of expressions is the integers. On this domain,
-the operations are then \emph{defined} directly by means of their semantics:
+the operations are then @{emph \<open>defined\<close>} directly by means of their semantics:
 \<close>
 
 (*<*)
@@ -229,27 +230,27 @@ lemma Deep_Shallow_Addition: \<open>Deep.eval (Deep.Addition x y) = Shallow.Addi
 (*>*)
 
 text\<open>
-Note that in the shallow embedding, the domain of \emph{expression}s is shared with the
+Note that in the shallow embedding, the domain of @{typ \<open>Shallow.expression\<close>}s is shared with the
 meta-language by directly representing expressions in the type to which they evaluate semantically
-in the deep embedding, namely \emph{int} in the example.
+in the deep embedding, namely @{typ \<open>int\<close>} in the example.
 
 There is a natural correspondence between the deep and shallow representations of this
 language. In particular @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
-@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold\footnote{TODO: Explain
-qualified names; mention that this gets more complex when involving interpretation and assignment functions.}.
+@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold@{footnote \<open>TODO: Explain
+qualified names; mention that this gets more complex when involving interpretation and assignment functions.\<close>}.
 So the semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representation. For example, in the
-deep embedding adding \emph{x} to \emph{y} results in an expression that is different from adding
-\emph{y} to \emph{x} for distinct \emph{x} and \emph{y}, even though they are equivalent under evaluation:
+deep embedding adding @{term x} to @{term y} results in an expression that is different from adding
+ @{term y} to  @{term x} for distinct  @{term x} and  @{term y}, even though they are equivalent under evaluation:
 
-@{thm[show_question_marks = false, names_short = false, display = true] Deep.CommutativeAdditionNonIdentity}
-@{thm[show_question_marks = false, names_short = false, display = true] Deep.CommutativeAdditionEquivalent}
+@{thm[show_question_marks = false, names_short = false, display = true]
+  Deep.CommutativeAdditionNonIdentity Deep.CommutativeAdditionEquivalent}
 
 In contrast, commuted additions are identical in the shallow embedding:
 
 @{thm[show_question_marks = false, names_short = false, display = true] Shallow.CommutativeAdditionIdentity}
 
-In fact, the shallow embedding can be thought of as a \emph{quotient} of the deep embedding under
+In fact, the shallow embedding can be thought of as a @{emph \<open>quotient\<close>} of the deep embedding under
 semantic evaluation. TODO: something formal about this? Or rather instead refer to the section
 about models and embeddings?
 
@@ -262,7 +263,7 @@ section\<open>SSEs as Universal Reasoning Tools\<close>
 
 text\<open>
 
-In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using \emph{Shallow Semantic Embeddings} (SSEs)
+In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using @{emph \<open>Shallow Semantic Embeddings\<close>} (SSEs)
 in classical higher-order logics as a means for universal reasoning. TODO: paraphrase the idea a bit.
 High-level concept and motivation here versus more technical details in the following sections.
 
@@ -287,11 +288,11 @@ begin
 text\<open>
 A natural semantic basis for SSEs of any modal logic is its Kripke-semantics (TODO cite?).
 In general, a Kripke frame consists of a set of possible worlds and a binary relation on these worlds
-called \emph{accessibility relation}. For S5 there are two versions of semantics, one in which the
+called @{emph \<open>accessibility relation\<close>}. For S5 there are two versions of semantics, one in which the
 accessibility relation is an equivalence relation and one in which there is no accessibility relation at
 all (TODO: cite M. Fitting "A Simple propositional S5 Tableau System"). For our purpose the simpler
-model suffices\footnote{We will later show that this is the only choice for the particular modal
-logic of Abstract Object Theory due to its additional actuality operator. TODO: actually do that.}.
+model suffices.@{footnote \<open>We will later show that this is the only choice for the particular modal
+logic of Abstract Object Theory due to its additional actuality operator. TODO: actually do that.\<close>}
 
 For possible worlds we can introduce a primitive type in Isabelle/HOL.
 \<close>
@@ -300,7 +301,7 @@ typedecl w
 
 text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
-usually read as a formula \emph{being satisfied at} a possible world. So the semantic domain of
+usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
 propositions is boolean-valued functions acting on (or, equivalently, sets of) possible worlds.
 In an SSE we use the semantic domains as type for the formulas themselves, so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
@@ -311,10 +312,10 @@ world, yielding @{term True}, if the proposition is true at that world or @{term
 type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
 
 text\<open>
-A proposition is \emph{valid} in case it is satisfied in all worlds.\footnote{The specification
-in parentheses after the type @{typ \<open>\<o> \<Rightarrow> bool\<close>} is \emph{mixfix notation} used to introduce
+A proposition is @{emph \<open>valid\<close>} in case it is satisfied in all worlds.@{footnote \<open>The specification
+in parentheses after the type @{typ \<open>\<o> \<Rightarrow> bool\<close>} is @{emph \<open>mixfix notation\<close>} used to introduce
 the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid}. The ability to
-introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.}
+introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.\<close>}
 \<close>
 
 definition valid :: \<open>\<o> \<Rightarrow> bool\<close> (\<open>\<Turnstile> _\<close> 100) where
@@ -332,8 +333,8 @@ definition conj :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (in
 definition disj :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<or>\<close> 130) where
   \<open>p \<^bold>\<or> q \<equiv> \<lambda> w . p w \<or> q w\<close>
 
-text\<open>The additional modal operators, i.e. the box operator for \emph{necessity} and the
-     diamond operator for \emph{possibility}, can be further defined as:\<close>
+text\<open>The additional modal operators, i.e. the box operator for @{emph \<open>necessity\<close>} and the
+     diamond operator for @{emph \<open>possibility\<close>}, can be further defined as:\<close>
 
 definition box :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<box>_\<close> [150] 150) where
   \<open>\<^bold>\<box>p \<equiv> \<lambda> w . \<forall> v . p v\<close>
@@ -380,8 +381,8 @@ lemma \<open>\<Turnstile> (\<^bold>\<exists>x . \<^bold>\<diamond>\<phi> x) \<^b
 text\<open>
 However, note that the automatic proofs again unfold the semantic definitions. We have shown that
 the Barcan formulas are valid in the constructed embedding, but from the proofs we cannot tell
-which axioms are required for proving them.\footnote{As a matter of fact we did not even state any
-axioms governing implications or quantifiers in the embedded logic.}
+which axioms are required for proving them.@{footnote \<open>As a matter of fact we did not even state any
+axioms governing implications or quantifiers in the embedded logic.\<close>}
 
 Depending on the application, it can be enough to be able to tell if a theorem is semantically
 valid or if a statement semantically follows from a set of assumptions. However, for the purpose
@@ -391,7 +392,7 @@ not the primary concern, but rather derivability from the formal system.
 Fortunately, it is possible to restrict Isabelle's automated reasoning tools like
 @{command sledgehammer}, s.t. they may not unfold semantic definitions. If this is done
 at larger scale and in a reliable manner for the purpose of analyzing derivability in
-a given deductive system, we say that we introduce \emph{abstraction layers} to the SSE.
+a given deductive system, we say that we introduce @{emph \<open>abstraction layers\<close>} to the SSE.
 \<close>
 
 (*<*)
@@ -414,8 +415,8 @@ TODO: more high-level description before technical details?
 
 The main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite again?).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
-the current proof goal. To that end, simply speaking\footnote{For the full and precise details of the process
-refer to TODO: cite.}, it collects all theorems derived in the current @{command theory} context
+the current proof goal. To that end, simply speaking@{footnote \<open>For the full and precise details of the process
+refer to TODO: cite.\<close>}, it collects all theorems derived in the current @{command theory} context
 together with all local assumptions, processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
@@ -448,7 +449,7 @@ or the @{command lift_definition}s (TODO: cite) introduce several theorems impli
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
 TODO: cite sledgehammer user guide section 6.1.
 
-On the other hand, it is not possible to simply exclude \emph{all} theorems that were defined
+On the other hand, it is not possible to simply exclude @{emph \<open>all\<close>} theorems that were defined
 up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
 - among others - the construction of classical higher-order logic from Isabelle's more basic @{theory Pure}
 logic. This includes theorems @{command sledgehammer} relies on and disbarring them will leave it
@@ -504,12 +505,14 @@ specification (\<o>\<^sub>1_conj) \<comment> \<open>We specify our conjunction b
   \<o>\<^sub>1_conjE2: \<open>valid_\<o>\<^sub>1 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>1 q\<close>
   \<o>\<^sub>1_conjI: \<open>valid_\<o>\<^sub>1 p \<Longrightarrow> valid_\<o>\<^sub>1 q \<Longrightarrow> valid_\<o>\<^sub>1 (p \<^bold>\<and> q)\<close>
 text\<open>We need to prove that there is a term satisfying the above specification. The natural choice is
-     the lifted conjunction on the booleans.\<close>
+     the lifted conjunction on the booleans.@{footnote \<open>For any @{command typedef}, Isabelle intoduces
+     constants prefixed with @{text Abs_} and @{text Rep_}, mapping the representation type to the
+     defined abstract type and vice-versa.\<close>}\<close>
   by (rule exI[where x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close>])
      (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
 
 text\<open>However, even though the identity of commuted conunctions not part of the @{command specification},
-     it is \emph{still} derivable.\<close>
+     it is @{emph \<open>still\<close>} derivable.\<close>
 lemma \<open>p \<^bold>\<and> q = q \<^bold>\<and> p\<close>
   by (metis Rep_\<o>\<^sub>1_inject \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 valid_\<o>\<^sub>1_def)
 
@@ -517,12 +520,13 @@ lemma \<open>p \<^bold>\<and> q = q \<^bold>\<and> p\<close>
 no_notation \<o>\<^sub>1_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 (*>*)
 
-text\<open>The reason is that there is simply only one choice for a conjunction operator on the booleans
+text\<open>The reason is that there is only one choice for a conjunction operator on the booleans
 and this choice is commutative.
 
-A way around this kind of issue is not to use booleans as underlying type for our propositions,
-but to introduce an opaque \emph{intensional type} that merely has a boolean \emph{extension}.
-This can, for example, be done as follows:
+A way around this  issue is to not only introduce opaque constants by @{command specification}, but
+to also take care that the @{emph \<open>type\<close>} of these constants can actually deliver the desired degree
+of intentionality. For example, we introduce an opaque @{emph \<open>intensional type\<close>} for propositons
+ that merely has a boolean @{emph \<open>extension\<close>} as follows:
 \<close>
 
 typedecl \<o>\<^sub>2 \<comment> \<open>Introduce an abstract type for propositions.\<close>
@@ -547,7 +551,7 @@ specification (\<o>\<^sub>2_conj) \<comment> \<open>We specify our conjunction b
   by (rule exI[where x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close>])
      (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
 
-text\<open>Now as a consequence of our specification, our conjunction is still commutative \emph{under validity}:\<close>
+text\<open>Now as a consequence of our specification, our conjunction is still commutative @{emph \<open>under validity\<close>}:\<close>
 
 lemma \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) = valid_\<o>\<^sub>2 (q \<^bold>\<and> p)\<close>
 text\<open>Note that the proof (found by @{command sledgehammer}) now solely relies on the properties of
@@ -555,20 +559,21 @@ text\<open>Note that the proof (found by @{command sledgehammer}) now solely rel
   using \<o>\<^sub>2_conjE1 \<o>\<^sub>2_conjE2 \<o>\<^sub>2_conjI by blast
 
 text\<open>However, commuted conjunctions are no longer identical. The model-finding tool @{command nitpick} (TODO: cite)
-     can provide a counter-example by constructing a model for @{typ \<o>\<^sub>2} that has more than two members.\<close>
+     can provide a counterexample by constructing a model for @{typ \<o>\<^sub>2} that has more than two members.\<close>
 
 lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
   nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q r, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
-text\<open>The model chosen by nitpick\footnote{The precise model may vary for different versions of Isabelle, resp. nitpick.}
-     has a cardinality of 3 for type @{typ \<o>\<^sub>2}. We choose @{text p}, @{text q} and @{text r} as names for these elements.
-     @{const \<o>\<^sub>2_ext} is chosen as @{text \<open>(p := True, q := False, r := False)\<close>} and
+text\<open>The model chosen by @{command nitpick}@{footnote \<open>The precise model may vary for different versions of Isabelle.\<close>}
+     chooses a three-element set for type @{typ \<o>\<^sub>2}. We chose @{text p}, @{text q} and @{text r} as names for these elements.
+     @{const \<o>\<^sub>2_ext} is modelled as @{text \<open>(p := True, q := False, r := False)\<close>} and
      @{const \<o>\<^sub>2_conj} as @{text \<open>((p, p) := p, (p, q) := q, (p, r) := r, (q, p) := r, (q, q) := q, (q, r) := r, (r, p) := r, (r, q) := r,
      (r, r) := r)\<close>}.
 
-     This is indeed one of the minimal models for conjunctions without identity of commutations.
-     On the other hand, @{command nitpick} can also \emph{satisfy} the same statement by providing
+     This is indeed one of the minimal models for conjunctions that are classical under validity, but
+     are not identical under commutation.
+     On the other hand, @{command nitpick} can also @{emph \<open>satisfy\<close>} the same statement by providing
      a model with cardinality 2 for type @{type \<o>\<^sub>2}:
 \<close>
 
@@ -581,11 +586,11 @@ text\<open>Note that for the above it is sufficient to find a concrete choice fo
      (in this case the same) model satisfying the identity for all propositions,
      respectively - equivalently - refute the identity failing to hold.\<close>
 
-lemma \<open>\<forall>p q . (p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
+lemma \<open>\<forall>p q . (p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close> \<comment> \<open>Satisfy the identity for all @{term p} and @{term q}.\<close>
   nitpick[satisfy, user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
-lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close>
+lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close> \<comment> \<open>Refute the non-identity for any @{term p} and @{term q}.\<close>
   nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
@@ -635,18 +640,18 @@ embedded theory, but has limited expertise in the particularities of the meta-lo
 in which the theory is embedded, can still use the embedding to reason in the target system
 without a steep learning curve.
 
-Isabelle's \emph{Isar} (\emph{Intelligible semi-automated reasoning}) language itself is, as the
+Isabelle's @{emph \<open>Isar\<close>} (@{emph \<open>Intelligible semi-automated reasoning\<close>}) language itself is, as the
 name suggests, specifically tailored towards being readable (TODO: cite isar-ref).
-Isar makes up the \emph{outer syntax} of an Isabelle theory file and consists of commands that
+Isar makes up the @{emph \<open>outer syntax\<close>} of an Isabelle theory file and consists of commands that
 specify theorems and structured proofs acting on Isabelle's system of terms and types, which are
-formulated in \emph{inner syntax}.
-\emph{Inner syntax} is highly customizable. In the examples in the previous sections we already
-made use of the ability to define new (bold) operators using \emph{mixfix} notation (TODO cite).
+formulated in @{emph \<open>inner syntax\<close>}.
+@{emph \<open>Inner syntax\<close>} is highly customizable. In the examples in the previous sections we already
+made use of the ability to define new (bold) operators using @{emph \<open>mixfix\<close>} notation (TODO cite).
 However, we only used the mechanism to provide symbols to be used inside the grammar tree of
 Isabelle/HOL's own term structure.
 In general Isabelle's inner syntax is described by a context-free priority grammar.
-It consists of a set of \emph{terminal symbols}, an extensible set of
-\emph{non-terminal symbols} and a set of \emph{productions} (TODO cite: isar-ref 8.4).
+It consists of a set of @{emph \<open>terminal symbols\<close>}, an extensible set of
+@{emph \<open>non-terminal symbols\<close>} and a set of @{emph \<open>productions\<close>} (TODO cite: isar-ref 8.4).
 For the purpose of embedding the syntax of a target theory during the construction of SSEs, it
 stands to reason to use the defined validity as root for the grammar subtree of the embedded
 language.
@@ -668,7 +673,7 @@ syntax valid_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> bool\<close> 
 
 text\<open>Furthermore we need to specify how propositions can be produced from terminals in the grammar.
 We want to use simple identifiers to refer to proposition variables. To that end we introduce a
-\emph{copy-production} rule (a rule that is not tied to a constant). The terminal
+@{emph \<open>copy-production\<close>} rule (a rule that is not tied to a constant). The terminal
 @{typ id_position} is used for identifiers with additional markup information (TODO: reference and cite PIDE markup).
 \<close>
 syntax "" :: \<open>id_position \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>_\<close>)
@@ -728,10 +733,10 @@ text\<open>Note that in the above the left-most implication is the implication o
 while the other logical connectives are the ones of the meta-logic (i.e. of HOL).
 
 While the mechanisms described above are sufficient to introduce an accurate representation
-of the syntax of most target theories\footnote{Note that \emph{Abstract Object Theory} does not fall into this category
+of the syntax of most target theories@{footnote \<open>Note that @{emph \<open>Abstract Object Theory\<close>} does not fall into this category
 and requires additional and more complex means to arrive at a good approximation of its syntax as
-described in (TODO: refer to later section.).} that are compatible with the lexical syntax of
-Isabelle/Pure, \emph{reasoning} in the logic of the target theory
+described in (TODO: refer to later section.).\<close>} that are compatible with the lexical syntax of
+Isabelle/Pure, @{emph \<open>reasoning\<close>} in the logic of the target theory
 entails additional challenges (TODO: refer to last section - in particular reasoning relative to
 a fixed but arbitrary possible world and the need to mention this world syntactically).
 
@@ -744,62 +749,87 @@ chapter\<open>Abstract Object Theory\<close>
 
 section\<open>Overview\<close>
 
+(*<*)
+AOT_theorem abs_eq: \<open>(A!x & A!y) \<rightarrow> (x = y \<equiv> \<box>\<forall>F(x[F] \<equiv> y[F]))\<close>
+proof(safe intro!: "\<rightarrow>I" "\<equiv>I")
+  AOT_assume \<open>([A!]x & [A!]y)\<close> and x_eq_y: \<open>x = y\<close>
+  AOT_have 1: \<open>\<box>\<forall>F(x[F] \<equiv> x[F])\<close> by (safe intro!: RN GEN "\<equiv>I" "\<rightarrow>I")
+  AOT_show \<open>\<box>\<forall>F(x[F] \<equiv> y[F])\<close>
+    using "rule=E"[rotated, OF x_eq_y]
+    using 1 by fast
+next
+  AOT_assume 0: \<open>([A!]x & [A!]y)\<close>
+  AOT_assume \<open>\<box>\<forall>F(x[F] \<equiv> y[F])\<close>
+  AOT_hence \<open>\<forall>F(x[F] \<equiv> y[F])\<close> using "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>x = y\<close> using "ab-obey:1"[THEN "\<rightarrow>E", OF 0] "\<rightarrow>E" by blast
+qed
+AOT_theorem ord_eq: \<open>(O!x & O!y) \<rightarrow> (x = y \<equiv> \<box>\<forall>F([F]x \<equiv> [F]y))\<close>
+proof(safe intro!: "\<rightarrow>I" "\<equiv>I")
+  AOT_assume \<open>([O!]x & [O!]y)\<close> and x_eq_y: \<open>x = y\<close>
+  AOT_have 1: \<open>\<box>\<forall>F([F]x \<equiv> [F]x)\<close> by (safe intro!: RN GEN "\<equiv>I" "\<rightarrow>I")
+  AOT_show \<open>\<box>\<forall>F([F]x \<equiv> [F]y)\<close>
+    using "rule=E"[rotated, OF x_eq_y]
+    using 1 by fast
+next
+  AOT_assume 0: \<open>([O!]x & [O!]y)\<close>
+  AOT_assume \<open>\<box>\<forall>F([F]x \<equiv> [F]y)\<close>
+  AOT_hence \<open>\<forall>F([F]x \<equiv> [F]y)\<close> using "qml:2"[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>x = y\<close> using "ord=E:2"[THEN "\<rightarrow>E", OF 0] "\<rightarrow>E" by blast
+qed
+thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]
+(*>*)
+
 text\<open>
 
-Abstract Object Theory (AOT or \emph{object theory}) is a meta-physical theory inspired by ideas of
+Abstract Object Theory (AOT or @{emph \<open>object theory\<close>}) is a meta-physical theory inspired by ideas of
 Ernst Mally and formalized by Edward Zalta. 
-While the theory has been evolving for decades (see TODO: cite), its most recent canonical
-presentation is given in \emph{Principia Logico-Metaphysica} (PLM), which is continuously
-developed further and the most recent version of which can be accessed as online monograph (TODO cite).
+While the theory has been evolving for several decades (see TODO: cite), its most recent canonical
+presentation is given in @{emph \<open>Principia Logico-Metaphysica\<close>} (PLM), which is continuously
+developed further and the most recent version of which can be accessed as online monograph (TODO cite PLM).
 
 TODO: the following is pretty much the section of the Review of Symbolic Logic Paper.
 
-AOT draws two fundamental distinctions, one between \emph{abstract} and
-\emph{ordinary} objects, and one between two modes of predication, namely,
-classical \emph{exemplification}  ($[F^1]x$, or more generally, $[F^n]x_1\ldots x_n$) and
-\emph{encoding} ($x[F^1]$).\footnote{Note that we use additional square brackets around any property term.
-This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
+AOT draws two fundamental distinctions, one between @{emph \<open>abstract\<close>} and
+@{emph \<open>ordinary\<close>} objects, and one between two modes of predication, namely,
+classical @{emph \<open>exemplification\<close>}  @{term "\<guillemotleft>[F]x\<guillemotright>"}, or more generally, @{term "\<guillemotleft>[R]x\<^sub>1...x\<^sub>n\<guillemotright>"} and
+@{emph \<open>encoding\<close>} @{term "\<guillemotleft>x[F]\<guillemotright>"}.@{footnote \<open>Note that we use additional square brackets around property terms
+in exemplification or encoding formulas. This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
 In AOT's usual notation these square brackets would be omitted, i.e. exemplification would be written as
-$F^nx_1\ldots x_n$ and encoding as $xF^1$.} The variables $x,y,z,\ldots$ range over both ordinary and
+$Fx_1\ldots x_n$ and encoding as $xF$.\<close>} The variables @{term x}, @{term y}, @{term z}, @{text \<open>\<dots>\<close>} range over both ordinary and
 abstract objects and we can distinguish claims about these two kinds of objects by using the exemplification 
-predications $[O!]x$ or $[A!]x$ to assert, respectively, that $x$ exemplifies \emph{being ordinary} or
-$x$ exemplifies \emph{being abstract}. Whereas ordinary objects are characterized only by the
+predications @{term "\<guillemotleft>[O!]x\<guillemotright>"} or @{term "\<guillemotleft>[A!]x\<guillemotright>"} to assert, respectively, that @{term x} exemplifies @{emph \<open>being ordinary\<close>} or
+@{term x} exemplifies @{emph \<open>being abstract\<close>}. Whereas ordinary objects are characterized only by the
 properties they exemplify, abstract objects may be characterized by
 both the properties they exemplify and the properties they encode. But
 only the latter play a role in their identity conditions:
-$A!x \:\&\: A!y \to \allowbreak (x\! =\! y \equiv \Box \forall F(xF \equiv yF))$, i.e,
+@{thm abs_eq[of _ "x::\<kappa> AOT_var" "y::\<kappa> AOT_var", print_as_theorem]}, i.e,
 abstract objects are  identical if and only if they necessarily
 encode the same properties. The identity for ordinary objects on the other hand is
-classical: $O!x \:\&\: O!y \to \allowbreak (x\! =\! y \equiv \Box \forall F(Fx \equiv Fy))$, i.e.,
-ordinary objects $x$ and $y$ are identical if and only if they necessarily exemplify the same properties.
-It is axiomatic that ordinary objects necessarily fail to encode properties ($O!x \to \Box \neg \exists FxF)$,
+classical: @{thm ord_eq[of _ "x::\<kappa> AOT_var" "y::\<kappa> AOT_var", print_as_theorem]}, i.e.,
+ordinary objects @{term x} and @{term y} are identical if and only if they necessarily exemplify the same properties.
+It is axiomatic that ordinary objects necessarily fail to encode properties (@{thm nocoder[axiom_inst, of _ x, print_as_theorem]}),
 and so only abstract objects can be the subject of true encoding predications.
 For example, whereas Pinkerton (a real American detective) exemplifies being a detective and
 all his other properties (and doesn't encode any properties), Sherlock Holmes encodes
-\emph{being a detective} (and all the other properties attributed to him in the novels),
-but doesn't exemplify \emph{being a detective}. Holmes, on the other hand, intuitively exemplifies
+@{emph \<open>being a detective\<close>} (and all the other properties attributed to him in the novels),
+but doesn't exemplify @{emph \<open>being a detective\<close>}. Holmes, on the other hand, intuitively exemplifies
 being a fictional character (but doesn't encode this property) and exemplifies any property necessarily
-implied by \emph{being abstract} (e.g., he exemplifies \emph{not having a mass}, \emph{not having a shape}, etc.).
-\footnote{He encodes \emph{having a mass}, \emph{having a shape}, etc., since these 
-are properties attributed to him, at least implicitly, in the story.
-As an abstract object, however, he does \emph{not} exemplify these properties,
-and so exemplifies their negations.}
+implied by @{emph \<open>being abstract\<close>} (e.g., he exemplifies @{emph \<open>not having a mass\<close>},
+@{emph \<open>not having a shape\<close>}, etc.).@{footnote \<open>He encodes @{emph \<open>having a mass\<close>}, @{emph \<open>having a shape\<close>},
+etc., since these  are properties attributed to him, at least implicitly, in the story.
+As an abstract object, however, he does @{emph \<open>not\<close>} exemplify these properties,
+and so exemplifies their negations.\<close>}
 
 The key axiom of AOT is the comprehension principle for abstract
 objects. It asserts, for every expressible condition on properties (i.e.,
 for every expressible set of properties), that there exists
 an abstract object that encodes exactly the properties that satisfy the
-condition; formally:
+condition; formally: @{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem]}
 
-@{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem]}
-
-Test:
-
-\begin{itemize}
-  \item[] $\exists x(A!x \;\&\;\allowbreak \forall F (xF
-\equiv\allowbreak \phi))$,\end{itemize}
-%
-where $\phi$ is any condition on $F$ in which  $x$ doesn't occur free. Therefore, abstract objects can be modeled as elements
+Here @{text "\<phi>{F}"} is the notation we use in the embedding to signify that @{term \<phi>} may contain
+a free occurrence of @{term F} (@{term \<phi>} may not contain a free occurrence of @{term x}, unless we had
+explicitly added @{term x} in curly braces as well).
+Therefore, abstract objects can be modeled as elements
 of the power set of properties: every abstract object uniquely
 corresponds to a specific set of properties.
 
@@ -810,37 +840,26 @@ forms, possible worlds, natural numbers, logically-defined sets, etc.
 
 Another interesting aspect of the theory is its hyperintensionality.
 Relation identity is defined in terms of encoding rather than
-in terms of exemplification. Two properties $F$ and $G$ are stipulated to be identical if they are
-necessarily \emph{encoded} by the same abstract objects (\mbox{$F\! =\! G \equiv \Box \forall x(xF \equiv xG)$}).  However, the theory does not impose
-any restrictions on the properties encoded by a particular abstract
+in terms of exemplification. Two properties @{term F} and @{term G} are stipulated to be identical if they are
+necessarily @{emph \<open>encoded\<close>} by the same abstract objects (@{thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}).
+However, the theory does not impose any restrictions on the properties encoded by a particular abstract
 object. For example, the fact that an abstract object encodes the
-property $[\lambda x\, Fx\; \&\; Gx]$ does not imply that
-it also encodes either the property $F$, or $G$ or even $[\lambda x\, Gx\; \&\; Fx]$ (which, although extensionally equivalent to $[\lambda x\, Fx\; \&\; Gx]$, is a distinct intensional entity).
+property @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [G]x]\<guillemotright>\<close>} does not imply that
+it also encodes either the property @{term F}, or @{term G} or even
+@{term \<open>\<guillemotleft>[\<lambda>x [G]x & [F]x]\<guillemotright>\<close>} (which, although extensionally equivalent to 
+@{term \<open>\<guillemotleft>[\<lambda>x [F]x & [G]x]\<guillemotright>\<close>}, is a distinct intensional entity).
 
 Therefore, without additional axioms, pairs of materially equivalent
 properties (in the exemplification sense), and even necessarily equivalent properties, are not forced
 to be identical. This is a key aspect of the theory that makes it
 possible to represent the contents of human thought much more
 accurately than classical exemplification logic would allow.  For instance, the
-properties \emph{being a creature with a heart} and \emph{being a
-  creature with a kidney} may be regarded as distinct properties
-despite the fact that they are extensionally equivalent.  And \emph{being a barber
-  who shaves all and only those persons who don't shave themselves}
-and \emph{being a set of all those sets that aren't members of
-  themselves} may be regarded as distinct properties, although they
+properties @{emph \<open>being a creature with a heart\<close>} and @{emph \<open>being a creature with a kidney\<close>}
+may be regarded as distinct properties despite the fact that they are extensionally equivalent.
+And @{emph \<open>being a barber who shaves all and only those persons who don't shave themselves\<close>}
+and @{emph \<open>being a set of all those sets that aren't members of
+  themselves\<close>} may be regarded as distinct properties, although they
 are necessarily equivalent (both necessarily fail to be exemplified).
-
-A full description of the theory goes beyond the scope of this paper,
-but detailed descriptions are available in two books \cite{zalta1983abstract,zalta1988intensional} and
-various papers by Zalta.  A
-regularly updated, online monograph titled \emph{Principia
-  Logico-Metaphysica} (\cite{PM}) contains the latest
-formulation of the theory and serves to compile, in one location, both new theorems and theorems from many of the published books and papers.
-The mechanization described below follows the presentation of AOT in PLM.
-
-The complexity and versatility of AOT, as well as its
-philosophical ambitions, make it an ideal candidate to test the
-universality of the SSE approach.  However, recent work \cite{rtt} has posed a challenge for any embedding of AOT in functional type theory. In the next section, we briefly discuss this challenge.
 
 \<close>
 
@@ -867,6 +886,8 @@ in constract to a construction e.g. based on ZFC.
 \<close>
 
 chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<close>
+
+section\<open>Model\<close>
 
 text\<open>
 
