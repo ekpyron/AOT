@@ -526,27 +526,69 @@ else Verbatim name
 end
 \<close>
 
+AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
+AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
+AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) "conventions:3": \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
+
+context AOT_meta_syntax
+begin
+notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
+notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
+notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
+end
+context AOT_no_meta_syntax
+begin
+no_notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+no_notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
+no_notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
+no_notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
+end
+
+
 ML\<open>
-fun AOT_preserve_binder_abs_tr' constName syntaxConst (ellipseConst,includesSyntaxConst) = 
+fun AOT_preserve_binder_abs_tr' constName syntaxConst (ellipseConst,includesSyntaxConst) restrConnect = 
 (constName, fn ctxt => fn terms =>
 let
 val term_opt = case terms of Abs (name, T, trm)::trms => 
 let
 val trm = case printVarKind name of SingleVariable name =>
-    snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+    let
+      val optBody = case fetchTermCategory ctxt (hd (Symbol.explode (name))) of SOME (AOT_Variable _, category) =>
+        let
+          val (restr, _) = Local_Theory.raw_theory_result (fn thy => (Symtab.lookup (AOT_Restriction.get thy) category, thy)) ctxt
+        in
+          case restr of SOME restr =>
+            (case trm of (Const (c,_) $ x $ trm) =>
+              if (c = restrConnect orelse Lexicon.unmark_const c = restrConnect (* TODO: better matching *))
+              then
+                (* TODO: is this matching good enough? *)
+                if Term.could_unify (Abs ("x", dummyT, x), Abs ("x", dummyT,  Term.betapply (fst restr,(Bound 0)))) then
+                  SOME trm
+                else
+                  NONE
+              else NONE | _ => NONE)
+          | _ => NONE
+        end
+        | _ => NONE
+      val terms = case optBody of SOME trm => Abs (name, T, trm)::trms | _ => trms
+    in
+        snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+    end
   | Ellipses (s,e) =>
-let
- (* TODO: ellipses that are fix'ed loose their markup - try to circumvent *)
-val body = Term.subst_bound (Const (\<^syntax_const>\<open>_AOT_free_var_ellipse\<close>, dummyT) $ Syntax_Trans.mark_bound_body (s,dummyT) $ Syntax_Trans.mark_bound_body (e,dummyT),
-trm)
-in
-  if includesSyntaxConst then
-    list_comb (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
-    Syntax_Trans.mark_bound_abs (e,dummyT) $ body, trms)
-  else
-    list_comb (Syntax.const syntaxConst $ (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
-    Syntax_Trans.mark_bound_abs (e,dummyT)) $ body, trms)
-end
+    let
+     (* TODO: ellipses that are fix'ed loose their markup - try to circumvent *)
+    val body = Term.subst_bound (Const (\<^syntax_const>\<open>_AOT_free_var_ellipse\<close>, dummyT) $ Syntax_Trans.mark_bound_body (s,dummyT) $ Syntax_Trans.mark_bound_body (e,dummyT),
+    trm)
+    in
+      if includesSyntaxConst then
+        list_comb (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
+        Syntax_Trans.mark_bound_abs (e,dummyT) $ body, trms)
+      else
+        list_comb (Syntax.const syntaxConst $ (Syntax.const ellipseConst $ Syntax_Trans.mark_bound_abs (s,dummyT) $ 
+        Syntax_Trans.mark_bound_abs (e,dummyT)) $ body, trms)
+    end
   | Verbatim _ => (* TODO *)
     snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
 in SOME trm end
@@ -561,11 +603,11 @@ end
 print_translation \<open>
 AOT_syntax_print_translations
  [
-  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close> (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, true),
+  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_forall\<close> \<^syntax_const>\<open>_AOT_all\<close> (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, true) \<^const_name>\<open>AOT_imp\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_forall_binder"} \<^syntax_const>\<open>_AOT_all\<close>,
   Syntax_Trans.preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_desc\<close> \<^syntax_const>\<open>_AOT_desc\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_desc_binder"} \<^syntax_const>\<open>_AOT_desc\<close>,
-  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close> (\<^syntax_const>\<open>_AOT_lambda_arg_ellipse\<close>, false),
+  AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_lambda\<close> \<^syntax_const>\<open>_AOT_lambda\<close> (\<^syntax_const>\<open>_AOT_lambda_arg_ellipse\<close>, false) \<^const_name>\<open>undefined\<close>, (* TODO: constrained variables *)
   AOT_binder_trans @{theory} @{binding "AOT_lambda_binder"} \<^syntax_const>\<open>_AOT_lambda\<close>
  ]
 \<close> \<comment> \<open>to avoid eta-contraction\<close>
@@ -606,26 +648,6 @@ in
 [(\<^syntax_const>\<open>_AOT_id_def\<close>, parseIdDef)]
 end
 \<close>
-
-AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
-AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) "conventions:3": \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
-AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
-
-context AOT_meta_syntax
-begin
-notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
-notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
-notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
-notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
-end
-context AOT_no_meta_syntax
-begin
-no_notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
-no_notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
-no_notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
-no_notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
-end
 
 ML\<open>
 fun AOT_restricted_binder const connect = fn ctxt => (fn [a, b] => Ast.mk_appl (Ast.Constant const) [
@@ -671,7 +693,7 @@ syntax
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists") [Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]])]\<close>
 print_translation\<open>AOT_syntax_print_translations
-  [AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>_AOT_exists\<close> (\<^syntax_const>\<open>_AOT_exists_ellipse\<close>,true),
+  [AOT_preserve_binder_abs_tr' \<^const_syntax>\<open>AOT_exists\<close> \<^syntax_const>\<open>_AOT_exists\<close> (\<^syntax_const>\<open>_AOT_exists_ellipse\<close>,true) \<^const_name>\<open>AOT_conj\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_exists_binder"} \<^syntax_const>\<open>_AOT_exists\<close>]
 \<close>
 
@@ -752,6 +774,22 @@ end
 in
 fn ctxt => fn [x as Ast.Appl [Ast.Constant "_constrain", Ast.Appl [Ast.Constant kind, Ast.Variable name], _]] => handleTermOfVar x kind name
 | [x as Ast.Appl [Ast.Constant kind, Ast.Variable name]] => handleTermOfVar x kind name
+| [x as Ast.Appl [Ast.Constant rep, y]] => (
+let
+val (restr,_) = Local_Theory.raw_theory_result (fn thy => (
+let
+val restrs = Symtab.dest (AOT_Restriction.get thy)
+val restr = List.find (fn (n,(_,Const (c,t))) => ((* TODO: this seems like a fragile matching method *)
+  c = rep orelse c = Lexicon.unmark_const rep) | _ => false) restrs
+in
+(restr,thy)
+end
+)) ctxt
+in
+  (* TODO: verify that just dropping the restriction constant is fine in all cases *)
+  case restr of SOME r => Ast.Appl [Ast.Constant (\<^const_syntax>\<open>AOT_term_of_var\<close>), y]
+  | _ => raise Match
+end)
 end
 ),
 ("_AOT_raw_appl", fn _ => fn t::a::args => let
@@ -826,6 +864,16 @@ val (restr, ctxt) = Local_Theory.raw_theory_result (fn thy => (Option.map fst (S
 val restr = case restr of SOME x => x | _ => raise Fail ("Unknown restricted type: " ^ name)
 in restr end
 )]
+\<close>
+
+print_translation\<open>
+AOT_syntax_print_translations
+[
+(* TODO: restricted variables *)
+  (\<^const_syntax>\<open>AOT_model_equiv_def\<close>, fn ctxt => fn [x,y] => Const (\<^syntax_const>\<open>_AOT_equiv_def\<close>, dummyT) $
+    (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x) $
+    (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y))
+]
 \<close>
 
 print_translation \<open>
