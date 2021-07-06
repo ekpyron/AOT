@@ -876,6 +876,28 @@ AOT_syntax_print_translations
 ]
 \<close>
 
+print_translation\<open>
+AOT_syntax_print_translations [
+(\<^const_syntax>\<open>AOT_model_id_def\<close>, fn ctxt =>
+  fn [lhs as Abs (lhsName, lhsTy, lhsTrm), rhs as Abs (rhsName, rhsTy, rhsTrm)] =>
+    let
+      val (name,_) = Name.variant lhsName (Term.declare_term_names rhsTrm (Term.declare_term_names lhsTrm Name.context));
+      val lhs = Term.betapply (lhs, Const ("_bound", dummyT) $ Free (name, lhsTy))
+      val rhs = Term.betapply (rhs, Const ("_bound", dummyT) $ Free (name, rhsTy))
+    in
+      Const (\<^const_syntax>\<open>AOT_model_id_def\<close>, dummyT) $ lhs $ rhs
+    end
+| [Const (\<^const_syntax>\<open>case_prod\<close>, _) $ lhs, Const (\<^const_syntax>\<open>case_prod\<close>, _) $ rhs] =>
+  Const (\<^const_syntax>\<open>AOT_model_id_def\<close>, dummyT) $ lhs $ rhs
+| [Const (\<^const_syntax>\<open>case_unit\<close>, _) $ lhs, Const (\<^const_syntax>\<open>case_unit\<close>, _) $ rhs] =>
+  Const (\<^const_syntax>\<open>AOT_model_id_def\<close>, dummyT) $ lhs $ rhs
+| [x, y] =>
+     Const (\<^syntax_const>\<open>_AOT_id_def\<close>, dummyT) $
+       (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x) $
+       (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
+)
+]\<close>
+
 print_translation \<open>
 AOT_syntax_print_translations [
 (\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [R, Const (\<^const_syntax>\<open>Pair\<close>, _) $ a $ b] => (
