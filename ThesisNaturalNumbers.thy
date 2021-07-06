@@ -158,6 +158,33 @@ can be defined and can indeed shown to be an equivalence relation:
 @{thm[display] "equi:3"[of F G] "eq-part:1"[of _ F, print_as_theorem] "eq-part:2"[of _ F G, print_as_theorem] "eq-part:3"[of _ F G H, print_as_theorem]}
 \<close>
 
+section\<open>The Number of @{term F}s\<close>
+
+text\<open>
+To state Hume's Theorem additionally to the definition of @{emph \<open>equinumerosity\<close>} above,
+a definition of @{emph \<open>The Number of @{term F}s\<close>} (written as @{term \<open>\<guillemotleft>#F\<guillemotright>\<close>}) is required.
+To that end Nodelman and Zalta (following Frege) first define what it means for an object
+to number a property as follows:
+
+@{thm[display] "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst], of _ x G, print_as_theorem]}
+
+An abstract object @{term x} numbers a property @{term G}, if it encodes exactly those properties,
+such that @{emph \<open>actually exemplifying\<close>} them is equinumerous to @{term G}.
+An alternative choice would be to forgo the actuality operator and merely require that @{term x}
+exactly those properties that are equinumerous to @{term F} itself. However, this would have
+the undesirable consequence that numbering properties would depend on modal context. For a detailed
+discussion of this issue refer to (TODO: cite PLM; maybe reproduce some of it here).
+
+Now @{emph \<open>The Number of @{term F}s\<close>} can simply be defined as @{emph \<open>the\<close>} object that numbers
+@{term F}:
+
+
+\<close>
+
+
+
+thm "num-def:1"[]
+
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
 
 text\<open>
