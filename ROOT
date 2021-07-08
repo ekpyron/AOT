@@ -1,5 +1,5 @@
 session "AOT" = "HOL" +
-  options [show_question_marks = false, names_short = true]
+  options [show_question_marks = false, names_short = true, browser_info]
   sessions
     "HOL-Eisbach"
   theories
