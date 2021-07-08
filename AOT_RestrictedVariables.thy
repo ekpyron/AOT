@@ -324,6 +324,18 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
     by (rule "\<exists>I")
 qed
+
+AOT_theorem "res-var-bound-reas[CBF\<diamond>]": \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
+  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close> and \<open>\<diamond>\<phi>{\<alpha>}\<close>
+    using rigid_condition[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] "&E" by blast+
+  AOT_hence \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (metis "KBasic:16" "con-dis-taut:5" "\<rightarrow>E")
+  AOT_hence \<open>\<exists>\<alpha> \<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    by (rule "\<exists>I")
+  AOT_thus \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
+qed
 end
 
 (*<*)
