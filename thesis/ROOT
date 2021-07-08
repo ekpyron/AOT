@@ -1,4 +1,4 @@
-session "Thesis" = "HOL" +
+session "Thesis" in ".." = "HOL" +
   options [show_question_marks = false, names_short = true, document = pdf, document_output = "output"]
   sessions
     "HOL-Eisbach"
@@ -15,7 +15,7 @@ session "Thesis" = "HOL" +
     AOT_NaturalNumbers
     Thesis
     ThesisNaturalNumbers
-  document_files
+  document_files (in "thesis")
     "root.tex"
     "logo.pdf"
     "root.bib"
