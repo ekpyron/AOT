@@ -5468,7 +5468,7 @@ qed
 AOT_theorem ext_zero_eq_nec: \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<box>\<not>\<exists>u [F]u\<close>
-  AOT_hence 0: \<open>\<not>\<diamond>\<exists>u [F]u\<close> by (smt (verit) "KBasic2:1" "\<equiv>E"(1))
+  AOT_hence 0: \<open>\<not>\<diamond>\<exists>u [F]u\<close> using "KBasic2:1" "\<equiv>E"(1) by blast
   AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
   proof(rule "raa-cor:2")
     AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
