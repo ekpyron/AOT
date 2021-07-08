@@ -5479,56 +5479,6 @@
     <span class="keyword1"><span class="command">using</span></span> 1 <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
 <span class="keyword1"><span class="command">qed</span></span>
 
-<span class="comment1">(*
-AOT_theorem denotes_equiv': ‹[λx ∀G (∀u ([G]u ≡ [H]u) → (x[G] ≡ x[H]))]↓›
-proof -
-  AOT_modally_strict {
-    AOT_have ‹∀F∀G □(∀u([G]u ≡ [F]u) → (∀u ([F]u ≡ [H]u) ≡ ∀u ([G]u ≡ [H]u)))›
-    proof (safe intro!: GEN RN "→I")
-      AOT_modally_strict {
-        fix F G
-        AOT_assume 0: ‹∀u([G]u ≡ [F]u)›
-        AOT_show ‹∀u ([F]u ≡ [H]u) ≡ ∀u ([G]u ≡ [H]u)›
-        proof(safe intro!: "≡I" "→I")
-          AOT_assume ‹∀u ([F]u ≡ [H]u)›
-          AOT_hence ‹[F]u ≡ [H]u› for u using "Ordinary.∀E" by fast
-          moreover AOT_have ‹[G]u ≡ [F]u› for u using 0 "Ordinary.∀E" by fast
-          ultimately AOT_have ‹[G]u ≡ [H]u› for u by (metis "deduction-theorem" "≡I" "≡E"(1) "≡E"(2))
-          AOT_thus ‹∀u ([G]u ≡ [H]u)› by (rule Ordinary.GEN)
-        next
-          AOT_assume ‹∀u ([G]u ≡ [H]u)›
-          AOT_hence ‹[G]u ≡ [H]u› for u using "Ordinary.∀E" by fast
-          moreover AOT_have ‹[G]u ≡ [F]u› for u using 0 "Ordinary.∀E" by fast
-          ultimately AOT_have ‹[F]u ≡ [H]u› for u by (metis "deduction-theorem" "≡I" "≡E"(1) "≡E"(2))
-          AOT_thus ‹∀u ([F]u ≡ [H]u)› by (rule Ordinary.GEN)
-        qed
-      }
-    qed
-    AOT_hence ‹[λx ∀F(x[F] ≡ ∀u ([F]u ≡ [H]u))]↓›
-      using Comprehension by simp
-  } note 0 = this
-  AOT_modally_strict {
-    fix x y
-    AOT_assume indist: ‹∀F ([F]x ≡ [F]y)›
-    AOT_have ‹∀G (∀u ([G]u ≡ [H]u) → (x[G] ≡ x[H])) → ∀G (∀u ([G]u ≡ [H]u) → (y[G] ≡ y[H]))›
-    proof(rule "→I")
-      AOT_assume ‹∀G (∀u ([G]u ≡ [H]u) → (x[G] ≡ x[H]))›
-      AOT_show ‹∀G (∀u ([G]u ≡ [H]u) → (y[G] ≡ y[H]))›
-        sorry
-    qed
-  } note 1 = this
-  AOT_modally_strict {
-    fix x y
-    AOT_assume indist: ‹∀F ([F]x ≡ [F]y)›
-    AOT_hence indist': ‹∀F ([F]y ≡ [F]x)›
-      by (metis "cqt-basic:11" "≡E"(1))
-    AOT_have ‹∀G (∀u ([G]u ≡ [H]u) → (x[G] ≡ x[H])) ≡ ∀G (∀u ([G]u ≡ [H]u) → (y[G] ≡ y[H]))›
-      using 1[OF indist] 1[OF indist'] "≡I" by blast
-  } note 1 = this
-  show ?thesis
-    apply (safe intro!: RN GEN "kirchner-thm:2"[THEN "≡E"(2)] "→I")
-    using 1 oops *)</span> <span class="comment1">(* by blast *)</span>
-
 <span class="keyword1"><span class="command">AOT_theorem</span></span> ext_zero_eq_nec<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="main">□</span><span class="main">¬</span><span class="main">∃</span><span class="bound"><span class="bound">u</span></span> <span class="main">[</span><span class="free">F</span><span class="main">]</span><span class="bound">u</span> <span class="main">→</span> <span class="main">#</span><span class="free">F</span> <span class="main">=</span> <span class="main">0</span>›</span></span>
 <span class="keyword1"><span class="command">proof</span></span><span class="main">(</span><span class="operator">rule</span> <span class="quoted">"→I"</span><span class="main">)</span>
   <span class="keyword3"><span class="command">AOT_assume</span></span> <span class="quoted"><span class="quoted">‹<span class="main">□</span><span class="main">¬</span><span class="main">∃</span><span class="bound"><span class="bound">u</span></span> <span class="main">[</span><span class="free">F</span><span class="main">]</span><span class="bound">u</span>›</span></span>
