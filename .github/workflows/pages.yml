@@ -1,0 +1,23 @@
+name: Build and publish gh-pages.
+
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build-and-deploy:
+    name: Build HTML pages.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Prepare.
+        run: mkdir build && chmod 777 build
+      - name: Isabelle build.
+        run: docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:latest build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/build
+      - name: Deploy github pages.
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: build/Unsorted/AOT
