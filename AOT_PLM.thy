@@ -6319,7 +6319,14 @@ AOT_define eq_E :: \<open>\<Pi>\<close> ("'(=\<^sub>E')") "=E": \<open>(=\<^sub>
 
 syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>E" 50)
 translations
-  "_AOT_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST eq_E) (\<kappa>, \<kappa>')"
+  "_AOT_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST eq_E) (CONST Pair \<kappa> \<kappa>')"
+(* TODO: try to replace by a simple translations pattern *)
+print_translation\<open>
+AOT_syntax_print_translations
+[(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [
+  Const ("\<^const>AOT_PLM.eq_E", _),
+  Const (\<^const_syntax>\<open>Pair\<close>, _) $ lhs $ rhs
+] => Const (\<^syntax_const>\<open>_AOT_eq_E_infix\<close>, dummyT) $ lhs $ rhs)]\<close>
 
 text\<open>Note: Not explicitly mentioned as theorem in PLM.\<close>
 AOT_theorem "=E[denotes]": \<open>[(=\<^sub>E)]\<down>\<close>
@@ -6373,8 +6380,14 @@ translations
   (\<Pi>) "(\<noteq>\<^sub>E)" == (\<Pi>) "(=\<^sub>E)\<^sup>-"
 syntax "_AOT_non_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>\<^sub>E" 50)
 translations
- "_AOT_non_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST relation_negation (CONST eq_E)) (\<kappa>,\<kappa>')"
-
+ "_AOT_non_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST relation_negation (CONST eq_E)) (CONST Pair \<kappa> \<kappa>')"
+(* TODO: try replacing be a simple translations pattern *)
+print_translation\<open>
+AOT_syntax_print_translations
+[(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [
+  Const (\<^const_syntax>\<open>relation_negation\<close>, _) $ Const ("\<^const>AOT_PLM.eq_E", _),
+  Const (\<^const_syntax>\<open>Pair\<close>, _) $ lhs $ rhs
+] => Const (\<^syntax_const>\<open>_AOT_non_eq_E_infix\<close>, dummyT) $ lhs $ rhs)]\<close>
 AOT_theorem "thm-neg=E": \<open>x \<noteq>\<^sub>E y \<equiv> \<not>(x =\<^sub>E y)\<close>
 proof -
   (* TODO: rethink the product hacks *)
