@@ -5465,56 +5465,6 @@ proof -
     using 1 by blast
 qed
 
-(*
-AOT_theorem denotes_equiv': \<open>[\<lambda>x \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H]))]\<down>\<close>
-proof -
-  AOT_modally_strict {
-    AOT_have \<open>\<forall>F\<forall>G \<box>(\<forall>u([G]u \<equiv> [F]u) \<rightarrow> (\<forall>u ([F]u \<equiv> [H]u) \<equiv> \<forall>u ([G]u \<equiv> [H]u)))\<close>
-    proof (safe intro!: GEN RN "\<rightarrow>I")
-      AOT_modally_strict {
-        fix F G
-        AOT_assume 0: \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
-        AOT_show \<open>\<forall>u ([F]u \<equiv> [H]u) \<equiv> \<forall>u ([G]u \<equiv> [H]u)\<close>
-        proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
-          AOT_assume \<open>\<forall>u ([F]u \<equiv> [H]u)\<close>
-          AOT_hence \<open>[F]u \<equiv> [H]u\<close> for u using "Ordinary.\<forall>E" by fast
-          moreover AOT_have \<open>[G]u \<equiv> [F]u\<close> for u using 0 "Ordinary.\<forall>E" by fast
-          ultimately AOT_have \<open>[G]u \<equiv> [H]u\<close> for u by (metis "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "\<equiv>E"(2))
-          AOT_thus \<open>\<forall>u ([G]u \<equiv> [H]u)\<close> by (rule Ordinary.GEN)
-        next
-          AOT_assume \<open>\<forall>u ([G]u \<equiv> [H]u)\<close>
-          AOT_hence \<open>[G]u \<equiv> [H]u\<close> for u using "Ordinary.\<forall>E" by fast
-          moreover AOT_have \<open>[G]u \<equiv> [F]u\<close> for u using 0 "Ordinary.\<forall>E" by fast
-          ultimately AOT_have \<open>[F]u \<equiv> [H]u\<close> for u by (metis "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "\<equiv>E"(2))
-          AOT_thus \<open>\<forall>u ([F]u \<equiv> [H]u)\<close> by (rule Ordinary.GEN)
-        qed
-      }
-    qed
-    AOT_hence \<open>[\<lambda>x \<forall>F(x[F] \<equiv> \<forall>u ([F]u \<equiv> [H]u))]\<down>\<close>
-      using Comprehension by simp
-  } note 0 = this
-  AOT_modally_strict {
-    fix x y
-    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
-    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H])) \<rightarrow> \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
-    proof(rule "\<rightarrow>I")
-      AOT_assume \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H]))\<close>
-      AOT_show \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
-        sorry
-    qed
-  } note 1 = this
-  AOT_modally_strict {
-    fix x y
-    AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
-    AOT_hence indist': \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
-      by (metis "cqt-basic:11" "\<equiv>E"(1))
-    AOT_have \<open>\<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (x[G] \<equiv> x[H])) \<equiv> \<forall>G (\<forall>u ([G]u \<equiv> [H]u) \<rightarrow> (y[G] \<equiv> y[H]))\<close>
-      using 1[OF indist] 1[OF indist'] "\<equiv>I" by blast
-  } note 1 = this
-  show ?thesis
-    apply (safe intro!: RN GEN "kirchner-thm:2"[THEN "\<equiv>E"(2)] "\<rightarrow>I")
-    using 1 oops *) (* by blast *)
-
 AOT_theorem ext_zero_eq_nec: \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<box>\<not>\<exists>u [F]u\<close>
