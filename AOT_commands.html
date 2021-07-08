@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory AOT_commands</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory AOT_commands</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> AOT_commands
+  <span class="keyword2"><span class="keyword">imports</span></span> <a href="AOT_model.html">AOT_model</a> <span class="quoted">"<a href="../../HOL/HOL-Eisbach/Eisbach_Tools.html">HOL-Eisbach.Eisbach_Tools</a>"</span>
+  <span class="keyword2"><span class="keyword">keywords</span></span> <span class="quoted">"AOT_define"</span> <span class="main">::</span> thy_decl
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_theorem"</span> <span class="main">::</span> thy_goal
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_lemma"</span> <span class="main">::</span> thy_goal
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_act_theorem"</span> <span class="main">::</span> thy_goal
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_act_lemma"</span> <span class="main">::</span> thy_goal
+
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_axiom"</span> <span class="main">::</span> thy_goal
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_act_axiom"</span> <span class="main">::</span> thy_goal
+
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_assume"</span> <span class="main">::</span> prf_asm <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_have"</span> <span class="main">::</span> prf_goal <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_hence"</span> <span class="main">::</span> prf_goal <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_modally_strict {"</span> <span class="main">::</span> prf_open <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_actually {"</span> <span class="main">::</span> prf_open <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_obtain"</span> <span class="main">::</span> prf_asm_goal <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_show"</span> <span class="main">::</span> prf_asm_goal <span class="main">%</span> <span class="quoted">"proof"</span>
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_thus"</span> <span class="main">::</span> prf_asm_goal <span class="main">%</span> <span class="quoted">"proof"</span>
+
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_find_theorems"</span> <span class="main">::</span> diag
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"thm_name"</span> <span class="main">::</span> diag
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer"</span> <span class="main">::</span> diag
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer_only"</span> <span class="main">::</span> diag
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_syntax_print_translations"</span> <span class="main">::</span> thy_decl
+       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_no_syntax_print_translations"</span> <span class="main">::</span> thy_decl
+<span class="keyword2"><span class="keyword">begin</span></span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">section</span></span><span class="quoted"><span class="plain_text">‹Outer Syntax Commands›</span></span>
+
+<span class="keyword1"><span class="command">nonterminal</span></span> AOT_prop
+<span class="keyword1"><span class="command">nonterminal</span></span> φ
+<span class="keyword1"><span class="command">nonterminal</span></span> φ'
+<span class="keyword1"><span class="command">nonterminal</span></span> τ
+<span class="keyword1"><span class="command">nonterminal</span></span> τ'
+<span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_axiom"</span>
+<span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_act_axiom"</span>
+<span class="keyword1"><span class="command">ML_file</span></span> AOT_keys.ML
+<span class="keyword1"><span class="command">ML_file</span></span> AOT_commands.ML
+<span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Theorems.setup</span>›</span>
+<span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Definitions.setup</span>›</span>
+<span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_no_atp.setup</span>›</span>
+
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span>
+<span class="comment1">(*&gt;*)</span></pre>
+</body>
+
+</html>
