@@ -3193,7 +3193,7 @@ AOT_theorem "pre-en-eq:1[2]": \<open>x\<^sub>1x\<^sub>2[F] \<rightarrow> \<box>x
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
-    using "nary_encoding[2]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+    using "nary-encoding[2]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1y]\<down>\<close> by "cqt:2[lambda]"
   ultimately AOT_have \<open>\<box>x\<^sub>1[\<lambda>y [F]yx\<^sub>2]\<close> and \<open>\<box>x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
@@ -3202,14 +3202,14 @@ proof (rule "\<rightarrow>I")
   AOT_hence \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2] & x\<^sub>2[\<lambda>y [F]x\<^sub>1y])\<close>
     using "KBasic:3"[THEN "\<equiv>E"(2)] "&I" by blast
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2[F]\<close>
-    by (rule "nary_encoding[2]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary-encoding[2]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem "pre-en-eq:1[3]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
-    using "nary_encoding[3]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
+    using "nary-encoding[3]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by blast+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<down>\<close> by "cqt:2[lambda]"
@@ -3219,14 +3219,14 @@ proof (rule "\<rightarrow>I")
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y])\<close>
     by (rule "KBasic:3"[THEN "\<equiv>E"(2)] "&I" A)+
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3[F]\<close>
-    by (rule "nary_encoding[3]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary-encoding[3]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem "pre-en-eq:1[4]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<rightarrow> \<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
   AOT_hence \<open>x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<close> and \<open>x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<close> and  \<open>x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
-    using "nary_encoding[4]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
+    using "nary-encoding[4]"[axiom_inst, THEN "\<equiv>E"(1)] "&E" by metis+
   moreover AOT_have \<open>[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
   moreover AOT_have \<open>[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4]\<down>\<close> by "cqt:2[lambda]"
@@ -3237,7 +3237,7 @@ proof (rule "\<rightarrow>I")
   AOT_have B: \<open>\<box>(x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4] & x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y])\<close>
     by (rule "KBasic:3"[THEN "\<equiv>E"(2)] "&I" A)+
   AOT_thus \<open>\<box>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F]\<close>
-    by (rule "nary_encoding[4]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
+    by (rule "nary-encoding[4]"[axiom_inst, THEN RN, THEN "KBasic:6"[THEN "\<rightarrow>E"], THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem "pre-en-eq:2[1]": \<open>\<not>x\<^sub>1[F] \<rightarrow> \<box>\<not>x\<^sub>1[F]\<close>
