@@ -6428,7 +6428,7 @@ AOT_theorem "id-act2:1": \<open>x =\<^sub>E y \<equiv> \<^bold>\<A>x =\<^sub>E y
 AOT_theorem "id-act2:2": \<open>x \<noteq>\<^sub>E y \<equiv> \<^bold>\<A>x \<noteq>\<^sub>E y\<close>
   by (meson "Act-Basic:5" "Act-Sub:2" "RA[2]" "id-nec4:2" "\<equiv>E"(1) "\<equiv>E"(6))
 
-AOT_theorem "ord-=Eequiv:1": \<open>O!x \<rightarrow> x =\<^sub>E x\<close>
+AOT_theorem "ord=Eequiv:1": \<open>O!x \<rightarrow> x =\<^sub>E x\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume 1: \<open>O!x\<close>
   AOT_show \<open>x =\<^sub>E x\<close>
@@ -6439,23 +6439,23 @@ proof (rule "\<rightarrow>I")
     by (simp add: "1" RN "&I" "oth-class-taut:3:a" "universal-cor")
 qed
 
-AOT_theorem "ord-=Eequiv:2": \<open>x =\<^sub>E y \<rightarrow> y =\<^sub>E x\<close>
+AOT_theorem "ord=Eequiv:2": \<open>x =\<^sub>E y \<rightarrow> y =\<^sub>E x\<close>
 proof(rule CP)
   AOT_assume 1: \<open>x =\<^sub>E y\<close>
   AOT_hence 2: \<open>x = y\<close> by (metis "=E-simple:2" "vdash-properties:10") 
   AOT_have \<open>O!x\<close> using 1 by (meson "&E"(1) "=E-simple:1" "\<equiv>E"(1))
-  AOT_hence \<open>x =\<^sub>E x\<close> using "ord-=Eequiv:1" "\<rightarrow>E" by blast
+  AOT_hence \<open>x =\<^sub>E x\<close> using "ord=Eequiv:1" "\<rightarrow>E" by blast
   AOT_thus \<open>y =\<^sub>E x\<close> using "rule=E"[rotated, OF 2] by fast
 qed
 
-AOT_theorem "ord-=Eequiv:3": \<open>(x =\<^sub>E y & y =\<^sub>E z) \<rightarrow> x =\<^sub>E z\<close>
+AOT_theorem "ord=Eequiv:3": \<open>(x =\<^sub>E y & y =\<^sub>E z) \<rightarrow> x =\<^sub>E z\<close>
 proof (rule CP)
   AOT_assume 1: \<open>x =\<^sub>E y & y =\<^sub>E z\<close>
   AOT_hence \<open>x = y & y = z\<close>
     by (metis "&I" "&E"(1) "&E"(2) "=E-simple:2" "vdash-properties:6")
   AOT_hence \<open>x = z\<close> by (metis "id-eq:3" "vdash-properties:6")
   moreover AOT_have \<open>x =\<^sub>E x\<close>
-    using 1[THEN "&E"(1)] "&E"(1) "=E-simple:1" "\<equiv>E"(1) "ord-=Eequiv:1" "\<rightarrow>E" by blast
+    using 1[THEN "&E"(1)] "&E"(1) "=E-simple:1" "\<equiv>E"(1) "ord=Eequiv:1" "\<rightarrow>E" by blast
   ultimately AOT_show \<open>x =\<^sub>E z\<close>
     using "rule=E" by fast
 qed
@@ -6471,7 +6471,7 @@ proof(rule CP)
         AOT_have \<open>O!x \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
         proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
           AOT_assume \<open>O!x\<close>
-          AOT_hence \<open>x =\<^sub>E x\<close> by (metis "ord-=Eequiv:1" "\<rightarrow>E")
+          AOT_hence \<open>x =\<^sub>E x\<close> by (metis "ord=Eequiv:1" "\<rightarrow>E")
           moreover AOT_assume \<open>x = y\<close>
           ultimately AOT_show \<open>x =\<^sub>E y\<close> using "rule=E" by fast
         next
@@ -6491,7 +6491,7 @@ proof(rule CP)
         AOT_have \<open>O!y \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
         proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
           AOT_assume \<open>O!y\<close>
-          AOT_hence \<open>y =\<^sub>E y\<close> by (metis "ord-=Eequiv:1" "\<rightarrow>E")
+          AOT_hence \<open>y =\<^sub>E y\<close> by (metis "ord=Eequiv:1" "\<rightarrow>E")
           moreover AOT_assume \<open>x = y\<close>
           ultimately AOT_show \<open>x =\<^sub>E y\<close> using "rule=E" id_sym by fast
         next
@@ -6538,7 +6538,7 @@ next
           apply (metis that[THEN "&E"(1), THEN "&E"(1)])
          apply (metis that[THEN "&E"(1), THEN "&E"(2)])
         using "rule=E"[rotated, OF that[THEN "&E"(2)]]
-              "ord-=Eequiv:1"[THEN "\<rightarrow>E", OF that[THEN "&E"(1), THEN "&E"(1)]] by fast
+              "ord=Eequiv:1"[THEN "\<rightarrow>E", OF that[THEN "&E"(1), THEN "&E"(1)]] by fast
     }
   qed
 qed
@@ -6589,7 +6589,7 @@ proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I"; rule "\<e
     apply (rule "\<beta>\<leftarrow>C"(1))
       apply "cqt:2[lambda]"
      apply (fact "cqt:2[const_var]"[axiom_inst])
-    using "ord-=Eequiv:1"[THEN "\<rightarrow>E", OF 0[THEN "&E"(1)]].
+    using "ord=Eequiv:1"[THEN "\<rightarrow>E", OF 0[THEN "&E"(1)]].
   ultimately AOT_have \<open>[\<lambda>z z =\<^sub>E y]x\<close> using "rule=E" by fast
   AOT_hence \<open>x =\<^sub>E y\<close> using "\<beta>\<rightarrow>C"(1) by blast
   AOT_hence \<open>x = y\<close> by (metis "=E-simple:2" "vdash-properties:6")
