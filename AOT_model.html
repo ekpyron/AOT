@@ -36,7 +36,7 @@ style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,1
 class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms
 ease-in-out}@keyframes
 octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@medi
-a (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
+a (<span title="(501)">max</span>-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
 .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
 <style>
@@ -75,18 +75,18 @@ pre .linenumber span {
 <a name="L8" href="#L8"><span class="linenumber">8</span></a>
 <a name="L9" href="#L9"><span class="linenumber">9</span></a><span class="keyword1"><span class="command">section</span></span><span class="quoted"><span class="plain_text">‹Model for the Logic of AOT›</span></span>
 <a name="L10" href="#L10"><span class="linenumber">10</span></a>
-<a name="L11" href="#L11"><span class="linenumber">11</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹We introduce a primitive type for hyperintensional propositions.›</span></span>
+<a name="L11" href="#L11"><span class="linenumber">11</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹We introduce a primitive type for hyperintensional <span title="(191)">propositions</span>.›</span></span>
 <a name="L12" href="#L12"><span class="linenumber">12</span></a><span class="keyword1"><span class="command">typedecl</span></span> 𝗈
 <a name="L13" href="#L13"><span class="linenumber">13</span></a>
 <a name="L14" href="#L14"><span class="linenumber">14</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹To be able to model modal operators following Kripke semantics, we introduce a primitive
 <a name="L15" href="#L15"><span class="linenumber">15</span></a>     type for possible worlds and assert, by axiom, that there is a surjective function mapping
-<a name="L16" href="#L16"><span class="linenumber">16</span></a>     propositions to the boolean-valued functions acting on possible worlds. We call the result
+<a name="L16" href="#L16"><span class="linenumber">16</span></a>     <span title="(191)">propositions</span> to the boolean-valued functions acting on possible worlds. We call the result
 <a name="L17" href="#L17"><span class="linenumber">17</span></a>     of applying this function to a proposition the Kripke-extension of the proposition.›</span></span>
 <a name="L18" href="#L18"><span class="linenumber">18</span></a><span class="keyword1"><span class="command">typedecl</span></span> w <span class="comment1">―‹The primtive type of possible worlds.›</span>
 <a name="L19" href="#L19"><span class="linenumber">19</span></a><span class="keyword1"><span class="command">axiomatization</span></span> <span class="free">AOT_model_d𝗈</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹𝗈<span class="main">⇒</span><span class="main">(</span>w<span class="main">⇒</span>bool<span class="main">)</span>›</span></span> <span class="keyword2"><span class="keyword">where</span></span> d𝗈_surj<span class="main">:</span> <span class="quoted"><span class="quoted">‹surj <span class="free">AOT_model_d𝗈</span>›</span></span>
 <a name="L20" href="#L20"><span class="linenumber">20</span></a>
-<a name="L21" href="#L21"><span class="linenumber">21</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹Furthermore, the axioms of PLM require the existence of a non-actual world.›</span></span>
-<a name="L22" href="#L22"><span class="linenumber">22</span></a><span class="keyword1"><span class="command">consts</span></span> w<span class="hidden">⇩</span><sub>0</sub> <span class="main">::</span> <span class="quoted">w</span> <span class="comment1">―‹The designated actual world.›</span>
+<a name="L21" href="#L21"><span class="linenumber">21</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹Furthermore, the axioms of PLM require the existence of a non-<span title="(479)">actual</span> world.›</span></span>
+<a name="L22" href="#L22"><span class="linenumber">22</span></a><span class="keyword1"><span class="command">consts</span></span> w<span class="hidden">⇩</span><sub>0</sub> <span class="main">::</span> <span class="quoted">w</span> <span class="comment1">―‹The designated <span title="(479)">actual</span> world.›</span>
 <a name="L23" href="#L23"><span class="linenumber">23</span></a><span class="keyword1"><span class="command">axiomatization</span></span> <span class="keyword2"><span class="keyword">where</span></span> AOT_model_nonactual_world<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span><span class="bound">w</span> <span class="main">.</span> <span class="bound">w</span> <span class="main">≠</span> w<span class="hidden">⇩</span><sub>0</sub>›</span></span>
 <a name="L24" href="#L24"><span class="linenumber">24</span></a>
 <a name="L25" href="#L25"><span class="linenumber">25</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹Validity of a proposition in a given world can now be modelled as the result

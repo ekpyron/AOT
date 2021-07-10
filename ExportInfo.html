@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory ExportInfo</title>
+</head>
+
+
+<body>
+<!--
+Github corner taken from: https://github.com/tholman/github-corners/
+Licensed as:
+
+The MIT License (MIT)
+
+Copyright (c) 2016 Tim Holman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//-->
+<a href="https://github.com/ekpyron/AOT" class="github-corner" aria-label="View source on GitHub"><svg 
+width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: fixed; top: 0; border: 
+0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path 
+d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 
+123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" 
+style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 
+119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 
+154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 
+187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 
+206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 
+156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" 
+class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms
+ease-in-out}@keyframes
+octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@medi
+a (<span title="(501)">max</span>-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
+.octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<style>
+pre .linenumber {
+  float:left;
+  margin:0 1em 0 -1em;
+  border-right:1px solid;
+  text-align:right;
+  color: black;
+  width: 3em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+pre .linenumber span {
+  display:block;
+  padding:0 .5em 0 1em;
+}
+</style>
+<div class="head">
+<h1>Theory ExportInfo</h1>
+</div>
+
+<pre class="source"><a name="L1" href="#L1"><span class="linenumber">1</span></a><span class="keyword1"><span class="command">theory</span></span> ExportInfo
+<a name="L2" href="#L2"><span class="linenumber">2</span></a>  <span class="keyword2"><span class="keyword">imports</span></span> <a href="AOT_NaturalNumbers.html">AOT_NaturalNumbers</a>
+<a name="L3" href="#L3"><span class="linenumber">3</span></a><span class="keyword2"><span class="keyword">begin</span></span>
+<a name="L4" href="#L4"><span class="linenumber">4</span></a>
+<a name="L5" href="#L5"><span class="linenumber">5</span></a><span class="keyword1"><span class="command">local_setup</span></span><span class="quoted">‹<span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">ctxt</span> <span class="main">=&gt;</span>
+<a name="L6" href="#L6"><span class="linenumber">6</span></a><span class="keyword2"><span class="keyword">let</span></span>
+<a name="L7" href="#L7"><span class="linenumber">7</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thmToItems</span> <span class="main">:</span> <span class="main">(</span>Symtab.set<span class="main">)</span> Thmtab.table <span class="main">=</span> Thmtab.empty
+<a name="L8" href="#L8"><span class="linenumber">8</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thy</span> <span class="main">=</span> Proof_Context.theory_of <span class="entity">ctxt</span>
+<a name="L9" href="#L9"><span class="linenumber">9</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">global_facts</span> <span class="main">=</span> Global_Theory.facts_of <span class="entity">thy</span><span class="main">;</span>
+<a name="L10" href="#L10"><span class="linenumber">10</span></a>
+<a name="L11" href="#L11"><span class="linenumber">11</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thmToItems</span> <span class="main">=</span> <span class="main">(</span>Facts.dest_all <span class="main">(</span>Context.Proof <span class="entity">ctxt</span><span class="main">)</span> false <span class="main">[</span><span class="main">]</span> <span class="entity">global_facts</span> |&gt;
+<a name="L12" href="#L12"><span class="linenumber">12</span></a>  filter <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">n</span><span class="main">,</span> <span class="entity">thms</span><span class="main">)</span> <span class="main">=&gt;</span> List.all <span class="main">(</span><span class="entity">AOT_Theorems.member</span> <span class="entity">ctxt</span><span class="main">)</span> <span class="entity">thms</span> <span class="keyword1"><span class="keyword">andalso</span></span>
+<a name="L13" href="#L13"><span class="linenumber">13</span></a>    <span class="main">(</span>Option.isSome <span class="main">(</span><span class="entity">AOT_get_item_number</span> <span class="main">(</span>Binding.name_of <span class="main">(</span>Binding.qualified_name <span class="entity">n</span><span class="main">)</span><span class="main">)</span><span class="main">)</span><span class="main">)</span><span class="main">)</span>
+<a name="L14" href="#L14"><span class="linenumber">14</span></a>  |&gt; fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">n</span><span class="main">,</span> <span class="entity">thms</span><span class="main">)</span> <span class="main">=&gt;</span> <span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">thmtab</span> <span class="main">=&gt;</span> <span class="keyword2"><span class="keyword">let</span></span>
+<a name="L15" href="#L15"><span class="linenumber">15</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">name</span> <span class="main">=</span> Binding.name_of <span class="main">(</span>Binding.qualified_name <span class="entity">n</span><span class="main">)</span>
+<a name="L16" href="#L16"><span class="linenumber">16</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">item</span> <span class="main">=</span> the <span class="main">(</span><span class="entity">AOT_get_item_number</span> <span class="entity">name</span><span class="main">)</span>
+<a name="L17" href="#L17"><span class="linenumber">17</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thmtab</span> <span class="main">=</span> fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">thm</span> <span class="main">=&gt;</span> <span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">thmtab</span> <span class="main">=&gt;</span> <span class="keyword2"><span class="keyword">let</span></span>
+<a name="L18" href="#L18"><span class="linenumber">18</span></a>      <span class="keyword2"><span class="keyword">in</span></span> Thmtab.map_default <span class="main">(</span><span class="entity">thm</span><span class="main">,</span> Symtab.empty<span class="main">)</span> <span class="main">(</span>Symtab.insert_set <span class="entity">item</span><span class="main">)</span> <span class="entity">thmtab</span> <span class="keyword2"><span class="keyword">end</span></span><span class="main">)</span> <span class="entity">thms</span> <span class="entity">thmtab</span>
+<a name="L19" href="#L19"><span class="linenumber">19</span></a>  <span class="keyword2"><span class="keyword">in</span></span>
+<a name="L20" href="#L20"><span class="linenumber">20</span></a>    <span class="entity">thmtab</span>
+<a name="L21" href="#L21"><span class="linenumber">21</span></a>  <span class="keyword2"><span class="keyword">end</span></span><span class="main">)</span><span class="main">)</span> Thmtab.empty
+<a name="L22" href="#L22"><span class="linenumber">22</span></a>
+<a name="L23" href="#L23"><span class="linenumber">23</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thy</span> <span class="main">=</span> Proof_Context.theory_of <span class="entity">ctxt</span>
+<a name="L24" href="#L24"><span class="linenumber">24</span></a><span class="keyword1"><span class="keyword">fun</span></span> <span class="entity">get_aot_facts</span> <span class="entity">ctxt</span> <span class="main">=</span>
+<a name="L25" href="#L25"><span class="linenumber">25</span></a><span class="keyword2"><span class="keyword">let</span></span>
+<a name="L26" href="#L26"><span class="linenumber">26</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">global_facts</span> <span class="main">=</span> Global_Theory.facts_of <span class="entity">thy</span><span class="main">;</span>
+<a name="L27" href="#L27"><span class="linenumber">27</span></a><span class="keyword2"><span class="keyword">in</span></span>
+<a name="L28" href="#L28"><span class="linenumber">28</span></a>Facts.dest_all <span class="main">(</span>Context.Proof <span class="entity">ctxt</span><span class="main">)</span> false <span class="main">[</span><span class="main">]</span> <span class="entity">global_facts</span> |&gt;
+<a name="L29" href="#L29"><span class="linenumber">29</span></a>  map <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">n</span><span class="main">,</span> <span class="entity">thms</span><span class="main">)</span> <span class="main">=&gt;</span> <span class="keyword2"><span class="keyword">let</span></span>
+<a name="L30" href="#L30"><span class="linenumber">30</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="main">{</span>concealed <span class="main">=</span> <span class="main">_</span><span class="main">,</span> group <span class="main">=</span> <span class="main">_</span><span class="main">,</span> theory_long_name <span class="main">=</span> <span class="entity">thy_name</span><span class="main">,</span> <span title="(489)">pos</span> <span class="main">=</span> <span class="main">_</span><span class="main">,</span> serial <span class="main">=</span> <span class="main">_</span><span class="main">}</span> <span class="main">=</span>
+<a name="L31" href="#L31"><span class="linenumber">31</span></a>      Name_Space.the_entry <span class="main">(</span>Facts.space_of <span class="entity">global_facts</span><span class="main">)</span> <span class="entity">n</span>
+<a name="L32" href="#L32"><span class="linenumber">32</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">name</span> <span class="main">=</span> Binding.name_of <span class="main">(</span>Binding.qualified_name <span class="entity">n</span><span class="main">)</span>
+<a name="L33" href="#L33"><span class="linenumber">33</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">items</span> <span class="main">=</span> Symtab.keys <span class="main">(</span>fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">thm</span> <span class="main">=&gt;</span> <span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">set</span> <span class="main">=&gt;</span>
+<a name="L34" href="#L34"><span class="linenumber">34</span></a>        <span class="keyword2"><span class="keyword">case</span></span> Thmtab.lookup <span class="entity">thmToItems</span> <span class="entity">thm</span> <span class="keyword2"><span class="keyword">of</span></span> SOME <span class="entity">set'</span> <span class="main">=&gt;</span> Symtab.merge <span class="main">(</span><span class="keyword1"><span class="keyword">op</span></span><span class="main">=</span><span class="main">)</span> <span class="main">(</span><span class="entity">set</span><span class="main">,</span><span class="entity">set'</span><span class="main">)</span>
+<a name="L35" href="#L35"><span class="linenumber">35</span></a>        <span class="main">|</span> <span class="main">_</span> <span class="main">=&gt;</span> <span class="entity">set</span><span class="main">)</span> <span class="entity">thms</span> Symtab.empty<span class="main">)</span>
+<a name="L36" href="#L36"><span class="linenumber">36</span></a>    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">items</span> <span class="main">=</span> <span class="keyword2"><span class="keyword">if</span></span> <span class="entity">name</span> <span class="main">=</span> <span class="inner_quoted">"AOT"</span> <span class="keyword1"><span class="keyword">orelse</span></span> <span class="entity">name</span> <span class="main">=</span> <span class="inner_quoted">"AOT_defs"</span> <span class="keyword2"><span class="keyword">then</span></span> <span class="main">[</span><span class="main">]</span> <span class="keyword2"><span class="keyword">else</span></span> <span class="entity">items</span>
+<a name="L37" href="#L37"><span class="linenumber">37</span></a>  <span class="keyword2"><span class="keyword">in</span></span>
+<a name="L38" href="#L38"><span class="linenumber">38</span></a>    <span class="main">(</span>Binding.name_of <span class="main">(</span>Binding.qualified_name <span class="entity">thy_name</span><span class="main">)</span><span class="main">,</span> <span class="entity">name</span><span class="main">,</span> <span class="entity">items</span><span class="main">)</span>
+<a name="L39" href="#L39"><span class="linenumber">39</span></a>  <span class="keyword2"><span class="keyword">end</span></span><span class="main">)</span> |&gt; filter <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="main">_</span><span class="main">,</span> <span class="main">_</span><span class="main">,</span> <span class="entity">items</span><span class="main">)</span> <span class="main">=&gt;</span> length <span class="entity">items</span> &gt; <span class="inner_numeral">0</span> <span class="keyword1"><span class="keyword">andalso</span></span> length <span class="entity">items</span> &lt; <span class="inner_numeral">10</span><span class="main">)</span>
+<a name="L40" href="#L40"><span class="linenumber">40</span></a><span class="keyword2"><span class="keyword">end</span></span>
+<a name="L41" href="#L41"><span class="linenumber">41</span></a>
+<a name="L42" href="#L42"><span class="linenumber">42</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">facts</span> <span class="main">=</span> <span class="entity">get_aot_facts</span> <span class="entity">ctxt</span>
+<a name="L43" href="#L43"><span class="linenumber">43</span></a><span class="keyword1"><span class="keyword">val</span></span> <span class="entity">blob</span> <span class="main">=</span> XML.blob <span class="main">(</span>maps <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">thyname</span><span class="main">,</span><span class="entity">key</span><span class="main">,</span><span class="entity">items</span><span class="main">)</span> <span class="main">=&gt;</span>
+<a name="L44" href="#L44"><span class="linenumber">44</span></a>  <span class="main">[</span><span class="entity">thyname</span><span class="main">,</span><span class="inner_quoted">"|"</span><span class="main">,</span><span class="entity">key</span><span class="main">,</span><span class="inner_quoted">"|"</span><span class="main">]</span>@<span class="main">[</span>String.concatWith <span class="inner_quoted">" "</span> <span class="entity">items</span><span class="main">]</span>@<span class="main">[</span><span class="inner_quoted">"\n"</span><span class="main">]</span><span class="main">)</span> <span class="entity">facts</span><span class="main">)</span>
+<a name="L45" href="#L45"><span class="linenumber">45</span></a><span class="keyword2"><span class="keyword">in</span></span>
+<a name="L46" href="#L46"><span class="linenumber">46</span></a><span class="main">(</span>Export.export <span class="entity">thy</span> <span class="main">(</span>Path.binding0 <span class="main">(</span>Path.make <span class="main">[</span><span class="inner_quoted">"info"</span><span class="main">]</span><span class="main">)</span><span class="main">)</span> <span class="entity">blob</span><span class="main">;</span> <span class="entity">ctxt</span><span class="main">)</span>
+<a name="L47" href="#L47"><span class="linenumber">47</span></a><span class="keyword2"><span class="keyword">end</span></span>
+<a name="L48" href="#L48"><span class="linenumber">48</span></a>›</span>
+<a name="L49" href="#L49"><span class="linenumber">49</span></a>
+<a name="L50" href="#L50"><span class="linenumber">50</span></a><span class="keyword2"><span class="keyword">end</span></span></pre>
+</body>
+
+</html>
