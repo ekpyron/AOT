@@ -13,5 +13,8 @@ session "AOT" = "HOL" +
     AOT_RestrictedVariables
     AOT_PossibleWorlds
     AOT_NaturalNumbers
+  theories [document = false]
+    ExportInfo
   document_files
     "root.tex"
+  export_files (in ".") "*:*"
