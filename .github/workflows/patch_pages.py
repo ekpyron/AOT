@@ -25,8 +25,7 @@ with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..","
     if len(split[1]) > 1:
       theorems[split[1]] = items
       theorems[symbolPattern.sub(lambda m: symbols[m.group(0)], split[1])] = items
-
-theoremPattern = re.compile(r'([^a-zA-Z:-_0-9])(["]?)({})(["]?)([^a-zA-Z:-_0-9])'.format("|".join(map(re.escape, theorems.keys()))))
+theoremPattern = re.compile(r'([ >,)".;])(["]?)({})(["]?)([ <\[\n(,".;])'.format("|".join(map(re.escape, theorems.keys()))))
 
 for filename in sys.argv[1:]:
   print("Patching: " + filename)
