@@ -14,7 +14,7 @@ symbols = {}
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "symbolmap")) as f:
   for line in f.readlines():
     split = line.strip().split()
-    symbols[split[0]] = split[1]
+    symbols[split[0]] = line[len(split[0]):].strip()
 
 symbolPattern = re.compile("|".join(map(re.escape, symbols.keys())))
 
