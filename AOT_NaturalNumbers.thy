@@ -2161,12 +2161,6 @@ proof (rule id_trans[OF "num-can:1"]; rule "equiv-desc-eq:2"[THEN "\<rightarrow>
   finally AOT_show \<open>\<^bold>\<A>([A!]x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)) \<equiv> \<^bold>\<A>([A!]x & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G))\<close>.
 qed
 
-text\<open>Note: not in PLM.\<close>
-AOT_act_theorem numbers_num: \<open>Numbers(#G, G)\<close>
-  apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "num-def:1"])
-  apply (simp add: "num-uniq")
-  using "num-uniq" "vdash-properties:10" "y-in:3" by blast
-
 AOT_define NaturalCardinal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NaturalCardinal'(_')\<close>)
   card: \<open>NaturalCardinal(x) \<equiv>\<^sub>d\<^sub>f \<exists>G(x = #G)\<close>
 
@@ -2182,16 +2176,21 @@ proof(rule "\<rightarrow>I")
     by (AOT_subst_using subst: card[THEN "\<equiv>Df"]) (fact 1)
 qed
 
-AOT_act_theorem "hume:1": \<open>#F = #G \<equiv> F \<approx>\<^sub>E G\<close>
-  by (safe intro!: "pre-Hume"[unvarify x y, OF "num-def:2", OF "num-def:2", THEN "\<rightarrow>E"] "&I" numbers_num)
+AOT_act_theorem "hume:1": \<open>Numbers(#G, G)\<close>
+  apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "num-def:1"])
+  apply (simp add: "num-uniq")
+  using "num-uniq" "vdash-properties:10" "y-in:3" by blast
 
-AOT_act_theorem "hume:2": \<open>#F = #G \<equiv> \<exists>R (R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G)\<close>
+AOT_act_theorem "hume:2": \<open>#F = #G \<equiv> F \<approx>\<^sub>E G\<close>
+  by (safe intro!: "pre-Hume"[unvarify x y, OF "num-def:2", OF "num-def:2", THEN "\<rightarrow>E"] "&I" "hume:1")
+
+AOT_act_theorem "hume:3": \<open>#F = #G \<equiv> \<exists>R (R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G)\<close>
   apply (AOT_subst_rev \<open>\<lambda> \<Pi> . \<guillemotleft> \<Pi> |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G \<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<Pi> |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G\<guillemotright>\<close>)
    apply (fact "equi-rem-thm")
-  using "equi:3" "hume:1" "\<equiv>E"(5) "\<equiv>Df" by blast
+  using "equi:3" "hume:2" "\<equiv>E"(5) "\<equiv>Df" by blast
 
-AOT_act_theorem "hume:3": \<open>F \<equiv>\<^sub>E G \<rightarrow> #F = #G\<close>
-  by (metis "apE-eqE:1" "deduction-theorem" "hume:1" "\<equiv>E"(2) "vdash-properties:10")
+AOT_act_theorem "hume:4": \<open>F \<equiv>\<^sub>E G \<rightarrow> #F = #G\<close>
+  by (metis "apE-eqE:1" "deduction-theorem" "hume:2" "\<equiv>E"(2) "vdash-properties:10")
 
 AOT_theorem "hume-strict": \<open>\<exists>!x (Numbers(x, F) & Numbers(x, G)) \<equiv> F \<approx>\<^sub>E G\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
@@ -2383,7 +2382,7 @@ proof(rule "\<rightarrow>I"; rule GEN)
   finally AOT_show \<open>x[F] \<equiv> x = #F\<close>.
 qed
 
-AOT_theorem "0F": \<open>\<not>\<exists>u [F]u \<equiv> Numbers(0, F)\<close>
+AOT_theorem "0F:1": \<open>\<not>\<exists>u [F]u \<equiv> Numbers(0, F)\<close>
 proof -
   AOT_have unotEu_act_ord: \<open>\<not>\<exists>v[\<lambda>x O!x & \<^bold>\<A>x \<noteq>\<^sub>E x]v\<close>
   proof(rule "raa-cor:2")
@@ -2398,7 +2397,6 @@ proof -
     moreover AOT_have \<open>y =\<^sub>E y\<close> by (metis 0[THEN "&E"(1)] "ord=Eequiv:1" "vdash-properties:10")
     ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "raa-cor:3")
   qed
-
   AOT_have \<open>Numbers(0, [\<lambda>y \<^bold>\<A>[\<lambda>x O!x & x \<noteq>\<^sub>E x]y])\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"])
      apply (rule "num-def:2"[unvarify G]; "cqt:2[lambda]")
@@ -2451,6 +2449,100 @@ proof -
   qed
 qed
 
+AOT_theorem "0F:2": \<open>\<not>\<exists>u \<^bold>\<A>[F]u \<equiv> #F = 0\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
+  AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
+  proof(rule "raa-cor:2")
+    AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
+    then AOT_obtain u where \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<^bold>\<A>[F]u\<close> by (metis "betaC:1:a")
+    AOT_hence \<open>\<exists>u \<^bold>\<A>[F]u\<close> by (rule "Ordinary.\<exists>I")
+    AOT_thus \<open>\<exists>u \<^bold>\<A>[F]u & \<not>\<exists>u \<^bold>\<A>[F]u\<close> using 0 "&I" by blast
+  qed
+  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
+    by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
+  AOT_hence \<open>0 = #F\<close>
+    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
+  AOT_thus \<open>#F = 0\<close> using id_sym by blast
+next
+  AOT_assume \<open>#F = 0\<close>
+  AOT_hence \<open>0 = #F\<close> using id_sym by blast
+  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
+    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)])
+  AOT_hence 0: \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
+    by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(2)]) "cqt:2[lambda]"
+  AOT_show \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
+  proof(rule "raa-cor:2")
+    AOT_assume \<open>\<exists>u \<^bold>\<A>[F]u\<close>
+    then AOT_obtain u where 1: \<open>\<^bold>\<A>[F]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
+    AOT_have \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close>
+      by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]") (safe intro!: 1 "cqt:2[const_var]"[axiom_inst])
+    AOT_hence \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>I" by blast
+    AOT_thus \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u & \<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close> using "&I" 0 by blast
+  qed
+qed
+
+AOT_theorem "0F:3": \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<not>\<exists>u [F]u\<close>
+  AOT_hence 0: \<open>\<not>\<diamond>\<exists>u [F]u\<close> using "KBasic2:1" "\<equiv>E"(1) by blast
+  AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
+  proof(rule "raa-cor:2")
+    AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
+    then AOT_obtain u where \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<^bold>\<A>[F]u\<close> by (metis "betaC:1:a")
+    AOT_hence \<open>\<diamond>[F]u\<close> by (metis "Act-Sub:3" "\<rightarrow>E")
+    AOT_hence \<open>\<exists>u \<diamond>[F]u\<close> by (rule "Ordinary.\<exists>I")
+    AOT_hence \<open>\<diamond>\<exists>u [F]u\<close> using "Ordinary.res-var-bound-reas[CBF\<diamond>]"[THEN "\<rightarrow>E"] by blast
+    AOT_thus \<open>\<diamond>\<exists>u [F]u & \<not>\<diamond>\<exists>u [F]u\<close> using 0 "&I" by blast
+  qed
+  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
+    by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
+  AOT_hence \<open>0 = #F\<close>
+    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
+  AOT_thus \<open>#F = 0\<close> using id_sym by blast
+qed
+
+AOT_theorem "0F:4": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[F]\<^sub>w = 0\<close>
+proof (rule "rule-id-def:2:b"[OF "w-index", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
+  AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
+    by (simp add: "w-rel:3")
+next
+  AOT_show \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
+  proof (rule "\<rightarrow>I")
+    AOT_assume \<open>w \<Turnstile> \<not>\<exists>u [F]u\<close>
+    AOT_hence 0: \<open>\<not>w \<Turnstile> \<exists>u [F]u\<close>
+      using "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+    AOT_have 1: \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
+    proof(rule "raa-cor:2")
+      AOT_assume \<open>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
+      then AOT_obtain u where 1: \<open>\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
+      AOT_have \<open>\<^bold>\<A>w \<Turnstile> [F]u\<close>
+        by (AOT_subst_rev \<open>\<guillemotleft>[\<lambda>x w \<Turnstile> [F]x]u\<guillemotright>\<close> \<open>\<guillemotleft>w \<Turnstile> [F]u\<guillemotright>\<close>; 
+            safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "w-rel:1"[THEN "\<rightarrow>E"] 1)
+           "cqt:2[lambda]"
+      AOT_hence 1: \<open>w \<Turnstile> [F]u\<close>
+        using "rigid-truth-at:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+      AOT_have \<open>\<box>O!u\<close> by (simp add: Ordinary.restricted_var_condition RN)
+      AOT_hence \<open>\<forall>w w \<Turnstile> O!u\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+      AOT_hence \<open>w \<Turnstile> O!u\<close> by (metis "PossibleWorld.\<forall>E")
+      AOT_hence \<open>w \<Turnstile> (O!u & [F]u)\<close>
+        using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)]
+              "&I"1 by blast
+      AOT_hence \<open>\<exists>x w \<Turnstile> (O!x & [F]x)\<close> using "\<exists>I" by fast
+      AOT_hence \<open>w \<Turnstile> \<exists>u [F]u\<close>
+        using "conj-dist-w:6"[THEN "\<equiv>E"(2)] by fast
+      AOT_thus \<open>w \<Turnstile> \<exists>u [F]u & \<not>w \<Turnstile> \<exists>u [F]u\<close>
+        using 0 "&I" by blast
+    qed
+    AOT_thus \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
+      by (safe intro!: "0F:2"[unvarify F, THEN "\<equiv>E"(1)] "w-rel:1"[THEN "\<rightarrow>E"])
+         "cqt:2[lambda]"
+  qed
+qed
+
 AOT_act_theorem "zero=:1": \<open>NaturalCardinal(x) \<rightarrow> \<forall>F (x[F] \<equiv> Numbers(x, F))\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix F
@@ -2482,7 +2574,7 @@ AOT_act_theorem "zero=:2": \<open>0[F] \<equiv> \<not>\<exists>u[F]u\<close>
 proof -
   AOT_have \<open>0[F] \<equiv> Numbers(0, F)\<close>
     using "zero=:1"[unvarify x, OF "zero:2", THEN "\<rightarrow>E", OF "zero-card", THEN "\<forall>E"(2)].
-  also AOT_have \<open>\<dots> \<equiv> \<not>\<exists>u[F]u\<close> using "0F"[symmetric].
+  also AOT_have \<open>\<dots> \<equiv> \<not>\<exists>u[F]u\<close> using "0F:1"[symmetric].
   finally show ?thesis.
 qed
 
@@ -3619,7 +3711,7 @@ proof(rule "raa-cor:2")
   AOT_hence \<open>[F]u\<close> and num0_F: \<open>Numbers(0, F)\<close> using "&E" "&I" by blast+
   AOT_hence \<open>\<exists>u [F]u\<close> using "Ordinary.\<exists>I" by fast
   moreover AOT_have \<open>\<not>\<exists>u [F]u\<close> using num0_F
-    using "\<equiv>E"(2) "0F" by blast
+    using "\<equiv>E"(2) "0F:1" by blast
   ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "raa-cor:3")
 qed
 
@@ -3698,7 +3790,7 @@ proof (safe intro!: "nnumber:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
   AOT_have \<open>[\<P>]0a\<close>
   proof (safe intro!: "pred-thm:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
                       "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x O!x & x =\<^sub>E u]\<guillemotright>\<close>] "Ordinary.\<exists>I"[where \<beta>=u] "&I" den
-                      "0F"[unvarify F, OF "F-u[den]", unvarify F, OF den, THEN "\<equiv>E"(1)])
+                      "0F:1"[unvarify F, OF "F-u[den]", unvarify F, OF den, THEN "\<equiv>E"(1)])
     AOT_show \<open>[\<lambda>x [O!]x & x =\<^sub>E u]u\<close>
       by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]";
           safe intro!: "&I" "cqt:2[const_var]"[axiom_inst] "ord=Eequiv:1"[THEN "\<rightarrow>E", OF Ordinary.\<psi>] Ordinary.\<psi>)
@@ -4107,7 +4199,7 @@ proof(rule AOT_model_axiomI)
       by (smt (verit) AOT_sem_equiv AOT_sem_not "thm-neg=E")
   qed
   AOT_have \<open>Numbers(0, [\<lambda>x x \<noteq>\<^sub>E x])\<close>
-    apply (rule "0F"[unvarify F, THEN "\<equiv>E"(1)])
+    apply (rule "0F:1"[unvarify F, THEN "\<equiv>E"(1)])
      apply "cqt:2[lambda]"
     using 0 by blast
   AOT_hence \<open>A!0\<close>
@@ -4685,7 +4777,7 @@ proof(rule AOT_model_axiomI)
         AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[G]z])\<close>
           using "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)] by blast
         AOT_hence act_G_unex: \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[G]z]u\<close>
-          by (rule "0F"[unvarify F, THEN "\<equiv>E"(2), rotated]) "cqt:2[lambda]"
+          by (rule "0F:1"[unvarify F, THEN "\<equiv>E"(2), rotated]) "cqt:2[lambda]"
         fix v
         AOT_have \<open>[\<lambda>z \<diamond>E!z]v\<close>
           using Ordinary.\<psi> by (rule AOT_ordinary[THEN "=\<^sub>d\<^sub>fE"(2), rotated]) "cqt:2[lambda]"
@@ -5463,94 +5555,6 @@ proof -
   show ?thesis
     apply (safe intro!: "kirchner-thm:2"[THEN "\<equiv>E"(2)])
     using 1 by blast
-qed
-
-AOT_theorem ext_zero_eq_nec: \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<box>\<not>\<exists>u [F]u\<close>
-  AOT_hence 0: \<open>\<not>\<diamond>\<exists>u [F]u\<close> using "KBasic2:1" "\<equiv>E"(1) by blast
-  AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
-  proof(rule "raa-cor:2")
-    AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
-    then AOT_obtain u where \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
-    AOT_hence \<open>\<^bold>\<A>[F]u\<close> by (metis "betaC:1:a")
-    AOT_hence \<open>\<diamond>[F]u\<close> by (metis "Act-Sub:3" "\<rightarrow>E")
-    AOT_hence \<open>\<exists>u \<diamond>[F]u\<close> by (rule "Ordinary.\<exists>I")
-    AOT_hence \<open>\<diamond>\<exists>u [F]u\<close> using "Ordinary.res-var-bound-reas[CBF\<diamond>]"[THEN "\<rightarrow>E"] by blast
-    AOT_thus \<open>\<diamond>\<exists>u [F]u & \<not>\<diamond>\<exists>u [F]u\<close> using 0 "&I" by blast
-  qed
-  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
-    by (safe intro!: "0F"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
-  AOT_hence \<open>0 = #F\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
-  AOT_thus \<open>#F = 0\<close> using id_sym by blast
-qed
-
-AOT_theorem ext_zero_eq_act: \<open>\<not>\<exists>u \<^bold>\<A>[F]u \<equiv> #F = 0\<close>
-proof(rule "\<equiv>I"; rule "\<rightarrow>I")
-  AOT_assume 0: \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
-  AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
-  proof(rule "raa-cor:2")
-    AOT_assume \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
-    then AOT_obtain u where \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
-    AOT_hence \<open>\<^bold>\<A>[F]u\<close> by (metis "betaC:1:a")
-    AOT_hence \<open>\<exists>u \<^bold>\<A>[F]u\<close> by (rule "Ordinary.\<exists>I")
-    AOT_thus \<open>\<exists>u \<^bold>\<A>[F]u & \<not>\<exists>u \<^bold>\<A>[F]u\<close> using 0 "&I" by blast
-  qed
-  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
-    by (safe intro!: "0F"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
-  AOT_hence \<open>0 = #F\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
-  AOT_thus \<open>#F = 0\<close> using id_sym by blast
-next
-  AOT_assume \<open>#F = 0\<close>
-  AOT_hence \<open>0 = #F\<close> using id_sym by blast
-  AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)])
-  AOT_hence 0: \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
-    by (safe intro!: "0F"[unvarify F, THEN "\<equiv>E"(2)]) "cqt:2[lambda]"
-  AOT_show \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
-  proof(rule "raa-cor:2")
-    AOT_assume \<open>\<exists>u \<^bold>\<A>[F]u\<close>
-    then AOT_obtain u where 1: \<open>\<^bold>\<A>[F]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
-    AOT_have \<open>[\<lambda>z \<^bold>\<A>[F]z]u\<close>
-      by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]") (safe intro!: 1 "cqt:2[const_var]"[axiom_inst])
-    AOT_hence \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close> using "Ordinary.\<exists>I" by blast
-    AOT_thus \<open>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u & \<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close> using "&I" 0 by blast
-  qed
-qed
-
-AOT_theorem ext_zero_eq_world: \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
-proof (rule "\<rightarrow>I")
-  AOT_assume \<open>w \<Turnstile> \<not>\<exists>u [F]u\<close>
-  AOT_hence 0: \<open>\<not>w \<Turnstile> \<exists>u [F]u\<close>
-    using "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-  AOT_have 1: \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
-  proof(rule "raa-cor:2")
-    AOT_assume \<open>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
-    then AOT_obtain u where 1: \<open>\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
-    AOT_have \<open>\<^bold>\<A>w \<Turnstile> [F]u\<close>
-      by (AOT_subst_rev \<open>\<guillemotleft>[\<lambda>x w \<Turnstile> [F]x]u\<guillemotright>\<close> \<open>\<guillemotleft>w \<Turnstile> [F]u\<guillemotright>\<close>; 
-          safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "w-rel:1"[THEN "\<rightarrow>E"] 1)
-         "cqt:2[lambda]"
-    AOT_hence 1: \<open>w \<Turnstile> [F]u\<close>
-      using "rigid-truth-at:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-    AOT_have \<open>\<box>O!u\<close> by (simp add: Ordinary.restricted_var_condition RN)
-    AOT_hence \<open>\<forall>w w \<Turnstile> O!u\<close>
-      using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-    AOT_hence \<open>w \<Turnstile> O!u\<close> by (metis "PossibleWorld.\<forall>E")
-    AOT_hence \<open>w \<Turnstile> (O!u & [F]u)\<close>
-      using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)]
-            "&I"1 by blast
-    AOT_hence \<open>\<exists>x w \<Turnstile> (O!x & [F]x)\<close> using "\<exists>I" by fast
-    AOT_hence \<open>w \<Turnstile> \<exists>u [F]u\<close>
-      using "conj-dist-w:6"[THEN "\<equiv>E"(2)] by fast
-    AOT_thus \<open>w \<Turnstile> \<exists>u [F]u & \<not>w \<Turnstile> \<exists>u [F]u\<close>
-      using 0 "&I" by blast
-  qed
-  AOT_thus \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
-    by (safe intro!: ext_zero_eq_act[unvarify F, THEN "\<equiv>E"(1)] "w-rel:1"[THEN "\<rightarrow>E"])
-       "cqt:2[lambda]"
 qed
 
 (*<*)
