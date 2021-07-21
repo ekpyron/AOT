@@ -8,7 +8,7 @@ chapter\<open>Natural Numbers in AOT\<close>
 
 text\<open>
 While AOT can represent mathematical theories including their deductive systems themselves
-as Abstract Objects, as mentioned in section (TODO: ref), it distinguishes this analysis of
+as @{emph \<open>abstract objects\<close>}, as mentioned in section (TODO: ref), it distinguishes this analysis of
 @{emph \<open>Theoretical Mathematics\<close>} from the notion of @{emph \<open>Natural Mathematics\<close>}. @{emph \<open>Natural\<close>}
 Mathematics consists of ordinary, pretheoretic claims about mathematical objects (TODO: cite PLM (303))
 and arise directly as abstraction of the exemplification patterns of ordinary objects rather
@@ -29,12 +29,17 @@ foreseeable future.\<close>} and arrived at the following results:
   justification of the construction.
 \<^item> We could suggest several amendments to the construction and discover and fix several
   minor errors and inconsistencies in the presentation.
-
+\<close>
+text\<open>
+TODO: formatting in PDF rendering is off.
 Interestingly, there are interactions between this construction and the paradox discovered
 in~\cite{Thesis} and discussed in TODO: cite session. We will describe this interaction in more
 detail in the following sections while reproducing the construction of Nodelman and Zalta and
 thereby show how our work towards amending object theory to overcome the paradox was a prerequisite
 for the current version of the construction.
+
+TODO: remark about forgoing details about significance of terms, while PLM and the implementation
+make them explicit.
 \<close>
 
 section\<open>General Idea of the Construction\<close>
@@ -63,8 +68,8 @@ bijection. Two properties are equinumerous, respectively they count the same num
 if and only if there is a bijection between the sets of objects they exemplify.
 
 However, this conception of equinumerosity relies on objects of theoretical mathematics
-and their axiomatization (sets, functions, bijection). While object theory can in fact define
-those notions as well, it takes relations to be the more primitive, fundamental notion and thereby
+and their axiomatization (sets, functions, bijections). While object theory can in fact define
+those notions as well, it takes relations to be the more primitive, fundamental concept and thereby
 prefers a definition in terms of relations alone.
 
 The concept of there being a bijection between the sets of objects two properties exemplify can 
@@ -99,11 +104,11 @@ proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
     using "\<exists>E" by metis 
   \<comment> \<open>By definition of a one-to-one correspondence it follows that:\<close>
   AOT_hence \<open>\<forall>x ([A!]x \<rightarrow> \<exists>!y ([A!]y & [R]xy))\<close>
-    using "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
-  \<comment> \<open>Now let @{term a} and @{term b} be witnesses to the theorem cited above.\<close>
+    using "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  \<comment> \<open>Now let @{term a} and @{term b} be witnesses to the theorem cited earlier in the text.\<close>
   moreover AOT_obtain a b where 1: \<open>A!a & A!b & a \<noteq> b & \<forall>F([F]a \<equiv> [F]b)\<close>
     using "aclassical2" "\<exists>E"(*<*)[rotated](*>*) by blast
-  \<comment> \<open>Taken together, this means there has to be unique abstract object to which @{term a} bears @{term R}.\<close>
+  \<comment> \<open>Taken together, this means there has to be a unique abstract object to which @{term a} bears @{term R}.\<close>
   ultimately AOT_have \<open>\<exists>!y ([A!]y & [R]ay)\<close>
     using "\<forall>E"(2) "&E" "\<rightarrow>E" by blast
   \<comment> \<open>Now let @{term c} be a witness, s.t. @{term c} is abstract and @{term a} bears @{term R} to @{term c}.\<close>
@@ -111,14 +116,14 @@ proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
     using "&E"(1) "\<exists>E"(*<*)[rotated](*>*) "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   \<comment> \<open>By beta-conversion it follows that @{term a} exemplifies @{emph \<open>being an @{term x} that bears @{term R} to @{term c}.\<close>}\<close>
   AOT_have \<open>[\<lambda>x [R]xc]a\<close>
-  \<comment> \<open>Since by construction @{term a} and @{term b} exemplify the same properties, the same holds true for @{term b}.\<close>
     by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; simp add: "cqt:2[const_var]"[axiom_inst] 2[THEN "&E"(2)])
+  \<comment> \<open>Since by construction @{term a} and @{term b} exemplify the same properties, the same holds true for @{term b}.\<close>
   AOT_hence \<open>[\<lambda>x [R]xc]b\<close>
     by (safe intro!: 1[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
   \<comment> \<open>Again by beta conversion it follows that @{term b} bears @{term R} to @{term c}.\<close>
   AOT_hence 5: \<open>[R]bc\<close>
     using "\<beta>\<rightarrow>C" by blast
-  \<comment> \<open>Now the following is a consequence of @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>} being in one-to-one correspondence to itself:\<close>
+  \<comment> \<open>Now the following is a consequence of the assumption that @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>} is in one-to-one correspondence to itself:\<close>
   AOT_have \<open>\<forall>x \<forall>y \<forall>z ([A!]x & [A!]y & [A!]z \<rightarrow> ([R]xz & [R]yz \<rightarrow> x = y))\<close>
     using "eq-1-1"[unvarify F G, OF "oa-exist:2", OF "oa-exist:2", THEN "\<equiv>E"(1),
                    THEN "fFG:4"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1),
@@ -172,14 +177,14 @@ to number a property as follows:
 An abstract object @{term x} numbers a property @{term G}, if it encodes exactly those properties,
 such that @{emph \<open>actually exemplifying\<close>} them is equinumerous to @{term G}.
 An alternative choice would be to forgo the actuality operator and merely require that @{term x}
-exactly those properties that are equinumerous to @{term F} itself.@{footnote \<open>Note
+encodes exactly those properties that are equinumerous to @{term F} itself.@{footnote \<open>Note
 that earlier derivations used this definition, but were amended in the more recent presentation
 of number theory in PLM. TODO: Cite e.g. \url{http://mally.stanford.edu/Papers/numbers.pdf\<close>}.}
  However, this would have the undesirable consequence that numbering properties would depend on modal context. For a detailed
 discussion of this issue refer to (TODO: cite PLM; maybe reproduce some of it here).
 
-Now @{emph \<open>The Number of @{term F}s\<close>} can simply be defined as @{emph \<open>the\<close>} object that numbers
-@{term F}:
+Now @{emph \<open>The Number of @{term G}s\<close>} can simply be defined as @{emph \<open>the\<close>} object that numbers
+@{term G}:
 
 @{thm[display] "num-def:1"}
 
@@ -216,7 +221,7 @@ qed
 (*>*)
 
 text\<open>
-  Given the fact that we defined numbers by means of the properties they number in particular based
+  Given the fact that we defined numbers by means of the properties they number, which is in particular based
 on the number of objects those properties exemplify, a natural definition of the number zero arises.
 The number zero is the object that numbers the empty property, to be more precise the number of
 @{emph \<open>being a non-self-identical ordinary object\<close>}.@{footnote \<open>To be precise being a
@@ -225,17 +230,70 @@ due to the hyperintensionality of object theory, it does not have to be the case
 @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are the same property. So
 @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are not the same object
 @{emph \<open>a priori\<close>}, even though it is of course a theorem that they are identical. But this theorem
-has to appeal to the fact that both properties are equinumerous and to Hume's Theorem, so it is
-not entirely trivial. Further examples of terms denoting zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
+has to appeal to the fact that both properties are equinumerous and to Hume's Theorem.
+Further examples of terms denoting zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
 @{term \<open>\<guillemotleft>#[\<lambda>x \<exists>p (p & \<not>p)]\<guillemotright>\<close>} also denote the same object. More generally we can prove that
 @{thm "ext_zero_eq_nec"[of _ F, print_as_theorem]} (TODO: cite proof), i.e. the number of any property
 that's necessarily not exemplified by any ordinary object is zero.\<close>}
 
 @{thm[display] "zero:1"}
 
+Note that while the above definition introduces the number zero as (abstract) object, we have not
+defined the notion of a @{emph \<open>Natural Number\<close>} yet, nor shown that the number zero indeed @{emph \<open>is\<close>} a
+natural number. The definition of @{emph \<open>Natural Number\<close>} will rely on introducing a @{emph \<open>predecessor\<close>}
+relation and, intuitively speaking, defining that an abstract object is a natural number, if there is
+a series of objects starting at zero, ending at the given abstract object, s.t. two consecutive objects
+in that series bear the predecessor relation to each other. While we will describe this construction
+in detail in the following sections, we can already define the strictly more general@{footnote \<open>It will
+be a theorem that @{term \<open>\<guillemotleft>#O!\<guillemotright>\<close>} is a natural cardinal that is infinite and not a natural number.\<close>} notion of a
+@{emph \<open>Natural Cardinal\<close>} and it will immediately follow that zero is a natural cardinal.
+An object @{term x} is a natural cardinal, just in case that there is a property @{term G},
+s.t. @{term x} is the number of @{term G}s:
+
+@{thm[display] card[of x]}
+
+By the definition of the number zero, it becomes immediately apparent that zero is a natural cardinal:
+
+@{thm[display] "zero-card"[print_as_theorem]}
+
 \<close>
 
+section\<open>Ancestral Relations and Transitive Closures\<close>
 
+text\<open>
+As mentioned above, @{emph \<open>Natural Numbers\<close>} will, informally speaking, be defined by the means of
+series of objects that bear a (yet to be introduced) predecessor relation to each other.
+However, traditionally, a series of objects relies on it being possible to index its objects using a
+continuous sequence of natural numbers. Since our goal is to @{emph \<open>define\<close>} natural numbers, using
+this traditional notion of a series is not an option.
+Instead we construct @{emph \<open>ancestral relations\<close>}. In particular the @{emph \<open>weak ancestral\<close>} of
+certain relations will match the concept of the transitive closure of the relation.
+Natural numbers will be defined as the objects to which the number zero bears the
+@{emph \<open>weak ancestral\<close>} of the predecessor relation, i.e. the objects that are transitively preceded by zero.
+
+The first step in this process is to define being a @{emph \<open>hereditary\<close>} property with respect to
+a relation, which will lead to a definition of the @{emph \<open>strong ancestral\<close>} of a relation.
+
+\<close>
+
+subsection\<open>Properties that are Hereditary with respect to a Relation\<close>
+
+text\<open>
+A property @{term F} is @{emph \<open>hereditary\<close>} w.r.t. a relation @{term R}, if and only if for every pair
+of objects @{term x} and @{term y}, s.t. @{term x} bears @{term R} to @{term y}, if @{term x} exemplifies
+@{term F}, then @{term y} exemplifies @{term F}:
+
+@{thm[display] "hered:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F R, print_as_theorem]}
+\<close>
+
+subsection\<open>Strong Ancestral of a Relation\<close>
+
+text\<open>
+Using the above definition, we can introduce the @{emph \<open>Strong Ancestral\<close>} of a relation @{term R},
+which will be written as @{term \<open>\<guillemotleft>[R]\<^sup>*\<guillemotright>\<close>}:
+
+@{thm[display] "ances-df"}
+\<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
 

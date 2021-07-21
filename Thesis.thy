@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar"
+  imports AOT_PLM (* "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar" *)
 begin
 (*>*)
 
@@ -793,7 +793,8 @@ AOT draws two fundamental distinctions, one between @{emph \<open>abstract\<clos
 @{emph \<open>ordinary\<close>} objects, and one between two modes of predication, namely,
 classical @{emph \<open>exemplification\<close>}  @{term "\<guillemotleft>[F]x\<guillemotright>"}, or more generally, @{term "\<guillemotleft>[R]x\<^sub>1...x\<^sub>n\<guillemotright>"} and
 @{emph \<open>encoding\<close>} @{term "\<guillemotleft>x[F]\<guillemotright>"}.@{footnote \<open>Note that we use additional square brackets around property terms
-in exemplification or encoding formulas. This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
+in exemplification or encoding formulas, except for specific constants like @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}, @{term \<open>\<guillemotleft>O!\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>}.
+This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
 In AOT's usual notation these square brackets would be omitted, i.e. exemplification would be written as
 $Fx_1\ldots x_n$ and encoding as $xF$.\<close>} The variables @{term x}, @{term y}, @{term z}, @{text \<open>\<dots>\<close>} range over both ordinary and
 abstract objects and we can distinguish claims about these two kinds of objects by using the exemplification 
