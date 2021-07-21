@@ -295,6 +295,16 @@ translations
   "_AOT_lambda \<alpha> \<phi>" => "CONST AOT_lambda (_abs \<alpha> \<phi>)"
   "_explicitRelation \<Pi>" => "\<Pi>"
 
+syntax (output) "_lambda_args" :: \<open>any \<Rightarrow> patterns \<Rightarrow> patterns\<close> ("__")
+
+AOT_syntax_print_translations
+  "_AOT_lambda (_lambda_args x y) \<phi>" <= "CONST AOT_lambda (_abs (_pattern x y) \<phi>)"
+  "_AOT_lambda (_lambda_args x y) \<phi>" <= "CONST AOT_lambda (_abs (_patterns x y) \<phi>)"
+  "_AOT_lambda x \<phi>" <= "CONST AOT_lambda (_abs x \<phi>)"
+  "_lambda_args x (_lambda_args y z)" <= "_lambda_args x (_patterns y z)"
+  "_lambda_args (x y z)" <= "_lambda_args (_tuple x (_tuple_arg (_tuple y z)))"
+
+
 AOT_syntax_print_translations
   "_AOT_denotes \<tau>" <= "CONST AOT_denotes \<tau>"
   "_AOT_imp \<phi> \<psi>" <= "CONST AOT_imp \<phi> \<psi>"
@@ -308,11 +318,6 @@ AOT_syntax_print_translations
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (\<lambda>x. \<phi>)"
   "_AOT_lambda0 \<phi>" <= "CONST AOT_lambda0 \<phi>"
   "_AOT_concrete" <= "CONST AOT_concrete"
-  "_AOT_lambda \<alpha> \<phi>" <= "CONST AOT_lambda (_abs \<alpha> \<phi>)"
-  "_AOT_lambda \<alpha> \<phi>" <= "CONST AOT_lambda (\<lambda> \<alpha> . \<phi>)"
-  "_AOT_exe (_AOT_lambda vars \<phi>) args" <= "CONST AOT_exe (_AOT_lambda vars \<phi>) args"
-  "_AOT_exe (_explicitRelation \<Pi>) args" <= "CONST AOT_exe \<Pi> args"
-
 
 nonterminal free_var
 nonterminal free_vars
@@ -404,10 +409,6 @@ syntax "_AOT_premises" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premi
        "_AOT_act_axiom" :: "\<phi>' \<Rightarrow> AOT_prop" (\<open>_ \<in> \<Lambda>\<close>)
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
-
-AOT_syntax_print_translations
-  "_AOT_act_axiom \<phi>" <= "CONST AOT_model_act_axiom \<phi>"
-  "_AOT_axiom \<phi>" <= "CONST AOT_model_axiom \<phi>"
 
 parse_translation\<open>
 let
@@ -525,6 +526,55 @@ if isEllipses then Ellipses (s,e)
 else Verbatim name
 end
 \<close>
+
+syntax (output) "_AOT_individual_term" :: \<open>'a \<Rightarrow> tuple_args\<close> ("_")
+syntax (output) "_AOT_individual_terms" :: \<open>tuple_args \<Rightarrow> tuple_args \<Rightarrow> tuple_args\<close> ("__")
+syntax (output) "_AOT_relation_term" :: \<open>'a \<Rightarrow> \<Pi>\<close>
+
+
+print_ast_translation\<open>
+let
+fun addFunct (x,f) g = (x, fn y => g (f y))
+fun unconstrain (Ast.Appl (Ast.Constant "_constrain"::x::tl)) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_constrain"::x::tl))
+  | unconstrain (Ast.Appl (Ast.Constant "_free"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_free"::[x]))
+  | unconstrain (Ast.Appl (Ast.Constant "_bound"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_bound"::[x]))
+  | unconstrain (Ast.Appl (Ast.Constant "_var"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_var"::[x]))
+  | unconstrain trm = (trm, fn x => x)
+in
+AOT_syntax_print_ast_translations
+[(\<^syntax_const>\<open>_AOT_individual_term\<close>, fn _ =>
+    (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_desc\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
+    | [trm as Ast.Constant _] => trm
+    | [trm] => (case unconstrain trm of (Ast.Variable name,c) => 
+                  (case printVarKind name of SingleVariable x => c (Ast.Variable name) |
+                    Ellipses (x,y) => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_exe_arg_ellipse\<close>) [
+                c (Ast.Variable x),
+                c (Ast.Variable y)])
+              | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        ) 
+        | (Ast.Constant name,c) => c (Ast.Constant name)
+        |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+    | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms)),
+(\<^syntax_const>\<open>_AOT_relation_term\<close>, fn _ =>
+    (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
+    | [trm] => (case unconstrain trm of (Ast.Variable name,c) => 
+                  (case printVarKind name of SingleVariable x => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c (Ast.Variable name)])
+                  | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        ) 
+        | (Ast.Constant name,c) => c (Ast.Constant name) |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+    | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))]
+end
+\<close>
+
+AOT_syntax_print_translations
+  "_AOT_individual_terms (_AOT_individual_term x) (_AOT_individual_terms (_tuple y z))" <= "_AOT_individual_terms (_tuple x (_tuple_args y z))"
+  "_AOT_individual_terms (_AOT_individual_term x) (_AOT_individual_term y)" <= "_AOT_individual_terms (_tuple x (_tuple_arg y))"
+  "_AOT_individual_terms (_tuple x y)" <= "_AOT_individual_term (_tuple x y)"
+  "_AOT_exe (_AOT_relation_term \<Pi>) (_AOT_individual_term \<kappa>)" <= "CONST AOT_exe \<Pi> \<kappa>"
 
 AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
 AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
@@ -743,6 +793,8 @@ print_translation\<open>AOT_syntax_print_translations
     val y = (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
     in Const (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, dummyT) $ y end
   ),
+ (\<^const_syntax>\<open>AOT_model_axiom\<close>, fn ctxt => fn [trm] => Const (\<^syntax_const>\<open>_AOT_axiom\<close>, dummyT) $ (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ trm)),
+ (\<^const_syntax>\<open>AOT_model_act_axiom\<close>, fn ctxt => fn [trm] => Const (\<^syntax_const>\<open>_AOT_axiom\<close>, dummyT) $ (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ trm)),
 (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn _ =>  fn [t] => let
   fun mapAppls (x as Const ("_free", _) $ Free (_, Type ("_ignore_type", [Type ("fun", _)]))) = (Const ("_AOT_raw_appl", dummyT) $ x)
     | mapAppls (x as Const ("_free", _) $ Free (_, Type ("fun", _))) = (Const ("_AOT_raw_appl", dummyT) $ x)
@@ -849,7 +901,7 @@ exemplification/encoding/lambda tuples
 
 bundle AOT_syntax
 begin
-declare[[show_AOT_syntax=true, show_question_marks=false]]
+declare[[show_AOT_syntax=true, show_question_marks=false, eta_contract=false]]
 end
 
 bundle AOT_no_syntax
@@ -897,12 +949,6 @@ AOT_syntax_print_translations [
        (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ y)
 )
 ]\<close>
-
-print_translation \<open>
-AOT_syntax_print_translations [
-(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [R, Const (\<^const_syntax>\<open>Pair\<close>, _) $ a $ b] => (
-Const (\<^const_syntax>\<open>AOT_exe\<close>, dummyT) $ R $ (Const (\<^syntax_const>\<open>_AOT_exe_args\<close>, dummyT) $ a $ b))
-)]\<close>
 
 text\<open>Special marker for printing propositions as theorems.\<close>
 definition print_as_theorem :: \<open>\<o> \<Rightarrow> bool\<close> where \<open>print_as_theorem \<equiv> \<lambda> \<phi> . \<forall>v . [v \<Turnstile> \<phi>]\<close>

@@ -5557,6 +5557,60 @@ proof -
     using 1 by blast
 qed
 
+(* TODO: more theorems *)
+
+(* Note: we forgo restricted variables for natural cardinals. *)
+AOT_define Finite :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Finite'(_')\<close>)
+  "inf-card:1": \<open>Finite(x) \<equiv>\<^sub>d\<^sub>f NaturalCardinal(x) & [\<nat>]x\<close>
+AOT_define Infinite :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Infinite'(_')\<close>)
+  "inf-card:2": \<open>Infinite(x) \<equiv>\<^sub>d\<^sub>f NaturalCardinal(x) & \<not>Finite(x)\<close>
+
+AOT_theorem "inf-card-exist:1": \<open>NaturalCardinal(#O!)\<close>
+  by (safe intro!: card[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>O!\<guillemotright>\<close>] "=I" "num-def:2"[unvarify G] "oa-exist:1")
+
+AOT_theorem "inf-card-exist:2": \<open>Infinite(#O!)\<close>
+proof (safe intro!: "inf-card:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "inf-card-exist:1")
+  AOT_show \<open>\<not>Finite(#O!)\<close>
+  proof(rule "raa-cor:2")
+    AOT_assume \<open>Finite(#O!)\<close>
+    AOT_hence 0: \<open>[\<nat>]#O!\<close>
+      using "inf-card:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2) by blast
+    AOT_have \<open>Numbers(#O!, [\<lambda>z \<^bold>\<A>O!z])\<close>
+      using "eq-num:3"[unvarify G, OF "oa-exist:1"].
+    AOT_hence \<open>#O! = #O!\<close>
+      using "eq-num:2"[unvarify x G, THEN "\<equiv>E"(1), OF "oa-exist:1", OF "num-def:2"[unvarify G], OF "oa-exist:1"]
+      by blast
+    AOT_hence \<open>[\<nat>]#O! & #O! = #O!\<close> using 0 "&I" by blast
+    AOT_hence \<open>\<exists>x ([\<nat>]x & x = #O!)\<close>
+      using "num-def:2"[unvarify G, OF "oa-exist:1"] "\<exists>I"(1) by fast
+    AOT_hence \<open>\<diamond>\<exists>y ([E!]y & \<forall>u (\<^bold>\<A>[O!]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
+      using "modal-axiom"[axiom_inst, unvarify G, THEN "\<rightarrow>E", OF "oa-exist:1"] by blast
+    AOT_hence \<open>\<exists>y \<diamond>([E!]y & \<forall>u (\<^bold>\<A>[O!]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
+      using "BF\<diamond>"[THEN "\<rightarrow>E"] by blast
+    then AOT_obtain b where \<open>\<diamond>([E!]b & \<forall>u (\<^bold>\<A>[O!]u \<rightarrow> u \<noteq>\<^sub>E b))\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence 1: \<open>\<diamond>[E!]b\<close> and 2: \<open>\<diamond>\<forall>u (\<^bold>\<A>[O!]u \<rightarrow> u \<noteq>\<^sub>E b)\<close>
+      using "KBasic2:3"[THEN "\<rightarrow>E"] "&E" by blast+
+    AOT_have \<open>[\<lambda>x \<diamond>[E!]x]b\<close>
+      by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]")
+         (safe intro!: 1 "cqt:2[const_var]"[axiom_inst])
+    moreover AOT_have \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close>
+      by (rule "rule-id-def:1[zero]"[OF "oa:1"]) "cqt:2[lambda]"
+    ultimately AOT_have b_ord: \<open>O!b\<close>
+      using "rule=E" id_sym by fast
+    AOT_hence \<open>\<^bold>\<A>O!b\<close>
+      by (meson "\<equiv>E"(1) "oa-facts:7")
+    moreover AOT_have 2: \<open>\<forall>u (\<^bold>\<A>[O!]u \<rightarrow> u \<noteq>\<^sub>E b)\<close>
+      using "modal-lemma"[unvarify G, unconstrain v, OF "oa-exist:1", THEN "\<rightarrow>E", OF b_ord, THEN "\<rightarrow>E", OF 2].
+    ultimately AOT_have \<open>b \<noteq>\<^sub>E b\<close>
+      using "Ordinary.\<forall>E"[OF 2, unconstrain \<alpha>, THEN "\<rightarrow>E", OF b_ord, THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>\<not>(b =\<^sub>E b)\<close> by (metis "\<equiv>E"(1) "thm-neg=E")
+    moreover AOT_have \<open>b =\<^sub>E b\<close>
+      using "ord=Eequiv:1"[THEN "\<rightarrow>E", OF b_ord].
+    ultimately AOT_show \<open>p & \<not>p\<close> for p by (metis "raa-cor:3")
+  qed
+qed
+
 (*<*)
 end
 (*>*)
