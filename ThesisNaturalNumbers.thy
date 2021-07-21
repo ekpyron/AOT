@@ -190,7 +190,7 @@ Now @{emph \<open>The Number of @{term G}s\<close>} can simply be defined as @{e
 
 Using these definitions Nodelman and Zalta can indeed derive Hume's theorem:
 
-@{thm[display] "hume:1"[of F G]}
+@{thm[display] "hume:2"[of F G]}
 
 Note that, due to the fact that AOT's definite descriptions are modally rigid and refer to objects
 in the actual world, this theorem is not modally strict.@{footnote \<open>This is signified by the turnstile
@@ -212,7 +212,7 @@ AOT_lemma ord_eq_e_eq: \<open>(O!x & x \<noteq>\<^sub>E x) \<equiv> (O!x & x \<n
 proof (safe intro!: "\<equiv>I" "\<rightarrow>I" "&I" dest: "&E"; (auto dest: "&E"; fail)?)
   AOT_assume \<open>O!x & x \<noteq>\<^sub>E x\<close>
   AOT_thus \<open>x \<noteq> x\<close>
-    by (metis "contraposition:1[2]" "\<equiv>E"(1) "ord-=Eequiv:1" "thm-neg=E" "\<rightarrow>E" "\<rightarrow>I" "&E")
+    by (metis "contraposition:1[2]" "\<equiv>E"(1) "ord=Eequiv:1" "thm-neg=E" "\<rightarrow>E" "\<rightarrow>I" "&E")
 next
   AOT_assume \<open>O!x & x \<noteq> x\<close>
   AOT_thus \<open>x \<noteq>\<^sub>E x\<close>
@@ -233,7 +233,7 @@ due to the hyperintensionality of object theory, it does not have to be the case
 has to appeal to the fact that both properties are equinumerous and to Hume's Theorem.
 Further examples of terms denoting zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
 @{term \<open>\<guillemotleft>#[\<lambda>x \<exists>p (p & \<not>p)]\<guillemotright>\<close>} also denote the same object. More generally we can prove that
-@{thm "ext_zero_eq_nec"[of _ F, print_as_theorem]} (TODO: cite proof), i.e. the number of any property
+@{thm "0F:3"[of _ F, print_as_theorem]} (TODO: cite proof), i.e. the number of any property
 that's necessarily not exemplified by any ordinary object is zero.\<close>}
 
 @{thm[display] "zero:1"}
