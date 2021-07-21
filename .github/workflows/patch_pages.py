@@ -2,11 +2,33 @@
 
 import sys;
 import glob;
+import re;
+import os;
 
 source_start='<pre class="source">';
 source_end='</pre>\n';
 
+theorems = {}
+
+symbols = {}
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "symbolmap")) as f:
+  for line in f.readlines():
+    split = line.strip().split()
+    symbols[split[0]] = line[len(split[0]):].strip()
+
+symbolPattern = re.compile("|".join(map(re.escape, symbols.keys())))
+
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..","AOT.ExportInfo","info")) as f:
+  for line in f.readlines():
+    split = line.strip().split('|')
+    items = " ".join(map(lambda i: "("+i+")",split[2].split()))
+    if len(split[1]) > 1:
+      theorems[split[1]] = items
+      theorems[symbolPattern.sub(lambda m: symbols[m.group(0)], split[1])] = items
+theoremPattern = re.compile(r'([ >,)".;])(["]?)({})(["]?)([ <\[\n(,".;])'.format("|".join(map(re.escape, theorems.keys()))))
+
 for filename in sys.argv[1:]:
+  print("Patching: " + filename)
   output=""
   with open(filename, 'r') as f:
     source=False;
@@ -79,5 +101,8 @@ pre .linenumber span {
 </style>
 '''
 
+  output = theoremPattern.sub(lambda m: '{}<span title="{}">{}{}{}</span>{}'.format(m.group(1), theorems[m.group(3)], m.group(2), m.group(3), m.group(4), m.group(5)), output)
+
   with open(filename, 'w') as f:
     f.write(output);
+

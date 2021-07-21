@@ -15,8 +15,10 @@ jobs:
       - name: Isabelle build.
         run: |
            mkdir output
+           mkdir AOT.ExportInfo
            chmod 777 output
-           docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:latest build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/output
+           chmod 777 AOT.ExportInfo
+           docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:latest build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/output -e
            cp -r output build
       - name: Patch pages.
         run: .github/workflows/patch_pages.py build/Unsorted/AOT/*.html

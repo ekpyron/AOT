@@ -509,8 +509,7 @@ class AOT_Enc =
 
 (* TODO: unfortunate that this is not in AOT_syntax *)
 AOT_syntax_print_translations
-  "_AOT_enc args (_AOT_lambda vars \<phi>)" <= "CONST AOT_enc args (_AOT_lambda vars \<phi>)"
-  "_AOT_enc args (_explicitRelation \<Pi>)" <= "CONST AOT_enc args \<Pi>"
+  "_AOT_enc (_AOT_individual_term \<kappa>) (_AOT_relation_term \<Pi>)" <= "CONST AOT_enc \<kappa> \<Pi>"
 
 context AOT_meta_syntax
 begin
