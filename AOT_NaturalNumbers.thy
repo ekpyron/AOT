@@ -2061,7 +2061,7 @@ proof(rule "\<rightarrow>I")
         using "approx-nec:3"[unvarify F, OF act_den, THEN "\<rightarrow>E", OF "&I", OF "actuallyF:2", OF G_rigid].
       moreover AOT_have \<open>\<box>(x[F] \<rightarrow> \<box>x[F])\<close> for F by (simp add: RN "pre-en-eq:1[1]")
       ultimately AOT_have \<open>\<box>(x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> for F
-        using "sc-eq-box-box:5"[THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"] by blast
+        using "sc-eq-box-box:5" "\<rightarrow>E" "qml:2"[axiom_inst] "&I" by meson
       AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> by (rule "\<forall>I")
       AOT_hence 1: \<open>\<box>\<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)\<close> using BF[THEN "\<rightarrow>E"] by fast
       AOT_have \<open>\<box>G\<down>\<close> by (simp add: "ex:2:a")

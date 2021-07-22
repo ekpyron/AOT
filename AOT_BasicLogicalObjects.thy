@@ -29,7 +29,7 @@ AOT_theorem "uni-tv": \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
 AOT_define TheTruthValueOf :: \<open>\<phi> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>\<circ>_\<close> [100] 100)
   "the-tv-p": \<open>\<circ>p =\<^sub>d\<^sub>f \<^bold>\<iota>x TruthValueOf(x,p)\<close>
 
-AOT_theorem "tv-id": \<open>\<circ>p = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q])))\<close>
+AOT_theorem "tv-id:1": \<open>\<circ>p = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q])))\<close>
 proof -
   AOT_have \<open>\<box>\<forall>x(TruthValueOf(x,p)  \<equiv> A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q])))\<close>
     by (rule RN; rule GEN; rule "tv-p"[THEN "\<equiv>Df"])
@@ -38,6 +38,8 @@ proof -
   thus ?thesis
     using "=\<^sub>d\<^sub>fI"(1)[OF "the-tv-p", OF "uni-tv"] by fast
 qed
+
+(* TODO[PLM]: currently "tv-id:2" uses the definition of "prop-enc" only defined below *)
 
 (* TODO more theorems *)
 
@@ -147,15 +149,31 @@ proof -
   qed
 qed
 
-AOT_act_theorem "T-lem:4": \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-  using "T-lem:3" "\<equiv>E"(2) "oth-class-taut:3:a" by blast
+(* TODO[PLM]: to be moved once prop-enc is moved *)
+AOT_theorem "tv-id:2": \<open>\<circ>p\<^bold>\<Sigma>p\<close>
+proof -
+  AOT_modally_strict {
+    AOT_have \<open>(p \<equiv> p) & [\<lambda>y p] = [\<lambda>y p]\<close>
+      by (auto simp: "prop-prop2:2" "rule=I:1" intro!: "\<equiv>I" "\<rightarrow>I" "&I")
+    AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
+      using "\<exists>I" by fast
+  }
+  AOT_hence \<open>\<^bold>\<A>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
+    using "RA[2]" by blast
+  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))[\<lambda>y p]\<close>
+    by (safe intro!: "desc-nec-encode:1"[unvarify F, THEN "\<equiv>E"(2)] "cqt:2")
+  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))\<^bold>\<Sigma>p\<close>
+    by (safe intro!: "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "A-descriptions")
+  AOT_thus \<open>\<circ>p\<^bold>\<Sigma>p\<close>
+    by (rule "rule=E"[rotated, OF "tv-id:1"[symmetric]])
+qed
 
-AOT_act_theorem "T-lem:5": \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close>
+AOT_act_theorem "T-lem:4": \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close>
 proof -
   AOT_have \<open>\<forall>x (x = \<^bold>\<iota>x TruthValueOf(x, p) \<equiv> \<forall>z (TruthValueOf(z, p) \<equiv> z = x))\<close>
     by (simp add: "fund-cont-desc" GEN)
   moreover AOT_have \<open>\<circ>p\<down>\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" "T-lem:4" "&E"(1) "prop-enc" by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "tv-id:2" "&E"(1) "prop-enc" by blast
   ultimately AOT_have \<open>(\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)) \<equiv> \<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>\<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
@@ -424,18 +442,18 @@ qed
 
 AOT_act_theorem "q-True:1": \<open>p \<equiv> (\<circ>p = \<top>)\<close>
   apply (rule "valueof-facts:1"[unvarify x, THEN "\<rightarrow>E", rotated, OF "T-lem:1"])
-  using "\<equiv>\<^sub>d\<^sub>fE" "T-lem:4" "&E"(1) "prop-enc" by blast
+  using "\<equiv>\<^sub>d\<^sub>fE" "tv-id:2" "&E"(1) "prop-enc" by blast
 
 AOT_act_theorem "q-True:2": \<open>\<not>p \<equiv> (\<circ>p = \<bottom>)\<close>
   apply (rule "valueof-facts:2"[unvarify x, THEN "\<rightarrow>E", rotated, OF "T-lem:1"])
-  using "\<equiv>\<^sub>d\<^sub>fE" "T-lem:4" "&E"(1) "prop-enc" by blast
+  using "\<equiv>\<^sub>d\<^sub>fE" "tv-id:2" "&E"(1) "prop-enc" by blast
 
 AOT_act_theorem "q-True:3": \<open>p \<equiv> \<top>\<^bold>\<Sigma>p\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume p
   AOT_hence \<open>\<circ>p = \<top>\<close> by (metis "\<equiv>E"(1) "q-True:1")
   moreover AOT_have \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-    by (simp add: "T-lem:4")
+    by (simp add: "tv-id:2")
   ultimately AOT_show \<open>\<top>\<^bold>\<Sigma>p\<close>
     using "rule=E" "T-lem:4" by fast
 next
@@ -461,7 +479,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>\<not>p\<close>
   AOT_hence \<open>\<circ>p = \<bottom>\<close> by (metis "\<equiv>E"(1) "q-True:2")
   moreover AOT_have \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-    by (simp add: "T-lem:4")
+    by (simp add: "tv-id:2")
   ultimately AOT_show \<open>\<bottom>\<^bold>\<Sigma>p\<close>
     using "rule=E" "T-lem:4" by fast
 next

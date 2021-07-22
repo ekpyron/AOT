@@ -2989,17 +2989,26 @@ proof(rule "\<rightarrow>I"; rule "\<rightarrow>I")
     using "\<or>E"(2) "reductio-aa:1" by blast
 qed
 
-AOT_theorem "sc-eq-box-box:5": \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> ((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
-proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
-  AOT_assume A: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
-  AOT_hence \<open>\<phi> \<rightarrow> \<box>\<phi>\<close> and \<open>\<psi> \<rightarrow> \<box>\<psi>\<close>
-    using "&E" "qml:2"[axiom_inst] "\<rightarrow>E" by blast+
-  moreover AOT_assume \<open>\<phi> \<equiv> \<psi>\<close>
-  ultimately AOT_have \<open>\<box>\<phi> \<equiv> \<box>\<psi>\<close>
-    using "\<rightarrow>E" "qml:2"[axiom_inst] "\<equiv>E" "\<equiv>I" by meson
-  moreover AOT_have \<open>(\<box>\<phi> \<equiv> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
-    using A "sc-eq-box-box:4" "\<rightarrow>E" by blast
-  ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close> using "\<rightarrow>E" by blast
+AOT_theorem "sc-eq-box-box:5": \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> \<box>((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
+  AOT_hence \<open>\<box>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
+    using 4[THEN "\<rightarrow>E"] "&E" "&I" "KBasic:3" "\<equiv>E"(2) by metis
+  moreover AOT_have \<open>\<box>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> \<box>((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
+  proof (rule RM; rule "\<rightarrow>I"; rule "\<rightarrow>I")
+    AOT_modally_strict {
+      AOT_assume A: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
+      AOT_hence \<open>\<phi> \<rightarrow> \<box>\<phi>\<close> and \<open>\<psi> \<rightarrow> \<box>\<psi>\<close>
+        using "&E" "qml:2"[axiom_inst] "\<rightarrow>E" by blast+
+      moreover AOT_assume \<open>\<phi> \<equiv> \<psi>\<close>
+      ultimately AOT_have \<open>\<box>\<phi> \<equiv> \<box>\<psi>\<close>
+        using "\<rightarrow>E" "qml:2"[axiom_inst] "\<equiv>E" "\<equiv>I" by meson
+      moreover AOT_have \<open>(\<box>\<phi> \<equiv> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
+        using A "sc-eq-box-box:4" "\<rightarrow>E" by blast
+      ultimately AOT_show \<open>\<box>(\<phi> \<equiv> \<psi>)\<close> using "\<rightarrow>E" by blast
+    }
+  qed
+  ultimately AOT_show \<open>\<box>((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close> using "\<rightarrow>E" by blast
 qed
 
 AOT_theorem "sc-eq-box-box:6": \<open>\<box>(\<phi> \<rightarrow> \<box>\<phi>) \<rightarrow> ((\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<rightarrow> \<psi>))\<close>
@@ -4759,10 +4768,10 @@ proof -
     using "thm-relation-negation:6" "\<forall>I" "\<forall>E"(1)[rotated, OF "log-prop-prop:2"] by fast
 qed
 
-AOT_define "cont-tf:1" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyTrue'(_')")
+AOT_define ContingentlyTrue :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyTrue'(_')")
   "cont-tf:1": \<open>ContingentlyTrue(p) \<equiv>\<^sub>d\<^sub>f p & \<diamond>\<not>p\<close>
 
-AOT_define "cont-tf:2" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyFalse'(_')")
+AOT_define ContingentlyFalse :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyFalse'(_')")
   "cont-tf:2": \<open>ContingentlyFalse(p) \<equiv>\<^sub>d\<^sub>f \<not>p & \<diamond>p\<close>
 
 AOT_theorem "cont-true-cont:1": \<open>ContingentlyTrue((p)) \<rightarrow> Contingent0((p))\<close>
@@ -6757,17 +6766,20 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>A!y\<close> by (metis "\<equiv>E"(2) "oa-facts:8")
 qed
 
-AOT_act_theorem "desc-encode": \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
+AOT_act_theorem "desc-encode:1": \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F}\<close>
 proof -
   AOT_have \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
     by (simp add: "A-descriptions")
   AOT_hence \<open>A!\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F})) & \<forall>F (\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F})\<close>
     using "y-in:3"[THEN "\<rightarrow>E"] by blast
-  AOT_thus \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
+  AOT_thus \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F}\<close>
     using "&E" "\<forall>E" by blast
 qed
 
-AOT_theorem "desc-nec-encode": \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
+AOT_act_theorem "desc-encode:2": \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
+  using "desc-encode:1".
+
+AOT_theorem "desc-nec-encode:1": \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<^bold>\<A>\<phi>{F}\<close>
 proof -
   AOT_have 0: \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<down>\<close>
     by (simp add: "A-descriptions")
@@ -6777,16 +6789,19 @@ proof -
     using "Act-Basic:2" "&E"(2) "\<equiv>E"(1) by blast
   AOT_hence \<open>\<forall>F \<^bold>\<A>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F})\<close>
     using "\<equiv>E"(1) "logic-actual-nec:3" "vdash-properties:1[2]" by blast
-  AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G})\<close>
+  AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F})\<close>
     using "\<forall>E" by blast
-  AOT_hence \<open>\<^bold>\<A>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
+  AOT_hence \<open>\<^bold>\<A>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<^bold>\<A>\<phi>{F}\<close>
     using "Act-Basic:5" "\<equiv>E"(1) by blast
-  AOT_thus \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
+  AOT_thus \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<^bold>\<A>\<phi>{F}\<close>
     using "en-eq:10[1]"[unvarify x\<^sub>1, OF 0] "\<equiv>E"(6) by blast
 qed
 
+AOT_theorem "desc-nec-encode:2": \<open>\<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<^bold>\<A>\<phi>{G}\<close>
+  using "desc-nec-encode:1".
+
 AOT_theorem "Box-desc-encode:1": \<open>\<box>\<phi>{G} \<rightarrow> \<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close>
-  by (rule "\<rightarrow>I"; rule "desc-nec-encode"[THEN "\<equiv>E"(2)])
+  by (rule "\<rightarrow>I"; rule "desc-nec-encode:2"[THEN "\<equiv>E"(2)])
      (meson "nec-imp-act" "vdash-properties:10")
 
 AOT_theorem "Box-desc-encode:2": \<open>\<box>\<phi>{G} \<rightarrow> \<box>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G})\<close>
@@ -6827,7 +6842,7 @@ proof (rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>(x[F] \<rightarrow> \<box>x[F])\<close> for F by (meson "pre-en-eq:1[1]" RN)
   moreover AOT_have \<open>\<box>(\<phi>{F} \<rightarrow> \<box>\<phi>{F})\<close> for F using RN "strict-can:1[E]"[OF assms] "\<forall>E" by blast
   ultimately AOT_have \<open>\<box>(x[F] \<equiv> \<phi>{F})\<close> for F
-    by (metis "&I" "sc-eq-box-box:5" "vdash-properties:6")
+    using "sc-eq-box-box:5" "qml:2"[axiom_inst, THEN "\<rightarrow>E"] "\<rightarrow>E" "&I" by metis
   AOT_hence \<open>\<forall>F \<box>(x[F] \<equiv> \<phi>{F})\<close> by (rule GEN)
   AOT_hence \<open>\<box>\<forall>F (x[F] \<equiv> \<phi>{F})\<close> by (rule BF[THEN "\<rightarrow>E"])
   AOT_thus \<open>\<box>([A!]x & \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
@@ -6852,9 +6867,9 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem "box-phi-a:3": assumes \<open>RIGID_CONDITION(\<phi>)\<close>
-  shows \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[G] \<equiv> \<phi>{G}\<close>
-  using "desc-nec-encode" 
-    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF "strict-can:1[E]"[OF assms, THEN "\<forall>E"(2)[where \<beta>=G], THEN RN]]
+  shows \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{F}))[F] \<equiv> \<phi>{F}\<close>
+  using "desc-nec-encode:2"
+    "sc-eq-fur:2"[THEN "\<rightarrow>E", OF "strict-can:1[E]"[OF assms, THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
     "\<equiv>E"(5) by blast
 
 AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Null'(_')") 
@@ -7041,7 +7056,7 @@ next
     moreover AOT_have \<open>\<not>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
     proof(rule "raa-cor:2")
       AOT_assume 0: \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
-      AOT_hence \<open>\<^bold>\<A>(F \<noteq> F)\<close> using "desc-nec-encode"[THEN "\<equiv>E"(1), OF 0] by blast
+      AOT_hence \<open>\<^bold>\<A>(F \<noteq> F)\<close> using "desc-nec-encode:2"[THEN "\<equiv>E"(1), OF 0] by blast
       moreover AOT_have \<open>\<not>\<^bold>\<A>(F \<noteq> F)\<close>
         using "\<equiv>\<^sub>d\<^sub>fE" "id-act:2" "id-eq:1" "\<equiv>E"(2) "=-infix" "raa-cor:3" by blast
       ultimately AOT_show \<open>\<^bold>\<A>(F \<noteq> F) & \<not>\<^bold>\<A>(F \<noteq> F)\<close> by (rule "&I")
@@ -7076,7 +7091,7 @@ next
       apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"])
       using "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "df-null-uni:2" "df-null-uni-terms:2" "null-uni-facts:4" "null-uni-uniq:4" "rule-id-df:2:a[zero]" "rule-ui:3" by blast
     moreover AOT_have \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>
-      using "RA[2]" "desc-nec-encode" "id-eq:1" "\<equiv>E"(2) by fastforce
+      using "RA[2]" "desc-nec-encode:2" "id-eq:1" "\<equiv>E"(2) by fastforce
     ultimately AOT_show \<open>a\<^sub>V[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>
       using "deduction-theorem" "\<equiv>I" by simp
   qed

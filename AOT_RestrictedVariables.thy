@@ -130,10 +130,10 @@ fun after_qed witts thy = let
 
   val ((_,st),thy) = Typedef.add_typedef {overloaded=true} (Binding.name name, [], Mixfix.NoSyn) typeset (SOME bnds)
     (fn ctxt => (Tactic.resolve_tac ctxt ([nonempty_thm]) 1)) thy
-  val ({rep_type = rep_type, abs_type = abs_type, Rep_name = Rep_name, Abs_name = Abs_name, axiom_name = axiom_name},
-     {inhabited = inhabited, type_definition = type_definition, Rep = Rep, Rep_inverse = Rep_inverse, Abs_inverse = Abs_inverse,
-      Rep_inject = Rep_inject, Abs_inject = Abs_inject, Rep_cases = Rep_cases, Abs_cases = Abs_cases,
-      Rep_induct = Rep_induct, Abs_induct = Abs_induct}) = st
+  val ({rep_type = _, abs_type = _, Rep_name = Rep_name, Abs_name = Abs_name, axiom_name = _},
+     {inhabited = _, type_definition = type_definition, Rep = _, Rep_inverse = _, Abs_inverse = _,
+      Rep_inject = _, Abs_inject = _, Rep_cases = _, Abs_cases = _,
+      Rep_induct = _, Abs_induct = _}) = st
 
   val locale_thm = Drule.OF (@{thm AOT_restricted_type_intro}, type_definition::thms)
 
