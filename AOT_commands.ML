@@ -83,6 +83,14 @@ fun AOT_note_theorems thms = Local_Theory.background_theory
 fun AOT_note_definitions thms = Local_Theory.background_theory
   (Context.theory_map (fold AOT_Definitions.add_thm (map Drule.export_without_context (flat thms))))
 
+structure AOT_DefinedConstants = Theory_Data (
+  type T = Termtab.set
+  val empty = Termtab.empty
+  val extend = I
+  val merge = Termtab.merge (K true)
+);
+fun AOT_note_defined_constant const = Local_Theory.background_theory (AOT_DefinedConstants.map (Termtab.insert_set const))
+
 fun AOT_read_prop nonterminal ctxt prop = (let
     val ctxt' = Config.put Syntax.root nonterminal ctxt
     val trm = Syntax.parse_term ctxt' prop
@@ -247,6 +255,8 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     val ctxt = ctxt |> Local_Theory.note ((thmbind, thmattrs), [thm]) |> snd
     val ctxt = AOT_note_theorems [[thm]] ctxt
     val ctxt = AOT_note_definitions [[thm]] ctxt
+    val ctxt = AOT_note_defined_constant (Proof_Context.read_const {proper=true,strict=true}
+              ctxt (Binding.name_of bnd)) ctxt
   in
     ctxt
   end

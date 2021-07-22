@@ -543,9 +543,18 @@ fun unconstrain (Ast.Appl (Ast.Constant "_constrain"::x::tl)) = addFunct (uncons
   | unconstrain (Ast.Appl (Ast.Constant "_bound"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_bound"::[x]))
   | unconstrain (Ast.Appl (Ast.Constant "_var"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_var"::[x]))
   | unconstrain trm = (trm, fn x => x)
+fun isDefinedConst ctxt name = let
+  val unmarkedName = Lexicon.unmark {case_class = fn str => NONE,
+      case_type = fn name => NONE,
+      case_const = fn name => SOME name,
+      case_fixed = fn name => NONE,
+      case_default = fn name => SOME name} name
+  val cons = Option.mapPartial (fn name => try (Proof_Context.read_const {proper = true, strict = true} ctxt) name) unmarkedName
+  val defined = case cons of SOME cons => Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons | _ => false
+  in defined end
 in
 AOT_syntax_print_ast_translations
-[(\<^syntax_const>\<open>_AOT_individual_term\<close>, fn _ =>
+[(\<^syntax_const>\<open>_AOT_individual_term\<close>, fn ctxt =>
     (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_desc\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
@@ -557,10 +566,12 @@ AOT_syntax_print_ast_translations
                 c (Ast.Variable y)])
               | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
         ) 
-        | (Ast.Constant name,c) => c (Ast.Constant name)
+        | (Ast.Constant name,c) => if isDefinedConst ctxt name then c (Ast.Constant name) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
+            (if isDefinedConst ctxt name then c trm' else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms)),
-(\<^syntax_const>\<open>_AOT_relation_term\<close>, fn _ =>
+(\<^syntax_const>\<open>_AOT_relation_term\<close>, fn ctxt =>
     (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
@@ -568,7 +579,10 @@ AOT_syntax_print_ast_translations
                   (case printVarKind name of SingleVariable x => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c (Ast.Variable name)])
                   | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
         ) 
-        | (Ast.Constant name,c) => c (Ast.Constant name) |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+        | (Ast.Constant name,c) => if isDefinedConst ctxt name then c (Ast.Constant name) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
+            (if isDefinedConst ctxt name then (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c trm']) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+        |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))]
 end
 \<close>
