@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM (* "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar" *)
+  imports AOT_PLM "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar"
 begin
 (*>*)
 
