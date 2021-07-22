@@ -295,7 +295,7 @@ in @{term F} (i.e. starting with an object exemplified by @{term F}), is complet
 @{term F} (i.e. every object in the sequence exemplifies @{term F} as well).
 \<close>
 
-subsection\<open>Strong Ancestral of a Relation\<close>
+subsection\<open>Strong Ancestral of a Relation and Transitive Closures\<close>
 
 text\<open>
 Using the above definition, we can introduce the @{emph \<open>Strong Ancestral\<close>} of a relation @{term R},
@@ -318,7 +318,7 @@ objects that are transitively related to @{term x}, which is @{emph \<open>exact
 @{emph \<open>are\<close>} transitively related to @{term x}.
 
 It is interesting to note that there is a different way to define the transitive closure of
-a relation @{term R}, that may be more familiar based on traditional mathematical training, namely:
+a relation @{term R}, that may be more common in traditional mathematical training, namely:
 
 The transitive closure of a relation @{term R} is the intersection of all transitive relations @{term R'} that
 are contained in @{term R}.
@@ -356,13 +356,12 @@ AOT_theorem \<open>[TransitiveClosure(R)]xy \<equiv> [R\<^sup>*]xy\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>[TransitiveClosure(R)]xy\<close>
   AOT_hence \<open>[\<lambda>xy \<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)]xy\<close>
-    by (safe_step intro!: "rule-id-def:2:a"[OF TransitiveClosure]) "cqt:2[lambda]"
+    by (auto intro: "rule-id-df:2:a"[OF TransitiveClosure] intro!: "cqt:2")
   AOT_hence \<open>\<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)\<close>
     using "\<beta>\<rightarrow>C" by fast
   AOT_hence \<open>Transitive(R\<^sup>*) & Entails(R,R\<^sup>*) \<rightarrow> [R\<^sup>*]xy\<close>
-    using "\<forall>E"(1) "rule-id-def:2:b"[OF "ances-df"] "hered:2" by blast
-  \<comment> \<open>The fact that the strong ancestral of @{term R} is transitive and entails @{term R} are
-      simple consequences of theorems proven in PLM.\<close>
+    using "\<forall>E"(1) "rule-id-df:2:b"[OF "ances-df"] "hered:2" by blast
+  \<comment> \<open>The following is a simple consequence of PLM's theorems about strong ancestral relations.\<close>
   moreover AOT_have \<open>Transitive(R\<^sup>*) & Entails(R,R\<^sup>*)\<close>
     by (auto intro!: "&I" Entails[THEN "\<equiv>\<^sub>d\<^sub>fI"] Transitive[THEN "\<equiv>\<^sub>d\<^sub>fI"] GEN "\<rightarrow>I"
                simp: "anc-her:1"[THEN "\<rightarrow>E"] "anc-her:6"[THEN "\<rightarrow>E"])
@@ -374,107 +373,90 @@ next
   proof(safe intro!: GEN "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     fix R'
     AOT_assume transitive: \<open>Transitive(R')\<close> and entails: \<open>Entails(R,R')\<close>
-    AOT_hence \<open>\<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z)\<close>
-      by (auto intro!: GEN "\<rightarrow>I" "\<beta>\<leftarrow>C" "cqt:2" dest: Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"] "\<forall>E"(2) "\<rightarrow>E")
-    moreover AOT_have \<open>[R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z) & Hereditary([\<lambda>z [R']xz],R) \<rightarrow> [\<lambda>z [R']xz]y\<close>
+    \<comment> \<open>The following is an instance of another theorem about strong ancestral relations.\<close>
+    AOT_have \<open>[R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z) & Hereditary([\<lambda>z [R']xz],R) \<rightarrow> [\<lambda>z [R']xz]y\<close>
       by (rule "anc-her:2"[unvarify F]) "cqt:2[lambda]"
     moreover AOT_have \<open>Hereditary([\<lambda>z [R']xz],R)\<close>
-    proof (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I")
-      AOT_show \<open>[\<lambda>z [R']xz]\<down>\<close> by "cqt:2[lambda]"
-    next
+    proof (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" GEN "\<rightarrow>I")
       fix z y
-      AOT_assume \<open>[R]zy\<close>
-      AOT_hence 2: \<open>[R']zy\<close>
-        using entails[THEN Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" by blast
-      AOT_assume \<open>[\<lambda>z [R']xz]z\<close>
-      AOT_hence \<open>[R']xz\<close> using "\<beta>\<rightarrow>C" by blast
+      AOT_assume \<open>[R]zy\<close> and \<open>[\<lambda>z [R']xz]z\<close>
+      AOT_hence \<open>[R']zy\<close> and \<open>[R']xz\<close>
+        using entails by (auto dest: Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"] "\<forall>E"(2) "\<rightarrow>E" "\<beta>\<rightarrow>C")
       AOT_hence \<open>[R']xy\<close>
-        using transitive[THEN Transitive[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" "&I" 2 by blast
+        using transitive by (auto dest!: Transitive[THEN "\<equiv>\<^sub>d\<^sub>fE"] dest: "\<forall>E"(2) "\<rightarrow>E" intro!: "&I")
       AOT_thus \<open>[\<lambda>z [R']xz]y\<close>
         by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
     qed
+    moreover AOT_have \<open>\<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z)\<close>
+      using entails[THEN Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"]]
+      by (auto intro!: GEN "\<rightarrow>I" "\<beta>\<leftarrow>C" "cqt:2" dest: "\<forall>E"(2) "\<rightarrow>E")
     ultimately AOT_have \<open>[\<lambda>z [R']xz]y\<close>
       using 0 "&I" "\<rightarrow>E" by auto
     AOT_thus \<open>[R']xy\<close>
       by (rule "\<beta>\<rightarrow>C")
   qed
-  AOT_hence \<open>[\<lambda>xy \<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)]xy\<close>
-    by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
   AOT_thus \<open>[TransitiveClosure(R)]xy\<close>
-    by (auto intro: "rule-id-def:2:b"[OF TransitiveClosure] intro!: "cqt:2")
+    by (auto intro: "rule-id-df:2:b"[OF TransitiveClosure]
+             intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
+qed
+
+section\<open>Weak Ancestral of a Relation and the Non-Existence of a General Relation of Identity\<close>
+
+text\<open>
+As mentioned above the goal is to define being a Natural Number as either being zero or being an
+object, s.t. zero bears the strong ancestral of the to-be-defined predecessor relation to it.
+This matches the notion of the @{emph \<open>weak ancestral\<close>} of the predecessor relation. Traditionally
+(TODO: cite Frege), the weak ancestral of a relation @{term \<open>\<guillemotleft>[R]\<^sup>+\<guillemotright>\<close>} is defined, s.t. an object @{term x}
+bears @{term \<open>\<guillemotleft>[R]\<^sup>+\<guillemotright>\<close>} to an object @{term y}, if only if either @{term x} bears the strong ancestral
+@{term \<open>\<guillemotleft>[R]\<^sup>*\<guillemotright>\<close>} to @{term y} or @{term \<open>x = y\<close>}.
+
+However, in AOT there is no general relation of identity, i.e. @{term \<open>\<guillemotleft>[\<lambda>xy x = y]\<guillemotright>\<close>} does not
+denote (TODO: refer to earlier discussion about this TBD). Consequently, the immediate candidate
+for defining the weak ancestral of a relation @{term \<open>\<guillemotleft>[\<lambda>xy [R]\<^sup>*xy \<or> x = y]\<guillemotright>\<close>} provable does not denote
+for any @{term R} with a strong ancestral that is not reflexive:@{footnote \<open>For trivial relations
+@{term R}, e.g. for a relation @{term R} that is universally exemplified, the @{text \<open>\<lambda>\<close>}-expression
+in question does trivially denote. Having a non-reflexive strong ancestral on the other hand is
+not a necessary condition for the term to fail to denote, but sufficient for our discussion, since
+the strong ancestral of the predecessor relation is not reflexive.\<close>}
+\<close>
+
+AOT_theorem \<open>\<forall>x \<not>[R\<^sup>*]xx \<rightarrow> \<not>[\<lambda>xy [R]\<^sup>*xy \<or> x = y]\<down>\<close>
+proof(rule "\<rightarrow>I"; rule "raa-cor:2")
+  AOT_assume non_reflexive: \<open>\<forall>x \<not>[R\<^sup>*]xx\<close>
+  AOT_assume 0: \<open>[\<lambda>xy [R]\<^sup>*xy \<or> x = y]\<down>\<close>
+  then AOT_obtain S where S_def: \<open>S = [\<lambda>xy [R]\<^sup>*xy \<or> x = y]\<close>
+    using "free-thms:1"[THEN "\<equiv>E"(1)] "\<exists>E"[rotated] by blast
+  \<comment> \<open>We use the established fact that there are distinct, but exemplification-indistinguishable abstract objects.\<close>
+  AOT_obtain x y where 1: \<open>A!x & A!y & x \<noteq> y & \<forall>F ([F]x \<equiv> [F]y)\<close>
+    using "aclassical2" "\<exists>E"[rotated] by blast
+  AOT_have \<open>[S]xx\<close>
+    by (rule "rule=E"[rotated, OF id_sym, OF S_def];
+        safe intro!: "\<beta>\<leftarrow>C" 0 prod_denotesI "cqt:2[const_var]"[axiom_inst] "&I" "\<or>I"(2) "=I")
+  moreover AOT_have \<open>\<not>[R]\<^sup>*xx\<close>
+    using "\<forall>E"(2) non_reflexive by blast
+  ultimately AOT_have \<open>[\<lambda>y [S]xy & \<not>[R]\<^sup>*xy]x\<close>
+    by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2" "&I")
+  AOT_hence \<open>[\<lambda>y [S]xy & \<not>[R]\<^sup>*xy]y\<close>
+    by (safe intro!: 1[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "cqt:2")
+  AOT_hence \<open>[S]xy & \<not>[R]\<^sup>*xy\<close> using "\<beta>\<rightarrow>C" by blast
+  AOT_hence \<open>[\<lambda>xy [R]\<^sup>*xy \<or> x = y]xy\<close> and \<open>\<not>[R]\<^sup>*xy\<close>
+    using "rule=E"[rotated, OF S_def] "&E" by fast+
+  AOT_hence \<open>x = y\<close> using "\<beta>\<rightarrow>C" "\<or>E" by fast
+  AOT_hence \<open>x = y & \<not>x = y\<close>
+    using "&I" 1[THEN "&E"(1), THEN "&E"(2)] by (metis "=-infix" "\<equiv>\<^sub>d\<^sub>fE")
+  AOT_thus \<open>p & \<not>p\<close> for p by (metis "raa-cor:1")
 qed
 
 text\<open>
-For a relation @{term R'} to be transitive means @{term \<open>\<guillemotleft>\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz)\<guillemotright>\<close>}.
-For a relation @{term R'} to @{emph \<open>contain\<close>} @{term R} means @{term \<open>\<guillemotleft>\<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)\<guillemotright>\<close>}.
-Being in the intersection of all such relations @{term R'} means exemplifying all such relations.
-
-Hence this concept of a transitive closure can be formally captured as
-@{term[display] \<open>\<guillemotleft>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]\<guillemotright>\<close>}.
-
-Now we can prove that this relation is exemplified exactly by the objects exemplified by the
-strong ancestral of @{term R}:
+For this reason Nodelman and Zalta proceed by introducing @{emph \<open>rigid one-to-one relations\<close>}
+which allow for defining a denoting relation of identity restricted to their domain. (TODO: cite)
 \<close>
 
-AOT_theorem \<open>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]xy \<equiv> [R\<^sup>*]xy\<close>
-proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
-  AOT_assume \<open>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z ([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]xy\<close>
-  AOT_hence \<open>\<forall>R' ((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)\<close>
-    using "\<beta>\<rightarrow>C" by fast
-  moreover AOT_have \<open>[R\<^sup>*]\<down>\<close>
-    by (rule "rule-id-def:2:b"[OF "ances-df"])
-       (auto simp: "hered:2")
-  ultimately AOT_have \<open>(\<forall>x\<forall>y\<forall>z([R\<^sup>*]xy & [R\<^sup>*]yz \<rightarrow> [R\<^sup>*]xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R\<^sup>*]xy)) \<rightarrow> [R\<^sup>*]xy\<close>
-    using "\<forall>E"(1) by blast
-  moreover AOT_have \<open>\<forall>x\<forall>y\<forall>z([R\<^sup>*]xy & [R\<^sup>*]yz \<rightarrow> [R\<^sup>*]xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R\<^sup>*]xy)\<close>
-  proof(safe intro!: "&I" GEN "\<rightarrow>I")
-    fix x y z
-    AOT_assume \<open>[R\<^sup>*]xy & [R\<^sup>*]yz\<close>
-    AOT_thus \<open>[R\<^sup>*]xz\<close>
-      using "anc-her:6"[THEN "\<rightarrow>E"] by blast
-  next
-    AOT_show \<open>[R\<^sup>*]xy\<close> if \<open>[R]xy\<close> for x y
-      using "anc-her:1"[THEN "\<rightarrow>E"] that by blast
-  qed
-  ultimately AOT_show \<open>[R\<^sup>*]xy\<close>
-    using "\<rightarrow>E" by blast
-next
-  AOT_assume 0: \<open>[R\<^sup>*]xy\<close>
-  AOT_have \<open>\<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)\<close>
-  proof(safe intro!: GEN "\<rightarrow>I")
-    fix R'
-    AOT_assume 2: \<open>\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)\<close>
-    AOT_have \<open>[R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z) & Hereditary([\<lambda>z [R']xz],R) \<rightarrow> [\<lambda>z [R']xz]y\<close>
-      by (rule "anc-her:2"[unvarify F]) "cqt:2[lambda]"
-    moreover AOT_have \<open>\<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z)\<close>
-    proof (safe intro!: GEN "\<rightarrow>I")
-      fix z
-      AOT_assume \<open>[R]xz\<close>
-      AOT_hence \<open>[R']xz\<close> using 2[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
-      AOT_thus \<open>[\<lambda>z [R']xz]z\<close>
-        by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
-    qed
-    moreover AOT_have \<open>Hereditary([\<lambda>z [R']xz],R)\<close>
-    proof (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I")
-      AOT_show \<open>[\<lambda>z [R']xz]\<down>\<close> by "cqt:2[lambda]"
-    next
-      fix z y
-      AOT_assume \<open>[R]zy\<close>
-      AOT_hence 4: \<open>[R']zy\<close> using 2[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
-      AOT_assume \<open>[\<lambda>z [R']xz]z\<close>
-      AOT_hence \<open>[R']xz\<close> using "\<beta>\<rightarrow>C" by blast
-      AOT_hence \<open>[R']xy\<close> using 2[THEN "&E"(1)] "\<forall>E"(2) "\<rightarrow>E" "&I" 4 by blast
-      AOT_thus \<open>[\<lambda>z [R']xz]y\<close>
-        by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
-    qed
-    ultimately AOT_have \<open>[\<lambda>z [R']xz]y\<close>
-      using 0 "&I" "\<rightarrow>E" by auto
-    AOT_thus \<open>[R']xy\<close>
-      by (rule "\<beta>\<rightarrow>C")
-  qed
-  AOT_thus \<open>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]xy\<close>
-    by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
-qed
+subsection\<open>Rigid One-to-One Relations\<close>
+
+text\<open>
+
+\<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
 
