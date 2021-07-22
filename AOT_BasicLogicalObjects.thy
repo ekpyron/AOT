@@ -113,7 +113,7 @@ AOT_define PropEnc :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<c
 AOT_act_theorem "T-lem:1": \<open>TruthValueOf(\<circ>p, p)\<close>
 proof -
   AOT_have \<theta>: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)\<close>
-    using "rule-id-def:1" "the-tv-p" "uni-tv" by blast
+    using "rule-id-df:1" "the-tv-p" "uni-tv" by blast
   moreover AOT_have \<open>\<circ>p\<down>\<close>
     using "t=t-proper:1" calculation "vdash-properties:10" by blast
   ultimately show ?thesis by (metis "rule=E" id_sym "vdash-properties:10" "y-in:3")
@@ -159,7 +159,7 @@ proof -
   ultimately AOT_have \<open>(\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)) \<equiv> \<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
     using "\<forall>E"(1) by blast
   AOT_hence \<open>\<forall>z (TruthValueOf(z, p) \<equiv> z = \<circ>p)\<close>
-    using "\<equiv>E"(1) "rule-id-def:1" "the-tv-p" "uni-tv" by blast
+    using "\<equiv>E"(1) "rule-id-df:1" "the-tv-p" "uni-tv" by blast
   AOT_thus \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close> using "\<forall>E"(2) by blast
 qed
 
@@ -195,9 +195,9 @@ AOT_define TheFalse :: \<kappa>\<^sub>s (\<open>\<bottom>\<close>)
 AOT_theorem "the-true:3": \<open>\<top> \<noteq> \<bottom>\<close>
 proof(safe intro!: "ab-obey:2"[unvarify x y, THEN "\<rightarrow>E", rotated 2, OF "\<or>I"(1)] "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x \<forall>q(q \<rightarrow> q)]\<guillemotright>\<close>] "&I" "prop-prop2:2")
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:2")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:2")
   moreover AOT_show false_den: \<open>\<bottom>\<down>\<close>
-    by (meson "\<rightarrow>E" "t=t-proper:1" "A-descriptions" "rule-id-def:1[zero]" "the-true:2")
+    by (meson "\<rightarrow>E" "t=t-proper:1" "A-descriptions" "rule-id-df:1[zero]" "the-true:2")
   ultimately AOT_have false_prop: \<open>\<^bold>\<A>(A!\<bottom> & \<forall>F (\<bottom>[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
     using "nec-hintikka-scheme"[unvarify x, THEN "\<equiv>E"(1), THEN "&E"(1)]  by blast
   AOT_hence \<open>\<^bold>\<A>\<forall>F (\<bottom>[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p]))\<close>
@@ -208,9 +208,9 @@ proof(safe intro!: "ab-obey:2"[unvarify x y, THEN "\<rightarrow>E", rotated 2, O
     using "\<forall>E"(1)[rotated, OF "prop-prop2:2"] by blast
 
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:1")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:1")
   moreover AOT_show true_den: \<open>\<top>\<down>\<close>
-    by (meson "t=t-proper:1" "A-descriptions" "rule-id-def:1[zero]" "the-true:1" "vdash-properties:10")
+    by (meson "t=t-proper:1" "A-descriptions" "rule-id-df:1[zero]" "the-true:1" "vdash-properties:10")
   ultimately AOT_have true_prop: \<open>\<^bold>\<A>(A!\<top> & \<forall>F (\<top>[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
     using "nec-hintikka-scheme"[unvarify x, THEN "\<equiv>E"(1), THEN "&E"(1)]  by blast
   AOT_hence \<open>\<^bold>\<A>\<forall>F (\<top>[F] \<equiv> \<exists>p(p & F = [\<lambda>y p]))\<close>
@@ -259,7 +259,7 @@ qed
 AOT_act_theorem "T-T-value:1": \<open>TruthValue(\<top>)\<close>
 proof -
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:1")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:1")
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<top>)\<close>
@@ -270,7 +270,7 @@ qed
 AOT_act_theorem "T-T-value:2": \<open>TruthValue(\<bottom>)\<close>
 proof -
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:2")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:2")
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_show \<open>TruthValue(\<bottom>)\<close>
@@ -362,7 +362,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>f
   AOT_have a: \<open>A!\<top>\<close>
     using "\<exists>E" "T-T-value:1" "T-value" "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" "tv-p" by blast
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:1")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:1")
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
@@ -395,7 +395,7 @@ proof(safe intro!: "\<rightarrow>I" dest!: "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>f
   AOT_have a: \<open>A!\<bottom>\<close>
     using "\<exists>E" "T-T-value:2" "T-value" "&E"(1) "\<equiv>\<^sub>d\<^sub>fE" "tv-p" by blast
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:2")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:2")
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
@@ -440,7 +440,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" "T-lem:4" by fast
 next
   AOT_have true_def: \<open>\<top> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:1")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:1")
   AOT_hence true_den: \<open>\<top>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<top>[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
@@ -466,7 +466,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "rule=E" "T-lem:4" by fast
 next
   AOT_have false_def: \<open>\<bottom> = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>p(\<not>p & F = [\<lambda>y p])))\<close>
-    by (simp add: "A-descriptions" "rule-id-def:1[zero]" "the-true:2")
+    by (simp add: "A-descriptions" "rule-id-df:1[zero]" "the-true:2")
   AOT_hence false_den: \<open>\<bottom>\<down>\<close>
     using "t=t-proper:1" "vdash-properties:6" by blast
   AOT_have b: \<open>\<forall>F (\<bottom>[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
@@ -564,7 +564,7 @@ proof -
   AOT_have 0: \<open>\<^bold>\<A>\<forall>x(ExtensionOf(x, p) \<equiv> TruthValueOf(x,p))\<close>
     by (rule "RA[2]"; rule GEN; rule "extof-e")
   AOT_have 1: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x,p)\<close>
-    using "rule-id-def:1" "the-tv-p" "uni-tv" by blast
+    using "rule-id-df:1" "the-tv-p" "uni-tv" by blast
   show ?thesis
     apply (rule "equiv-desc-eq:1"[THEN "\<rightarrow>E", OF 0, THEN "\<forall>E"(1)[where \<tau>=\<open>\<guillemotleft>\<circ>p\<guillemotright>\<close>], THEN "\<equiv>E"(2), symmetric])
     using "1" "t=t-proper:1" "vdash-properties:10" apply blast

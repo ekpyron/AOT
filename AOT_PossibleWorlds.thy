@@ -670,7 +670,7 @@ next
   qed
 next
   AOT_show \<open>\<^bold>s\<^sub>V\<down>\<close>
-    using "df-the-null-sit:2" "rule-id-def:2:b[zero]" "thm-null-trivial:4" by blast
+    using "df-the-null-sit:2" "rule-id-df:2:b[zero]" "thm-null-trivial:4" by blast
 qed
 
 AOT_theorem "actual-s:3": \<open>\<exists>p\<forall>s(Actual(s) \<rightarrow> \<not>s \<Turnstile> p)\<close>
@@ -1557,7 +1557,7 @@ AOT_define TheActualWorld :: \<open>\<kappa>\<^sub>s\<close> (\<open>\<^bold>w\<
 
 AOT_act_theorem "T-world:1": \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
 proof -
-  AOT_have true_den: \<open>\<top>\<down>\<close> using "A-descriptions" "rule-id-def:2:b[zero]" "the-true:1" "vdash-properties:10" by fast
+  AOT_have true_den: \<open>\<top>\<down>\<close> using "A-descriptions" "rule-id-df:2:b[zero]" "the-true:1" "vdash-properties:10" by fast
   AOT_obtain x where x_def: \<open>x = \<top>\<close>
     by (metis "instantiation" "rule=I:1" "existential:1" id_sym true_den)
   AOT_have \<open>Situation(\<top>)\<close>
@@ -1566,9 +1566,9 @@ proof -
     using "rule=E"[rotated, OF x_def[symmetric]] by blast
 
   AOT_have w_alpha_def: \<open>\<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>w Actual(w)\<close>
-    by (simp add: "pre-walpha" "rule-id-def:1[zero]" "w-alpha")
+    by (simp add: "pre-walpha" "rule-id-df:1[zero]" "w-alpha")
   AOT_hence w_alpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
-    using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" by blast
   AOT_obtain y where y_def: \<open>y = \<^bold>w\<^sub>\<alpha>\<close>
     by (metis "instantiation" "existential:1" id_sym w_alpha_def "pre-walpha")
   AOT_have \<open>PossibleWorld(\<^bold>w\<^sub>\<alpha>) & Actual(\<^bold>w\<^sub>\<alpha>)\<close>
@@ -1618,10 +1618,10 @@ AOT_act_theorem "T-world:2": \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> = \<^bol
 AOT_act_theorem "truth-at-alpha": \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> p\<close>
 proof -
   AOT_have \<open>PossibleWorld(\<^bold>w\<^sub>\<alpha>)\<close>
-    using "&E"(1) "pre-walpha" "rule-id-def:2:b[zero]" "vdash-properties:10" "w-alpha" "y-in:3" by blast
+    using "&E"(1) "pre-walpha" "rule-id-df:2:b[zero]" "vdash-properties:10" "w-alpha" "y-in:3" by blast
   AOT_hence sit_w_alpha: \<open>Situation(\<^bold>w\<^sub>\<alpha>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) "world:1")
   AOT_have w_alpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
-    using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" by blast
   AOT_have \<open>p \<equiv> \<top>\<^bold>\<Sigma>p\<close>
     using "q-True:3" by force
   moreover AOT_have \<open>\<top> = \<^bold>w\<^sub>\<alpha>\<close>
@@ -1636,7 +1636,7 @@ qed
 AOT_theorem "alpha-world:1": \<open>PossibleWorld(\<^bold>w\<^sub>\<alpha>)\<close>
 proof -
   AOT_have 0: \<open>\<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>w Actual(w)\<close>
-    using "pre-walpha" "rule-id-def:1[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:1[zero]" "w-alpha" by blast
   AOT_hence walpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
     by (metis "t=t-proper:1" "vdash-properties:6")
   AOT_have \<open>\<^bold>\<A>(PossibleWorld(\<^bold>w\<^sub>\<alpha>) & Actual(\<^bold>w\<^sub>\<alpha>))\<close>
@@ -1650,7 +1650,7 @@ qed
 AOT_theorem "alpha-world:2": \<open>Maximal(\<^bold>w\<^sub>\<alpha>)\<close>
 proof -
   AOT_have \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
-    using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" by blast
   then AOT_obtain x where x_def: \<open>x = \<^bold>w\<^sub>\<alpha>\<close>
     by (metis "instantiation" "rule=I:1" "existential:1" id_sym)
   AOT_hence \<open>PossibleWorld(x)\<close> using "alpha-world:1" "rule=E" id_sym by fast
@@ -1661,7 +1661,7 @@ qed
 AOT_theorem "t-at-alpha-strict": \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<equiv> \<^bold>\<A>p\<close>
 proof -
   AOT_have 0: \<open>\<^bold>w\<^sub>\<alpha> = \<^bold>\<iota>w Actual(w)\<close>
-    using "pre-walpha" "rule-id-def:1[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:1[zero]" "w-alpha" by blast
   AOT_hence walpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
     by (metis "t=t-proper:1" "vdash-properties:6")
   AOT_have 1: \<open>\<^bold>\<A>(PossibleWorld(\<^bold>w\<^sub>\<alpha>) & Actual(\<^bold>w\<^sub>\<alpha>))\<close>
@@ -1712,7 +1712,7 @@ proof (rule "\<rightarrow>I"; rule "raa-cor:2")
   AOT_assume \<open>w \<noteq> \<^bold>w\<^sub>\<alpha>\<close>
   AOT_hence 0: \<open>\<not>(w = \<^bold>w\<^sub>\<alpha>)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "=-infix")
   AOT_have walpha_den: \<open>\<^bold>w\<^sub>\<alpha>\<down>\<close>
-    using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" by blast
   AOT_have walpha_sit: \<open>Situation(\<^bold>w\<^sub>\<alpha>)\<close>
     using "\<equiv>\<^sub>d\<^sub>fE" "alpha-world:2" "&E"(1) max by blast
   AOT_assume act_w: \<open>Actual(w)\<close>
@@ -1774,14 +1774,14 @@ qed
 AOT_act_theorem "act-world2:1": \<open>\<^bold>w\<^sub>\<alpha> \<Turnstile> p \<equiv> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
   apply (AOT_subst \<open>\<guillemotleft>[\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<guillemotright>\<close> \<open>AOT_term_of_var p\<close>)
    apply (rule "beta-C-meta"[THEN "\<rightarrow>E", OF "prop-prop2:2", unvarify \<nu>\<^sub>1\<nu>\<^sub>n])
-  using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" apply blast
+  using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" apply blast
   using "\<equiv>E"(2) "Commutativity of \<equiv>" "truth-at-alpha" by blast
 
 AOT_act_theorem "act-world2:2": \<open>p \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
 proof -
   AOT_have \<open>p \<equiv> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
     apply (rule "beta-C-meta"[THEN "\<rightarrow>E", OF "prop-prop2:2", unvarify \<nu>\<^sub>1\<nu>\<^sub>n, symmetric])
-    using "pre-walpha" "rule-id-def:2:b[zero]" "w-alpha" by blast
+    using "pre-walpha" "rule-id-df:2:b[zero]" "w-alpha" by blast
   also AOT_have \<open>\<dots> \<equiv> \<^bold>w\<^sub>\<alpha> \<Turnstile> [\<lambda>y p]\<^bold>w\<^sub>\<alpha>\<close>
     by (meson "log-prop-prop:2" "rule-ui:1" "truth-at-alpha" "universal-cor")
   finally show ?thesis.
@@ -2535,7 +2535,7 @@ AOT_define Rigidifies :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>
   "df-rigid-rel:2": \<open>Rigidifies(F, G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
 
 AOT_theorem "rigid-der:1": \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w \<Turnstile> [F]x\<^sub>1...x\<^sub>n\<close>
-  apply (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
+  apply (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
    apply (fact "w-rel:3")
   apply (rule "beta-C-meta"[THEN "\<rightarrow>E"])
   by (fact "w-rel:3")
@@ -2543,7 +2543,7 @@ AOT_theorem "rigid-der:1": \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w 
 AOT_theorem "rigid-der:2": \<open>Rigid([G]\<^sub>w)\<close>
 proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "df-rigid-rel:1"] "&I")
   AOT_show \<open>[G]\<^sub>w\<down>\<close>
-    by (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
+    by (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
        (fact "w-rel:3")+
 next
   AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close>
@@ -2555,7 +2555,7 @@ next
       fix x\<^sub>1x\<^sub>n
       AOT_assume \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-        using "rule-id-def:2:a[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"]
+        using "rule-id-df:2:a[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"]
         by fast
       AOT_hence \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
         by (metis "\<beta>\<rightarrow>C"(1))
@@ -2572,7 +2572,7 @@ next
       ultimately AOT_have 1: \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
         using "\<rightarrow>E" by blast
       AOT_show \<open>\<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
-        by (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
+        by (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
            (auto simp: 1 "w-rel:3")
     }
   qed
@@ -2593,11 +2593,11 @@ proof -
       proof(rule "\<equiv>I"; rule "\<rightarrow>I")
         AOT_assume \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
         AOT_thus \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-          by (rule "rule-id-def:2:a[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"])
+          by (rule "rule-id-df:2:a[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"])
       next
         AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
         AOT_thus \<open>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n\<close>
-          by (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"])
+          by (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index", OF "w-rel:3"])
       qed
       also AOT_have \<open>\<dots> \<equiv> w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
         by (rule "beta-C-meta"[THEN "\<rightarrow>E"])
@@ -2607,7 +2607,7 @@ proof -
     qed
   next
     AOT_show \<open>[G]\<^sub>w\<down>\<close>
-      by (rule "rule-id-def:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
+      by (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and \<sigma>="\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<lambda>x\<^sub>1...x\<^sub>n \<kappa> \<Turnstile> [\<Pi>]x\<^sub>1...x\<^sub>n]\<guillemotright>", simplified, OF "w-index"])
          (auto simp: "w-rel:3")
   qed
 qed
