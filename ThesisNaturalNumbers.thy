@@ -115,8 +115,8 @@ proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
   then AOT_obtain c where 2: \<open>A!c & [R]ac\<close>
     using "&E"(1) "\<exists>E"(*<*)[rotated](*>*) "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   \<comment> \<open>By beta-conversion it follows that @{term a} exemplifies @{emph \<open>being an @{term x} that bears @{term R} to @{term c}.\<close>}\<close>
-  AOT_have \<open>[\<lambda>x [R]xc]a\<close>
-    by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; simp add: "cqt:2[const_var]"[axiom_inst] 2[THEN "&E"(2)])
+  AOT_hence \<open>[\<lambda>x [R]xc]a\<close>
+    by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" dest: "&E")
   \<comment> \<open>Since by construction @{term a} and @{term b} exemplify the same properties, the same holds true for @{term b}.\<close>
   AOT_hence \<open>[\<lambda>x [R]xc]b\<close>
     by (safe intro!: 1[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)]) "cqt:2[lambda]"
@@ -370,46 +370,38 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "\<rightarrow>E" "&I" by blast
 next
   AOT_assume 0: \<open>[R\<^sup>*]xy\<close>
-  AOT_have 1: \<open>\<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)\<close>
+  AOT_have \<open>\<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)\<close>
   proof(safe intro!: GEN "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     fix R'
     AOT_assume transitive: \<open>Transitive(R')\<close> and entails: \<open>Entails(R,R')\<close>
-    AOT_have \<open>[R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z) & Hereditary([\<lambda>z [R']xz],R) \<rightarrow> [\<lambda>z [R']xz]y\<close>
+    AOT_hence \<open>\<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z)\<close>
+      by (auto intro!: GEN "\<rightarrow>I" "\<beta>\<leftarrow>C" "cqt:2" dest: Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"] "\<forall>E"(2) "\<rightarrow>E")
+    moreover AOT_have \<open>[R\<^sup>*]xy & \<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z) & Hereditary([\<lambda>z [R']xz],R) \<rightarrow> [\<lambda>z [R']xz]y\<close>
       by (rule "anc-her:2"[unvarify F]) "cqt:2[lambda]"
-    moreover AOT_have \<open>\<forall>z([R]xz \<rightarrow> [\<lambda>z [R']xz]z)\<close>
-    proof (safe intro!: GEN "\<rightarrow>I")
-      fix z
-      AOT_assume \<open>[R]xz\<close>
-      AOT_hence 2: \<open>[R']xz\<close>
-        using entails[THEN Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" by blast
-      AOT_show \<open>[\<lambda>z [R']xz]z\<close>
-        by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; safe intro!: 2 "cqt:2[const_var]"[axiom_inst])
-    qed
     moreover AOT_have \<open>Hereditary([\<lambda>z [R']xz],R)\<close>
     proof (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I")
       AOT_show \<open>[\<lambda>z [R']xz]\<down>\<close> by "cqt:2[lambda]"
     next
       fix z y
       AOT_assume \<open>[R]zy\<close>
-      AOT_hence 3: \<open>[R']zy\<close>
+      AOT_hence 2: \<open>[R']zy\<close>
         using entails[THEN Entails[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" by blast
       AOT_assume \<open>[\<lambda>z [R']xz]z\<close>
       AOT_hence \<open>[R']xz\<close> using "\<beta>\<rightarrow>C" by blast
-      AOT_hence 4: \<open>[R']xy\<close>
-        using transitive[THEN Transitive[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" "&I" 3 by blast
-      AOT_show \<open>[\<lambda>z [R']xz]y\<close>
-        by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; safe intro!: 4 "cqt:2[const_var]"[axiom_inst])
+      AOT_hence \<open>[R']xy\<close>
+        using transitive[THEN Transitive[THEN "\<equiv>\<^sub>d\<^sub>fE"]] "\<forall>E"(2) "\<rightarrow>E" "&I" 2 by blast
+      AOT_thus \<open>[\<lambda>z [R']xz]y\<close>
+        by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
     qed
     ultimately AOT_have \<open>[\<lambda>z [R']xz]y\<close>
       using 0 "&I" "\<rightarrow>E" by auto
     AOT_thus \<open>[R']xy\<close>
       by (rule "\<beta>\<rightarrow>C")
   qed
-  AOT_have \<open>[\<lambda>xy \<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)]xy\<close>
-    by (safe_step intro!: "\<beta>\<leftarrow>C"; "cqt:2[lambda]")
-       (safe intro!: tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"] "cqt:2[const_var]"[axiom_inst] 1)
+  AOT_hence \<open>[\<lambda>xy \<forall>R'(Transitive(R') & Entails(R,R') \<rightarrow> [R']xy)]xy\<close>
+    by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
   AOT_thus \<open>[TransitiveClosure(R)]xy\<close>
-    by (safe_step intro!: "rule-id-def:2:b"[OF TransitiveClosure]) "cqt:2[lambda]"
+    by (auto intro: "rule-id-def:2:b"[OF TransitiveClosure] intro!: "cqt:2")
 qed
 
 text\<open>
@@ -448,7 +440,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     using "\<rightarrow>E" by blast
 next
   AOT_assume 0: \<open>[R\<^sup>*]xy\<close>
-  AOT_have 1: \<open>\<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)\<close>
+  AOT_have \<open>\<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)\<close>
   proof(safe intro!: GEN "\<rightarrow>I")
     fix R'
     AOT_assume 2: \<open>\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)\<close>
@@ -458,9 +450,9 @@ next
     proof (safe intro!: GEN "\<rightarrow>I")
       fix z
       AOT_assume \<open>[R]xz\<close>
-      AOT_hence 3: \<open>[R']xz\<close> using 2[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
-      AOT_show \<open>[\<lambda>z [R']xz]z\<close>
-        by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; safe intro!: 3 "cqt:2[const_var]"[axiom_inst])
+      AOT_hence \<open>[R']xz\<close> using 2[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
+      AOT_thus \<open>[\<lambda>z [R']xz]z\<close>
+        by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
     qed
     moreover AOT_have \<open>Hereditary([\<lambda>z [R']xz],R)\<close>
     proof (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I")
@@ -471,18 +463,17 @@ next
       AOT_hence 4: \<open>[R']zy\<close> using 2[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
       AOT_assume \<open>[\<lambda>z [R']xz]z\<close>
       AOT_hence \<open>[R']xz\<close> using "\<beta>\<rightarrow>C" by blast
-      AOT_hence 5: \<open>[R']xy\<close> using 2[THEN "&E"(1)] "\<forall>E"(2) "\<rightarrow>E" "&I" 4 by blast
-      AOT_show \<open>[\<lambda>z [R']xz]y\<close>
-        by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]"; safe intro!: 5 "cqt:2[const_var]"[axiom_inst])
+      AOT_hence \<open>[R']xy\<close> using 2[THEN "&E"(1)] "\<forall>E"(2) "\<rightarrow>E" "&I" 4 by blast
+      AOT_thus \<open>[\<lambda>z [R']xz]y\<close>
+        by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2")
     qed
     ultimately AOT_have \<open>[\<lambda>z [R']xz]y\<close>
       using 0 "&I" "\<rightarrow>E" by auto
     AOT_thus \<open>[R']xy\<close>
       by (rule "\<beta>\<rightarrow>C")
   qed
-  AOT_show \<open>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]xy\<close>
-    by (rule "\<beta>\<leftarrow>C"; "cqt:2[lambda]")
-       (auto intro!: tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"] "cqt:2[const_var]"[axiom_inst] 1)
+  AOT_thus \<open>[\<lambda>xy \<forall>R'((\<forall>x\<forall>y\<forall>z([R']xy & [R']yz \<rightarrow> [R']xz) & \<forall>x\<forall>y([R]xy \<rightarrow> [R']xy)) \<rightarrow> [R']xy)]xy\<close>
+    by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
 qed
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
