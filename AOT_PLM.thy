@@ -1105,7 +1105,7 @@ qed
 
 lemmas "=I" = "rule=I:1" "rule=I:2[const_var]" "rule=I:2[lambda]"
 
-AOT_theorem "rule-id-def:1":
+AOT_theorem "rule-id-df:1":
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close>
   shows \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
 proof -
@@ -1115,7 +1115,7 @@ proof -
     using assms(2) "\<rightarrow>E" by blast
 qed
 
-AOT_theorem "rule-id-def:1[zero]":
+AOT_theorem "rule-id-df:1[zero]":
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close>
   shows \<open>\<tau> = \<sigma>\<close>
 proof -
@@ -1125,16 +1125,16 @@ proof -
     using assms(2) "\<rightarrow>E" by blast
 qed
 
-AOT_theorem "rule-id-def:2:a":
+AOT_theorem "rule-id-df:2:a":
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
   shows \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
 proof -
-  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using "rule-id-def:1" assms(1,2) by blast
+  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using "rule-id-df:1" assms(1,2) by blast
   AOT_thus \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "rule=E" by blast
 qed
 
 (* TODO: get rid of this, ideally *)
-AOT_theorem "rule-id-def:2:a[2]":
+AOT_theorem "rule-id-df:2:a[2]":
   assumes \<open>\<tau>{\<guillemotleft>(\<alpha>\<^sub>1,\<alpha>\<^sub>2)\<guillemotright>} =\<^sub>d\<^sub>f \<sigma>{\<guillemotleft>(\<alpha>\<^sub>1,\<alpha>\<^sub>2)\<guillemotright>}\<close> and \<open>\<sigma>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}\<down>\<close> and \<open>\<phi>{\<tau>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close>
   shows \<open>\<phi>{\<sigma>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close>
 proof -
@@ -1148,28 +1148,28 @@ proof -
   AOT_thus \<open>\<phi>{\<sigma>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close> using assms(3) "rule=E" by blast
 qed
 
-AOT_theorem "rule-id-def:2:a[zero]":
+AOT_theorem "rule-id-df:2:a[zero]":
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close> and \<open>\<phi>{\<tau>}\<close>
   shows \<open>\<phi>{\<sigma>}\<close>
 proof -
-  AOT_have \<open>\<tau> = \<sigma>\<close> using "rule-id-def:1[zero]" assms(1,2) by blast
+  AOT_have \<open>\<tau> = \<sigma>\<close> using "rule-id-df:1[zero]" assms(1,2) by blast
   AOT_thus \<open>\<phi>{\<sigma>}\<close> using assms(3) "rule=E" by blast
 qed
 
-lemmas "=\<^sub>d\<^sub>fE" = "rule-id-def:2:a" "rule-id-def:2:a[zero]"
+lemmas "=\<^sub>d\<^sub>fE" = "rule-id-df:2:a" "rule-id-df:2:a[zero]"
 
-AOT_theorem "rule-id-def:2:b":
+AOT_theorem "rule-id-df:2:b":
   assumes \<open>\<tau>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} =\<^sub>d\<^sub>f \<sigma>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close> and \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>\<close> and \<open>\<phi>{\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
   shows \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close>
 proof -
-  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using "rule-id-def:1" assms(1,2) by blast
+  AOT_have \<open>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close> using "rule-id-df:1" assms(1,2) by blast
   AOT_hence \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
     using "rule=E" "=I"(1) "t=t-proper:1" "\<rightarrow>E" by fast
   AOT_thus \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "rule=E" by blast
 qed
 
 (* TODO: get rid of this, ideally *)
-AOT_theorem "rule-id-def:2:b[2]":
+AOT_theorem "rule-id-df:2:b[2]":
   assumes \<open>\<tau>{\<guillemotleft>(\<alpha>\<^sub>1,\<alpha>\<^sub>2)\<guillemotright>} =\<^sub>d\<^sub>f \<sigma>{\<guillemotleft>(\<alpha>\<^sub>1,\<alpha>\<^sub>2)\<guillemotright>}\<close> and \<open>\<sigma>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}\<down>\<close> and \<open>\<phi>{\<sigma>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close>
   shows \<open>\<phi>{\<tau>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close>
 proof -
@@ -1185,17 +1185,17 @@ proof -
   AOT_thus \<open>\<phi>{\<tau>{\<guillemotleft>(\<tau>\<^sub>1,\<tau>\<^sub>2)\<guillemotright>}}\<close> using assms(3) "rule=E" by blast
 qed
 
-AOT_theorem "rule-id-def:2:b[zero]":
+AOT_theorem "rule-id-df:2:b[zero]":
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close> and \<open>\<phi>{\<sigma>}\<close>
   shows \<open>\<phi>{\<tau>}\<close>
 proof -
-  AOT_have \<open>\<tau> = \<sigma>\<close> using "rule-id-def:1[zero]" assms(1,2) by blast
+  AOT_have \<open>\<tau> = \<sigma>\<close> using "rule-id-df:1[zero]" assms(1,2) by blast
   AOT_hence \<open>\<sigma> = \<tau>\<close>
     using "rule=E" "=I"(1) "t=t-proper:1" "\<rightarrow>E" by fast
   AOT_thus \<open>\<phi>{\<tau>}\<close> using assms(3) "rule=E" by blast
 qed
 
-lemmas "=\<^sub>d\<^sub>fI" = "rule-id-def:2:b" "rule-id-def:2:b[zero]"
+lemmas "=\<^sub>d\<^sub>fI" = "rule-id-df:2:b" "rule-id-df:2:b[zero]"
 
 AOT_theorem "free-thms:1": \<open>\<tau>\<down> \<equiv> \<exists>\<beta> (\<beta> = \<tau>)\<close>
   by (metis "\<exists>E" "rule=I:1" "t=t-proper:2" "\<rightarrow>I" "\<exists>I"(1) "\<equiv>I" "\<rightarrow>E")
@@ -3933,7 +3933,7 @@ AOT_theorem "thm-relation-negation:3": \<open>((p)\<^sup>-) \<equiv> \<not>p\<cl
 proof -
   AOT_have \<open>(p)\<^sup>- = [\<lambda> \<not>p]\<close> using "rel-neg-T:2[zero]" by blast
   AOT_hence \<open>((p)\<^sup>-) \<equiv> [\<lambda> \<not>p]\<close>
-    using "df-relation-negation[zero]" "log-prop-prop:2" "oth-class-taut:3:a" "rule-id-def:2:a" by blast
+    using "df-relation-negation[zero]" "log-prop-prop:2" "oth-class-taut:3:a" "rule-id-df:2:a" by blast
   also AOT_have \<open>[\<lambda> \<not>p] \<equiv> \<not>p\<close>
     by (simp add: "propositions-lemma:2")
   finally show ?thesis.
@@ -5858,7 +5858,7 @@ proof -
   qed
 
   AOT_have not_act_q_zero: \<open>\<not>\<^bold>\<A>q\<^sub>0\<close>
-    by (meson "log-prop-prop:2" "pos-not-pna:1" q\<^sub>0_def "reductio-aa:1" "rule-id-def:2:a[zero]")
+    by (meson "log-prop-prop:2" "pos-not-pna:1" q\<^sub>0_def "reductio-aa:1" "rule-id-df:2:a[zero]")
   AOT_have delta_q_zero: \<open>\<^bold>\<Delta>q\<^sub>0\<close>
   proof(rule "\<equiv>\<^sub>d\<^sub>fI"[OF necessary_or_contingently_false]; rule "\<or>I"(2); rule "&I")
     AOT_show \<open>\<not>\<^bold>\<A>q\<^sub>0\<close> using not_act_q_zero.
@@ -6996,7 +6996,7 @@ proof (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:
     rule "raa-cor:2")
   AOT_obtain x where nullx: \<open>Null(x)\<close>
     by (metis "instantiation" "df-null-uni-terms:1" "existential:1" "null-uni-facts:3"
-              "null-uni-uniq:3" "rule-id-def:2:b[zero]")
+              "null-uni-uniq:3" "rule-id-df:2:b[zero]")
   AOT_hence act_null: \<open>\<^bold>\<A>Null(x)\<close> by (metis "nec-imp-act" "null-uni-facts:1" "vdash-properties:10")
   AOT_assume \<open>\<^bold>\<iota>x Null(x) = \<^bold>\<iota>x Universal(x)\<close>
   AOT_hence \<open>\<^bold>\<A>\<forall>x(Null(x) \<equiv> Universal(x))\<close>
@@ -7027,7 +7027,7 @@ next
     using "rule=I:1" by blast
   AOT_show \<open>[A!]a\<^sub>\<emptyset> & [A!]\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"]; rule "&I")
-    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:1" "df-null-uni-terms:1" "null-uni-facts:3" "null-uni-uniq:3" "rule-id-def:2:a[zero]" "vdash-properties:10")
+    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:1" "df-null-uni-terms:1" "null-uni-facts:3" "null-uni-uniq:3" "rule-id-df:2:a[zero]" "vdash-properties:10")
     using "can-ab2"[unvarify y, OF "A-descriptions", THEN "\<rightarrow>E", OF 1].
 next
   AOT_show \<open>\<forall>F (a\<^sub>\<emptyset>[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F])\<close>
@@ -7037,7 +7037,7 @@ next
       by (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:1", OF "null-uni-uniq:3"])
          (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "\<or>I"(2) "\<or>E"(3)
                 "df-null-uni:1" "df-null-uni-terms:1" "existential:2[const_var]" "null-uni-facts:3"
-                "raa-cor:2" "rule-id-def:2:a[zero]" "russell-axiom[enc,1].\<psi>_denotes_asm")
+                "raa-cor:2" "rule-id-df:2:a[zero]" "russell-axiom[enc,1].\<psi>_denotes_asm")
     moreover AOT_have \<open>\<not>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
     proof(rule "raa-cor:2")
       AOT_assume 0: \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F \<noteq> F))[F]\<close>
@@ -7066,7 +7066,7 @@ next
     using "rule=I:1" by blast
   AOT_show \<open>[A!]a\<^sub>V & [A!]\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"]; rule "&I")
-    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:2" "df-null-uni-terms:2" "null-uni-facts:4" "null-uni-uniq:4" "rule-id-def:2:a[zero]" "vdash-properties:10")
+    apply (meson "\<equiv>\<^sub>d\<^sub>fE" "Conjunction Simplification"(1) "df-null-uni:2" "df-null-uni-terms:2" "null-uni-facts:4" "null-uni-uniq:4" "rule-id-df:2:a[zero]" "vdash-properties:10")
     using "can-ab2"[unvarify y, OF "A-descriptions", THEN "\<rightarrow>E", OF 1].
 next
   AOT_show \<open>\<forall>F (a\<^sub>V[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F])\<close>
@@ -7074,7 +7074,7 @@ next
     fix F
     AOT_have \<open>a\<^sub>V[F]\<close>
       apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "df-null-uni-terms:2", OF "null-uni-uniq:4"])
-      using "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "df-null-uni:2" "df-null-uni-terms:2" "null-uni-facts:4" "null-uni-uniq:4" "rule-id-def:2:a[zero]" "rule-ui:3" by blast
+      using "\<equiv>\<^sub>d\<^sub>fE" "&E"(2) "df-null-uni:2" "df-null-uni-terms:2" "null-uni-facts:4" "null-uni-uniq:4" "rule-id-df:2:a[zero]" "rule-ui:3" by blast
     moreover AOT_have \<open>\<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>
       using "RA[2]" "desc-nec-encode" "id-eq:1" "\<equiv>E"(2) by fastforce
     ultimately AOT_show \<open>a\<^sub>V[F] \<equiv> \<^bold>\<iota>x([A!]x & \<forall>F (x[F] \<equiv> F = F))[F]\<close>

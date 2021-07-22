@@ -694,8 +694,8 @@ proof (rule "\<rightarrow>I"; frule "&E"(2); drule "&E"(1); frule "&E"(2); drule
   AOT_assume fu: \<open>[F]u\<close>
   AOT_assume gv: \<open>[G]v\<close>
   AOT_have \<open>[\<lambda>z [\<Pi>]z & z \<noteq>\<^sub>E \<kappa>]\<down>\<close> for \<Pi> \<kappa> by "cqt:2[lambda]"
-  note \<Pi>_minus_\<kappa>I = "rule-id-def:2:b[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
-   and \<Pi>_minus_\<kappa>E = "rule-id-def:2:a[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
+  note \<Pi>_minus_\<kappa>I = "rule-id-df:2:b[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
+   and \<Pi>_minus_\<kappa>E = "rule-id-df:2:a[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
   AOT_have \<Pi>_minus_\<kappa>_den: \<open>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<down>\<close> for \<Pi> \<kappa> (* TODO: PLM: quietly dismissed *)
     by (rule \<Pi>_minus_\<kappa>I) "cqt:2[lambda]"+
   {
@@ -1112,8 +1112,8 @@ qed
 AOT_theorem "P'-eq": \<open>[F]\<^sup>-\<^sup>u \<approx>\<^sub>E [G]\<^sup>-\<^sup>v & [F]u & [G]v \<rightarrow> F \<approx>\<^sub>E G\<close>
 proof(safe intro!: "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); frule "&E"(1); drule "&E"(2))
   AOT_have \<open>[\<lambda>z [\<Pi>]z & z \<noteq>\<^sub>E \<kappa>]\<down>\<close> for \<Pi> \<kappa> by "cqt:2[lambda]"
-  note \<Pi>_minus_\<kappa>I = "rule-id-def:2:b[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
-   and \<Pi>_minus_\<kappa>E = "rule-id-def:2:a[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
+  note \<Pi>_minus_\<kappa>I = "rule-id-df:2:b[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
+   and \<Pi>_minus_\<kappa>E = "rule-id-df:2:a[2]"[where \<tau>=\<open>(\<lambda>(\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<guillemotright>)\<close>, simplified, OF "F-u", simplified, OF this]
   AOT_have \<Pi>_minus_\<kappa>_den: \<open>[\<Pi>]\<^sup>-\<^sup>\<kappa>\<down>\<close> for \<Pi> \<kappa> (* TODO: PLM: quietly dismissed *)
     by (rule \<Pi>_minus_\<kappa>I) "cqt:2[lambda]"+
 
@@ -2281,7 +2281,7 @@ proof -
   AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G) \<equiv> \<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close>
     using 0[unvarify x, OF "num-def:2"].
   moreover AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G)\<close>
-    using "num-def:1" "num-uniq" "rule-id-def:1" by blast
+    using "num-def:1" "num-uniq" "rule-id-df:1" by blast
   ultimately AOT_have \<open>\<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close> using "\<equiv>E" by blast
   thus ?thesis using "\<forall>E"(2) by blast
 qed
@@ -2492,7 +2492,7 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem "0F:4": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[F]\<^sub>w = 0\<close>
-proof (rule "rule-id-def:2:b"[OF "w-index", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
+proof (rule "rule-id-df:2:b"[OF "w-index", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
   AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
     by (simp add: "w-rel:3")
 next
@@ -3132,11 +3132,9 @@ qed
 
 AOT_theorem "1-1-R:4": \<open>[\<R>]\<^sup>*xy \<rightarrow> InDomainOf(x,\<R>)\<close>
 proof(rule "\<rightarrow>I"; rule "df-1-1:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  AOT_have 0: \<open>[\<lambda>z [\<R>]\<^sup>*xz \<rightarrow> \<exists>y [\<R>]xy]\<down>\<close> by "cqt:2[lambda]"
   AOT_assume 1: \<open>[\<R>]\<^sup>*xy\<close>
   AOT_have \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]y\<close>
-  proof (rule "anc-her:2"[unvarify F, OF 0, THEN "\<rightarrow>E"];
-         safe intro!: "&I" "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "cqt:2[const_var]"[axiom_inst] GEN "\<rightarrow>I")
+  proof (safe intro!: "anc-her:2"[unvarify F, THEN "\<rightarrow>E"]; safe intro!: "cqt:2" "&I" GEN "\<rightarrow>I" "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     AOT_show \<open>[\<R>]\<^sup>*xy\<close> by (fact 1)
   next
     fix z
@@ -3168,7 +3166,7 @@ proof(rule "\<rightarrow>I"; rule "df-1-1:5"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
     qed
     AOT_show \<open>[\<lambda>z [\<R>\<^sup>*]xz \<rightarrow> \<exists>y [\<R>]xy]y\<close>
       by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" 1)
-  qed("cqt:2[lambda]")
+  qed
   AOT_hence \<open>[\<R>\<^sup>*]xy \<rightarrow> \<exists>y [\<R>]xy\<close> by (rule "\<beta>\<rightarrow>C"(1))
   AOT_thus \<open>\<exists>y [\<R>]xy\<close> using 1 "\<rightarrow>E" by blast
 qed
@@ -3493,7 +3491,7 @@ AOT_define Predecessor :: \<open>\<tau>\<close> (\<open>\<P>\<close>)
   "pred-thm:1": \<open>\<P> =\<^sub>d\<^sub>f [\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<close>
 
 AOT_theorem "pred-thm:2": \<open>\<P>\<down>\<close>
-  using pred "pred-thm:1" "rule-id-def:2:b[zero]" by blast
+  using pred "pred-thm:1" "rule-id-df:2:b[zero]" by blast
 
 AOT_theorem "pred-thm:3": \<open>[\<P>]xy \<equiv> \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
 proof -
@@ -5564,7 +5562,7 @@ proof (safe intro!: "inf-card:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "inf-car
     AOT_hence \<open>[\<lambda>x \<diamond>[E!]x]b\<close>
       by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2")
     moreover AOT_have \<open>O! = [\<lambda>x \<diamond>[E!]x]\<close>
-      by (rule "rule-id-def:1[zero]"[OF "oa:1"]) "cqt:2[lambda]"
+      by (rule "rule-id-df:1[zero]"[OF "oa:1"]) "cqt:2[lambda]"
     ultimately AOT_have b_ord: \<open>O!b\<close>
       using "rule=E" id_sym by fast
     AOT_hence \<open>\<^bold>\<A>O!b\<close>
