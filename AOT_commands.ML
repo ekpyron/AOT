@@ -727,3 +727,27 @@ val _ =
       Toplevel.keep (fn st => find_theorems query st)));
 
 end
+
+fun setup_AOT_no_atp thy = let
+val all_facts_with_AOT_semantics =
+  let
+    val transfer = Global_Theory.transfer_theories thy;
+    val global_facts = Global_Theory.facts_of thy;
+  in
+   (Facts.dest_all (Context.Theory thy) false [] global_facts
+   |> maps Facts.selections
+   |> map (apsnd transfer)
+   |> filter (not o AOT_Theorems.member (Proof_Context.init_global thy) o snd))
+  end
+val all_facts_Main =
+  let
+    val transfer = Global_Theory.transfer_theories @{theory Main};
+    val global_facts = Global_Theory.facts_of @{theory Main};
+  in
+   (Facts.dest_all (Context.Theory @{theory Main}) false [] global_facts
+   |> maps Facts.selections
+   |> map (apsnd transfer))
+  end
+val facts = filter (fn (elem,_) => not (List.exists (fn (elem',_) => elem = elem') all_facts_Main)) all_facts_with_AOT_semantics
+val thy = fold (fn fact => Context.theory_map (AOT_no_atp.add_thm fact)) (map snd facts) thy
+in thy end

@@ -1,6 +1,6 @@
 (*<*)
 theory AOT_PLM
-  imports AOT_axioms
+  imports AOT_Axioms
 begin
 (*>*)
 
@@ -8,16 +8,6 @@ section\<open>The Deductive System PLM\<close>
 
 (* constrain sledgehammer to the abstraction layer *)
 unbundle AOT_no_atp
-
-(* To enable meta syntax: *)
-(*interpretation AOT_meta_syntax.*)
-(* To disable meta syntax: *)
-interpretation AOT_no_meta_syntax.
-
-(* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_syntax
-(* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
-(* unbundle AOT_no_syntax *)
 
 AOT_theorem "modus-ponens": assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
@@ -29,6 +19,7 @@ AOT_theorem "non-con-thm-thm": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> 
 AOT_theorem "vdash-properties:1[1]": assumes \<open>\<phi> \<in> \<Lambda>\<close> shows \<open>\<^bold>\<turnstile> \<phi>\<close>
   using assms unfolding AOT_model_act_axiom_def by blast (* NOTE: semantics needed *)
 
+text\<open>Convenience attribute for instantiating modally-fragile axioms.\<close>
 attribute_setup act_axiom_inst =
   \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm RS @{thm "vdash-properties:1[1]"})))\<close>
   "Instantiate modally fragile axiom as modally fragile theorem."
@@ -36,10 +27,12 @@ attribute_setup act_axiom_inst =
 AOT_theorem "vdash-properties:1[2]": assumes \<open>\<phi> \<in> \<Lambda>\<^sub>\<box>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close>
   using assms unfolding AOT_model_axiom_def by blast (* NOTE: semantics needed *)
 
+text\<open>Convenience attribute for instantiating modally-strict axioms.\<close>
 attribute_setup axiom_inst =
   \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm RS @{thm "vdash-properties:1[2]"})))\<close>
   "Instantiate axiom as theorem."
 
+text\<open>Convenience methods and theorem sets for applying "cqt:2".\<close>
 method cqt_2_lambda_inst_prover = (fast intro: AOT_instance_of_cqt_2_intro)
 method "cqt:2[lambda]" = (rule "cqt:2[lambda]"[axiom_inst]; cqt_2_lambda_inst_prover)
 lemmas "cqt:2" = "cqt:2[const_var]"[axiom_inst] "cqt:2[lambda]"[axiom_inst] AOT_instance_of_cqt_2_intro
@@ -4411,12 +4404,12 @@ qed
 
 AOT_theorem "property-facts:3": \<open>L \<noteq> [L]\<^sup>- & L \<noteq> E! & L \<noteq> E!\<^sup>- & [L]\<^sup>- \<noteq> [E!]\<^sup>- & E! \<noteq> [E!]\<^sup>-\<close>
 proof -
-  AOT_have noneqI: \<open>\<Pi> \<noteq> \<Pi>'\<close> if \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close> for \<phi> \<Pi> \<Pi>'
+  AOT_have noneqI: \<open>\<Pi> \<noteq> \<Pi>'\<close> if \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close> for \<phi> and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
     apply (rule "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "raa-cor:2")
     using "rule=E"[where \<phi>=\<phi> and \<tau>=\<Pi> and \<sigma> = \<Pi>'] that "&I" by blast
-  AOT_have contingent_denotes: \<open>\<Pi>\<down>\<close> if \<open>Contingent([\<Pi>])\<close> for \<Pi>
+  AOT_have contingent_denotes: \<open>\<Pi>\<down>\<close> if \<open>Contingent([\<Pi>])\<close> for \<Pi> :: \<open><\<kappa>>\<close>
     using that "contingent-properties:4"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1)] by blast
-  AOT_have not_noncontingent_if_contingent: \<open>\<not>NonContingent([\<Pi>])\<close> if \<open>Contingent([\<Pi>])\<close> for \<Pi>
+  AOT_have not_noncontingent_if_contingent: \<open>\<not>NonContingent([\<Pi>])\<close> if \<open>Contingent([\<Pi>])\<close> for \<Pi> :: \<open><\<kappa>>\<close>
   proof(rule RAA(2))
     AOT_show \<open>\<not>(Necessary([\<Pi>]) \<or> Impossible([\<Pi>]))\<close>
       using that "contingent-properties:4"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF contingent_denotes[OF that], THEN "\<equiv>E"(1)] by blast
@@ -4427,7 +4420,7 @@ proof -
   qed
 
   show ?thesis
-  proof (rule "&I")+
+  proof (safe intro!: "&I")
     AOT_show \<open>L \<noteq> [L]\<^sup>-\<close>
       apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def])
        apply "cqt:2[lambda]"
@@ -5662,7 +5655,7 @@ proof -
   AOT_have 1: \<open>L\<down>\<close>
     by (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]) "cqt:2[lambda]"+
   {
-    fix \<phi> and \<Pi> and \<Pi>'
+    fix \<phi> and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
     AOT_have A: \<open>\<not>(\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>})\<close> if  \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
     proof (rule "raa-cor:2")
       AOT_assume \<open>\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>}\<close>
@@ -5703,7 +5696,7 @@ proof -
   AOT_have 1: \<open>L\<down>\<close>
     by (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]) "cqt:2[lambda]"+
   {
-    fix \<phi> and \<Pi> and \<Pi>'
+    fix \<phi> and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
     AOT_have A: \<open>\<not>(\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>})\<close> if  \<open>\<phi>{\<Pi>}\<close> and \<open>\<not>\<phi>{\<Pi>'}\<close>
     proof (rule "raa-cor:2")
       AOT_assume \<open>\<phi>{\<Pi>'} \<equiv> \<phi>{\<Pi>}\<close>

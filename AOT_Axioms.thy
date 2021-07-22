@@ -1,132 +1,10 @@
 (*<*)
-theory AOT_axioms
-  imports AOT_semantics
+theory AOT_Axioms
+  imports AOT_Definitions
 begin
 (*>*)
 
 section\<open>Axioms of PLM\<close>
-
-(* To enable meta syntax: *)
-(* interpretation AOT_meta_syntax. *)
-(* To disable meta syntax: TODO: enabling and disabling seems to adversely affect AOT_syntax (binders) *)
-(* interpretation AOT_no_meta_syntax. *)
-
-(* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_syntax
-(* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
-(* unbundle AOT_no_syntax *)
-
-(* conventions - these are already defined, resp. valid, so just note them here again *)
-notepad
-begin
-  fix \<phi> \<psi> \<chi>
-
-  AOT_have \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
-    using "conventions:1" .
-  AOT_have \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-    using "conventions:2" .
-  AOT_have \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
-    using "conventions:3" .
-  {
-    fix \<phi> :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
-    AOT_have \<open>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
-      using "conventions:4" .
-  }
-  AOT_have \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
-    using "conventions:5" .
-
-  have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close> by blast
-  have "conventions3[2]": \<open>\<guillemotleft>\<phi> & \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
-                   and \<open>\<guillemotleft>\<phi> \<or> \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
-    by blast+
-  have "conventions3[3]": \<open>\<guillemotleft>\<phi> \<or> \<psi> & \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) & \<chi>\<guillemotright>\<close>
-                   and \<open>\<guillemotleft>\<phi> & \<psi> \<or> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<or> \<chi>\<guillemotright>\<close> (* not exactly, but close enough *)
-     by blast+
-end
-
-AOT_theorem "existence:1": \<open>\<kappa>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>F [F]\<kappa>\<close>
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def)
-     (metis AOT_sem_denotes AOT_sem_exe AOT_sem_lambda_beta AOT_sem_lambda_denotes)
-declare "existence:1"[AOT_defs]
-AOT_theorem "existence:2": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<^sub>1...\<exists>x\<^sub>n x\<^sub>1...x\<^sub>n[\<Pi>]\<close>
-  using AOT_sem_denotes AOT_sem_enc_denotes AOT_sem_universal_encoder
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def) blast
-declare "existence:2"[AOT_defs]
-AOT_theorem "existence:2[1]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x x[\<Pi>]\<close>
-  using "existence:2"[of \<Pi>] by simp
-declare "existence:2[1]"[AOT_defs]
-AOT_theorem "existence:2[2]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y xy[\<Pi>]\<close>
-  using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
-declare "existence:2[2]"[AOT_defs]
-AOT_theorem "existence:2[3]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y\<exists>z xyz[\<Pi>]\<close>
-  using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
-declare "existence:2[3]"[AOT_defs]
-AOT_theorem "existence:2[4]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]\<close>
-  using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
-declare "existence:2[4]"[AOT_defs]
-
-AOT_theorem "existence:3": \<open>\<phi>\<down> \<equiv>\<^sub>d\<^sub>f [\<lambda>x \<phi>]\<down>\<close>
-  by (simp add: AOT_sem_denotes AOT_model_denotes_\<o>_def AOT_model_equiv_def
-                AOT_model_lambda_denotes)
-declare "existence:3"[AOT_defs]
-
-AOT_theorem "oa:1": \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close> using AOT_ordinary .
-AOT_theorem "oa:2": \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close> using AOT_abstract .
-
-AOT_theorem "identity:1": \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)) \<or> ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
-  unfolding AOT_model_equiv_def
-  using AOT_sem_ind_eq[of _ x y]
-  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
-declare "identity:1"[AOT_defs]
-
-AOT_theorem "identity:2":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
-  using AOT_sem_enc_eq[of _ F G]
-  by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq AOT_sem_conj
-                 AOT_sem_forall AOT_sem_box AOT_sem_equiv)
-declare "identity:2"[AOT_defs]
-
-AOT_theorem "identity:3[2]":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y([\<lambda>z [F]zy] = [\<lambda>z [G]zy] & [\<lambda>z [F]yz] = [\<lambda>z [G]yz])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
-declare "identity:3[2]"[AOT_defs]
-AOT_theorem "identity:3[3]":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [F]zy\<^sub>1y\<^sub>2] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2] & [\<lambda>z [F]y\<^sub>1y\<^sub>2z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
-declare "identity:3[3]"[AOT_defs]
-AOT_theorem "identity:3[4]":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [F]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [G]y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
-declare "identity:3[4]"[AOT_defs]
-AOT_theorem "identity:3":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . AOT_exe F \<tau>) (\<lambda> \<tau> . AOT_exe G \<tau>)\<guillemotright>\<close> (* TODO: is it ok to state this as axiom? *)
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
-declare "identity:3"[AOT_defs]
-
-AOT_theorem "identity:4":
-  \<open>p = q \<equiv>\<^sub>d\<^sub>f p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_eq AOT_sem_denotes AOT_sem_conj
-                 AOT_model_lambda_denotes AOT_sem_lambda_eq_prop_eq)
-declare "identity:4"[AOT_defs]
-
-AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>" 50)
-  "=-infix": \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
-
-context AOT_meta_syntax
-begin
-notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
-end
-context AOT_no_meta_syntax
-begin
-no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
-end
 
 AOT_axiom "pl:1": \<open>\<phi> \<rightarrow> (\<psi> \<rightarrow> \<phi>)\<close>
   by (auto simp: AOT_sem_imp AOT_model_axiomI)
@@ -145,11 +23,10 @@ AOT_axiom "cqt:2[lambda]":
   using assms by (simp add: AOT_sem_denotes AOT_instance_of_cqt_2_def AOT_model_axiomI)
 AOT_axiom "cqt:2[lambda0]":
   shows \<open>[\<lambda> \<phi>]\<down>\<close>
-  apply (rule AOT_model_axiomI)
-  using AOT_model_equiv_def AOT_sem_lambda_denotes "existence:3" by fastforce
+  by (auto intro!: AOT_model_axiomI
+           simp: AOT_sem_lambda_denotes "existence:3"[unfolded AOT_model_equiv_def])
 AOT_axiom "cqt:2[concrete]": \<open>E!\<down>\<close>
-  apply (rule AOT_model_axiomI)
-  using AOT_sem_concrete_denotes AOT_concrete_sem by auto
+  by (auto intro!: AOT_model_axiomI simp: AOT_sem_concrete_denotes AOT_concrete_sem)
 
 AOT_axiom "cqt:3": \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
@@ -169,8 +46,8 @@ AOT_axiom "cqt:5:a[4]": \<open>[\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<
   by (rule AOT_model_axiomI)
      (metis AOT_model_denotes_prod_def AOT_sem_conj AOT_sem_denotes AOT_sem_exe AOT_sem_imp case_prodD)
 AOT_axiom "cqt:5:b": \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>)\<close>
-  by (rule AOT_model_axiomI)
-     (insert AOT_sem_enc_denotes; auto simp: AOT_sem_conj AOT_sem_denotes AOT_sem_imp)
+  using AOT_sem_enc_denotes
+  by (auto intro!: AOT_model_axiomI simp: AOT_sem_conj AOT_sem_denotes AOT_sem_imp)+
 AOT_axiom "cqt:5:b[1]": \<open>\<kappa>[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<down>)\<close>
   using "cqt:5:b" AOT_model_axiomI by blast
 AOT_axiom "cqt:5:b[2]": \<open>\<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>] \<rightarrow> (\<Pi>\<down> & \<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>)\<close>
@@ -216,10 +93,10 @@ AOT_axiom "qml:3": \<open>\<diamond>\<phi> \<rightarrow> \<box>\<diamond>\<phi>\
      (simp add: AOT_sem_box AOT_sem_dia AOT_sem_imp)
 
 AOT_axiom "qml:4": \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<close>
-  apply (rule AOT_model_axiomI)
   using AOT_sem_concrete AOT_model_contingent
-  by (auto simp: AOT_sem_box AOT_sem_dia AOT_sem_imp AOT_sem_exists AOT_sem_denotes
-                 AOT_sem_conj AOT_sem_not AOT_sem_act AOT_sem_exe AOT_concrete_sem)
+  by (auto intro!: AOT_model_axiomI
+             simp: AOT_sem_box AOT_sem_dia AOT_sem_imp AOT_sem_exists AOT_sem_denotes
+                   AOT_sem_conj AOT_sem_not AOT_sem_act AOT_sem_exe AOT_concrete_sem)+
 
 AOT_axiom "qml-act:1": \<open>\<^bold>\<A>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
@@ -265,9 +142,8 @@ proof (rule AOT_model_axiomI)
   }
 qed
 AOT_axiom "safe-ext": \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
-  apply (rule AOT_model_axiomI)
   using AOT_sem_lambda_coex
-  by (simp add: AOT_sem_imp AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box AOT_sem_forall) blast
+  by (auto intro!: AOT_model_axiomI simp: AOT_sem_imp AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box AOT_sem_forall)
 AOT_axiom "safe-ext[2]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<phi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down> & \<box>\<forall>\<nu>\<^sub>1\<forall>\<nu>\<^sub>2 (\<phi>{\<nu>\<^sub>1, \<nu>\<^sub>2} \<equiv> \<psi>{\<nu>\<^sub>1, \<nu>\<^sub>2})) \<rightarrow> [\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2 \<psi>{\<nu>\<^sub>1,\<nu>\<^sub>2}]\<down>\<close>
   using "safe-ext"[where \<phi>="\<lambda>(x,y). \<phi> x y"]
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
@@ -296,15 +172,13 @@ AOT_axiom "nary-encoding[4]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<e
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
 
 AOT_axiom encoding: \<open>x[F] \<rightarrow> \<box>x[F]\<close>
-  apply (rule AOT_model_axiomI)
   using AOT_sem_enc_nec 
-  by (simp add: AOT_sem_imp AOT_sem_box) blast
+  by (auto intro!: AOT_model_axiomI simp: AOT_sem_imp AOT_sem_box)
 
 AOT_axiom nocoder: \<open>O!x \<rightarrow> \<not>\<exists>F x[F]\<close>
-  apply (rule AOT_model_axiomI)
-  by (simp add: AOT_sem_imp AOT_sem_not AOT_sem_exists AOT_sem_ordinary AOT_sem_dia AOT_concrete_sem
-                AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes,
-                                     OF AOT_sem_vars_denote])
+  by (auto intro!: AOT_model_axiomI
+           simp: AOT_sem_imp AOT_sem_not AOT_sem_exists AOT_sem_ordinary AOT_sem_dia AOT_concrete_sem
+                AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes, OF AOT_sem_vars_denote])
      (metis AOT_sem_nocoder)
 
 AOT_axiom "A-objects": \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
@@ -340,23 +214,9 @@ AOT_theorem universal_closure_act: assumes \<open>for arbitrary \<alpha>: \<phi>
 AOT_theorem act_closure_act: assumes \<open>\<phi> \<in> \<Lambda>\<close> shows \<open>\<^bold>\<A>\<phi> \<in> \<Lambda>\<close>
   using assms by (simp add: AOT_model_act_axiom_def AOT_sem_act)
 
-AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
-  by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
-declare tuple_denotes[AOT_defs]
+text\<open>The following are not part of PLM and only hold in the extended models.
+     They are a generalization of the predecessor axiom.\<close>
 
-AOT_theorem tuple_identity_1: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright> = \<guillemotleft>(\<sigma>, \<sigma>')\<guillemotright> \<equiv>\<^sub>d\<^sub>f (\<tau> = \<sigma>) & (\<tau>' = \<sigma>')\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_conj AOT_sem_eq AOT_model_denotes_prod_def AOT_sem_denotes)
-declare tuple_identity_1[AOT_defs]
-
-AOT_theorem tuple_forall: \<open>\<forall>\<alpha>\<^sub>1...\<forall>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<forall>\<alpha>\<^sub>1(\<forall>\<alpha>\<^sub>2...\<forall>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_forall AOT_sem_denotes AOT_model_denotes_prod_def)
-declare tuple_forall[AOT_defs]
-
-AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<^sub>1(\<exists>\<alpha>\<^sub>2...\<exists>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_exists AOT_sem_denotes AOT_model_denotes_prod_def)
-declare tuple_exists[AOT_defs]
-
-(* extended model only *)
 AOT_axiom indistinguishable_ord_enc_all: \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
   ((\<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])) \<equiv> \<forall>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G]))\<close>
 proof (rule AOT_model_axiomI)
@@ -379,8 +239,9 @@ proof (rule AOT_model_axiomI)
           AOT_assume 1: \<open>\<Pi>'\<down>\<close>
           AOT_assume 2: \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)\<close> for z
           AOT_have \<open>x[\<Pi>']\<close>
-            using 3 apply (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
-            by (metis (no_types, lifting) 1 2 AOT_model.AOT_term_of_var_cases AOT_sem_box AOT_sem_denotes AOT_sem_imp)
+            using 3
+            by (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+               (metis (no_types, lifting) 1 2 AOT_term_of_var_cases AOT_sem_box AOT_sem_denotes AOT_sem_imp)
         } note 3 = this
         fix \<Pi>' :: \<open><\<kappa>>\<close>
         AOT_assume \<Pi>_den: \<open>\<Pi>'\<down>\<close>
@@ -390,8 +251,8 @@ proof (rule AOT_model_axiomI)
           AOT_assume \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0\<close>
           AOT_hence \<open>O!\<kappa>\<^sub>0\<close>
             using AOT_concrete_sem AOT_sem_ordinary by simp
-          moreover AOT_hence \<open>\<kappa>\<^sub>0\<down>\<close>
-            by (simp add: AOT_sem_exe)
+          moreover AOT_have \<open>\<kappa>\<^sub>0\<down>\<close>
+            using calculation by (simp add: AOT_sem_exe)
           ultimately AOT_have \<open>\<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
         } note 4 = this
         AOT_have \<open>y[\<Pi>']\<close>
