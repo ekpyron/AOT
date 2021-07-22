@@ -97,6 +97,14 @@ fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn<
 <span class="keyword1"><span class="keyword">fun</span></span> <span class="entity">AOT_note_definitions</span> <span class="entity">thms</span> <span class="main">=</span> Local_Theory.background_theory
   <span class="main">(</span>Context.theory_map <span class="main">(</span>fold <span class="entity">AOT_Definitions.add_thm</span> <span class="main">(</span>map Drule.export_without_context <span class="main">(</span>flat <span class="entity">thms</span><span class="main">)</span><span class="main">)</span><span class="main">)</span><span class="main">)</span>
 
+<span class="keyword1"><span class="keyword">structure</span></span> <span class="entity">AOT_DefinedConstants</span> <span class="main">=</span> Theory_Data <span class="main">(</span>
+  <span class="keyword1"><span class="keyword">type</span></span> <span class="entity">T</span> <span class="main">=</span> Termtab.set
+  <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">empty</span> <span class="main">=</span> Termtab.empty
+  <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">extend</span> <span class="main">=</span> I
+  <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">merge</span> <span class="main">=</span> Termtab.merge <span class="main">(</span>K true<span class="main">)</span>
+<span class="main">)</span><span class="main">;</span>
+<span class="keyword1"><span class="keyword">fun</span></span> <span class="entity">AOT_note_defined_constant</span> <span class="entity">const</span> <span class="main">=</span> Local_Theory.background_theory <span class="main">(</span>AOT_DefinedConstants.map <span class="main">(</span>Termtab.insert_set <span class="entity">const</span><span class="main">)</span><span class="main">)</span>
+
 <span class="keyword1"><span class="keyword">fun</span></span> <span class="entity">AOT_read_prop</span> <span class="entity">nonterminal</span> <span class="entity">ctxt</span> <span class="entity">prop</span> <span class="main">=</span> <span class="main">(</span><span class="keyword2"><span class="keyword">let</span></span>
     <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">ctxt'</span> <span class="main">=</span> Config.put Syntax.root <span class="entity">nonterminal</span> <span class="entity">ctxt</span>
     <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">trm</span> <span class="main">=</span> Syntax.parse_term <span class="entity">ctxt'</span> <span class="entity">prop</span>
@@ -261,6 +269,8 @@ fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn<
     <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">ctxt</span> <span class="main">=</span> <span class="entity">ctxt</span> |&gt; Local_Theory.note <span class="main">(</span><span class="main">(</span><span class="entity">thmbind</span><span class="main">,</span> <span class="entity">thmattrs</span><span class="main">)</span><span class="main">,</span> <span class="main">[</span><span class="entity">thm</span><span class="main">]</span><span class="main">)</span> |&gt; snd
     <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">ctxt</span> <span class="main">=</span> <span class="entity">AOT_note_theorems</span> <span class="main">[</span><span class="main">[</span><span class="entity">thm</span><span class="main">]</span><span class="main">]</span> <span class="entity">ctxt</span>
     <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">ctxt</span> <span class="main">=</span> <span class="entity">AOT_note_definitions</span> <span class="main">[</span><span class="main">[</span><span class="entity">thm</span><span class="main">]</span><span class="main">]</span> <span class="entity">ctxt</span>
+    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">ctxt</span> <span class="main">=</span> <span class="entity">AOT_note_defined_constant</span> <span class="main">(</span>Proof_Context.read_const <span class="main">{</span>proper<span class="main">=</span>true<span class="main">,</span>strict<span class="main">=</span>true<span class="main">}</span>
+              <span class="entity">ctxt</span> <span class="main">(</span>Binding.name_of <span class="entity">bnd</span><span class="main">)</span><span class="main">)</span> <span class="entity">ctxt</span>
   <span class="keyword2"><span class="keyword">in</span></span>
     <span class="entity">ctxt</span>
   <span class="keyword2"><span class="keyword">end</span></span>
