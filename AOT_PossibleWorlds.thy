@@ -777,10 +777,9 @@ proof (safe intro!: "\<rightarrow>I")
   AOT_assume \<open>Actual(s)\<close>
   AOT_hence p if \<open>s \<Turnstile> p\<close> using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] that by blast
   moreover AOT_assume \<open>s \<Turnstile> p\<close>
-  ultimately AOT_have p: p by blast
-  AOT_show \<open>[\<lambda>y p]s\<close>
-    by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]")
-       (auto simp: p "ex:1:a" "rule-ui:2[const_var]")
+  ultimately AOT_have p by blast
+  AOT_thus \<open>[\<lambda>y p]s\<close>
+    by (safe intro!: "\<beta>\<leftarrow>C"(1) "cqt:2")
 qed
 
 AOT_theorem "act-sit:2": \<open>(Actual(s') & Actual(s'')) \<rightarrow> \<exists>x (Actual(x) & s' \<unlhd> x & s'' \<unlhd> x)\<close>
@@ -1039,7 +1038,7 @@ proof -
     {
       AOT_assume 0: \<open>p\<close>
       AOT_have \<open>[\<lambda>y p]x\<close> for x
-        by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
+        by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" 0)
       AOT_hence \<open>[\<lambda>y \<not>p]x\<close> for x using i "rule=E" by fast
       AOT_hence \<open>\<not>p\<close>
         using "\<beta>\<rightarrow>C"(1) by auto
@@ -1047,7 +1046,7 @@ proof -
     moreover {
       AOT_assume 0: \<open>\<not>p\<close>
       AOT_have \<open>[\<lambda>y \<not>p]x\<close> for x
-        by (rule "\<beta>\<leftarrow>C"(1); "cqt:2[lambda]"; auto intro!: 0 "cqt:2[const_var]"[axiom_inst])
+        by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" 0)
       AOT_hence \<open>[\<lambda>y p]x\<close> for x using i[symmetric] "rule=E" by fast
       AOT_hence \<open>p\<close>
         using "\<beta>\<rightarrow>C"(1) by auto
@@ -2565,10 +2564,9 @@ next
       moreover AOT_have \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
       proof (rule RM; rule "\<rightarrow>I")
         AOT_modally_strict {
-          AOT_assume 1: \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
-          AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
-            by (rule "\<beta>\<leftarrow>C"(1); fact "w-rel:3")
-               (auto simp: 1 "cqt:2[const_var]" "vdash-properties:1[2]")
+          AOT_assume \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
+          AOT_thus \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
+            by (auto intro!: "\<beta>\<leftarrow>C"(1) simp: "w-rel:3" "cqt:2" "vdash-properties:1[2]")
         }
       qed
       ultimately AOT_have 1: \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
