@@ -448,8 +448,9 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
 qed
 
 text\<open>
-For this reason Nodelman and Zalta proceed by introducing @{emph \<open>rigid one-to-one relations\<close>}
-which allow for defining a denoting relation of identity restricted to their domain. (TODO: cite)
+For this reason Nodelman and Zalta proceed by introducing @{emph \<open>rigid one-to-one relations\<close>}.
+Rigid one-to-one relations induce a notion of identity on their @{emph \<open>domain\<close>} that is consistent
+with general identity (on this domain), but constitutes a denoting relation. (TODO: cite)
 \<close>
 
 subsection\<open>Rigid One-to-One Relations\<close>
