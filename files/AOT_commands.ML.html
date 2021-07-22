@@ -741,6 +741,30 @@ fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn<
       <span class="entity">Toplevel.keep</span> <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">st</span> <span class="main">=&gt;</span> <span class="entity">find_theorems</span> <span class="entity">query</span> <span class="entity">st</span><span class="main">)</span><span class="main">)</span><span class="main">)</span><span class="main">;</span>
 
 <span class="keyword2"><span class="keyword">end</span></span>
+
+<span class="keyword1"><span class="keyword">fun</span></span> <span class="entity">setup_AOT_no_atp</span> <span class="entity">thy</span> <span class="main">=</span> <span class="keyword2"><span class="keyword">let</span></span>
+<span class="keyword1"><span class="keyword">val</span></span> <span class="entity">all_facts_with_AOT_semantics</span> <span class="main">=</span>
+  <span class="keyword2"><span class="keyword">let</span></span>
+    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">transfer</span> <span class="main">=</span> Global_Theory.transfer_theories <span class="entity">thy</span><span class="main">;</span>
+    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">global_facts</span> <span class="main">=</span> Global_Theory.facts_of <span class="entity">thy</span><span class="main">;</span>
+  <span class="keyword2"><span class="keyword">in</span></span>
+   <span class="main">(</span>Facts.dest_all <span class="main">(</span>Context.Theory <span class="entity">thy</span><span class="main">)</span> false <span class="main">[</span><span class="main">]</span> <span class="entity">global_facts</span>
+   |&gt; maps Facts.selections
+   |&gt; map <span class="main">(</span>apsnd <span class="entity">transfer</span><span class="main">)</span>
+   |&gt; filter <span class="main">(</span>not o <span class="entity">AOT_Theorems.member</span> <span class="main">(</span>Proof_Context.init_global <span class="entity">thy</span><span class="main">)</span> o snd<span class="main">)</span><span class="main">)</span>
+  <span class="keyword2"><span class="keyword">end</span></span>
+<span class="keyword1"><span class="keyword">val</span></span> <span class="entity">all_facts_Main</span> <span class="main">=</span>
+  <span class="keyword2"><span class="keyword">let</span></span>
+    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">transfer</span> <span class="main">=</span> Global_Theory.transfer_theories <span class="antiquoted"><span class="entity"><span class="antiquote">@{</span><span class="operator">theory</span> <a href="../../HOL/HOL/Main.html">Main</a><span class="antiquote">}</span></span></span><span class="main">;</span>
+    <span class="keyword1"><span class="keyword">val</span></span> <span class="entity">global_facts</span> <span class="main">=</span> Global_Theory.facts_of <span class="antiquoted"><span class="entity"><span class="antiquote">@{</span><span class="operator">theory</span> <a href="../../HOL/HOL/Main.html">Main</a><span class="antiquote">}</span></span></span><span class="main">;</span>
+  <span class="keyword2"><span class="keyword">in</span></span>
+   <span class="main">(</span>Facts.dest_all <span class="main">(</span>Context.Theory <span class="antiquoted"><span class="entity"><span class="antiquote">@{</span><span class="operator">theory</span> <a href="../../HOL/HOL/Main.html">Main</a><span class="antiquote">}</span></span></span><span class="main">)</span> false <span class="main">[</span><span class="main">]</span> <span class="entity">global_facts</span>
+   |&gt; maps Facts.selections
+   |&gt; map <span class="main">(</span>apsnd <span class="entity">transfer</span><span class="main">)</span><span class="main">)</span>
+  <span class="keyword2"><span class="keyword">end</span></span>
+<span class="keyword1"><span class="keyword">val</span></span> <span class="entity">facts</span> <span class="main">=</span> filter <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">elem</span><span class="main">,</span><span class="main">_</span><span class="main">)</span> <span class="main">=&gt;</span> not <span class="main">(</span>List.exists <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="main">(</span><span class="entity">elem'</span><span class="main">,</span><span class="main">_</span><span class="main">)</span> <span class="main">=&gt;</span> <span class="entity">elem</span> <span class="main">=</span> <span class="entity">elem'</span><span class="main">)</span> <span class="entity">all_facts_Main</span><span class="main">)</span><span class="main">)</span> <span class="entity">all_facts_with_AOT_semantics</span>
+<span class="keyword1"><span class="keyword">val</span></span> <span class="entity">thy</span> <span class="main">=</span> fold <span class="main">(</span><span class="keyword1"><span class="keyword">fn</span></span> <span class="entity">fact</span> <span class="main">=&gt;</span> Context.theory_map <span class="main">(</span><span class="entity">AOT_no_atp.add_thm</span> <span class="entity">fact</span><span class="main">)</span><span class="main">)</span> <span class="main">(</span>map snd <span class="entity">facts</span><span class="main">)</span> <span class="entity">thy</span>
+<span class="keyword2"><span class="keyword">in</span></span> <span class="entity">thy</span> <span class="keyword2"><span class="keyword">end</span></span>
 </pre>
 </body>
 
