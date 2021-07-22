@@ -42,6 +42,8 @@ attribute_setup axiom_inst =
 
 method cqt_2_lambda_inst_prover = (fast intro: AOT_instance_of_cqt_2_intro)
 method "cqt:2[lambda]" = (rule "cqt:2[lambda]"[axiom_inst]; cqt_2_lambda_inst_prover)
+lemmas "cqt:2" = "cqt:2[const_var]"[axiom_inst] "cqt:2[lambda]"[axiom_inst] AOT_instance_of_cqt_2_intro
+method "cqt:2" = (safe intro!: "cqt:2")
 
 AOT_theorem "vdash-properties:3": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<Gamma> \<^bold>\<turnstile> \<phi>\<close>
   using assms by blast

@@ -428,6 +428,10 @@ val rhs = (case collectConstraints NONE constraints of SOME c => Const ("AOT_con
 in
 HOLogic.mk_Trueprop (\<^const>\<open>AOT_model_equiv_def\<close> $ processFreesAlwaysMeta ctxt lhs $ processFreesAlwaysMeta ctxt rhs)
 end
+fun foldPremises world (Const (\<^syntax_const>\<open>_AOT_premises\<close>, _) $ p1 $ p2) y =
+  @{const "Pure.imp"} $ (p1 $ world) $ foldPremises world p2 y
+| foldPremises world x y =
+  @{const "Pure.imp"} $ (x $ world) $ HOLogic.mk_Trueprop  (@{const AOT_model_valid_in} $ world $ y)
 in
 [
   (\<^syntax_const>\<open>_AOT_var\<close>, parseVar true),
@@ -435,7 +439,6 @@ in
   (\<^syntax_const>\<open>_AOT_valid\<close>, fn ctxt => fn [w,x] => \<^const>\<open>AOT_model_valid_in\<close> $ w $ x),
   (\<^syntax_const>\<open>_AOT_quoted\<close>, fn ctxt => fn [x] => x),
   (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
-  (\<^syntax_const>\<open>_AOT_premises\<close>, fn ctxt => fn [x,y] => Abs ("v", dummyT, @{const Pure.conjunction} $ (x $ Bound 0) $ (y $ Bound 0))),
   (\<^syntax_const>\<open>_AOT_world_relative_prop\<close>, fn ctxt => fn [x] => let
     val (x, premises) = processFreesAndPremises ctxt x
     val (world::formulas) = Variable.variant_frees ctxt [x] (("v", dummyT)::(map (fn _ => ("\<phi>", dummyT)) premises))
@@ -465,9 +468,9 @@ in
     in trm end),
   (\<^syntax_const>\<open>_AOT_derivable\<close>, fn ctxt => fn [x,y] => let
     val world = case (AOT_ProofData.get ctxt) of SOME w => w | _ => raise Fail "Expected world to be stored in the proof state."
-    in @{const "Pure.imp"} $ (x $ world) $ HOLogic.mk_Trueprop  (@{const AOT_model_valid_in} $ world $ y) end),
+    in foldPremises world x y end),
   (\<^syntax_const>\<open>_AOT_nec_derivable\<close>, fn ctxt => fn [x,y] => let
-    in Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("v", dummyT, @{const "Pure.imp"} $ (x $ Bound 0) $ HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Bound 0 $ y)) end),
+    in Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ Abs ("v", dummyT, foldPremises (Bound 0) x y) end),
   (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, fn ctxt => fn [_ $ var $ pos,trm] => let
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ (Const ("_constrainAbs", dummyT) $ Term.absfree (Term.dest_Free var) trm $ pos)
     in trm end),
