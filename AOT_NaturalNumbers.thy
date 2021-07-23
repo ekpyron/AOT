@@ -2491,24 +2491,24 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>#F = 0\<close> using id_sym by blast
 qed
 
-AOT_theorem "0F:4": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[F]\<^sub>w = 0\<close>
+AOT_theorem "0F:4": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<equiv> #[F]\<^sub>w = 0\<close>
 proof (rule "rule-id-df:2:b"[OF "w-index", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
   AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
     by (simp add: "w-rel:3")
 next
-  AOT_show \<open>w \<Turnstile> \<not>\<exists>u [F]u \<rightarrow> #[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
-  proof (rule "\<rightarrow>I")
+  AOT_show \<open>w \<Turnstile> \<not>\<exists>u [F]u \<equiv> #[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
+  proof (rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_assume \<open>w \<Turnstile> \<not>\<exists>u [F]u\<close>
     AOT_hence 0: \<open>\<not>w \<Turnstile> \<exists>u [F]u\<close>
       using "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-    AOT_have 1: \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
+    AOT_have \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
     proof(rule "raa-cor:2")
       AOT_assume \<open>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
-      then AOT_obtain u where 1: \<open>\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
-      AOT_have \<open>\<^bold>\<A>w \<Turnstile> [F]u\<close>
+      then AOT_obtain u where \<open>\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close> using "Ordinary.\<exists>E"[rotated] by meson
+      AOT_hence \<open>\<^bold>\<A>w \<Turnstile> [F]u\<close>
         by (AOT_subst (reverse) \<open>w \<Turnstile> [F]u\<close> \<open>[\<lambda>x w \<Turnstile> [F]x]u\<close>; 
-            safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "w-rel:1"[THEN "\<rightarrow>E"] 1)
-           "cqt:2[lambda]"
+            safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "w-rel:1"[THEN "\<rightarrow>E"])
+           "cqt:2"
       AOT_hence 1: \<open>w \<Turnstile> [F]u\<close>
         using "rigid-truth-at:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
       AOT_have \<open>\<box>O!u\<close> by (simp add: Ordinary.restricted_var_condition RN)
@@ -2517,7 +2517,7 @@ next
       AOT_hence \<open>w \<Turnstile> O!u\<close> by (metis "PossibleWorld.\<forall>E")
       AOT_hence \<open>w \<Turnstile> (O!u & [F]u)\<close>
         using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)]
-              "&I"1 by blast
+              "&I" 1 by blast
       AOT_hence \<open>\<exists>x w \<Turnstile> (O!x & [F]x)\<close> using "\<exists>I" by fast
       AOT_hence \<open>w \<Turnstile> \<exists>u [F]u\<close>
         using "conj-dist-w:6"[THEN "\<equiv>E"(2)] by fast
@@ -2526,7 +2526,35 @@ next
     qed
     AOT_thus \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
       by (safe intro!: "0F:2"[unvarify F, THEN "\<equiv>E"(1)] "w-rel:1"[THEN "\<rightarrow>E"])
-         "cqt:2[lambda]"
+         "cqt:2"
+  next
+    AOT_assume \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
+    AOT_hence 0: \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
+      by (safe intro!: "0F:2"[unvarify F, THEN "\<equiv>E"(2)] "w-rel:1"[THEN "\<rightarrow>E"])
+         "cqt:2"
+    AOT_have \<open>\<not>w \<Turnstile> \<exists>u [F]u\<close>
+    proof (rule "raa-cor:2")
+      AOT_assume \<open>w \<Turnstile> \<exists>u [F]u\<close>
+      AOT_hence \<open>\<exists>x w \<Turnstile> (O!x & [F]x)\<close>
+        using "conj-dist-w:6"[THEN "\<equiv>E"(1)] by fast
+      then AOT_obtain x where \<open>w \<Turnstile> (O!x & [F]x)\<close> using "\<exists>E"[rotated] by blast
+      AOT_hence \<open>w \<Turnstile> O!x\<close> and Fx_in_w: \<open>w \<Turnstile> [F]x\<close>
+        using "conj-dist-w:1"[unvarify p q] "\<equiv>E"(1) "log-prop-prop:2" "&E" by blast+
+      AOT_hence \<open>\<diamond>O!x\<close>
+        using "fund:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "PossibleWorld.\<exists>I" by simp
+      AOT_hence ord_x: \<open>O!x\<close> using "oa-facts:3"[THEN "\<rightarrow>E"] by blast
+      AOT_have \<open>\<^bold>\<A>w \<Turnstile> [F]x\<close>
+        using "rigid-truth-at:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] Fx_in_w by blast
+      AOT_hence \<open>\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]x\<close>
+        by (AOT_subst \<open>[\<lambda>x w \<Turnstile> [F]x]x\<close> \<open>w \<Turnstile> [F]x\<close>; safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "w-rel:1"[THEN "\<rightarrow>E"]) "cqt:2"
+      AOT_hence \<open>O!x & \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]x\<close>
+        using ord_x "&I" by blast
+      AOT_hence \<open>\<exists>x (O!x & \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]x)\<close> using "\<exists>I" by fast
+      AOT_thus \<open>\<exists>u (\<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u) & \<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
+        using 0 "&I" by blast
+    qed
+    AOT_thus \<open>w \<Turnstile> \<not>\<exists>u[F]u\<close>
+      using "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] by blast
   qed
 qed
 
