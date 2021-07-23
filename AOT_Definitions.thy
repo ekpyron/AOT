@@ -124,7 +124,7 @@ no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
 
-text\<open>The following are artifacts of the internal implementation of n-ary relations as tuples.\<close>
+text\<open>The following are artifacts of the internal implementation of n-ary relations as relations on tuples.\<close>
 AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
   by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
 AOT_theorem tuple_identity_1: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright> = \<guillemotleft>(\<sigma>, \<sigma>')\<guillemotright> \<equiv>\<^sub>d\<^sub>f (\<tau> = \<sigma>) & (\<tau>' = \<sigma>')\<close>
