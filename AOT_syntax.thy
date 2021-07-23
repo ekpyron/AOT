@@ -550,7 +550,11 @@ fun isDefinedConst ctxt name = let
       case_fixed = fn name => NONE,
       case_default = fn name => SOME name} name
   val cons = Option.mapPartial (fn name => try (Proof_Context.read_const {proper = true, strict = true} ctxt) name) unmarkedName
-  val defined = case cons of SOME cons => Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons | _ => false
+  val defined = case cons of
+    SOME cons =>
+      Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons
+      orelse cons = @{const AOT_concrete}
+    | _ => false
   in defined end
 in
 AOT_syntax_print_ast_translations
