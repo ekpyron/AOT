@@ -2356,7 +2356,7 @@ definition AOT_subst_cond_fun :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Righ
 
 inductive AOT_subst_fun :: "(('a \<Rightarrow> 'b) \<Rightarrow> \<o>) \<Rightarrow> bool" where
   AOT_subst_fun_const[AOT_substI]: "AOT_subst_fun (\<lambda>\<phi>. \<psi>)"
-| AOT_subst_fun_id[AOT_substI]: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<Psi> (\<phi> (AOT_term_of_var x)))"
+| AOT_subst_fun_id[AOT_substI]: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<Psi> (\<phi> (AOT_term_of_var \<alpha>)))"
 | AOT_subst_fun_all[AOT_substI]: "AOT_subst \<Psi> \<Longrightarrow> (\<And> \<alpha> . AOT_subst_fun (\<Theta> (AOT_term_of_var \<alpha>))) \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi> :: 'a \<Rightarrow> 'b. \<Psi> \<guillemotleft>\<forall>\<alpha> \<guillemotleft>\<Theta> (\<alpha>::'a) \<phi>\<guillemotright>\<guillemotright>)"
 | AOT_subst_fun_not[AOT_substI]: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<guillemotleft>\<not>\<guillemotleft>\<Psi> \<phi>\<guillemotright>\<guillemotright>)"
 | AOT_subst_fun_imp[AOT_substI]: "AOT_subst \<Psi> \<Longrightarrow> AOT_subst \<Theta> \<Longrightarrow> AOT_subst_fun (\<lambda>\<phi>. \<guillemotleft>\<guillemotleft>\<Psi> \<phi>\<guillemotright> \<rightarrow> \<guillemotleft>\<Theta> \<phi>\<guillemotright>\<guillemotright>)"
@@ -2376,6 +2376,7 @@ instance proof
   next
   case (AOT_subst_fun_id \<Psi> x)
   then show ?case by (simp add: AOT_subst AOT_subst_cond_fun_def) 
+  next
   next
   case (AOT_subst_fun_all \<Psi> \<Theta>)
   AOT_have \<open>\<^bold>\<turnstile>\<^sub>\<box> \<box>(\<Theta>{\<alpha>, \<guillemotleft>\<psi>\<guillemotright>} \<equiv> \<Theta>{\<alpha>, \<guillemotleft>\<chi>\<guillemotright>})\<close> for \<alpha>
@@ -2407,44 +2408,64 @@ instance proof
 qed
 end
 
-method_setup AOT_defI =
-\<open>Scan.lift (Scan.succeed (fn ctxt => (Method.CONTEXT_METHOD (fn thms => (Context_Tactic.CONTEXT_SUBGOAL (fn (trm,int) => 
-Context_Tactic.CONTEXT_TACTIC (
-let
-fun findHeadConst (Const x) = SOME x
-  | findHeadConst (A $ B) = findHeadConst A
-  | findHeadConst _ = NONE
-fun findDef (Const (\<^const_name>\<open>AOT_model_equiv_def\<close>, _) $ lhs $ rhs) = findHeadConst lhs
-  | findDef (A $ B) = (case findDef A of SOME x => SOME x | _ => findDef B)
-  | findDef (Abs (a,b,c)) = findDef c
-  | findDef _ = NONE
-val const_opt = (findDef trm)
-val defs = case const_opt of SOME const => List.filter (fn thm => let
-    val concl = Thm.concl_of thm
-    val thmconst = (findDef concl)
-    in case thmconst of SOME (c,_) => fst const = c | _ => false end) (AOT_Definitions.get ctxt)
-    | _ => []
-in
-resolve_tac ctxt defs 1
-end
-)) 1)))))\<close>
-\<open>Resolve AOT definitions\<close>
-
-
-method AOT_subst_intro_helper = ((rule AOT_substI
-      | AOT_defI
-      | (simp only: AOT_subst_cond_\<o>_def AOT_subst_cond_fun_def; ((rule allI)+)?)))
+ML\<open>
+fun prove_AOT_subst_tac ctxt = REPEAT (SUBGOAL (fn (trm,_) => let
+          fun findHeadConst (Const x) = SOME x
+            | findHeadConst (A $ _) = findHeadConst A
+            | findHeadConst _ = NONE
+          fun findDef (Const (\<^const_name>\<open>AOT_model_equiv_def\<close>, _) $ lhs $ _) = findHeadConst lhs
+            | findDef (A $ B) = (case findDef A of SOME x => SOME x | _ => findDef B)
+            | findDef (Abs (_,_,c)) = findDef c
+            | findDef _ = NONE
+          val const_opt = (findDef trm)
+          val defs = case const_opt of SOME const => List.filter (fn thm => let
+              val concl = Thm.concl_of thm
+              val thmconst = (findDef concl)
+              in case thmconst of SOME (c,_) => fst const = c | _ => false end) (AOT_Definitions.get ctxt)
+              | _ => []
+          val tac = case defs of [] => safe_step_tac (ctxt addSIs @{thms AOT_substI}) 1
+                    | _ => resolve_tac ctxt defs 1
+        in tac end) 1)
+fun getSubstThm ctxt reversed phi p q = let
+val p_ty = Term.type_of p
+val abs = HOLogic.mk_Trueprop (@{const AOT_subst(_)} $ phi)
+val abs = Syntax.check_term ctxt abs
+val substThm = Goal.prove ctxt [] [] abs (fn {context=ctxt, prems=_} => prove_AOT_subst_tac ctxt)
+val substThm = substThm RS @{thm AOT_subst}
+in if reversed then let
+  val substThm = Drule.instantiate_normalize ([],[((("\<chi>", 0), p_ty), Thm.cterm_of ctxt p),
+          ((("\<psi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
+  val substThm = substThm RS @{thm "\<equiv>E"(1)}
+  in substThm end
+else
+  let
+  val substThm = Drule.instantiate_normalize ([],[((("\<psi>", 0), p_ty), Thm.cterm_of ctxt p),
+          ((("\<chi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
+  val substThm = substThm RS @{thm "\<equiv>E"(2)}
+  in substThm end end
+\<close>
 
 method_setup AOT_subst = \<open>
 Scan.option (Scan.lift (Args.parens (Args.$$$ "reverse"))) --
 Scan.lift (Args.embedded_inner_syntax -- Args.embedded_inner_syntax
-) -- Scan.option (Scan.lift (Args.$$$ "bound" -- Args.colon) |-- Scan.repeat1 (Scan.lift (Args.embedded_inner_syntax)))
+) -- Scan.option (Scan.lift (Args.$$$ "for" -- Args.colon) |-- Scan.repeat1 (Scan.lift (Args.embedded_inner_syntax) -- Scan.option (Scan.lift (Args.$$$ "::" |-- Args.embedded_inner_syntax))))
 >> (fn ((reversed,(raw_p,raw_q)),raw_bounds) => (fn ctxt =>
 (Method.SIMPLE_METHOD (Subgoal.FOCUS (fn {context = ctxt, params = _, prems = prems, asms = asms, concl = concl, schematics = _} =>
 let
 val thms = prems
 val ctxt' = ctxt
 val ctxt = Context_Position.set_visible false ctxt
+val raw_bounds = case raw_bounds of SOME bounds => bounds | _ => []
+
+val ctxt = (fold (fn (bound, ty) => fn ctxt =>
+  let
+    val bound = AOT_read_term @{nonterminal \<tau>'} ctxt bound
+    val ty = Option.map (Syntax.read_typ ctxt) ty
+    val ctxt = case ty of SOME ty => let
+        val bound = Const ("_type_constraint_", Type ("fun", [ty,ty])) $ bound
+        val bound = Syntax.check_term ctxt bound
+      in Variable.declare_term bound ctxt end | _ => ctxt
+  in ctxt end)) raw_bounds ctxt
 
 val p = AOT_read_term @{nonterminal \<phi>'} ctxt raw_p
 val p = Syntax.check_term ctxt p
@@ -2453,9 +2474,7 @@ val q = AOT_read_term @{nonterminal \<phi>'} ctxt raw_q
 val q = Syntax.check_term ctxt q
 val ctxt = Variable.declare_term q ctxt
 
-
-val raw_bounds = case raw_bounds of SOME bounds => bounds | _ => [] 
-val bounds = (map (fn x => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt x))) raw_bounds
+val bounds = (map (fn (bound, _) => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt bound))) raw_bounds
 val p = fold (fn bound => fn p => let in Term.abs ("\<alpha>", Term.type_of bound) (Term.abstract_over (bound,p)) end) bounds p
 val p = Syntax.check_term ctxt p
 val p_ty = Term.type_of p
@@ -2472,50 +2491,13 @@ val q = Syntax.check_term ctxt q
 val ctxt = Context_Position.restore_visible ctxt' ctxt
 val ctxt' = ctxt
 fun unsource str = fst (Input.source_content (Syntax.read_input str))
-val (_,ctxt') = Proof_Context.add_fixes (map (fn str => (Binding.make (unsource str, Position.none), NONE, Mixfix.NoSyn)) raw_bounds) ctxt'
-val _ = (map (fn x => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt' x))) raw_bounds
+val (_,ctxt') = Proof_Context.add_fixes (map (fn (str,_) => (Binding.make (unsource str, Position.none), NONE, Mixfix.NoSyn)) raw_bounds) ctxt'
+val _ = (map (fn (x,_) => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt' x))) raw_bounds
 val _ = AOT_read_term @{nonterminal \<phi>'} ctxt' raw_p
 val _ = AOT_read_term @{nonterminal \<phi>'} ctxt' raw_q
 
-val abs = phi
-val abs = HOLogic.mk_Trueprop (@{const AOT_subst(_)} $ abs)
-val abs = Syntax.check_term ctxt abs
-
-val substThm = Goal.prove ctxt [] [] abs (fn {context=ctxt, prems=prems} =>
-      REPEAT (SUBGOAL (fn (trm,int) => let
-          fun findHeadConst (Const x) = SOME x
-            | findHeadConst (A $ B) = findHeadConst A
-            | findHeadConst _ = NONE
-          fun findDef (Const (\<^const_name>\<open>AOT_model_equiv_def\<close>, _) $ lhs $ rhs) = findHeadConst lhs
-            | findDef (A $ B) = (case findDef A of SOME x => SOME x | _ => findDef B)
-            | findDef (Abs (a,b,c)) = findDef c
-            | findDef _ = NONE
-          val const_opt = (findDef trm)
-          val defs = case const_opt of SOME const => List.filter (fn thm => let
-              val concl = Thm.concl_of thm
-              val thmconst = (findDef concl)
-              in case thmconst of SOME (c,_) => fst const = c | _ => false end) (AOT_Definitions.get ctxt)
-              | _ => []
-          val tac = case defs of [] => safe_step_tac (ctxt addSIs @{thms AOT_substI}) 1
-                    | _ => resolve_tac ctxt defs 1
-        in tac end) 1)
-  )
-val substThm = substThm RS @{thm AOT_subst}
-val abs = Thm.cterm_of ctxt abs
-val substThm = case reversed of NONE =>
-  let
-  val substThm = Drule.instantiate_normalize ([],[((("\<psi>", 0), p_ty), Thm.cterm_of ctxt p),
-          ((("\<chi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
-  val substThm = substThm RS @{thm "\<equiv>E"(2)}
-  in substThm end
-| _ =>   let
-  val substThm = Drule.instantiate_normalize ([],[((("\<chi>", 0), p_ty), Thm.cterm_of ctxt p),
-          ((("\<psi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
-  val substThm = substThm RS @{thm "\<equiv>E"(1)}
-  in substThm end
-
 in
-resolve_tac ctxt [substThm] 1
+resolve_tac ctxt [getSubstThm ctxt (case reversed of SOME x => true | _ => false) phi p q] 1
 THEN simp_tac (ctxt addsimps [@{thm AOT_subst_cond_\<o>_def}, @{thm AOT_subst_cond_fun_def}]) 1
 THEN (REPEAT (resolve_tac ctxt [@{thm allI}] 1))
 THEN (TRY (resolve_tac ctxt thms 1))
@@ -2523,35 +2505,51 @@ end
 ) ctxt 1))))
 \<close>
 
-method AOT_subst_old for \<psi>::"'a::AOT_subst" and \<chi>::"'a::AOT_subst" =
-    (match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> and v \<Rightarrow>
-      \<open>match (\<phi>) in "\<lambda>a . ?p" \<Rightarrow> \<open>fail\<close> \<bar> "\<lambda>a . a" \<Rightarrow> \<open>fail\<close>
-       \<bar> _ \<Rightarrow> \<open>rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(2)]
-       ; (AOT_subst_intro_helper+)?\<close>\<close>)
+method_setup AOT_subst_def = \<open>
+Scan.option (Scan.lift (Args.parens (Args.$$$ "reverse"))) --
+Attrib.thm
+>> (fn (reversed,fact) => (fn ctxt =>
+(Method.SIMPLE_METHOD (Subgoal.FOCUS (fn {context = ctxt, params = _, prems = prems, asms = asms, concl = concl, schematics = _} =>
+let
+val c = Thm.concl_of fact
+val (lhs, rhs) = case c of (\<^const>\<open>Trueprop\<close> $ (\<^const>\<open>AOT_model_equiv_def\<close> $ lhs $ rhs)) => (lhs, rhs)
+  | _ => raise Fail "Definition expected."
+val substCond = HOLogic.mk_Trueprop (Const (\<^const_name>\<open>AOT_subst_cond\<close>, dummyT) $ lhs $ rhs)
+val substCond = Syntax.check_term (Proof_Context.set_mode Proof_Context.mode_schematic ctxt) substCond
+val substCondThm = Goal.prove ctxt [] [] substCond (fn {context=ctxt, prems=prems} =>
+      (SUBGOAL (fn (trm,int) =>
+        auto_tac (ctxt addsimps [@{thm AOT_subst_cond_\<o>_def}, @{thm AOT_subst_cond_fun_def}, fact RS @{thm "\<equiv>Df"}])) 1))
+val substThm = substCondThm RSN (2,@{thm AOT_subst})
+in
+resolve_tac ctxt [substThm RS (case reversed of NONE => @{thm "\<equiv>E"(2)} | _ => @{thm "\<equiv>E"(1)})] 1
+THEN prove_AOT_subst_tac ctxt
+THEN (TRY (resolve_tac ctxt prems 1))
+end
+) ctxt 1))))
+\<close>
 
-method AOT_subst_old_rev for \<chi>::"'a::AOT_subst" and \<psi>::"'a::AOT_subst" =
-    (match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> and v \<Rightarrow>
-      \<open>match (\<phi>) in "\<lambda>a . ?p" \<Rightarrow> \<open>fail\<close> \<bar> "\<lambda>a . a" \<Rightarrow> \<open>fail\<close>
-       \<bar> _ \<Rightarrow> \<open>rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<chi> and \<chi>=\<psi>, THEN "\<equiv>E"(1)]
-       ; (AOT_subst_intro_helper+)?\<close>\<close>)
+method_setup AOT_subst_thm = \<open>
+Scan.option (Scan.lift (Args.parens (Args.$$$ "reverse"))) --
+Attrib.thm
+>> (fn (reversed,fact) => (fn ctxt =>
+(Method.SIMPLE_METHOD (Subgoal.FOCUS (fn {context = ctxt, params = _, prems = prems, asms = asms, concl = concl, schematics = _} =>
+let
+val c = Thm.concl_of fact
+val (lhs, rhs) = case c of (\<^const>\<open>Trueprop\<close> $ (\<^const>\<open>AOT_model_valid_in\<close> $ _ $ (\<^const>\<open>AOT_equiv\<close> $ lhs $ rhs))) => (lhs, rhs)
+  | _ => raise Fail "Equivalence expected."
 
-method AOT_subst_manual for \<phi>::"'a::AOT_subst \<Rightarrow> \<o>" =
-    (rule AOT_subst[where \<phi>=\<phi>, THEN "\<equiv>E"(2)]; (AOT_subst_intro_helper+)?)
-
-method AOT_subst_manual_rev for \<phi>::"'a::AOT_subst \<Rightarrow> \<o>" =
-    (rule AOT_subst[where \<phi>=\<phi>, THEN "\<equiv>E"(1)]; (AOT_subst_intro_helper+)?)
-
-method AOT_subst_using uses subst =
-    (match subst in "[?w \<Turnstile> \<psi> \<equiv> \<chi>]" for \<psi> \<chi> \<Rightarrow> \<open>
-       match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright>]" for \<phi> v \<Rightarrow> \<open>
-         rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(2)]
-         ; ((AOT_subst_intro_helper | (fact subst; fail))+)?\<close>\<close>)
-
-method AOT_subst_using_rev uses subst =
-    (match subst in "[?w \<Turnstile> \<psi> \<equiv> \<chi>]" for \<psi> \<chi> \<Rightarrow> \<open>
-      match conclusion in "[v \<Turnstile> \<guillemotleft>\<phi> \<chi>\<guillemotright>]" for \<phi> v \<Rightarrow> \<open>
-        rule AOT_subst[where \<phi>=\<phi> and \<psi>=\<psi> and \<chi>=\<chi>, THEN "\<equiv>E"(1)]
-        ; ((AOT_subst_intro_helper | (fact subst; fail))+)?\<close>\<close>)
+val substCond = HOLogic.mk_Trueprop (Const (\<^const_name>\<open>AOT_subst_cond\<close>, dummyT) $ lhs $ rhs)
+val substCond = Syntax.check_term (Proof_Context.set_mode Proof_Context.mode_schematic ctxt) substCond
+val substCondThm = Goal.prove ctxt [] [] substCond (fn {context=ctxt, prems=prems} =>
+      (SUBGOAL (fn (trm,int) => auto_tac (ctxt addsimps [@{thm AOT_subst_cond_\<o>_def}, @{thm AOT_subst_cond_fun_def}, fact])) 1))
+val substThm = substCondThm RSN (2,@{thm AOT_subst})
+in
+resolve_tac ctxt [substThm RS (case reversed of NONE => @{thm "\<equiv>E"(2)} | _ => @{thm "\<equiv>E"(1)})] 1
+THEN prove_AOT_subst_tac ctxt
+THEN (TRY (resolve_tac ctxt prems 1))
+end
+) ctxt 1))))
+\<close>
 
 AOT_theorem "rule-sub-remark:1[1]": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close> and \<open>\<not>A!x\<close> shows \<open>\<not>\<not>\<diamond>E!x\<close>
   by (AOT_subst (reverse) \<open>\<not>\<diamond>E!x\<close> \<open>A!x\<close>)
@@ -2563,57 +2561,57 @@ AOT_theorem "rule-sub-remark:1[2]": assumes \<open>\<^bold>\<turnstile>\<^sub>\<
 
 AOT_theorem "rule-sub-remark:2[1]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> [R]xy \<equiv> ([R]xy & ([Q]a \<or> \<not>[Q]a))\<close> and \<open>p \<rightarrow> [R]xy\<close> shows \<open>p \<rightarrow> [R]xy & ([Q]a \<or> \<not>[Q]a)\<close>
-  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm (reverse) assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:2[2]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> [R]xy \<equiv> ([R]xy & ([Q]a \<or> \<not>[Q]a))\<close> and \<open>p \<rightarrow> [R]xy & ([Q]a \<or> \<not>[Q]a)\<close> shows \<open>p \<rightarrow> [R]xy\<close>
-  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:3[1]":
   assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close>
       and \<open>\<exists>x A!x\<close>
     shows \<open>\<exists>x \<not>\<diamond>E!x\<close>
-  by (AOT_subst (reverse) \<open>\<not>\<diamond>E!x\<close> \<open>A!x\<close> bound: x)
+  by (AOT_subst (reverse) \<open>\<not>\<diamond>E!x\<close> \<open>A!x\<close> for: x)
      (auto simp: assms)
 
 AOT_theorem "rule-sub-remark:3[2]":
   assumes \<open>for arbitrary x: \<^bold>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close>
       and \<open>\<exists>x \<not>\<diamond>E!x\<close>
     shows \<open>\<exists>x A!x\<close>
-  by (AOT_subst \<open>A!x\<close> \<open>\<not>\<diamond>E!x\<close> bound: x)
+  by (AOT_subst \<open>A!x\<close> \<open>\<not>\<diamond>E!x\<close> for: x)
      (auto simp: assms)
 
 AOT_theorem "rule-sub-remark:4[1]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<not>[P]x \<equiv> [P]x\<close> and \<open>\<^bold>\<A>\<not>\<not>[P]x\<close> shows \<open>\<^bold>\<A>[P]x\<close>
-  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm (reverse) assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:4[2]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<not>[P]x \<equiv> [P]x\<close> and \<open>\<^bold>\<A>[P]x\<close> shows \<open>\<^bold>\<A>\<not>\<not>[P]x\<close>
-  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:5[1]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> and \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> shows \<open>\<box>(\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close>
-  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm (reverse) assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:5[2]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> (\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> and \<open>\<box>(\<not>\<psi> \<rightarrow> \<not>\<phi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> 
-  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:6[1]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<chi>)\<close> 
-  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm (reverse) assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:6[2]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<chi>)\<close> shows \<open>\<box>(\<phi> \<rightarrow> \<psi>)\<close>
-  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:7[1]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<not>\<not>\<phi>\<close> and \<open>\<box>(\<phi> \<rightarrow> \<phi>)\<close> shows \<open>\<box>(\<not>\<not>\<phi> \<rightarrow> \<phi>)\<close> 
-  by (AOT_subst_using_rev subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm (reverse) assms(1)) (simp add: assms(2))
 
 AOT_theorem "rule-sub-remark:7[2]":
   assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<not>\<not>\<phi>\<close> and \<open>\<box>(\<not>\<not>\<phi> \<rightarrow> \<phi>)\<close> shows  \<open>\<box>(\<phi> \<rightarrow> \<phi>)\<close>
-  by (AOT_subst_using subst: assms(1)) (simp add: assms(2))
+  by (AOT_subst_thm assms(1)) (simp add: assms(2))
 
 AOT_theorem "KBasic2:1": \<open>\<box>\<not>\<phi> \<equiv> \<not>\<diamond>\<phi>\<close>
   by (meson "conventions:5" "contraposition:2" "Hypothetical Syllogism" "df-rules-formulas[3]"
@@ -2907,13 +2905,13 @@ proof(rule "\<rightarrow>I")
     apply (AOT_subst (reverse) \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>)
     using \<theta> by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close>
-    by (AOT_subst (reverse) \<open>\<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<box>\<not>\<phi>{\<alpha>}\<close> bound: \<alpha>)
+    by (AOT_subst (reverse) \<open>\<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<box>\<not>\<phi>{\<alpha>}\<close> for: \<alpha>)
        (simp add: "oth-class-taut:3:b")
   AOT_hence \<open>\<exists>\<alpha> \<not>\<box>\<not>\<phi>{\<alpha>}\<close>
     by (rule "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_thus \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
     using "conventions:5"[THEN "\<equiv>Df"]
-    by (AOT_subst \<open>\<diamond>\<phi>{\<alpha>}\<close> \<open>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> bound: \<alpha>)
+    by (AOT_subst \<open>\<diamond>\<phi>{\<alpha>}\<close> \<open>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> for: \<alpha>)
 qed
 lemmas "BF\<diamond>" = "BFs:3"
 
@@ -2924,7 +2922,7 @@ proof(rule "\<rightarrow>I")
     using "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
     using "KBasic2:1"
-    by (AOT_subst \<open>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<not>\<diamond>\<phi>{\<alpha>}\<close> bound: \<alpha>)
+    by (AOT_subst \<open>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<not>\<diamond>\<phi>{\<alpha>}\<close> for: \<alpha>)
   moreover AOT_have \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>} \<equiv> \<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     using "\<equiv>I" "BF" "CBF" by metis
   ultimately AOT_have 1: \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
@@ -3012,11 +3010,13 @@ AOT_theorem "id-nec2:1": \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<alp
   using "B\<diamond>" "RM\<diamond>" "Hypothetical Syllogism" "id-nec:1" by blast
 
 AOT_theorem "id-nec2:2": \<open>\<alpha> \<noteq> \<beta> \<rightarrow> \<box>\<alpha> \<noteq> \<beta>\<close>
-  apply (AOT_subst_using subst: "=-infix"[THEN "\<equiv>Df"])
+  apply (AOT_subst \<open>\<alpha> \<noteq> \<beta>\<close> \<open>\<not>(\<alpha> = \<beta>)\<close>)
+  using "=-infix"[THEN "\<equiv>Df"] apply blast
   using "KBasic2:1" "deduction-theorem" "id-nec2:1" "\<equiv>E"(2) "modus-tollens:1" by blast
 
 AOT_theorem "id-nec2:3": \<open>\<diamond>\<alpha> \<noteq> \<beta> \<rightarrow> \<alpha> \<noteq> \<beta>\<close>
-  apply (AOT_subst_using subst: "=-infix"[THEN "\<equiv>Df"])
+  apply (AOT_subst \<open>\<alpha> \<noteq> \<beta>\<close> \<open>\<not>(\<alpha> = \<beta>)\<close>)
+  using "=-infix"[THEN "\<equiv>Df"] apply blast
   by (metis "KBasic:11" "deduction-theorem" "id-nec:2" "\<equiv>E"(3) "reductio-aa:2" "vdash-properties:6")
 
 AOT_theorem "id-nec2:4": \<open>\<diamond>\<alpha> = \<beta> \<rightarrow> \<box>\<alpha> = \<beta>\<close>
@@ -3229,29 +3229,27 @@ qed
 AOT_theorem "A-Exists:1": \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
 proof -
   AOT_have \<open>\<^bold>\<A>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<^bold>\<A>\<exists>\<alpha>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    by (AOT_subst_using subst: "uniqueness:2")
-       (simp add: "oth-class-taut:3:a")
+    by (AOT_subst \<open>\<exists>!\<alpha> \<phi>{\<alpha>}\<close> \<open>\<exists>\<alpha>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>)
+       (auto simp add: "oth-class-taut:3:a" "uniqueness:2")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     by (simp add: "Act-Basic:10")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    by (AOT_subst \<open>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> \<open>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> bound: \<alpha>)
+    by (AOT_subst \<open>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> \<open>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> for: \<alpha>)
        (auto simp: "logic-actual-nec:3" "vdash-properties:1[2]" "oth-class-taut:3:a")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<^bold>\<A>\<beta> = \<alpha>)\<close>
-    by (AOT_subst_old_rev "\<lambda> \<tau> \<tau>' . \<guillemotleft>\<^bold>\<A>(\<phi>{\<tau>'} \<equiv> \<tau>' = \<tau>)\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<^bold>\<A>\<phi>{\<tau>'} \<equiv> \<^bold>\<A>\<tau>' = \<tau>\<guillemotright>")
+    by (AOT_subst (reverse) \<open>\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<^bold>\<A>\<beta> = \<alpha>\<close>  \<open>\<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> for: \<alpha> \<beta> :: 'a)
        (auto simp: "Act-Basic:5" "cqt-further:7")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-(*    apply (AOT_subst \<open>\<^bold>\<A>\<guillemotleft>AOT_term_of_var \<beta>::'a\<guillemotright> = \<alpha>\<close> \<open>\<beta> = \<alpha>\<close> bound: \<beta> \<alpha>) TODO: sort type constraint*)
-    apply (AOT_subst_old "\<lambda> \<tau> \<tau>' :: 'a . \<guillemotleft>\<^bold>\<A>\<tau>' = \<tau>\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<tau>' = \<tau>\<guillemotright>")
-     apply (meson "id-act:1" "\<equiv>E"(6) "oth-class-taut:3:a")
-    by (simp add: "cqt-further:7")
+    by (AOT_subst (reverse) \<open>\<^bold>\<A>\<beta> = \<alpha>\<close> \<open>\<beta> = \<alpha>\<close> for: \<alpha> \<beta> :: 'a)
+       (auto simp: "id-act:1" "cqt-further:7")
   also AOT_have \<open>... \<equiv> \<exists>!\<alpha> \<^bold>\<A>\<phi>{\<alpha>}\<close>
     using "uniqueness:2" "Commutativity of \<equiv>"[THEN "\<equiv>E"(1)] by fast
   finally show ?thesis .
 qed
 
 AOT_theorem "A-Exists:2": \<open>\<^bold>\<iota>x \<phi>{x}\<down> \<equiv> \<^bold>\<A>\<exists>!x \<phi>{x}\<close>
-  by (AOT_subst_using subst: "A-Exists:1")
-     (simp add: "actual-desc:1")
+  by (AOT_subst \<open>\<^bold>\<A>\<exists>!x \<phi>{x}\<close> \<open>\<exists>!x \<^bold>\<A>\<phi>{x}\<close>)
+     (auto simp: "actual-desc:1" "A-Exists:1")
 
 AOT_theorem "id-act-desc:1": \<open>\<^bold>\<iota>x (x = y)\<down>\<close>
 proof(rule "existence:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"]; rule "\<exists>I")
@@ -3493,9 +3491,10 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>[\<lambda>x \<diamond>E!x]x\<close>
     by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_ordinary, rotated 1]) "cqt:2[lambda]"
   AOT_hence \<open>\<diamond>E!x\<close> using \<theta>[THEN "\<equiv>E"(1)] by blast
-  AOT_hence 0: \<open>\<box>\<diamond>E!x\<close> using "qml:3"[axiom_inst, THEN "\<rightarrow>E"] by blast
-  AOT_have \<open>\<box>[\<lambda>x \<diamond>E!x]x\<close>
-    by (AOT_subst_using subst: \<theta>) (simp add: 0)
+  AOT_hence \<open>\<box>\<diamond>E!x\<close> using "qml:3"[axiom_inst, THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<box>[\<lambda>x \<diamond>E!x]x\<close>
+    by (AOT_subst \<open>[\<lambda>x \<diamond>E!x]x\<close> \<open>\<diamond>E!x\<close>)
+       (auto simp: \<theta>)
   AOT_thus \<open>\<box>O!x\<close>
     by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_ordinary, rotated 1]) "cqt:2[lambda]"
 qed
@@ -3511,13 +3510,13 @@ proof(rule "\<rightarrow>I")
     by (rule "=\<^sub>d\<^sub>fE"(2)[OF AOT_abstract, rotated 1]) "cqt:2[lambda]"
   AOT_hence \<open>\<not>\<diamond>E!x\<close> using \<theta>[THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>\<box>\<not>E!x\<close> using "KBasic2:1"[THEN "\<equiv>E"(2)] by blast
-  AOT_hence 0: \<open>\<box>\<box>\<not>E!x\<close> using "4"[THEN "\<rightarrow>E"] by blast
-  AOT_have 1: \<open>\<box>\<not>\<diamond>E!x\<close>
-    apply (AOT_subst \<open>\<not>\<diamond>E!x\<close> \<open>\<box>\<not>E!x\<close>)
-    using "KBasic2:1"[symmetric] apply blast
-    using 0 by blast
-  AOT_have \<open>\<box>[\<lambda>x \<not>\<diamond>E!x]x\<close>
-    by (AOT_subst_using subst: \<theta>) (simp add: 1)
+  AOT_hence \<open>\<box>\<box>\<not>E!x\<close> using "4"[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<box>\<not>\<diamond>E!x\<close>
+    using "KBasic2:1"
+    by (AOT_subst (reverse) \<open>\<not>\<diamond>E!x\<close> \<open>\<box>\<not>E!x\<close>) blast
+  AOT_hence \<open>\<box>[\<lambda>x \<not>\<diamond>E!x]x\<close>
+    by (AOT_subst \<open>[\<lambda>x \<not>\<diamond>E!x]x\<close> \<open>\<not>\<diamond>E!x\<close>)
+       (auto simp: \<theta>)
   AOT_thus \<open>\<box>A!x\<close>
     by (rule "=\<^sub>d\<^sub>fI"(2)[OF AOT_abstract, rotated 1]) "cqt:2[lambda]"
 qed
@@ -3677,7 +3676,7 @@ proof(rule RAA(2))
     AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close> using "\<beta>\<leftarrow>C" "cqt:2[const_var]"[of a, axiom_inst] A by blast
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> bound: G)
+      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> for: G)
          (auto simp: "oth-class-taut:1:a" C)
     AOT_hence \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>] \<rightarrow> [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close> using "\<forall>E" A by blast
     moreover AOT_have \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(1), OF A, THEN "\<equiv>E"(2)]
@@ -3710,7 +3709,7 @@ proof(rule RAA(2))
       using "oth-class-taut:4:b"[THEN "\<equiv>E"(1), OF F_prop[THEN "\<forall>E"(2)[of _ _ a]], THEN "\<equiv>E"(1)] by simp
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> bound: G)
+      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> for: G)
          (auto simp: "oth-class-taut:1:a" C)
     AOT_hence \<open>a[F] \<rightarrow> [F]a\<close> using "\<forall>E" by blast
     moreover AOT_have \<open>a[F]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), of F, THEN "\<equiv>E"(2)]
@@ -4234,7 +4233,7 @@ proof -
       apply (rule "oth-class-taut:4:b"[THEN "\<equiv>E"(1)])
       apply (AOT_subst \<open>\<exists>x \<not>[F]x\<close> \<open>\<not> \<forall>x \<not>\<not>[F]x\<close>)
        apply (simp add: "conventions:4" "\<equiv>Df")
-      apply (AOT_subst (reverse) \<open>\<not>\<not>[F]x\<close> \<open>[F]x\<close> bound: x)
+      apply (AOT_subst (reverse) \<open>\<not>\<not>[F]x\<close> \<open>[F]x\<close> for: x)
        apply (simp add: "oth-class-taut:3:b")
       apply (AOT_subst (reverse) \<open>\<not>\<not>\<forall>x [F]x\<close> \<open>\<forall>x [F]x\<close>)
       by (auto simp: "oth-class-taut:3:b" "contingent-properties:1" "\<equiv>Df")
@@ -4260,10 +4259,10 @@ proof -
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x \<not>[F]x & \<diamond>\<exists>x [F]x\<close>
     by (simp add: "Commutativity of &")
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]\<^sup>-x & \<diamond>\<exists>x [F]x\<close>
-    by (AOT_subst \<open>[F]\<^sup>-x\<close> \<open>\<not>[F]x\<close> bound: x)
+    by (AOT_subst \<open>[F]\<^sup>-x\<close> \<open>\<not>[F]x\<close> for: x)
        (auto simp: "thm-relation-negation:1" "oth-class-taut:3:a")
   also AOT_have \<open>... \<equiv> \<diamond>\<exists>x [F]\<^sup>-x & \<diamond>\<exists>x \<not>[F]\<^sup>-x\<close>
-    by (AOT_subst (reverse) \<open>[F]x\<close> \<open>\<not>[F]\<^sup>-x\<close> bound: x)
+    by (AOT_subst (reverse) \<open>[F]x\<close> \<open>\<not>[F]\<^sup>-x\<close> for: x)
        (auto simp: "thm-relation-negation:2" "oth-class-taut:3:a")
   also AOT_have \<open>... \<equiv> Contingent([F]\<^sup>-)\<close>
     using 1[OF "rel-neg-T:3", symmetric] by blast
@@ -4358,13 +4357,13 @@ proof -
   AOT_have \<open>\<diamond>\<exists>x ([F]x & \<diamond>\<not>[F]x) \<equiv> \<exists>x \<diamond>([F]x & \<diamond>\<not>[F]x)\<close>
     using "BF\<diamond>" "CBF\<diamond>" "\<equiv>I" by blast
   also AOT_have \<open>\<dots> \<equiv> \<exists>x (\<diamond>[F]x &  \<diamond>\<not>[F]x)\<close>
-    by (AOT_subst \<open>\<diamond>([F]x & \<diamond>\<not>[F]x)\<close> \<open>\<diamond>[F]x &  \<diamond>\<not>[F]x\<close> bound: x)
+    by (AOT_subst \<open>\<diamond>([F]x & \<diamond>\<not>[F]x)\<close> \<open>\<diamond>[F]x &  \<diamond>\<not>[F]x\<close> for: x)
        (auto simp: "S5Basic:11" "cqt-further:7")
   also AOT_have \<open>\<dots> \<equiv> \<exists>x (\<diamond>\<not>[F]x & \<diamond>[F]x)\<close>
-    by (AOT_subst \<open>\<diamond>\<not>[F]x & \<diamond>[F]x\<close>  \<open>\<diamond>[F]x & \<diamond>\<not>[F]x\<close> bound: x)
+    by (AOT_subst \<open>\<diamond>\<not>[F]x & \<diamond>[F]x\<close>  \<open>\<diamond>[F]x & \<diamond>\<not>[F]x\<close> for: x)
        (auto simp: "Commutativity of &" "cqt-further:7")
   also AOT_have \<open>\<dots> \<equiv> \<exists>x \<diamond>(\<not>[F]x & \<diamond>[F]x)\<close>
-    by (AOT_subst \<open>\<diamond>(\<not>[F]x & \<diamond>[F]x)\<close> \<open>\<diamond>\<not>[F]x & \<diamond>[F]x\<close> bound: x)
+    by (AOT_subst \<open>\<diamond>(\<not>[F]x & \<diamond>[F]x)\<close> \<open>\<diamond>\<not>[F]x & \<diamond>[F]x\<close> for: x)
        (auto simp: "S5Basic:11" "oth-class-taut:3:a")
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<exists>x (\<not>[F]x & \<diamond>[F]x)\<close>
     using "BF\<diamond>" "CBF\<diamond>" "\<equiv>I" by fast
@@ -4376,9 +4375,9 @@ proof -
   AOT_have \<open>\<diamond>\<exists>x ([F]x & \<diamond>\<not>[F]x) \<equiv> \<diamond>\<exists>x (\<not>[F]x & \<diamond>[F]x)\<close>
     using "lem-cont-e:1".
   also AOT_have \<open>\<dots> \<equiv> \<diamond>\<exists>x ([F]\<^sup>-x & \<diamond>\<not>[F]\<^sup>-x)\<close>
-    apply (AOT_subst \<open>\<not>[F]\<^sup>-x\<close> \<open>[F]x\<close> bound: x)
+    apply (AOT_subst \<open>\<not>[F]\<^sup>-x\<close> \<open>[F]x\<close> for: x)
      apply (simp add: "thm-relation-negation:2")
-    apply (AOT_subst \<open>[F]\<^sup>-x\<close> \<open>\<not>[F]x\<close> bound: x)
+    apply (AOT_subst \<open>[F]\<^sup>-x\<close> \<open>\<not>[F]x\<close> for: x)
      apply (simp add: "thm-relation-negation:1")
     by (simp add: "oth-class-taut:3:a")
   finally show ?thesis.
@@ -5046,7 +5045,8 @@ proof -
   AOT_hence \<open>\<box>([\<lambda>z p\<^sub>1]x \<equiv> p\<^sub>1)\<close> using "\<forall>E" by blast
   AOT_hence \<open>[\<lambda>z p\<^sub>1]x\<close> using 1[THEN "&E"(1)] "qml:2"[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(2) by blast
   moreover AOT_have \<open>\<diamond>\<not>[\<lambda>z p\<^sub>1]x\<close>
-    apply (AOT_subst_using subst: 2[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"]])
+    using 2[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"]]
+    apply (AOT_subst \<open>[\<lambda>z p\<^sub>1]x\<close> \<open>p\<^sub>1\<close>)
     using 1[THEN "&E"(2)] by blast
   ultimately AOT_have \<open>[\<lambda>z p\<^sub>1]x & \<diamond>\<not>[\<lambda>z p\<^sub>1]x\<close> using "&I" by blast
   AOT_hence \<open>\<exists>x ([\<lambda>z p\<^sub>1]x & \<diamond>\<not>[\<lambda>z p\<^sub>1]x)\<close> using "\<exists>I"(2) by fast
@@ -5082,7 +5082,8 @@ proof -
     AOT_hence \<open>\<box>([\<lambda>z p\<^sub>1]x \<equiv> p\<^sub>1)\<close> using "\<forall>E" by fast
   } note 4 = this
   AOT_have \<open>\<diamond>[\<lambda>z p\<^sub>1]x\<close>
-    apply (AOT_subst_using subst: 4[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"]])
+    using 4[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"]]
+    apply (AOT_subst \<open>[\<lambda>z p\<^sub>1]x\<close> \<open>p\<^sub>1\<close>)
     using 1[THEN "&E"(2)] by blast
   AOT_hence \<open>\<not>[\<lambda>z p\<^sub>1]x & \<diamond>[\<lambda>z p\<^sub>1]x\<close> using 3 "&I" by blast
   AOT_hence \<open>\<exists>x (\<not>[\<lambda>z p\<^sub>1]x & \<diamond>[\<lambda>z p\<^sub>1]x)\<close> using "\<exists>I"(2) by fast
@@ -5978,8 +5979,8 @@ proof -
   AOT_modally_strict {
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
-  moreover AOT_have\<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
+  proof (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y A!y & q\<^sub>0]x\<close> \<open>A!x & q\<^sub>0\<close> for: x)
     AOT_show \<open>\<not>\<^bold>\<A>([A!]b & q\<^sub>0)\<close>
       using "Act-Basic:2" "&E"(1) "\<equiv>E"(1) not_act_abs_b "raa-cor:3" by blast
   next AOT_show \<open>\<not>\<^bold>\<Delta>([A!]b & q\<^sub>0)\<close>
@@ -5993,7 +5994,7 @@ proof -
     next AOT_show \<open>\<diamond>([A!]a & q\<^sub>0)\<close>
         by (metis "&I" "\<rightarrow>E" Delta_pos "KBasic:16" "&E"(1) delta_abs_a "\<equiv>E"(1) "oa-facts:6" q\<^sub>0_prop)
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>1 where \<open>\<not>\<^bold>\<A>[F\<^sub>1]b & \<not>\<^bold>\<Delta>[F\<^sub>1]b & \<not>\<^bold>\<A>[F\<^sub>1]a & \<^bold>\<Delta>[F\<^sub>1]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>1]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1]a\<close>
@@ -6005,7 +6006,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y A!y & \<not>q\<^sub>0]x\<close> \<open>A!x & \<not>q\<^sub>0\<close> for: x)
     AOT_show \<open>\<not>\<^bold>\<A>([A!]b & \<not>q\<^sub>0)\<close>
       using "Act-Basic:2" "&E"(1) "\<equiv>E"(1) not_act_abs_b "raa-cor:3" by blast
   next AOT_show \<open>\<not>\<^bold>\<Delta>([A!]b & \<not>q\<^sub>0)\<close>
@@ -6020,7 +6021,7 @@ proof -
       AOT_show \<open>\<not>\<box>([A!]a & \<not>q\<^sub>0)\<close>
         by (metis "KBasic2:1" "KBasic:3" "&E"(1) "&E"(2) "\<equiv>E"(4) q\<^sub>0_prop "raa-cor:3")
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>2 where \<open>\<not>\<^bold>\<A>[F\<^sub>2]b & \<not>\<^bold>\<Delta>[F\<^sub>2]b & \<^bold>\<A>[F\<^sub>2]a & \<not>\<^bold>\<Delta>[F\<^sub>2]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>2]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>2]b\<close> and \<open>\<^bold>\<A>[F\<^sub>2]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>2]a\<close>
@@ -6047,8 +6048,8 @@ proof -
     AOT_have \<open>[\<lambda>y q\<^sub>0]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]b & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]b & \<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]a & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]a\<close>
-    by (safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
-       (auto simp: not_act_q_zero delta_q_zero)
+    by (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y q\<^sub>0]b\<close> \<open>q\<^sub>0\<close> for: b)
+       (auto simp: not_act_q_zero delta_q_zero  "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>5 where \<open>\<not>\<^bold>\<A>[F\<^sub>5]b & \<^bold>\<Delta>[F\<^sub>5]b & \<not>\<^bold>\<A>[F\<^sub>5]a & \<^bold>\<Delta>[F\<^sub>5]a\<close>
     using "cqt:2[concrete]"[axiom_inst] "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>5]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>5]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]a\<close>
@@ -6060,7 +6061,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof(safe intro!: "&I"; AOT_subst \<open>[\<lambda>y E!y \<or> (A!y & \<not>q\<^sub>0)]x\<close> \<open>E!x \<or> (A!x & \<not>q\<^sub>0)\<close> for: x)
     AOT_have \<open>\<^bold>\<A>\<not>([A!]b & \<not>q\<^sub>0)\<close>
       by (metis "Act-Basic:1" "Act-Basic:2" abstract_prop "&E"(1) "\<or>E"(2)
                 "\<equiv>E"(1) "raa-cor:3")
@@ -6098,7 +6099,7 @@ proof -
         by (metis "RE\<diamond>" "\<equiv>E"(2) "oth-class-taut:5:d")
       AOT_thus \<open>\<not>\<box>([E!]a \<or> ([A!]a & \<not>q\<^sub>0))\<close> by (metis "KBasic:12" "\<equiv>E"(1) "raa-cor:3")
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>6 where \<open>\<not>\<^bold>\<A>[F\<^sub>6]b & \<^bold>\<Delta>[F\<^sub>6]b & \<^bold>\<A>[F\<^sub>6]a & \<not>\<^bold>\<Delta>[F\<^sub>6]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>6]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>6]b\<close> and \<open>\<^bold>\<A>[F\<^sub>6]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>6]a\<close>
@@ -6110,7 +6111,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof(safe intro!: "&I"; AOT_subst \<open>[\<lambda>y A!y \<or> E!y]x\<close> \<open>A!x \<or> E!x\<close> for: x)
     AOT_show \<open>\<not>\<^bold>\<A>([A!]b \<or> [E!]b)\<close>
       using "Act-Basic:9" "\<or>E"(2) "\<equiv>E"(4) not_act_abs_b not_act_concrete_b "raa-cor:3" by blast
   next AOT_show \<open>\<^bold>\<Delta>([A!]b \<or> [E!]b)\<close>
@@ -6127,7 +6128,7 @@ proof -
       AOT_show \<open>\<box>([A!]a \<or> [E!]a)\<close>
         by (metis "KBasic:15" act_abs_a act_and_not_nec_not_delta "Disjunction Addition"(1) delta_abs_a "raa-cor:3" "vdash-properties:10")
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>7 where \<open>\<not>\<^bold>\<A>[F\<^sub>7]b & \<^bold>\<Delta>[F\<^sub>7]b & \<^bold>\<A>[F\<^sub>7]a & \<^bold>\<Delta>[F\<^sub>7]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>7]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>7]b\<close> and \<open>\<^bold>\<A>[F\<^sub>7]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>7]a\<close>
@@ -6139,7 +6140,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof(safe intro!: "&I"; AOT_subst \<open>[\<lambda>y O!y & \<not>E!y]x\<close> \<open>O!x & \<not>E!x\<close> for: x)
     AOT_show \<open>\<^bold>\<A>([O!]b & \<not>[E!]b)\<close>
       by (metis "Act-Basic:1" "Act-Basic:2" act_ord_b "&I" "\<or>E"(2) "\<equiv>E"(3) not_act_concrete_b "raa-cor:3")
   next AOT_show \<open>\<not>\<^bold>\<Delta>([O!]b & \<not>[E!]b)\<close>
@@ -6152,7 +6153,7 @@ proof -
       by (metis "KBasic2:3" "&E"(1) "\<equiv>E"(4) not_act_ord_a "oa-facts:3" "oa-facts:7" "raa-cor:3" "vdash-properties:10")
     AOT_thus \<open>\<not>\<^bold>\<Delta>([O!]a & \<not>[E!]a)\<close>
       by (rule impossible_delta)
-  qed      
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>8 where \<open>\<^bold>\<A>[F\<^sub>8]b & \<not>\<^bold>\<Delta>[F\<^sub>8]b & \<not>\<^bold>\<A>[F\<^sub>8]a & \<not>\<^bold>\<Delta>[F\<^sub>8]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>8]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>8]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>8]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>8]a\<close>
@@ -6165,7 +6166,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof(safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof(safe intro!: "&I"; AOT_subst \<open>[\<lambda>y \<not>E!y & (O!y \<or> q\<^sub>0)]x\<close> \<open>\<not>E!x & (O!x \<or> q\<^sub>0)\<close> for: x)
     AOT_show \<open>\<^bold>\<A>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
       by (metis "Act-Basic:1" "Act-Basic:2" "Act-Basic:9" act_ord_b "&I" "\<or>I"(1)
                 "\<or>E"(2) "\<equiv>E"(3) not_act_concrete_b "raa-cor:1")
@@ -6202,7 +6203,7 @@ proof -
        ultimately AOT_show \<open>\<diamond>(\<not>[E!]a & ([O!]a \<or> q\<^sub>0))\<close>
          by (metis "KBasic:16" "&I" "vdash-properties:10")
      qed
-   qed
+   qed(auto simp:  "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>9 where \<open>\<^bold>\<A>[F\<^sub>9]b & \<not>\<^bold>\<Delta>[F\<^sub>9]b & \<not>\<^bold>\<A>[F\<^sub>9]a & \<^bold>\<Delta>[F\<^sub>9]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>9]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>9]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>9]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>9]a\<close>
@@ -6213,7 +6214,8 @@ proof -
     AOT_have \<open>[\<lambda>y \<not>q\<^sub>0]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]b & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]b & \<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]a & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]a\<close>
-    by (safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1]; auto simp: act_not_q_zero not_delta_not_q_zero)
+    by (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y \<not>q\<^sub>0]x\<close> \<open>\<not>q\<^sub>0\<close> for: x)
+       (auto simp: act_not_q_zero not_delta_not_q_zero "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>1\<^sub>0 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]b & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]b & \<^bold>\<A>[F\<^sub>1\<^sub>0]a & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>0]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>0]a\<close>
@@ -6224,7 +6226,7 @@ proof -
     AOT_have \<open>[\<lambda>y \<not>[E!]y]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<lambda>y \<not>[E!]y]b & \<not>\<^bold>\<Delta>[\<lambda>y \<not>[E!]y]b & \<^bold>\<A>[\<lambda>y \<not>[E!]y]a & \<^bold>\<Delta>[\<lambda>y \<not>[E!]y]a\<close>
-  proof (safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y \<not>[E!]y]x\<close> \<open>\<not>[E!]x\<close> for: x)
     AOT_show \<open>\<^bold>\<A>\<not>[E!]b\<close>
       using "Act-Basic:1" "\<or>E"(2) not_act_concrete_b by blast
   next AOT_show \<open>\<not>\<^bold>\<Delta>\<not>[E!]b\<close>
@@ -6233,7 +6235,7 @@ proof -
       using "Act-Basic:1" "\<or>E"(2) not_act_concrete_a by blast
   next AOT_show \<open>\<^bold>\<Delta>\<not>[E!]a\<close>
       using "KBasic2:1" "\<equiv>E"(2) nec_delta not_act_and_pos_delta not_act_concrete_a not_delta_concrete_a "reductio-aa:1" by blast
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>1\<^sub>1 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]b & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]b & \<^bold>\<A>[F\<^sub>1\<^sub>1]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>1]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]b\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>1]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>1]a\<close>
@@ -6253,7 +6255,7 @@ proof -
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof (safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y O!y \<or> q\<^sub>0]x\<close> \<open>O!x \<or> q\<^sub>0\<close> for: x)
     AOT_show \<open>\<^bold>\<A>([O!]b \<or> q\<^sub>0)\<close>
       by (meson "Act-Basic:9" act_ord_b "\<or>I"(1) "\<equiv>E"(2))
   next AOT_show \<open>\<^bold>\<Delta>([O!]b \<or> q\<^sub>0)\<close>
@@ -6267,7 +6269,7 @@ proof -
     next AOT_show \<open>\<diamond>([O!]a \<or> q\<^sub>0)\<close>
         using "KBasic2:2" "&E"(1) "\<or>I"(2) "\<equiv>E"(2) q\<^sub>0_prop by blast
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>1\<^sub>3 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>3]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>3]b & \<not>\<^bold>\<A>[F\<^sub>1\<^sub>3]a & \<^bold>\<Delta>[F\<^sub>1\<^sub>3]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>3]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>3]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>1\<^sub>3]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>3]a\<close>
@@ -6279,7 +6281,7 @@ proof -
      AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
-  proof (safe intro!: "&I"; AOT_subst_using subst: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
+  proof (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y O!y \<or> \<not>q\<^sub>0]x\<close> \<open>O!x \<or> \<not>q\<^sub>0\<close> for: x)
     AOT_show \<open>\<^bold>\<A>([O!]b \<or> \<not>q\<^sub>0)\<close>
       by (meson "Act-Basic:9" act_not_q_zero "\<or>I"(2) "\<equiv>E"(2))
   next AOT_show \<open>\<^bold>\<Delta>([O!]b \<or> \<not>q\<^sub>0)\<close>
@@ -6309,7 +6311,7 @@ proof -
           using "2" by blast
       qed
     qed
-  qed
+  qed(auto simp: "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>1\<^sub>4 where \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]b & \<^bold>\<Delta>[F\<^sub>1\<^sub>4]b & \<^bold>\<A>[F\<^sub>1\<^sub>4]a & \<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]a\<close>
     using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]] by fastforce
   AOT_hence \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]b\<close> and \<open>\<^bold>\<A>[F\<^sub>1\<^sub>4]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>1\<^sub>4]a\<close>
@@ -7621,14 +7623,14 @@ proof (rule "rule=E"[rotated, OF "rel-neg-T:2"[symmetric]]; rule "raa-cor:2")
   AOT_hence \<open>\<box>\<exists>x [\<lambda>x \<not>[E!]x]x \<rightarrow> \<box>\<forall>x [\<lambda>x \<not>[E!]x]x\<close>
     using "\<rightarrow>E" "qml:1" "vdash-properties:1[2]" by blast
   moreover AOT_have \<open>\<box>\<exists>x [\<lambda>x \<not>[E!]x]x\<close>
-    apply (AOT_subst \<open>[\<lambda>x \<not>E!x]x\<close> \<open>\<not>E!x\<close> bound: x)
+    apply (AOT_subst \<open>[\<lambda>x \<not>E!x]x\<close> \<open>\<not>E!x\<close> for: x)
     apply (rule "beta-C-meta"[THEN "\<rightarrow>E"])
      apply "cqt:2[lambda]"
     by (metis (full_types) "B\<diamond>" RN "T\<diamond>" "cqt-further:2" "o-objects-exist:5" "vdash-properties:10")
   ultimately AOT_have 1: \<open>\<box>\<forall>x [\<lambda>x \<not>[E!]x]x\<close>
     by (metis "vdash-properties:6")
   AOT_hence \<open>\<box>\<forall>x \<not>[E!]x\<close>
-    by (AOT_subst (reverse) \<open>\<not>[E!]x\<close>  \<open>[\<lambda>x \<not>[E!]x]x\<close> bound: x)
+    by (AOT_subst (reverse) \<open>\<not>[E!]x\<close>  \<open>[\<lambda>x \<not>[E!]x]x\<close> for: x)
        (auto intro!: "cqt:2" "beta-C-meta"[THEN "\<rightarrow>E"])
   AOT_hence \<open>\<forall>x \<box>\<not>[E!]x\<close> by (metis "CBF" "vdash-properties:10")
   moreover AOT_obtain a where abs_a: \<open>O!a\<close>

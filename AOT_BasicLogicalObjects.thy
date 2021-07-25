@@ -13,13 +13,13 @@ AOT_define TruthValueOf :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<ph
 
 AOT_theorem "p-has-!tv:1": \<open>\<exists>x TruthValueOf(x,p)\<close>
   using  "tv-p"[THEN "\<equiv>Df"]
-  by (AOT_subst \<open>TruthValueOf(x,p)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close> bound: x)
+  by (AOT_subst \<open>TruthValueOf(x,p)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close> for: x)
      (simp add: "A-objects"[axiom_inst])
 
 
 AOT_theorem "p-has-!tv:2": \<open>\<exists>!x TruthValueOf(x,p)\<close>
   using  "tv-p"[THEN "\<equiv>Df"]
-  by (AOT_subst \<open>TruthValueOf(x,p)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close> bound: x)
+  by (AOT_subst \<open>TruthValueOf(x,p)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close> for: x)
      (simp add: "A-objects!")
 
 
@@ -186,22 +186,22 @@ qed
 
 AOT_theorem "TV-lem2:1": \<open>(A!x & \<forall>F (x[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))) \<rightarrow> TruthValue(x)\<close>
 proof(safe intro!: "\<rightarrow>I" "T-value"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF "log-prop-prop:2"] "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  AOT_assume 0: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
-  AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q]))\<close>
-    apply (AOT_subst_old \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
-     apply (AOT_subst_old \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<forall>p (p \<rightarrow> p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<phi>\<close>)
-      apply (metis (full_types) "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) "universal-cor")
-    by (auto simp add: "cqt-further:7" 0)
+  AOT_assume \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (q & F = [\<lambda>y q]))\<close>
+  AOT_thus \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q]))\<close>
+    apply (AOT_subst \<open>\<exists>q ((q \<equiv> (\<forall>p (p \<rightarrow> p))) & F = [\<lambda>y q])\<close> \<open>\<exists>q (q & F = [\<lambda>y q])\<close> for: F :: \<open><\<kappa>>\<close>)
+     apply (AOT_subst \<open>q \<equiv> \<forall>p (p \<rightarrow>p)\<close> \<open>q\<close> for: q)
+    apply (metis (no_types, lifting) "\<rightarrow>I" "\<equiv>I" "\<equiv>E"(2) GEN)
+    by (auto simp: "cqt-further:7")
 qed
 
 AOT_theorem "TV-lem2:2": \<open>(A!x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))) \<rightarrow> TruthValue(x)\<close>
 proof(safe intro!: "\<rightarrow>I" "T-value"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<exists>I"(1)[rotated, OF "log-prop-prop:2"] "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  AOT_assume 0: \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
-  AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q]))\<close>
-    apply (AOT_subst_old \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & \<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q (\<not>q & \<Pi> = [\<lambda>y q])\<guillemotright>\<close>)
-     apply (AOT_subst_old \<open>\<lambda> \<phi> . \<guillemotleft>\<phi> \<equiv> (\<exists>p (p & \<not>p))\<guillemotright>\<close> \<open>\<lambda> \<phi> . \<guillemotleft>\<not>\<phi>\<guillemotright>\<close>)
-      apply (metis "instantiation" "deduction-theorem" "\<equiv>I" "\<equiv>E"(1) "raa-cor:1" "raa-cor:3")
-    by (auto simp add: "cqt-further:7" 0)
+  AOT_assume \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q (\<not>q & F = [\<lambda>y q]))\<close>
+  AOT_thus \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q]))\<close>
+    apply (AOT_subst \<open>\<exists>q ((q \<equiv> (\<exists>p (p & \<not>p))) & F = [\<lambda>y q])\<close> \<open>\<exists>q (\<not>q & F = [\<lambda>y q])\<close> for: F :: \<open><\<kappa>>\<close>)
+     apply (AOT_subst \<open>q \<equiv> \<exists>p (p & \<not>p)\<close> \<open>\<not>q\<close> for: q)
+      apply (metis (no_types, lifting) "\<rightarrow>I" "\<exists>E" "\<equiv>E"(1) "\<equiv>I" "raa-cor:1" "raa-cor:3")
+    by (auto simp add: "cqt-further:7")
 qed
 
 AOT_define TheTrue :: \<kappa>\<^sub>s (\<open>\<top>\<close>)
@@ -513,10 +513,9 @@ AOT_theorem "extof-e": \<open>ExtensionOf(x, p) \<equiv> TruthValueOf(x, p)\<clo
 proof (safe intro!: "\<equiv>I" "\<rightarrow>I" "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "exten-p"[THEN "\<equiv>\<^sub>d\<^sub>fI"]
             dest!: "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "exten-p"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   AOT_assume 1: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> Propositional([F])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
-  AOT_have \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
-    apply (AOT_subst_old \<open>\<lambda> \<Pi> . \<guillemotleft>\<exists>q(\<Pi> = [\<lambda>y q])\<guillemotright>\<close> \<open>\<lambda> \<Pi> . \<guillemotleft>Propositional([\<Pi>])\<guillemotright>\<close>)
-     using "\<equiv>E"(2) "Commutativity of \<equiv>" "prop-prop1" "\<equiv>Df" apply blast
-    by (simp add: 1)
+  AOT_hence \<theta>: \<open>[A!]x & \<forall>F (x[F] \<rightarrow> \<exists>q(F = [\<lambda>y q])) & \<forall>q (x \<^bold>\<Sigma> q \<equiv> (q \<equiv> p))\<close>
+    by (AOT_subst \<open>\<exists>q(F = [\<lambda>y q])\<close> \<open>Propositional([F])\<close> for: F :: \<open><\<kappa>>\<close>)
+       (auto simp add: "df-rules-formulas[3]" "df-rules-formulas[4]" "\<equiv>I" "prop-prop1")
   AOT_show \<open>[A!]x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q]))\<close>
   proof(safe intro!: "&I" GEN 1[THEN "&E"(1), THEN "&E"(1)] "\<equiv>I" "\<rightarrow>I")
     fix F
@@ -571,7 +570,7 @@ next
 qed
 
 AOT_theorem "ext-p-tv:1": \<open>\<exists>!x ExtensionOf(x, p)\<close>
-  by (AOT_subst \<open>ExtensionOf(x, p)\<close> \<open>TruthValueOf(x, p)\<close> bound: x)
+  by (AOT_subst \<open>ExtensionOf(x, p)\<close> \<open>TruthValueOf(x, p)\<close> for: x)
      (auto simp: "extof-e" "p-has-!tv:2")
 
 AOT_theorem "ext-p-tv:2": \<open>\<^bold>\<iota>x(ExtensionOf(x, p))\<down>\<close>
