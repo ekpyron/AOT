@@ -7,7 +7,8 @@ session "AOT" = "HOL" +
     AOT_commands
     AOT_syntax
     AOT_semantics
-    AOT_axioms
+    AOT_Definitions
+    AOT_Axioms
     AOT_PLM
     AOT_BasicLogicalObjects
     AOT_RestrictedVariables

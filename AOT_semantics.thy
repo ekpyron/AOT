@@ -47,16 +47,16 @@ specification(AOT_act)
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_conj: \<open>[w \<Turnstile> \<phi> & \<psi>] = ([w \<Turnstile> \<phi>] \<and> [w \<Turnstile> \<psi>])\<close>
-  using "conventions:1" AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
+  using AOT_conj AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
 
 lemma AOT_sem_equiv: \<open>[w \<Turnstile> \<phi> \<equiv> \<psi>] = ([w \<Turnstile> \<phi>] = [w \<Turnstile> \<psi>])\<close>
-  using "conventions:3" AOT_sem_conj AOT_model_equiv_def AOT_sem_imp by auto
+  using AOT_equiv AOT_sem_conj AOT_model_equiv_def AOT_sem_imp by auto
 
 lemma AOT_sem_disj: \<open>[w \<Turnstile> \<phi> \<or> \<psi>] = ([w \<Turnstile> \<phi>] \<or> [w \<Turnstile> \<psi>])\<close>
-  using "conventions:2" AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
+  using AOT_disj AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
 
 lemma AOT_sem_dia: \<open>[w \<Turnstile> \<diamond>\<phi>] = (\<exists> w . [w \<Turnstile> \<phi>])\<close>
-  using "conventions:5" AOT_sem_box AOT_model_equiv_def AOT_sem_not by auto
+  using AOT_dia AOT_sem_box AOT_model_equiv_def AOT_sem_not by auto
 
 specification(AOT_forall)
   AOT_sem_forall: \<open>[w \<Turnstile> \<forall>\<alpha> \<phi>{\<alpha>}] = (\<forall> \<tau> . [w \<Turnstile> \<tau>\<down>] \<longrightarrow> [w \<Turnstile> \<phi>{\<tau>}])\<close>
@@ -64,7 +64,7 @@ specification(AOT_forall)
      (simp add: AOT_model_proposition_choice_simp)
 
 lemma AOT_sem_exists: \<open>[w \<Turnstile> \<exists>\<alpha> \<phi>{\<alpha>}] = (\<exists> \<tau> . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<phi>{\<tau>}])\<close>
-  unfolding "conventions:4"[unfolded AOT_model_equiv_def, THEN spec]
+  unfolding AOT_exists[unfolded AOT_model_equiv_def, THEN spec]
   by (simp add: AOT_sem_forall AOT_sem_not)
 
 specification(AOT_eq)
@@ -940,7 +940,9 @@ AOT_register_type_constraints
   Relation: \<open><_::AOT_\<kappa>s>\<close>
 
 AOT_define AOT_ordinary :: \<open>\<Pi>\<close> (\<open>O!\<close>) \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close>
+declare AOT_ordinary[AOT del, AOT_defs del]
 AOT_define AOT_abstract :: \<open>\<Pi>\<close> (\<open>A!\<close>) \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]\<close>
+declare AOT_abstract[AOT del, AOT_defs del]
 
 context AOT_meta_syntax
 begin
@@ -1109,43 +1111,17 @@ lemma [AOT_instance_of_cqt_2_intro]:
                 AOT_model_term_equiv_prod_def) blast
 (********************)
 
-(* Collect all theorems that are not in Main and not declared [AOT] and store them in a blacklist. *)
-setup\<open>fn thy =>
-let
-val all_facts_with_AOT_semantics =
-  let
-    val transfer = Global_Theory.transfer_theories thy;
-    val global_facts = Global_Theory.facts_of thy;
-  in
-   (Facts.dest_all (Context.Theory thy) false [] global_facts
-   |> maps Facts.selections
-   |> map (apsnd transfer)
-   |> filter (not o AOT_Theorems.member (Proof_Context.init_global thy) o snd))
-  end
-val all_facts_Main =
-  let
-    val transfer = Global_Theory.transfer_theories @{theory Main};
-    val global_facts = Global_Theory.facts_of @{theory Main};
-  in
-   (Facts.dest_all (Context.Theory @{theory Main}) false [] global_facts
-   |> maps Facts.selections
-   |> map (apsnd transfer))
-  end
-val facts = filter (fn (elem,_) => not (List.exists (fn (elem',_) => elem = elem') all_facts_Main)) all_facts_with_AOT_semantics
-val thy = fold (fn fact => Context.theory_map (AOT_no_atp.add_thm fact)) (map snd facts) thy
-in thy end
-\<close>
-bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
-(* Can be used as: "including AOT_no_atp sledgehammer" or "sledgehammer(del: AOT_no_atp) *)
-
 (* These are merely artifacts of the defined syntax. *)
 AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
   using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesE[AOT del]
 AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
   using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesI[AOT del]
 
 AOT_register_type_constraints
   Individual: \<open>\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close>
+
 
 (*<*)
 end

@@ -543,9 +543,22 @@ fun unconstrain (Ast.Appl (Ast.Constant "_constrain"::x::tl)) = addFunct (uncons
   | unconstrain (Ast.Appl (Ast.Constant "_bound"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_bound"::[x]))
   | unconstrain (Ast.Appl (Ast.Constant "_var"::[x])) = addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_var"::[x]))
   | unconstrain trm = (trm, fn x => x)
+fun isDefinedConst ctxt name = let
+  val unmarkedName = Lexicon.unmark {case_class = fn str => NONE,
+      case_type = fn name => NONE,
+      case_const = fn name => SOME name,
+      case_fixed = fn name => NONE,
+      case_default = fn name => SOME name} name
+  val cons = Option.mapPartial (fn name => try (Proof_Context.read_const {proper = true, strict = true} ctxt) name) unmarkedName
+  val defined = case cons of
+    SOME cons =>
+      Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons
+      orelse cons = @{const AOT_concrete}
+    | _ => false
+  in defined end
 in
 AOT_syntax_print_ast_translations
-[(\<^syntax_const>\<open>_AOT_individual_term\<close>, fn _ =>
+[(\<^syntax_const>\<open>_AOT_individual_term\<close>, fn ctxt =>
     (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_desc\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
@@ -557,10 +570,12 @@ AOT_syntax_print_ast_translations
                 c (Ast.Variable y)])
               | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
         ) 
-        | (Ast.Constant name,c) => c (Ast.Constant name)
+        | (Ast.Constant name,c) => if isDefinedConst ctxt name then c (Ast.Constant name) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
+            (if isDefinedConst ctxt name then c trm' else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms)),
-(\<^syntax_const>\<open>_AOT_relation_term\<close>, fn _ =>
+(\<^syntax_const>\<open>_AOT_relation_term\<close>, fn ctxt =>
     (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
@@ -568,7 +583,10 @@ AOT_syntax_print_ast_translations
                   (case printVarKind name of SingleVariable x => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c (Ast.Variable name)])
                   | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
         ) 
-        | (Ast.Constant name,c) => c (Ast.Constant name) |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+        | (Ast.Constant name,c) => if isDefinedConst ctxt name then c (Ast.Constant name) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
+            (if isDefinedConst ctxt name then (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c trm']) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+        |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))]
 end
 \<close>
@@ -579,10 +597,14 @@ AOT_syntax_print_translations
   "_AOT_individual_terms (_tuple x y)" <= "_AOT_individual_term (_tuple x y)"
   "_AOT_exe (_AOT_relation_term \<Pi>) (_AOT_individual_term \<kappa>)" <= "CONST AOT_exe \<Pi> \<kappa>"
 
-AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
-AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) "conventions:2": \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
-AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) "conventions:3": \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
-AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
+AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
+declare "AOT_conj"[AOT del, AOT_defs del]
+AOT_define AOT_disj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>\<or>\<close> 35) \<open>\<phi> \<or> \<psi> \<equiv>\<^sub>d\<^sub>f \<not>\<phi> \<rightarrow> \<psi>\<close>
+declare "AOT_disj"[AOT del, AOT_defs del]
+AOT_define AOT_equiv :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infix \<open>\<equiv>\<close> 20) \<open>\<phi> \<equiv> \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)\<close>
+declare "AOT_equiv"[AOT del, AOT_defs del]
+AOT_define AOT_dia :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<diamond>_\<close> [49] 54) \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
+declare "AOT_dia"[AOT del, AOT_defs del]
 
 context AOT_meta_syntax
 begin
@@ -720,7 +742,8 @@ parse_ast_translation\<open>
  (\<^syntax_const>\<open>_AOT_desc\<close>, AOT_restricted_binder \<^const_name>\<open>AOT_desc\<close> \<^const_name>\<open>AOT_conj\<close>)]
 \<close>
 
-AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> "conventions:4": \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
+declare AOT_exists[AOT del, AOT_defs del]
 syntax "_AOT_exists" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40])
 
 AOT_syntax_print_translations
