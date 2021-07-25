@@ -2445,21 +2445,26 @@ let
 val thms = prems
 val ctxt' = ctxt
 val ctxt = Context_Position.set_visible false ctxt
-val raw_bounds = case raw_bounds of SOME bounds => bounds | _ => [] 
-val bounds = (map (fn x => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt x))) raw_bounds
 
 val p = AOT_read_term @{nonterminal \<phi>'} ctxt raw_p
 val p = Syntax.check_term ctxt p
+val ctxt = Variable.declare_term p ctxt
+val q = AOT_read_term @{nonterminal \<phi>'} ctxt raw_q
+val q = Syntax.check_term ctxt q
+val ctxt = Variable.declare_term q ctxt
+
+
+val raw_bounds = case raw_bounds of SOME bounds => bounds | _ => [] 
+val bounds = (map (fn x => Syntax.check_term ctxt (AOT_read_term @{nonterminal \<tau>'} ctxt x))) raw_bounds
 val p = fold (fn bound => fn p => let in Term.abs ("\<alpha>", Term.type_of bound) (Term.abstract_over (bound,p)) end) bounds p
 val p = Syntax.check_term ctxt p
 val p_ty = Term.type_of p
+
 val pat = @{const Trueprop} $ (@{const AOT_model_valid_in} $ Var (("w",0), @{typ w}) $ (Var (("\<phi>",0), Type (\<^type_name>\<open>fun\<close>, [p_ty, @{typ \<o>}])) $ p))
 val univ = Unify.matchers (Context.Proof ctxt) [(pat, Thm.term_of concl)]
 val univ = hd (Seq.list_of univ) (* TODO: choose? try all? filter? *)
 val phi = the (Envir.lookup univ (("\<phi>",0), Type (\<^type_name>\<open>fun\<close>, [p_ty, @{typ \<o>}])))
 
-val q = AOT_read_term @{nonterminal \<phi>'} ctxt raw_q
-val q = Syntax.check_term ctxt q
 val q = fold (fn bound => fn q => let in Term.abs ("\<alpha>", Term.type_of bound) (Term.abstract_over (bound,q)) end) bounds q
 val q = Syntax.check_term ctxt q
 
@@ -2902,14 +2907,13 @@ proof(rule "\<rightarrow>I")
     apply (AOT_subst (reverse) \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>)
     using \<theta> by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close>
-    apply - apply (AOT_subst_old_rev "\<lambda> \<tau>. \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>"  "\<lambda> \<tau>. \<guillemotleft>\<not>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
-    by (simp add: "oth-class-taut:3:b")
-  AOT_hence 0: \<open>\<exists>\<alpha> \<not>\<box>\<not>\<phi>{\<alpha>}\<close>
+    by (AOT_subst (reverse) \<open>\<not>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<box>\<not>\<phi>{\<alpha>}\<close> bound: \<alpha>)
+       (simp add: "oth-class-taut:3:b")
+  AOT_hence \<open>\<exists>\<alpha> \<not>\<box>\<not>\<phi>{\<alpha>}\<close>
     by (rule "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  AOT_show \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
-    apply (AOT_subst_old "\<lambda> \<tau> . \<guillemotleft>\<diamond>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<box>\<not>\<phi>{\<tau>}\<guillemotright>")
-     apply (simp add: "conventions:5" "\<equiv>Df")
-    using 0 by blast
+  AOT_thus \<open>\<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
+    using "conventions:5"[THEN "\<equiv>Df"]
+    by (AOT_subst \<open>\<diamond>\<phi>{\<alpha>}\<close> \<open>\<not>\<box>\<not>\<phi>{\<alpha>}\<close> bound: \<alpha>)
 qed
 lemmas "BF\<diamond>" = "BFs:3"
 
@@ -2919,8 +2923,8 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<not>\<forall>\<alpha> \<not>\<diamond>\<phi>{\<alpha>}\<close>
     using "conventions:4"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_hence \<open>\<not>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
-    apply - apply (AOT_subst_old "\<lambda> \<tau> . \<guillemotleft>\<box>\<not>\<phi>{\<tau>}\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<not>\<diamond>\<phi>{\<tau>}\<guillemotright>")
-    by (simp add: "KBasic2:1")
+    using "KBasic2:1"
+    by (AOT_subst \<open>\<box>\<not>\<phi>{\<alpha>}\<close> \<open>\<not>\<diamond>\<phi>{\<alpha>}\<close> bound: \<alpha>)
   moreover AOT_have \<open>\<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>} \<equiv> \<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
     using "\<equiv>I" "BF" "CBF" by metis
   ultimately AOT_have 1: \<open>\<not>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
@@ -3230,12 +3234,13 @@ proof -
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha> \<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
     by (simp add: "Act-Basic:10")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
-    by (AOT_subst_old "\<lambda> \<tau> . \<guillemotleft>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>" "\<lambda> \<tau> . \<guillemotleft>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<tau>)\<guillemotright>")
+    by (AOT_subst \<open>\<^bold>\<A>\<forall>\<beta> (\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> \<open>\<forall>\<beta> \<^bold>\<A>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close> bound: \<alpha>)
        (auto simp: "logic-actual-nec:3" "vdash-properties:1[2]" "oth-class-taut:3:a")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<^bold>\<A>\<beta> = \<alpha>)\<close>
     by (AOT_subst_old_rev "\<lambda> \<tau> \<tau>' . \<guillemotleft>\<^bold>\<A>(\<phi>{\<tau>'} \<equiv> \<tau>' = \<tau>)\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<^bold>\<A>\<phi>{\<tau>'} \<equiv> \<^bold>\<A>\<tau>' = \<tau>\<guillemotright>")
        (auto simp: "Act-Basic:5" "cqt-further:7")
   also AOT_have \<open>\<dots> \<equiv> \<exists>\<alpha>\<forall>\<beta> (\<^bold>\<A>\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
+(*    apply (AOT_subst \<open>\<^bold>\<A>\<guillemotleft>AOT_term_of_var \<beta>::'a\<guillemotright> = \<alpha>\<close> \<open>\<beta> = \<alpha>\<close> bound: \<beta> \<alpha>) TODO: sort type constraint*)
     apply (AOT_subst_old "\<lambda> \<tau> \<tau>' :: 'a . \<guillemotleft>\<^bold>\<A>\<tau>' = \<tau>\<guillemotright>" "\<lambda> \<tau> \<tau>'. \<guillemotleft>\<tau>' = \<tau>\<guillemotright>")
      apply (meson "id-act:1" "\<equiv>E"(6) "oth-class-taut:3:a")
     by (simp add: "cqt-further:7")
@@ -3672,7 +3677,7 @@ proof(rule RAA(2))
     AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close> using "\<beta>\<leftarrow>C" "cqt:2[const_var]"[of a, axiom_inst] A by blast
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst_old "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>")
+      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> bound: G)
          (auto simp: "oth-class-taut:1:a" C)
     AOT_hence \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>] \<rightarrow> [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close> using "\<forall>E" A by blast
     moreover AOT_have \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(1), OF A, THEN "\<equiv>E"(2)]
@@ -3705,7 +3710,7 @@ proof(rule RAA(2))
       using "oth-class-taut:4:b"[THEN "\<equiv>E"(1), OF F_prop[THEN "\<forall>E"(2)[of _ _ a]], THEN "\<equiv>E"(1)] by simp
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close> using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
-      by (AOT_subst_old "\<lambda> \<Pi> . \<guillemotleft>a[\<Pi>] \<rightarrow> [\<Pi>]a\<guillemotright>" "\<lambda> \<Pi> . \<guillemotleft>\<not>(a[\<Pi>] & \<not>[\<Pi>]a)\<guillemotright>")
+      by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> bound: G)
          (auto simp: "oth-class-taut:1:a" C)
     AOT_hence \<open>a[F] \<rightarrow> [F]a\<close> using "\<forall>E" by blast
     moreover AOT_have \<open>a[F]\<close> using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), of F, THEN "\<equiv>E"(2)]
