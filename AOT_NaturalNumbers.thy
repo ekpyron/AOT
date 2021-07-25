@@ -2511,16 +2511,11 @@ next
            "cqt:2"
       AOT_hence 1: \<open>w \<Turnstile> [F]u\<close>
         using "rigid-truth-at:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-      AOT_have \<open>\<box>O!u\<close> by (simp add: Ordinary.restricted_var_condition RN)
-      AOT_hence \<open>\<forall>w w \<Turnstile> O!u\<close>
-        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
-      AOT_hence \<open>w \<Turnstile> O!u\<close> by (metis "PossibleWorld.\<forall>E")
-      AOT_hence \<open>w \<Turnstile> (O!u & [F]u)\<close>
-        using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)]
-              "&I" 1 by blast
-      AOT_hence \<open>\<exists>x w \<Turnstile> (O!x & [F]x)\<close> using "\<exists>I" by fast
+      AOT_have \<open>\<box>([F]u \<rightarrow> \<exists>u [F]u)\<close> using "Ordinary.\<exists>I" "\<rightarrow>I" RN by simp
+      AOT_hence \<open>w \<Turnstile> ([F]u \<rightarrow> \<exists>u [F]u)\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] "PossibleWorld.\<forall>E" by fast
       AOT_hence \<open>w \<Turnstile> \<exists>u [F]u\<close>
-        using "conj-dist-w:6"[THEN "\<equiv>E"(2)] by fast
+        using 1 "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "\<rightarrow>E"] by blast
       AOT_thus \<open>w \<Turnstile> \<exists>u [F]u & \<not>w \<Turnstile> \<exists>u [F]u\<close>
         using 0 "&I" by blast
     qed
