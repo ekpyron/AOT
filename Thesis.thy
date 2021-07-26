@@ -16,7 +16,7 @@ non-trivial task. Consequently, there is only a limited number of trusted system
 interactive and automated reasoning tools like Coq, HOL-Light or Isablle/HOL (TODO: cite).
 Furthermore, most of these systems have at least parts of their logical foundation in common,
 for example they are all based on some variation of functional type theory (TODO: make sure this
-can actually be stated as such).
+can actually be stated as such in particular towards Coq).
 
 On the other hand, there is still an ongoing debate about the most suitable logical system
 to be used for the foundations of mathematics (TODO: cite). While higher-order functional type
@@ -37,6 +37,15 @@ The following represents an attempt at overcoming this issue. We utilize the con
 the sophisticated interactive and automated reasoning system Isabelle/HOL to a fundamentally
 different foundational system, namely to Abstract Object Theory (TODO: cite).
 
+While it is not a requirement for our proposed general method, we demonstrate that
+we can extend Isabelle/HOL by a customized reasoning infrastructure written in Isabelle/ML
+that allows for an almost entirely transparent transfer of reasoning in our target logic and
+abstracts the syntactic and inferential differences between Isabelle/HOL and AOT, while still
+internally using the verified core logic of Isabelle/HOL as semantic backend. This means we
+effectively construct a dedicated theorem proving environment for AOT that (1) is immediately guaranteed
+to be sound, (2) can be used to explore the safety of axiomatic extensions to the system and (3) allows
+for the reuse of the automation infrastructure available for Isabelle/HOL.
+
 While our method can potentially be applied to a multitude of logical systems, Abstract Object Theory
 is a particularly well-suited target. On the one hand it aims to be a foundational metaphysical system
 that can serve as the basis for mathematics, linguistics and the sciences (TODO: rethink, cite), while
@@ -47,6 +56,7 @@ models and semantics for such a system can be beneficial and vital for its sound
 During our continued work we could contribute to the evolution of Abstract Object Theory and
 simultaneously arrived at a faithful representation of its model structure, semantics and
 deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.
+
 As a prime result, we can show that the construction of Natural Numbers described in Principia
 Logico-Metaphysica is verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for the derivation of Natural Numbers, that we believe strengthens
@@ -153,14 +163,21 @@ matching embedding. The details of this process and its results are the main sub
 section\<open>Overview of the Following Chapters\<close>
 
 text\<open>
-In the following,  we first give a more detailed description of Shallow Semantical Embeddings and
-a brief introduction to Abstract Object Theory. Based on that, we describe the constructed
-embedding of Abstract Object Theory in Isabelle/HOL while highlighting the contributions
+In the following, we first give a more detailed description of Shallow Semantical Embeddings (chapter~\ref{SSEs}) and
+a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
+
+Based on that, chapter~\ref{SSEofAOT} describes
+the constructed embedding of Abstract Object Theory in Isabelle/HOL while highlighting the contributions
 of the embedding to the theory of abstract objects on the one hand and the techniques developed for
-its implementation on the other hand. Finally we present the results on Natural Numbers and
-discuss the issue of extending the current system to encompass the full higher-order
-type-theoretic version of Abstract Object Theory. TODO: explicitly mention the fact that the embedding
-deals with the second-order fragment only earlier and restate here.
+its implementation up to the dedicated reasoning system implemented in Isabelle/ML on the other hand.
+
+In chapter~\ref{NaturalNumbers} we present the results on the derivation of Natural Numbers and
+Mathematical Induction and discuss our proposed extension of AOT with a general comprehension
+principle for relations among abstract objects.
+
+Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
+encompass the full higher-order type-theoretic version of Abstract Object Theory.
+TODO: explicitly mention the fact that the embedding deals with the second-order fragment only earlier and restate here.
 \<close>
 
 
@@ -240,7 +257,7 @@ language. In particular @{thm[show_question_marks = false, names_short = false] 
 qualified names; mention that this gets more complex when involving interpretation and assignment functions.\<close>}.
 So the semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representation. For example, in the
-deep embedding adding @{term x} to @{term y} results in an expression that is different from adding
+deep embedding adding @{term x} to @{term y} results in an expression that is different from the expression of adding
  @{term y} to  @{term x} for distinct  @{term x} and  @{term y}, even though they are equivalent under evaluation:
 
 @{thm[show_question_marks = false, names_short = false, display = true]
@@ -459,7 +476,8 @@ derivations in our context TODO: rethink that, maybe collect examples).
 The solution used in the current embedding of Abstract Object Theory is the use of option (2), but
 it uses Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
 list. For convenience, an new command @{command AOT_sledgehammer} is introduced that internally
-configures @{command sledgehammer} to use the desired set of theorems and then passes the current
+configures @{command sledgehammer} (TODO: rethink; in practice I usually set up sledgehammer globally instead)
+to use the desired set of theorems and then passes the current
 proof state to it. With this method we can achieve significantly better proof automation than in
 the earlier version in \cite{MScThesis}.
 
@@ -745,7 +763,7 @@ embedding of Abstract Object Theory in Isabelle/HOL as an example of a successfu
 albeit technically complex, solution. TODO: adjust references.
 \<close>
 
-chapter\<open>Abstract Object Theory\<close>
+chapter\<open>Abstract Object Theory\<close>text\<open>\label{AOT}\<close>
 
 section\<open>Overview\<close>
 

@@ -4,7 +4,7 @@ theory ThesisNaturalNumbers
 begin
 (*>*)
 
-chapter\<open>Natural Numbers in AOT\<close>
+chapter\<open>Natural Numbers in AOT\<close>text\<open>\label{NaturalNumbers}\<close>
 
 text\<open>
 While AOT can represent mathematical theories including their deductive systems themselves
@@ -31,15 +31,17 @@ foreseeable future.\<close>} and arrived at the following results:
   minor errors and inconsistencies in the presentation.
 \<close>
 text\<open>
-TODO: formatting in PDF rendering is off.
 Interestingly, there are interactions between this construction and the paradox discovered
 in~\cite{Thesis} and discussed in TODO: cite session. We will describe this interaction in more
 detail in the following sections while reproducing the construction of Nodelman and Zalta and
 thereby show how our work towards amending object theory to overcome the paradox was a prerequisite
-for the current version of the construction.
+for the current version of the construction. TODO: actually do that. Example: the elimination of the
+Rigidity axioms, which were required for constructing modally rigid numbers, based on the extension
+of relation comprehension and "Kirchner's Theorem", etc.
 
-TODO: remark about forgoing details about significance of terms, while PLM and the implementation
-make them explicit.
+TODO: remark about forgoing details about significance of terms throughout the following chapter,
+while PLM and the implementation make them explicit. Also think about how best to cite the implementation
+throughout the text.
 \<close>
 
 section\<open>General Idea of the Construction\<close>
@@ -86,7 +88,7 @@ the previous sections we are again directly quoting theorems verified in the Isa
 @{lemma[display] \<open>print_as_theorem \<guillemotleft>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow> G \<equiv> \<forall>x ([F]x \<rightarrow> \<exists>!y ([G]y & [R]xy)) & \<forall>y ([G]y \<rightarrow> \<exists>!x ([F]x & [R]xy))\<guillemotright>\<close> by (auto dest: "&E" "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fE"] intro!: print_as_theoremI "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2[const_var]"[axiom_inst] "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fI"])}
 
 However, this unrestricted notion of one-to-one correspondence is not well suited for a definition
-of equinumerosity that validates Hume's principle. The intuitive reason for this is that abstract
+of equinumerosity that validates Hume's principle in AOT. The intuitive reason for this is that abstract
 objects cannot be counted. In particular, recall that there are distinct, but
 exemplification-indistinguishable abstract objects (TODO: make sure this is mentioned earlier):
 
@@ -159,7 +161,8 @@ correspondence:
 
 Based on one-to-one correspondences on the ordinary objects, equinumerosity on the ordinary objects
 can be defined and can indeed shown to be an equivalence relation: TODO: sketch the proofs at least
-a bit? At least cite through the progression of theorems leading to them.
+a bit? At least cite through the progression of theorems leading to them. This would be an opportunity
+to mention the elimination of the rigidity axiom due made possible by results from the embedding.
 
 @{thm[display] "equi:3"[of F G] "eq-part:1"[of _ F, print_as_theorem] "eq-part:2"[of _ F G, print_as_theorem] "eq-part:3"[of _ F G H, print_as_theorem]}
 \<close>
@@ -227,7 +230,8 @@ The number zero is the object that numbers the empty property, to be more precis
 @{emph \<open>being a non-self-identical ordinary object\<close>}.@{footnote \<open>To be precise being a
 non-self-identical@{text \<open>\<^sub>E\<close>} object. This distincation is non-trivial: While @{thm ord_eq_e_eq[of _ x, print_as_theorem]} is a theorem,
 due to the hyperintensionality of object theory, it does not have to be the case that
-@{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are the same property. So
+@{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are the same property (as a matter of fact it is
+not even asserted @{emph \<open>a priori\<close>} that the latter even denotes a property at all). So
 @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are not the same object
 @{emph \<open>a priori\<close>}, even though it is of course a theorem that they are identical. But this theorem
 has to appeal to the fact that both properties are equinumerous and to Hume's Theorem.
@@ -293,6 +297,9 @@ objects @{term x\<^sub>1}, ..., @{term x\<^sub>n} an @{term R}-induced sequence,
 Then @{term F} being hereditary w.r.t @{term R} means that any @{term R}-induced sequence starting
 in @{term F} (i.e. starting with an object exemplified by @{term F}), is completely contained in
 @{term F} (i.e. every object in the sequence exemplifies @{term F} as well).
+
+Or in other words, a property @{term F} is hereditary w.r.t a relation @{term R}, if "@{term F}-ness"
+is inherited from objects to all objects that are @{term R}-related to them.
 \<close>
 
 subsection\<open>Strong Ancestral of a Relation and Transitive Closures\<close>
@@ -307,11 +314,11 @@ An object @{term x} bears @{term \<open>\<guillemotleft>[R]\<^sup>*\<guillemotri
 property @{term F} that is hereditary w.r.t @{term R} and that is exemplified by all objects to
 which @{term x} bears @{term R}.
 To convince ourselves that this definition captures the transitive closure of @{term R}, we may fix
-@{term x} and consider a properties @{term F}, s.t. @{term \<open>\<guillemotleft>\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)\<guillemotright>\<close>}.
+@{term x} and consider a property @{term F}, s.t. @{term \<open>\<guillemotleft>\<forall>z([R]xz \<rightarrow> [F]z) & Hereditary(F,R)\<guillemotright>\<close>}.
 Any such property @{term F} is exemplified by all objects immediately following @{term x} in an
 @{term R}-induced sequence (first conjunct) as well as all objects in any longer @{term R}-induced
 sequence starting at @{term x} (second conjunct). Hence (informally thinking of properties as sets)
-any such @{term F} @{emph \<open>contains\<close>} all objects that are transitively related to @{term x}. Note,
+any such @{term F} contains all objects that are transitively related to @{term x}. Note,
 however, that @{term F} may exemplify additional objects that are not part of any @{term R}-induced
 sequence. However, the intersection of all such properties @{term F} yields the smallest set of
 objects that are transitively related to @{term x}, which is @{emph \<open>exactly\<close>} those objects that
@@ -471,18 +478,21 @@ object @{term y}, s.t. @{term x} bears @{term R} to @{term y}:
 @{thm[display] "df-1-1:5"[of x R, THEN "\<equiv>Df", print_as_theorem]}
 
 While the predecessor relation will in fact be a functional relation, a relation that
-relates a single object to all other objects is an example of a one-to-one relation that's succinctly
-non-functional.
+relates a single object to all other objects, but no other object to any object, is an example of a
+one-to-one relation that's succinctly non-functional.
 
 However, in order to introduce a restricted notion of identity, functionality is not a requirement.
-But the restricted identity we are about to define only makes sense for one-to-one relation, so we
+But the restricted identity we are about to define only makes sense for one-to-one relation. For that reason, we
 introduce restricted variables for them and only define the restricted identity relative
-to this restriction. Reasoning with non-rigid restricted variables, however, is cumbersome, so
-we define @{emph \<open>rigid one-to-one relations\<close>} as relations that are both one-to-one and rigid (we
+to this restriction. Reasoning with non-rigid restricted variables, however, is cumbersome (TODO: cite discussion in PLM or 
+sections above), so we define @{emph \<open>rigid one-to-one relations\<close>} as relations that are both one-to-one and rigid (we
 restate the definition of rigid as well): (TODO: refer to earlier mentions of rigidity)
 
 @{thm[display] "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst], of _ R, print_as_theorem]}
 @{thm[display] "df-1-1:2"[THEN "\<equiv>Df", of _ R, print_as_theorem]}
+
+In the following we will use @{term \<R>} as a restricted variable ranging over rigid one-to-one relations.@{footnote \<open>Note
+that AOT uses $\underline{R}$, however, in our framework choosing a fresh character is the simpler choice.\<close>}
 \<close>
 
 subsection\<open>Identity Restricted to the Domain of Rigid One-to-one Relations\<close>
@@ -542,102 +552,157 @@ relation @{term \<open>\<R>\<^sup>+\<close>} for rigid one-to-one relations as f
 @{thm[display] "w-ances-df"}
 
 Restricting to the domain of @{term \<R>}, two object are now exactly in the weak ancestral relation
-@{term \<open>\<guillemotleft>[\<R>]\<^sup>*\<guillemotright>\<close>}, if they are either transitively @{term \<R>}-related (i.e. in the strong ancestral
-relation @{term \<open>\<guillemotleft>[\<R>]\<^sup>+\<guillemotright>\<close>}) or identical:
+@{term \<open>\<guillemotleft>[\<R>]\<^sup>+\<guillemotright>\<close>}, if they are either transitively @{term \<R>}-related (i.e. in the strong ancestral
+relation @{term \<open>\<guillemotleft>[\<R>]\<^sup>*\<guillemotright>\<close>}) or identical:
 
 @{thm[display] ances_in_domain[of _ x \<R> y, print_as_theorem]}
 \<close>
 
 section\<open>Generalized Induction\<close>
 
-AOT_theorem weak_generalized_induction: \<open>[F]z & \<forall>x\<forall>y ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)) \<rightarrow> \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
-proof(safe intro!: "\<rightarrow>I")
-  AOT_assume 0: \<open>[F]z & \<forall>x\<forall>y ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
-  AOT_have preind_cond: \<open>\<forall>x\<forall>y ([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
-  proof (safe intro!: GEN "\<rightarrow>I")
-    fix x y
-    AOT_assume \<open>[\<R>]xy\<close>
-    moreover AOT_assume \<open>[F]x\<close>
-    ultimately AOT_show \<open>[F]y\<close> using 0[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
-  qed
-  AOT_show \<open>\<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
-    using "pre-ind"[THEN "\<rightarrow>E", OF "&I", OF 0[THEN "&E"(1)], OF preind_cond] by blast
-qed
+text\<open>
+In order to understand the formulation of generalized induction, first consider the
+following theorem that Nodelman and Zalta prove before even introducing weak ancestral relations,
+but which already has "inductive character":
 
-AOT_find_theorems \<open>[\<lambda>x Numbers(x,F)]\<down>\<close>
+@{thm[display] "anc-her:3"[of _ F x R y, print_as_theorem]}
 
-AOT_theorem induction: \<open>\<forall>F([F]0 & \<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m)) \<rightarrow> \<forall>n[F]n)\<close>
-proof(rule GEN; safe intro!: "Number.GEN" "\<rightarrow>I")
-  fix F n
-  AOT_assume 0: \<open>[F]0 & \<forall>n \<forall>m ([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
-  AOT_have 1: \<open>[\<lambda>x [\<nat>]x & [F]x]\<down>\<close> by "cqt:2"
-  AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]0 & \<forall>x \<forall>y ([\<P>]xy \<rightarrow> ([\<lambda>x [\<nat>]x & [F]x]x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]y)) \<rightarrow> \<forall>x ([\<P>]\<^sup>+0x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]x)\<close>
-    using weak_generalized_induction[unconstrain \<R>, unvarify \<beta> z F , OF 1, OF "zero:2", THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4"] .
-  moreover AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]0\<close>
-    by (safe intro!: "\<beta>\<leftarrow>C" 1 "zero:2" "&I" "0-n" 0[THEN "&E"(1)])
-  moreover AOT_have \<open>\<forall>x \<forall>y ([\<P>]xy \<rightarrow> ([\<lambda>x [\<nat>]x & [F]x]x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]y))\<close>
-  proof(safe intro!: GEN "\<rightarrow>I")
-    fix x y
-    AOT_assume 2: \<open>[\<P>]xy\<close>
-    AOT_assume \<open>[\<lambda>x [\<nat>]x & [F]x]x\<close>
-    AOT_hence 3: \<open>[\<nat>]x & [F]x\<close> using "\<beta>\<rightarrow>C" by blast
-    AOT_have Ny: \<open>[\<nat>]y\<close> using "suc-num:1"[unconstrain n, THEN "\<rightarrow>E", OF 3[THEN "&E"(1)], THEN "\<rightarrow>E", OF 2].
-    moreover AOT_have \<open>[F]y\<close>
-      using 0[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 3[THEN "&E"(1)], THEN "\<forall>E"(2), THEN "\<rightarrow>E",
-              OF Ny, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF 2, OF 3[THEN "&E"(2)]] by blast
-    AOT_thus \<open>[\<lambda>x [\<nat>]x & [F]x]y\<close>
-      by (safe intro!: "\<beta>\<leftarrow>C" 1 "cqt:2" "&I" Ny)
-  qed
-  ultimately AOT_have \<open>\<forall>x ([\<P>]\<^sup>+0x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]x)\<close>
-    using "\<rightarrow>E" "&I" by blast
-  moreover AOT_have \<open>[\<P>]\<^sup>+0n\<close>
-    by (meson "intro-elim:3:a" "nnumber:3" Number.restricted_var_condition)
-  ultimately AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]n\<close>
-    using "\<forall>E"(2) "\<rightarrow>E" by blast
-  AOT_thus \<open>[F]n\<close> using "\<beta>\<rightarrow>C" "&E" by blast
-qed
+While this may not look like an inductive principle as stated, unfolding the definition of
+@{text \<open>Hereditary\<close>} this is equivalent (under some trivial transformations) to the following:
+\<close>
 
-
-AOT_theorem \<open>[F]z & (\<forall>x ([\<R>]zx \<rightarrow> [F]x)) & \<forall>x\<forall>y ([\<R>]\<^sup>*zx & [\<R>]\<^sup>*zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y))) \<rightarrow> \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
-proof (safe intro!: "\<rightarrow>I" "&I" GEN)
-  fix x
-  AOT_assume 0: \<open>[F]z & (\<forall>x ([\<R>]zx \<rightarrow> [F]x)) & \<forall>x\<forall>y ([\<R>]\<^sup>*zx & [\<R>]\<^sup>*zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
-  AOT_assume 1: \<open>[\<R>]\<^sup>+zx\<close>
-  AOT_hence z_in_dom: \<open>InDomainOf(z, \<R>)\<close>
-    using "1-1-R:5" "\<rightarrow>E" by blast
-  AOT_have preind_cond: \<open>\<forall>x \<forall>y ([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
-  proof (safe intro!: GEN "\<rightarrow>I")
-    fix x y
-    AOT_assume Rxy: \<open>[\<R>]xy\<close>
-    AOT_assume Fx: \<open>[F]x\<close>
-    AOT_assume \<open>[\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy\<close>
-    AOT_hence 2: \<open>[\<R>]\<^sup>*zx \<or> z = x\<close> and 3: \<open>[\<R>]\<^sup>*zy \<or> z = y\<close> using ances_in_domain[THEN "\<rightarrow>E", OF z_in_dom, THEN "\<equiv>E"(1)] "&E" by blast+
-    moreover {
-      AOT_assume \<open>z = y\<close>
-      AOT_hence \<open>[F]y\<close> using 0 "&E"(1) "rule=E" by blast
-    }
-    moreover {
-      AOT_assume \<open>z = x\<close>
-      AOT_hence \<open>[\<R>]zy\<close> using Rxy "rule=E" id_sym by fast
-      AOT_hence \<open>[F]y\<close> using 0[THEN "&E"(1), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
-    }
-    moreover {
-      AOT_assume \<open>\<not>z = y\<close> and \<open>\<not>z = x\<close>
-      AOT_hence \<open>[\<R>]\<^sup>*zx\<close> and \<open>[\<R>]\<^sup>*zy\<close> using 2 3 by (metis "con-dis-i-e:4:c")+
-      AOT_hence \<open>[F]y\<close>
-        using 0[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"] Rxy Fx by blast
-    }
-    ultimately AOT_show \<open>[F]y\<close> by (metis "raa-cor:1")
-  qed
-  AOT_show \<open>[F]x\<close>
-    using "pre-ind"[THEN "\<rightarrow>E", OF "&I", OF 0[THEN "&E"(1), THEN "&E"(1)], OF preind_cond]
-          "\<forall>E"(2) "\<rightarrow>E" 1 by blast
+AOT_theorem \<open>[F]z & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y)) \<rightarrow> \<forall>y ([R]\<^sup>*zy \<rightarrow> [F]y)\<close>
+proof(safe intro!: "\<rightarrow>I" GEN)
+  fix y
+  AOT_assume \<open>[F]z & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
+  AOT_hence \<open>[F]z & Hereditary(F,R)\<close>
+    by (AOT_subst_def "hered:1") (auto intro!: "&I" "cqt:2" elim: "&E")
+  moreover AOT_assume \<open>[R]\<^sup>*zy\<close>
+  moreover AOT_have \<open>[F]z & [R\<^sup>*]zy & Hereditary(F,R) \<rightarrow> [F]y\<close>
+    using "anc-her:3". \<comment> \<open>This is an instance of the theorem cited above.\<close>
+  ultimately AOT_show \<open>[F]y\<close>
+    using "&I" "&E" "\<rightarrow>E" by metis
 qed
 
 text\<open>
+I.e. if an object @{term z} exemplifies @{term F} and @{term F} is inherited via @{term R}, then
+any object that is transitively @{term R}-related to @{term z} exemplifies @{term F}.
+
+Pretend for a moment that @{term R} could be a well-defined predecessor relation and @{term z} the number zero.
+Then this theorem would imply that if (1) @{term F} holds for zero and
+(2) for any @{term x} and @{term y}, s.t. @{term x} precedes @{term y}, if @{term x} exemplifies
+@{term F}, then @{term y} exemplifies @{term F}, then @{term F} holds for all numbers transitively
+preceded by zero (and since @{term F} also holds for zero by assumption this would trivially imply that
+@{term F} holds for any natural number).
+
+In principle, this is how mathematical induction will be derived.
+However, it is inconvenient that the induction step in this formulation ranges over the full domain
+of all objects. When arguing about an induction step, it is counter-intuitive to consider if and
+in what way natural numbers may or may not be related to arbitrary objects.
+By instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [\<R>]\<^sup>+zx]\<guillemotright>\<close>}, the above can be
+generalized to the following principle, which PLM states as @{emph \<open>Generalized Induction\<close>}
+(TODO cite):@{footnote \<open>Note that (1) @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zy\<guillemotright>\<close>} for any @{term y}
+implies @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zz\<guillemotright>\<close>}, yielding @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [\<R>]\<^sup>+zx]z\<guillemotright>\<close>} in all cases in which the consequent
+of the strengthened theorem does not trivially hold (i.e. if @{term \<open>\<guillemotleft>\<not>\<exists>y [\<R>]\<^sup>+zy\<guillemotright>\<close>}) and (2) that the consequent of
+the weaker theorem can be strengthened since @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zy\<guillemotright>\<close>} either
+ implies (a) @{term \<open>z = y\<close>}, in which case @{term \<open>\<guillemotleft>[F]y\<guillemotright>\<close>} follows from the assumption @{term \<open>\<guillemotleft>[F]z\<guillemotright>\<close>},
+or it implies (b) @{term \<open>\<guillemotleft>[\<R>]\<^sup>*zy\<guillemotright>\<close>}, in which case the consequent of the weaker principle yields @{term \<open>\<guillemotleft>[F]y\<guillemotright>\<close>}.
+The additional fact that @{term \<open>\<guillemotleft>[\<R>]xy\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zx\<guillemotright>\<close>} imply @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zy\<guillemotright>\<close>} is sufficient to
+arrive at the strengthened theorem.\<close>}
+
+@{thm[display] "pre-ind"[of _ F z \<R>, print_as_theorem]}
+
+We will show below that instantiating this generalized principle of induction to the predecessor relation
+we are about to define, yields classical mathematical induction (relative to a defined notion of natural numbers).
+
+Note, however, that while the predecessor relation will define a total order on its domain, the
+generalized principle of induction can be applied more broadly: if we call an object that is
+either @{term z} or transitively @{term \<R>}-related to @{term z} as part of the @{term \<R>}-series
+starting at @{term z}, then the theorem shows that all objects on the @{term \<R>}-series
+starting at @{term z} exemplify @{term F} just in case, @{term z} exemplifies @{term F} and
+@{term F} is inherited from any object on an @{term \<R>}-series starting at @{term z} to any other such object
+to which it is @{term \<R>}-related. TODO: try to make the generality clearer; applicability beyond total orders.
 \<close>
 
-chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
+section\<open>The Predecessor Relation\<close>
+
+subsection\<open>Definition\<close>
+
+text\<open>
+While the definition of the predecessor relation is rather straightforward, the interesting question
+will be whether it actually denotes a relation, which we will discuss in detail below. For the moment
+assume that the @{text \<open>\<lambda>\<close>}-expression in the definiens of the following definition denotes:
+
+@{thm[display] "pred-thm:1"}
+
+So an object @{term x} precedes an object @{term y} just in case there is a property @{term F}
+and an ordinary object @{term u}, s.t. @{term u} exemplifies @{term F}, @{term y} numbers @{term F}
+and @{term x} numbers being an @{term F} other than @{term u} (written as @{term \<open>\<guillemotleft>[F]\<^sup>-\<^sup>u\<guillemotright>\<close>} which is
+just defined as @{term \<open>\<guillemotleft>[\<lambda>z [F]z & z \<noteq>\<^sub>E u]\<guillemotright>\<close>}}.
+
+This is a variant of Frege's definition of the successor relation (TODO cite)@{footnote \<open>Nodelman and
+Zalta argue in favour of a predecessor relation due to the fact that in contrast to a successor relation,
+the argument order of the predecessor relation matches the numerical order of objects in the relation.
+Otherwise the notions are interchangeable, i.e. @{text \<open>Succeeds(y,x)\<close>} is exactly @{term \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close>}.\<close>}.
+The idea can be clarified by considering how the first natural numbers are related w.r.t this relation:
+\<^item> The number Zero numbers properties that are not (actually) exemplified by any ordinary object. Hence there
+  cannot be a property @{term F} that is exemplified by an object @{term u}, s.t. Zero numbers @{term F},
+  which means that Zero is not preceded by any object.
+\<^item> The number One numbers properties that are (actually) exemplified by a single ordinary object.@{footnote \<open>While
+  we have not formally introduced any number other than Zero, we consider this intuitive understanding helpful
+  in clarifying the idea of the predecessor relation. The number One will formally be introduced later in this chapter.\<close>}
+  Hence any property @{term F} numbered by One is exemplified
+  by some ordinary object @{term \<open>u\<close>} and @{term \<open>\<guillemotleft>[F]\<^sup>-\<^sup>u\<guillemotright>\<close>}, i.e. being an object exemplifying @{term F} other than @{term u},
+  is not exemplified by any ordinary object. Hence Zero is the unique predecessor of One.
+\<^item> The number Two numbers properties that are (actually) exemplified by two distinct ordinary objects.
+  Being an object that exemplifies any of these properties other than any particular object the given
+  property exemplifies, is a property exemplified by only one ordinary object, hence numbered by One, i.e.
+  One preceeds Two, etc.
+\<close>
+
+subsection\<open>Assuring that the Predecessor Relation Denotes\<close>
+
+text\<open>
+It is important to realize that the @{text \<open>\<lambda>\<close>}-expression used in above definition does not
+trivially denote a relation in AOT.
+@{emph \<open>Numbering a property\<close>} is an encoding claim: an object numbers a property @{term G}, just in case
+it encodes all properties, s.t. actually exemplifying it is equinumerous to @{term G}.
+In general, encoding claims cannot be abstracted to denoting properties and relations (TODO: cite earlier discussion
+on this).
+In fact it is easy to see that the minimal model of AOT does not validate this axiom: the minimal
+model contains one ordinary urelement (resp. one ordinary object) and one special urelement.
+Since special urelements determine the exemplification extensions of abstract objects, there being
+only one special urelement implies that all abstract objects exemplify the same properties and relations.
+This implies in particular that either all objects are preceded by zero or no object is, in particular:
+@{term \<open>\<guillemotleft>[\<P>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that zero is
+not preceded by any object.@{footnote \<open>Both @{thm "no-pred-0:1"[print_as_theorem]} and @{thm "prec-facts:1"[print_as_theorem]} are formally 
+derived TODO: cite.\<close>} Hence in this model it would have to hold that @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}.
+However, since the minimal model still contains one ordinary object, the number One can be constructed
+and (again as argued above) is preceded by Zero, i.e. @{term \<open>\<guillemotleft>[\<P>]0 1\<guillemotright>\<close>}, which yields a contradiction.
+
+Nodelman and Zalta assert that the predecessor relation denotes by axiom and emphasize that the relation
+is not inherently mathematical and no mathematical primitives are needed to assert as an axiom axiom that
+it denotes. (TODO cite PLM: pred). On the one hand they argue that expressions of the form
+@{term \<open>\<guillemotleft>Numbers(y,F)\<guillemotright>\<close>}, while seemingly mathematical in nature, can be eliminated, since they are @{emph \<open>defined\<close>}
+in terms of primitives of AOT. On the other hand they argue that the relation merely asserts the
+existence of an ordering relation on abstract objects and ordering relations can in general be expressed in
+entirely logical terms.
+
+However, even if one concedes that the axiom is not inherently mathematical, it can be objected
+that it is rather @{emph \<open>ad-hoc\<close>}: rather than asserting a general principle according to which
+encoding claims can be abstracted to relations, it singles out a specific relation and this
+relation is after all used to @{emph \<open>define\<close>} a concept that is very much mathematical in nature.
+Furthermore, it is not trivial that the axiom is consistent: as we have already shown the minimal
+model of AOT will not validate it.
+
+Using our embedding we can, however, contribute to this situation in two ways:
+\<^item> We can show that the axiom is consistent by constructing models that validate it.
+\<^item> We can generalize the axiom to a comprehension principle for relations among abstract objects, s.t.
+  it becomes a theorem that the predecessor relation in particular denotes. We are confident that
+  we can thereby alleviate any remaining doubt on the non-mathematical character of the axiom.
+\<close>
+
+chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
 text\<open>
 
