@@ -635,10 +635,14 @@ assume that the @{text \<open>\<lambda>\<close>}-expression in the definiens of 
 
 @{thm[display] "pred-thm:1"}
 
+
+Given the assumption that this relation denotes, it follows by @{text \<open>\<beta>\<close>}-conversion that:
+
+@{thm[display] "pred-thm:3"[of _ x y, print_as_theorem]}
+
 So an object @{term x} precedes an object @{term y} just in case there is a property @{term F}
 and an ordinary object @{term u}, s.t. @{term u} exemplifies @{term F}, @{term y} numbers @{term F}
-and @{term x} numbers being an @{term F} other than @{term u} (written as @{term \<open>\<guillemotleft>[F]\<^sup>-\<^sup>u\<guillemotright>\<close>} which is
-just defined as @{term \<open>\<guillemotleft>[\<lambda>z [F]z & z \<noteq>\<^sub>E u]\<guillemotright>\<close>}}.
+and @{term x} numbers being an @{term F} other than @{term u}  (via the definition @{thm "F-u"}).
 
 This is a variant of Frege's definition of the successor relation (TODO cite)@{footnote \<open>Nodelman and
 Zalta argue in favour of a predecessor relation due to the fact that in contrast to a successor relation,
@@ -660,6 +664,7 @@ The idea can be clarified by considering how the first natural numbers are relat
   One preceeds Two, etc.
 \<close>
 
+
 subsection\<open>Assuring that the Predecessor Relation Denotes\<close>
 
 text\<open>
@@ -669,6 +674,7 @@ trivially denote a relation in AOT.
 it encodes all properties, s.t. actually exemplifying it is equinumerous to @{term G}.
 In general, encoding claims cannot be abstracted to denoting properties and relations (TODO: cite earlier discussion
 on this).
+
 In fact it is easy to see that the minimal model of AOT does not validate this axiom: the minimal
 model contains one ordinary urelement (resp. one ordinary object) and one special urelement.
 Since special urelements determine the exemplification extensions of abstract objects, there being
@@ -700,7 +706,150 @@ Using our embedding we can, however, contribute to this situation in two ways:
 \<^item> We can generalize the axiom to a comprehension principle for relations among abstract objects, s.t.
   it becomes a theorem that the predecessor relation in particular denotes. We are confident that
   we can thereby alleviate any remaining doubt on the non-mathematical character of the axiom.
+
+We defer our more detailed discussion of this axiom to section~\ref{pred} and in the following continue to
+reproduce the construction of Natural Numbers and Mathematical Induction as given by Nodelman and Zalta
+in PLM.
 \<close>
+
+subsection\<open>The Predecessor Relation as Rigid One-to-One Relation.\<close>
+
+text\<open>
+It can be derived that the Predecessor Relation is Rigid: @{thm "pred-1-1:2"[print_as_theorem]}
+respectively @{thm "pred-1-1:1"[of _ x y,print_as_theorem]}.
+While the full proof can be found in (TODO: cite), it is noteworthy that it again (TODO: adjust depending
+on whether rigidifying relations end up being discussed above in the context of equinumerosity) requires
+to argue with @{emph \<open>rigidifying\<close>} relations: by the theorem governing the predecessor relation given above,
+@{term \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close>} implies that there exists a relation @{term F} and an ordinary object @{term u}, s.t.
+@{term \<open>\<guillemotleft>[F]u & Numbers(y, F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<guillemotright>\<close>}. However, none of the conjuncts are guaranteed to
+be necessary. But we may refer to the fact that for any relation @{term F} there exists a relation @{term G}
+that @{emph \<open>rigidifies\<close>} @{term F} and this relation @{term G} can serve as witness for the claim that
+@{term \<open>\<guillemotleft>\<box>[\<P>]xy\<guillemotright>\<close>}.
+
+Furthermore it is a consequence of a modally-strict variant of Hume's principle that the predecessor
+relation is one-to-one: @{thm "pred-1-1:3"[print_as_theorem]}. TODO: cite or reproduce proof.
+
+Consequently, the Predecessor Relation is a rigid one-to-one relation and we cannot only instantiate
+the definition of the @{emph \<open>strong\<close>} ancestral to @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}:
+
+@{thm[display] "assume-anc:1"[print_as_theorem]}
+
+but furthermore being @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}-identical as well as the @{emph \<open>weak\<close>} ancestral of @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>} are well-defined:
+
+@{thm[display] "assume1:2"[of _ x y, print_as_theorem] "assume1:3"[print_as_theorem]}
+
+Before we continue to define Natural Numbers, it is noteworthy that it is already derivable that
+the number Zero neither has a direct or a transitive predecessor: @{thm "no-pred-0:1"[print_as_theorem]}
+respectively @{thm "no-pred-0:2"[print_as_theorem]} (TODO: cite proof.)
+\<close>
+
+section\<open>Natural Numbers\<close>
+
+text\<open>
+
+Using the infrastructure introduced in the past section, we can now follow through with the strategy
+described in the beginning of the chapter and define @{emph \<open>being a natural number\<close>} as being an
+object, s.t. Zero bears the weak ancestral of the Predecessor relation to it:
+
+@{thm[display] "nnumber:1"}
+
+Since by construction the weak ancestral of any rigid one-to-one relation denotes a proper relation,
+it follows that @{term \<open>\<guillemotleft>\<nat>\<guillemotright>\<close>} denotes a property @{thm "nnumber:2"} and consequently by
+@{text \<open>\<beta>\<close>}-conversion that:
+
+@{thm[display] "nnumber:3"[of _ x, print_as_theorem]}
+\<close>
+
+section\<open>Zero is a Natural Number\<close>
+
+text\<open>
+
+The first Dedekind-Peano postulate can now be derived:
+
+@{thm[display] "0-n"[print_as_theorem]}
+
+Interestingly, while both in Frege's original work and in Zalta's first construction (TODO: cite both)
+the weak ancestral was defined using general identity and consequently @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} is a simple
+consequence of the fact that zero is self-identical, due to the construction via rigid one-to-one relations
+this theorem requires a non-trivial proof: @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} by definition is just the case if either
+@{term \<open>\<guillemotleft>[\<P>]\<^sup>*0 0\<guillemotright>\<close>} (which was already refuted above) or @{term \<open>\<guillemotleft>0 =\<^sub>\<P> 0\<guillemotright>\<close>}.
+
+However, @{term \<open>\<guillemotleft>0 =\<^sub>\<P> 0\<guillemotright>\<close>} is not a simple consequence of the fact that @{term \<open>\<guillemotleft>0 = 0\<guillemotright>\<close>}, but additionally
+requires that @{term \<open>\<guillemotleft>InDomainOf(0,\<P>)\<guillemotright>\<close>}, respectively that @{term \<open>\<guillemotleft>\<exists>y [\<P>]0 y\<guillemotright>\<close>}, i.e. the proof
+effectively requires to construct the number One as witness.@{footnote \<open>The number One can for example
+be introduced as the number of any relation exemplified by exactly one ordinary object.
+Since it is a theorem that there is an ordinary object @{thm "o-objects-exist:1"[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], print_as_theorem]},
+we can choose @{term a} to be a witness to this existential claim and choose @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x =\<^sub>E a]\<guillemotright>\<close>} as a witness
+to @{term \<open>\<guillemotleft>\<exists>y [\<P>]0 y\<guillemotright>\<close>}. TODO: cite full proof.\<close>}
+
+This constitutes one of the corrections to the construction that can be traced back directly to
+the embedding. Preliminary working versions of the chapter of PLM left this non-trivial proof
+as an exercise referring to it being a trivial consequence of the self-identity of the number Zero.
+Trying to prove the statement in the embedding showed that additional work is required due to the
+changes in the construction compared to previous versions and we could suggest the proof outlined in the footnote.
+TODO: think about whether to emphasize this that much or adding something like "Even though to be fair the chapter was
+under heavy revision at the time and this omission would likely have been independently uncovered eventually".
+\<close>
+
+section\<open>Being a Natural Number is Rigid.\<close>
+
+text\<open>
+
+From the generalized principle of induction when instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x \<box>[\<nat>]x]\<guillemotright>\<close>}
+and @{term \<R>} to @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}, it follows that @{thm "mod-col-num:1"[of _ x, print_as_theorem]}
+and consequently that @{thm "mod-col-num:2"[print_as_theorem]}. TODO: cite proof?
+
+Since furthermore Zero is a witness to the existence of natural numbers and it is easy to prove
+that @{term \<open>\<guillemotleft>[\<nat>]\<kappa> \<rightarrow> \<kappa>\<down>\<guillemotright>\<close>}, being a natural number is a @{emph \<open>rigid restriction condition\<close>} and
+it is possible to introduce well-behaved restricted variables ranging over the natural numbers.
+
+In the following the variable names @{term m}, @{term n}, @{term k}, @{term i} and @{term j}
+range over natural numbers.
+
+\<close>
+
+section\<open>Zero Has No Predecessor\<close>
+
+text\<open>
+We have already mentioned the fact that @{thm "no-pred-0:1"[print_as_theorem]} above, but we can
+now restate this theorem @{emph \<open>a fortiori\<close>} for variables restricted to natural numbers, which
+constitutes second Dedkind-Peano postulate (as mentioned above this formulation is equivalent to
+the assertion that Zero is not the successor of any natural number):
+
+@{thm[display] "0-pred"[print_as_theorem]}
+\<close>
+
+section\<open>No Two Natural Numbers have the Same Successor\<close>
+
+text\<open>
+The third Dedekind-Peano postulate is a general property of any one-to-one relation, but can
+be stated explicitly using restricted variables for natural numbers (on which @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}-identity
+matches general identity) as follows:
+
+@{thm[display] "no-same-succ"[print_as_theorem]}
+
+\<close>
+
+section\<open>Mathematical Induction\<close>
+
+text\<open>
+As promised at the beginning of the chapter we can now derive Mathematical Induction as follows:
+
+@{thm induction[print_as_theorem]}
+
+Every property that is (1) satisfied on the number zero and for which (2) being satisfied on a
+natural number implies it being satisfied for its successor is true for all natural numbers.
+
+Thereby the fifth Dedekind-Peano postulate is derivable. The fourth Dedekind-Peano axiom, i.e.
+every Natural Number has a Successor, requires some more work and will be derived in the upcoming sections.
+ (TODO: check where the numbering is actually coming from and cite).
+
+TODO: cite full proof or just quickly state that it's a special case of generalized induction?
+\<close>
+
+
+
+section\<open>The Predecessor Axiom in Detail\<close>text\<open>\label{pred}\<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
