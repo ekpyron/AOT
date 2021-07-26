@@ -452,11 +452,189 @@ For this reason Nodelman and Zalta proceed by introducing @{emph \<open>rigid on
 Rigid one-to-one relations induce a notion of identity on their @{emph \<open>domain\<close>} that is consistent
 with general identity (on this domain), but constitutes a denoting relation. (TODO: cite)
 \<close>
-
 subsection\<open>Rigid One-to-One Relations\<close>
 
 text\<open>
+For a relation to be @{emph \<open>one-to-one\<close>} is related to the notion of a function being injective.
+A relation @{term R} is @{emph \<open>one-to-one\<close>}, if whenever two objects @{term x} and @{term y} bear
+@{term R} to the same object @{term z}, then @{term x} and @{term y} are identical:
 
+@{thm[display] "df-1-1:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst], of _ R, print_as_theorem]}
+
+Note, however, that one-to-one relations are more general than injective functions, since the criterion
+to be one-to-one does not imply that the relation is @{emph \<open>functional\<close>}, i.e. that each object
+in its domain is related to exactly one object.
+
+An object @{term x} is in the domain of a relation @{term R}, just in case that there is an
+object @{term y}, s.t. @{term x} bears @{term R} to @{term y}:
+
+@{thm[display] "df-1-1:5"[of x R, THEN "\<equiv>Df", print_as_theorem]}
+
+While the predecessor relation will in fact be a functional relation, a relation that
+relates a single object to all other objects is an example of a one-to-one relation that's succinctly
+non-functional.
+
+However, in order to introduce a restricted notion of identity, functionality is not a requirement.
+But the restricted identity we are about to define only makes sense for one-to-one relation, so we
+introduce restricted variables for them and only define the restricted identity relative
+to this restriction. Reasoning with non-rigid restricted variables, however, is cumbersome, so
+we define @{emph \<open>rigid one-to-one relations\<close>} as relations that are both one-to-one and rigid (we
+restate the definition of rigid as well): (TODO: refer to earlier mentions of rigidity)
+
+@{thm[display] "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst], of _ R, print_as_theorem]}
+@{thm[display] "df-1-1:2"[THEN "\<equiv>Df", of _ R, print_as_theorem]}
+\<close>
+
+subsection\<open>Identity Restricted to the Domain of Rigid One-to-one Relations\<close>
+
+(*<*)
+AOT_theorem r_id_restr: \<open>x =\<^sub>\<R> y \<equiv> (InDomainOf(x,\<R>) & InDomainOf(y,\<R>) & x = y)\<close>
+  by (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" dest: "id-R-thm:2"[THEN "\<rightarrow>E"] "&E" "id-R-thm:3"[THEN "\<rightarrow>E"]
+                   "id-R-thm:4"[THEN "\<rightarrow>E", OF "\<or>I"(1), THEN "\<equiv>E"(2)])
+(*>*)
+
+text\<open>
+For a variable @{term \<R>} that is restricted to rigid one-to-one relations, a restricted notion
+of identity can now be defined as follows:
+
+@{thm[display] "id-d-R"}
+
+Note that in contrast to general identity, @{term \<R>}-identity is a proper relation.
+
+By @{text \<beta>}-conversion and using infix notation, two objects @{term x} and @{term y} are
+@{term \<R>}-identical, if there is an object they are both @{term \<R>}-related to:
+
+@{thm[display] "id-R-thm:1"[of _ \<R> x y, print_as_theorem]}
+
+Since @{term \<R>} is restricted to rigid one-to-one relations, the resulting identity relation is exactly the
+restriction of general identity to the domain of @{term \<R>}:
+
+@{thm[display] r_id_restr[of _ \<R> x y, print_as_theorem]}
+
+Consequently, the defined identity is a partial equivalence relation that is
+reflexive on the domain of the relation:
+
+@{thm "id-R-thm:5"[of _ x \<R>, print_as_theorem]
+      "id-R-thm:6"[of _ \<R> x y, print_as_theorem]
+      "id-R-thm:7"[of _ \<R> x y z, print_as_theorem]}
+\<close>
+
+subsection \<open>The Weak Ancestral of a Relation\<close>
+
+(*<*)
+AOT_theorem ances_in_domain: \<open>InDomainOf(x,\<R>) \<rightarrow> ([\<R>]\<^sup>+xy \<equiv> [\<R>]\<^sup>*xy \<or> x = y)\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>InDomainOf(x,\<R>)\<close>
+  AOT_hence 0: \<open>x =\<^sub>\<R> y \<equiv> x = y\<close>
+    using "id-R-thm:4"[THEN "\<rightarrow>E", OF "\<or>I"(1)] by blast
+  AOT_have \<open>[\<R>]\<^sup>+xy \<equiv> [\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y\<close>
+    using "w-ances".
+  also AOT_have \<open>\<dots> \<equiv> [\<R>]\<^sup>*xy \<or> x = y\<close>
+    using 0 "oth-class-taut:8:g" "\<rightarrow>E" by blast
+  finally AOT_show \<open>[\<R>]\<^sup>+xy \<equiv> [\<R>]\<^sup>*xy \<or> x = y\<close>.
+qed
+(*>*)
+
+text\<open>
+Based on the concept of @{term \<R>}-identity, Nodelman and Zalta continue to define the @{emph \<open>weak ancestral\<close>} of a
+relation @{term \<open>\<R>\<^sup>+\<close>} for rigid one-to-one relations as follows:
+
+@{thm[display] "w-ances-df"}
+
+Restricting to the domain of @{term \<R>}, two object are now exactly in the weak ancestral relation
+@{term \<open>\<guillemotleft>[\<R>]\<^sup>*\<guillemotright>\<close>}, if they are either transitively @{term \<R>}-related (i.e. in the strong ancestral
+relation @{term \<open>\<guillemotleft>[\<R>]\<^sup>+\<guillemotright>\<close>}) or identical:
+
+@{thm[display] ances_in_domain[of _ x \<R> y, print_as_theorem]}
+\<close>
+
+section\<open>Generalized Induction\<close>
+
+AOT_theorem weak_generalized_induction: \<open>[F]z & \<forall>x\<forall>y ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)) \<rightarrow> \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume 0: \<open>[F]z & \<forall>x\<forall>y ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
+  AOT_have preind_cond: \<open>\<forall>x\<forall>y ([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
+  proof (safe intro!: GEN "\<rightarrow>I")
+    fix x y
+    AOT_assume \<open>[\<R>]xy\<close>
+    moreover AOT_assume \<open>[F]x\<close>
+    ultimately AOT_show \<open>[F]y\<close> using 0[THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
+  qed
+  AOT_show \<open>\<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
+    using "pre-ind"[THEN "\<rightarrow>E", OF "&I", OF 0[THEN "&E"(1)], OF preind_cond] by blast
+qed
+
+AOT_find_theorems \<open>[\<lambda>x Numbers(x,F)]\<down>\<close>
+
+AOT_theorem induction: \<open>\<forall>F([F]0 & \<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m)) \<rightarrow> \<forall>n[F]n)\<close>
+proof(rule GEN; safe intro!: "Number.GEN" "\<rightarrow>I")
+  fix F n
+  AOT_assume 0: \<open>[F]0 & \<forall>n \<forall>m ([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
+  AOT_have 1: \<open>[\<lambda>x [\<nat>]x & [F]x]\<down>\<close> by "cqt:2"
+  AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]0 & \<forall>x \<forall>y ([\<P>]xy \<rightarrow> ([\<lambda>x [\<nat>]x & [F]x]x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]y)) \<rightarrow> \<forall>x ([\<P>]\<^sup>+0x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]x)\<close>
+    using weak_generalized_induction[unconstrain \<R>, unvarify \<beta> z F , OF 1, OF "zero:2", THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4"] .
+  moreover AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]0\<close>
+    by (safe intro!: "\<beta>\<leftarrow>C" 1 "zero:2" "&I" "0-n" 0[THEN "&E"(1)])
+  moreover AOT_have \<open>\<forall>x \<forall>y ([\<P>]xy \<rightarrow> ([\<lambda>x [\<nat>]x & [F]x]x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]y))\<close>
+  proof(safe intro!: GEN "\<rightarrow>I")
+    fix x y
+    AOT_assume 2: \<open>[\<P>]xy\<close>
+    AOT_assume \<open>[\<lambda>x [\<nat>]x & [F]x]x\<close>
+    AOT_hence 3: \<open>[\<nat>]x & [F]x\<close> using "\<beta>\<rightarrow>C" by blast
+    AOT_have Ny: \<open>[\<nat>]y\<close> using "suc-num:1"[unconstrain n, THEN "\<rightarrow>E", OF 3[THEN "&E"(1)], THEN "\<rightarrow>E", OF 2].
+    moreover AOT_have \<open>[F]y\<close>
+      using 0[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 3[THEN "&E"(1)], THEN "\<forall>E"(2), THEN "\<rightarrow>E",
+              OF Ny, THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF 2, OF 3[THEN "&E"(2)]] by blast
+    AOT_thus \<open>[\<lambda>x [\<nat>]x & [F]x]y\<close>
+      by (safe intro!: "\<beta>\<leftarrow>C" 1 "cqt:2" "&I" Ny)
+  qed
+  ultimately AOT_have \<open>\<forall>x ([\<P>]\<^sup>+0x \<rightarrow> [\<lambda>x [\<nat>]x & [F]x]x)\<close>
+    using "\<rightarrow>E" "&I" by blast
+  moreover AOT_have \<open>[\<P>]\<^sup>+0n\<close>
+    by (meson "intro-elim:3:a" "nnumber:3" Number.restricted_var_condition)
+  ultimately AOT_have \<open>[\<lambda>x [\<nat>]x & [F]x]n\<close>
+    using "\<forall>E"(2) "\<rightarrow>E" by blast
+  AOT_thus \<open>[F]n\<close> using "\<beta>\<rightarrow>C" "&E" by blast
+qed
+
+
+AOT_theorem \<open>[F]z & (\<forall>x ([\<R>]zx \<rightarrow> [F]x)) & \<forall>x\<forall>y ([\<R>]\<^sup>*zx & [\<R>]\<^sup>*zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y))) \<rightarrow> \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
+proof (safe intro!: "\<rightarrow>I" "&I" GEN)
+  fix x
+  AOT_assume 0: \<open>[F]z & (\<forall>x ([\<R>]zx \<rightarrow> [F]x)) & \<forall>x\<forall>y ([\<R>]\<^sup>*zx & [\<R>]\<^sup>*zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
+  AOT_assume 1: \<open>[\<R>]\<^sup>+zx\<close>
+  AOT_hence z_in_dom: \<open>InDomainOf(z, \<R>)\<close>
+    using "1-1-R:5" "\<rightarrow>E" by blast
+  AOT_have preind_cond: \<open>\<forall>x \<forall>y ([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
+  proof (safe intro!: GEN "\<rightarrow>I")
+    fix x y
+    AOT_assume Rxy: \<open>[\<R>]xy\<close>
+    AOT_assume Fx: \<open>[F]x\<close>
+    AOT_assume \<open>[\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy\<close>
+    AOT_hence 2: \<open>[\<R>]\<^sup>*zx \<or> z = x\<close> and 3: \<open>[\<R>]\<^sup>*zy \<or> z = y\<close> using ances_in_domain[THEN "\<rightarrow>E", OF z_in_dom, THEN "\<equiv>E"(1)] "&E" by blast+
+    moreover {
+      AOT_assume \<open>z = y\<close>
+      AOT_hence \<open>[F]y\<close> using 0 "&E"(1) "rule=E" by blast
+    }
+    moreover {
+      AOT_assume \<open>z = x\<close>
+      AOT_hence \<open>[\<R>]zy\<close> using Rxy "rule=E" id_sym by fast
+      AOT_hence \<open>[F]y\<close> using 0[THEN "&E"(1), THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+    }
+    moreover {
+      AOT_assume \<open>\<not>z = y\<close> and \<open>\<not>z = x\<close>
+      AOT_hence \<open>[\<R>]\<^sup>*zx\<close> and \<open>[\<R>]\<^sup>*zy\<close> using 2 3 by (metis "con-dis-i-e:4:c")+
+      AOT_hence \<open>[F]y\<close>
+        using 0[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<rightarrow>E", OF "&I"] Rxy Fx by blast
+    }
+    ultimately AOT_show \<open>[F]y\<close> by (metis "raa-cor:1")
+  qed
+  AOT_show \<open>[F]x\<close>
+    using "pre-ind"[THEN "\<rightarrow>E", OF "&I", OF 0[THEN "&E"(1), THEN "&E"(1)], OF preind_cond]
+          "\<forall>E"(2) "\<rightarrow>E" 1 by blast
+qed
+
+text\<open>
 \<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>
