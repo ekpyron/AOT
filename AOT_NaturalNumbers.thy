@@ -2958,7 +2958,7 @@ proof(rule "\<rightarrow>I")
   AOT_thus \<open>[\<R>]\<^sup>+xy\<close> using "w-ances"[THEN "\<equiv>E"(2)] "\<or>I" by blast
 qed
 
-AOT_theorem "w-ances-her:2": \<open>([F]x & [\<R>]\<^sup>+xy & Hereditary(F, \<R>)) \<rightarrow> [F]y\<close>
+AOT_theorem "w-ances-her:2": \<open>[F]x & [\<R>]\<^sup>+xy & Hereditary(F, \<R>) \<rightarrow> [F]y\<close>
 proof(rule "\<rightarrow>I"; (frule "&E"(1); drule "&E"(2))+)
   AOT_assume 0: \<open>[F]x\<close>
   AOT_assume 1: \<open>Hereditary(F, \<R>)\<close>
@@ -3502,7 +3502,7 @@ proof -
     using 0 "\<rightarrow>I" by simp
 qed
 
-AOT_define Predecessor :: \<open>\<tau>\<close> (\<open>\<P>\<close>)
+AOT_define Predecessor :: \<open>\<Pi>\<close> (\<open>\<P>\<close>)
   "pred-thm:1": \<open>\<P> =\<^sub>d\<^sub>f [\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<close>
 
 AOT_theorem "pred-thm:2": \<open>\<P>\<down>\<close>
@@ -5020,6 +5020,10 @@ qed
 
 AOT_define Numeral1 :: \<open>\<kappa>\<^sub>s\<close> ("1")
   "numerals:1": \<open>1 =\<^sub>d\<^sub>f 0\<^bold>'\<close>
+
+AOT_theorem "prec-facts:1": \<open>[\<P>]0 1\<close>
+  by (auto intro: "numerals:1"[THEN "rule-id-df:2:b[zero]", OF "def-suc[den2]"[unconstrain n, unvarify \<beta>, OF "zero:2", THEN "\<rightarrow>E", OF "0-n"]]
+                  "suc-thm"[unconstrain n, unvarify \<beta>, OF "zero:2", THEN "\<rightarrow>E", OF "0-n"])
 
 AOT_theorem AX:
   assumes 0: \<open>\<forall>F (\<forall>u([F]u \<equiv> [G]u) \<rightarrow> (x[F] \<equiv> x[G]))\<close>
