@@ -571,7 +571,7 @@ While this may not look like an inductive principle as stated, unfolding the def
 @{text \<open>Hereditary\<close>} this is equivalent (under some trivial transformations) to the following:
 \<close>
 
-AOT_theorem \<open>[F]z & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y)) \<rightarrow> \<forall>y ([R]\<^sup>*zy \<rightarrow> [F]y)\<close>
+AOT_theorem pre_ind': \<open>[F]z & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y)) \<rightarrow> \<forall>y ([R]\<^sup>*zy \<rightarrow> [F]y)\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix y
   AOT_assume \<open>[F]z & \<forall>x\<forall>y([R]xy \<rightarrow> ([F]x \<rightarrow> [F]y))\<close>
@@ -791,7 +791,7 @@ TODO: think about whether to emphasize this that much or adding something like "
 under heavy revision at the time and this omission would likely have been independently uncovered eventually".
 \<close>
 
-section\<open>Being a Natural Number is Rigid.\<close>
+section\<open>Being a Natural Number is Rigid\<close>
 
 text\<open>
 
@@ -830,7 +830,7 @@ matches general identity) as follows:
 
 \<close>
 
-section\<open>Mathematical Induction\<close>
+section\<open>Mathematical Induction\<close>text\<open>\label{MathematicalInduction}\<close>
 
 text\<open>
 As promised at the beginning of the chapter we can now derive Mathematical Induction as follows:
@@ -840,22 +840,187 @@ As promised at the beginning of the chapter we can now derive Mathematical Induc
 Every property that is (1) satisfied on the number zero and for which (2) being satisfied on a
 natural number implies it being satisfied for its successor is true for all natural numbers.
 
-Thereby the fifth Dedekind-Peano postulate is derivable. The fourth Dedekind-Peano axiom, i.e.
-every Natural Number has a Successor, requires some more work and will be derived in the upcoming sections.
- (TODO: check where the numbering is actually coming from and cite).
-
 TODO: cite full proof or just quickly state that it's a special case of generalized induction?
+
+Thereby the fifth Dedekind-Peano postulate is derivable (TODO: check where the numbering is actually coming from and cite).
+Note, however, that we haven't yet derived the fourth Dedekind-Peano axiom, i.e. every Natural Number has a unique successor.
+The construction so far is validated by the minimal models of AOT that are extended to validate the Predecessor Axiom.
+Validating the Predecessor Axiom involves increasing the number of special urelements in the model (see~\ref{pred}; TODO: adjust reference, if necessary),
+but it does not require to increase the number of ordinary urelements/objects, so there are still
+models with only a single ordinary urelement/object. However, in such models the only natural numbers
+are Zero and One and the number One will not have a successor.
+For that reason, Nodelman and Zalta extend the system by another axiom, which we will discuss below
+after stating a few more derived properties of the predecessor relation and natural numbers.
+\<close>
+
+section\<open>Properties of the Predecessor Relation and Natural Numbers\<close>
+
+(*<*)
+AOT_theorem "pred-num[ext1]": \<open>[\<P>]\<^sup>*xn \<rightarrow> [\<nat>]x\<close>
+proof (rule "\<rightarrow>I")
+  AOT_have \<open>[\<lambda>y \<forall>x ([\<P>]\<^sup>*x y \<rightarrow> [\<nat>]x)]n\<close>
+  proof (safe intro!: "pre-ind"[unconstrain \<R>, unvarify F z \<beta>, OF "pred-thm:2", OF "zero:2", THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
+                      "pred-1-1:4" "Number.\<psi>"[THEN "nnumber:3"[THEN "\<equiv>E"(1)]]; safe intro!: "&I" "\<rightarrow>I" GEN "\<beta>\<leftarrow>C" "cqt:2" "zero:2")
+    fix x
+    AOT_assume \<open>[\<P>\<^sup>*]x 0\<close>
+    AOT_thus \<open>[\<nat>]x\<close> using "existential:2[const_var]" "no-pred-0:2" "raa-cor:4" by fast
+  next
+    fix \<alpha> y x
+    AOT_assume \<open>[\<P>]\<^sup>+0\<alpha> & [\<P>]\<^sup>+0y\<close>
+    AOT_hence N\<alpha>: \<open>[\<nat>]\<alpha>\<close> using "con-dis-i-e:2:a" "intro-elim:3:b" "nnumber:3" by blast
+    AOT_assume \<open>[\<lambda>y \<forall>x ([\<P>\<^sup>*]xy \<rightarrow> [\<nat>]x)]\<alpha>\<close>
+    AOT_hence \<open>\<forall>x ([\<P>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
+    AOT_hence 0: \<open>[\<P>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x\<close> using "\<forall>E"(2) by blast
+    AOT_assume \<open>[\<P>]\<alpha>y\<close>
+    moreover AOT_assume \<open>[\<P>\<^sup>*]xy\<close>
+    ultimately AOT_have \<open>[\<P>]\<^sup>+x \<alpha>\<close>
+      using "1-1-R:1"[unconstrain \<R>, unvarify \<beta>, THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4", THEN "\<rightarrow>E", OF "&I"] by blast
+    AOT_hence \<open>[\<P>]\<^sup>*x \<alpha> \<or> x =\<^sub>\<P> \<alpha>\<close>
+      by (metis "assume1:5" "intro-elim:3:a")
+    moreover {
+      AOT_assume \<open>x =\<^sub>\<P> \<alpha>\<close>
+      AOT_hence \<open>\<exists>z ([\<P>]xz & [\<P>]\<alpha>z)\<close> using "assume1:2"[THEN "\<equiv>E"(1)] by blast
+      then AOT_obtain z where \<open>[\<P>]xz & [\<P>]\<alpha>z\<close> using "\<exists>E"[rotated] by blast
+      AOT_hence \<open>x = \<alpha>\<close>
+        using "pred-1-1:3"[THEN "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
+      AOT_hence \<open>[\<nat>]x\<close> using N\<alpha> "rule=E" id_sym by blast
+    }
+    moreover {
+      AOT_assume \<open>[\<P>]\<^sup>*x \<alpha>\<close>
+      AOT_hence \<open>[\<nat>]x\<close> using 0 "\<rightarrow>E" by blast
+    }
+    ultimately AOT_show \<open>[\<nat>]x\<close> by (metis "con-dis-i-e:4:c" "raa-cor:1")
+  qed
+  AOT_hence \<open>\<forall>x ([\<P>]\<^sup>*x n \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
+  moreover AOT_assume \<open>[\<P>]\<^sup>*xn\<close>
+  ultimately AOT_show \<open>[\<nat>]x\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
+qed
+AOT_theorem "pred-num[ext2]": \<open>[\<P>]\<^sup>+xn \<rightarrow> [\<nat>]x\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>[\<P>]\<^sup>+xn\<close>
+  AOT_hence \<open>[\<P>]\<^sup>*xn \<or> x =\<^sub>\<P> n\<close> by (metis "assume1:5" "intro-elim:3:a")
+  moreover {
+    AOT_assume \<open>[\<P>]\<^sup>*xn\<close>
+    AOT_hence \<open>[\<nat>]x\<close> using "pred-num[ext1]"[THEN "\<rightarrow>E"] by blast
+  }
+  moreover {
+    AOT_assume \<open>x =\<^sub>\<P> n\<close>
+    AOT_hence \<open>x = n\<close>
+      using "id-R-thm:3"[unconstrain \<R>, unvarify \<beta>, THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4", THEN "\<rightarrow>E"]
+      by blast
+    AOT_hence \<open>[\<nat>]x\<close> by (metis "rule=E" Number.restricted_var_condition id_sym)
+  }
+  ultimately AOT_show \<open>[\<nat>]x\<close> by (metis "con-dis-i-e:4:c" "raa-cor:1")
+qed
+
+(*>*)
+
+text\<open>
+We note a few more interesting properties of natural numbers and the predecessor relation that can
+be derived from the construction thus far. The proofs can be found (TODO: cite).
+
+Successors of natural numbers are (transitively) natural numbers:
+
+@{thm[display] "suc-num:1"[of _ n x, print_as_theorem]
+               "suc-num:2"[of _ n x, print_as_theorem]
+               "suc-num:3"[of _ n x, print_as_theorem]}
+
+Predecessors of natural numbers are (transivitely) natural numbers:@{footnote \<open>PLM proves only the
+first. The proof of the first can be found at (TODO: cite), the proofs of the second and third at (TODO: cite).\<close>}
+
+@{thm[display] "pred-num"[of _ x n, print_as_theorem]
+               "pred-num[ext1]"[of _ x n, print_as_theorem]
+               "pred-num[ext2]"[of _ x n, print_as_theorem]}
+
+Natural numbers are Natural Cardinals:
+
+@{thm[display] "nat-card"[of _ x, print_as_theorem]}
+
+The Predecessor relation is functional:
+
+@{thm[display] "pred-func:1"[of _ x y z, print_as_theorem]
+               "pred-func:2"[of _ n m k, print_as_theorem]}
+\<close>
+
+section\<open>Possible Richness of Objects\<close>
+
+text\<open>
+As mentioned above, the construction so far is valid in models with only a single ordinary 
+object/urelement and consequently with only two natural numbers, which is not sufficient to
+derive that every natural number has a successor.
+
+The following axiom, by which Nodelman and Zalta proceed to extend the system, changes this:
+
+@{thm[display] "modal-axiom"[axiom_inst, of _ G, print_as_theorem]}
+
+If there is a natural number which numbers @{term G}, then there might have been a concrete object
+@{term y} which is distinct from every ordinary object that @{emph \<open>actually\<close>} exemplifies @{term G}
+(TODO: cite).
+We will explain in detail how we extend our models to be able to validate this axiom in section~\ref{modell-modal-axiom}.
+In summary the axiom requires extending the domain of ordinary urelements/objects to an at least
+countably infinite set (while there may still only be a single @{emph \<open>concrete\<close>} object).
+
+This axiom requires some justification, especially given the claim that the construction is
+@{emph \<open>purely logical\<close>} and does not require to presuppose any intrinsically mathematical claims.
+
+Traditionally, a system is no longer considered to be @{emph \<open>purely logical\<close>}, if it asserts the existence
+of more than one object. While Nodelman and Zalta agree with this principle, they argue that
+it only extends to @{emph \<open>concrete\<close>} objects.
+While above axiom does imply that the domain of @{emph \<open>ordinary\<close>} objects (recall that @{emph \<open>being ordinary\<close>}
+is defined as @{emph \<open>being @{emph \<open>possibly\<close>} concrete\<close>}) is at least countably infinite, it does not imply
+that there is even a single object that is @{emph \<open>actually concrete\<close>}.
+Nodelman and Zalta further argue that on the one hand it is in fact common for logical systems to assert the existence
+of more than one @{emph \<open>abstract\<close>} object, for example that there are two distinct truth values, The
+True and The False (TODO: cite PLM and maybe Frege), and that on the other hand logicians traditionally
+work under the assumption that @{emph \<open>the domain of objects @{emph \<open>might\<close>} be of any size\<close>}, which
+they take as a modal claim: while logic may not presuppose that the domain of concrete object
+has any particular size, it allows for the @{emph \<open>possiblity\<close>} of the domain being of any size, i.e.
+it is valid for a logic to presuppose that there @{emph \<open>may possibly\<close>} be more than one object, as
+long as that does not imply that there is @{emph \<open>actually\<close>} more than one (concrete) object.
+
+Independently of the question whether this axiom may or may not be considered as @{emph \<open>purely logical\<close>},
+towards which we refrain from presuming to pass judgement either way, we certainly agree that it captures a pretheoretic
+intuition: it is a prerequisite of talking about natural numbers to be able to imagine that
+no matter how many objects we currently consider that there @{emph \<open>possibly might have been\<close>} yet another object,
+even though for doing so we do not need to be able to point to this object in the actual world (i.e. it may not be concrete, but
+merely @{emph \<open>possibly concrete\<close>}). (TODO: rephrase and improve this entire discussion)
+
+
+\<close>
+
+section\<open>Every Number has a Unique Successor\<close>
+
+text\<open>
+The above axiom is now sufficient to derive the last Dedekind-Peano postulate, i.e. that every
+natural number has a unique successor:
+
+@{thm[display] "th-succ"[print_as_theorem]}
+
+The proof can be found at (TODO: cite).
+
+While PLM continues to derive further theorems of Number Theory, continues to define mathematical
+functions and operations, including recursively defined functions such as addition and proceed to
+deriving Second-Order Dedekind-Peano arithmetic,@{footnote \<open>In the future, we hope to be able to
+provide a full implementation of this chapter of PLM relative to our embedding.\<close>} we will conclude
+our discussion of the topic here and instead discuss in more detail how we modelled the two required
+axioms introduced in the last sections in our models and our implementation.
 \<close>
 
 
-
 section\<open>The Predecessor Axiom in Detail\<close>text\<open>\label{pred}\<close>
+
+
+section\<open>Modelling Possible Richness of Objects\<close>text\<open>\label{modell-modal-axiom}\<close>
+
+text\<open>
+\<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
 text\<open>
 
 \<close>
+
 
 chapter\<open>Conclusion\<close>
 

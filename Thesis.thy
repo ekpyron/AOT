@@ -217,8 +217,8 @@ The deep embedding consists of a (usually recursive) algebraic datatype that cap
 the language to be embedded. This syntax is then given a semantics by means of an evaluation function
 that traverses this algebraic datatype.@{footnote \<open>In the setting of logical theories this evaluation
 function would usually depend on interpretations and assignment functions of a model. Since the simple
-language of expression used as example here neither involves constants nor variables, however, this is not
-necessary. TODO: rethink.\<close>}
+language of expression used as example here neither involves constants nor variables (respectively since
+literals have trivial interpretations), however, this is not necessary. TODO: rethink.\<close>}
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
 by its semantics. In our example, the semantic domain of expressions is the integers. On this domain,
 the operations are then @{emph \<open>defined\<close>} directly by means of their semantics:
@@ -252,10 +252,10 @@ meta-language by directly representing expressions in the type to which they eva
 in the deep embedding, namely @{typ \<open>int\<close>} in the example.
 
 There is a natural correspondence between the deep and shallow representations of this
-language. In particular @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
-@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition} hold@{footnote \<open>TODO: Explain
-qualified names; mention that this gets more complex when involving interpretation and assignment functions.\<close>}.
-So the semantic evaluation is implicit in the shallow embedding.
+language. In particular it holds that @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
+@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition}.@{footnote \<open>TODO: Explain
+qualified names; mention that this gets more complex when involving interpretation and assignment functions.\<close>}
+So semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representation. For example, in the
 deep embedding adding @{term x} to @{term y} results in an expression that is different from the expression of adding
  @{term y} to  @{term x} for distinct  @{term x} and  @{term y}, even though they are equivalent under evaluation:
@@ -289,7 +289,7 @@ High-level concept and motivation here versus more technical details in the foll
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>
 text\<open>
 
-An examples of a non-classical logic that is used prominently in metaphysics is Quantified Higher-Order
+An example of a non-classical logic that is used prominently in metaphysics is Quantified Higher-Order
 Modal Logic in various different axiomatizations. While there have been extensive studies of
 modal logics using SSEs in Isabelle/HOL (see: TODO: cite a good paper about QML in Isabelle/HOL
 maybe: \url{http://page.mi.fu-berlin.de/cbenzmueller/papers/C47.pdf} or similar), we restrict ourselves
@@ -432,8 +432,8 @@ TODO: more high-level description before technical details?
 
 The main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite again?).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
-the current proof goal. To that end, simply speaking@{footnote \<open>For the full and precise details of the process
-refer to TODO: cite.\<close>}, it collects all theorems derived in the current @{command theory} context
+the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
+refer to TODO: cite.\<close>} it collects all theorems derived in the current @{command theory} context
 together with all local assumptions, processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
@@ -652,7 +652,7 @@ To achieve the goal of constructing a custom theorem proving environment for a n
 means of an embedding, the primary concern is achieving a faithful representation of its axioms
 and deductive system and, thereby, to be able to faithfully reproduce reasoning in the embedded system.
 
-However, for the embedding to be of actual practical use, it is equally important that the
+However, for the embedding to be of practical use, it is equally important that the
 resulting representation is readable and, ideally, that a person that is familiar with the
 embedded theory, but has limited expertise in the particularities of the meta-logical system
 in which the theory is embedded, can still use the embedding to reason in the target system
@@ -751,10 +751,10 @@ text\<open>Note that in the above the left-most implication is the implication o
 while the other logical connectives are the ones of the meta-logic (i.e. of HOL).
 
 While the mechanisms described above are sufficient to introduce an accurate representation
-of the syntax of most target theories@{footnote \<open>Note that @{emph \<open>Abstract Object Theory\<close>} does not fall into this category
+of the syntax of most target theories that are compatible with the lexical syntax of
+Isabelle/Pure,@{footnote \<open>Note that @{emph \<open>Abstract Object Theory\<close>} does not fall into this category
 and requires additional and more complex means to arrive at a good approximation of its syntax as
-described in (TODO: refer to later section.).\<close>} that are compatible with the lexical syntax of
-Isabelle/Pure, @{emph \<open>reasoning\<close>} in the logic of the target theory
+described in (TODO: refer to later section.).\<close>} @{emph \<open>reasoning\<close>} in the logic of the target theory
 entails additional challenges (TODO: refer to last section - in particular reasoning relative to
 a fixed but arbitrary possible world and the need to mention this world syntactically).
 
