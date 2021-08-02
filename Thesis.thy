@@ -1203,9 +1203,11 @@ attribute_setup print_as_rule =
   \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm COMP @{thm AOT_print_as_ruleI})))\<close>
   "Print as rule."
 
-syntax (output)
+syntax (latex output)
   "_AOT_asms" :: "prop \<Rightarrow> prop \<Rightarrow> prop" ("_ /\<^latex>\<open>{\\normalsize \\,\<close>and\<^latex>\<open>\\,}\<close>/ _") (* ("_ and _") *)
   "_AOT_rule" :: "prop \<Rightarrow> prop \<Rightarrow> prop" ("\<^latex>\<open>{\\normalsize{}\<close>If\<^latex>\<open>\\,}\<close> _ /\<^latex>\<open>{\\normalsize \\,\<close>then\<^latex>\<open>\\,}\<close>/ _.") (*("If _ then _")*)
+  "_AOT_for_arbitrary" :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> ("\<^latex>\<open>{\\normalsize{}\<close>for arbitrary\<^latex>\<open>\\,}\<close> _\<^latex>\<open>{\\normalsize{}\<close>:\<^latex>\<open>\\,}\<close>/ _" [1000,1] 1)
+
 print_translation\<open>[
 (\<^const_syntax>\<open>AOT_print_as_rule\<close>, fn ctxt => fn [x] => (
 let
