@@ -127,10 +127,10 @@ proof (rule AOT_model_axiomI)
       by induct (simp add: AOT_sem_denotes AOT_sem_equiv AOT_sem_imp AOT_sem_lambda_beta)
   }
 qed
-AOT_axiom "lambda-predicates:3": \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
+AOT_axiom "lambda-predicates:3": \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
-    AOT_show \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [F]\<nu>\<^sub>1...\<nu>\<^sub>n] = F\<close>
+    AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
       by induct (simp add: AOT_sem_denotes AOT_sem_lambda_eta AOT_sem_vars_denote)
   }
 qed
@@ -157,16 +157,16 @@ AOT_axiom "safe-ext[4]": \<open>([\<lambda>\<nu>\<^sub>1\<nu>\<^sub>2\<nu>\<^sub
   by (simp add: AOT_model_axiom_def AOT_sem_imp AOT_model_denotes_prod_def AOT_sem_forall
                 AOT_sem_denotes AOT_sem_conj AOT_sem_equiv AOT_sem_box)
 
-AOT_axiom "nary-encoding[2]": \<open>xy[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>y] & y[\<lambda>\<nu> [F]x\<nu>]\<close>
+AOT_axiom "nary-encoding[2]": \<open>x\<^sub>1x\<^sub>2[F] \<equiv> x\<^sub>1[\<lambda>y [F]yx\<^sub>2] & x\<^sub>2[\<lambda>y [F]x\<^sub>1y]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
-AOT_axiom "nary-encoding[3]": \<open>xyz[F] \<equiv> x[\<lambda>\<nu> [F]\<nu>yz] & y[\<lambda>\<nu> [F]x\<nu>z] & z[\<lambda>\<nu> [F]xy\<nu>]\<close>
+AOT_axiom "nary-encoding[3]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3[F] \<equiv> x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3] & x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2y]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
-AOT_axiom "nary-encoding[4]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1[\<lambda>\<nu> [F]\<nu>x\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>\<nu> [F]x\<^sub>1\<nu>x\<^sub>3x\<^sub>4] &
-                                           x\<^sub>3[\<lambda>\<nu> [F]x\<^sub>1x\<^sub>2\<nu>x\<^sub>4] & x\<^sub>4[\<lambda>\<nu> [F]x\<^sub>1x\<^sub>2x\<^sub>3\<nu>]\<close>
+AOT_axiom "nary-encoding[4]": \<open>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[F] \<equiv> x\<^sub>1[\<lambda>y [F]yx\<^sub>2x\<^sub>3x\<^sub>4] & x\<^sub>2[\<lambda>y [F]x\<^sub>1yx\<^sub>3x\<^sub>4] &
+                                           x\<^sub>3[\<lambda>y [F]x\<^sub>1x\<^sub>2yx\<^sub>4] & x\<^sub>4[\<lambda>y [F]x\<^sub>1x\<^sub>2x\<^sub>3y]\<close>
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_conj AOT_sem_equiv AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc AOT_sem_vars_denote)
