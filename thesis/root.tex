@@ -32,14 +32,14 @@
   \ifnum\getpagerefnumber{a\thetmp}=\getpagerefnumber{b\thetmp} \else
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y1) + (\separacionBarraFinal\textwidth,1ex) $ ) --  
           ( $ (\x3,\y3) + (\separacionBarraFinal\textwidth,-0.51\textheight) $ );
       \end{tikzpicture}%
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y1) + (-\separacionBarraFinal\textwidth,1ex) $ ) --  
           ( $ (\x3,\y3) + (-\separacionBarraFinal\textwidth,-0.51\textheight) $ );
@@ -52,14 +52,14 @@
   \ifnum\getpagerefnumber{a\thetmp}=\getpagerefnumber{b\thetmp}
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y1) + (\separacionBarraFinal\textwidth,1ex) $ ) --  
           ( $ (\x3,\y2) + (\separacionBarraFinal\textwidth,-0.75ex) $ );
       \end{tikzpicture}%
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y1) + (-\separacionBarraFinal\textwidth,1ex) $ ) --  
           ( $ (\x3,\y2) + (-\separacionBarraFinal\textwidth,-0.75ex) $ );
@@ -67,14 +67,14 @@
   \else
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y3) + (\separacionBarraFinal\textwidth,.495\textheight) $ ) -- 
           ( $ (\x3,\y2) + (\separacionBarraFinal\textwidth,-0.75ex) $ );
       \end{tikzpicture}%
       \begin{tikzpicture}[overlay, remember picture]
         %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
-        \draw [decorate,ultra thick,gray]
+        \draw [decorate,thick,gray]
           let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
           ( $ (\x3,\y3) + (-\separacionBarraFinal\textwidth,.495\textheight) $ ) -- 
           ( $ (\x3,\y2) + (-\separacionBarraFinal\textwidth,-0.75ex) $ );
