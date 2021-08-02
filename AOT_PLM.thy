@@ -1498,15 +1498,19 @@ AOT_theorem "closure-act:4": \<open>\<^bold>\<A>\<forall>\<alpha>\<^sub>1...\<fo
   using "closure-act:3" .
 
 (* TODO: examine these proofs *)
-AOT_theorem "RA[1]": assumes \<open>\<^bold>\<turnstile> \<phi>\<close> shows \<open>\<^bold>\<turnstile> \<^bold>\<A>\<phi>\<close>
-  (* This proof is the one rejected in remark (136) (meta-rule) *)
+AOT_act_theorem "RA[1]": assumes \<open>\<^bold>\<turnstile> \<phi>\<close> shows \<open>\<^bold>\<turnstile> \<^bold>\<A>\<phi>\<close>
+  \<comment> \<open>While this proof is rejected in PLM, we merely state it as modally-fragile rule, which addresses the concern in PLM.\<close>
   using "\<not>\<not>E" assms "\<equiv>E"(3) "logic-actual"[act_axiom_inst] "logic-actual-nec:1"[axiom_inst] "modus-tollens:2" by blast
-AOT_theorem "RA[2]": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<phi>\<close>
-  (* This is actually \<Gamma> \<turnstile>\<^sub>\<box> \<phi> \<Longrightarrow> \<box>\<Gamma> \<turnstile>\<^sub>\<box> \<A>\<phi>*)
+AOT_theorem "RA[2]": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>
+  \<comment> \<open>This rule is in fact a consequence of RN and does not require an appeal to the semantics itself.\<close>
   using RN assms "nec-imp-act" "vdash-properties:5" by blast
 AOT_theorem "RA[3]": assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<A>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>
-  using assms by (meson AOT_sem_act imageI)
-  (* This is not exactly right either. *)
+  text\<open>While this is derivable from the semantics, it is not derivable without,
+       but apparently no proof actually relies on it. If this turns out to be required,
+       it is valid to derive it from the semantics just like RN, but we refrain from doing
+       so, unless necessary.\<close>
+ (*  using assms by (meson AOT_sem_act imageI) *)
+  oops
 
 AOT_act_theorem "ANeg:1": \<open>\<not>\<^bold>\<A>\<phi> \<equiv> \<not>\<phi>\<close>
   by (simp add: "RA[1]" "contraposition:1[1]" "deduction-theorem" "\<equiv>I" "logic-actual"[act_axiom_inst])
@@ -5442,37 +5446,35 @@ proof(rule GEN)
     }
   qed
 
-  AOT_have Aux_D: \<open>\<^bold>\<A>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z) \<rightarrow> (\<^bold>\<A>\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<^bold>\<A>\<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x))\<close> for \<psi>
-  proof (rule "\<rightarrow>I"; rule "Act-Basic:5"[THEN "\<equiv>E"(1)])
-    AOT_assume \<open>\<^bold>\<A>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
-    AOT_thus \<open>\<^bold>\<A>(\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x))\<close>
-    proof (rule "RA[3]"[where \<Gamma>="{\<guillemotleft>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<guillemotright>}", simplified, rotated])
-      AOT_modally_strict {
+  AOT_have \<open>\<box>(\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z) \<rightarrow> (\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)))\<close> for \<psi>
+  proof (rule RN; rule "\<rightarrow>I")
+    AOT_modally_strict {
         AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
         AOT_thus \<open>\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close>
           apply -
         proof(rule "\<equiv>I"; (rule "useful-tautologies:5"[THEN "\<rightarrow>E"]; rule "\<rightarrow>I")?)
-        AOT_modally_strict {
           AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
           AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z using "\<forall>E" by blast
           AOT_assume \<open>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close>
           AOT_hence 2: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using "\<forall>E" by blast
           AOT_have \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using "\<equiv>E" 1 2 by meson
           AOT_thus \<open>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> by (rule GEN)
-        }
-      next
-        AOT_modally_strict {
-          AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
-          AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z using "\<forall>E" by blast
-          AOT_assume \<open>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close>
-          AOT_hence 2: \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using "\<forall>E" by blast
-          AOT_have \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using 1 2 "\<equiv>E" by meson
-          AOT_thus \<open> \<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> by (rule GEN)
-        }
-      qed
-      }
-    qed
+        next
+            AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
+            AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z using "\<forall>E" by blast
+            AOT_assume \<open>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close>
+            AOT_hence 2: \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using "\<forall>E" by blast
+            AOT_have \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z using 1 2 "\<equiv>E" by meson
+            AOT_thus \<open> \<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> by (rule GEN)
+        qed
+    }
   qed
+  AOT_hence \<open>\<^bold>\<A>(\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z) \<rightarrow> (\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)))\<close> for \<psi>
+    using "nec-imp-act"[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<^bold>\<A>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z) \<rightarrow> \<^bold>\<A>(\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x))\<close> for \<psi>
+    using "act-cond"[THEN "\<rightarrow>E"] by blast
+  AOT_hence Aux_D: \<open>\<^bold>\<A>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z) \<rightarrow> (\<^bold>\<A>\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv> \<^bold>\<A>\<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x))\<close> for \<psi>
+    by (auto intro!: "\<rightarrow>I" "Act-Basic:5"[THEN "\<equiv>E"(1)] dest!: "\<rightarrow>E")
 
   AOT_have \<open>\<not>\<^bold>\<A>q\<^sub>0\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF q\<^sub>0_def])

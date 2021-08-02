@@ -306,7 +306,6 @@ AOT_syntax_print_translations
 
 
 AOT_syntax_print_translations
-  "_AOT_denotes \<tau>" <= "CONST AOT_denotes \<tau>"
   "_AOT_imp \<phi> \<psi>" <= "CONST AOT_imp \<phi> \<psi>"
   "_AOT_not \<phi>" <= "CONST AOT_not \<phi>"
   "_AOT_box \<phi>" <= "CONST AOT_box \<phi>"
@@ -533,6 +532,7 @@ end
 syntax (output) "_AOT_individual_term" :: \<open>'a \<Rightarrow> tuple_args\<close> ("_")
 syntax (output) "_AOT_individual_terms" :: \<open>tuple_args \<Rightarrow> tuple_args \<Rightarrow> tuple_args\<close> ("__")
 syntax (output) "_AOT_relation_term" :: \<open>'a \<Rightarrow> \<Pi>\<close>
+syntax (output) "_AOT_any_term" :: \<open>'a \<Rightarrow> \<tau>\<close>
 
 
 print_ast_translation\<open>
@@ -587,6 +587,24 @@ AOT_syntax_print_ast_translations
         |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
             (if isDefinedConst ctxt name then (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [c trm']) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+    | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms)),
+(\<^syntax_const>\<open>_AOT_any_term\<close>, fn ctxt =>
+    (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_desc\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
+    | [trm] => (case unconstrain trm of (Ast.Variable name,c) => 
+                  (case printVarKind name of SingleVariable x => c (Ast.Variable name) |
+                    Ellipses (x,y) => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_exe_arg_ellipse\<close>) [
+                c (Ast.Variable x),
+                c (Ast.Variable y)])
+              | _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        ) 
+        | (Ast.Constant name,c) => if isDefinedConst ctxt name then c (Ast.Constant name) else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm]
+        |  (trm' as Ast.Appl (Ast.Constant name::_),c) =>
+            (if isDefinedConst ctxt name then c trm' else Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
+        |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))]
 end
 \<close>
@@ -596,6 +614,7 @@ AOT_syntax_print_translations
   "_AOT_individual_terms (_AOT_individual_term x) (_AOT_individual_term y)" <= "_AOT_individual_terms (_tuple x (_tuple_arg y))"
   "_AOT_individual_terms (_tuple x y)" <= "_AOT_individual_term (_tuple x y)"
   "_AOT_exe (_AOT_relation_term \<Pi>) (_AOT_individual_term \<kappa>)" <= "CONST AOT_exe \<Pi> \<kappa>"
+  "_AOT_denotes (_AOT_any_term \<kappa>)" <= "CONST AOT_denotes \<kappa>"
 
 AOT_define AOT_conj :: \<open>[\<phi>, \<phi>] \<Rightarrow> \<phi>\<close> (infixl \<open>&\<close> 35) \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
 declare "AOT_conj"[AOT del, AOT_defs del]
@@ -976,14 +995,21 @@ AOT_syntax_print_translations [
 )
 ]\<close>
 
-text\<open>Special marker for printing propositions as theorems.\<close>
+text\<open>Special marker for printing propositions as theorems and for pretty-printing AOT terms.\<close>
 definition print_as_theorem :: \<open>\<o> \<Rightarrow> bool\<close> where \<open>print_as_theorem \<equiv> \<lambda> \<phi> . \<forall>v . [v \<Turnstile> \<phi>]\<close>
 lemma print_as_theoremI: assumes \<open>\<And> v . [v \<Turnstile> \<phi>]\<close> shows \<open>print_as_theorem \<phi>\<close>
   using assms by (simp add: print_as_theorem_def)
 attribute_setup print_as_theorem =
   \<open>Scan.succeed (Thm.rule_attribute [] (K (fn thm => thm RS @{thm print_as_theoremI})))\<close>
-  "Instantiate axiom as theorem."
+  "Print as theorem."
 print_translation\<open>AOT_syntax_print_translations [(\<^const_syntax>\<open>print_as_theorem\<close>, fn ctxt => fn [x] => 
+(Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x))]\<close>
+
+definition print_term :: \<open>'a \<Rightarrow> 'a\<close> where \<open>print_term \<equiv> \<lambda> x . x\<close>
+syntax "_AOT_print_term" :: \<open>\<tau> \<Rightarrow> 'a\<close> (\<open>AOT'_TERM[_]\<close>)
+translations
+  "_AOT_print_term \<phi>" => "CONST print_term (_AOT_process_frees \<phi>)"
+print_translation\<open>AOT_syntax_print_translations [(\<^const_syntax>\<open>print_term\<close>, fn ctxt => fn [x] => 
 (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x))]\<close>
 
 (*<*)
