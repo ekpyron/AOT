@@ -16,6 +16,75 @@
 \newcommand{\bigbox}{}
 \setcounter{secnumdepth}{2}
 \setcounter{tocdepth}{1}
+% START SQU
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing,calc}
+\newcounter{tmp}
+\newcommand\tikzmark[1]{%
+  \tikz[overlay,remember picture] \node (#1) {};}
+
+\def\separacionBarraInicial{.51}
+\def\separacionBarraFinal{.53}
+
+\newcommand\Startsquiggly{%
+  \stepcounter{tmp}%
+  \tikzmark{a}\label{a\thetmp}%
+  \ifnum\getpagerefnumber{a\thetmp}=\getpagerefnumber{b\thetmp} \else
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y1) + (\separacionBarraFinal\textwidth,1ex) $ ) --  
+          ( $ (\x3,\y3) + (\separacionBarraFinal\textwidth,-0.51\textheight) $ );
+      \end{tikzpicture}%
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y1) + (-\separacionBarraFinal\textwidth,1ex) $ ) --  
+          ( $ (\x3,\y3) + (-\separacionBarraFinal\textwidth,-0.51\textheight) $ );
+      \end{tikzpicture}%
+  \fi%
+}
+
+\newcommand\Endsquiggly{%
+\tikzmark{b}\label{b\thetmp}
+  \ifnum\getpagerefnumber{a\thetmp}=\getpagerefnumber{b\thetmp}
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y1) + (\separacionBarraFinal\textwidth,1ex) $ ) --  
+          ( $ (\x3,\y2) + (\separacionBarraFinal\textwidth,-0.75ex) $ );
+      \end{tikzpicture}%
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y1) + (-\separacionBarraFinal\textwidth,1ex) $ ) --  
+          ( $ (\x3,\y2) + (-\separacionBarraFinal\textwidth,-0.75ex) $ );
+      \end{tikzpicture}%
+  \else
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y3) + (\separacionBarraFinal\textwidth,.495\textheight) $ ) -- 
+          ( $ (\x3,\y2) + (\separacionBarraFinal\textwidth,-0.75ex) $ );
+      \end{tikzpicture}%
+      \begin{tikzpicture}[overlay, remember picture]
+        %\draw [decoration={coil,aspect=0},decorate,ultra thick,gray]
+        \draw [decorate,ultra thick,gray]
+          let \p1 = (a.north), \p2 = (b), \p3 = (current page.center) in
+          ( $ (\x3,\y3) + (-\separacionBarraFinal\textwidth,.495\textheight) $ ) -- 
+          ( $ (\x3,\y2) + (-\separacionBarraFinal\textwidth,-0.75ex) $ );
+      \end{tikzpicture}%
+  \fi
+}
+
+
+\newcommand\Squ[1]{\Startsquiggly#1\Endsquiggly}
+% END SQU
 
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
@@ -91,7 +160,7 @@ PhD thesis at the institute of mathematics at Freie Universit\"at Berlin
 
     \large{\textbf{
         Supervisors:\\
-Priv.-Doz. Dr.-Ing. Christoph Benzm\"uller\\
+Prof. Dr. habil Christoph Benzm\"uller\\
 Dr. Edward Zalta
     }}
 
