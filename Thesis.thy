@@ -934,7 +934,9 @@ AOT's strict distinction between constants, variables and meta-variables does no
 in all detail for our embedding for the following reasons:
 
 
-  \<^item> The embedding collapses all alphabetic variants. This is discussed in more detail in TODO: cite.
+  \<^item> The embedding collapses all alphabetic variants. This is discussed in more detail in section~\ref{alphabetic-variants}.
+  \<^item> The embedding implicitly generalizes free variables in theorems to @{emph \<open>schematic variables\<close>}. This is discussed in more detail
+    in section~\ref{free-variables-schematic}.
   \<^item> The distinction between constants and variables is done at the meta-logical level of Isabelle/HOL. TODO: explain further.
 
 
@@ -1283,8 +1285,215 @@ text\<open>
 
 section\<open>Meta Theorems\<close>
 
-text\<open>
+subsection\<open>The Collapse of Alphabetic Variants\<close>text\<open>\label{alphabetic-variants}\<close>
 
+text\<open>
+We already informally stated that the embedding collapses alphabetic variants. In this section
+we will define more precisely what this means and justify this collapse.
+
+Isabelle internally represents bound variables using de-Bruijin indices (TODO: cite). We will
+showcase this mechanism in detail below. As a consequence, terms that are alphabetic variants
+are meta-logically indistinguishable. To justify representing AOT's bound variables directly
+using bound variables in Isabelle, we need to show that both (1) AOT's notion of alphabetic
+variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any two formulas
+involving alphabetic variants are inter-derivable (fortunately, PLM already derives a suitable
+meta-rule).
+
+\<close>
+
+subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijin Indices\<close>
+
+(*<*)
+setup\<open>Thy_Output.antiquotation_pretty_source @{binding "ML_print_term"} Args.term (
+fn ctxt => fn trm => 
+  Pretty.chunks [
+  Pretty.block [Syntax.pretty_term ctxt trm],
+  Pretty.str "\n",
+  Pretty.markup_block {consistent = true, indent = 8, markup = Markup.ML_string}
+    [Pretty.str (ML_Pretty.string_of_polyml (ML_system_pretty (trm, FixedInt.fromInt 100)))]]
+)\<close>
+(*>*)
+
+text\<open>
+Internally, Isabelle represents binding notation by function application and abstraction.
+E.g. if we let Isabelle print the internal representation of the term @{term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>},
+we arrive at the following:@{footnote \<open>Technically, we have setup an @{emph \<open>antiquotation\<close>} that
+allows us to print a term together with the internal ML representation of the term. TODO: cite isar-ref?\<close>}
+
+@{ML_print_term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>}
+
+Note that while the internal representation retains the name of the bound variable @{text p}, it
+has no logical meaning and is merely used for term printing, while, logically, occurrences of the
+bound variables are referred to by @{text \<open>Bound\<close>} with a de-Bruijin index. An index of zero
+refers to the innermost abstraction the bound variable is contained in. An index of one
+refers to the next outer abstraction, e.g.
+
+@{ML_print_term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> \<forall>q (q \<rightarrow> p))\<guillemotright>\<close>}
+
+Note that in the inner abstraction @{text \<open>Bound 0\<close>} refers to @{term q}, while @{text \<open>Bound 1\<close>}
+refers to @{term p}.
+
+Our claim is that two terms or formulas of AOT are alphabetic variants, if and only if their
+representation using de-Bruijin indices is the same.
+
+PLM defines alphabetic variants as follows (TODO: cite): It refers to two occurrences of a
+variable as @{emph \<open>linked\<close>}, if both are free or they are bound by the same occurrence of a
+variable-binding operator. PLM further introduces @{emph \<open>BV-notation\<close>} for formulas and terms@{footnote \<open>In
+the following we will restrict our discussion to formulas, but the argument applies analogously to terms
+as well.\<close>}: the BV-notation of a formula @{term \<phi>} is @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>}, where @{text \<open>\<alpha>\<^sub>1, \<dots> \<alpha>\<^sub>n\<close>}
+is the list of all variables that occur bound in @{term \<phi>}, including repetitions.
+Further @{text \<open>\<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>} refers to the result of replacing @{text \<open>\<alpha>\<^sub>i\<close>} by @{text \<open>\<beta>\<^sub>i\<close>}
+in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>}. Now @{term \<phi>'} is defined to be an @{emph \<open>alphabetic variant\<close>} of @{term \<phi>}
+just in case for some @{text n}:
+  \<^item> @{text \<open>\<phi>' = \<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>},
+  \<^item> @{text \<phi>'} has the same number of bound variable occurrences as @{text \<phi>} and so can be written as
+    @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots>, \<beta>\<^sub>n]\<close>}, and
+  \<^item> for @{text \<open>1 \<le> i, j \<le> n\<close>}, @{text \<alpha>\<^sub>i} and @{text \<alpha>\<^sub>j} are linked in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>} if and
+    only if @{text \<beta>\<^sub>i} and @{text \<beta>\<^sub>j} are linked in @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots> \<beta>\<^sub>n]\<close>}.
+
+By definition each group of @{emph \<open>linked\<close>} variable occurrences in AOT corresponds to exactly
+one abstraction in Isabelle's internal representation and all de-Bruijin indexed @{text Bound} terms
+that refer to this abstraction. Since changing the variable name of a linking group will not affect the
+de-Bruijin indices, the de-Bruijin representation of two alphabetic variants is therefore the same.
+Conversely, changing any index in the de-Bruijin representation translates to breaking a linking
+group as defined in PLM, thereby terms with different de-Bruijin representation are not alphabetic
+variants.
+
+TODO: consider trying to come up with a constructive proof, even though the correspondence is rather
+obvious.
+
+Now that it is established that the formulas and terms that are collapsed in Isabelle's internal
+representation are exactly the alphabetic variants of AOT, it remains to argue that the collapse
+is inferentially valid, i.e. all statements of AOT are equivalent to their alphabetic variants.
+\<close>
+
+subsubsection\<open>Equivalence of Alphabetic Variants in AOT\<close>
+
+text\<open>
+Conveniently, PLM itself derives the following @{emph \<open>Rule of Alphabetic Variants\<close>}:
+
+\begin{quote}
+\textbf{Rule of Alphabetic Variants}\\
+@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
+of @{text \<phi>}.
+\end{quote}
+
+It is straightforward to strengthen this further the following:
+
+\begin{quote}
+@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
+of @{text \<phi>} and @{text \<open>\<Gamma>'\<close>} is a set of alphabetic variants of @{text \<open>\<Gamma>\<close>}, i.e.
+for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} there is an alphabetic variant @{text \<open>\<psi>'\<close>} of @{text \<open>\<psi>\<close>},
+s.t. @{text \<open>\<psi>' \<in> \<Gamma>'\<close>}, and vice-verse.
+\end{quote}
+
+For a proof it suffices to realize that for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} and @{text \<open>\<psi>' \<in> \<Gamma>'\<close>} by the above rule it holds that
+@{text \<open>\<psi> \<stileturn>\<turnstile> \<psi>'\<close>} and all premises in @{text \<Gamma>} are derivable from @{text \<Gamma>'} and vice-versa.
+
+Hence AOT allows to freely move from any formula to an alphabetic variant in all theorems and assumptions,
+justifying the fact that the embedding identifies alphabetic variants.
+
+\<close>
+
+subsection\<open>Generalizing Free Variables to Schematic Variables\<close>text\<open>\label{free-variables-schematic}\<close>
+
+text\<open>
+After a theorem is proven in Isabelle, it is implicitly exported to the current theory context in
+@{emph \<open>schematic\<close>} form. That means each free variable used in the theorem is implicitly
+generalized to a @{emph \<open>schematic variable\<close>} that can be instantiated to any variable or term of
+the same type. Since the embedding uses distinct types for variables and terms that have the same type in AOT (TODO: cite),
+this does @{emph \<open>not\<close>} mean that any theorem involving AOT variables can be directly instantiated
+to AOT terms, however, it does mean that all theorems of AOT are implicitly stated using
+meta-variables ranging over all variable names. As an example the theorem
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>F ([F]x \<rightarrow> [F]x)\<guillemotright>\<close> by (auto intro!: print_as_theoremI "\<rightarrow>I" GEN)}
+not only implicitly asserts its alphabetic variants, e.g. 
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>G ([G]x \<rightarrow> [G]x)\<guillemotright>\<close> by (auto intro!: print_as_theoremI "\<rightarrow>I" GEN)},
+but can also be directly instantiated for a different free individual variable, e.g. 
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>G ([G]y \<rightarrow> [G]y)\<guillemotright>\<close> by (auto intro!: print_as_theoremI "\<rightarrow>I" GEN)}.
+In the notation of AOT this means that we actually state the theorem
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>G ([G]\<nu> \<rightarrow> [G]\<nu>)\<guillemotright>\<close> by (auto intro!: print_as_theoremI "\<rightarrow>I" GEN)},
+where @{term \<nu>} ranges over all names for individual variables. While PLM does not derive
+a meta-rule that matches this principle, it is usually a straightforward consequence of a series of
+applications of the meta-rule of universal generalization GEN followed by applications
+of the rule of @{text \<open>\<forall>\<close>}Elimination for variables. However, to formulate this as a general
+principle, some care has to be taken and we have to additionally rely on the collapse of
+alphabetic variants.
+
+We start by stating and proving the trivial case as a meta-rule in AOT's system:
+
+\begin{quote}
+If @{text \<open>\<turnstile> \<phi>\<close>}, then @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.
+\end{quote}
+
+Assume @{text \<open>\<turnstile> \<phi>\<close>}. Since the derivation of @{text \<phi>} does not need any premises,
+it follows by the rule of universal generalization (GEN) (TODO: cite) that @{text \<open>\<turnstile> \<forall>\<alpha> \<phi>\<close>}. Since by assumption
+@{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} we can immediately conclude by @{text \<open>\<forall>\<close>}Elimination (TODO: cite)
+that @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>}.
+
+However, we want to generalize this rule further to a version that allows for premises and does
+not require the proviso that @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.
+
+To that end the next step is to generalize above rule to include premises:
+
+\begin{quote}
+If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
+in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} @{text \<beta>} is sustitutable for @{text \<alpha>} in @{text \<psi>} and @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} is
+the set of all @{text \<open>\<psi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.
+\end{quote}
+
+One way to show this is by first eliminating all premises @{text \<Gamma>} using the deduction theorem (TODO: cite),
+applying GEN to the resulting theorem, instantiating the introduced quantifier to @{text \<beta>}. The resulting
+theorem will yield @{text \<open>\<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} from @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} by successive applications of modus ponens.
+
+In particular, let @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n\<close>} be the list of premises in @{text \<open>\<Gamma>\<close>}, s.t.
+@{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n \<turnstile> \<phi>\<close>}. By the deduction theorem it follows that @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^bsub>n-1\<^esub> \<turnstile> \<psi>\<^sub>n \<rightarrow> \<phi>\<close>}.
+Continuing to apply the deduction theorem, we end up with @{text \<open>\<turnstile> \<psi>\<^sub>1 \<rightarrow> (\<psi>\<^sub>2 \<rightarrow> (\<dots> \<rightarrow> (\<psi>\<^sub>n \<rightarrow> \<phi>)\<dots>)\<close>}.
+By assumption @{text \<beta>} is substitutable for @{text \<alpha>} in this theorem, hence be the rule above we
+can conclude that: @{text \<open>\<turnstile> \<psi>\<^sub>1\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> (\<psi>\<^sub>2\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> (\<dots> \<rightarrow> (\<psi>\<^sub>n\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> \<phi>\<^sup>\<beta>\<^sub>\<alpha>)\<dots>)\<close>}.
+Since all @{text \<open>\<psi>\<^sub>i\<^sup>\<beta>\<^sub>\<alpha>\<close>} are in @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>}, it follows that @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} by @{text n}
+applications of modus ponens.
+
+What remains is the proviso that @{text \<beta>} be substitutable for @{text \<alpha>} in @{text \<phi>} and
+in all @{text \<open>\<psi> \<in> \<Gamma>\<close>}. However, note that for every @{text \<phi>} and @{text \<Gamma>} we can choose
+alphabetic variants @{text \<phi>'} and @{text \<Gamma>'} that replace all bound occurrences of @{text \<beta>}
+with a fresh variable @{text \<gamma>} that does not occur in @{text \<phi>} or in any @{text \<open>\<psi> \<in> \<Gamma>\<close>}.
+
+In the last section we have seen that if @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}. Since 
+@{text \<beta>} is trivially substitutable for @{text \<alpha>} in @{text \<open>\<phi>'\<close>} and in all @{text \<open>\<psi> \<in> \<Gamma>'\<close>},
+it follows by the previous rule in this section that @{text \<open>\<Gamma>'\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>'\<^sup>\<beta>\<^sub>\<alpha>\<close>}. Since Isabelle
+collapses alphabetic variants by eliminating concrete variable names with de-Bruijin indices,
+this suffices as justification for the schematic generalization of free variables in theorems
+and rules in the embedding.
+
+To clarify the last argument, consider the following theorem as example:
+
+@{lemma[display] \<open>print_as_theorem \<guillemotleft>\<forall>x ([R]xy \<rightarrow> [R]xy)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}
+
+Isabelle will let us instantiate this theorem using @{term z} in place of @{term y}, i.e.
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>x ([R]xz \<rightarrow> [R]xz)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}
+is an instance of above theorem.
+
+However, Isabelle will not allow to @{emph \<open>directly\<close>} instantiate @{term y} to @{term x}, since in 
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>x ([R]xx \<rightarrow> [R]xx)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")} (which
+also happens to be a theorem, but a distinct one) all occurrences of @{term x} are @{emph \<open>bound\<close>} and
+while Isabelle allows to instantiate @{emph \<open>schematic variables\<close>} to free variable,
+it does not allow instantiating them to  bound variables.@{footnote \<open>To be precise Isabelle @{emph \<open>will\<close>}
+in fact allow this kind of instantiation, but only in situations in which it can automatically rename the bound variable
+on its own, as we do manually in the continuation of the example.\<close>}
+
+But since alphabetic variants are collapsed, the following is @{emph \<open>identical\<close>} to the original theorem:
+@{lemma \<open>print_as_theorem \<guillemotleft>\<forall>z ([R]zy \<rightarrow> [R]zy)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}
+
+In this formulation of the theorem, there is no a naming conflict and we @{emph \<open>can\<close>} instantiate @{term y} to @{term x} to
+get @{lemma \<open>print_as_theorem \<guillemotleft>\<forall>z ([R]zx \<rightarrow> [R]zx)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}.
+
+Note that this is still an @{emph \<open>instance\<close>} of the original theorem. We just cannot state this
+instance without simultaneously renaming the bound variable. Even though, internally, the variable
+names are eliminated, concrete variable names, of course, still make a difference when @{emph \<open>parsing\<close>}
+inner syntax.
+
+Given this discussion and the meta-rule derived above, the fact that Isabelle implicitly generalizes
+free variables to schematic variables remains faithful to the derivational system of AOT.
 \<close>
 
 (*<*)
