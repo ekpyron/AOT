@@ -1,6 +1,6 @@
 (*<*)
 theory ThesisNaturalNumbers
-  imports AOT_NaturalNumbers
+  imports Thesis AOT_NaturalNumbers
 begin
 (*>*)
 
@@ -665,7 +665,7 @@ The idea can be clarified by considering how the first natural numbers are relat
 \<close>
 
 
-subsection\<open>Assuring that the Predecessor Relation Denotes\<close>
+subsection\<open>Assuring that the Predecessor Relation Denotes\<close>text\<open>\label{pred-denotes}\<close>
 
 text\<open>
 It is important to realize that the @{text \<open>\<lambda>\<close>}-expression used in above definition does not
@@ -698,8 +698,8 @@ However, even if one concedes that the axiom is not inherently mathematical, it 
 that it is rather @{emph \<open>ad-hoc\<close>}: rather than asserting a general principle according to which
 encoding claims can be abstracted to relations, it singles out a specific relation and this
 relation is after all used to @{emph \<open>define\<close>} a concept that is very much mathematical in nature.
-Furthermore, it is not trivial that the axiom is consistent: as we have already shown the minimal
-model of AOT will not validate it.
+Furthermore, the axiom is not trivially consistent: as we have already shown that minimal
+models of the base system of AOT do not validate it.
 
 Using our embedding we can, however, contribute to this situation in two ways:
 \<^item> We can show that the axiom is consistent by constructing models that validate it.
@@ -1008,6 +1008,202 @@ axioms introduced in the last sections in our models and our implementation.
 
 
 section\<open>The Predecessor Axiom in Detail\<close>text\<open>\label{pred}\<close>
+
+text\<open>
+Recall that the predecessor axiom of PLM is stated as follows:
+
+\begin{quote}
+@{thm[display] pred[print_as_theorem]}
+\end{quote}
+
+In section~\ref{pred-denotes} we have already established that the relation in question
+distinguishes between certain abstract objects that number properties and that this relation
+does @{emph \<open>not\<close>} denote in the minimal models of the base system of AOT. We also have already
+discussed that there cannot be a relation in AOT that generally distinguishes between arbitrary abstract
+objects (in particular @{term \<open>\<guillemotleft>[\<lambda>xy x = y]\<guillemotright>\<close>} does not denote; TODO: cite). So we want to determine
+what is special about the abstract objects that @{emph \<open>are\<close>} distinguished by the predecessor relation
+that allows to construct consistent models for it.
+
+To that end we first note that if @{emph \<open>numbering a property\<close>} denotes a property, the
+predecessor relation denotes by coexistence, since then, using @{text \<open>\<beta>\<close>}-conversion, the matrix
+of the predecessor relation is necessarily universally equivalent to
+@{term \<open>\<guillemotleft>[\<lambda>xy \<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)]\<guillemotright>\<close>}, which denotes axiomatically.
+(TODO: cite full proof in appendix or insert full proof here)
+
+We can indeed construct models in which @{thm numbers_prop_den[of _ F, print_as_theorem]} is a theorem.
+Recall that @{emph \<open>numbering a property\<close>} is equivalent to the following condition:
+
+\begin{quote}
+@{thm[display] "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst], of _ x G, print_as_theorem]}
+\end{quote}
+
+So while @{emph \<open>numbering a property\<close>} is a condition on the properties an abstract object encodes,
+it requires the abstract object to encode an entire class of properties, namely all properties, s.t.
+@{emph \<open>actually\<close>} exemplifying them is equinumerous to the numbered property. Further recall that
+being @{emph \<open>equinumerous\<close>}, informally speaking, means to be exemplified by the same amount of
+@{emph \<open>ordinary\<close>} objects.
+
+This is the crucial fact that allows us to construct suitable models: while we need to distinguish
+between abstract objects based on the properties they @{emph \<open>encode\<close>}, the condition under which these
+abstract objects encode or do not encode properties solely relies on the exemplification patterns of 
+those properties on the @{emph \<open>ordinary\<close>} objects.
+
+In our models, two abstract objects are exemplification-distinguishable, if they are mapped to distinct
+@{emph \<open>special urelements\<close>}. If we wanted to be able to distinguish between abstract objects
+in general based on the exemplification patterns of the properties they encode, this would mean that
+@{emph \<open>special urelements\<close>} would need to be defined self-referentially. Exemplification patterns
+are functions from @{emph \<open>urelements\<close>} (i.e. ordinary @{emph \<open>and\<close>} special urlements) to modal
+truth conditions (i.e. functions from semantic possible worlds to booleans).
+
+Therefore, if we wanted to assign distinct special urelements based on @{emph \<open>general\<close>} exemplification
+patterns, we would need an injective function from exemplification patterns (i.e. sets of functions
+acting on urelements) to special urelements, which would be in violation of Cantor's theorem. (TODO: cite?)
+
+However, fortunately, we only need to distinguish between exemplification patterns on @{emph \<open>ordinary\<close>}
+objects. Since the domains of special urelements and ordinary urelements are independent, it is
+consistently possible to require there being an injective function mapping any kind of function
+(or sets of functions) acting on ordinary urelements alone to special urelements.
+
+In our general models we chose an @{emph \<open>abstract\<close>} type @{typ \<sigma>} as type of special urelements.@{footnote \<open>I.e.
+we allow any non-empty domain for @{typ \<sigma>} in models of the meta-logic without restriction.\<close>}
+In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} a concrete
+type by choosing a subset of the sets of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
+as representation set for @{typ \<sigma>}.
+Recall that the type @{typ \<omega>} is the type of ordinary urelements and @{typ w} is the type of
+semantic possible worlds. @{typ \<sigma>'} is an additional abstract type of @{emph \<open>very special urelements\<close>}
+that retains the model's ability to distinguish between abstract objects beyond those that
+differ in exemplification patterns of ordinary objects.
+So in these models, special urelements are tuples of two copies of sets of property extensions on
+ordinary objects and a very special urelements. We refer to the first copy of extensions as the
+@{emph \<open>intersection set of ordinary property extensions\<close>} and to the second copy as the
+@{emph \<open>union set of ordinary property extensions\<close>}.
+
+When we map an abstract object @{term a} to this new type of special urelements,
+we insert a property extension on ordinary objects into the intersection set, just in case 
+@{term a} encodes @{emph \<open>all\<close>} properties with this extension on the ordinary objects.
+And we insert an extension into the union set, just in case that there @{emph \<open>exists\<close>}
+a property with that extension (on the ordinary objects) that is encoded by @{term a}.
+
+To retain the surjectivity of the mapping from abstract objects to special urelements (TODO: cite explanation
+of this requirement), we need to impose further restrictions on the representation set of special urelements.
+In particular:
+  \<^item> Whenever an extension on the ordinary objects is in the intersection set, it also has
+    to be in the union set.
+  \<^item> We choose a designated @{emph \<open>very special urelement\<close>} @{term \<open>\<sigma>'\<^sub>0\<close>} for the case that the union set is identical
+    to the intersection set.
+    In this case the abstract object encodes @{emph \<open>exactly\<close>} those properties with an extension on
+    the ordinary objects that is contained in either of the (identical) extension sets. For each such set of
+    extensions, there is a single unique such abstract object.
+
+This construction @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
+in case either (1) one of them encodes a property with a given extension on the ordinary object, while the other doesn't
+encode any such property, or (2) one of them encodes all properties with a given extension on the ordinary object,
+while the other fails to encode at least one such property.
+
+Furthermore, the construction still @{emph \<open>allows\<close>} two abstract objects to be assigned different special urelements,
+in case they differ only in encoding properties with the same extension on the ordinary objects (by assigning them
+distinct @{emph \<open>very special\<close>} urelements).
+
+This extended model validates the following two axioms:
+
+  \<^item> @{thm indistinguishable_ord_enc_all[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
+  \<^item> @{thm indistinguishable_ord_enc_ex[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
+
+I.e. if two abstract objects that are (exemplification-)indistinguishable, then they
+(1) co-encode all properties that are necessarily equivalent on the ordinary objects to a given denoting
+property term @{term \<Pi>} and (2) if either one encodes any property that is necessarily equivalent to
+@{term \<Pi>} on the ordinary objects, there is also such a property that is encoded by the other.
+
+While this formulation of the axioms is rather complex and not particularly intuitive, we can equivalently
+(given the theorem about sufficient and necessary conditions for relation terms to denote we contributed
+to AOT; TODO: cite) state them as follows:
+
+\begin{quote}
+@{thm[display] denotes_all[of _ F, print_as_theorem] denotes_ex[of _ F, print_as_theorem]}
+\end{quote}
+
+I.e. (1) encoding @{emph \<open>all\<close>} properties that are necessarily equivalent on the ordinary objects to a
+given property @{term F} denotes a property and (2) encoding @{emph \<open>any\<close>} properties that is necessarily
+equivalent on the ordinary objects to a given property @{term F} denotes a property.
+
+We can further generalize to the following comprehension principles:
+
+\begin{quote}
+@{thm[display] Comprehension_1[of _ \<phi>, print_as_theorem] Comprehension_2[of _ \<phi>, print_as_theorem]}
+\end{quote}
+
+I.e. for every condition @{term \<open>\<phi>\<close>} on properties  that necessarily coincides on all properties
+that are necessarily equivalent on the ordinary objects, then (1) @{emph \<open>encoding all properties that satisfy @{term \<phi>}\<close>}
+denotes a property and (2) @{emph \<open>encoding only properties s.t. @{term \<phi>}\<close>} denotes a property.
+
+In combination these two principles yield the following:
+\begin{quote}
+@{thm[display] Comprehension_3[of _ \<phi>, print_as_theorem]}
+\end{quote}
+
+I.e. for every condition @{term \<open>\<phi>\<close>} on properties that necessarily coincides on all properties that are
+necessarily equivalent on the ordinary objects, @{emph \<open>encoding exactly those properties that satisfy @{term \<open>\<phi>\<close>}\<close>}
+denotes a property.
+
+It is easy to show that @{emph \<open>being an @{term F}, s.t. actually exemplifying @{term F} is equinumerous
+to @{term G}\<close>}, is a condition that necessarily coincides on properties that are necessarily equivalent
+on the ordinary objects and thereby @{emph \<open>numbering a property\<close>} denotes by coexistence.
+
+TODO: justification of the principles.
+\<close>
+
+(*<*)
+(* TODO: think about stating the full proof *)
+AOT_theorem
+  \<comment> \<open>We assume that for any property term @{text \<open>\<Pi>\<close>} it is a modally-strict theorem\<close>
+  \<comment> \<open>that numbering @{text \<open>\<Pi>\<close>} denotes a property\<close>
+  assumes \<open>for arbitrary \<Pi>: \<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z Numbers(z,\<Pi>)]\<down>\<close>
+  shows \<open>[\<lambda>xy \<exists>F \<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<down>\<close>
+\<comment> \<open>Proof using the safe extension axiom.\<close>
+proof(rule "safe-ext[2]"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+  \<comment> \<open>The following relation denotes axiomatically:\<close>
+  AOT_show \<open>[\<lambda>xy \<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)]\<down>\<close>
+    by "cqt:2"
+next
+  \<comment> \<open>It remains to show that the matrix of the relation above is necessarily universally\<close>
+  \<comment> \<open>equivalent to the matrix of the predecessor relation:\<close>
+  AOT_show \<open>\<box>\<forall>x \<forall>y (\<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x) \<equiv>
+                     \<exists>F \<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u)))\<close>
+  proof(safe intro!: RN GEN "\<equiv>I" "\<rightarrow>I")
+    AOT_modally_strict {
+      fix x y
+      AOT_assume \<open>\<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)\<close>
+      then AOT_obtain F where \<open>\<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)\<close>
+        using "\<exists>E"[rotated] by blast
+      then AOT_obtain u where \<open>[F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x\<close>
+        using "Ordinary.\<exists>E"[rotated] by meson
+      AOT_hence \<open>[F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<close>
+        by (metis "\<beta>\<rightarrow>C"(1) "&I" "&E")
+      AOT_hence \<open>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
+        by (rule "Ordinary.\<exists>I")
+      AOT_thus \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
+        by (rule "\<exists>I")
+    }
+  next
+    AOT_modally_strict {
+      fix x y
+      AOT_assume \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
+      then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
+        using "\<exists>E"[rotated] by blast
+      then AOT_obtain u where \<open>[F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<close>
+        using "Ordinary.\<exists>E"[rotated] by meson
+      \<comment> \<open>This application of @{text \<open>\<beta>\<close>}-conversion relies on the assumption\<close>
+      \<comment> \<open>that numbering properties denotes.\<close>
+      AOT_hence \<open>[F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x\<close>
+        by (metis "\<beta>\<leftarrow>C"(1)[OF assms, OF "cqt:2[const_var]"[axiom_inst]] "&I" "&E")
+      AOT_hence \<open>\<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)\<close>
+        by (rule "Ordinary.\<exists>I")
+      AOT_thus \<open>\<exists>F\<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)\<close>
+        by (rule "\<exists>I")
+    }
+  qed
+qed
+(*>*)
 
 
 section\<open>Modelling Possible Richness of Objects\<close>text\<open>\label{modell-modal-axiom}\<close>

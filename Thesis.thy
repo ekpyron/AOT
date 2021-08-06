@@ -1296,7 +1296,7 @@ showcase this mechanism in detail below. As a consequence, terms that are alphab
 are meta-logically indistinguishable. To justify representing AOT's bound variables directly
 using bound variables in Isabelle, we need to show that both (1) AOT's notion of alphabetic
 variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any two formulas
-involving alphabetic variants are inter-derivable (fortunately, PLM already derives a suitable
+involving alphabetic variants are inter-derivable in AOT (fortunately, PLM already derives a suitable
 meta-rule).
 
 \<close>
@@ -1370,28 +1370,32 @@ is inferentially valid, i.e. all statements of AOT are equivalent to their alpha
 subsubsection\<open>Equivalence of Alphabetic Variants in AOT\<close>
 
 text\<open>
-Conveniently, PLM itself derives the following @{emph \<open>Rule of Alphabetic Variants\<close>}:
+Conveniently, PLM itself derives the following @{emph \<open>Rule of Alphabetic Variants\<close>} (TODO: cite):@{footnote \<open>Note
+that while PLM states meta-rules using @{text \<open>\<turnstile>\<close>}, unless otherwise noted by convention they apply to both @{text \<open>\<turnstile>\<close>} and
+@{text \<open>\<turnstile>\<^sub>\<box>\<close>}. We adopt this convention for this section.\<close>}
 
 \begin{quote}
-\textbf{Rule of Alphabetic Variants}\\
-@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
-of @{text \<phi>}.
+\Squ{@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
+of @{text \<phi>}.}
 \end{quote}
 
-It is straightforward to strengthen this further the following:
+It is straightforward to strengthen this further to the following:
 
 \begin{quote}
-@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
+\Squ{@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
 of @{text \<phi>} and @{text \<open>\<Gamma>'\<close>} is a set of alphabetic variants of @{text \<open>\<Gamma>\<close>}, i.e.
 for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} there is an alphabetic variant @{text \<open>\<psi>'\<close>} of @{text \<open>\<psi>\<close>},
-s.t. @{text \<open>\<psi>' \<in> \<Gamma>'\<close>}, and vice-verse.
+s.t. @{text \<open>\<psi>' \<in> \<Gamma>'\<close>}, and vice-verse.}
 \end{quote}
 
 For a proof it suffices to realize that for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} and @{text \<open>\<psi>' \<in> \<Gamma>'\<close>} by the above rule it holds that
-@{text \<open>\<psi> \<stileturn>\<turnstile> \<psi>'\<close>} and all premises in @{text \<Gamma>} are derivable from @{text \<Gamma>'} and vice-versa.
+@{text \<open>\<psi> \<stileturn>\<turnstile> \<psi>'\<close>} and hence all premises in @{text \<Gamma>} are derivable from @{text \<Gamma>'} and vice-versa.
 
 Hence AOT allows to freely move from any formula to an alphabetic variant in all theorems and assumptions,
 justifying the fact that the embedding identifies alphabetic variants.
+
+TODO: think about mentioning the @{attribute rename_abs} attribute that allows for renaming
+linked groups of bound variables.
 
 \<close>
 
@@ -1422,7 +1426,7 @@ alphabetic variants.
 We start by stating and proving the trivial case as a meta-rule in AOT's system:
 
 \begin{quote}
-If @{text \<open>\<turnstile> \<phi>\<close>}, then @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.
+\Squ{If @{text \<open>\<turnstile> \<phi>\<close>}, then @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.}
 \end{quote}
 
 Assume @{text \<open>\<turnstile> \<phi>\<close>}. Since the derivation of @{text \<phi>} does not need any premises,
@@ -1436,9 +1440,9 @@ not require the proviso that @{text \<beta>} is substitutable for @{text \<alpha
 To that end the next step is to generalize above rule to include premises:
 
 \begin{quote}
-If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
+\Squ{If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
 in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} @{text \<beta>} is sustitutable for @{text \<alpha>} in @{text \<psi>} and @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} is
-the set of all @{text \<open>\<psi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.
+the set of all @{text \<open>\<psi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.}
 \end{quote}
 
 One way to show this is by first eliminating all premises @{text \<Gamma>} using the deduction theorem (TODO: cite),
@@ -1466,8 +1470,9 @@ this suffices as justification for the schematic generalization of free variable
 and rules in the embedding.
 
 To clarify the last argument, consider the following theorem as example:
-
+\begin{quote}
 @{lemma[display] \<open>print_as_theorem \<guillemotleft>\<forall>x ([R]xy \<rightarrow> [R]xy)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}
+\end{quote}
 
 Isabelle will let us instantiate this theorem using @{term z} in place of @{term y}, i.e.
 @{lemma \<open>print_as_theorem \<guillemotleft>\<forall>x ([R]xz \<rightarrow> [R]xz)\<guillemotright>\<close> by (auto intro!: print_as_theoremI GEN "\<rightarrow>I")}
