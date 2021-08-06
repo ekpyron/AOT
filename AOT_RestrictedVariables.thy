@@ -336,6 +336,33 @@ proof(rule "\<rightarrow>I")
     by (rule "\<exists>I")
   AOT_thus \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
 qed
+
+AOT_theorem "res-var-bound-reas[A-Exists:1]": \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<equiv> \<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<exists>!\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    using "A-Exists:1"[THEN "\<equiv>E"(1)] by blast
+  AOT_hence \<open>\<exists>!\<alpha> (\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+    apply(AOT_subst \<open>\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>}\<close> \<open>\<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> for: \<alpha>)
+     apply (meson "Act-Basic:2" "intro-elim:3:f" "oth-class-taut:3:a")
+    by simp
+  AOT_thus \<open>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+    apply (AOT_subst \<open>\<psi>{\<alpha>}\<close> \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> for: \<alpha>)
+    using "Commutativity of \<equiv>" "intro-elim:3:b" "sc-eq-fur:2" "\<rightarrow>E" rigid_condition by blast
+next
+  AOT_assume \<open>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+  AOT_hence \<open>\<exists>!\<alpha> (\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+    apply (AOT_subst \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> \<open>\<psi>{\<alpha>}\<close> for: \<alpha>)
+     apply (meson "sc-eq-fur:2" "vdash-properties:10" rigid_condition)
+    by simp
+  AOT_hence \<open>\<exists>!\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    apply (AOT_subst \<open>\<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> \<open>\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>}\<close> for: \<alpha>)
+     using "Act-Basic:2" apply presburger
+     by simp
+  AOT_thus \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+     by (metis "A-Exists:1" "intro-elim:3:b")
+qed
+
 end
 
 (*<*)

@@ -87,7 +87,7 @@ structure AOT_VariablePrefix = Theory_Data (
   type T = (AOT_VariableKind*string) Symtab.table
   val empty = Symtab.empty
   val extend = I
-  val merge = Symtab.merge (K true)
+  val merge = Symtab.merge (K true) (* TODO: probably better to remove conflicts than to ignore them *)
 );
 structure AOT_PremiseSetPrefix = Theory_Data (
   type T = unit Symtab.table
@@ -99,13 +99,13 @@ structure AOT_Constraints = Theory_Data (
   type T = (term*term) Symtab.table
   val empty = Symtab.empty
   val extend = I
-  val merge = Symtab.merge (K true)
+  val merge = Symtab.merge (fn ((x,y),(x',y')) => x = x' andalso y = y')
 )
 structure AOT_Restriction = Theory_Data (
   type T = (term*term) Symtab.table
   val empty = Symtab.empty
   val extend = I
-  val merge = Symtab.merge (K true)
+  val merge = Symtab.merge (fn ((x,y),(x',y')) => x = x' andalso y = y')
 )
 
 fun AOT_IsPremiseSetPrefix ctxt = Local_Theory.raw_theory_result (fn thy => (AOT_PremiseSetPrefix.get thy, thy)) ctxt |> fst |> Symtab.lookup #> Option.isSome
