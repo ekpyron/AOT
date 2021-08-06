@@ -40,14 +40,13 @@ lemma \<open>True\<close> nitpick[satisfy, user_axioms, expect = genuine] ..
 typedecl \<omega>
 
 typedecl \<sigma>'
-consts \<sigma>'\<^sub>V :: \<sigma>'
 consts \<sigma>'\<^sub>0 :: \<sigma>'
 definition \<sigma>cond :: \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> bool\<close> where
-  \<open>\<sigma>cond \<equiv> \<lambda> (ordext :: (\<omega> \<Rightarrow> w \<Rightarrow> bool) set, ordext' :: (\<omega> \<Rightarrow> w \<Rightarrow> bool) set, \<sigma>' :: \<sigma>') .
-    (\<forall> x \<in> ordext . x \<in> ordext') \<and> (if ordext' = {} then \<sigma>' = \<sigma>'\<^sub>0 else if \<forall> x \<in> ordext' . x \<in> ordext then \<sigma>' = \<sigma>'\<^sub>V else True)\<close>
+  \<open>\<sigma>cond \<equiv> \<lambda> (intersection_set, union_set, \<sigma>').
+          (intersection_set \<subseteq> union_set) \<and> (union_set = intersection_set \<longrightarrow> \<sigma>' = \<sigma>'\<^sub>0)\<close>
 definition \<sigma>set where \<open>\<sigma>set \<equiv> Collect \<sigma>cond\<close>
 abbreviation (input) ordext_intersection :: \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set\<close> where
-  \<open>ordext_intersection \<equiv> \<lambda> set . fst set\<close>
+  \<open>ordext_intersection \<equiv> fst\<close>
 abbreviation (input) ordext_union :: \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set\<close> where
   \<open>ordext_union \<equiv> \<lambda> set . fst (snd set)\<close>
 abbreviation (input) \<sigma>\<sigma>' :: \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> \<sigma>'\<close> where
@@ -55,7 +54,7 @@ abbreviation (input) \<sigma>\<sigma>' :: \<open>(\<omega> \<Rightarrow> w \<Rig
 lemma \<sigma>condI:
   assumes \<open>\<forall> x \<in> ordext_intersection \<sigma> . x \<in> ordext_union \<sigma>\<close>
   assumes \<open>ordext_union \<sigma> = {} \<Longrightarrow> \<sigma>\<sigma>' \<sigma> = \<sigma>'\<^sub>0\<close>
-  assumes \<open>ordext_union \<sigma> \<noteq> {} \<Longrightarrow> ordext_intersection \<sigma> = ordext_union \<sigma> \<Longrightarrow> \<sigma>\<sigma>' \<sigma> = \<sigma>'\<^sub>V\<close>
+  assumes \<open>ordext_union \<sigma> \<noteq> {} \<Longrightarrow> ordext_intersection \<sigma> = ordext_union \<sigma> \<Longrightarrow> \<sigma>\<sigma>' \<sigma> = \<sigma>'\<^sub>0\<close>
   shows \<open>\<sigma>cond \<sigma>\<close>
   unfolding \<sigma>cond_def using assms by fastforce
 typedef \<sigma> = \<open>\<sigma>set\<close> unfolding \<sigma>set_def \<sigma>cond_def by auto
@@ -136,7 +135,7 @@ proof -
   let ?\<alpha>\<sigma>_wit = \<open>\<lambda> urrels . 
         let ordexts = \<alpha>\<sigma>_wit_intersection urrels in
         let ordexts' = \<alpha>\<sigma>_wit_union urrels in
-      (ordexts, ordexts', if ordexts' = {} then \<sigma>'\<^sub>0 else if \<forall> x \<in> ordexts' . x \<in> ordexts then \<sigma>'\<^sub>V else \<alpha>\<sigma>_wit_\<sigma>' urrels)\<close>
+      (ordexts, ordexts', if \<forall> x \<in> ordexts' . x \<in> ordexts then \<sigma>'\<^sub>0 else \<alpha>\<sigma>_wit_\<sigma>' urrels)\<close>
   define \<alpha>\<sigma>_wit :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
     \<open>\<alpha>\<sigma>_wit \<equiv> \<lambda> urrels . Abs_\<sigma> (?\<alpha>\<sigma>_wit urrels)\<close>
   have 1: \<open>\<forall>urrel. urrel_to_\<omega>rel urrel = y \<longrightarrow> urrel \<in> x \<Longrightarrow> \<exists>urrel\<in>x. urrel_to_\<omega>rel urrel = y\<close> for y x
@@ -152,9 +151,9 @@ proof -
     have \<sigma>cond: \<open>\<sigma>cond (Rep_\<sigma> \<sigma>)\<close>
       using Rep_\<sigma> \<sigma>set_def by blast
     have \<sigma>cond_empty: \<open>fst (snd (Rep_\<sigma> \<sigma>)) = {} \<Longrightarrow> (fst (Rep_\<sigma> \<sigma>)) = {}\<close>
-      by (metis (no_types, lifting) Product_Type.Collect_case_prodD Rep_\<sigma> \<sigma>cond_def \<sigma>set_def curryI curry_case_prod eq_fst_iff ex_in_conv) 
+      by (metis (no_types, lifting) Product_Type.Collect_case_prodD Rep_\<sigma> \<sigma>cond_def \<sigma>set_def curryI curry_case_prod prod.collapse subset_empty)
     have \<sigma>cond_univ: \<open>(fst (Rep_\<sigma> \<sigma>)) = UNIV \<Longrightarrow> fst (snd (Rep_\<sigma> \<sigma>)) = UNIV\<close>
-      by (metis (mono_tags, lifting) UNIV_I UNIV_eq_I \<sigma>cond \<sigma>cond_def prod.case_eq_if)
+      by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def iso_tuple_UNIV_I split_def subsetI subset_antisym)
     {
       assume \<open>ordext_union (Rep_\<sigma> \<sigma>) = {}\<close>
       moreover have \<open>ordext_intersection (Rep_\<sigma> \<sigma>) = {}\<close>
@@ -175,13 +174,13 @@ proof -
     }
     moreover {
       assume 0: \<open>ordext_union (Rep_\<sigma> \<sigma>) \<noteq> {}\<close>
-      moreover assume \<open>ordext_union (Rep_\<sigma> \<sigma>) = ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-      moreover have \<open>snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>'\<^sub>V\<close>
-        by (metis (mono_tags, lifting) Rep_\<sigma> \<sigma>cond_def \<sigma>set_def calculation(1) calculation(2) mem_Collect_eq prod.case_eq_if)
+      assume \<open>ordext_union (Rep_\<sigma> \<sigma>) = ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
+      moreover have \<open>snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>'\<^sub>0\<close>
+        by (metis (mono_tags, lifting) Rep_\<sigma> \<sigma>cond_def \<sigma>set_def calculation mem_Collect_eq prod.case_eq_if)
       moreover {
         have 2: \<open>{ordext. \<exists>urrel\<in>{urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)}. urrel_to_\<omega>rel urrel = ordext} \<noteq> {}\<close>
-          using "0" Quotient3_abs_rep calculation(2) urrel_\<omega>rel_quot by fastforce
-        have \<open>\<alpha>\<sigma>_wit {urrel . urrel_to_\<omega>rel urrel \<in> ordext_intersection (Rep_\<sigma> \<sigma>)} = Abs_\<sigma> (ordext_intersection (Rep_\<sigma> \<sigma>), ordext_intersection (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>V)\<close>
+          using "0" Quotient3_abs_rep calculation urrel_\<omega>rel_quot by fastforce
+        have \<open>\<alpha>\<sigma>_wit {urrel . urrel_to_\<omega>rel urrel \<in> ordext_intersection (Rep_\<sigma> \<sigma>)} = Abs_\<sigma> (ordext_intersection (Rep_\<sigma> \<sigma>), ordext_intersection (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>0)\<close>
         unfolding \<alpha>\<sigma>_wit_def
         apply (subst Abs_\<sigma>_inject)
         unfolding \<sigma>set_def
@@ -191,13 +190,12 @@ proof -
             apply (metis 1)
            apply (simp add: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
           apply (simp add: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-        apply blast
-         apply (metis CollectI \<sigma>cond calculation(2) calculation(3) surjective_pairing)
+        apply (metis Rep_\<sigma> \<sigma>set_def calculation(1) calculation(2) prod.exhaust_sel)
         apply (simp only: Let_def 2 \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def) apply simp
         using 1 by blast
       }
-      moreover have \<open>\<sigma>cond (ordext_union (Rep_\<sigma> \<sigma>), ordext_union (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>V)\<close>
-        by (metis \<sigma>cond calculation(2) calculation(3) surjective_pairing)
+      moreover have \<open>\<sigma>cond (ordext_union (Rep_\<sigma> \<sigma>), ordext_union (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>0)\<close>
+        by (metis \<sigma>cond calculation(1,2) surjective_pairing)
       ultimately have \<open>\<alpha>\<sigma>_wit {urrel . urrel_to_\<omega>rel urrel \<in> ordext_union (Rep_\<sigma> \<sigma>)} = \<sigma>\<close>
         by (metis Rep_\<sigma>_inverse prod.exhaust_sel)
       hence \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close> by blast
@@ -205,8 +203,12 @@ proof -
     moreover {
       assume \<open>ordext_intersection (Rep_\<sigma> \<sigma>) \<noteq> UNIV\<close>
       assume \<open>ordext_union (Rep_\<sigma> \<sigma>) \<noteq> ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-      moreover have \<open>\<forall>x \<in> ordext_intersection (Rep_\<sigma> \<sigma>) . x \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
-        by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def case_prod_unfold)
+      moreover {
+        have \<open>ordext_intersection (Rep_\<sigma> \<sigma>) \<subseteq> ordext_union (Rep_\<sigma> \<sigma>)\<close>
+          by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def prod.case_eq_if)
+        hence \<open>\<forall>x \<in> ordext_intersection (Rep_\<sigma> \<sigma>) . x \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
+          by blast
+      }
       ultimately obtain r where r_notin_intersection: \<open>r \<notin> ordext_intersection (Rep_\<sigma> \<sigma>)\<close> and r_in_union: \<open>r \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
         by blast
       have \<alpha>\<sigma>wit_eqI: \<open>\<alpha>\<sigma>_wit x = \<sigma>\<close> if
