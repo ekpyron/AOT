@@ -1093,7 +1093,8 @@ In particular:
     to the intersection set.
     In this case the abstract object encodes @{emph \<open>exactly\<close>} those properties with an extension on
     the ordinary objects that is contained in either of the (identical) extension sets. For each such set of
-    extensions, there is a single unique such abstract object.
+    extensions, there is a single unique such abstract object, therefore we can only assign a single
+    unique special urelement to this case.
 
 This construction @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
 in case either (1) one of them encodes a property with a given extension on the ordinary object, while the other doesn't
@@ -1109,47 +1110,106 @@ This extended model validates the following two axioms:
   \<^item> @{thm indistinguishable_ord_enc_all[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
   \<^item> @{thm indistinguishable_ord_enc_ex[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
 
-I.e. if two abstract objects that are (exemplification-)indistinguishable, then they
-(1) co-encode all properties that are necessarily equivalent on the ordinary objects to a given denoting
+I.e. if two abstract objects are (exemplification-)indistinguishable, then they
+(1) co-encode all properties that are necessarily equivalent on the ordinary objects to any given denoting
 property term @{term \<Pi>} and (2) if either one encodes any property that is necessarily equivalent to
 @{term \<Pi>} on the ordinary objects, there is also such a property that is encoded by the other.
 
 While this formulation of the axioms is rather complex and not particularly intuitive, we can equivalently
-(given the theorem about sufficient and necessary conditions for relation terms to denote we contributed
-to AOT; TODO: cite) state them as follows:
+(given the necessary and sufficient conditions for relation terms to denote we contributed
+to AOT as a theorem; TODO: cite) state them as follows:
 
 \begin{quote}
 @{thm[display] denotes_all[of _ F, print_as_theorem] denotes_ex[of _ F, print_as_theorem]}
 \end{quote}
 
-I.e. (1) encoding @{emph \<open>all\<close>} properties that are necessarily equivalent on the ordinary objects to a
-given property @{term F} denotes a property and (2) encoding @{emph \<open>any\<close>} properties that is necessarily
-equivalent on the ordinary objects to a given property @{term F} denotes a property.
+I.e. (1) @{emph \<open>encoding @{emph \<open>all\<close>} properties that are necessarily equivalent on the ordinary objects to a
+given property @{term F}\<close>} denotes a property and (2) @{emph \<open>encoding @{emph \<open>any\<close>} property that is necessarily
+equivalent on the ordinary objects to a given property @{term F}\<close>} denotes a property.
 
-We can further generalize to the following comprehension principles:
+We can further generalize these axioms to the following comprehension principles:
 
 \begin{quote}
 @{thm[display] Comprehension_1[of _ \<phi>, print_as_theorem] Comprehension_2[of _ \<phi>, print_as_theorem]}
 \end{quote}
 
-I.e. for every condition @{term \<open>\<phi>\<close>} on properties  that necessarily coincides on all properties
-that are necessarily equivalent on the ordinary objects, then (1) @{emph \<open>encoding all properties that satisfy @{term \<phi>}\<close>}
-denotes a property and (2) @{emph \<open>encoding only properties s.t. @{term \<phi>}\<close>} denotes a property.
+We call @{term \<phi>} a @{emph \<open>condition on extensions on ordinary objects\<close>}, just in case that
+@{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<guillemotright>\<close>}.
+Then the comprehension principles state that for any condition @{term \<phi>} on extensions on ordinary objects,
+both @{emph \<open>encoding all properties that satisfy @{term \<phi>}\<close>} and
+@{emph \<open>encoding only properties that satisfy @{term \<phi>}\<close>} denote properties.
 
-In combination these two principles yield the following:
+In combination these two principles yield the following:@{footnote \<open>However, note that above
+principles are stronger, i.e. they are @{emph \<open>not\<close>} derivable from the combined principle.\<close>}
 \begin{quote}
 @{thm[display] Comprehension_3[of _ \<phi>, print_as_theorem]}
 \end{quote}
 
-I.e. for every condition @{term \<open>\<phi>\<close>} on properties that necessarily coincides on all properties that are
-necessarily equivalent on the ordinary objects, @{emph \<open>encoding exactly those properties that satisfy @{term \<open>\<phi>\<close>}\<close>}
-denotes a property.
+I.e. for every condition @{term \<open>\<phi>\<close>} on extensions on ordinary objects,
+@{emph \<open>encoding exactly those properties that satisfy @{term \<open>\<phi>\<close>}\<close>} denotes a property.
 
 It is easy to show that @{emph \<open>being an @{term F}, s.t. actually exemplifying @{term F} is equinumerous
-to @{term G}\<close>}, is a condition that necessarily coincides on properties that are necessarily equivalent
-on the ordinary objects and thereby @{emph \<open>numbering a property\<close>} denotes by coexistence.
+to @{term G}\<close>}, is a condition on extensions on ordinary objects. Hence it is a consequence of
+this last comprehension principle that @{term \<open>\<guillemotleft>[\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]\<down>\<guillemotright>\<close>} and
+thereby @{emph \<open>numbering a property\<close>} and, consequently, the predecessor relation denote by coexistence.
 
-TODO: justification of the principles.
+\<close>
+
+subsubsection\<open>Justification of the Comprehension Principles\<close>
+
+text\<open>
+While the predecessor axiom (that asserts that the predecessor relation denotes) singles out a particular relation
+among abstract objects for the sole purpose of defining a mathematical relation, the comprehension principles we
+suggest provide a general means to construct relations among abstract objects based on their encoding
+patterns in a manner that is provably consistent, but also independently justifiable.
+
+TODO: remark this?: In the following we use the terms @{emph \<open>distinguishable\<close>} and @{emph \<open>indistinguishable\<close>} with respect
+to @{emph \<open>exemplification\<close>}, not @{emph \<open>encoding\<close>}.
+
+In general, the burden of justification rather lies in the fact that some abstract objects @{emph \<open>are\<close>}
+exemplification-indistinguishable: let @{term R\<^sub>t} be the relation @{emph \<open>thinking about\<close>}, s.t. 
+@{term \<open>\<guillemotleft>[R\<^sub>t]xy\<guillemotright>\<close>} can be read as @{term x} is thinking about @{term y}. Then for two distinct abstract
+objects @{term a} and @{term b} to be exemplification-indistinguishable implies that it is impossible
+for anyone to think about one without thinking about the other: @{term \<open>\<guillemotleft>\<forall>x \<box>([R\<^sub>t]xa \<equiv> [R\<^sub>t]xb)\<guillemotright>\<close>}.
+While the existence of such objects is justifiable, it is not necessarily a pre-theoretic intuition.
+Interestingly, it is not possible to independently construct two abstract objects that
+are in fact exemplification-indistinguishable: while it is provable that there @{emph \<open>exist\<close>} such
+pairs of objects, the construction always has to rely on constructing one of the objects particularly
+in such a way that it cannot be distinguished from the other.@{footnote \<open>And even this is only possible
+for specific choices of a first abstract object: For example, we cannot construct an abstract object that
+is indistinguishable from the null-object (that encodes no properties) since we can always conceive of a
+model that maps the null-object to a designated special urelement that no other abstract object maps to.\<close>}
+Whenever two abstract objects are constructed independently, a model can generally choose two distinct
+special urelements for them, thereby making them distinguishable. Only if the construction of the
+second abstract object @{emph \<open>depends\<close>} on the choice of a special urelement for the first and forces
+both objects to be collapsed under the mapping from abstract objects to special urelements,
+this becomes infeasible.
+
+This helps in consolidating the fact that there are indistinguishable abstract object with pre-theoretic
+intuition: given two independent abstract objects, we can always find ourselves thinking about one, but
+not the other. However, we can conceive of concepts that themselves involve @{emph \<open>being indistinguishable from other
+abstract objects\<close>}, for which a clever construction@{footnote \<open>In particular considering the concept of being
+indistinguishable from other abstract objects that do not encode being indistinguishable from themselves
+is the basic idea of the proof that there are indistinguishable abstract objects. We provide a variant of the
+proof that makes this idea more explicit in TODO: cite\<close>} in fact yields distinct concepts that are indistinguishable.
+
+So while we can always consistently distinguish between @{emph \<open>particular, independent\<close>} abstract objects,
+given that there still @{emph \<open>are\<close>} indistinguishable abstract objects, we cannot formulate
+a general principle that allows for distinguishing @{emph \<open>arbitrary\<close>} abstract objects.
+
+However, our suggested comprehension principles are restricted to abstract objects that have encoding
+conditions that differ in exemplification patterns on the @{emph \<open>ordinary\<close>} objects. If an abstract
+object encodes all, only or exactly some given exemplification patterns on ordinary objects (that can
+be specified by a @{emph \<open>condition on extensions on ordinary objects\<close>} as defined above), but another
+one doesn't, then those two abstract objects capture a different view on properties among (possibly) concrete
+objects that we can (at least possibly) point to.
+
+Consider the third comprehension principle we suggested above (which is sufficient for deriving that
+numbering a property and thereby also the predecessor relation denote). Being an abstract object
+that encodes exactly those properties that satisfy a condition on extensions on ordinary objects.
+
+
+
 \<close>
 
 (*<*)
