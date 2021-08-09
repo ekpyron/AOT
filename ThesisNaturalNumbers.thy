@@ -7,7 +7,7 @@ begin
 chapter\<open>Natural Numbers in AOT\<close>text\<open>\label{NaturalNumbers}\<close>
 
 text\<open>
-While AOT can represent mathematical theories, including their deductive systems, themselves
+While AOT can represent mathematical theories (including their deductive systems) themselves
 as @{emph \<open>abstract objects\<close>}, as mentioned in section (TODO: adjust ref; likely~\ref{ImplicationsForPhilosophyOfMathematics}), it distinguishes this analysis of
 @{emph \<open>Theoretical Mathematics\<close>} from the notion of @{emph \<open>Natural Mathematics\<close>}. @{emph \<open>Natural\<close>}
 Mathematics consists of ordinary, pretheoretic claims about mathematical objects (TODO: cite PLM (303))
@@ -30,7 +30,7 @@ foreseeable future.\<close>} and arrived at the following results:
   \<^item> We could suggest several amendments to the construction and discover and fix several
     minor errors and inconsistencies in the presentation.
 
-In particular, we can derive the following Dedekind-Peano Postulates about Natural Numbers: (TODO: improve formulations and cite)
+In particular, we can derive the Dedekind-Peano Postulates about Natural Numbers: (TODO: improve formulations and cite)
     \<^enum> Zero is a Natural Number.
     \<^enum> No Natural Number has Zero as its Successor.
     \<^enum> If a Natural Number @{text k} succeeds the numbers @{text n} and @{text m}, then @{text \<open>n = m\<close>}.
@@ -40,15 +40,15 @@ In particular, we can derive the following Dedekind-Peano Postulates about Natur
       exemplifies @{text F}, then @{text F} is exemplified by all natural numbers.
 \<close>
 text\<open>
-Interestingly, there are interactions between this construction and the paradox discovered
-in~\cite{MScThesis} and discussed in TODO: cite session. We will describe this interaction in more
-detail in the following sections while reproducing the construction of Nodelman and Zalta and
-thereby show how our work towards amending object theory to overcome the paradox was a prerequisite
-for the current version of the construction. TODO: actually do that. Example: the elimination of the
+Interestingly, the paradox discovered in~\cite{MScThesis} and the resulting evolution of AOT have
+had repercussions on the details of the construction. We will describe this interaction in more
+detail in the following sections, while reproducing the construction Nodelman and Zalta present in PLM chapter~14.
+TODO: Maybe point out some examples like the elimination of the
 Rigidity axioms, which were required for constructing modally rigid numbers, based on the extension
-of relation comprehension and "Kirchner's Theorem", etc.
+of relation comprehension and "Kirchner's Theorem". Also make sure this point sufficiently comes across
+in the next sections.
 
-TODO: remark about forgoing details about significance of terms throughout the following chapter,
+TODO: remark about forgoing details about logical significance of terms throughout the following chapter,
 while PLM and the implementation make them explicit. Also think about how best to cite the implementation
 throughout the text.
 \<close>
