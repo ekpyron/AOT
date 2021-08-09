@@ -2,6 +2,8 @@ theory AOT_ExtendedRelationComprehension
   imports AOT_RestrictedVariables
 begin
 
+section\<open>Extended Relation Comprehension\<close>
+
 AOT_register_rigid_restricted_type
   Ordinary: \<open>O!\<kappa>\<close>
 proof
@@ -365,6 +367,16 @@ next
   qed
 qed
 
+AOT_theorem denotes_ex_neg: \<open>[\<lambda>x \<not>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]\<down>\<close>
+proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+  AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x]\<down>\<close>
+    by "cqt:2"
+next
+  AOT_show \<open>\<box>\<forall>x (\<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x \<equiv> \<not>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
+    by (AOT_subst \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x\<close> \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close> for: x)
+       (safe intro!: GEN RN "beta-C-meta"[THEN "\<rightarrow>E"] denotes_ex "\<equiv>I" "\<rightarrow>I")
+qed
+
 
 AOT_theorem Comprehension_1:
   shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
@@ -516,7 +528,7 @@ qed
 
 notepad
 begin
-text\<open>Verify that the axioms are equivalent to denotes_all and denotes_ex.\<close>
+text\<open>Verify that the axioms are equivalent to @{text \<open>denotes_all\<close>} and @{text \<open>denotes_ex\<close>}.\<close>
 AOT_modally_strict {
   fix x y H
   AOT_have \<open>A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
