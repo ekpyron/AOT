@@ -10,7 +10,7 @@ chapter\<open>Introduction\<close>
 section\<open>Motivation\<close>
 text\<open>
 While automated reasoning environments are already a vital part of the modern analysis
-of mathematics and formal systems and their importance can only be expected
+of mathematics and formal systems in general and their importance can only be expected
 to increase in the future, building up a sound reasoning environment from scratch is a highly
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isablle/HOL (TODO: cite).
@@ -59,7 +59,7 @@ deductive system in Isabelle/HOL that can utilize the existing automated reasoni
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
 of the Peano-Dedekind postulates as well as Mathematical Induction described in Principia
-Logico-Metaphysica are verifiably sound. Furthermore, we can suggest the generalization of
+Logico-Metaphysica (TODO: cite) are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
 \<close>
@@ -73,8 +73,8 @@ text\<open>
 The computational analysis of Abstract Object Theory (AOT) was pioneered by Fitelson and Zalta in
 \cite{FitelsonZalta}. They used the first-order system Prover9 for their work and were able to 
 verify the proofs of the theorems in AOT's analysis of situations and possible worlds in
-\cite{zalta1993}. Furthermore, they discovered an error in \cite{PelletierZalta} in a theorem
-about Platonic Forms that was left as an exercise.
+\cite{zalta1993}. Furthermore, they discovered an error in a theorem about Platonic Forms in~\cite{PelletierZalta}
+that was left as an exercise.
 Other work with Prover9 that does not target AOT includes the simplification of the reconstruction
 of Anselm's ontological argument (in \cite{OppenheimerZalta2011}, Oppenheimer and Zalta show that
 only one of the three premises they used in \cite{OppenheimerZalta1991} is sufficient) or the
@@ -114,7 +114,7 @@ by a range of studies of similar ontological arguments (TODO cite). TODO: newer 
 
 The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
-proving environments are capable of automatically transforming statements into a suitable first-order
+proving environment is capable of automatically transforming statements into a suitable first-order
 representation on the fly to allow first-order theorem provers like E or SPASS (TODO: cite) to perform
 proof search much like e.g. Prover9 was able to do on a manually constructed first-order representation.
 
@@ -128,10 +128,10 @@ subsection\<open>Previous Work on AOT involving the SSE Approach\<close>
 
 text\<open>
 
-In our own previous work (in \cite{MScThesis}) we applied an extended version of the technique of
-SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to
-for example the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
-basis for previous work using SSE as mentioned above. While the so-called Aczel models of object theory
+In our own previous work (see~\cite{MScThesis}) we applied an extended version of the technique of
+SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
+the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
+basis for the previous work using SSE as mentioned above. While the so-called Aczel models of object theory
 (TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
@@ -151,8 +151,8 @@ A major result of \cite{MScThesis} was the discovery of an oversight in the form
 allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
-of the foundations of AOT which culminated in the extension of the free logic of AOT to its relation
-terms as well, while previously it was restricted to its individual terms only (to account for non-denoting
+of the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
+while previously it was restricted to individual terms only (to account for non-denoting
 definite descriptions). This reworking of AOT was accompanied by a continuous further development of its
 embedding in Isabelle/HOL. This mutually beneficial mode of work was already partly described in
 (TODO cite Open Philosophy) and resulted in a now stabilized improved formulation of AOT and a
@@ -1039,7 +1039,8 @@ following Mendelsson's axiom system (TODO: cite Elliott Mendelson, Introduction 
 \end{quote}
 
 The next set of axioms constructs a quantifier logic for a free logic with non-denoting terms.
-Atomic formulas of the form @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>} can be read as @{emph \<open>the term @{term \<open>\<tau>\<close>} denotes\<close>}.
+Formulas of the form @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>} can be read as @{emph \<open>the term @{term \<open>\<tau>\<close>} denotes\<close>} and refer
+to the notion of logical existence that was @{emph \<open>defined\<close>} in the previous section.
 
 \begin{quote}
 @{thm[display] "cqt:1"[axiom_inst, of _ \<phi> \<tau>, print_as_theorem]
@@ -1050,7 +1051,8 @@ Atomic formulas of the form @{term \<open>\<guillemotleft>\<tau>\<down>\<guillem
 \end{quote}
 
 The last two axioms in the list above are noteworthy: they establish that if any
-atomic exemplification or encoding formula is true, then its primary terms are significant.
+atomic exemplification or encoding formula (which are specific to AOT) is true,
+then its primary terms are significant.
 
 Additionally, PLM establishes a base set of denoting terms with the following axiom:
 
@@ -1107,8 +1109,7 @@ that is not @{emph \<open>actually\<close>} concrete, thereby committing the sys
 @{thm[display] "qml:4"[axiom_inst, print_as_theorem]}
 \end{quote}
 
-The classical S5 modal logic is connected to the previously axiomatized logic of actuality by the
-following two axioms:
+The classical S5 modal logic is connected to logic of actuality by the following two axioms:
 
 \begin{quote}
 @{thm "qml-act:1"[axiom_inst, of _ \<phi>, print_as_theorem]
@@ -1263,11 +1264,33 @@ The rule of generalization GEN:
 @{thm[display] "GEN"[print_as_rule]}
 \end{quote}
 
+TODO: needs to mention (since referenced later):
+  \<^item> Inferential role of definitions.
+  \<^item> Two deductive systems: modally-strict and modally-fragile.
+  \<^item> Rigid restriction conditions and restricted variables.
+\<close>
+
+section\<open>Interesting Theorems of AOT\<close>
+
+text\<open>
+TODO: needs to mention:
+  \<^item> There are distinct, but exemplification-indistinguishable abstract objects.
+  \<^item> There is no general relation of identity.
+  \<^item> There are 16 distinct properties (proof contributed by us). Relate to minimal models of AOT.
+  \<^item> Blocking of the "Kirchner Paradox", referring to previous work.
+  \<^item> "Kirchner's Theorem": Necessary and sufficient conditions for relations to denote (proof contributed by us).
+  \<^item> Parts of possible world theory and in particular world-relative relations and the existence of Rigidifying relation (proof contributed by us, replacing it being an unnecessary axiom)
+  \<^item> Maybe some "teasers" like the @{emph \<open>There are exactly two Truth Values.\<close>} or @{emph \<open>The True is identical to the Actual World.\<close>} or
+    the Fundamental Theorems of Possible Worlds, etc. Maybe mention and cite extensibility e.g. to Temporal Logic as discussed in PLM's theory of stories (even though not yet embedded).
+
+Maybe split into a part of interesting theorems and a part of interesting challenges (like the paradoxes and the free logic of lambda expressions).
 \<close>
 
 section\<open>Examples of Applications\<close>
 
-section\<open>Implications for the Philosophy of Mathematics\<close>
+text\<open>\<close>
+
+section\<open>Implications for the Philosophy of Mathematics\<close>text\<open>\label{ImplicationsForPhilosophyOfMathematics}\<close>
 
 text\<open>
 TODO: Mention the use of higher-order AOT as logical meta-theory to argue for
@@ -1280,7 +1303,49 @@ chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<clo
 section\<open>Model\<close>
 
 text\<open>
+TODO: extensive description of the actual models used in the embedding.
+  \<^item> Aczel Models
+  \<^item> Hyperintensional Propositions
+  \<^item> Relations as Proposition Valued Functions
+  \<^item> Terms implemented as type classes with a partial equivalence relation signifying exemplification-indistinguishability and determining when terms denote.
+  \<^item> Nary terms as relations on tuples, abstracted by type classes instantiated to the product type.
+  \<^item> "Regular" and "irregular" terms for precisely modelling nary-relation identity.
+  
+\<close>
 
+section\<open>Syntax of the Target Theory\<close>
+
+text\<open>
+  \<^item> Independent grammar root with extensive use of parse translations
+  \<^item> Splitting of identifiers in atomic formulas like @{term \<open>\<guillemotleft>[F]xy\<guillemotright>\<close>}.
+  \<^item> Registering symbols for implied types; handling of meta-variables; simulating ellipses with type classes.
+  \<^item> Multiple printing modes.
+\<close>
+
+section\<open>Extending Isabelle's Outer Syntax\<close>
+
+text\<open>
+  \<^item> ML implemented copy of the Isar language.
+  \<^item> Automatically parses inner syntax at @{typ AOT_prop} grammar root.
+  \<^item> Tracks semantic possible worlds.
+  \<^item> Reproducing AOT's system of definitions using @{command AOT_define}; implicit tracking
+    of defined constants; implicit instantiation, internally using the @{command specification} backend.
+  \<^item> @{command AOT_find_theorems} and @{command AOT_sledgehammer}
+\<close>
+
+section\<open>Representation of an Abstract Semantics of AOT\<close>
+text\<open>
+  \<^item> Abstraction of the properties of the models required for deriving the axiom system.
+  \<^item> Heavy use of @{command specification} to allow for general models and obtain some degree of guaranteed automatic abstraction.
+\<close>
+
+section\<open>Axiom System and Deductive System\<close>
+text\<open>
+  \<^item> Deriving Axioms and Fundamental Meta-Rules from semantics.
+  \<^item> Challenge in stating the natural language conditions with focus on cqt.2 (base cases of denoting terms).
+  \<^item> Custom proving methods for substitutition.
+  \<^item> Proof by types using type classes.
+  \<^item> Attributes for "rulifying" AOT theorems.
 \<close>
 
 section\<open>Meta Theorems\<close>
@@ -1499,6 +1564,31 @@ inner syntax.
 
 Given this discussion and the meta-rule derived above, the fact that Isabelle implicitly generalizes
 free variables to schematic variables remains faithful to the derivational system of AOT.
+\<close>
+
+subsection\<open>Further Meta-Theorems\<close>
+
+text\<open>
+Ideas:
+  \<^item> Relation of AOT's existential elimination and @{command obtain}.
+  \<^item> Tuples as accurate representation of most of the general n-ary statements justified by the ability to define
+    matching tuples in AOT.
+  \<^item> More on generalization and e.g. constants?
+
+\<close>
+
+subsection\<open>Discussion\<close>
+
+text\<open>
+  \<^item> Sparse documentation of Isabelle/ML's internals.
+  \<^item> Danger of hiding the actual reasoning behind too much syntax and custom infrastructure vs. readability and ease of reasoning transfer.
+  \<^item> Concessions due to limitations of the type system, type classes, etc.
+  \<^item> Challenges due to inability:
+    \<^item> Configure root grammar nonterminal.
+    \<^item> Hooking into @{command sledgehammer}'s fact selection.
+    \<^item> A sub-optimal interface to the internals of theorem specifications and other commands.
+  \<^item> Option to define a completely independent Isabelle/Pure based object logic vs. ensured soundness via
+    @{command nitpick}-validated constructive models and working tools like @{command sledgehammer}.
 \<close>
 
 (*<*)
