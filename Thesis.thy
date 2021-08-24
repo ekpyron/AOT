@@ -27,7 +27,7 @@ and set theory has long been a prime choice for a common denominator of mathemat
 complex and counter-intuitive, respectively lacking in philosophical grounding and justification (TODO: cite).
 
 While there is prominent research into alternative foundational approaches (e.g. homotopy type
-theory; TODO: cite - maybe something else/more examples), a practical problem for such approaches
+theory; topos theory; TODO: cite - maybe something else/more examples), a practical problem for such approaches
 and a pragmatic defense of the use of set theory or HOL as foundation is the effort required in building up automated
 reasoning systems that are on par with the existing tools that are available for processing theories
 grounded in set theory or traditional higher-order type theory.
@@ -58,7 +58,7 @@ simultaneously arrived at a faithful representation of its model structure, sema
 deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
-of the Peano-Dedekind postulates as well as Mathematical Induction described in Principia
+of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
 Logico-Metaphysica (TODO: cite) are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
@@ -319,7 +319,7 @@ typedecl w
 text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
-propositions is boolean-valued functions acting on (or, equivalently, sets of) possible worlds.
+propositions is boolean-valued function acting on (or, equivalently, sets of) possible worlds.
 In an SSE we use the semantic domains as type for the formulas themselves, so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
@@ -425,7 +425,7 @@ embedded theory, but to reliably determine the derivability of a statement from 
 system of the theory itself, while still retaining ensured soundness. While Isabelle provides
 its own mechanisms for abstract reasoning like type @{command class}es, @{command locale}s and
 @{command specification}s, those are not primarily designed for this exact purpose and come with
-limitations that can make them unsuitable to achieve that purpose entirely on their own,
+limitations that can make them unsuitable to achieve that purpose on their own,
 as described in more detail in the following section.
 
 TODO: more high-level description before technical details?
@@ -1109,7 +1109,7 @@ that is not @{emph \<open>actually\<close>} concrete, thereby committing the sys
 @{thm[display] "qml:4"[axiom_inst, print_as_theorem]}
 \end{quote}
 
-The classical S5 modal logic is connected to logic of actuality by the following two axioms:
+The classical S5 modal logic is connected to the logic of actuality by the following two axioms:
 
 \begin{quote}
 @{thm "qml-act:1"[axiom_inst, of _ \<phi>, print_as_theorem]
@@ -1137,7 +1137,10 @@ so while @{text \<alpha>}-conversion can be stated, it effectively reduces to th
                "lambda-predicates:3"[axiom_inst, of _ F, print_as_theorem]}
 \end{quote}
 Note that the last of the above axioms, @{text \<eta>}-conversion, also has the @{text 0}-place case
-@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.
+@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.\footnote{While identical,
+the syntactically distinct terms @{text \<open>p\<close>} and @{text \<open>[\<lambda> p]\<close>} in AOT are meant to capture
+the natural-language distinction between the statement @{text p} itself and the statement
+@{emph \<open>that @{text p} is true\<close>}. TODO: rethink.}
 
 The following axiom is specific to AOT and, together with generally extending AOT's free logic
 to relation terms and the refinement of base cases of denoting terms, a main aspect in the evolution
@@ -1232,7 +1235,7 @@ end))]\<close>
 text\<open>
 
 While an implementation of the complete deductive system of PLM chapter~9 (TODO: cite properly) can be
-found in (TODO: cite), a full discussion of the entire system would be beyond the scope of this thesis.
+found in (TODO: cite), a full discussion of the entire system would go beyond the scope of this thesis.
 However, we will discuss some aspects in detail.
 
 Since the axioms in the last section are to be understood as axiom schemata, i.e. their statement
