@@ -1020,7 +1020,7 @@ of this definition in the embedding is discussed in more detail in section TODO:
 Based on the described language and definitions we can state AOT's axiom system in the following section.
 \<close>
 
-section\<open>The Axiom System\<close>
+section\<open>The Axiom System\<close>text\<open>\label{AxiomSystem}\<close>
 
 text\<open>
 In the following we reproduce the full axiom system of the latest formulation of AOT, while
@@ -1268,6 +1268,8 @@ TODO: needs to mention (since referenced later):
   \<^item> Inferential role of definitions.
   \<^item> Two deductive systems: modally-strict and modally-fragile.
   \<^item> Rigid restriction conditions and restricted variables.
+  \<^item> Definition of identity on the ordinary objects.
+  \<^item> At least brief mention of the analysis of Definite Descriptions and their being modally rigid by referring to the actual world.
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>

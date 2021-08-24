@@ -86,7 +86,11 @@ prefers a definition in terms of relations alone.
 The concept of there being a bijection between the sets of objects two properties exemplify can 
 equivalently be captured by the notion of there being a @{emph \<open>one-to-one correspondence\<close>} between
 the properties.
+\<close>
 
+subsection\<open>One-to-One Correspondences\<close>
+
+text\<open>
 A @{emph \<open>one-to-one correspondence\<close>} between the properties @{term F} and @{term G} is a relation
 @{term R}, s.t. (1) for every object @{term x} that exemplifies @{term F}, there is a unique object
 @{term y} exemplifying @{term G}, s.t. @{term x} bears @{term R} to @{term y} and conversely (2) for
@@ -156,7 +160,13 @@ text\<open>
 So if @{emph \<open>equinumerosity\<close>} was contingent on the existence of a full one-to-one correspondence,
 @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>} would not be equinumerous to itself and consequently equinumerosity
 would not be an equivalence relation. However, Frege's Theorem does rely on equinumerosity being
-an equivalence relation. Fortunately, there is a natural solution to this issue.
+an equivalence relation. Fortunately, there is a natural solution to this issue, namely restricting
+the analysis to the domain of @{emph \<open>ordinary objects\<close>}.
+\<close>
+
+subsection\<open>One-to-One Correspondences on the Ordinary Objects\<close>
+
+text\<open>
 As mentioned in the introduction of this chapter, natural mathematics arises from abstracting
 patterns of @{emph \<open>ordinary\<close>} objects. And ordinary objects are what can naturally be counted.
 Hence Nodelman and Zalta introduce the notion of one-to-one correspondences @{emph \<open>among the ordinary
@@ -166,17 +176,129 @@ restricted variables in the embedding in: TODO.\<close>} Using these restricted 
 correspondence among the ordinary objects can be defined in the same way as a full one-to-one
 correspondence:
 
+\begin{quote}
 @{lemma[display] \<open>print_as_theorem \<guillemotleft>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G \<equiv> \<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R]uv)) & \<forall>v ([G]v \<rightarrow> \<exists>!u ([F]u & [R]uv))\<guillemotright>\<close> by (auto dest: "&E" "equi:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] intro!: print_as_theoremI "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2[const_var]"[axiom_inst] "equi:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"])}
-
-Based on one-to-one correspondences on the ordinary objects, equinumerosity on the ordinary objects
-can be defined and can indeed shown to be an equivalence relation: TODO: sketch the proofs at least
-a bit? At least cite through the progression of theorems leading to them. This would be an opportunity
-to mention the elimination of the rigidity axiom made possible by results from the embedding.
-
-@{thm[display] "equi:3"[of F G] "eq-part:1"[of _ F, print_as_theorem] "eq-part:2"[of _ F G, print_as_theorem] "eq-part:3"[of _ F G H, print_as_theorem]}
+\end{quote}
 \<close>
 
-section\<open>The Number of Fs and Hume's Theorem\<close>
+subsection\<open>Definition of Equinumerosity\<close>
+
+text\<open>
+Based on one-to-one correspondences on the ordinary objects, equinumerosity on the ordinary objects
+can be defined as suggested above: two relations are equinumerous@{text \<open>\<^sub>E\<close>}, if and only if there is a one-to-one
+correspondence on the ordinary objects between them:@{footnote \<open>In the following sections we will drop the explicit mention
+of the restriction to the ordinary objects and simply talk about @{emph \<open>equinumerosity\<close>} and being @{emph \<open>equinumerous\<close>}
+instead of @{emph \<open>equinumerosity on the ordinary objects\<close>} and @{emph \<open>equinumerous@{text \<open>\<^sub>E\<close>}\<close>}.\<close>}
+
+\begin{quote}
+@{thm[display] "equi:3"[of F G]}
+\end{quote}
+
+Equinumerosity on the ordinary objects is indeed an equivalence relation:
+
+\begin{quote}
+@{thm[display] "eq-part:1"[of _ F, print_as_theorem] "eq-part:2"[of _ F G, print_as_theorem] "eq-part:3"[of _ F G H, print_as_theorem]}
+\end{quote}
+
+Reflexivity can be shown by using the identity on the ordinary objects @{term \<open>\<guillemotleft>(=\<^sub>E)\<guillemotright>\<close>} as witness for
+the existence of a one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between any relation and itself. Note that in contrast to
+general identity, identity on the ordinary objects is a relation.
+
+Symmetry is a simple consequence of the symmetry of the definition of one-to-one correspondences.
+
+Transitivitity requires a slightly more verbose proof (see: TODO: cite), that hinges on the fact that
+@{term \<open>\<guillemotleft>[\<lambda>xy O!x & O!y & \<exists>v ([G]v & [R\<^sub>1]xv & [R\<^sub>2]vy)]\<guillemotright>\<close>} can be chosen as a witness for the existence
+of a one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between @{term F} and @{term H}, if @{term R\<^sub>1} is a one-to-one-correspondence@{text \<open>\<^sub>E\<close>}
+between @{term F} and @{term G} and @{term R\<^sub>2} is a one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between @{term G} and @{term H}.
+\<close>
+
+subsection\<open>Properties of Equinumerosity\<close>
+
+text\<open>
+Nodelmann and Zalta continue derive a variety of properties of equinumerosity that are helpful
+for the remainder of the construction. While a full account of the progression of theorems can be
+found in PLM (TODO: cite), respectively in our implementation in (TODO: cite), the following is a
+noteworthy selection of these auxiliary theorems:
+
+Properties that are unexemplified on the ordinary objects are equinumerous (any relation may serve
+as one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between them):
+\begin{quote}
+@{thm[display] "empty-approx:1"[of _ F H, print_as_theorem]}
+\end{quote}
+
+A property @{term F} that is exemplified by some ordinary object is @{emph \<open>not\<close>} equinumerous
+to a relation @{term H} that is not exemplified by any ordinary object (proof by contradiction, since
+the existence of a one-to-one correspondence@{text \<open>\<^sub>E\<close>} would imply that @{term H} is exemplified by
+an ordinary object):
+\begin{quote}
+@{thm[display] "empty-approx:2"[of _ F H, print_as_theorem]}
+\end{quote}
+
+Removing and adding ordinary objects to equinumerous properties yields equinumerous properties:@{footnote \<open>The statements
+rely on the following definition of @{term \<open>\<guillemotleft>[F]\<^sup>-\<^sup>x\<guillemotright>\<close>}, i.e. @{emph \<open>being an F that is not @{term x}\<close>}: @{thm "F-u"}. The proofs
+rely on constructing suitable one-to-one correspondences@{text \<open>\<^sub>E\<close>} by case analysis. See TODO: cite.\<close>}
+\begin{quote}
+@{thm[display] eqP'[of _ F G u v, print_as_theorem]
+                "P'-eq"[of _ F u G v, print_as_theorem]}
+\end{quote}
+
+Properties that are equivalent on the ordinary objects (written as @{text "\<equiv>\<^sub>E"}) are equinumerous:@{footnote \<open>The identity
+on the ordinary objects @{term \<open>\<guillemotleft>(=\<^sub>E)\<guillemotright>\<close>} can again be chosen as witness for the existence of a one-to-one-correspondence@{text \<open>\<^sub>E\<close>}.\<close>}
+
+\begin{quote}
+@{thm[display] eqE[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]
+               "apE-eqE:1"[of _ F G, print_as_theorem]}
+\end{quote}
+\<close>
+
+subsection\<open>Modal Properties of Equinumerosity\<close>
+
+text\<open>
+It is noteworthy that, in general, equinumerosity is @{emph \<open>not\<close>} modally rigid. In particular, it
+is provable that there are relations that are possibly equinumerous and possibly not equinumerous:
+
+\begin{quote}
+@{thm[display] "approx-cont:1"[print_as_theorem]}
+\end{quote}
+
+As a simple example consider a property that is necessarily unexemplified and another property
+that is @{emph \<open>actually\<close>} unexemplified, but @{emph \<open>possibly\<close>} exemplified by some ordinary object.@{footnote \<open>The
+existence of such properties is guaranteed by the fact that by axiom there is an object that is not actually, but
+possibly concrete as mentioned in section~\ref{AxiomSystem}.\<close>}
+While such properties are equinumerous in the actual world, there is no one-to-one-correspondence@{text \<open>\<^sub>E\<close>}
+between them in the possibly world, in which the second property is exemplified by an object. (TODO: elaborate?)
+
+We will see in the next section that for this reason the actual world is used as a reference for the definition
+of @{emph \<open>numbering properties\<close>}.
+
+It is noteworthy, that it is still possible to express equinumerosity relative to the behaviour of properties
+in the actual world. In particular the following is a theorem:
+\begin{quote}
+@{thm[display] "approx-nec:2"[of _ F G, print_as_theorem]}
+\end{quote}
+
+I.e. two properties @{term F} and @{term G} are equinumerous, if and only if for all properties @{term H},
+both @{term F} and @{term G} is equinumerous to @{emph \<open>actually exemplifying @{term H}\<close>}.
+Furthermore, for @{emph \<open>rigid\<close>} properties,@{footnote \<open>I.e. properties that are modally collapsed: @{thm "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst], of _ F, rename_abs x, print_as_theorem]}\<close>}
+equinumerosity is modally collapsed:
+\begin{quote}
+@{thm[display] "approx-nec:3"[of _ F G, print_as_theorem]}
+\end{quote}
+
+The proofs of the last two theorems hinges on the existence of @{emph \<open>rigidifying\<close>} relations. Recall the
+earlier discussion of this topic in section (TODO: cite) - notably, in earlier versions of PLM,
+the existence of rigidifying relations had to be ensured by axiom, until further refinement
+of the theory, and in particular the derivation of necessary and sufficient conditions for relations to denote
+that we could contribute to the theory on the basis of our analysis with the embedding, led to a proof
+of the existence of @{emph \<open>world-indexed properties\<close>} that can serve as witnesses for the existence
+of rigidifying relations, thereby eliminating the need for the additional axiom.
+
+\<close>
+
+
+
+
+section\<open>The Number of Fs and Hume's Theorem\<close>text\<open>\label{Numbers}\<close>
 
 text\<open>
 To state Hume's Theorem additionally to the definition of @{emph \<open>equinumerosity\<close>} above,
@@ -189,11 +311,16 @@ to number a property as follows:
 An abstract object @{term x} numbers a property @{term G}, if it encodes exactly those properties,
 such that @{emph \<open>actually exemplifying\<close>} them is equinumerous to @{term G}.
 An alternative choice would be to forgo the actuality operator and merely require that @{term x}
-encodes exactly those properties that are equinumerous to @{term F} itself.@{footnote \<open>Note
-that earlier derivations used this definition, but were amended in the more recent presentation
+encodes exactly those properties that are equinumerous to @{term F} itself.@{footnote \<open>In fact,
+earlier constructions used this definition, but were amended in the more recent presentation
 of number theory in PLM. TODO: Cite e.g. \url{http://mally.stanford.edu/Papers/numbers.pdf\<close>}.}
- However, this would have the undesirable consequence that numbering properties would depend on modal context. For a detailed
-discussion of this issue refer to (TODO: cite PLM; maybe reproduce some of it here).
+ However, we noted in the last section that equinumerosity is not (in general) modally rigid, so
+such a definition would have the undesirable consequence that numbering properties would depend on modal context and
+consequently that every possible world would need its own sets of numbers.@{footnote \<open>For a detailed
+discussion of this issue refer to (TODO: cite PLM; maybe reproduce some of it here).\<close>} To avoid this
+issue the actual world is used as a reference. Later in this chapter, we will show that this does
+@{emph \<open>not\<close>} mean that it is impossible to count in non-actual worlds and is consistent with
+the pretheoretic intuition of numbers in possible worlds (see~\ref{CountingInPossibleWorlds}). (TODO: check reference; maybe rephrase and elaborate.)
 
 Now @{emph \<open>The Number of @{term G}s\<close>} can simply be defined as @{emph \<open>the\<close>} object that numbers
 @{term G}:
@@ -272,6 +399,317 @@ By the definition of the number zero, it becomes immediately apparent that zero 
 @{thm[display] "zero-card"[print_as_theorem]}
 
 \<close>
+
+
+section\<open>Counting in Possible Worlds\<close>text\<open>\label{CountingInPossibleWorlds}\<close>
+
+(*<*)
+AOT_define NumbersAlternative :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Numbers'''(_,_')\<close>)
+  \<open>Numbers'(x, G) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G)\<close>
+AOT_theorem NumbersAlternative': \<open>Numbers'(x,G) \<equiv> A!x & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G)\<close>
+  by (AOT_subst_def NumbersAlternative)
+     (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2" dest: "&E")
+AOT_theorem NumbersAlternativeProp: \<open>\<exists>x\<exists>y (\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y)\<close>
+proof -
+  AOT_obtain w\<^sub>1 where \<open>\<exists>w w\<^sub>1 \<noteq> w\<close>
+    using "two-worlds-exist:4" "PossibleWorld.\<exists>E"[rotated] by fast
+  then AOT_obtain w\<^sub>2 where distinct_worlds: \<open>w\<^sub>1 \<noteq> w\<^sub>2\<close>
+    using "PossibleWorld.\<exists>E"[rotated] by blast
+  AOT_obtain x where x_prop: \<open>A!x & \<forall>F (x[F] \<equiv> w\<^sub>1 \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
+  moreover AOT_obtain y where y_prop: \<open>A!y & \<forall>F (y[F] \<equiv> w\<^sub>2 \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
+  moreover {
+    fix x w
+    AOT_assume x_prop: \<open>A!x & \<forall>F (x[F] \<equiv> w \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    AOT_have \<open>\<forall>F w \<Turnstile> (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    proof(safe intro!: GEN "conj-dist-w:4"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2",THEN "\<equiv>E"(2)] "\<equiv>I" "\<rightarrow>I")
+      fix F
+      AOT_assume \<open>w \<Turnstile> x[F]\<close>
+      AOT_hence \<open>\<exists>w w \<Turnstile> x[F]\<close> by (rule "PossibleWorld.\<exists>I")
+      AOT_hence \<open>\<diamond>x[F]\<close> using "fund:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] by blast
+      AOT_hence \<open>x[F]\<close> by (metis "en-eq:3[1]" "intro-elim:3:a")
+      AOT_thus \<open>w \<Turnstile> (F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+        using x_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+    next
+      fix F
+      AOT_assume \<open>w \<Turnstile> (F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      AOT_hence \<open>x[F]\<close>
+        using x_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
+      AOT_hence \<open>\<box>x[F]\<close> using "pre-en-eq:1[1]"[THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<forall>w w \<Turnstile> x[F]\<close> using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+      AOT_thus \<open>w \<Turnstile> x[F]\<close> using "PossibleWorld.\<forall>E" by fast
+    qed
+    AOT_hence \<open>w \<Turnstile> \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      using "conj-dist-w:5"[THEN "\<equiv>E"(2)] by fast
+    moreover {
+      AOT_have \<open>\<box>[\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down>\<close> by (safe intro!: RN "cqt:2")
+      AOT_hence \<open>w \<Turnstile> [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down>\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "PossibleWorld.\<forall>E"] by blast
+    }
+    moreover {
+      AOT_have \<open>\<box>A!x\<close> using x_prop[THEN "&E"(1)] by (metis "oa-facts:2" "vdash-properties:10")
+      AOT_hence \<open>w \<Turnstile> A!x\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "PossibleWorld.\<forall>E"] by blast
+    }
+    ultimately AOT_have \<open>w \<Turnstile> (A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2), OF "&I"] by auto
+    AOT_hence \<open>\<exists>w w \<Turnstile> (A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "PossibleWorld.\<exists>I" by auto
+    AOT_hence \<open>\<diamond>(A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "fund:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] by blast
+    AOT_hence \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      by (AOT_subst_def NumbersAlternative)
+  }
+  ultimately AOT_have \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+                  and \<open>\<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close> by auto
+  moreover AOT_have \<open>x \<noteq> y\<close>
+  proof (rule "ab-obey:2"[THEN "\<rightarrow>E"])
+    thm "sit-identity"
+    AOT_have \<open>\<box>\<not>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+    proof (safe intro!: RN "raa-cor:2")
+      AOT_modally_strict {
+        AOT_assume \<open>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+        then AOT_obtain u where \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close> using "Ordinary.\<exists>E"[rotated] by blast
+        AOT_hence \<open>O!u & u \<noteq>\<^sub>E u\<close> by (rule "\<beta>\<rightarrow>C")
+        AOT_hence \<open>\<not>(u =\<^sub>E u)\<close> by (metis "con-dis-taut:2" "intro-elim:3:d" "modus-tollens:1" "raa-cor:3" "thm-neg=E")
+        AOT_hence \<open>u =\<^sub>E u & \<not>u =\<^sub>E u\<close> by (metis "modus-tollens:1" "ord=Eequiv:1" "raa-cor:3" Ordinary.restricted_var_condition)
+        AOT_thus \<open>p & \<not>p\<close> for p by (metis "raa-cor:1")
+      }
+    qed
+    AOT_hence nec_not_ex: \<open>\<forall>w w \<Turnstile> \<not>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+      using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+    AOT_have \<open>\<box>([\<lambda>y p]x \<equiv> p)\<close> for x p
+      by (safe intro!: RN "beta-C-meta"[THEN "\<rightarrow>E"] "cqt:2")
+    AOT_hence world_prop_beta: \<open>\<forall>w w \<Turnstile> ([\<lambda>y p]x \<equiv> p)\<close> for x p
+      using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+    AOT_hence world_prop_beta: \<open>\<forall>w (w \<Turnstile> [\<lambda>y p]x \<equiv> w \<Turnstile> p)\<close> for x p
+      using "conj-dist-w:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)]
+            "PossibleWorld.\<forall>E" "PossibleWorld.\<forall>I" by meson
+
+    AOT_have \<open>\<not>\<forall>p (w\<^sub>1 \<Turnstile> p \<equiv> w\<^sub>2 \<Turnstile> p)\<close>
+    proof(rule "raa-cor:2")
+      AOT_assume \<open>\<forall>p (w\<^sub>1 \<Turnstile> p \<equiv> w\<^sub>2 \<Turnstile> p)\<close>
+      AOT_hence \<open>w\<^sub>1 = w\<^sub>2\<close>
+        using "sit-identity"[unconstrain s, THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN "world:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)],
+                             unconstrain s', THEN "\<rightarrow>E", OF PossibleWorld.\<psi>[THEN "world:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)], THEN "\<equiv>E"(2)] by blast
+      AOT_thus \<open>w\<^sub>1 = w\<^sub>2 & \<not>w\<^sub>1 = w\<^sub>2\<close> using  "=-infix" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:1" distinct_worlds by blast
+    qed
+    AOT_hence \<open>\<exists>p \<not>(w\<^sub>1 \<Turnstile> p \<equiv> w\<^sub>2 \<Turnstile> p)\<close>
+      by (metis "\<not>\<not>E" "cqt-further:3" "intro-elim:3:c")
+    then AOT_obtain p where \<open>\<not>(w\<^sub>1 \<Turnstile> p \<equiv> w\<^sub>2 \<Turnstile> p)\<close> using "\<exists>E"[rotated] by blast
+    moreover {
+      AOT_assume 0: \<open>w\<^sub>1 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p\<close>
+      AOT_have \<open>y[\<lambda>y p]\<close>
+      proof (safe intro!: y_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)] "cqt:2")
+        AOT_show \<open>w\<^sub>2 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<close>
+        proof (safe intro!: "empty-approx:1"[unvarify F H, THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E",
+                             THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "\<rightarrow>E"] "cqt:2"
+                            "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+          AOT_have \<open>\<not>w\<^sub>2 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+          proof (rule "raa-cor:2")
+            AOT_assume \<open>w\<^sub>2 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+            AOT_hence \<open>\<exists>x w\<^sub>2 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> by (metis "conj-dist-w:6" "intro-elim:3:a")
+            then AOT_obtain x where \<open>w\<^sub>2 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>w\<^sub>2 \<Turnstile> [\<lambda>y p]x\<close>
+              using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "&E"(2)] by blast
+            AOT_hence \<open>w\<^sub>2 \<Turnstile> p\<close>
+              using world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(1)] by blast
+            AOT_thus \<open>w\<^sub>2 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p\<close> using 0[THEN "&E"(2)] "&I" by blast
+          qed
+          AOT_thus \<open>w\<^sub>2 \<Turnstile> \<not>\<exists>u [\<lambda>y p]u\<close>
+            by (safe intro!: "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)])
+        next
+          AOT_show \<open>w\<^sub>2 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+            using nec_not_ex[THEN "PossibleWorld.\<forall>E"] by blast
+        qed
+      qed
+      moreover AOT_have \<open>\<not>x[\<lambda>y p]\<close>
+      proof(rule "raa-cor:2")
+        AOT_assume \<open>x[\<lambda>y p]\<close>
+        AOT_hence "w\<^sub>1 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+          using x_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "prop-prop2:2" by blast
+        AOT_hence "\<not>w\<^sub>1 \<Turnstile> \<not>[\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+          using "coherent:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+        moreover AOT_have "w\<^sub>1 \<Turnstile> \<not>([\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])"
+        proof (safe intro!: "empty-approx:2"[unvarify F H, THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E",
+                             THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "\<rightarrow>E"] "cqt:2"
+                           "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+          fix u
+          AOT_have \<open>w\<^sub>1 \<Turnstile> O!u\<close> using Ordinary.\<psi>[THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E"] by simp
+          moreover AOT_have \<open>w\<^sub>1 \<Turnstile> [\<lambda>y p]u\<close>
+            by (safe intro!: world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(2)] 0[THEN "&E"(1)])
+          ultimately AOT_have \<open>w\<^sub>1 \<Turnstile> (O!u & [\<lambda>y p]u)\<close>
+            using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2), OF "&I"] by blast
+          AOT_hence \<open>\<exists>x w\<^sub>1 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> by (rule "\<exists>I")
+          AOT_thus \<open>w\<^sub>1 \<Turnstile> \<exists>u [\<lambda>y p]u\<close> by (metis "conj-dist-w:6" "intro-elim:3:b")
+        next
+          AOT_show \<open>w\<^sub>1 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+            using "PossibleWorld.\<forall>E" nec_not_ex by fastforce
+        qed
+        ultimately AOT_show \<open>p & \<not>p\<close> for p using "raa-cor:3" by blast
+      qed
+      ultimately AOT_have \<open>y[\<lambda>y p] & \<not>x[\<lambda>y p]\<close> using "&I" by blast
+      AOT_hence \<open>\<exists>F (y[F] & \<not>x[F])\<close> by (metis "existential:1" "prop-prop2:2")
+      AOT_hence \<open>\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])\<close> by (rule "\<or>I")
+    }
+    moreover {
+      AOT_assume 0: \<open>\<not>w\<^sub>1 \<Turnstile> p & w\<^sub>2 \<Turnstile> p\<close>
+      AOT_have \<open>x[\<lambda>y p]\<close>
+      proof (safe intro!: x_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)] "cqt:2")
+        AOT_show \<open>w\<^sub>1 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<close>
+        proof (safe intro!: "empty-approx:1"[unvarify F H, THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E",
+                             THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "\<rightarrow>E"] "cqt:2"
+                            "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+          AOT_have \<open>\<not>w\<^sub>1 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+          proof (rule "raa-cor:2")
+            AOT_assume \<open>w\<^sub>1 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+            AOT_hence \<open>\<exists>x w\<^sub>1 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> by (metis "conj-dist-w:6" "intro-elim:3:a")
+            then AOT_obtain x where \<open>w\<^sub>1 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> using "\<exists>E"[rotated] by blast
+            AOT_hence \<open>w\<^sub>1 \<Turnstile> [\<lambda>y p]x\<close>
+              using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "&E"(2)] by blast
+            AOT_hence \<open>w\<^sub>1 \<Turnstile> p\<close>
+              using world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(1)] by blast
+            AOT_thus \<open>w\<^sub>1 \<Turnstile> p & \<not>w\<^sub>1 \<Turnstile> p\<close> using 0[THEN "&E"(1)] "&I" by blast
+          qed
+          AOT_thus \<open>w\<^sub>1 \<Turnstile> \<not>\<exists>u [\<lambda>y p]u\<close>
+            by (safe intro!: "coherent:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)])
+        next
+          AOT_show \<open>w\<^sub>1 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+            using nec_not_ex[THEN "PossibleWorld.\<forall>E"] by blast
+        qed
+      qed
+      moreover AOT_have \<open>\<not>y[\<lambda>y p]\<close>
+      proof(rule "raa-cor:2")
+        AOT_assume \<open>y[\<lambda>y p]\<close>
+        AOT_hence "w\<^sub>2 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+          using y_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "prop-prop2:2" by blast
+        AOT_hence "\<not>w\<^sub>2 \<Turnstile> \<not>[\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+          using "coherent:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+        moreover AOT_have "w\<^sub>2 \<Turnstile> \<not>([\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])"
+        proof (safe intro!: "empty-approx:2"[unvarify F H, THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E",
+                             THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "\<rightarrow>E"] "cqt:2"
+                           "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+          fix u
+          AOT_have \<open>w\<^sub>2 \<Turnstile> O!u\<close> using Ordinary.\<psi>[THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E"] by simp
+          moreover AOT_have \<open>w\<^sub>2 \<Turnstile> [\<lambda>y p]u\<close>
+            by (safe intro!: world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(2)] 0[THEN "&E"(2)])
+          ultimately AOT_have \<open>w\<^sub>2 \<Turnstile> (O!u & [\<lambda>y p]u)\<close>
+            using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2", OF "log-prop-prop:2", THEN "\<equiv>E"(2), OF "&I"] by blast
+          AOT_hence \<open>\<exists>x w\<^sub>2 \<Turnstile> (O!x & [\<lambda>y p]x)\<close> by (rule "\<exists>I")
+          AOT_thus \<open>w\<^sub>2 \<Turnstile> \<exists>u [\<lambda>y p]u\<close> by (metis "conj-dist-w:6" "intro-elim:3:b")
+        next
+          AOT_show \<open>w\<^sub>2 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+            using "PossibleWorld.\<forall>E" nec_not_ex by fastforce
+        qed
+        ultimately AOT_show \<open>p & \<not>p\<close> for p using "raa-cor:3" by blast
+      qed
+      ultimately AOT_have \<open>x[\<lambda>y p] & \<not>y[\<lambda>y p]\<close> using "&I" by blast
+      AOT_hence \<open>\<exists>F (x[F] & \<not>y[F])\<close> by (metis "existential:1" "prop-prop2:2")
+      AOT_hence \<open>\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])\<close> by (rule "\<or>I")
+    }
+    ultimately AOT_show \<open>\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])\<close>
+      using "con-dis-i-e:1" "deduction-theorem" "intro-elim:2" "raa-cor:3" by metis
+  qed
+  ultimately AOT_have \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y\<close> using "&I" by blast
+  AOT_hence \<open>\<exists>y (\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y)\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>x\<exists>y (\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y)\<close> by (rule "\<exists>I")
+qed
+AOT_theorem ZeroRigid: \<open>\<diamond>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> x = 0\<close>
+proof(rule "\<rightarrow>I")
+  AOT_have \<open>Rigid([\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+  proof (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2"; rule RN; safe intro!: GEN "\<rightarrow>I")
+    AOT_modally_strict {
+      fix x
+      AOT_assume \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]x\<close>
+      AOT_hence \<open>O!x & x \<noteq>\<^sub>E x\<close> by (rule "\<beta>\<rightarrow>C")
+      moreover AOT_have \<open>x =\<^sub>E x\<close> using calculation[THEN "&E"(1)] 
+        by (metis "ord=Eequiv:1" "vdash-properties:10")
+      ultimately AOT_have \<open>x =\<^sub>E x & \<not>x =\<^sub>E x\<close>
+        by (metis "con-dis-i-e:1" "con-dis-i-e:2:b" "intro-elim:3:a" "thm-neg=E")
+      AOT_thus \<open>\<box>[\<lambda>z O!z & z \<noteq>\<^sub>E z]x\<close> using "raa-cor:1" by blast
+    }
+  qed
+  AOT_hence \<open>\<box>\<forall>x (Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    by (safe intro!: "num-cont:2"[unvarify G, THEN "\<rightarrow>E"] "cqt:2")
+  AOT_hence \<open>\<forall>x \<box>(Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    using "BFs:2"[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<box>(Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    using "\<forall>E"(2) by auto
+  moreover AOT_assume \<open>\<diamond>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+  ultimately AOT_have \<open>\<^bold>\<A>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "sc-eq-box-box:1"[THEN "\<equiv>E"(1), THEN "\<rightarrow>E", THEN "nec-imp-act"[THEN "\<rightarrow>E"]] by blast
+  AOT_hence \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[\<lambda>z O!z & z \<noteq>\<^sub>E z]z])\<close>
+    by (safe intro!: "eq-num:1"[unvarify G, THEN "\<equiv>E"(1)] "cqt:2")
+  AOT_hence \<open>x = #[\<lambda>z O!z & z \<noteq>\<^sub>E z]\<close>
+    by (safe intro!: "eq-num:2"[unvarify G, THEN "\<equiv>E"(1)] "cqt:2")
+  AOT_thus \<open>x = 0\<close>
+    using "cqt:2"(1) "rule-id-df:2:b[zero]" "rule=E" "zero:1" by blast
+qed
+(*>*)
+
+text\<open>
+In section~\ref{Numbers}, we mentioned the use of the actual world as reference for defining numbering
+properties and hinted at the fact that this is justified and consistent with pretheoretic intuition.
+We can now discuss this in more detail at the example of the number Zero.
+
+The number of a property is defined as rigid definite description
+and thereby uses the actual world as frame of reference.
+In particular, using the number Zero as example, this means the following:
+
+\begin{quote}
+@{thm[display] "0F:2"[of _ F, print_as_theorem]}
+\end{quote}
+
+If and only if a property @{term F} is not @{emph \<open>actually\<close>} exemplified by any ordinary object,
+the number of that property is Zero. This may seem counter-intuitive at first: the stated theorem
+is modally-strict and thereby a @{emph \<open>necessary\<close>} fact. So in any possible world, even in worlds
+in which @{term F} could be exemplified, the number of @{term F} is still zero, if
+@{term F} is not @{emph \<open>actually\<close>} exemplified. However, this is merely due to the fact that
+definite descriptions are rigid and themselves refer to objects in the actual world.
+
+Moving away from the rigidly defined @{emph \<open>number of Fs\<close>}, it is a modally-strict theorem
+(and thereby a @{emph \<open>necessary\<close>} fact), that Zero @{emph \<open>numbers\<close>} any property that is not
+exemplified by any ordinary object:
+\begin{quote}
+@{thm[display] "0F:1"[of _ F, print_as_theorem]
+               "0F:1"[THEN RN, of _ F, print_as_theorem]}
+\end{quote}
+
+I.e. Zero numbers empty properties in all possible worlds. A different take on this is the
+fact that any object that @{emph \<open>possibly\<close>} numbers a necessarily empty property is the number zero:
+\begin{quote}
+@{thm[display] ZeroRigid[of _ x, print_as_theorem]}
+\end{quote}
+
+By contrast, if numbering a property had been defined without using the actual world
+as reference, then "the" number Zero would be a different abstract object in different possible worlds:
+
+If we define @{text \<open>Numbers'\<close>} without the use of the actuality operator, s.t.:
+\begin{quote}
+@{thm[display] NumbersAlternative'[of _ x G, print_as_theorem]}
+\end{quote}
+Then it is a theorem that:
+\begin{quote}
+@{thm[display] NumbersAlternativeProp[print_as_theorem]}
+\end{quote}
+I.e. there would be distinct abstract objects that might count necessarily empty properties.
+This is clearly contrary to the pretheoretic intuition that numbers are universal, i.e. that
+counting empty properties in any world will yield one and the same number Zero.
+
+On the other hand, we can further consolidate the use of the actual world as reference frame, by
+realizing that we @{emph \<open>can\<close>} talk about the numbers of properties in different worlds, despite the
+rigidity of definite descriptions and the use of the actual world as reference for defining numbers.
+We again use the number Zero as example and can show that if and only if a property @{term F} is not exemplified
+in a given possible world @{term w}, then @{emph \<open>the number of exemplifying @{term F} at @{term w}\<close>} is Zero:@{footnote \<open>Recall the discussion
+of AOT's theory of Possible Worlds and world-indexed properties in section TODO: cite.\<close>}
+\begin{quote}
+@{thm[display] "0F:4"[of _ w F, print_as_theorem]}
+\end{quote}
+
+\<close>
+
+
 
 section\<open>Ancestral Relations and Transitive Closures\<close>
 
