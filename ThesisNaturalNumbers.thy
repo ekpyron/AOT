@@ -312,7 +312,9 @@ a definition of @{emph \<open>The Number of @{term F}s\<close>} (written as @{te
 To that end Nodelman and Zalta (following Frege) first define what it means for an object
 to number a property as follows:
 
+\begin{quote}
 @{thm[display] "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst], of _ x G, print_as_theorem]}
+\end{quote}
 
 An abstract object @{term x} numbers a property @{term G}, if it encodes exactly those properties,
 such that @{emph \<open>actually exemplifying\<close>} them is equinumerous to @{term G}.
@@ -331,20 +333,28 @@ the pretheoretic intuition of numbers in possible worlds (see~\ref{CountingInPos
 Now @{emph \<open>The Number of @{term G}s\<close>} can simply be defined as @{emph \<open>the\<close>} object that numbers
 @{term G}:
 
+\begin{quote}
 @{thm[display] "num-def:1"}
+\end{quote}
 
 Using these definitions Nodelman and Zalta can indeed derive Hume's theorem:
 
+\begin{quote}
 @{thm[display] "hume:2"[of F G]}
+\end{quote}
 
 Note that, due to the fact that AOT's definite descriptions are modally rigid and refer to objects
 in the actual world, this theorem is not modally strict.@{footnote \<open>This is signified by the turnstile
 symbol @{text "\<^bold>\<turnstile>"}. Modally-strict theorems, in contrast, are signified by @{text "\<^bold>\<turnstile>\<^sub>\<box>"}. However,
 for increased readability we adopt the convention that unmarked theorems are understood to be
 modally-strict. We have configured Isabelle's pretty printing accordingly. TODO: refer to earlier
-discussion of this.\<close>} However, the following variant is a necessary fact with a modally-strict proof:
+discussion of this.\<close>} However, the following variants are necessary facts with modally-strict proofs (the
+second translates the rigid descriptions in Hume's theorem according to Russell's analysis of definite descriptions):
 
-@{thm[display] "hume-strict"[of _ F G, print_as_theorem]}
+\begin{quote}
+@{thm[display] "hume-strict:1"[of _ F G, print_as_theorem]}
+@{thm[display] "hume-strict:2"[of _ F G, print_as_theorem]}
+\end{quote}
 
 The details of this derivation are described in PLM TODO: cite and are implemented in our
 embedding in TODO: cite.
