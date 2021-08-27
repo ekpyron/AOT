@@ -29,6 +29,9 @@ AOT_theorem "uni-tv": \<open>\<^bold>\<iota>x TruthValueOf(x,p)\<down>\<close>
 AOT_define TheTruthValueOf :: \<open>\<phi> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>\<circ>_\<close> [100] 100)
   "the-tv-p": \<open>\<circ>p =\<^sub>d\<^sub>f \<^bold>\<iota>x TruthValueOf(x,p)\<close>
 
+AOT_define PropEnc :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (infixl \<open>\<^bold>\<Sigma>\<close> 40)
+  "prop-enc": \<open>x\<^bold>\<Sigma>p \<equiv>\<^sub>d\<^sub>f x\<down> & x[\<lambda>y p]\<close>
+
 AOT_theorem "tv-id:1": \<open>\<circ>p = \<^bold>\<iota>x (A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q])))\<close>
 proof -
   AOT_have \<open>\<box>\<forall>x(TruthValueOf(x,p)  \<equiv> A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q])))\<close>
@@ -39,7 +42,23 @@ proof -
     using "=\<^sub>d\<^sub>fI"(1)[OF "the-tv-p", OF "uni-tv"] by fast
 qed
 
-(* TODO[PLM]: currently "tv-id:2" uses the definition of "prop-enc" only defined below *)
+AOT_theorem "tv-id:2": \<open>\<circ>p\<^bold>\<Sigma>p\<close>
+proof -
+  AOT_modally_strict {
+    AOT_have \<open>(p \<equiv> p) & [\<lambda>y p] = [\<lambda>y p]\<close>
+      by (auto simp: "prop-prop2:2" "rule=I:1" intro!: "\<equiv>I" "\<rightarrow>I" "&I")
+    AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
+      using "\<exists>I" by fast
+  }
+  AOT_hence \<open>\<^bold>\<A>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
+    using "RA[2]" by blast
+  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))[\<lambda>y p]\<close>
+    by (safe intro!: "desc-nec-encode:1"[unvarify F, THEN "\<equiv>E"(2)] "cqt:2")
+  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))\<^bold>\<Sigma>p\<close>
+    by (safe intro!: "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "A-descriptions")
+  AOT_thus \<open>\<circ>p\<^bold>\<Sigma>p\<close>
+    by (rule "rule=E"[rotated, OF "tv-id:1"[symmetric]])
+qed
 
 (* TODO more theorems *)
 
@@ -109,9 +128,6 @@ AOT_define TruthValue :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Trut
 
 (* TODO more theorems *)
 
-AOT_define PropEnc :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (infixl \<open>\<^bold>\<Sigma>\<close> 40)
-  "prop-enc": \<open>x\<^bold>\<Sigma>p \<equiv>\<^sub>d\<^sub>f x\<down> & x[\<lambda>y p]\<close>
-
 AOT_act_theorem "T-lem:1": \<open>TruthValueOf(\<circ>p, p)\<close>
 proof -
   AOT_have \<theta>: \<open>\<circ>p = \<^bold>\<iota>x TruthValueOf(x, p)\<close>
@@ -147,25 +163,6 @@ proof -
     AOT_hence \<open>\<circ>p[\<lambda>y r]\<close> using \<theta> "\<equiv>E"(2) by blast
     AOT_thus \<open>\<circ>p\<^bold>\<Sigma>r\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "&I" "prop-enc" "russell-axiom[enc,1].\<psi>_denotes_asm")
   qed
-qed
-
-(* TODO[PLM]: to be moved once prop-enc is moved *)
-AOT_theorem "tv-id:2": \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-proof -
-  AOT_modally_strict {
-    AOT_have \<open>(p \<equiv> p) & [\<lambda>y p] = [\<lambda>y p]\<close>
-      by (auto simp: "prop-prop2:2" "rule=I:1" intro!: "\<equiv>I" "\<rightarrow>I" "&I")
-    AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-      using "\<exists>I" by fast
-  }
-  AOT_hence \<open>\<^bold>\<A>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
-    using "RA[2]" by blast
-  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))[\<lambda>y p]\<close>
-    by (safe intro!: "desc-nec-encode:1"[unvarify F, THEN "\<equiv>E"(2)] "cqt:2")
-  AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<exists>q ((q \<equiv> p) & F = [\<lambda>y q])))\<^bold>\<Sigma>p\<close>
-    by (safe intro!: "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "A-descriptions")
-  AOT_thus \<open>\<circ>p\<^bold>\<Sigma>p\<close>
-    by (rule "rule=E"[rotated, OF "tv-id:1"[symmetric]])
 qed
 
 AOT_act_theorem "T-lem:4": \<open>TruthValueOf(x, p) \<equiv> x = \<circ>p\<close>

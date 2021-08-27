@@ -2160,30 +2160,44 @@ AOT_act_theorem "hume:3": \<open>#F = #G \<equiv> \<exists>R (R |: F \<^sub>1\<^
 AOT_act_theorem "hume:4": \<open>F \<equiv>\<^sub>E G \<rightarrow> #F = #G\<close>
   by (metis "apE-eqE:1" "deduction-theorem" "hume:2" "\<equiv>E"(2) "vdash-properties:10")
 
-AOT_theorem "hume-strict": \<open>\<exists>!x (Numbers(x, F) & Numbers(x, G)) \<equiv> F \<approx>\<^sub>E G\<close>
+AOT_theorem "hume-strict:1": \<open>\<exists>x (Numbers(x, F) & Numbers(x, G)) \<equiv> F \<approx>\<^sub>E G\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
-  AOT_assume \<open>\<exists>!x (Numbers(x, F) & Numbers(x, G))\<close>
-  AOT_hence \<open>\<exists>x (Numbers(x, F) & Numbers(x, G) & \<forall>z ((Numbers(z, F) & Numbers(z, G) \<rightarrow> z = x)))\<close>
-    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  then AOT_obtain a where a_prop: \<open>Numbers(a, F) & Numbers(a, G) & \<forall>z ((Numbers(z, F) & Numbers(z, G) \<rightarrow> z = a))\<close>
+  AOT_assume \<open>\<exists>x (Numbers(x, F) & Numbers(x, G))\<close>
+  then AOT_obtain a where \<open>Numbers(a, F) & Numbers(a, G)\<close>
     using "\<exists>E"[rotated] by blast
-  AOT_show \<open>F \<approx>\<^sub>E G\<close>
-    by (auto intro!: "id-eq:1" "pre-Hume"[THEN "\<rightarrow>E", OF a_prop[THEN "&E"(1)], THEN "\<equiv>E"(1)])
+  AOT_thus \<open>F \<approx>\<^sub>E G\<close>
+    using "num-tran:2" "vdash-properties:10" by blast
 next
   AOT_assume 0: \<open>F \<approx>\<^sub>E G\<close>
   moreover AOT_obtain b where num_b_F: \<open>Numbers(b, F)\<close> by (metis "instantiation" "num:1")
-  ultimately AOT_have num_b_G: \<open>Numbers(b, G)\<close> using "num-tran:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
-  AOT_have \<open>\<forall>z (Numbers(z, F) & Numbers(z, G) \<rightarrow> z = b)\<close>
-  proof(safe intro!: GEN "\<rightarrow>I"; drule "&E"(1))
-    AOT_show \<open>z = b\<close> if \<open>Numbers(z, F)\<close> for z
-      using "pre-Hume"[THEN "\<rightarrow>E", OF "&I", OF that, OF num_b_F, THEN "\<equiv>E"(2), rotated, OF "eq-part:1"].
-  qed
-  AOT_hence \<open>Numbers(b, F) & Numbers(b, G) & \<forall>z (Numbers(z, F) & Numbers(z, G) \<rightarrow> z = b)\<close>
-    using num_b_F num_b_G "&I" by blast
-  AOT_hence \<open>\<exists>x (Numbers(x, F) & Numbers(x, G) & \<forall>z (Numbers(z, F) & Numbers(z, G) \<rightarrow> z = x))\<close>
-    by (rule "\<exists>I")
-  AOT_thus \<open>\<exists>!x (Numbers(x, F) & Numbers(x, G))\<close>
-    by (rule "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  moreover AOT_have num_b_G: \<open>Numbers(b, G)\<close> using calculation "num-tran:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
+  ultimately AOT_have \<open>Numbers(b, F) & Numbers(b, G)\<close> by (safe intro!: "&I")
+  AOT_thus \<open>\<exists>x (Numbers(x, F) & Numbers(x, G))\<close> by (rule "\<exists>I")
+qed
+
+AOT_theorem "hume-strict:2": \<open>\<exists>x\<exists>y (Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = y) & x = y) \<equiv> F \<approx>\<^sub>E G\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>\<exists>x\<exists>y (Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = y) & x = y)\<close>
+  then AOT_obtain x where \<open>\<exists>y (Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = y) & x = y)\<close>
+    using "\<exists>E"[rotated] by blast
+  then AOT_obtain y where \<open>Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = y) & x = y\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>Numbers(x, F)\<close> and \<open>Numbers(y,G)\<close> and \<open>x = y\<close> using "&E" by blast+
+  AOT_hence \<open>Numbers(y, F) & Numbers(y, G)\<close> using "&I" "rule=E" by fast
+  AOT_hence \<open>\<exists>y (Numbers(y, F) & Numbers(y, G))\<close> by (rule "\<exists>I")
+  AOT_thus \<open>F \<approx>\<^sub>E G\<close> using "hume-strict:1"[THEN "\<equiv>E"(1)] by blast
+next
+  AOT_assume \<open>F \<approx>\<^sub>E G\<close>
+  AOT_hence \<open>\<exists>x (Numbers(x, F) & Numbers(x, G))\<close>
+    using "hume-strict:1"[THEN "\<equiv>E"(2)] by blast
+  then AOT_obtain x where \<open>Numbers(x, F) & Numbers(x, G)\<close> using "\<exists>E"[rotated] by blast
+  moreover AOT_have \<open>\<forall>z (Numbers(z, F) \<rightarrow> z = x)\<close> and \<open>\<forall>z (Numbers(z, G) \<rightarrow> z = x)\<close>
+    using calculation
+    by (auto intro!: GEN "\<rightarrow>I" "pre-Hume"[THEN "\<rightarrow>E", OF "&I", THEN "\<equiv>E"(2), rotated 2, OF "eq-part:1"] dest: "&E")
+  ultimately AOT_have \<open>Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(x, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = x) & x = x\<close>
+    by (auto intro!: "&I" "id-eq:1" dest: "&E")
+  AOT_thus \<open>\<exists>x\<exists>y (Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = y) & x = y)\<close>
+    by (auto intro!: "\<exists>I")
 qed
 
 AOT_theorem unotEu: \<open>\<not>\<exists>y[\<lambda>x O!x & x \<noteq>\<^sub>E x]y\<close>
@@ -2214,18 +2228,16 @@ AOT_theorem "zero-card": \<open>NaturalCardinal(0)\<close>
 AOT_theorem "eq-num:1": \<open>\<^bold>\<A>Numbers(x, G) \<equiv> Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])\<close>
 proof -
   AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2[lambda]"
-  AOT_have \<open>\<box>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
-    using "hume-strict"[unvarify G, OF act_den, THEN RN].
-  AOT_hence \<open>\<^bold>\<A>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
+  AOT_have \<open>\<box>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "hume-strict:1"[unvarify G, OF act_den, THEN RN].
+  AOT_hence \<open>\<^bold>\<A>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[G]z])\<close>
     using "nec-imp-act"[THEN "\<rightarrow>E"] by fast
-  AOT_hence \<open>\<^bold>\<A>(\<exists>!x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+  AOT_hence \<open>\<^bold>\<A>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
     using "actuallyF:1" "Act-Basic:5" "\<equiv>E"(1) "\<equiv>E"(2) by fast
-  AOT_hence \<open>\<exists>!x \<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
-    by (metis "A-Exists:1" "\<equiv>E"(1))
-  AOT_hence \<open>\<exists>x(\<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]))) & \<forall>z(\<^bold>\<A>((Numbers(z, G) & Numbers(z,[\<lambda>z \<^bold>\<A>[G]z]))) \<rightarrow> z = x))\<close>
-    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  then AOT_obtain a where \<open>\<^bold>\<A>((Numbers(a, G) & Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
-    using "\<exists>E"[rotated] "&E" by blast
+  AOT_hence \<open>\<exists>x \<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    by (metis "Act-Basic:10" "intro-elim:3:a")
+  then AOT_obtain a where \<open>\<^bold>\<A>(Numbers(a, G) & Numbers(a,[\<lambda>z \<^bold>\<A>[G]z]))\<close>
+    using "\<exists>E"[rotated] by blast
   AOT_hence act_a_num_G: \<open>\<^bold>\<A>Numbers(a, G)\<close> and act_a_num_actG: \<open>\<^bold>\<A>Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])\<close>
     using "Act-Basic:2" "&E" "\<equiv>E"(1) by blast+
   AOT_hence num_a_act_g: \<open>Numbers(a, [\<lambda>z \<^bold>\<A>[G]z])\<close>
@@ -2278,16 +2290,8 @@ AOT_theorem "eq-num:4": \<open>A!#G & \<forall>F (#G[F] \<equiv> [\<lambda>z \<^
   by (auto intro!: "&I" "eq-num:3"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1), THEN "&E"(1)]
                    "eq-num:3"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)])
 
-AOT_theorem "eq-num:5": \<open>#G[\<lambda>z \<^bold>\<A>[G]z]\<close>
-proof -
-  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2[lambda]"
-  show ?thesis
-    apply (rule "eq-num:4"[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)])
-     apply "cqt:2[lambda]"
-    apply (rule "approx-nec:1"[unvarify F, THEN "\<rightarrow>E", symmetric])
-     apply "cqt:2[lambda]"
-    using "actuallyF:2" by auto
-qed
+AOT_theorem "eq-num:5": \<open>#G[G]\<close>
+  by (auto intro!: "eq-num:4"[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] "eq-part:1"[unvarify F] simp: "cqt:2")
 
 AOT_theorem "eq-num:6": \<open>Numbers(x, G) \<rightarrow> NaturalCardinal(x)\<close>
 proof(rule "\<rightarrow>I")
