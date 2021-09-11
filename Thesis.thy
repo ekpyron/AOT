@@ -9,33 +9,43 @@ chapter\<open>Introduction\<close>
 
 section\<open>Motivation\<close>
 text\<open>
-While automated reasoning environments are already a vital part of the modern analysis
+Automated reasoning environments are already a vital part of the modern analysis
 of mathematics and formal systems in general and their importance can only be expected
-to increase in the future, building up a sound reasoning environment from scratch is a highly
+to increase in the future. However, building up a sound reasoning environment from scratch is a highly
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isablle/HOL (TODO: cite).
 Furthermore, most of these systems have at least parts of their logical foundation in common,
 for example they are all based on some variation of functional type theory (TODO: make sure this
 can actually be stated as such in particular towards Coq).
 
-On the other hand, there is still an ongoing debate about the most suitable logical system
-to be used for the foundations of mathematics (TODO: cite). While higher-order functional type
-theory is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink this point and the citation;
+On the other hand, there is still an ongoing debate about the most suitable foundational
+system for mathematics (TODO: cite). While higher-order functional type
+theory (HOL) is closely tied to set theory (see \cite{HigherOrderLogicSetTheoryFalseDilemma}, TODO: rethink this point and the citation;
 also note e.g. the opposite statement \url{https://kwarc.info/people/frabe/Research/RI_isabelle_10.pdf})
-and set theory has long been a prime choice for a common denominator of mathematical disciplines
-(TODO: cite), its modern paradox free axiomatization following Zermelo-Fraenkel is often viewed as
-complex and counter-intuitive, respectively lacking in philosophical grounding and justification (TODO: cite).
+and set theory has long been the prime choice for a common denominator of mathematical disciplines
+(TODO: cite), its modern paradox-free axiomatization following Zermelo-Fraenkel is often viewed as
+complex and counter-intuitive, respectively lacking in philosophical grounding and justification.
+This circumstance was already noted by Quine whose assessment is still commonly shared in present days:\footnote{TODO: precise quote.
+in \url{https://plato.stanford.edu/entries/computational-philosophy/} Quine 1951 153; ideally also a reference
+to a present formulation of the same sentiment.}
+
+\blockquote{Whatever the inconveniences of type theory, contradictions such as \textins{the Russell paradox}
+show clearly enough that the previous naive logic needs reforming.\textelp{} There have been other proposals
+to the same end - one of them coeval with the theory of types. \textins{Quine cites Zermelo 1908. TODO: add reference}
+But a striking circumstance is that none of these proposals, type theory included, has any intuitive foundation.
+None has the backing of common sense. Common sense is bankrupt, for it wound up in contradiction.}
 
 While there is prominent research into alternative foundational approaches (e.g. homotopy type
-theory; topos theory; TODO: cite - maybe something else/more examples), a practical problem for such approaches
+theory; topos theory; TODO: cite - maybe something else/more examples), independently of the question of whether
+they have \emph{the backing of common sense}, a practical problem for such approaches
 and a pragmatic defense of the use of set theory or HOL as foundation is the effort required in building up automated
 reasoning systems that are on par with the existing tools that are available for processing theories
-grounded in set theory or traditional higher-order type theory.
+grounded in set theory or traditional functional higher-order type theory.
 
 The following represents an attempt at overcoming this issue. We utilize the concept of a
-@{emph \<open>shallow semantic embedding\<close>} with abstraction layers (TODO: cite) to transfer the merits of
+@{emph \<open>shallow semantic embedding\<close>} (SSE) with abstraction layers (TODO: cite) to transfer the merits of
 the sophisticated interactive and automated reasoning system Isabelle/HOL to a fundamentally
-different foundational system, namely to Abstract Object Theory (TODO: cite).
+different foundational system, namely to Abstract Object Theory (AOT) (TODO: cite).
 
 While it is not a requirement for our proposed general method, we demonstrate that
 we can extend Isabelle/HOL by a customized reasoning infrastructure written in Isabelle/ML
@@ -47,11 +57,14 @@ to be sound, (2) can be used to explore the safety of axiomatic extensions to th
 for the reuse of the automation infrastructure available for Isabelle/HOL.
 
 While our method can potentially be applied to a multitude of logical systems, Abstract Object Theory
-is a particularly well-suited target. On the one hand it aims to be a foundational metaphysical system
-that can serve as the basis for mathematics, linguistics and the sciences (TODO: rethink, cite), while
-on the other hand it is based on logical foundations that differ from classical functional higher-order
-type-theory and were even argued to be incompatible (see \cite{rtt}).
-In our previous work (see \cite{MScThesis}) we demonstrated how our method for formally analyzing
+is a particularly well-suited target. On the one hand, it aims to be a foundational metaphysical system
+that can serve as the basis for mathematics and thereby stands in the tradition of Russell and
+Whitehead's Principia Mathematica (TODO: cite), while in fact extending its scope to e.g. linguistics and
+the sciences in general (TODO: rethink, cite). Furthermore, it attempts to overcome the dilemma noted
+by Quine by basing its analysis on an intuitive distinction between \emph{ordinary} and \emph{abstract} objects
+and equipping the latter with a justifiable comprehension principle.(TODO: rethink, refer to later sections). On the other hand, it is based on logical foundations that significantly differ
+from classical functional higher-order type-theory and were even argued to be incompatible (see \cite{rtt}).
+Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
 models and semantics for such a system can be beneficial and vital for its soundness (TODO: refer to section with details).
 During our continued work we could contribute to the evolution of Abstract Object Theory and
 simultaneously arrived at a faithful representation of its model structure, semantics and
@@ -62,10 +75,30 @@ of the Peano-Dedekind postulates, including Mathematical Induction, described in
 Logico-Metaphysica (TODO: cite) are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
+
 \<close>
 
 section\<open>Prior Work\<close>
 
+text\<open>
+The \emph{Logic Theorist}, developed by Allen Newell and Herbert Simon at Carnegie Mellon and programmed
+by J. C. Shaw using the vacuum tubes of the JOHNNIAC computer at the Institute for Advanced Study,
+is commonly regarded as the first automated theorem prover.(TODO: cite \url{https://plato.stanford.edu/entries/computational-philosophy/})
+When confronted with \emph{Logic Theorist}'s ability to prove 38 out of 52 theorems from chapter two of
+Whitehead and Russell’s Principia Mathematica (TODO: cite), including a proof more elegant than one of
+Whitehead and Russell’s own (TODO: cite MacKenzie 1995, Loveland 1984, Davis 1957),
+Russell recognized the potential in the computational analysis of logic:\footnote{TODO: precise quote.
+Letter from Russell to Simon; source reference in \url{https://plato.stanford.edu/entries/computational-philosophy/}
+more text in \url{https://www.cl.cam.ac.uk/~jrh13/slides/lyon-04feb14/slides.pdf}. TODO: Verify primary source.}
+
+\blockquote{I am delighted to know that Principia Mathematica can now be done by machinery \textelp{} I am quite
+willing to believe that everything in deductive logic can be done by machinery. \textelp{} I wish
+Whitehead and I had known of this possibility before we wasted 10 years doing it by hand.}
+
+Since then there has been significant progress both in the development of automated theorem provers
+in general and in the application of computational methods to logical theories in particular. Parts
+of this development are outlined in the following sections.
+\<close>
 subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 
 text\<open>
@@ -81,14 +114,14 @@ only one of the three premises they used in \cite{OppenheimerZalta1991} is suffi
 reconstruction of theorems in Spinoza's @{emph \<open>Ethics\<close>} in \cite{SpinozaProver9}.
 
 However, there are inherent limitations to the approach of analyzing higher-order theories like AOT
-with the help of first-order provers. While it is possible to reason about the first order truth
+with the help of first-order provers. While it is possible to reason about the first-order truth
 conditions of statements by introducing sort predicates and using a number of special techniques
 to translate the statements into the less-expressive language of multi-sorted first-order logic
 (a detailed account of such techniques is given in \cite{AlamaZalta2015}), the complexity of the
 resulting representation increases for expressive, higher-order philosophical claims.
 In general, this approach may be sufficient for analyzing concrete isolated arguments, but it becomes
 infeasible to construct a natural representation of an entire expressive higher-order theory and
-its full deductive system.
+its full deductive system. (TODO: cite from paper)
 \<close>
 subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>
 
@@ -109,8 +142,8 @@ more detail in chapter~\ref{SSEs}.
 (TODO: citation is embedding in simple type theory, not Isabelle/HOL. Rethink.)
 In \cite{ModalLogics} Benzm\"uller and Paulson represented quantified modal logic using SSEs by means
 of embedding modal operators based on their Kripke semantics (TODO cite). This allowed for an
-extensive analysis of G\"odel's ontological argument in second-order S5 modal logic (TODO cite), followed
-by a range of studies of similar ontological arguments (TODO cite). TODO: newer work by Benzm\"uller.
+extensive analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
+such as KB (TODO cite), followed by a range of studies of similar ontological arguments (TODO cite). TODO: newer work by Benzm\"uller.
 
 The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
@@ -119,19 +152,16 @@ representation on the fly to allow first-order theorem provers like E or SPASS (
 proof search much like e.g. Prover9 was able to do on a manually constructed first-order representation.
 
 These studies were still mainly concerned with case studies of concrete arguments or
-with conservative extensions of higher-order logic like functional higher-order modal logic.
-Furthermore, they relied heavily on the previously available completeness results of second-order modal
-logic with respect to Kripke models (TODO: cite).
+with conservative extensions of higher-order logic like quantified higher-order modal logic.
 \<close>
 
-subsection\<open>Prior Work on AOT involving the SSE Approach\<close>
+subsection\<open>Analysis of AOT with the SSE Approach\<close>
 
 text\<open>
-
-In our own previous work (see~\cite{MScThesis}) we applied an extended version of the technique of
-SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
+Initial results of our own research were reported in~\cite{MScThesis}, in which we applied an extended
+version of the technique of SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
 the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
-basis for the previous work using SSE as mentioned above. While the so-called Aczel models of object theory
+basis for the previous work using SSEs mentioned above. While the so-called Aczel models of object theory
 (TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
@@ -144,17 +174,15 @@ rely on the derived axioms and deduction rules.
 Abstraction layers turned out to be a helpful means for reasoning within a target theory without
 the danger of deriving artifactual theories, even in the absence of a formal completeness result
 about the used semantics.
-Furthermore, it can be used to analyze soundness and completeness of the semantics itself. (TODO: rethink; maybe
-reformulate differently)
 
-A major result of \cite{MScThesis} was the discovery of an oversight in the formulation of AOT that
-allowed for the reintroduction of a previously known paradox into the system. While multiple quick
+A major initial result of this project, reported in~\cite{MScThesis}, was the discovery of an oversight
+in the formulation of AOT that allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
 of the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
 while previously it was restricted to individual terms only (to account for non-denoting
 definite descriptions). This reworking of AOT was accompanied by a continuous further development of its
-embedding in Isabelle/HOL. This mutually beneficial mode of work was already partly described in
+embedding in Isabelle/HOL. This mutually beneficial mode of work was described in
 (TODO cite Open Philosophy) and resulted in a now stabilized improved formulation of AOT and a
 matching embedding. The details of this process and its results are the main subject of this thesis. 
 
@@ -438,7 +466,7 @@ together with all local assumptions, processes the resulting set of theorems heu
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
 CVC4, E or SPASS (TODO: cite). This may, for example, involve a translation from higher-order problems
-to first order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
+to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
 tries to reconstruct a short proof using Isabelle's proving methods (e.g. @{method metis} or @{method blast} TODO: cite?)
 that can be directly inserted to prove the current goal.
 
