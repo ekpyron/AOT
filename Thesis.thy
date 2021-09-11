@@ -62,13 +62,16 @@ that can serve as the basis for mathematics and thereby stands in the tradition 
 Whitehead's Principia Mathematica (TODO: cite), while in fact extending its scope to e.g. linguistics and
 the sciences in general (TODO: rethink, cite). Furthermore, it attempts to overcome the dilemma noted
 by Quine by basing its analysis on an intuitive distinction between \emph{ordinary} and \emph{abstract} objects
-and equipping the latter with a justifiable comprehension principle.(TODO: rethink, refer to later sections). On the other hand, it is based on logical foundations that significantly differ
+and equipping the latter with a very general and yet natural comprehension principle.(TODO: rethink, refer to later sections). On the other hand, it is based on logical foundations that significantly differ
 from classical functional higher-order type-theory and were even argued to be incompatible (see \cite{rtt}).
 Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
 models and semantics for such a system can be beneficial and vital for its soundness (TODO: refer to section with details).
 During our continued work we could contribute to the evolution of Abstract Object Theory and
 simultaneously arrived at a faithful representation of its model structure, semantics and
-deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.
+deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.\footnote{Note,
+however, that our embedding currently only extends to the second-order fragment of AOT, which is the subject
+of PLM chapters (TODO: cite). We briefly discuss the challenges of representing full higher-order
+object theory in chapter~\ref{HigherOrderAOT}.}
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
 of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
@@ -87,7 +90,7 @@ is commonly regarded as the first automated theorem prover.(TODO: cite \url{http
 When confronted with \emph{Logic Theorist}'s ability to prove 38 out of 52 theorems from chapter two of
 Whitehead and Russell’s Principia Mathematica (TODO: cite), including a proof more elegant than one of
 Whitehead and Russell’s own (TODO: cite MacKenzie 1995, Loveland 1984, Davis 1957),
-Russell recognized the potential in the computational analysis of logic:\footnote{TODO: precise quote.
+Russell was quick to recognized the potential of computational methods:\footnote{TODO: precise quote.
 Letter from Russell to Simon; source reference in \url{https://plato.stanford.edu/entries/computational-philosophy/}
 more text in \url{https://www.cl.cam.ac.uk/~jrh13/slides/lyon-04feb14/slides.pdf}. TODO: Verify primary source.}
 
@@ -104,7 +107,7 @@ subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 text\<open>
 
 The computational analysis of Abstract Object Theory (AOT) was pioneered by Fitelson and Zalta in
-\cite{FitelsonZalta}. They used the first-order system Prover9 for their work and were able to 
+\cite{FitelsonZalta}. They used the first-order system Prover9 (TODO: cite) for their work and were able to 
 verify the proofs of the theorems in AOT's analysis of situations and possible worlds in
 \cite{zalta1993}. Furthermore, they discovered an error in a theorem about Platonic Forms in~\cite{PelletierZalta}
 that was left as an exercise.
@@ -165,7 +168,7 @@ basis for the previous work using SSEs mentioned above. While the so-called Acze
 (TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
-of statements of the at the time most recent formulation of AOT in Principia Logico-Metaphysica (PLM) (TODO: cite).
+of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica (PLM) (TODO: cite).
 Furthermore, we introduced the new concept of @{emph \<open>abstraction layers\<close>}. An abstraction layer consists
 of a derivation of the axioms and deduction rules of a target system from a given semantics that is
 then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
@@ -183,8 +186,9 @@ of the foundations of AOT which culminated in the extension of the free logic of
 while previously it was restricted to individual terms only (to account for non-denoting
 definite descriptions). This reworking of AOT was accompanied by a continuous further development of its
 embedding in Isabelle/HOL. This mutually beneficial mode of work was described in
-(TODO cite Open Philosophy) and resulted in a now stabilized improved formulation of AOT and a
-matching embedding. The details of this process and its results are the main subject of this thesis. 
+(TODO cite Open Philosophy) and resulted in a now stabilized and improved formulation of AOT and a
+matching embedding of its second-order fragment. The details of this process and its results are
+the main subject of this thesis. 
 
 \<close>
 
@@ -195,9 +199,10 @@ In the following, we first give a more detailed description of Shallow Semantica
 a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
 
 Based on that, chapter~\ref{SSEofAOT} describes
-the constructed embedding of Abstract Object Theory in Isabelle/HOL while highlighting the contributions
-of the embedding to the theory of abstract objects on the one hand and the techniques developed for
-its implementation up to the dedicated reasoning system implemented in Isabelle/ML on the other hand.
+the constructed embedding of the second-order fragment of Abstract Object Theory in Isabelle/HOL while
+highlighting the contributions of the embedding to the theory of abstract objects on the one hand and
+the techniques developed for its implementation up to the dedicated reasoning system implemented in
+Isabelle/ML on the other hand.
 
 In chapter~\ref{NaturalNumbers} we present the results on the derivation of Natural Numbers and
 Mathematical Induction and discuss our proposed extension of AOT with a general comprehension
@@ -205,7 +210,6 @@ principle for relations among abstract objects.
 
 Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
 encompass the full higher-order type-theoretic version of Abstract Object Theory.
-TODO: explicitly mention the fact that the embedding deals with the second-order fragment only earlier and restate here.
 \<close>
 
 
@@ -794,15 +798,28 @@ albeit technically complex, solution. TODO: adjust references.
 chapter\<open>Abstract Object Theory\<close>text\<open>\label{AOT}\<close>
 
 text\<open>
-The following sections provide a brief introduction into Abstract Object Theory. While the first
+The following sections provide a brief introduction to Abstract Object Theory. While the first
 section will explain the general idea and motivation of object theory, the following sections
 reproduce the language and axiom system of AOT as implemented in our embedding. In the process,
 we hint at the major differences between the original formulation of AOT and its incarnation in
-our embedding, hinting at more detailed implementational details that will be discussed in the
+our embedding, hinting at implementational details that will be discussed in the
 next chapter.
 Note that unless explicitly stated otherwise, all definitions and theorems are cited directly
 from our embedding. TODO: rethink, elaborate (i.e. they are actual Isabelle-verified statements
 relative to the embedding).
+
+We restrict ourselves to the discussion of the second-order fragment of AOT which is the target of
+our embedding in Isabelle/HOL.\footnote{In the following chapters up until chapter~\ref{HigherOrderAOT}, we will
+refer to the second-order fragment of AOT plainly as AOT or \emph{object theory}.}
+The second-order fragment is expressive enough for the analysis of a wide variety of objects occurring in Philosophy and Mathematics,
+including Basic Logical Objects like Truh Values and Extensions of Propositions (see PLM chapter 10 TODO cite);
+Platonic Forms (PLM chapter 11); Situations, Worlds, Times, and Stories (PLM chapter 12);
+Concepts (PLM chapter 13) and Natural Numbers (PLM chapter 14).
+
+The applications of higher-order object theory and the challenges in representing it in Isabelle/HOL are
+briefly discussed in chapter~\ref{HigherOrderAOT}. To get an intuition for the level of expressiveness of
+higher-order object theory, note that it can be used to analyze e.g. Zermelo-Fraenkel set-theory itself as
+one of its abstract object. (TODO: consult with Ed on this one. Ideally cite.)
 \<close>
 section\<open>Overview\<close>
 
