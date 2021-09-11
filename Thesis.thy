@@ -64,9 +64,9 @@ an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
 \<close>
 
-section\<open>Previous Work\<close>
+section\<open>Prior Work\<close>
 
-subsection\<open>Previous Computational Analysis of Abstract Object Theory\<close>
+subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 
 text\<open>
 
@@ -90,7 +90,7 @@ In general, this approach may be sufficient for analyzing concrete isolated argu
 infeasible to construct a natural representation of an entire expressive higher-order theory and
 its full deductive system.
 \<close>
-subsection\<open>Previous Work involving Shallow Semantic Embeddings\<close>
+subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>
 
 text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
@@ -124,7 +124,7 @@ Furthermore, they relied heavily on the previously available completeness result
 logic with respect to Kripke models (TODO: cite).
 \<close>
 
-subsection\<open>Previous Work on AOT involving the SSE Approach\<close>
+subsection\<open>Prior Work on AOT involving the SSE Approach\<close>
 
 text\<open>
 
@@ -160,7 +160,7 @@ matching embedding. The details of this process and its results are the main sub
 
 \<close>
 
-section\<open>Overview of the Following Chapters\<close>
+section\<open>Contributions and Structure of the Thesis\<close>
 
 text\<open>
 In the following, we first give a more detailed description of Shallow Semantical Embeddings (chapter~\ref{SSEs}) and
