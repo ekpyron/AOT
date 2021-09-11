@@ -25,7 +25,7 @@ also note e.g. the opposite statement \url{https://kwarc.info/people/frabe/Resea
 and set theory has long been the prime choice for a common denominator of mathematical disciplines
 (TODO: cite), its modern paradox-free axiomatization following Zermelo-Fraenkel is often viewed as
 complex and counter-intuitive, respectively lacking in philosophical grounding and justification.
-This circumstance was already noted by Quine whose assessment is still commonly shared in present days:\footnote{TODO: precise quote.
+This sentiment was already expressed by Quine whose assessment is still commonly shared in present days:\footnote{TODO: precise quote.
 in \url{https://plato.stanford.edu/entries/computational-philosophy/} Quine 1951 153; ideally also a reference
 to a present formulation of the same sentiment.}
 
