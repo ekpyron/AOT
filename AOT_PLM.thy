@@ -5,13 +5,20 @@ begin
 (*>*)
 
 section\<open>The Deductive System PLM\<close>
+text\<open>\label{PLM: 9}\<close>
 
 (* constrain sledgehammer to the abstraction layer *)
 unbundle AOT_no_atp
 
+subsection\<open>Primitive Rule of PLM: Modus Ponens\<close>
+text\<open>\label{PLM: 9.1}\<close>
+
 AOT_theorem "modus-ponens": assumes \<open>\<phi>\<close> and \<open>\<phi> \<rightarrow> \<psi>\<close> shows \<open>\<psi>\<close>
   using assms by (simp add: AOT_sem_imp) (* NOTE: semantics needed *)
 lemmas MP = "modus-ponens"
+
+subsection\<open>(Modally Strict) Proofs and Derivations\<close>
+text\<open>\label{PLM: 9.2}\<close>
 
 AOT_theorem "non-con-thm-thm": assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<^bold>\<turnstile> \<phi>\<close>
   using assms by simp
@@ -57,6 +64,9 @@ AOT_theorem "vdash-properties:10": assumes \<open>\<phi> \<rightarrow> \<psi>\<c
   using MP assms by blast
 lemmas "\<rightarrow>E" = "vdash-properties:10"
 
+subsection\<open>Two Fundamental Metarules: GEN and RN\<close>
+text\<open>\label{PLM: 9.3}\<close>
+
 AOT_theorem "rule-gen": assumes \<open>for arbitrary \<alpha>: \<phi>{\<alpha>}\<close> shows \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
   using assms by (metis AOT_var_of_term_inverse AOT_sem_denotes AOT_sem_forall) (* NOTE: semantics needed *)
 lemmas GEN = "rule-gen"
@@ -65,6 +75,9 @@ AOT_theorem "RN[prem]": assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box
   by (meson AOT_sem_box assms image_iff) (* NOTE: semantics needed *)
 AOT_theorem RN: assumes \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close> shows \<open>\<box>\<phi>\<close>
   using "RN[prem]" assms by blast
+
+subsection\<open>The Inferential Role of Definitions\<close>
+text\<open>\label{PLM: 9.4}\<close>
 
 AOT_axiom "df-rules-formulas[1]": assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> shows \<open>\<phi> \<rightarrow> \<psi>\<close>
   using assms by (simp_all add: AOT_model_axiomI AOT_model_equiv_def AOT_sem_imp) (* NOTE: semantics needed *)
@@ -95,6 +108,8 @@ AOT_theorem "df-rules-terms[4]":
   shows \<open>(\<sigma>\<down> \<rightarrow> \<tau> = \<sigma>) & (\<not>\<sigma>\<down> \<rightarrow> \<not>\<tau>\<down>)\<close>
   using "df-rules-terms[2]"[axiom_inst, OF assms].
 
+subsection\<open>The Theory of Negations and Conditionals\<close>
+text\<open>\label{PLM: 9.5}\<close>
 
 AOT_theorem "if-p-then-p": \<open>\<phi> \<rightarrow> \<phi>\<close>
   by (meson "pl:1"[axiom_inst] "pl:2"[axiom_inst] MP)
@@ -435,6 +450,9 @@ AOT_theorem  "df-simplify:2": assumes \<open>\<phi> \<equiv> (\<psi> & \<chi>)\<
   by (metis "&E"(1) "&I" "\<equiv>E"(1, 2) "\<equiv>I" "\<rightarrow>I" assms)
 lemmas "\<equiv>S" = "df-simplify:1"  "df-simplify:2"
 
+subsection\<open>The Theory of Quantification\<close>
+text\<open>\label{PLM: 9.6}\<close>
+
 AOT_theorem "rule-ui:1": assumes \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close> and \<open>\<tau>\<down>\<close> shows \<open>\<phi>{\<tau>}\<close>
   using "\<rightarrow>E" "cqt:1"[axiom_inst] assms by blast
 AOT_theorem "rule-ui:2[const_var]": assumes \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close> shows \<open>\<phi>{\<beta>}\<close>
@@ -685,6 +703,9 @@ qed
 
 AOT_theorem "cqt-further:11": \<open>\<exists>\<alpha>\<exists>\<beta> \<phi>{\<alpha>,\<beta>} \<equiv> \<exists>\<beta>\<exists>\<alpha> \<phi>{\<alpha>,\<beta>}\<close>
   using "\<equiv>I" "\<rightarrow>I" "\<exists>I"(2) "\<exists>E" by metis
+
+subsection\<open>Logical Existence, Identity, and Truth\<close>
+text\<open>\label{PLM: 9.7}\<close>
 
 AOT_theorem "log-prop-prop:1": \<open>[\<lambda> \<phi>]\<down>\<close>
   using "cqt:2[lambda0]"[axiom_inst] by auto
@@ -1412,6 +1433,9 @@ proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
     using "uniqueness:1" "\<equiv>\<^sub>d\<^sub>fI" "\<exists>I" by fast
 qed
 
+subsection\<open>The Theory of Actuality and Descriptions\<close>
+text\<open>\label{PLM: 9.8}\<close>
+
 AOT_theorem "act-cond": \<open>\<^bold>\<A>(\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<^bold>\<A>\<phi> \<rightarrow> \<^bold>\<A>\<psi>)\<close>
   using "\<rightarrow>I" "\<equiv>E"(1) "logic-actual-nec:2"[axiom_inst] by blast
 
@@ -2063,6 +2087,9 @@ qed
 
 AOT_theorem "dr-alphabetic-thm": \<open>\<^bold>\<iota>\<nu> \<phi>{\<nu>}\<down> \<rightarrow> \<^bold>\<iota>\<nu> \<phi>{\<nu>} = \<^bold>\<iota>\<mu> \<phi>{\<mu>}\<close> (* TODO: vacuous *)
   by (simp add: "rule=I:1" "\<rightarrow>I")
+
+subsection\<open>The Theory of Necessity\<close>
+text\<open>\label{PLM: 9.9}\<close>
 
 AOT_theorem "RM:1[prem]": assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi> \<rightarrow> \<psi>\<close> shows \<open>\<box>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<box>\<phi> \<rightarrow> \<box>\<psi>\<close>
 proof -
@@ -3541,6 +3568,9 @@ AOT_theorem "oa-facts:7": \<open>O!x \<equiv> \<^bold>\<A>O!x\<close>
 
 AOT_theorem "oa-facts:8": \<open>A!x \<equiv> \<^bold>\<A>A!x\<close>
   by (meson "Act-Sub:3" "Hypothetical Syllogism" "\<equiv>I" "nec-imp-act" "oa-facts:2" "oa-facts:4")
+
+subsection\<open>The Theory of Relations\<close>
+text\<open>\label{PLM: 9.10}\<close>
 
 AOT_theorem "beta-C-meta": \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> \<rightarrow> ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv> \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n, \<nu>\<^sub>1...\<nu>\<^sub>n})\<close>
   using "lambda-predicates:2"[axiom_inst] by blast
@@ -6353,6 +6383,9 @@ proof -
                                 OF "&I", OF A, OF B]\<close>\<close>\<close>\<close>)+
 qed
 
+subsection\<open>The Theory of Objects\<close>
+text\<open>\label{PLM: 9.11}\<close>
+
 AOT_theorem "o-objects-exist:1": \<open>\<box>\<exists>x O!x\<close>
 proof(rule RN)
   AOT_modally_strict {
@@ -7517,6 +7550,9 @@ proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
     using "\<beta>\<rightarrow>C"(1) by blast
   AOT_thus \<open>\<box>(\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n})\<close> using "\<rightarrow>E" 0 by blast
 qed
+
+subsection\<open>Propositional Properties\<close>
+text\<open>\label{PLM: 9.12}\<close>
 
 AOT_define propositional :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Propositional'(_')\<close>)
   "prop-prop1": \<open>Propositional([F]) \<equiv>\<^sub>d\<^sub>f \<exists>p(F = [\<lambda>y p])\<close>
