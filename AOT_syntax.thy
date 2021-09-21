@@ -594,6 +594,7 @@ AOT_syntax_print_ast_translations
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
+    | [trm as Ast.Appl (Ast.Constant "_AOT_raw_appl"::_)] => trm
     | [trm] => (case unconstrain trm of (Ast.Variable name,c) => 
                   (case printVarKind name of SingleVariable x => c (Ast.Variable name) |
                     Ellipses (x,y) => (Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_exe_arg_ellipse\<close>) [
@@ -854,7 +855,6 @@ print_translation\<open>AOT_syntax_print_translations
 \<close>
 
 print_ast_translation\<open>AOT_syntax_print_ast_translations
-[(\<^const_syntax>\<open>AOT_term_of_var\<close>,
 let
 fun handleTermOfVar x kind name = (
 let
@@ -868,10 +868,9 @@ in
   | Verbatim name => Ast.mk_appl (Ast.Constant "_AOT_quoted") [Ast.mk_appl (Ast.Constant "_AOT_term_of_var") [x]]
 end
 )
-in
-fn ctxt => fn [x as Ast.Appl [Ast.Constant "_constrain", Ast.Appl [Ast.Constant kind, Ast.Variable name], _]] => handleTermOfVar x kind name
-| [x as Ast.Appl [Ast.Constant kind, Ast.Variable name]] => handleTermOfVar x kind name
-| [x as Ast.Appl [Ast.Constant rep, y]] => (
+fun termOfVar ctxt (Ast.Appl [Ast.Constant "_constrain", x as Ast.Appl [Ast.Constant kind, Ast.Variable name], _]) = termOfVar ctxt x
+  | termOfVar ctxt (x as Ast.Appl [Ast.Constant kind, Ast.Variable name]) = handleTermOfVar x kind name
+  | termOfVar ctxt (x as Ast.Appl [Ast.Constant rep, y]) = (
 let
 val (restr,_) = Local_Theory.raw_theory_result (fn thy => (
 let
@@ -887,11 +886,16 @@ in
   case restr of SOME r => Ast.Appl [Ast.Constant (\<^const_syntax>\<open>AOT_term_of_var\<close>), y]
   | _ => raise Match
 end)
-end
-),
-("_AOT_raw_appl", fn _ => fn t::a::args => let
-val ts = fold (fn a => fn b => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_args\<close>) [b,a]) args a
+
+in
+[(\<^const_syntax>\<open>AOT_term_of_var\<close>, fn ctxt => fn [x] => termOfVar ctxt x),
+("_AOT_raw_appl", fn ctxt => fn t::a::args => let
+(* TODO: instead of trying and catching, determine precise cases *)
+fun applyTermOfVar (t as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::[x])) = (case try (termOfVar ctxt) x of SOME y => y | _ => t)
+  | applyTermOfVar y = (case try (termOfVar ctxt) y of SOME x => x | _ => y)
+val ts = fold (fn a => fn b => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_args\<close>) [b,applyTermOfVar a]) args (applyTermOfVar a)
 in Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_appl\<close>) [t,ts] end)]
+end
 \<close>
 
 context AOT_meta_syntax
