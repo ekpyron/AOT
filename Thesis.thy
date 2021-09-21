@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
+  imports AOT_PLM AOT_RestrictedVariables "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
 begin
 (*>*)
 
@@ -84,13 +84,15 @@ the argument that the construction does not require any inherently mathematical 
 section\<open>Prior Work\<close>
 
 text\<open>
-The \emph{Logic Theorist}, developed by Allen Newell and Herbert Simon at Carnegie Mellon and programmed
-by J. C. Shaw using the vacuum tubes of the JOHNNIAC computer at the Institute for Advanced Study,
-is commonly regarded as the first automated theorem prover.(TODO: cite \url{https://plato.stanford.edu/entries/computational-philosophy/})
-When confronted with \emph{Logic Theorist}'s ability to prove 38 out of 52 theorems from chapter two of
-Whitehead and Russell’s Principia Mathematica (TODO: cite), including a proof more elegant than one of
-Whitehead and Russell’s own (TODO: cite MacKenzie 1995, Loveland 1984, Davis 1957),
-Russell was quick to recognized the potential of computational methods:\footnote{TODO: precise quote.
+The development of automated theorem provers has always been tied to the analysis of foundational formal
+systems. Already in the middle of the last century, Betrand Russell was quick to recognize the potential
+of computational methods, when confronted with the \emph{Logic Theorist}\footnote{A system developed by
+Allen Newell and Herbert Simon at Carnegie Mellon and programmed by J. C. Shaw using the vacuum tubes of
+the JOHNNIAC computer at the Institute for Advanced Study; TODO: cite.}, commonly regarded as the first
+automated theorem prover (TODO: cite \url{https://plato.stanford.edu/entries/computational-philosophy/}),
+and its ability to prove 38 out of 52 theorems from chapter two of Whitehead and Russell’s
+Principia Mathematica (TODO: cite), including a proof more elegant than one of
+Whitehead and Russell’s own (TODO: cite MacKenzie 1995, Loveland 1984, Davis 1957):\footnote{TODO: precise quote.
 Letter from Russell to Simon; source reference in \url{https://plato.stanford.edu/entries/computational-philosophy/}
 more text in \url{https://www.cl.cam.ac.uk/~jrh13/slides/lyon-04feb14/slides.pdf}. TODO: Verify primary source.}
 
@@ -99,9 +101,10 @@ willing to believe that everything in deductive logic can be done by machinery. 
 Whitehead and I had known of this possibility before we wasted 10 years doing it by hand.}
 
 Since then there has been significant progress both in the development of automated theorem provers
-in general and in the application of computational methods to logical theories in particular. Parts
-of this development are outlined in the following sections.
+in general and in the application of computational methods to logical theories in particular. Some
+of the more recent developments in this area are outlined in the following sections.
 \<close>
+
 subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 
 text\<open>
@@ -195,7 +198,7 @@ the main subject of this thesis.
 section\<open>Contributions and Structure of the Thesis\<close>
 
 text\<open>
-In the following, we first give a more detailed description of Shallow Semantical Embeddings (chapter~\ref{SSEs}) and
+In the following, we first provide a more detailed description of Shallow Semantical Embeddings (chapter~\ref{SSEs}) and
 a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
 
 Based on that, chapter~\ref{SSEofAOT} describes
@@ -205,7 +208,7 @@ the techniques developed for its implementation up to the dedicated reasoning sy
 Isabelle/ML on the other hand.
 
 In chapter~\ref{NaturalNumbers} we present the results on the derivation of Natural Numbers and
-Mathematical Induction and discuss our proposed extension of AOT with a general comprehension
+Mathematical Induction and discuss our proposed extension of AOT with a more general comprehension
 principle for relations among abstract objects.
 
 Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
@@ -305,7 +308,7 @@ about models and embeddings?
 
 While there are several advantages and disadvantages of using shallow vs. deep embeddings for
 Domain-Specific languages, we forgo a detailed discussion of them here (TODO: maybe citation?) and
-focus on the application of similar modes of embeddings to logical reasoning in the next section.
+focus on the application of similar modes of embeddings to logical reasoning in the next sections.
 \<close>
 
 section\<open>SSEs as Universal Reasoning Tools\<close>
@@ -340,8 +343,8 @@ In general, a Kripke frame consists of a set of possible worlds and a binary rel
 called @{emph \<open>accessibility relation\<close>}. For S5 there are two versions of semantics, one in which the
 accessibility relation is an equivalence relation and one in which there is no accessibility relation at
 all (TODO: cite M. Fitting "A Simple propositional S5 Tableau System"). For our purpose the simpler
-model suffices.@{footnote \<open>We will later show that this is the only choice for the particular modal
-logic of Abstract Object Theory due to its additional actuality operator. TODO: actually do that.\<close>}
+model suffices.@{footnote \<open>We will later argue that this is a natural choice for the particular modal
+logic of Abstract Object Theory due to its additional actuality operator and rigid definite descriptions. TODO: actually do that.\<close>}
 
 For possible worlds we can introduce a primitive type in Isabelle/HOL.
 \<close>
@@ -401,8 +404,9 @@ lemma 5: \<open>\<Turnstile> \<^bold>\<diamond>p \<^bold>\<rightarrow> \<^bold>\
 
 text\<open>The proofs of both axioms are automatically found by @{command sledgehammer} (TODO cite?).
 
-So far we have constructed an embedding of propositional S5 modal logic. However it is straightforward
-to enrich it with quantification.
+So far we have constructed an embedding of propositional S5 modal logic using what is commonly
+known as \emph{Standard Translation} of modal logic (TODO: cite). However it is straightforward
+to enrich this embedding with quantification.
 \<close>
 
 definition forall :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<forall>\<close> 110) where
@@ -410,7 +414,7 @@ definition forall :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (
 definition exists :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<exists>\<close> 110) where
   \<open>\<^bold>\<exists> x . \<phi> x \<equiv> \<lambda>w . \<exists> x . \<phi> x w\<close>
 
-text\<open>Note that we didn't have to introduce any particular type for individuals, but stated the
+text\<open>Note that we didn't have to introduce any particular type for individuals, but stated
 polymorphic definitions relative to a type variable @{typ 'a}. This way the same quantifier
 can be used for propositions themselves, any desired type for individuals or even properties of
 any order.
@@ -466,7 +470,7 @@ The main tool for automated reasoning in Isabelle/HOL in question is @{command s
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
 the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
 refer to TODO: cite.\<close>} it collects all theorems derived in the current @{command theory} context
-together with all local assumptions, processes the resulting set of theorems heuristically to find
+together with all local assumptions, and processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
 CVC4, E or SPASS (TODO: cite). This may, for example, involve a translation from higher-order problems
@@ -494,7 +498,7 @@ the provided set of theorems. Consequently, the proving power and therefore the 
 In our current implementation, we therefore use option (2) instead. However, this comes with
 some challenges. While the equational theorems introduced by simple @{command definition}s can
 easily be collected and marked, other more advanced constructions in Isabelle like type definitions
-or the @{command lift_definition}s (TODO: cite) introduce several theorems implicitly. While
+or @{command lift_definition}s (TODO: cite) introduce several theorems implicitly. While
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
 TODO: cite sledgehammer user guide section 6.1.
 
@@ -505,8 +509,8 @@ logic. This includes theorems @{command sledgehammer} relies on and disbarring t
 non-functional (conceptually, such theorems in question can be thought of as meta-theorems about
 derivations in our context TODO: rethink that, maybe collect examples).
 
-The solution used in the current embedding of Abstract Object Theory is the use of option (2), but
-it uses Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
+The solution used in the current embedding of Abstract Object Theory is the use of option (2), while
+using Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
 list. For convenience, an new command @{command AOT_sledgehammer} is introduced that internally
 configures @{command sledgehammer} (TODO: rethink; in practice I usually set up sledgehammer globally instead)
 to use the desired set of theorems and then passes the current
@@ -715,13 +719,13 @@ text\<open>This time we do not use mixfix notation to directly introduce syntax 
 definition valid_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> bool\<close> where \<open>valid_\<o>\<^sub>3 p \<equiv> \<forall> w . p w\<close>
 
 text\<open>Instead, we introduce a @{command nonterminal} as grammar root for the syntax of the embedded language.
-     The nonterminal then serves as the purely syntactic type for propositions in the grammar of our
+     The nonterminal then serves as purely syntactic type for propositions in the grammar of our
      sub-language.\<close>
 nonterminal prop\<o>\<^sub>3 
-text\<open>The nonterminal can be used as (purely syntactic) type in @{command syntax} definitions.\<close>
+text\<open>The nonterminal can be used as syntactic type in @{command syntax} definitions.\<close>
 syntax valid_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> bool\<close>  (\<open>\<Turnstile> _\<close> 1)
 
-text\<open>Furthermore we need to specify how propositions can be produced from terminals in the grammar.
+text\<open>Furthermore, we need to specify how propositions can be produced from terminals in the grammar.
 We want to use simple identifiers to refer to proposition variables. To that end we introduce a
 @{emph \<open>copy-production\<close>} rule (a rule that is not tied to a constant). The terminal
 @{typ id_position} is used for identifiers with additional markup information (TODO: reference and cite PIDE markup).
@@ -731,7 +735,7 @@ syntax "" :: \<open>id_position \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>_
 text\<open>Now we can already construct a simple term in our new syntax:\<close>
 term \<open>\<Turnstile> p\<close>
 
-text\<open>Since we introduce an entirely new grammar subtree that is independent of the usual HOL inner syntax,
+text\<open>Since we introduce an entirely new grammar subtree that is independent of the inner syntax of HOL,
 we can now reuse the same symbols for logical connectives as used in HOL (compared to having to use
 bold versions in the previous section).
 We first define the connectives without syntax (here the symbols refer to connectives and operators
@@ -773,13 +777,13 @@ As a simpler example, we also need to introduce parentheses explicitly in our gr
 syntax "" :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>'(_')\<close>)
 term \<open>\<Turnstile> p \<and> (\<diamond>q \<longrightarrow> p)\<close> \<comment> \<open>Without the above this would not parse.\<close>
 
-text\<open>Note that it is still possible to mix the usual HOL syntax with our newly defined subgrammar
+text\<open>It is still possible to mix the usual HOL syntax with our newly defined subgrammar
 to argue about validity:\<close>
 
 lemma \<open>(\<Turnstile> \<diamond>p \<longrightarrow> q) \<longrightarrow> (\<not>(\<Turnstile> p) \<or> (\<Turnstile> q))\<close>
   using dia_\<o>\<^sub>3_def imp_\<o>\<^sub>3_def valid_\<o>\<^sub>3_def by auto
 
-text\<open>Note that in the above the left-most implication is the implication of the embedded logic,
+text\<open>In the above the left-most implication is the implication of the embedded logic,
 while the other logical connectives are the ones of the meta-logic (i.e. of HOL).
 
 While the mechanisms described above are sufficient to introduce an accurate representation
@@ -902,22 +906,26 @@ an abstract object that encodes exactly the properties that satisfy the
 condition; formally: @{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem]}
 
 Here @{text "\<phi>{F}"} is the notation we use in the embedding to signify that @{term \<phi>} may contain
-a free occurrence of @{term F} (@{term \<phi>} may not contain a free occurrence of @{term x}, unless we had
-explicitly added @{term x} in curly braces as well; TODO: cite later section).
-Therefore, abstract objects can be modeled as elements
-of the power set of properties: every abstract object uniquely
-corresponds to a specific set of properties.
+a free occurrence of the bound variable @{term F} (@{term \<phi>} may not contain a free occurrence of @{term x},
+unless we had explicitly added @{term x} in curly braces as well; TODO: cite later section).\footnote{PLM, on the
+other hand, uses the opposite convention: any @{emph \<open>metavariable\<close>} like @{term \<phi>} may contain free
+occurrences of arbitrary variables unless explicitly excluded, i.e. instead of @{text "\<phi>{F}"}, PLM
+simply states @{term \<open>\<phi>\<close>} and uses natural language to add the proviso that @{term x} may
+@{emph \<open>not\<close>} occur free in @{term \<phi>}.} Taken together, the comprehension principle and the identity conditions
+of abstract objects imply that abstract objects be modeled as elements of the power set of properties:
+every abstract object uniquely corresponds to a specific set of properties.
 
 Given this basic theory of abstract objects, AOT can elegantly define
 a wide variety of objects that have been postulated in philosophy or
 presupposed in the sciences, including Leibnizian concepts, Platonic
 forms, possible worlds, natural numbers, logically-defined sets, etc.
 
-Another interesting aspect of the theory is its hyperintensionality.
+Another crucial aspect of the theory is its hyperintensionality:
 Relation identity is defined in terms of encoding rather than
 in terms of exemplification. Two properties @{term F} and @{term G} are stipulated to be identical if they are
-necessarily @{emph \<open>encoded\<close>} by the same abstract objects (@{thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}).
-However, the theory does not impose any restrictions on the properties encoded by a particular abstract
+necessarily @{emph \<open>encoded\<close>} by the same abstract objects (@{thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}).\footnote{Traditionally,
+one might expect properties to be identical, if they are necessarily @{emph \<open>exemplified\<close>} by the same objects instead.}
+The theory does not impose any restrictions on the properties encoded by a particular abstract
 object. For example, the fact that an abstract object encodes the
 property @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [G]x]\<guillemotright>\<close>} does not imply that
 it also encodes either the property @{term F}, or @{term G} or even
@@ -936,7 +944,7 @@ and @{emph \<open>being a set of all those sets that aren't members of
   themselves\<close>} may be regarded as distinct properties, although they
 are necessarily equivalent (both necessarily fail to be exemplified).
 
-In the following sections we provide a brief overview of the language, the axiom system and
+In the following sections, we provide a brief overview of the language, the axiom system and
 the deductive system of PLM. For a full account and detailed discussion refer to (TODO: cite PLM).
 \<close>
 
@@ -945,15 +953,14 @@ section\<open>The Language\<close>
 text\<open>
 
 A precise description of AOT's language can be found in (TODO: cite PLM).
-In the following we provide a simplified informal description while explaining some of the deviations
+In this section we provide a simplified informal description while explaining some of the deviations
 from AOT's conventions we use in our embedding.
 
 The language distinguishes between constants, variables and terms at each type. The types of
 the second-order fragment consist of a type of individuals and, for each @{text \<open>n \<ge> 0\<close>}, of a type
 of @{text n}-place relations, i.e. relations among @{text n} individuals.
-Formulas are considered as @{text 0}-place relation terms. Additionally,
-PLM uses @{emph \<open>meta-variables\<close>} that range over all variable names of a given type.
-PLM uses the following conventions for referring to the primitive language elements in each type:
+Formulas are considered as @{text 0}-place relation terms. PLM uses the following conventions for
+referring to the primitive language elements in each type:
 
   \<^item> Primitive individual constants: @{text \<open>a\<^sub>1, a\<^sub>2, \<dots>\<close>}
   \<^item> Individual variables: @{text \<open>x\<^sub>1, x\<^sub>2, \<dots>\<close>}
@@ -961,9 +968,8 @@ PLM uses the following conventions for referring to the primitive language eleme
   \<^item> @{text n}-place relation variables: @{text \<open>F\<^sup>n\<^sub>1, F\<^sup>n\<^sub>2, \<dots>\<close>}
   \<^item> A distinguished 1-place relation constant for @{emph \<open>being concrete\<close>}: @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}
 
-
-Additionally, AOT uses the Greek letters for meta-variables, i.e. schematic meta-logical variables
-ranging over arbitrary variable names or over terms. By convention, it associates specific kinds of
+Additionally, PLM uses Greek letters for @{emph \<open>meta-variables\<close>}, i.e. schematic meta-logical variables,
+that may range over all variable names or all terms at a given type. By convention, it associates specific kinds of
 meta-variables with Greek letters (with additional numbered subscripts as needed) as follows:
 
 
@@ -991,10 +997,10 @@ Furthermore, AOT introduces the following primitive formula- and term-forming op
   \<^item> @{term \<open>\<guillemotleft>\<box>\<phi>\<guillemotright>\<close>}, the @{emph \<open>necessity\<close>} operator
   \<^item> @{term \<open>\<guillemotleft>\<^bold>\<A>\<phi>\<guillemotright>\<close>}, the @{emph \<open>actuality\<close>} operator
   \<^item> @{term \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>\<close>}, the @{emph \<open>conditional\<close>} operator
-  \<^item> @{term \<open>AOT_TERM[(\<forall>\<alpha> \<phi>{\<alpha>})]\<close>}, the @{emph \<open>universal quantifier\<close>}@{footnote \<open>While PLM, by default, allows
-  any free variables to occur instances of a schematic meta-variable, unless specified otherwise, for
-  technical reasons, we choose the opposite convention, i.e. while a schematic meta-variable may contain
-  any occurence of variable that would remain @{emph \<open>free\<close>}, any @{emph \<open>bound\<close>} variables that may
+  \<^item> @{term \<open>AOT_TERM[(\<forall>\<alpha> \<phi>{\<alpha>})]\<close>}, the @{emph \<open>universal quantifier\<close>}@{footnote \<open>As mentioned in the previous section,
+  PLM, by default, allows any free variables to occur instances of a schematic meta-variable, unless specified otherwise.
+  For technical reasons, we choose the opposite convention, i.e. while a schematic meta-variable may still contain
+  any occurrence of variables that would remain @{emph \<open>free\<close>}, any @{emph \<open>bound\<close>} variables that may
   occur in an instance of the schematic meta-variable have to be explicitly listed in curly brackets.\<close>}
   \<^item> @{term \<open>AOT_TERM[\<^bold>\<iota>x \<phi>{x}]\<close>}, the @{emph \<open>definite description\<close>} operator
   \<^item> @{term \<open>AOT_TERM[[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]]\<close>}, the @{emph \<open>relation abstraction\<close>}- or @{text \<open>\<lambda>\<close>}-operator@{footnote \<open>Note
@@ -1024,7 +1030,7 @@ Derived connectives and quantifiers:
                "conventions:5"[of \<phi>]}
 \end{quote}
 
-Logical existence, i.e. the conditions under which an object @{emph \<open>denotes\<close>}:
+Logical existence, i.e. the conditions under which a term @{emph \<open>denotes\<close>} an object:
 
 \begin{quote}
 @{thm[display] "existence:1"[of \<kappa>]
@@ -1068,11 +1074,11 @@ Based on the described language and definitions we can state AOT's axiom system 
 section\<open>The Axiom System\<close>text\<open>\label{AxiomSystem}\<close>
 
 text\<open>
-In the following we reproduce the full axiom system of the latest formulation of AOT, while
+In the following, we reproduce the full axiom system of the latest formulation of AOT, while
 commenting on several aspects that are specific to AOT. Unless explicitly noted otherwise, we
 will directly cite the axioms from our implementation while explaining notational and conceptual
-differences to the original axiom system of AOT, which can be found with detailed explanations in
-(TODO: cite PLM).
+differences to the original axiom system of AOT. The original axiom system is stated in (TODO: cite PLM)
+with detailed explanations.
 
 The first set of axioms build up a Hilbert-style deductive system for negation and implications
 following Mendelsson's axiom system (TODO: cite Elliott Mendelson, Introduction to Mathematical Logic, Van Nostrand, New York, 1979, p. 31.):
@@ -1182,14 +1188,14 @@ so while @{text \<alpha>}-conversion can be stated, it effectively reduces to th
                "lambda-predicates:3"[axiom_inst, of _ F, print_as_theorem]}
 \end{quote}
 Note that the last of the above axioms, @{text \<eta>}-conversion, also has the @{text 0}-place case
-@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.\footnote{While identical,
+@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.\footnote{While identical by axiom,
 the syntactically distinct terms @{text \<open>p\<close>} and @{text \<open>[\<lambda> p]\<close>} in AOT are meant to capture
 the natural-language distinction between the statement @{text p} itself and the statement
-@{emph \<open>that @{text p} is true\<close>}. TODO: rethink.}
+@{emph \<open>that @{text p} is true\<close>}. TODO: rethink; mention subtlety of terms instead of variables.}
 
 The following axiom is specific to AOT and, together with generally extending AOT's free logic
 to relation terms and the refinement of base cases of denoting terms, a main aspect in the evolution
-of PLM that was originally triggered by our previous work in (TODO: cite MSc thesis).
+of PLM that was originally triggered by its analysis using our embedding (TODO: cite MSc thesis).
 It states that whenever a @{text \<lambda>}-expression denotes, any @{text \<lambda>}-expression with a matrix
 that is necessarily equivalent on all abstracted variables will denote as well:
 
@@ -1219,7 +1225,7 @@ The second axiom governing encoding states that encoding is @{emph \<open>modall
   @{thm[display] encoding[axiom_inst, of _ x F, print_as_theorem]}
 \end{quote}
 
-Furthermore, as mentioned in the overview, encoding is reserved for @{emph \<open>abstract\<close>} objects or
+Furthermore, as mentioned in the introduction of this chapter, encoding is reserved for @{emph \<open>abstract\<close>} objects or
 in other words: ordinary objects do not encode properties:
 
 \begin{quote}
@@ -1235,7 +1241,7 @@ properties that satisfy the condition:
 \end{quote}
 
 All above axioms are to be understood as axiom @{emph \<open>schemata\<close>}, i.e. their universal closures
-will also be axioms. Furthermore, for all axioms except the modally-fragile axiom of actuality,
+are axioms as well. Furthermore, for all axioms except the modally-fragile axiom of actuality,
 their modal closures are taken as axioms as well.
 \<close>
 
@@ -1265,25 +1271,32 @@ let
 fun deconstruct x = (case Term.strip_comb x of (Const (\<^const_syntax>\<open>Pure.imp\<close>, _), [prem,concl]) => apfst (fn x => prem::x) (deconstruct concl)
                      | _ => ([],x))
 val (prems,concl) = deconstruct x
-val (v,concl) = case concl of (Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_valid_in\<close>, _ ) $ v $ c)) => (v,c)
+val (v,concl) = case concl of (Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_valid_in\<close>, _ ) $ v $ c)) => (v,Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ c)
+                            | _ => (Const (\<^const_syntax>\<open>undefined\<close>, dummyT),concl)
 fun mapPremise (x as Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_valid_in\<close>, _ ) $ v' $ c)) = (if v = v' then Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ c else x)
   | mapPremise (x as Const (\<^const_syntax>\<open>Pure.all\<close>, _) $ (abs as Abs (name, t, xs))) = if t = @{typ w} then x else Const (\<^syntax_const>\<open>_AOT_for_arbitrary\<close>, dummyT) $ (Const ("_bound", dummyT) $ Free (name, dummyT)) $ (mapPremise (Term.betapply (abs, Const ("_bound", dummyT) $ Free (name, dummyT))))
   | mapPremise (x as Const (\<^const_syntax>\<open>Pure.imp\<close>, _) $ p $ q) = Const (\<^syntax_const>\<open>_AOT_derivable\<close>, dummyT) $ mapPremise p $ mapPremise q
+  | mapPremise (x as Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_equiv_def\<close>, _ ) $ lhs $ rhs)) = (Const (\<^syntax_const>\<open>_AOT_equiv_def\<close>, dummyT) $ lhs $ rhs)
+  | mapPremise (x as Const (\<^const_syntax>\<open>HOL.Trueprop\<close>, _) $ (Const (\<^const_syntax>\<open>AOT_model_id_def\<close>, _ ) $ lhs $ rhs)) = (Const (\<^const_syntax>\<open>AOT_model_id_def\<close>, dummyT) $ lhs $ rhs)
 val prems = map mapPremise prems
 val prem = (hd prems)
 val prem = fold (fn c => fn p => (Const (\<^syntax_const>\<open>_AOT_asms\<close>, dummyT) $ p $ c)) (tl prems) prem
 val der = case v of Const ("_var", _) $ _ => \<^syntax_const>\<open>_AOT_rule\<close> | _ => \<^syntax_const>\<open>_AOT_rule\<close>
 in
-Const (der, dummyT) $ prem $ (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $  concl)
+Const (der, dummyT) $ prem $ concl
 end))]\<close>
 (*>*)
 text\<open>
 
 While an implementation of the complete deductive system of PLM chapter~9 (TODO: cite properly) can be
 found in (TODO: cite), a full discussion of the entire system would go beyond the scope of this thesis.
-However, we will discuss some aspects in detail.
+However, we will discuss some aspects (TODO: that are required for understanding the rest of the thesis?) in detail.
+\<close>
 
-Since the axioms in the last section are to be understood as axiom schemata, i.e. their statement
+subsection\<open>Primitive and Derived Meta-Rules\<close>
+
+text\<open>
+Since the axioms of AOT are to be understood as axiom schemata, i.e. their statement
 includes the statement of adequate closures, a single primitive rule of inference suffices for
 the deductive system of PLM, i.e. Modus Ponens:@{footnote \<open>Note that we are still citing rules directly from the embedding
 using a special printing mode for meta-rules.\<close>}
@@ -1302,7 +1315,7 @@ The deduction theorem:
 @{thm[display] "deduction-theorem"[print_as_rule]}
 \end{quote}
 
-The rule of necessitation RN:
+The rule of necessitation RN:\footnote{TODO: refer to more detailed discussion about the converse of RN.}
 \begin{quote}
 @{thm[display] "RN"[print_as_rule]}
 \end{quote}
@@ -1311,9 +1324,140 @@ The rule of generalization GEN:
 \begin{quote}
 @{thm[display] "GEN"[print_as_rule]}
 \end{quote}
+\<close>
+
+subsection\<open>The Inferential Role of Definitions\<close>
+
+text\<open>
+PLM uses two kinds of definitions: definitions-by-equivalence @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} and definitions-by-identity
+@{text \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close>}.
+While, intuitively, definitions by equivalence imply definiens and definiendum to be equivalent (@{text \<open>\<equiv>\<close>})
+and definitions by identity imply them to be identical, further care is required when stating their
+precise inferential roles.
+\<close>
+
+subsubsection\<open>Definitions by Equivalence\<close>
+
+text\<open>Since equivalence (@{text \<open>\<equiv>\<close>}) is itself @{emph \<open>defined\<close>} using a definition-by-equivalence,
+it cannot be used to specify the inferential role of definitions-by-equivalence. Instead the inferential role
+has to be formulated relative in terms of primitives of the language, i.e. of implication.
+
+To that end, PLM formulates a @{emph \<open>Rule of Definition by Equivalence\<close>} that we reproduce in
+the embedding as follows:
+
+\begin{quote}
+@{thm[display] "df-rules-formulas[1]"[axiom_inst, of \<phi> \<psi>, print_as_rule]
+               "df-rules-formulas[2]"[axiom_inst, of \<phi> \<psi>, print_as_rule]}
+\end{quote}
+
+In other words (and as formulated in PLM TODO: cite), a definition-by-equivalence of the form @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} introduces the closures of
+@{text \<open>\<phi> \<rightarrow> \<psi>\<close>} and @{text \<open>\<psi> \<rightarrow> \<phi>\<close>} as necessary axioms.
+
+The maybe more natural principle that a definition-by-equivalence implies definiens and definiendum to
+in fact be equivalent can then be derived:
+
+\begin{quote}
+@{thm[display] "\<equiv>Df"[of \<phi> \<psi>, print_as_rule]}
+\end{quote}
+
+Another noteworthy subtlety in PLM's use of definitions by equivalence is its convention that such definitions
+are stated using object-level variables, even though those variables act as meta-variables.
+For instance, following PLM's conventions, the definition of identity for properties (TODO cite) can be stated as:
+
+\begin{quote}
+@{thm[display] "identity:2"[of F G]}
+\end{quote}
+
+However, replacing @{term F} and @{term G} by any property term constitutes a valid instance of this
+definition. In order to avoid confusion for a reader that is not familiar with this convention, we
+choose to either state the definitions using meta-variables instead, or state a derived equivalence
+as theorem using object-variables in its place (which allows forgoing clauses about the significance
+of the involved terms in the definiendum). I.e. in the upcoming chapters, instead of stating e.g. the full
+definition-by-equivalence for property identity, we may illustrate the definition using a simpler
+theorem using regular object-level variables while dropping significance constraints:
+
+\begin{quote}
+@{thm[display] "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}
+\end{quote}
+
+This simplification is justified, since most definitions of PLM are formulated in such a way
+that the definiens implies the significance of all free terms in the definiendum, so unless noted otherwise
+it can be assumed that the definiendum of a definition-by-equivalence is false for non-denoting terms.
+A notable example of an exception to this rule is the definition of non-identity: for two terms to be
+non-identical neither has to be significant, respectively non-significant terms are non-identical
+to any other terms.
+\<close>
+
+subsubsection\<open>Definitions by Identity\<close>
+
+text\<open>
+A subtlety in definitions by identity is their behaviour in the presence of non-denoting terms.
+This is made explicit in the formulation of the Rule of Definition by Identity:
+
+\begin{quote}
+@{thm[display] "df-rules-terms[1]"[axiom_inst, print_as_rule, of \<tau> \<sigma> _ \<tau>\<^sub>1\<tau>\<^sub>n]}
+\end{quote}
+
+I.e. if the definiens denotes, a definition by identity implies identity, if the definitions fails to denote,
+a definition by identity implies that the definiendum fails to denote as well.
+In the simplest case of a definition-by-identity that does not involve any free variables,
+the definition-by-identity reduces to a plain identity, if the definiens provably denotes.
+
+\<close>
+
+subsection\<open>Reasoning in PLM\<close>(* TODO: section title? *)
+
+text\<open>
+Based on the fundamental meta-rules above, PLM derives further theorems and rules governing
+Negations and Conditionals (TODO: cite PLM 9.5); Quantification (TODO: cite PLM 9.6);
+Logical Existence, Identity and Truth (TODO: cite PLM 9.7); Actuality and Descriptions (TODO: cite PLM 9.8);
+Necessity (TODO: cite PLM 9.9); Relations (TODO: cite PLM 9.10); Objects (TODO: cite PLM 9.11) and
+Propositional Properties (TODO: cite 9.12).
+\<close>
+
+subsection\<open>Restricted Variables\<close>
+
+text\<open>
+
+TODO: cite discussion in PLM.
+
+A common theme in abstract object theory is the definition and analysis of certain families
+of objects. For instance, Possible Worlds, Logical Sets or Natural Numbers are families
+of abstract objects with specific properties. Furthermore, some constructions involve talking
+about the Ordinary Objects specifically. To be able to more conveniently state
+theorems involving such families of objects, PLM introduces a general mechansism for defining
+@{emph \<open>restricted variables\<close>} that range over objects satisfying a certain @{emph \<open>restriction condition\<close>}.
+\<close>
+
+text\<open>
+A formula @{term \<psi>} that involves a single free, unrestricted variable @{term \<alpha>}, i.e. a formula
+that can be written as @{text \<open>\<psi>{\<alpha>}\<close>} in the notational convention of the embedding, is called
+a @{emph \<open>restriction condition\<close>}, just in case that it is both @{emph \<open>non-empty\<close>}, i.e.
+@{thm (concl) "AOT_restriction_condition.res-var:2"[of \<psi>, print_as_theorem]} is a (modally-strict)
+theorem, and has @{emph \<open>strict existential import\<close>}, i.e. @{thm (concl) "AOT_restriction_condition.res-var:3"[of \<psi> _ \<tau>, print_as_theorem]}
+is a (modally-strict) theorem.\footnote{PLM distinguishes @{emph \<open>restriction conditions\<close>}, in which non-emptyness
+and strict existential import are modally-strict and @{emph \<open>weak restriction conditions\<close>}, in which neither
+are required to be modally strict. Since the parts of PLM implemented in our embedding do not involve
+weak restriction conditions, the embedding thus far forgoes an implementation of them. However,
+it should be straightforward to extend the current implementation to also cover weak restriction
+conditions.}
+
+An example of a restriction condition is @{emph \<open>being ordinary\<close>}, i.e. @{term \<open>\<guillemotleft>O!x\<guillemotright>\<close>}.\footnote{It
+is a theorem that there necessarily exists an ordinary object @{thm "o-objects-exist:1"[print_as_theorem]}
+TODO: cite PLM and embedding, as a consequence of the modal axiom @{thm "qml:4"[axiom_inst, print_as_theorem]},
+the definition of @{emph \<open>being ordinary\<close>} as @{thm "oa:1"}, @{text \<open>\<beta>\<close>}-conversion and some modal reasoning.
+Furthermore, strict existential instance follows from the last quantifier axiom TODO: ref.}\<close>
+
+
+
+
+subsection\<open>Identity on the Ordinary Objects\<close>
+
+subsection\<open>Definite Descriptions\<close>
+
+text\<open>
 
 TODO: needs to mention (since referenced later):
-  \<^item> Inferential role of definitions.
   \<^item> Two deductive systems: modally-strict and modally-fragile.
   \<^item> Rigid restriction conditions and restricted variables.
   \<^item> Definition of identity on the ordinary objects.
@@ -1614,6 +1758,71 @@ inner syntax.
 
 Given this discussion and the meta-rule derived above, the fact that Isabelle implicitly generalizes
 free variables to schematic variables remains faithful to the derivational system of AOT.
+\<close>
+
+subsection\<open>Trivial Accessibility Relation for the Modal Logic\<close>
+
+text\<open>As already hinted at in section (TODO cite), choosing a trivial accessibility relation (respectively, equivalently,
+no accessibility relation at all) is a natural choice for modelling the modal logic of AOT.
+In fact, it can be shown that if AOT's actuality operator is modelled using a fixed actual world,
+any accessibility relation used for modelling necessity has to be trivial.
+
+To see this, consider the following simple embedding of a general extensional modal logic with actuality
+operator, in which the actuality operator is modelled as validity in an arbitrary, but fixed actual world
+@{text \<open>w\<^sub>0\<close>}.
+\<close>
+
+consts r :: \<open>w \<Rightarrow> w \<Rightarrow> bool\<close>
+consts w\<^sub>0 :: w
+type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
+definition valid :: \<open>\<o> \<Rightarrow> bool\<close> (\<open>\<Turnstile> _\<close>) where \<open>valid \<equiv> \<lambda> \<phi> . \<forall> w . \<phi> w\<close>
+definition impl :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<rightarrow>\<close> 8) where \<open>impl \<equiv> \<lambda> \<phi> \<psi> w . \<phi> w \<longrightarrow> \<psi> w\<close>
+definition box :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<box>_\<close> [50] 50) where \<open>box \<equiv> \<lambda> \<phi> w . \<forall> v . r w v \<longrightarrow> \<phi> v\<close>
+definition actual :: \<open>\<o> \<Rightarrow> \<o>\<close> (\<open>\<^bold>\<A>_\<close> [50] 50) where \<open>actual \<equiv> \<lambda> \<phi> w . \<phi> w\<^sub>0\<close>
+definition equiv :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close> (infixl \<open>\<^bold>\<equiv>\<close> 10) where \<open>equiv \<equiv> \<lambda> \<phi> \<psi> w . \<phi> w \<longleftrightarrow> \<psi> w\<close>
+
+text\<open>
+In this simple system, @{command sledgehammer} can immediately prove that all semantic possible
+worlds have to be related by the accessibility relation, given the T axiom and one of AOT's axioms
+of actuality and necessity:
+\<close>
+
+lemma
+  assumes \<open>\<And> \<phi> . \<Turnstile> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<phi>)\<close>
+      and \<open>\<And> \<phi> . \<Turnstile> (\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<A>\<^bold>\<box>\<phi>)\<close>
+    shows \<open>\<forall> x y . r x y\<close>
+  by (metis (mono_tags, hide_lams) assms equiv_def actual_def box_def impl_def valid_def)
+
+text\<open>However, note that this does not mean that a trivial accessibility relation is in fact the only
+choice in modelling AOT's modal logic. While the S5 axioms imply that the accessibility relation has
+to be an equivalence relation, we conjecture that it is possible to model an actuality operator by
+choosing a different actual world for each equivalence class of worlds induced by the accessibility relation.
+
+However, independently of potential philosophical issues one may raise against presuming (even if only
+for the purpose of modelling) more than one world that may, depending on modal context, be @{emph \<open>actual\<close>},
+an additional practical problem arises: in order to additionally satisfy AOT's axiom for rigid definite descriptions,
+the description operator would need to become world-relative: instead of choosing the unique object that
+satisfies the matrix of the description in the globally-fixed actual world, the description operator
+would have to choose the unique object that satisfies the matrix in the respective actual world of
+the equivalence class of possible worlds in which the formula containing the description is evaluated.
+
+Allowing the denotation of an individual term to vary depending on modal context constitutes a
+significant complication for the models. Therefore, our current work forgoes further analysis
+of this way to extend the basic model structure of AOT. However, such an extension of the models may
+constitute an interesting topic for future research. We conjecture that it is possible to construct models
+with a different actual world for each equivalence class of worlds, and that doing so could
+lead to a means to reproduce the strict distinction between modally-strict and modally-fragile theorems
+in AOT as follows: while modally-strict theorems could be modelled as being valid in all possible worlds,
+i.e. across all equivalence classes in the accessibility relation, modally-fragile axioms could be
+modelled as being valid in a globally-fixed actual world, despite the fact that actuality may choose
+a different actual world depending on the modal context. This way, adding a contingent truth to the
+modally-fragile derivation system would merely assert that it holds in the globally-fixed actual world,
+whereas a modally-strict proof of some statement being @{emph \<open>actually true\<close>} would require that
+statement to be true in @{emph \<open>all\<close>} actual worlds. This would constitute a model in which 
+@{text \<open>\<turnstile> \<phi>\<close>} would no longer imply @{text \<open>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>} and, consequently, in which the converse of RN fails,
+i.e. @{text \<open>\<turnstile> \<box>\<phi>\<close>} would no longer imply @{text \<open>\<turnstile>\<^sub>\<box> \<phi>\<close>} (while the former merely requires @{text \<open>\<phi>\<close>}
+to be valid in all worlds accessible from the globally-fixed actual world, the latter also requires
+@{text \<open>\<phi>\<close>} to be true even in worlds inaccessible from the global actual world).
 \<close>
 
 subsection\<open>Further Meta-Theorems\<close>
