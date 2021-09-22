@@ -1409,10 +1409,10 @@ subsection\<open>Reasoning in PLM\<close>(* TODO: section title? *)
 
 text\<open>
 Based on the fundamental meta-rules above, PLM derives further theorems and rules governing
-Negations and Conditionals (TODO: cite PLM 9.5); Quantification (TODO: cite PLM 9.6);
-Logical Existence, Identity and Truth (TODO: cite PLM 9.7); Actuality and Descriptions (TODO: cite PLM 9.8);
-Necessity (TODO: cite PLM 9.9); Relations (TODO: cite PLM 9.10); Objects (TODO: cite PLM 9.11) and
-Propositional Properties (TODO: cite 9.12).
+Negations and Conditionals (TODO: \citePLMsec{9.5}); Quantification (TODO: \citePLMsec{9.6});
+Logical Existence, Identity and Truth (TODO: \citePLMsec{9.7}); Actuality and Descriptions (TODO: \citePLMsec{9.8});
+Necessity (TODO:\citePLMsec{9.9}); Relations (TODO: \citePLMsec{9.10}); Objects (TODO: \citePLMsec{9.11}) and
+Propositional Properties (TODO: \citePLMsec{9.12}).
 \<close>
 
 subsection\<open>Restricted Variables\<close>
