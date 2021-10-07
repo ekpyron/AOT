@@ -2,7 +2,7 @@
 \usepackage{isabelle,isabellesym}
 \usepackage{url}
 \usepackage{xr}
-\usepackage[usenames]{color}
+\usepackage{xcolor}
 \usepackage{csquotes}
 \usepackage{graphicx}
 \usepackage{geometry}
@@ -12,6 +12,10 @@
 \usepackage[all]{nowidow}
 \usepackage[stable]{footmisc}
 \usepackage[ngerman,english]{babel}
+\usepackage{lineno}
+\usepackage[T1]{fontenc}
+\usepackage{environ}
+
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 \newcommand{\bigbox}{}
 \setcounter{secnumdepth}{2}
@@ -133,6 +137,213 @@
 \title{Computer-Verified Foundations of Metaphysics\\ and an Ontology of Natural Numbers in Isabelle/HOL}
 \author{Daniel Kirchner}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\pidesymparm}{$\mathord{\color{black!33}\bullet}$}% TODO
+
+\newcommand{\pidesymtimes}{$\times$}%TODO
+\newcommand{\pidesymhyphen}{--}%TODO
+\newcommand{\pidesymlangle}{$\langle$}
+\newcommand{\pidesymrangle}{$\rangle$}
+\newcommand{\pidesympipe}{|}
+
+\newcommand{\pidesymrightarrow}{$\rightarrow$}
+\newcommand{\pidesymleftarrow}{$\leftarrow$}
+\newcommand{\pidesymdown}{$\downarrow$}
+\newcommand{\pidesymneg}{$\neg$}
+
+\newcommand{\pidesymcartoucheleft}{\guilsinglleft}
+\newcommand{\pidesymcartoucheright}{\guilsinglright}
+\newcommand{\pidesymguillemotleft}{\guillemotleft}
+\newcommand{\pidesymguillemotright}{\guillemotright}
+\newcommand{\pidesymldots}{$\ldots$}
+
+\newcommand{\pidesymGamma}{$\Gamma$}
+\newcommand{\pidesymDelta}{$\Delta$}
+\newcommand{\pidesymTheta}{$\Theta$}%?
+\newcommand{\pidesymLambda}{$\Lambda$}
+\newcommand{\pidesymXi}{$\Xi$}%?
+\newcommand{\pidesymPi}{$\Pi$}
+\newcommand{\pidesymPsi}{$\Pi$}
+\newcommand{\pidesymalpha}{$\alpha$}
+\newcommand{\pidesymbeta}{$\beta$}
+\newcommand{\pidesymgamma}{$\gamma$}
+\newcommand{\pidesymdelta}{$\delta$}
+\newcommand{\pidesymepsilon}{$\varepsilon$}
+\newcommand{\pidesymlongrightarrow}{$\longrightarrow$}
+\newcommand{\pidesymLeftrightarrow}{$\Leftrightarrow$}%?
+\newcommand{\pidesymvarphi}{$\varphi$}
+
+\newcommand{\pidesymzeta}{$\zeta$}
+\newcommand{\pidesymeta}{$\eta$}
+\newcommand{\pidesymvartheta}{$\vartheta$}%?
+\newcommand{\pidesymiota}{$\iota$}
+\newcommand{\pidesymkappa}{$\kappa$}%?
+\newcommand{\pidesymlambda}{$\lambda$}
+
+\newcommand{\pidesymmu}{$\mu$}
+\newcommand{\pidesymnu}{$\nu$}
+\newcommand{\pidesymxi}{$\xi$}
+
+\newcommand{\pidesymsigma}{$\sigma$}
+\newcommand{\pidesymtau}{$\tau$}
+
+\newcommand{\pidesymchi}{$\chi$}
+\newcommand{\pidesympsi}{$\psi$}
+\newcommand{\pidesymomega}{$\omega$}
+
+\newcommand{\pidesymupsilon}{$\upsilon$}
+\newcommand{\pidesymSigma}{$\Sigma$}
+\newcommand{\pidesymPhi}{$\Phi$}
+
+\newcommand{\pidesymmathbbN}{$\mathbb{N}$}
+\newcommand{\pidesymmathcalR}{\underline{R}}%TODO: \mathcal{R}?
+
+\newcommand{\pidesymRightarrow}{$\Rightarrow$}% =>?
+
+\newcommand{\pidesymforall}{$\forall$}
+
+\newcommand{\pidesymexists}{$\exists$}
+\newcommand{\pidesymnotexists}{$\not\exists$}
+\newcommand{\pidesymemptyset}{$\emptyset$}%?
+
+\newcommand{\pidesymin}{$\in$}
+\newcommand{\pidesymnotin}{$\not\in$}
+
+\newcommand{\pidesymcirc}{$\circ$}%\circ TODO?
+
+\newcommand{\pidesymlor}{$\lor$}%?
+
+\newcommand{\pidesymapprox}{$\approx$}
+
+\newcommand{\pidesymnoteq}{$\not=$}%?
+\newcommand{\pidesymequiv}{$\equiv$}
+
+\newcommand{\pidesymsubseteq}{$\subseteq$}
+
+\newcommand{\pidesymland}{$\land$}%?
+
+\newcommand{\pidesymcup}{$\cup$}%?
+
+\newcommand{\pidesymvdash}{$\vdash$}
+
+\newcommand{\pidesymtop}{$\top$}
+\newcommand{\pidesymbot}{$\bot$}
+
+\newcommand{\pidesymmodels}{$\models$}%?
+
+\newcommand{\pidesymtrianglelefteq}{$\trianglelefteq$}%?
+
+\newcommand{\pidesymbigwedge}{$\bigwedge$}%?
+
+\newcommand{\pidesymBox}{$\Box$}
+
+\newcommand{\pidesymDiamond}{$\Diamond$}
+
+\newcommand{\pidesymlongleftrightarrow}{$\longleftrightarrow$}%?
+\newcommand{\pidesymLongrightarrow}{$\Longrightarrow$}%?
+
+\newcommand{\pidesymlBrace}{$\{\!|$}%TODO
+\newcommand{\pidesymrBrace}{$|\!\}$}%TODO
+
+\newcommand{\pidesymlParen}{$(\!|$}%TODO
+\newcommand{\pidesymrParen}{$|\!)$}%TODO
+
+\newcommand{\pidesymmathcalA}{$\mathcal{A}$}%?
+
+\newcommand{\pidesymmathcalP}{$\mathbb{P}$}%TODO: \mathcal{P}?
+\newcommand{\pidesymmathcalS}{\underline{S}}%TODO: \mathcal{S}?
+\newcommand{\pidesymmathrmo}{$\mathrm{o}$}%?
+
+
+\definecolor{pidekeyword1}{HTML}{006699}
+\definecolor{pidekeyword2}{HTML}{009966}
+\definecolor{pidekeyword3}{HTML}{0066FF}
+\definecolor{pidetext}{HTML}{CC6600}
+\definecolor{pidefree}{HTML}{0000FF}
+\definecolor{pidevar}{HTML}{00009B}
+\definecolor{pidetfree}{HTML}{A020F0}
+\definecolor{pideskolem}{HTML}{D2691E}
+\definecolor{pidebound}{HTML}{008000}
+\definecolor{pidecomment1}{HTML}{CC0000}
+\definecolor{pidecomment2}{HTML}{FF8400}
+\definecolor{pidecomment3}{HTML}{6600CC}
+\definecolor{pideinnerquoted}{HTML}{FF00CC}
+\definecolor{pideantiquote}{HTML}{6600CC}
+\definecolor{pidequasikeyword}{HTML}{9966FF}
+\definecolor{pideimproper}{HTML}{FF5050}
+\definecolor{pideantiquoted}{HTML}{000000}
+\definecolor{pidedynamic}{HTML}{7BA428}
+\definecolor{piderawtext}{HTML}{6600CC}
+\definecolor{pideinnernumeral}{HTML}{FF0000}
+\definecolor{pideclassparameter}{HTML}{D2691E}
+\definecolor{pideliteral}{HTML}{006699}
+\definecolor{pideoperator}{HTML}{323232}
+
+\newenvironment{pidekeyword}{\bfseries}{}
+\newenvironment{pidekeyword1}{\color{pidekeyword1}\bfseries}{}
+\newenvironment{pidekeyword2}{\color{pidekeyword2}\bfseries}{}
+\newenvironment{pidekeyword3}{\color{pidekeyword3}\bfseries}{}
+\newenvironment{pidequoted}{}{}
+\newenvironment{pideplain_text}{\color{pidetext}}{}
+\newenvironment{pidecommand}{\bfseries}{}
+\newenvironment{pidemain}{\color{black}}{}
+\newenvironment{pidefree}{\color{pidefree}}{}
+%\newenvironment{pideoperator}{\color{pideoperator}}{}% TODO: used for named_theorems?
+\newenvironment{pideoperator}{}{}% TODO: used for named_theorems?
+\newenvironment{pideantiquoted}{\color{pideantiquoted}}{}
+\newenvironment{pideantiquote}{\color{pideantiquote}}{}
+\newenvironment{pidecomment}{\color{pidecomment1}}{}
+\newenvironment{pidecomment1}{\color{pidecomment1}}{}
+\newenvironment{pidecomment2}{\color{pidecomment2}}{}
+\newenvironment{pidecomment3}{\color{pidecomment3}}{}
+\newenvironment{pidequasi_keyword}{\color{pidequasikeyword}}{}
+\newenvironment{pidehidden}{}{}
+\newenvironment{pideentity}{}{}
+\newenvironment{pidedynamic}{\color{pidedynamic}}{}
+\newenvironment{pidebound}{\color{pidebound}}{}
+\newenvironment{pideinner_quoted}{\color{pideinnerquoted}}{}
+\NewEnviron{pidecontrol}{{\color{black}\bfseries\BODY}}
+%\newenvironment{control}{}{}
+\newenvironment{pideskolem}{\color{pideskolem}}{}
+\newenvironment{pidevar}{\color{pidevar}}{}
+\newenvironment{pidetfree}{\color{pidetfree}}{}
+\newenvironment{pideimproper}{\color{pideimproper}}{}
+\newenvironment{pideraw_text}{\color{piderawtext}}{}
+\newenvironment{pideclass_parameter}{\color{pideclassparameter}}{}
+\newenvironment{pideinner_numeral}{\color{pideinnernumeral}}{}
+
+\newenvironment{pidecartouche}{}{}
+\newenvironment{pidelanguage}{}{}
+\newenvironment{pidestring}{}{}
+\newenvironment{pidedelimiter}{}{}
+\newenvironment{pideml_delimiter}{}{}
+\newenvironment{pideml_keyword1}{\color{pidekeyword1}}{}
+\newenvironment{pideml_keyword2}{\color{pidekeyword2}}{}
+\newenvironment{pideml_keyword3}{\color{pidekeyword3}}{}
+\newenvironment{pideml_string}{\color{pideinnerquoted}}{}
+\newenvironment{pideml_char}{\color{pideinnerquoted}}{}%TODO
+\newenvironment{pideml_comment}{\color{pidecomment1}}{}
+\newenvironment{pideml_numeral}{\color{pideinnernumeral}}{}
+\newenvironment{pidexml_elem}{}{}
+\newenvironment{pidexml_body}{}{}
+\newenvironment{pideblock}{}{}
+\newenvironment{pidebreak}{}{}
+\newenvironment{pideliteral}{\color{pideliteral}}{}
+\newenvironment{pidedynamic_fact}{\color{pidedynamic}}{}
+\hbadness=10000
+\vbadness=10000
+
+\makeatletter
+	\newcommand\plmlabel[2][]{\phantomsection\def\@currentlabelname{#1}\label{#2}}
+ \newcommand{\myhypertarget}[2]{\Hy@raisedlink{\hypertarget{#1}{}}#2}
+\makeatother
+
+\newcommand{\llabel}[1]{\Hy@raisedlink{\hypertarget{llineno:#1}{\label{llineno:#1}}}}
+\newcommand{\lref}[2]{\hyperlink{llineno:#1}{#2}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 
 \begin{titlepage}
@@ -194,19 +405,27 @@ TODO
 
 \appendix
 \setcounter{secnumdepth}{3}
-\chapter{Isabelle Theory}
- \input{AOT_model}
- \input{AOT_commands}
- \input{AOT_syntax}
- \input{AOT_semantics}
- \input{AOT_Definitions}
- \input{AOT_Axioms}
- \input{AOT_PLM}
- \input{AOT_BasicLogicalObjects}
- \input{AOT_RestrictedVariables}
- \input{AOT_PossibleWorlds}
- \input{AOT_ExtendedRelationComprehension}
- \input{AOT_NaturalNumbers}
+
+\setcounter{secnumdepth}{3}
+
+\ttfamily
+\footnotesize
+\parindent0pt
+\input{theories}
+
+%\chapter{Isabelle Theory}
+% \input{AOT_model}
+% \input{AOT_commands}
+% \input{AOT_syntax}
+% \input{AOT_semantics}
+% \input{AOT_Definitions}
+% \input{AOT_Axioms}
+% \input{AOT_PLM}
+% \input{AOT_BasicLogicalObjects}
+% \input{AOT_RestrictedVariables}
+% \input{AOT_PossibleWorlds}
+% \input{AOT_ExtendedRelationComprehension}
+% \input{AOT_NaturalNumbers}
 
 \restoregeometry
 

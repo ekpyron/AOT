@@ -19,5 +19,7 @@ session "Thesis" in ".." = "HOL" +
     ThesisNaturalNumbers
   document_files (in "thesis")
     "root.tex"
+    "theories.tex"
     "logo.pdf"
+    "pdfsetup.sty"
     "root.bib"

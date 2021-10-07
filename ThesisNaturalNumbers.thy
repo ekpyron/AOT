@@ -98,7 +98,7 @@ A @{emph \<open>one-to-one correspondence\<close>} between the properties @{term
 @{term R}, s.t. (1) for every object @{term x} that exemplifies @{term F}, there is a unique object
 @{term y} exemplifying @{term G}, s.t. @{term x} bears @{term R} to @{term y} and conversely (2) for
 every object @{term y} that exemplifies @{term G}, there is a unique object @{term x} exemplifying
-@{term F}, s.t. @{term x} bears @{term R} to @{term y}. Formally:@{footnote \<open>Note that similar to
+@{term F}, s.t. @{term x} bears @{term R} to @{term y}. Formally (see~\nameref{AOT:1-1-cor}):@{footnote \<open>Note that similar to
 the previous sections we are again directly quoting theorems verified in the Isabelle theory.
 Also note that, for simplicity, we state an equivalence in place of the corresponding @{emph \<open>definition by equivalence\<close>},
 which would require additional conjuncts  in the definiens, that asserting that the free terms denote.
@@ -109,7 +109,7 @@ This is discussed in more detail in (TODO: cite).\<close>}
 However, this unrestricted notion of one-to-one correspondence is not well suited for a definition
 of equinumerosity that validates Hume's principle in AOT. The intuitive reason for this is that abstract
 objects cannot be counted. In particular, recall that there are distinct, but
-exemplification-indistinguishable abstract objects (TODO: make sure this is mentioned earlier):
+exemplification-indistinguishable abstract objects (TODO: make sure this is mentioned earlier; see~\nameref{AOT:aclassical2}):
 
 @{thm[display] "aclassical2"[print_as_theorem]}
 

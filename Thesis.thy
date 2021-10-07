@@ -9,6 +9,7 @@ chapter\<open>Introduction\<close>
 
 section\<open>Motivation\<close>
 text\<open>
+
 Automated reasoning environments are already a vital part of the modern analysis
 of mathematics and formal systems in general and their importance can only be expected
 to increase in the future. However, building up a sound reasoning environment from scratch is a highly
