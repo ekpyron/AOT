@@ -1498,6 +1498,8 @@ chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<clo
 section\<open>Model\<close>
 
 text\<open>
+We introduce a primitive type for propositions @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>}).
+
 TODO: extensive description of the actual models used in the embedding.
   \<^item> Aczel Models
   \<^item> Hyperintensional Propositions
