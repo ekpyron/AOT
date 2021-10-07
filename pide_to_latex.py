@@ -9,6 +9,77 @@ with open("./keys.list") as f:
 		split = line.strip().split('|')
 		keys[split[1]] = split[0]
 
+unicode_map = {
+	'\u0007': "parm",
+	'\u0393': "Gamma",
+	'\u0394': "Delta",
+	'\u0398': "Theta",
+	'\u039B': "Lambda",
+	'\u039E': "Xi",
+	'\u03A0': "Pi",
+	'\u03A8': "Psi",
+	'\u03B1': "alpha",
+	'\u03B2': "beta",
+	'\u03B3': "gamma",
+	'\u03B4': "delta",
+	'\u03B5': "epsilon",
+	'\u03B6': "zeta",
+	'\u03B7': "eta",
+	'\u03B8': "vartheta",
+	'\u03B9': "iota",
+	'\u03BA': "kappa",
+	'\u03BB': "lambda",
+	'\u03BC': "mu",
+	'\u03BD': "nu",
+	'\u03BE': "xi",
+	'\u03C3': "sigma",
+	'\u03C4': "tau",
+	'\u03C7': "chi",
+	'\u03C8': "psi",
+	'\u03C9': "omega",
+	'\u03C5': "upsilon",
+	'\u03A3': "Sigma",
+	'\u03A6': "Phi",
+	'\u2115': "mathbbN",
+	'\u211B': "mathcalR",
+	'\u21D2': "Rightarrow",
+	'\u2200': "forall",
+	'\u2203': "exists",
+	'\u2204': "notexists",
+	'\u2205': "emptyset",
+	'\u2208': "in",
+	'\u2209': "notin",
+	'\u2218': "circ",
+	'\u2227': "land",
+	'\u2228': "lor",
+	'\u2248': "approx",
+	'\u2260': "noteq",
+	'\u2261': "equiv",
+	'\u2286': "subseteq",
+	'\u222A': "cup",
+	'\u22A2': "vdash",
+	'\u22A4': "top",
+	'\u22A5': "bot",
+	'\u22A8': "models",
+	'\u22B4': "trianglelefteq",
+	'\u22C0': "bigwedge",
+	'\u25A1': "Box",
+	'\u25C7': "Diamond",
+	'\u27F7': "longleftrightarrow",
+	'\u27F9': "Longrightarrow",
+	'\u2983': "lBrace",
+	'\u2984': "rBrace",
+	'\u2987': "lParen",
+	'\u2988': "rParen",
+	'\U0001D49C': "mathcalA",
+	'\U0001D4AB': "mathcalP",
+	'\U0001D4AE': "mathcalS",
+	'\U0001D5C8': "mathrmo",
+	'\u27F6': "longrightarrow",
+	'\u21D4': "Leftrightarrow",
+	'\u03C6': "varphi",
+}
+
 class PideXMLParser(HTMLParser):
 	def __init__(self):
 		HTMLParser.__init__(self)
@@ -71,10 +142,10 @@ class PideXMLParser(HTMLParser):
 		elif tag == "plain_text":
 			self.is_plain_text = True
 		self.endtagfuns.append(endtagfuns)
-		print("\\begin{{{}}}".format("isa"+tag), end="")
+		print("\\begin{{{}}}".format("pide"+tag), end="")
 
 	def handle_endtag(self, tag):
-		print("\\end{{{}}}".format("isa"+tag), end="")
+		print("\\end{{{}}}".format("pide"+tag), end="")
 		for fun in self.endtagfuns.pop():
 			fun(self)
 
@@ -140,7 +211,10 @@ class PideXMLParser(HTMLParser):
 				elif c == '^':
 					data_clean += "\\^{}" # TODO
 				else:
-					data_clean += c
+					if c in unicode_map:
+						data_clean += "{{\\pidesym{}}}".format(unicode_map[c])
+					else:
+						data_clean += c
 
 				if self.sub:
 					data_clean += "}"
