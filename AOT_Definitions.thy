@@ -2,15 +2,10 @@ theory AOT_Definitions
   imports AOT_semantics
 begin
 
-(* To enable meta syntax: *)
 (* interpretation AOT_meta_syntax. *)
-(* To disable meta syntax: TODO: enabling and disabling seems to adversely affect AOT_syntax (binders) *)
 (* interpretation AOT_no_meta_syntax. *)
-
-(* To enable AOT syntax (takes precedence over meta syntax; can be done locally using "including" or "include"): *)
-unbundle AOT_syntax
-(* To disable AOT syntax (restoring meta syntax or no syntax; can be done locally using "including" or "include"): *)
 (* unbundle AOT_no_syntax *)
+unbundle AOT_syntax
 
 section\<open>Definitions of AOT\<close>
 
@@ -25,18 +20,20 @@ AOT_theorem "conventions:4": \<open>\<exists>\<alpha> \<phi>{\<alpha>} \<equiv>\
 AOT_theorem "conventions:5": \<open>\<diamond>\<phi> \<equiv>\<^sub>d\<^sub>f \<not>\<box>\<not>\<phi>\<close>
   using AOT_dia.
 
-declare "conventions:1"[AOT_defs] "conventions:2"[AOT_defs] "conventions:3"[AOT_defs]
-        "conventions:4"[AOT_defs] "conventions:5"[AOT_defs]
+declare "conventions:1"[AOT_defs] "conventions:2"[AOT_defs]
+        "conventions:3"[AOT_defs] "conventions:4"[AOT_defs]
+        "conventions:5"[AOT_defs]
 
 notepad
 begin
   fix \<phi> \<psi> \<chi>
-  have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close> by blast
+  have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close>
+    by blast
   have "conventions3[2]": \<open>\<guillemotleft>\<phi> & \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
                    and \<open>\<guillemotleft>\<phi> \<or> \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
     by blast+
   have "conventions3[3]": \<open>\<guillemotleft>\<phi> \<or> \<psi> & \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) & \<chi>\<guillemotright>\<close>
-                   and \<open>\<guillemotleft>\<phi> & \<psi> \<or> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<or> \<chi>\<guillemotright>\<close> (* not exactly, but close enough *)
+                   and \<open>\<guillemotleft>\<phi> & \<psi> \<or> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<or> \<chi>\<guillemotright>\<close>
      by blast+
 end
 
@@ -51,21 +48,24 @@ AOT_theorem "existence:2[1]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exi
   using "existence:2"[of \<Pi>] by simp
 AOT_theorem "existence:2[2]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y xy[\<Pi>]\<close>
   using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def
+                AOT_model_denotes_prod_def)
 AOT_theorem "existence:2[3]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<exists>y\<exists>z xyz[\<Pi>]\<close>
   using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def
+                AOT_model_denotes_prod_def)
 AOT_theorem "existence:2[4]": \<open>\<Pi>\<down> \<equiv>\<^sub>d\<^sub>f \<exists>x\<^sub>1\<exists>x\<^sub>2\<exists>x\<^sub>3\<exists>x\<^sub>4 x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub>4[\<Pi>]\<close>
   using "existence:2"[of \<Pi>]
-  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def AOT_model_denotes_prod_def)
+  by (simp add: AOT_sem_denotes AOT_sem_exists AOT_model_equiv_def
+                AOT_model_denotes_prod_def)
 
 AOT_theorem "existence:3": \<open>\<phi>\<down> \<equiv>\<^sub>d\<^sub>f [\<lambda>x \<phi>]\<down>\<close>
   by (simp add: AOT_sem_denotes AOT_model_denotes_\<o>_def AOT_model_equiv_def
                 AOT_model_lambda_denotes)
 
 declare "existence:1"[AOT_defs] "existence:2"[AOT_defs] "existence:2[1]"[AOT_defs]
-        "existence:2[2]"[AOT_defs] "existence:2[3]"[AOT_defs] "existence:2[4]"[AOT_defs]
-        "existence:3"[AOT_defs]
+        "existence:2[2]"[AOT_defs] "existence:2[3]"[AOT_defs]
+        "existence:2[4]"[AOT_defs] "existence:3"[AOT_defs]
 
 
 AOT_theorem "oa:1": \<open>O! =\<^sub>d\<^sub>f [\<lambda>x \<diamond>E!x]\<close> using AOT_ordinary .
@@ -73,34 +73,47 @@ AOT_theorem "oa:2": \<open>A! =\<^sub>d\<^sub>f [\<lambda>x \<not>\<diamond>E!x]
 
 declare "oa:1"[AOT_defs] "oa:2"[AOT_defs]
 
-
-AOT_theorem "identity:1": \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)) \<or> ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
+AOT_theorem "identity:1":
+  \<open>x = y \<equiv>\<^sub>d\<^sub>f ([O!]x & [O!]y & \<box>\<forall>F ([F]x \<equiv> [F]y)) \<or>
+             ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ x y]
-  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq AOT_sem_denotes)
+  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj
+                AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq
+                AOT_sem_denotes)
 
 AOT_theorem "identity:2":
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x(x[F] \<equiv> x[G])\<close>
   using AOT_sem_enc_eq[of _ F G]
-  by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq AOT_sem_conj
-                 AOT_sem_forall AOT_sem_box AOT_sem_equiv)
+  by (auto simp: AOT_model_equiv_def AOT_sem_imp AOT_sem_denotes AOT_sem_eq
+                 AOT_sem_conj AOT_sem_forall AOT_sem_box AOT_sem_equiv)
 
 AOT_theorem "identity:3[2]":
   \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y([\<lambda>z [F]zy] = [\<lambda>z [G]zy] & [\<lambda>z [F]yz] = [\<lambda>z [G]yz])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G]
+                 AOT_sem_proj_id_prod_def AOT_sem_conj AOT_sem_denotes
+                 AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem "identity:3[3]":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [F]zy\<^sub>1y\<^sub>2] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2] & [\<lambda>z [F]y\<^sub>1y\<^sub>2z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2([\<lambda>z [F]zy\<^sub>1y\<^sub>2] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2] &
+                              [\<lambda>z [F]y\<^sub>1zy\<^sub>2] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2] &
+                              [\<lambda>z [F]y\<^sub>1y\<^sub>2z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2z])\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G]
+                 AOT_sem_proj_id_prod_def AOT_sem_conj AOT_sem_denotes
+                 AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem "identity:3[4]":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [F]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2y\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [G]y\<^sub>1y\<^sub>2zy\<^sub>3] & [\<lambda>z [F]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>y\<^sub>1\<forall>y\<^sub>2\<forall>y\<^sub>3([\<lambda>z [F]zy\<^sub>1y\<^sub>2y\<^sub>3] = [\<lambda>z [G]zy\<^sub>1y\<^sub>2y\<^sub>3] &
+                                [\<lambda>z [F]y\<^sub>1zy\<^sub>2y\<^sub>3] = [\<lambda>z [G]y\<^sub>1zy\<^sub>2y\<^sub>3] &
+                                [\<lambda>z [F]y\<^sub>1y\<^sub>2zy\<^sub>3] = [\<lambda>z [G]y\<^sub>1y\<^sub>2zy\<^sub>3] &
+                                [\<lambda>z [F]y\<^sub>1y\<^sub>2y\<^sub>3z] = [\<lambda>z [G]y\<^sub>1y\<^sub>2y\<^sub>3z])\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G]
+                 AOT_sem_proj_id_prod_def AOT_sem_conj AOT_sem_denotes
+                 AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 AOT_theorem "identity:3":
-  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . AOT_exe F \<tau>) (\<lambda> \<tau> . AOT_exe G \<tau>)\<guillemotright>\<close> (* TODO: is it ok to state this as theorem *)
-  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G] AOT_sem_proj_id_prod_def AOT_sem_conj
-                 AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
+  \<open>F = G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<guillemotleft>AOT_sem_proj_id x\<^sub>1x\<^sub>n (\<lambda> \<tau> . AOT_exe F \<tau>)
+                                                      (\<lambda> \<tau> . AOT_exe G \<tau>)\<guillemotright>\<close>
+  by (auto simp: AOT_model_equiv_def AOT_sem_proj_id_prop[of _ F G]
+                 AOT_sem_proj_id_prod_def AOT_sem_conj AOT_sem_denotes
+                 AOT_sem_forall AOT_sem_unary_proj_id AOT_model_denotes_prod_def)
 
 AOT_theorem "identity:4":
   \<open>p = q \<equiv>\<^sub>d\<^sub>f p\<down> & q\<down> & [\<lambda>x p] = [\<lambda>x q]\<close>
@@ -124,22 +137,29 @@ no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
 
-text\<open>The following are artifacts of the internal implementation of n-ary relations as relations on tuples.\<close>
+text\<open>The following are artifacts of the internal implementation of n-ary relations
+     as relations on tuples.\<close>
 AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
-  by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def AOT_sem_conj AOT_sem_denotes)
+  by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def
+                AOT_sem_conj AOT_sem_denotes)
 AOT_theorem tuple_identity_1: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright> = \<guillemotleft>(\<sigma>, \<sigma>')\<guillemotright> \<equiv>\<^sub>d\<^sub>f (\<tau> = \<sigma>) & (\<tau>' = \<sigma>')\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_conj AOT_sem_eq AOT_model_denotes_prod_def AOT_sem_denotes)
+  by (auto simp: AOT_model_equiv_def AOT_sem_conj AOT_sem_eq
+                 AOT_model_denotes_prod_def AOT_sem_denotes)
 AOT_theorem tuple_forall: \<open>\<forall>\<alpha>\<^sub>1...\<forall>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<forall>\<alpha>\<^sub>1(\<forall>\<alpha>\<^sub>2...\<forall>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_forall AOT_sem_denotes AOT_model_denotes_prod_def)
+  by (auto simp: AOT_model_equiv_def AOT_sem_forall AOT_sem_denotes
+                 AOT_model_denotes_prod_def)
 AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<^sub>n \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n} \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha>\<^sub>1(\<exists>\<alpha>\<^sub>2...\<exists>\<alpha>\<^sub>n \<phi>{\<guillemotleft>(\<alpha>\<^sub>1, \<alpha>\<^sub>2\<alpha>\<^sub>n)\<guillemotright>})\<close>
-  by (auto simp: AOT_model_equiv_def AOT_sem_exists AOT_sem_denotes AOT_model_denotes_prod_def)
+  by (auto simp: AOT_model_equiv_def AOT_sem_exists AOT_sem_denotes
+                 AOT_model_denotes_prod_def)
 declare tuple_denotes[AOT_defs] tuple_identity_1[AOT_defs] tuple_forall[AOT_defs]
         tuple_exists[AOT_defs]
 
 
-(* Collect all theorems that are not in Main and not declared [AOT] and store them in a blacklist. *)
+(* Collect all theorems that are not in Main and not declared [AOT]
+   and store them in a blacklist. *)
 setup\<open>setup_AOT_no_atp\<close>
 bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
-(* Can be used as: "including AOT_no_atp sledgehammer" or "sledgehammer(del: AOT_no_atp) *)
+(* Can be used as: "including AOT_no_atp sledgehammer" or
+   "sledgehammer(del: AOT_no_atp) *)
 
 end
