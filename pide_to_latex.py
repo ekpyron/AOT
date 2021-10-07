@@ -5,6 +5,10 @@ import sys
 
 keys = {}
 
+referencedEntities = {
+	"AOT_model.<o>"
+}
+
 with open("./keys.list") as f:
 	for line in f.readlines():
 		split = line.strip().split('|')
@@ -181,6 +185,10 @@ class PideXMLParser(HTMLParser):
 			if is_command and name == "subsection":
 				print("\\phantomsection", end="")
 				self.is_section = True
+			if defname and name:
+				name = name.replace('\\','').replace('$','')
+				if name in referencedEntities:
+					print("\\plmlabel[{}.{}.{}]{{AOT:{}}}".format(self.chapter,self.section, self.line, name), end="")
 			if defline and deffile:
 				theory = Path(deffile).stem
 				ext = Path(deffile).suffix
