@@ -19,18 +19,24 @@ let
 val ctxt = thy
 val ctxt = setupStrictWorld ctxt
 val trm = Syntax.check_term ctxt (AOT_read_term @{nonterminal \<phi>'} ctxt restriction)
-val free = case (Term.add_frees trm []) of [f] => f | _ => raise Term.TERM ("Expected single free variable.", [trm])
+val free = case (Term.add_frees trm []) of [f] => f |
+    _ => raise Term.TERM ("Expected single free variable.", [trm])
 val trm = Term.absfree free trm
 val localeTerm = Const (\<^const_name>\<open>AOT_restriction_condition\<close>, dummyT) $ trm
 val localeTerm = Syntax.check_term ctxt localeTerm
 fun after_qed thms thy = let
-val st = Interpretation.global_interpretation (([(@{locale AOT_restriction_condition}, ((name, true),
+val st = Interpretation.global_interpretation
+  (([(@{locale AOT_restriction_condition}, ((name, true),
            (Expression.Named [("\<psi>", trm)], [])))], [])) [] thy
 val st = Proof.refine_insert (flat thms) st
 val thy = Proof.global_immediate_proof st
 
-val thy = Local_Theory.background_theory (AOT_Constraints.map (Symtab.update (name, (term_of (snd free), term_of (snd free))))) thy
-val thy = Local_Theory.background_theory (AOT_Restriction.map (Symtab.update (name, (trm, Const (\<^const_name>\<open>AOT_term_of_var\<close>, dummyT))))) thy
+val thy = Local_Theory.background_theory
+  (AOT_Constraints.map (Symtab.update
+    (name, (term_of (snd free), term_of (snd free))))) thy
+val thy = Local_Theory.background_theory
+  (AOT_Restriction.map (Symtab.update
+    (name, (trm, Const (\<^const_name>\<open>AOT_term_of_var\<close>, dummyT))))) thy
 
 in thy end
 in
@@ -38,9 +44,11 @@ Proof.theorem NONE after_qed [[(HOLogic.mk_Trueprop localeTerm, [])]] ctxt
 end
 
 val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_restricted_type\<close> "Register a restricted type."
-    (((Parse.short_ident --| Parse.$$$ ":") -- Parse.term) >> (Toplevel.local_theory_to_proof NONE NONE o register_restricted_type));
-
+  Outer_Syntax.command
+    \<^command_keyword>\<open>AOT_register_restricted_type\<close>
+    "Register a restricted type."
+    (((Parse.short_ident --| Parse.$$$ ":") -- Parse.term) >>
+    (Toplevel.local_theory_to_proof NONE NONE o register_restricted_type));
 \<close>
 
 locale AOT_rigid_restriction_condition = AOT_restriction_condition +
@@ -51,7 +59,9 @@ lemma type_set_nonempty[AOT_no_atp, no_atp]: \<open>\<exists>x . x \<in> { \<alp
 end
 
 locale AOT_restricted_type = AOT_rigid_restriction_condition +
-  fixes Rep and Abs assumes AOT_restricted_type_definition[AOT_no_atp]: \<open>type_definition Rep Abs { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close>
+  fixes Rep and Abs
+  assumes AOT_restricted_type_definition[AOT_no_atp]:
+    \<open>type_definition Rep Abs { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close>
 begin
 
 AOT_theorem restricted_var_condition: \<open>\<psi>{\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>}\<close>
@@ -100,7 +110,8 @@ end
 
 
 lemma AOT_restricted_type_intro[AOT_no_atp, no_atp]:
-  assumes \<open>type_definition Rep Abs { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close> and \<open>AOT_rigid_restriction_condition \<psi>\<close>
+  assumes \<open>type_definition Rep Abs { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close>
+      and \<open>AOT_rigid_restriction_condition \<psi>\<close>
   shows \<open>AOT_restricted_type \<psi> Rep Abs\<close>
   by (auto intro!: assms AOT_restricted_type_axioms.intro AOT_restricted_type.intro)
 
@@ -112,9 +123,11 @@ let
 val ctxt = thy
 val ctxt = setupStrictWorld ctxt
 val trm = Syntax.check_term ctxt (AOT_read_term @{nonterminal \<phi>'} ctxt restriction)
-val free = case (Term.add_frees trm []) of [f] => f | _ => raise Term.TERM ("Expected single free variable.", [trm])
+val free = case (Term.add_frees trm []) of [f] => f
+  | _ => raise Term.TERM ("Expected single free variable.", [trm])
 val trm = Term.absfree free trm
-val localeTerm = HOLogic.mk_Trueprop (Const (\<^const_name>\<open>AOT_rigid_restriction_condition\<close>, dummyT) $ trm)
+val localeTerm = HOLogic.mk_Trueprop
+  (Const (\<^const_name>\<open>AOT_rigid_restriction_condition\<close>, dummyT) $ trm)
 val localeTerm = Syntax.check_prop ctxt localeTerm
 val int_bnd = Binding.concealed (Binding.qualify true "internal" (Binding.name name))
 val bnds = {Rep_name = Binding.qualify true name (Binding.name "Rep"),
@@ -124,27 +137,38 @@ val bnds = {Rep_name = Binding.qualify true name (Binding.name "Rep"),
 fun after_qed witts thy = let
   val thms = (map (Element.conclude_witness ctxt) (flat witts))
   
-  val typeset = HOLogic.mk_Collect ("\<alpha>", dummyT, \<^const>\<open>AOT_model_valid_in\<close> $ \<^const>\<open>w\<^sub>0\<close> $ (trm $ (Const (\<^const_name>\<open>AOT_term_of_var\<close>, dummyT) $ Bound 0)))
+  val typeset = HOLogic.mk_Collect ("\<alpha>", dummyT,
+    \<^const>\<open>AOT_model_valid_in\<close> $ \<^const>\<open>w\<^sub>0\<close> $
+    (trm $ (Const (\<^const_name>\<open>AOT_term_of_var\<close>, dummyT) $ Bound 0)))
   val typeset = Syntax.check_term thy typeset
-  val nonempty_thm = Drule.OF (@{thm AOT_rigid_restriction_condition.type_set_nonempty}, thms)
+  val nonempty_thm = Drule.OF
+    (@{thm AOT_rigid_restriction_condition.type_set_nonempty}, thms)
 
-  val ((_,st),thy) = Typedef.add_typedef {overloaded=true} (Binding.name name, [], Mixfix.NoSyn) typeset (SOME bnds)
+  val ((_,st),thy) = Typedef.add_typedef {overloaded=true}
+    (Binding.name name, [], Mixfix.NoSyn) typeset (SOME bnds)
     (fn ctxt => (Tactic.resolve_tac ctxt ([nonempty_thm]) 1)) thy
-  val ({rep_type = _, abs_type = _, Rep_name = Rep_name, Abs_name = Abs_name, axiom_name = _},
-     {inhabited = _, type_definition = type_definition, Rep = _, Rep_inverse = _, Abs_inverse = _,
-      Rep_inject = _, Abs_inject = _, Rep_cases = _, Abs_cases = _,
-      Rep_induct = _, Abs_induct = _}) = st
+  val ({rep_type = _, abs_type = _, Rep_name = Rep_name, Abs_name = Abs_name,
+        axiom_name = _},
+     {inhabited = _, type_definition = type_definition, Rep = _,
+      Rep_inverse = _, Abs_inverse = _, Rep_inject = _, Abs_inject = _,
+      Rep_cases = _, Abs_cases = _, Rep_induct = _, Abs_induct = _}) = st
 
   val locale_thm = Drule.OF (@{thm AOT_restricted_type_intro}, type_definition::thms)
 
-  val st = Interpretation.global_interpretation (([(@{locale AOT_restricted_type}, ((name, true),
-             (Expression.Named [("\<psi>", trm), ("Rep", Const (Rep_name, dummyT)), ("Abs", Const (Abs_name, dummyT))], [])))], [])) [] thy
+  val st = Interpretation.global_interpretation (([(@{locale AOT_restricted_type},
+    ((name, true), (Expression.Named [
+      ("\<psi>", trm),
+      ("Rep", Const (Rep_name, dummyT)),
+      ("Abs", Const (Abs_name, dummyT))], [])))
+    ], [])) [] thy
 
   val st = Proof.refine_insert [locale_thm] st
   val thy = Proof.global_immediate_proof st
 
-  val thy = Local_Theory.background_theory (AOT_Constraints.map (Symtab.update (name, (term_of (snd free), term_of (snd free))))) thy
-  val thy = Local_Theory.background_theory (AOT_Restriction.map (Symtab.update (name, (trm, Const (Rep_name, dummyT))))) thy
+  val thy = Local_Theory.background_theory (AOT_Constraints.map (
+    Symtab.update (name, (term_of (snd free), term_of (snd free))))) thy
+  val thy = Local_Theory.background_theory (AOT_Restriction.map (
+    Symtab.update (name, (trm, Const (Rep_name, dummyT))))) thy
   
   in thy end
 in
@@ -152,8 +176,11 @@ Element.witness_proof after_qed [[localeTerm]] thy
 end
 
 val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_register_rigid_restricted_type\<close> "Register a restricted type."
-    (((Parse.short_ident --| Parse.$$$ ":") -- Parse.term) >> (Toplevel.local_theory_to_proof NONE NONE o register_rigid_restricted_type)); 
+  Outer_Syntax.command
+    \<^command_keyword>\<open>AOT_register_rigid_restricted_type\<close>
+    "Register a restricted type."
+    (((Parse.short_ident --| Parse.$$$ ":") -- Parse.term) >>
+    (Toplevel.local_theory_to_proof NONE NONE o register_rigid_restricted_type)); 
 \<close>
 
 (* Generalized mechanism for "AOT_restricted_type.\<forall>I" followed by \<forall>E *)
@@ -163,7 +190,9 @@ val trm = Thm.concl_of thm
 val trm = case trm of (@{const Trueprop} $ (@{const AOT_model_valid_in} $ _ $ x)) => x
                       | _ => raise Term.TERM ("Expected simple theorem.", [trm])
 fun extractVars (Const (\<^const_name>\<open>AOT_term_of_var\<close>, t) $ (Const rep $ Var v)) =
-    (if fst (fst v) = fst varname then [Const (\<^const_name>\<open>AOT_term_of_var\<close>, t) $ (Const rep $ Var v)] else []) (* TODO: care about the index? *)
+    (if fst (fst v) = fst varname
+     then [Const (\<^const_name>\<open>AOT_term_of_var\<close>, t) $ (Const rep $ Var v)]
+     else []) (* TODO: care about the index *)
   | extractVars (t1 $ t2) = extractVars t1 @ extractVars t2
   | extractVars (Abs (_, _, t)) = extractVars t
   | extractVars _ = []
@@ -171,12 +200,15 @@ val vars = extractVars trm
 val vartrm = hd vars
 val vars = fold Term.add_vars vars []
 val var = hd vars
-val trmty = (case vartrm of (Const (_, Type ("fun", [_, ty])) $ _) => ty | _ => raise Match)
+val trmty = (case vartrm of (Const (_, Type ("fun", [_, ty])) $ _) => ty
+                       | _ => raise Match)
 val varty = snd var
 val tyname = fst (Term.dest_Type varty)
 val b = tyname^".\<forall>I" (* TODO: better way to find the theorem *)
-val thms = fst (Context.map_proof_result (fn ctxt => (Attrib.eval_thms ctxt [(Facts.Named ((b,Position.none),NONE),[])], ctxt)) ctxt)
-val allthm = (case thms of (thm::_) => thm | _ => raise Fail "Unknown restricted type.")
+val thms = fst (Context.map_proof_result (fn ctxt => (Attrib.eval_thms ctxt
+    [(Facts.Named ((b,Position.none),NONE),[])], ctxt)) ctxt)
+val allthm = (case thms of (thm::_) => thm
+    | _ => raise Fail "Unknown restricted type.")
 val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (vartrm, trm))
 val trm = Thm.cterm_of (Context.proof_of ctxt) trm
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
@@ -191,12 +223,14 @@ attribute_setup "unconstrain" =
   \<open>Scan.lift (Scan.repeat1 Args.var) >> (fn args => Thm.rule_attribute []
   (fn ctxt => fn thm =>
     let
-    val thm = fold (fn arg => fn thm => thm RS get_instantiated_allI ctxt arg thm) args thm
+    val thm = fold (fn arg => fn thm => thm RS get_instantiated_allI ctxt arg thm)
+                   args thm
     val thm = fold (fn _ => fn thm => thm RS @{thm "\<forall>E"(2)}) args thm
     in
      thm
     end))\<close>
-  "Generalize a statement about restricted variables to a statement about unrestricted variables with explicit restriction condition."
+  "Generalize a statement about restricted variables to a statement about
+   unrestricted variables with explicit restriction condition."
 
 
 
@@ -230,7 +264,8 @@ lemmas "\<exists>E" = "instantiation"
 
 AOT_theorem existential: assumes \<open>\<phi>{\<guillemotleft>AOT_term_of_var (Rep \<beta>)\<guillemotright>}\<close>
   shows \<open>\<exists> \<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
-  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms "&I" "existential:2[const_var]")
+  by (meson AOT_restricted_type.\<psi> AOT_restricted_type_axioms assms
+            "&I" "existential:2[const_var]")
 lemmas "\<exists>I" = existential
 end
 
@@ -238,7 +273,8 @@ end
 context AOT_rigid_restriction_condition
 begin
 
-AOT_theorem "res-var-bound-reas[1]": \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}) \<equiv> \<forall>\<beta>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
+AOT_theorem "res-var-bound-reas[1]":
+  \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>}) \<equiv> \<forall>\<beta>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>, \<beta>})\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   fix \<beta> \<alpha>
   AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<forall>\<beta> \<phi>{\<alpha>, \<beta>})\<close>
@@ -255,62 +291,83 @@ next
   ultimately AOT_show \<open>\<phi>{\<alpha>, \<beta>}\<close> using "\<rightarrow>E" by blast
 qed
 
-(* TODO: PLM: easier proof with lemmas above *)
-AOT_theorem "res-var-bound-reas[BF]": \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[BF]":
+  \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
-  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
-  AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis "sc-eq-box-box:6" rigid_condition "vdash-properties:6")
-  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "BF" "vdash-properties:6")
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>}\<close> for \<alpha>
+    using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha>
+    by (metis "sc-eq-box-box:6" rigid_condition "vdash-properties:6")
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (rule GEN)
+  AOT_thus \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (metis "BF" "vdash-properties:6")
 qed
 
-AOT_theorem "res-var-bound-reas[CBF]": \<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[CBF]":
+\<open>\<box>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<box>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "CBF" "vdash-properties:6")
-  AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<forall>\<alpha> \<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (metis "CBF" "vdash-properties:6")
+  AOT_hence 1: \<open>\<box>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    using "\<forall>E"(2) by blast
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close>
     by (metis "B\<diamond>" "T\<diamond>" rigid_condition "vdash-properties:6")
-  AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close> using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
+  AOT_thus \<open>\<box>\<phi>{\<alpha>}\<close>
+    using 1 "qml:1"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
 qed
 
-AOT_theorem "res-var-bound-reas[2]": \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[2]":
+\<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}) \<rightarrow> \<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
-  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) by blast
-  AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha> by (metis "sc-eq-box-box:7" rigid_condition "vdash-properties:6")
-  AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (rule GEN)
-  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "\<equiv>E"(2) "logic-actual-nec:3" "vdash-properties:1[2]")
+  AOT_hence \<open>\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>}\<close> for \<alpha>
+    using "\<forall>E"(2) by blast
+  AOT_hence \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> for \<alpha>
+    by (metis "sc-eq-box-box:7" rigid_condition "vdash-properties:6")
+  AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (rule GEN)
+  AOT_thus \<open>\<^bold>\<A>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
+    by (metis "\<equiv>E"(2) "logic-actual-nec:3"[axiom_inst])
 qed
 
 
-AOT_theorem "res-var-bound-reas[3]": \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[3]":
+  \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>}) \<rightarrow> \<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<^bold>\<A>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix \<alpha>
   AOT_assume \<open>\<^bold>\<A>\<forall>\<alpha> (\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<forall>\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>
-    by (metis "\<equiv>E"(1) "logic-actual-nec:3" "vdash-properties:1[2]")
+    by (metis "\<equiv>E"(1) "logic-actual-nec:3"[axiom_inst])
   AOT_hence 1: \<open>\<^bold>\<A>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close> by (metis "rule-ui:3")
   AOT_assume \<open>\<psi>{\<alpha>}\<close>
-  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> by (metis "nec-imp-act" "qml:2" rigid_condition "vdash-properties:1[2]" "vdash-properties:6")
-  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close> using 1 by (metis "act-cond" "vdash-properties:6")
+  AOT_hence \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close>
+    by (metis "nec-imp-act" "qml:2"[axiom_inst] rigid_condition "\<rightarrow>E")
+  AOT_thus \<open>\<^bold>\<A>\<phi>{\<alpha>}\<close>
+    using 1 by (metis "act-cond" "\<rightarrow>E")
 qed
 
-AOT_theorem "res-var-bound-reas[Buridan]": \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[Buridan]":
+  \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}) \<rightarrow> \<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
 proof (rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>})\<close>
-  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
+  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<box>\<phi>{\<alpha>}\<close>
+    using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> 
     by (metis "KBasic:11" "KBasic:3" "T\<diamond>" "&I" "&E"(1) "&E"(2)
               "\<equiv>E"(2) "reductio-aa:1" rigid_condition "vdash-properties:6")
-  AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule "\<exists>I")
-  AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (rule Buridan[THEN "\<rightarrow>E"])
+  AOT_hence \<open>\<exists>\<alpha> \<box>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    by (rule "\<exists>I")
+  AOT_thus \<open>\<box>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    by (rule Buridan[THEN "\<rightarrow>E"])
 qed
 
-AOT_theorem "res-var-bound-reas[BF\<diamond>]": \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<rightarrow> \<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[BF\<diamond>]":
+  \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<rightarrow> \<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<exists>\<alpha> \<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
@@ -318,26 +375,33 @@ proof(rule "\<rightarrow>I")
   then AOT_obtain \<alpha> where \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<diamond>\<psi>{\<alpha>}\<close> and \<open>\<diamond>\<phi>{\<alpha>}\<close>
-    using "KBasic2:3" "&E" "vdash-properties:10" by blast+
-  moreover AOT_have \<open>\<psi>{\<alpha>}\<close> using calculation rigid_condition by (metis "B\<diamond>" "K\<diamond>" "vdash-properties:10")
-  ultimately AOT_have \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close> using "&I" by blast
+    using "KBasic2:3" "&E" "\<rightarrow>E" by blast+
+  moreover AOT_have \<open>\<psi>{\<alpha>}\<close>
+    using calculation rigid_condition by (metis "B\<diamond>" "K\<diamond>" "\<rightarrow>E")
+  ultimately AOT_have \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close>
+    using "&I" by blast
   AOT_thus \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
     by (rule "\<exists>I")
 qed
 
-AOT_theorem "res-var-bound-reas[CBF\<diamond>]": \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[CBF\<diamond>]":
+  \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}) \<rightarrow> \<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>\<alpha> (\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>})\<close>
-  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close> using "\<exists>E"[rotated] by blast
+  then AOT_obtain \<alpha> where \<open>\<psi>{\<alpha>} & \<diamond>\<phi>{\<alpha>}\<close>
+    using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<box>\<psi>{\<alpha>}\<close> and \<open>\<diamond>\<phi>{\<alpha>}\<close>
     using rigid_condition[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] "&E" by blast+
-  AOT_hence \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> by (metis "KBasic:16" "con-dis-taut:5" "\<rightarrow>E")
+  AOT_hence \<open>\<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    by (metis "KBasic:16" "con-dis-taut:5" "\<rightarrow>E")
   AOT_hence \<open>\<exists>\<alpha> \<diamond>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
     by (rule "\<exists>I")
-  AOT_thus \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
+  AOT_thus \<open>\<diamond>\<exists>\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
+    using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
 qed
 
-AOT_theorem "res-var-bound-reas[A-Exists:1]": \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<equiv> \<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
+AOT_theorem "res-var-bound-reas[A-Exists:1]":
+  \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>}) \<equiv> \<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>\<^bold>\<A>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<exists>!\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
@@ -348,12 +412,13 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     by simp
   AOT_thus \<open>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
     apply (AOT_subst \<open>\<psi>{\<alpha>}\<close> \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> for: \<alpha>)
-    using "Commutativity of \<equiv>" "intro-elim:3:b" "sc-eq-fur:2" "\<rightarrow>E" rigid_condition by blast
+    using "Commutativity of \<equiv>" "intro-elim:3:b" "sc-eq-fur:2"
+          "\<rightarrow>E" rigid_condition by blast
 next
   AOT_assume \<open>\<exists>!\<alpha> (\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
   AOT_hence \<open>\<exists>!\<alpha> (\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>})\<close>
     apply (AOT_subst \<open>\<^bold>\<A>\<psi>{\<alpha>}\<close> \<open>\<psi>{\<alpha>}\<close> for: \<alpha>)
-     apply (meson "sc-eq-fur:2" "vdash-properties:10" rigid_condition)
+     apply (meson "sc-eq-fur:2" "\<rightarrow>E" rigid_condition)
     by simp
   AOT_hence \<open>\<exists>!\<alpha> \<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close>
     apply (AOT_subst \<open>\<^bold>\<A>(\<psi>{\<alpha>} & \<phi>{\<alpha>})\<close> \<open>\<^bold>\<A>\<psi>{\<alpha>} & \<^bold>\<A>\<phi>{\<alpha>}\<close> for: \<alpha>)
