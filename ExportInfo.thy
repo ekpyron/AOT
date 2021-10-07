@@ -27,7 +27,7 @@ val global_facts = Global_Theory.facts_of thy;
 in
 Facts.dest_all (Context.Proof ctxt) false [] global_facts |>
   map (fn (n, thms) => let
-    val {concealed = _, group = _, theory_long_name = thy_name, pos = _, serial = _} =
+    val {concealed = _, group = _, theory_long_name = thy_name, pos = pos, serial = _} =
       Name_Space.the_entry (Facts.space_of global_facts) n
     val name = Binding.name_of (Binding.qualified_name n)
     val items = Symtab.keys (fold (fn thm => fn set =>
@@ -35,15 +35,18 @@ Facts.dest_all (Context.Proof ctxt) false [] global_facts |>
         | _ => set) thms Symtab.empty)
     val items = if name = "AOT" orelse name = "AOT_defs" then [] else items
   in
-    (Binding.name_of (Binding.qualified_name thy_name), name, items)
-  end) |> filter (fn (_, _, items) => length items > 0 andalso length items < 10)
+    (Binding.name_of (Binding.qualified_name thy_name), name, items, pos)
+  end) |> filter (fn (_, _, items,_) => length items > 0 andalso length items < 10)
 end
 
 val facts = get_aot_facts ctxt
-val blob = XML.blob (maps (fn (thyname,key,items) =>
+val blob = XML.blob (maps (fn (thyname,key,items,pos) =>
   [thyname,"|",key,"|"]@[String.concatWith " " items]@["\n"]) facts)
+val blob2 = XML.blob (maps (fn (thyname,key,items,pos) =>
+  [thyname,"|",key,"|", case Position.line_of pos of SOME x => Int.toString(x) | _ => "NONE"]@["\n"]) facts)
 in
-(Export.export thy (Path.binding0 (Path.make ["info"])) blob; ctxt)
+(Export.export thy (Path.binding0 (Path.make ["info"])) blob;
+ Export.export thy (Path.binding0 (Path.make ["info2"])) blob2; ctxt)
 end
 \<close>
 

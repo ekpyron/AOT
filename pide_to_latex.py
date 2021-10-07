@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from html.parser import HTMLParser
+from pathlib import Path
 import sys
 
 keys = {}
@@ -9,7 +10,34 @@ with open("./keys.list") as f:
 		split = line.strip().split('|')
 		keys[split[1]] = split[0]
 
+linerefs = {}
+
+with open("./AOT.ExportInfo/info2") as f:
+	for line in f.readlines():
+		split = line.strip().split('|')
+		theory = split[0]
+		key = split[1]
+		line = split[2]
+		if not theory in linerefs:
+			linerefs[theory] = {}
+		linerefs[theory][line] = key
+
 unicode_map = {
+	'\u2015': "hyphen",
+	'\u00d7': "times",
+	'\u27e8': "langle",
+	'\u27e9': "rangle",
+	'\u00a6': "pipe",
+		
+	'\u2190': "leftarrow",
+	'\u2192': "rightarrow",
+	'\u2193': "down",
+	'\u00ac': "neg",
+	'\u2039': "cartoucheleft",
+	'\u203A': "cartoucheright",
+	'\u00AB': "guillemotleft",
+	'\u00BB': "guillemotright",
+	'\u2026': "ldots",
 	'\u0007': "parm",
 	'\u0393': "Gamma",
 	'\u0394': "Delta",
@@ -80,8 +108,33 @@ unicode_map = {
 	'\u03C6': "varphi",
 }
 
+class ReferenceChecker(HTMLParser):
+	def __init__(self, theories):
+		HTMLParser.__init__(self)
+		self.theories = {}
+		for _,thy,_ in theories:
+			self.theories[thy] = True
+	def handle_starttag(self, tag, attrs):
+		endtagfuns = []
+		if tag == "entity":
+			defline = None
+			deffile = None
+			for (attr,value) in attrs:
+				if attr == "def_line":
+					defline = value
+				if attr == "def_file":
+					deffile = value
+			if deffile and defline:
+				theory = Path(deffile).stem
+				ext = Path(deffile).suffix
+				if ext == ".thy" and theory in self.theories:
+					if not theory in linerefs:
+						linerefs[theory] = {}
+					if not defline in linerefs[theory]:
+						linerefs[theory][defline] = ""
+
 class PideXMLParser(HTMLParser):
-	def __init__(self):
+	def __init__(self, thy, chapter, section):
 		HTMLParser.__init__(self)
 		self.endtagfuns = []
 		self.start_of_line = True
@@ -95,18 +148,28 @@ class PideXMLParser(HTMLParser):
 		self.current_def = None
 		self.is_plain_text = False
 		self.is_section = False
+		self.theory = thy
+		self.section = section
+		self.chapter = chapter
+		self.linerefs = linerefs[self.theory]
 
 	def handle_starttag(self, tag, attrs):
 		endtagfuns = []
 		if tag == "entity":
 			refname = None
 			defname = None
+			deffile = None
+			defline = None
 			name = None
 			is_fact = False
 			is_command = False
 			for (attr,value) in attrs:
 				if attr == "def":
 					defname = value
+				if attr == "def_file":
+					deffile = value
+				if attr == "def_line":
+					defline = value
 				if attr == "ref":
 					refname = value
 				if attr == "name":
@@ -118,31 +181,26 @@ class PideXMLParser(HTMLParser):
 			if is_command and name == "subsection":
 				print("\\phantomsection", end="")
 				self.is_section = True
-			if defname:
-				self.defs[defname] = defname
-				endtagfuns.append(lambda self: print("}", end=""))
-				print("\\myhypertarget{{{}}}{{".format(defname), end="")
-				if name and is_fact:
-					name = name.split('.')[-1]
-					self.defsByName[name] = defname
-					name = name.split('[')[0]
-					name = name.split(':')
-					if name[0] in keys:
-						self.current_def = keys[name[0]]
-						for s in name[1:]:
-							self.current_def += '.' + s
-			elif refname and refname in self.defs:
-				endtagfuns.append(lambda self: print("}", end=""))
-				print("\\hyperlink{{{}}}{{".format(self.defs[refname]), end="")
-			elif refname and name:
-				name_parts = name.split('.')
-				if len(name_parts) > 1 and name_parts[-2].endswith("_class") and name_parts[-1] in self.defsByName:
-					print("\\hyperlink{{{}}}{{".format(self.defs[self.defsByName[name_parts[-1]]]), end="")
+			if defline and deffile:
+				theory = Path(deffile).stem
+				ext = Path(deffile).suffix
+				if ext == ".thy" and theory in linerefs and defline in linerefs[theory]:					
 					endtagfuns.append(lambda self: print("}", end=""))
+					print("\\hyperlink{{{}.L{}}}{{".format(theory, defline), end="")
 		elif tag == "plain_text":
 			self.is_plain_text = True
 		self.endtagfuns.append(endtagfuns)
 		print("\\begin{{{}}}".format("pide"+tag), end="")
+	
+	def markLine(self):
+		if str(self.line) in self.linerefs:
+			label = self.linerefs[str(self.line)]
+			print("\\myhypertarget{{{}.L{}}}{{}}".format(self.theory, self.line), end="")
+			if len(label) > 0:
+				labelKey = label.strip().split(":")[0].split("[")[0]
+				if labelKey in keys:
+					label = label.replace('\\','').replace('$','')
+					print("\\plmlabel[{}.{}.{}]{{AOT:{}}}".format(self.chapter,self.section, self.line, label), end="")
 
 	def handle_endtag(self, tag):
 		print("\\end{{{}}}".format("pide"+tag), end="")
@@ -154,6 +212,8 @@ class PideXMLParser(HTMLParser):
 		data_clean = ""
 		for c in data:
 			if c == "\n":
+				if self.start_of_line:
+					self.markLine()
 				if len(data_clean) > 0:
 					tokens.append(data_clean)
 					data_clean=""
@@ -182,6 +242,7 @@ class PideXMLParser(HTMLParser):
 			else:
 				if self.start_of_line:
 					self.start_of_line = False
+					self.markLine()
 					if self.line_indent > 0:
 						tokens.append("\hspace*{{{}em}}".format(self.line_indent*0.5))
 				
@@ -238,21 +299,19 @@ class PideXMLParser(HTMLParser):
 				self.is_section = False
 		
 
-parser = PideXMLParser()
-
 theories = [
-	('AOT.AOT_model', 'Model for the Logic of AOT'),
-	('AOT.AOT_commands', 'Outer Syntax Commands'),
-	('AOT.AOT_syntax', 'Approximation of the Syntax of PLM'),
-	('AOT.AOT_semantics', 'Semantics'),
-	('AOT.AOT_Definitions', 'Definitions of AOT'),
-	('AOT.AOT_Axioms', 'Axioms of AOT'),
-	('AOT.AOT_PLM', 'The Deductive System PLM'),
-	('AOT.AOT_BasicLogicalObjects', 'Basic Logical Objects'),
-	('AOT.AOT_RestrictedVariables', 'Restricted Variables'),
-	('AOT.AOT_ExtendedRelationComprehension', 'Extended Relation Comprehension'),
-	('AOT.AOT_PossibleWorlds', 'Possible Worlds'),
-	('AOT.AOT_NaturalNumbers', 'Natural Numbers')
+	('AOT', 'AOT_model', 'Model for the Logic of AOT'),
+	('AOT', 'AOT_commands', 'Outer Syntax Commands'),
+	('AOT', 'AOT_syntax', 'Approximation of the Syntax of PLM'),
+	('AOT', 'AOT_semantics', 'Semantics'),
+	('AOT', 'AOT_Definitions', 'Definitions of AOT'),
+	('AOT', 'AOT_Axioms', 'Axioms of AOT'),
+	('AOT', 'AOT_PLM', 'The Deductive System PLM'),
+	('AOT', 'AOT_BasicLogicalObjects', 'Basic Logical Objects'),
+	('AOT', 'AOT_RestrictedVariables', 'Restricted Variables'),
+	('AOT', 'AOT_ExtendedRelationComprehension', 'Extended Relation Comprehension'),
+	('AOT', 'AOT_PossibleWorlds', 'Possible Worlds'),
+	('AOT', 'AOT_NaturalNumbers', 'Natural Numbers')
 ]
 
 blobs = [
@@ -261,15 +320,24 @@ blobs = [
         ('AOT_syntax.ML', 'AOT$\_$syntax.ML: Syntax Helpers')
 ]
 
+referenceChecker = ReferenceChecker(theories)
+for (session,thy,title) in theories:
+	file = open('./pide_markup/' + session + "." + thy + '.xml', mode='r')
+	content = file.read()
+	referenceChecker.feed(content)
+
 print("\\nolinenumbers")
 print("\\chapter{Isabelle Theory}")
-for (thy,title) in theories:
-	file = open('./pide_markup/' + thy + '.xml', mode='r')
+section = 0
+for (session,thy,title) in theories:
+	section = section + 1
+	file = open('./pide_markup/' + session + "." + thy + '.xml', mode='r')
 	content = file.read()
 	print("\\nolinenumbers")
 	print("\\section{{{}}}".format(title))
 	print("\\resetlinenumber")
 	print("\\begin{linenumbers}")
+	parser = PideXMLParser(thy, "A", section)
 	parser.feed(content)
 	print("\\end{linenumbers}")
 	print("\\newpage")
@@ -285,6 +353,7 @@ if addBlobs:
 		print("\\section{{{}}}".format(title))
 		print("\\resetlinenumber")
 		print("\\begin{linenumbers}")
+		parser.setTheory(blob)
 		parser.feed(content)
 		print("\\end{linenumbers}")
 		print("\\newpage")
