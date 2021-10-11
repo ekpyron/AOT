@@ -6,7 +6,16 @@ import sys
 keys = {}
 
 referencedEntities = {
-	"AOT_model.<o>"
+	"AOT_model.<o>",
+	"AOT_semantics.AOT_instance_of_cqt_2",
+	"AOT_NaturalNumbers.numbers_prop_den",
+	"AOT_Axioms.indistinguishable_ord_enc_all",
+	"AOT_Axioms.indistinguishable_ord_enc_ex",
+	"AOT_ExtendedRelationComprehension.denotes_all",
+	"AOT_ExtendedRelationComprehension.denotes_ex_neg",
+	"AOT_ExtendedRelationComprehension.Comprehension_1",
+	"AOT_ExtendedRelationComprehension.Comprehension_2",
+	"AOT_ExtendedRelationComprehension.Comprehension_3"
 }
 
 with open("./keys.list") as f:
@@ -189,17 +198,27 @@ class PideXMLParser(HTMLParser):
 				name = name.replace('\\','').replace('$','')
 				if name in referencedEntities:
 					print("\\plmlabel[{}.{}.{}]{{AOT:{}}}".format(self.chapter,self.section, self.line, name), end="")
+				if name and is_fact:
+					name = name.split('.')[-1]
+					self.defsByName[name] = defname
+					name = name.split('[')[0]
+					name = name.split(':')
+					if name[0] in keys:
+							self.current_def = keys[name[0]]
+							for s in name[1:]:
+									self.current_def += '.' + s
+
 			if defline and deffile:
 				theory = Path(deffile).stem
 				ext = Path(deffile).suffix
-				if ext == ".thy" and theory in linerefs and defline in linerefs[theory]:					
+				if ext == ".thy" and theory in linerefs and defline in linerefs[theory]:
 					endtagfuns.append(lambda self: print("}", end=""))
 					print("\\hyperlink{{{}.L{}}}{{".format(theory, defline), end="")
 		elif tag == "plain_text":
 			self.is_plain_text = True
 		self.endtagfuns.append(endtagfuns)
 		print("\\begin{{{}}}".format("pide"+tag), end="")
-	
+
 	def markLine(self):
 		if str(self.line) in self.linerefs:
 			label = self.linerefs[str(self.line)]
@@ -343,6 +362,7 @@ for (session,thy,title) in theories:
 	content = file.read()
 	print("\\nolinenumbers")
 	print("\\section{{{}}}".format(title))
+	print("\\label{{{}:{}}}".format(session, thy))
 	print("\\resetlinenumber")
 	print("\\begin{linenumbers}")
 	parser = PideXMLParser(thy, "A", section)
@@ -359,6 +379,7 @@ if addBlobs:
 		content = file.read()
 		print("\\nolinenumbers")
 		print("\\section{{{}}}".format(title))
+		print("\\label{{{}}}".format(blob))
 		print("\\resetlinenumber")
 		print("\\begin{linenumbers}")
 		parser.setTheory(blob)
