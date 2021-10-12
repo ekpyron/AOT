@@ -79,14 +79,17 @@ specification(AOT_desc)
   AOT_sem_desc_prop: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] \<Longrightarrow> [w\<^sub>0 \<Turnstile> \<phi>{\<^bold>\<iota>x(\<phi>{x})}]\<close>
   AOT_sem_desc_unique: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] \<Longrightarrow> [w \<Turnstile> \<kappa>\<down>] \<Longrightarrow> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}] \<Longrightarrow>
                         [w \<Turnstile> \<^bold>\<iota>x(\<phi>{x}) = \<kappa>]\<close>
-  AOT_sem_desc_eq: \<open>(\<And> \<kappa> . [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}] = [w\<^sub>0 \<Turnstile> \<psi>{\<kappa>}]) \<Longrightarrow> \<guillemotleft>\<^bold>\<iota>x(\<phi>{x})\<guillemotright> = \<guillemotleft>\<^bold>\<iota>x(\<psi>{x})\<guillemotright>\<close>
 proof -
-  obtain nondenoting :: 'a where nondenoting: \<open>\<not>AOT_model_denotes nondenoting\<close>
-    using AOT_model_nondenoting_ex by blast
+  have \<open>\<exists>x::'a . \<not>AOT_model_denotes x\<close>
+    using AOT_model_nondenoting_ex
+    by blast
+  then obtain nondenoting :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> 'a\<close> where
+    nondenoting: \<open>\<forall> \<phi> . \<not>AOT_model_denotes (nondenoting \<phi>)\<close>
+    by fast
   obtain desc where desc_def:
     \<open>desc = (\<lambda> \<phi> . if (\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])
                    then (THE \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])
-                   else nondenoting)\<close> by blast
+                   else nondenoting \<phi>)\<close> by blast
   {
     fix \<phi> :: \<open>'a \<Rightarrow> \<o>\<close>
     assume ex1: \<open>\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}]\<close>
@@ -100,7 +103,7 @@ proof -
   moreover {
     fix \<phi> :: \<open>'a \<Rightarrow> \<o>\<close>
     assume nex1: \<open>\<nexists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}]\<close>
-    hence "(desc \<phi>) = nondenoting" by (simp add: desc_def AOT_sem_denotes)
+    hence "(desc \<phi>) = nondenoting \<phi>" by (simp add: desc_def AOT_sem_denotes)
     hence "[w \<Turnstile> \<not>\<guillemotleft>desc \<phi>\<guillemotright>\<down>]" for w
       by (simp add: AOT_sem_denotes nondenoting AOT_sem_not)
   }
@@ -113,9 +116,7 @@ proof -
              [w \<Turnstile> \<guillemotleft>desc \<phi>\<guillemotright> = \<kappa>])\<close>
     by (insert 1; auto simp: desc_denotes_simp AOT_sem_eq AOT_sem_denotes
                              desc_def nondenoting)
-  moreover have \<open>(\<And> x . [w\<^sub>0 \<Turnstile> \<guillemotleft>\<phi> x\<guillemotright>] = [w\<^sub>0 \<Turnstile> \<guillemotleft>\<psi> x\<guillemotright>]) \<Longrightarrow> desc \<phi> = desc \<psi>\<close> for \<phi> \<psi>
-    unfolding desc_def by (auto simp: nondenoting)
-  ultimately show ?thesis
+  thus ?thesis
     by (safe intro!: exI[where x=desc]; presburger)
 qed
 
@@ -1252,7 +1253,7 @@ definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>
 definition AOT_instance_of_cqt_2_exe_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_exe_arg \<equiv> \<lambda> \<phi> . \<forall> x y .
       AOT_model_denotes x \<and> AOT_model_term_equiv x y \<longrightarrow>
-      AOT_model_term_equiv (\<phi> x) (\<phi> y)\<close>
+      (AOT_model_term_equiv (\<phi> x) (\<phi> y) \<or> (\<not>AOT_model_denotes (\<phi> x) \<and> \<not>AOT_model_denotes (\<phi> y)))\<close>
 definition AOT_instance_of_cqt_2_exe_rel :: \<open>('a::AOT_\<kappa>s \<Rightarrow> <'b::AOT_\<kappa>s>) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_exe_rel \<equiv> \<lambda> \<phi> . \<forall> x y z v .
       AOT_model_denotes x \<and> AOT_model_denotes y \<and>
@@ -1366,18 +1367,51 @@ lemma AOT_instance_of_cqt_2_intros_exe_arg_Pair[AOT_instance_of_cqt_2_intro]:
   shows \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda>\<tau>. Pair (\<phi> \<tau>) (\<psi> \<tau>))\<close>
   using assms
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
-            AOT_sem_denotes AOT_sem_lambda_denotes
-  by (meson AOT_meta_prod_equivI(1) AOT_meta_prod_equivI(2)
-            AOT_model_term_equiv_part_equivp equivp_transp)
+            AOT_sem_denotes AOT_sem_lambda_denotes AOT_model_term_equiv_prod_def
+            AOT_model_denotes_prod_def
+  by auto
 lemma AOT_instance_of_cqt_2_intros_desc[AOT_instance_of_cqt_2_intro]:
-  assumes \<open>\<And>z. AOT_instance_of_cqt_2 (\<Phi> z)\<close>
-  shows \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda> \<kappa> . \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>)\<close>
-  using assms
-  unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
-            AOT_sem_denotes AOT_model_lambda_denotes
-  apply (auto simp: AOT_model_term_equiv_part_equivp equivp_reflp)
-  by (smt AOT_sem_desc_eq AOT_model_term_equiv_denotes
-          AOT_model_term_equiv_part_equivp equivp_reflp)
+  assumes \<open>\<And>z :: 'a::AOT_\<kappa>. AOT_instance_of_cqt_2 (\<Phi> z)\<close>
+  shows \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda> \<kappa> :: 'b::AOT_\<kappa> . \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>)\<close>
+proof -
+  have 0: \<open>\<forall> \<kappa> \<kappa>'. AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and>
+                   AOT_model_term_equiv \<kappa> \<kappa>' \<longrightarrow>
+                   [w\<^sub>0 \<Turnstile> \<guillemotleft>\<Phi> z \<kappa>\<guillemotright>] = [w\<^sub>0 \<Turnstile> \<guillemotleft>\<Phi> z \<kappa>'\<guillemotright>]\<close> for z
+    using assms
+    unfolding AOT_instance_of_cqt_2_def
+              AOT_sem_denotes AOT_model_lambda_denotes by simp
+  {
+    fix \<kappa> \<kappa>' :: 'b
+    assume 1: \<open>AOT_model_denotes \<kappa> \<and> AOT_model_term_equiv \<kappa> \<kappa>'\<close>
+    {
+      assume \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>\<close>
+      moreover have \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+        using calculation 0 1 AOT_model_term_equiv_denotes
+        unfolding AOT_sem_desc_denotes[unfolded AOT_sem_denotes]
+        by blast
+      ultimately have \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<and>
+                       \<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+        by simp
+    }
+    moreover {
+      assume \<open>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>\<close>
+      moreover have \<open>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+        using calculation 0 1 AOT_model_term_equiv_denotes
+        unfolding AOT_sem_desc_denotes[unfolded AOT_sem_denotes]
+        by blast
+      ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+        by (smt (verit) "0" "1" AOT_model_term_equiv_denotes
+                        AOT_model_term_equiv_rel_equiv AOT_sem_denotes
+                        AOT_sem_desc_denotes AOT_sem_desc_prop) 
+    }
+    ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright> \<or>
+                     (\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<and>
+                      \<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>)\<close> by blast
+  }
+  thus ?thesis
+    unfolding AOT_instance_of_cqt_2_exe_arg_def by simp
+qed
+
 lemma AOT_instance_of_cqt_2_intros_exe[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2_exe_rel \<Pi>\<close> and \<open>AOT_instance_of_cqt_2_exe_arg \<kappa>s\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>x :: 'b::AOT_\<kappa>s. AOT_exe \<guillemotleft>[\<guillemotleft>\<Pi> x\<guillemotright>]\<guillemotright> (\<kappa>s x))\<close>
