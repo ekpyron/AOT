@@ -1101,6 +1101,8 @@ commenting on several aspects that are specific to AOT. Unless explicitly noted 
 will directly cite the axioms from our implementation while explaining notational and conceptual
 differences to the original axiom system of AOT. The original axiom system is stated in (TODO: cite PLM)
 with detailed explanations. The implementation in our embedding can be found in~\ref{AOT:AOT_Axioms}.
+Throughout the section we will refer to the statement of the axioms in~\ref{AOT:AOT_Axioms},
+which will in turn refer to the item numbers of the axioms in PLM.
 
 The first set of axioms build up a Hilbert-style deductive system for negation and implications
 following Mendelsson's axiom system
@@ -1436,10 +1438,10 @@ subsection\<open>Reasoning in PLM\<close>(* TODO: section title? *)
 
 text\<open>
 Based on the fundamental meta-rules above, PLM derives further theorems and rules governing
-Negations and Conditionals (TODO: \citePLMsec{9.5}); Quantification (TODO: \citePLMsec{9.6});
-Logical Existence, Identity and Truth (TODO: \citePLMsec{9.7}); Actuality and Descriptions (TODO: \citePLMsec{9.8});
-Necessity (TODO:\citePLMsec{9.9}); Relations (TODO: \citePLMsec{9.10}); Objects (TODO: \citePLMsec{9.11}) and
-Propositional Properties (TODO: \citePLMsec{9.12}).
+Negations and Conditionals (see~\nameref{PLM: 9.5}); Quantification (see~\nameref{PLM: 9.6});
+Logical Existence, Identity and Truth (see~\nameref{PLM: 9.7}); Actuality and Descriptions (see~\nameref{PLM: 9.8});
+Necessity (see~\nameref{PLM: 9.9}); Relations (see~\nameref{PLM: 9.10}); Objects (see~\nameref{PLM: 9.11}) and
+Propositional Properties (see~\nameref{PLM: 9.12}).
 \<close>
 
 subsection\<open>Restricted Variables\<close>
@@ -1561,6 +1563,16 @@ chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<clo
 
 section\<open>Model\<close>
 
+text\<open>
+While the precise model construction of the embedding can be found in section~\ref{AOT:AOT_model},
+this section provides a high-level description of the construction.
+The general construction is based on Aczel models of AOT, which are extended
+to accommodate for AOT's hyperintensional modal logic on the one hand and its
+free logic for individual and relation terms on the other hand. Furthermore,
+it employs type classes to model relations of arbitrary arity as relations among
+tuples of individuals.
+\<close>
+
 subsection\<open>Aczel Models\<close>
 
 text\<open>
@@ -1569,7 +1581,7 @@ Aczel models are extensional models that validate both
 the Comprehension Principle of Abstract Objects and classical relation comprehension
 in the absence of encoding formulas.
 
-The following figure is an illustration of an Aczel model:
+The following figure is illustrates the basic idea of Aczel models:
 
 \tikzset{font=\fontsize{8pt}{10pt}\selectfont}
 \begin{figure}[h!]
@@ -1627,7 +1639,7 @@ special urelements. The special urelement @{text \<open>||x||\<close>} to which 
 The domain of individuals @{text D} is defined as the union of abstract objects and
 ordinary urelements (resp. ordinary objects).
 
-Any individual @{text x} can be associated with an urelement @{text \<open>|x|\<close>}:
+Any individual @{text \<open>x \<in> D\<close>} can be associated with an urelement @{text \<open>|x| \<in> U\<close>}:
 
 \begin{equation*}
   |x| =
@@ -1655,20 +1667,108 @@ abstract objects and the comprehension principle of abstract objects:
 Furthermore, the models validate a restricted version of relation comprehension.
 Since the truth conditions of any exemplification formula solely depend on the urelement
 associated with exemplifying individual, any condition @{term \<phi>} on individuals that does not
-contain encoding claims, can equivalently be represented as a condition on urelements.
-Therefore, for any such condition @{term \<phi>}, there exists a relation that is exemplified
+contain encoding claims can equivalently be represented as a condition on urelements.
+Therefore, for any such condition @{term \<phi>}, there exists a relation @{term F} that is exemplified
 by exactly those objects that satisfy @{term \<phi>}.
 
+While Aczel models generally demonstrate that abstract objects and encoding can be
+modelled without being subject to the Clark-Boolos paradox (TODO: ref), there are
+several issues that are remain unaddressed:
+
+  \<^item> AOT's relations are not extensional and not even merely intensional,
+    but fully hyperintensional.
+  \<^item> Relation comprehension for formulas in the absence of encoding formulas
+    does not immediately cover all the base cases of axiomatically denoting relation
+    terms as mentioned in section~\ref{AxiomSystem}.
+  \<^item> Aczel models are prone to several classes of artifactual theorems, e.g.
+    @{text \<open>\<forall>x([F]x = [G]x) \<rightarrow> F = G\<close>}.
+
+Therefore, while the models used for our embedding inherit the idea of urelements
+and a mapping from abstract objects to special urelements, we significantly extend
+the general model structure. As a first step, we describe the implementation of
+AOT's hyperintensionality.
 \<close>
 
-subsection\<open>Extending to Full Hyperintensional Models of AOT\<close>
+subsection\<open>Hyperintensional Propositions\<close>
 
 text\<open>
 
-While the precise model construction of the embedding can be found in section~\ref{AOT:AOT_model},
-this section provides a high-level description of the construction.
+TODO: reference previous discussion of hyperintensionality, if any.
 
-We introduce a primitive type for propositions @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>}).
+The hyperintensionality of AOT is modelled at the level of propositions.
+A primitive type @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>})
+is used to represent hyperintensional propositions and is associated with modal extensions
+following Kripke semantics: another primitive type @{typ w} for semantic possible
+worlds is introduced (see~\nameref{AOT:AOT_model.w}) and it is axiomatized that
+there be a surjective mapping @{term AOT_model_d\<o>} from propositions of type @{typ \<o>}
+to Kripke-extensions, i.e. boolean valued functions on possible worlds (type @{typ \<open>w\<Rightarrow>bool\<close>};
+see~\nameref{AOT:AOT_model.AOT_model_d<o>}).
+
+We define for a proposition @{term p} of type @{typ \<o>} to be valid in a given semantic possible
+world @{term v} (written @{term \<open>AOT_model_valid_in v p\<close>}), just in case @{term AOT_model_d\<o>} maps @{term p}
+to a Kripke-extension that evaluates to @{term True} for @{term v} (see~\nameref{AOT:AOT_model.AOT_model_valid_in}).
+
+This way, our type of propositions @{typ \<o>} is assured to contain a proposition for
+each Kripke-extension, but still does not require the collapse of necessarily
+equivalent propositions:
+
+  \<^item> For any given Kripke-extension @{term \<phi>}, the inverse of @{term AOT_model_d\<o>}
+    yields a proposition of type @{term \<o>} that is valid in exactly those worlds
+    for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).
+  \<^item> However, the construction allows for the type @{typ \<o>} to contain more propositions
+    than Kripke-extensions. For example, there may be two distinct
+    objects @{term p} and @{term q} of type @{typ \<o>} that are necessarilily equivalent,
+    i.e. they are valid in the same semantic possible worlds. This can be confirmed by
+    @{command nitpick}:
+\<close>
+
+lemma \<open>\<forall> v . AOT_model_valid_in v p = AOT_model_valid_in v q\<close> and \<open>p \<noteq> q\<close>
+  nitpick[satisfy, user_axioms, expect=genuine]
+  oops
+
+text\<open>
+@{command nitpick} can find a model in which @{term p} and @{term q} are mapped
+to two distinct propositions, both of which evaluate to the same Kripke-extension
+under @{term AOT_model_d\<o>}.
+
+Note, however, that the construction also @{emph \<open>allows\<close>} for necessary equivalent
+propositions to be collapsed:
+\<close>
+
+lemma \<open>\<forall> p q . (\<forall> v . AOT_model_valid_in v p = AOT_model_valid_in v q) \<longrightarrow> p = q\<close>
+  nitpick[satisfy, user_axioms, expect=genuine]
+  oops
+
+text\<open>
+In this case @{command nitpick} chooses a model in which the type @{typ \<o>} is
+isomorphic to the type of Kripke-extensions @{typ \<open>w \<Rightarrow> bool\<close>}, i.e. there are
+just as many objects of type @{typ \<o>} as there are Kripke-extensions.
+
+So just as AOT, the model construction does not presuppose the degree of hyperintensionality of
+propositions.
+
+As a next step we construct a variant of Aczel models on top of the hyperintensional
+propositions that aims to preserve hyperintensionality for relations and accounts
+for AOT's free logic.
+\<close>
+
+subsection\<open>Urelements, Individuals and Relations\<close>
+
+text\<open>
+AOT involves complex terms that may not have a denotation. However, all formulas
+in AOT, even if they involve non-denoting terms, have well-defined truth conditions
+(e.g. atomic formulas involving a primary term that does not denote are false).
+
+Consequently, non-denoting terms have to be accounted for explicitly in the embedding.
+
+\<close>
+
+subsection\<open>Non-\<close>
+
+
+subsection\<open>TODO\<close>
+
+text\<open>
 
 TODO: extensive description of the actual models used in the embedding.
   \<^item> Aczel Models
@@ -1736,7 +1836,13 @@ meta-rule).
 subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijin Indices\<close>
 
 (*<*)
-setup\<open>Thy_Output.antiquotation_pretty_source @{binding "ML_print_term"} Args.term (
+setup\<open>
+let
+val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
+(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
+in
+antiquotation_pretty_source
+end @{binding "ML_print_term"} Args.term (
 fn ctxt => fn trm => 
   Pretty.chunks [
   Pretty.block [Syntax.pretty_term ctxt trm],

@@ -337,6 +337,7 @@
 
 \makeatletter
 	\newcommand\plmlabel[2][]{\phantomsection\def\@currentlabelname{#1}\label{#2}}
+	\newcommand\plmlabelnosec[2][]{\def\@currentlabelname{#1}\label{#2}}
  \newcommand{\myhypertarget}[2]{\Hy@raisedlink{\hypertarget{#1}{}}#2}
 \makeatother
 
