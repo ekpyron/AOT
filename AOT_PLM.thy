@@ -693,9 +693,13 @@ val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (
 val trm = Thm.cterm_of (Context.proof_of ctxt) trm
 val ty = hd (Term.add_tvars (Thm.prop_of @{thm "\<forall>I"}) [])
 val typ = Thm.ctyp_of (Context.proof_of ctxt) trmty
-val allthm = Drule.instantiate_normalize ([(ty, typ)],[]) @{thm "\<forall>I"}
+fun TVars_make x = x (* Next Isabelle release: = TVars.make x *)
+val TVars_empty = [] (* Next Isabelle release: = TVars.empty *)
+fun Vars_make x = x (* Next Isabelle release: = Vars.make x *)
+val Vars_empty = [] (* Next Isabelle release: = Vars.empty *)
+val allthm = Drule.instantiate_normalize (TVars_make [(ty, typ)],Vars_empty) @{thm "\<forall>I"}
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
-val allthm = Drule.instantiate_normalize ([],[(phi,trm)]) allthm
+val allthm = Drule.instantiate_normalize (TVars_empty, Vars_make [(phi,trm)]) allthm
 in
 allthm
 end
@@ -2975,16 +2979,20 @@ val abs = Syntax.check_term ctxt abs
 val substThm = Goal.prove ctxt [] [] abs
   (fn {context=ctxt, prems=_} => prove_AOT_subst_tac ctxt)
 val substThm = substThm RS @{thm AOT_subst}
+fun TVars_make x = x (* Next Isabelle release: = TVars.make x *)
+val TVars_empty = [] (* Next Isabelle release: = TVars.empty *)
+fun Vars_make x = x (* Next Isabelle release: = Vars.make x *)
+val Vars_empty = [] (* Next Isabelle release: = Vars.empty *)
 in if reversed then let
   val substThm = Drule.instantiate_normalize
-          ([],[((("\<chi>", 0), p_ty), Thm.cterm_of ctxt p),
+          (TVars_empty,Vars_make [((("\<chi>", 0), p_ty), Thm.cterm_of ctxt p),
           ((("\<psi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
   val substThm = substThm RS @{thm "\<equiv>E"(1)}
   in substThm end
 else
   let
   val substThm = Drule.instantiate_normalize
-          ([],[((("\<psi>", 0), p_ty), Thm.cterm_of ctxt p),
+          (TVars_empty,Vars_make [((("\<psi>", 0), p_ty), Thm.cterm_of ctxt p),
           ((("\<chi>", 0), p_ty), Thm.cterm_of ctxt q)]) substThm
   val substThm = substThm RS @{thm "\<equiv>E"(2)}
   in substThm end end
