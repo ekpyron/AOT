@@ -2,11 +2,16 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import sys
+import re
 
 keys = {}
 
 referencedEntities = {
 	"AOT_model.<o>",
+	"AOT_model.w",
+	"AOT_model.AOT_model_d<o>",
+	"AOT_model.AOT_model_valid_in",
+	"AOT_model.AOT_model_proposition_choice",
 	"AOT_semantics.AOT_instance_of_cqt_2",
 	"AOT_NaturalNumbers.numbers_prop_den",
 	"AOT_Axioms.indistinguishable_ord_enc_all",
@@ -120,6 +125,8 @@ unicode_map = {
 	'\u21D4': "Leftrightarrow",
 	'\u03C6': "varphi",
 }
+
+labelPattern = re.compile(r'\u2039\\label{([^}]*)}\u203A', re.UNICODE)
 
 class ReferenceChecker(HTMLParser):
 	def __init__(self, theories):
@@ -237,6 +244,10 @@ class PideXMLParser(HTMLParser):
 	def handle_data(self, data):
 		tokens = []
 		data_clean = ""
+		if self.is_plain_text:
+			m = labelPattern.match(data)
+			if m:
+				print("\\plmlabelnosec[{}.{}.{}]{{{}}}".format(self.chapter,self.section, self.line, m.group(1)), end="")
 		for c in data:
 			if c == "\n":
 				if self.start_of_line:
