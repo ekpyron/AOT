@@ -1564,7 +1564,7 @@ chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<clo
 section\<open>Model\<close>
 
 text\<open>
-While the precise model construction of the embedding can be found in section~\ref{AOT:AOT_model},
+While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
 this section provides a high-level description of the construction.
 The general construction is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
@@ -1666,10 +1666,11 @@ abstract objects and the comprehension principle of abstract objects:
 
 Furthermore, the models validate a restricted version of relation comprehension.
 Since the truth conditions of any exemplification formula solely depend on the urelement
-associated with exemplifying individual, any condition @{term \<phi>} on individuals that does not
+associated with the exemplifying individual, any condition @{term \<phi>} on individuals that does not
 contain encoding claims can equivalently be represented as a condition on urelements.
 Therefore, for any such condition @{term \<phi>}, there exists a relation @{term F} that is exemplified
-by exactly those objects that satisfy @{term \<phi>}.
+by exactly those objects that satisfy @{term \<phi>}: @{text \<open>\<exists>F\<forall>x([F]x \<equiv> \<phi>{x})\<close>}, given
+that @{text \<phi>} does not involve encoding claims.
 
 While Aczel models generally demonstrate that abstract objects and encoding can be
 modelled without being subject to the Clark-Boolos paradox (TODO: ref), there are
@@ -1681,7 +1682,7 @@ several issues that are remain unaddressed:
     does not immediately cover all the base cases of axiomatically denoting relation
     terms as mentioned in section~\ref{AxiomSystem}.
   \<^item> Aczel models are prone to several classes of artifactual theorems, e.g.
-    @{text \<open>\<forall>x([F]x = [G]x) \<rightarrow> F = G\<close>}.
+    @{text[display] \<open>\<forall>x([F]x = [G]x) \<rightarrow> F = G\<close>}.
 
 Therefore, while the models used for our embedding inherit the idea of urelements
 and a mapping from abstract objects to special urelements, we significantly extend
@@ -1698,7 +1699,7 @@ TODO: reference previous discussion of hyperintensionality, if any.
 The hyperintensionality of AOT is modelled at the level of propositions.
 A primitive type @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>})
 is used to represent hyperintensional propositions and is associated with modal extensions
-following Kripke semantics: another primitive type @{typ w} for semantic possible
+following Kripke semantics: a primitive type @{typ w} for semantic possible
 worlds is introduced (see~\nameref{AOT:AOT_model.w}) and it is axiomatized that
 there be a surjective mapping @{term AOT_model_d\<o>} from propositions of type @{typ \<o>}
 to Kripke-extensions, i.e. boolean valued functions on possible worlds (type @{typ \<open>w\<Rightarrow>bool\<close>};
@@ -1716,15 +1717,15 @@ equivalent propositions:
     yields a proposition of type @{term \<o>} that is valid in exactly those worlds
     for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).
   \<^item> However, the construction allows for the type @{typ \<o>} to contain more propositions
-    than Kripke-extensions. For example, there may be two distinct
+    than there are Kripke-extensions. For example, there may be two distinct
     objects @{term p} and @{term q} of type @{typ \<o>} that are necessarilily equivalent,
     i.e. they are valid in the same semantic possible worlds. This can be confirmed by
     @{command nitpick}:
 \<close>
 
-lemma \<open>\<forall> v . AOT_model_valid_in v p = AOT_model_valid_in v q\<close> and \<open>p \<noteq> q\<close>
+lemma \<open>\<forall> v . [v \<Turnstile> p] = [v \<Turnstile> q]\<close> and \<open>p \<noteq> q\<close>
   nitpick[satisfy, user_axioms, expect=genuine]
-  oops
+  (*<*)oops(*>*)
 
 text\<open>
 @{command nitpick} can find a model in which @{term p} and @{term q} are mapped
@@ -1737,7 +1738,7 @@ propositions to be collapsed:
 
 lemma \<open>\<forall> p q . (\<forall> v . AOT_model_valid_in v p = AOT_model_valid_in v q) \<longrightarrow> p = q\<close>
   nitpick[satisfy, user_axioms, expect=genuine]
-  oops
+  (*<*)oops(*>*)
 
 text\<open>
 In this case @{command nitpick} chooses a model in which the type @{typ \<o>} is
