@@ -4,7 +4,7 @@ theory AOT_semantics
 begin
 (*>*)
 
-section\<open>Semantics\<close>
+section\<open>Abstract Semantics for AOT\<close>
 
 (* To enable meta syntax: *)
 (* interpretation AOT_meta_syntax. *)
@@ -83,6 +83,7 @@ proof -
   have \<open>\<exists>x::'a . \<not>AOT_model_denotes x\<close>
     using AOT_model_nondenoting_ex
     by blast
+  text\<open>Note that we may choose a distinct non-denoting object for each matrix.\<close>
   then obtain nondenoting :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> 'a\<close> where
     nondenoting: \<open>\<forall> \<phi> . \<not>AOT_model_denotes (nondenoting \<phi>)\<close>
     by fast
@@ -458,16 +459,23 @@ instance proof
       fix x :: 'b
       assume x_special: \<open>\<not>AOT_model_regular x\<close>
       hence prod_special: \<open>\<not>AOT_model_regular (\<kappa>, x)\<close>
-        by (simp add: AOT_model_regular_prod_def)
-      hence \<open>Rep_rel \<Pi> (\<kappa>, x) = AOT_model_irregular (Rep_rel \<Pi>) (\<kappa>, x)\<close>
-        using AOT_model_denotes_rel.rep_eq \<Pi>_denotes by auto
+        by (metis (no_types, lifting) AOT_model_irregular_nondenoting
+                                      AOT_model_regular_prod_def case_prodD)
+      hence \<open>(\<not>AOT_model_denotes \<kappa> \<or> \<not>AOT_model_regular x) \<and>
+             (AOT_model_denotes \<kappa> \<or> \<not>AOT_model_denotes x)\<close>
+        unfolding AOT_model_regular_prod_def by blast
+      hence x_nonden: \<open>\<not>AOT_model_regular x\<close>
+        by (simp add: \<alpha>_denotes)
+      have \<open>Rep_rel \<Pi> (\<kappa>, x) = AOT_model_irregular (Rep_rel \<Pi>) (\<kappa>, x)\<close>
+        using AOT_model_denotes_rel.rep_eq \<Pi>_denotes prod_special by blast
       moreover have \<open>AOT_model_irregular (Rep_rel \<Pi>) (\<kappa>, x) =
                      AOT_model_irregular (\<lambda>z. Rep_rel \<Pi> (\<kappa>, z)) x\<close>
-        using \<Pi>_denotes x_special prod_special
-        by (induct arbitrary: \<Pi> x rule: AOT_model_irregular_prod.induct)
-           (auto simp: \<alpha>_denotes AOT_model_irregular_nondenoting
-                       AOT_model_denotes_rel.rep_eq AOT_meta_prod_equivI(2)
-                       AOT_model_term_equiv_eps(1)
+        using \<Pi>_denotes x_special prod_special x_nonden
+        using AOT_model_irregular_prod_generic
+        apply (induct arbitrary: \<Pi> x rule: AOT_model_irregular_prod.induct)
+        by (auto simp: \<alpha>_denotes AOT_model_irregular_nondenoting
+                       AOT_model_regular_prod_def AOT_meta_prod_equivI(2)
+                       AOT_model_denotes_rel.rep_eq AOT_model_term_equiv_eps(1)
                  intro!: AOT_model_irregular_eqI)
       ultimately have
         \<open>AOT_exe \<Pi> (\<kappa>, x) = AOT_model_irregular (\<lambda>z. AOT_exe \<Pi> (\<kappa>, z)) x\<close>
@@ -553,7 +561,7 @@ instance proof
                                          OF \<Pi>_proj2_den[OF \<alpha>denotes]]
                     AOT_sem_exe_denoting[simplified AOT_sem_denotes,
                                          OF \<Pi>'_proj2_den[OF \<alpha>denotes]]
-          by (simp add: Abs_rel_inverse)
+          by (metis Abs_rel_inverse UNIV_I)
         hence "Rep_rel \<Pi> (\<kappa>,\<beta>) = Rep_rel \<Pi>' (\<kappa>,\<beta>)" for \<beta>
           by (simp add: Abs_rel_inject[simplified]) meson
       } note \<alpha>denotes = this
@@ -573,13 +581,19 @@ instance proof
       {
         fix \<alpha> :: 'a and \<beta> :: 'b
         assume nospecial_\<alpha>\<beta>: \<open>AOT_model_regular (\<alpha>, \<beta>)\<close>
-        hence \<open>AOT_model_regular \<beta> \<and> (AOT_model_denotes \<alpha> \<or> AOT_model_denotes \<beta>)\<close>
-          unfolding AOT_model_regular_prod_def
-          by blast
-        hence \<open>AOT_model_denotes \<alpha> \<or> AOT_model_denotes \<beta>\<close>
-          using nospecial_\<alpha>\<beta> unfolding AOT_model_regular_prod_def by auto
-        hence \<open>Rep_rel \<Pi> (\<alpha>,\<beta>) = Rep_rel \<Pi>' (\<alpha>,\<beta>)\<close>
-          using \<alpha>denotes \<beta>denotes by blast
+        thm AOT_model_regular_prod_def
+        moreover {
+          assume \<open>AOT_model_denotes \<alpha> \<and> AOT_model_regular \<beta>\<close>
+          hence \<open>Rep_rel \<Pi> (\<alpha>,\<beta>) = Rep_rel \<Pi>' (\<alpha>,\<beta>)\<close>
+            using \<alpha>denotes by presburger
+        }
+        moreover {
+          assume \<open>\<not>AOT_model_denotes \<alpha> \<and> AOT_model_denotes \<beta>\<close>
+          hence \<open>Rep_rel \<Pi> (\<alpha>,\<beta>) = Rep_rel \<Pi>' (\<alpha>,\<beta>)\<close>
+            by (simp add: \<beta>denotes)
+        }
+        ultimately have \<open>Rep_rel \<Pi> (\<alpha>,\<beta>) = Rep_rel \<Pi>' (\<alpha>,\<beta>)\<close>
+          by (metis (no_types, lifting) AOT_model_regular_prod_def case_prodD)
       }
       hence \<open>Rep_rel \<Pi> = Rep_rel \<Pi>'\<close>
         using \<Pi>_denotes[unfolded AOT_model_denotes_rel.rep_eq,
@@ -682,7 +696,8 @@ class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
 
       (* only extended models *)
       and AOT_sem_enc_indistinguishable_all:
-          \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] \<Longrightarrow>
+          \<open>AOT_ExtendedModel \<Longrightarrow>
+           [v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] \<Longrightarrow>
            [v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>'] \<Longrightarrow>
            (\<And> \<Pi>' . [v \<Turnstile> \<Pi>'\<down>] \<Longrightarrow> (\<And> w . [w \<Turnstile> [\<Pi>']\<kappa>] = [w \<Turnstile> [\<Pi>']\<kappa>'])) \<Longrightarrow>
            [v \<Turnstile> \<Pi>\<down>] \<Longrightarrow>
@@ -691,7 +706,8 @@ class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
            (\<And> \<Pi>' . [v \<Turnstile> \<Pi>'\<down>] \<Longrightarrow> (\<And> \<kappa>\<^sub>0 . [v \<Turnstile> [\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0] \<Longrightarrow>
               (\<And> w . [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>0])) \<Longrightarrow> [v \<Turnstile> \<kappa>'[\<Pi>']])\<close>
       and AOT_sem_enc_indistinguishable_ex:
-          \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] \<Longrightarrow>
+          \<open>AOT_ExtendedModel \<Longrightarrow>
+           [v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>] \<Longrightarrow>
            [v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>'] \<Longrightarrow>
            (\<And> \<Pi>' . [v \<Turnstile> \<Pi>'\<down>] \<Longrightarrow> (\<And> w . [w \<Turnstile> [\<Pi>']\<kappa>] = [w \<Turnstile> [\<Pi>']\<kappa>'])) \<Longrightarrow>
            [v \<Turnstile> \<Pi>\<down>] \<Longrightarrow>
@@ -903,9 +919,9 @@ next
     by auto
   qed
 (* Only extended model *)
-(* TODO: brush up proof *)
 next
   fix v and \<kappa> \<kappa>' :: \<kappa> and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
+  assume ext: \<open>AOT_ExtendedModel\<close>
   assume \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>]\<close>
   hence \<open>is_\<alpha>\<kappa> \<kappa>\<close>
     by (metis AOT_model_\<omega>_concrete_in_some_world AOT_model_concrete_\<kappa>.simps(1)
@@ -989,12 +1005,13 @@ next
   } note ord_indist = this
   have \<open>AOT_model_enc \<kappa>' \<Pi>'\<close>
     using AOT_model_enc_indistinguishable_all
-            [OF \<kappa>_den, OF \<kappa>_abs, OF \<kappa>'_den, OF \<kappa>'_abs, OF \<Pi>_den]
+            [OF ext, OF \<kappa>_den, OF \<kappa>_abs, OF \<kappa>'_den, OF \<kappa>'_abs, OF \<Pi>_den]
           indist \<kappa>_enc_cond \<Pi>'_den ord_indist by blast
   thus \<open>[v \<Turnstile> \<kappa>'[\<Pi>']]\<close>
     using AOT_enc_\<kappa>_meta \<Pi>'_den \<kappa>'_den by blast
 next
   fix v and \<kappa> \<kappa>' :: \<kappa> and \<Pi> \<Pi>' :: \<open><\<kappa>>\<close>
+  assume ext: \<open>AOT_ExtendedModel\<close>
   assume \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>]\<close>
   hence \<open>is_\<alpha>\<kappa> \<kappa>\<close>
     by (metis AOT_model_\<omega>_concrete_in_some_world AOT_model_concrete_\<kappa>.simps(1)
@@ -1054,7 +1071,7 @@ next
               (\<forall>v x. (\<exists>w. AOT_model_concrete w x) \<longrightarrow>
                [v \<Turnstile> \<guillemotleft>Rep_rel \<Pi>' x\<guillemotright>] = [v \<Turnstile> \<guillemotleft>Rep_rel \<Pi> x\<guillemotright>])\<close>
     using AOT_model_enc_indistinguishable_ex
-            [OF \<kappa>_den, OF \<kappa>_abs, OF \<kappa>'_den, OF \<kappa>'_abs, OF \<Pi>_den]
+            [OF ext, OF \<kappa>_den, OF \<kappa>_abs, OF \<kappa>'_den, OF \<kappa>'_abs, OF \<Pi>_den]
           indist by blast
   then obtain \<Pi>'' where
       \<Pi>''_den: \<open>AOT_model_denotes \<Pi>''\<close>
@@ -1253,7 +1270,8 @@ definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>
 definition AOT_instance_of_cqt_2_exe_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_exe_arg \<equiv> \<lambda> \<phi> . \<forall> x y .
       AOT_model_denotes x \<and> AOT_model_term_equiv x y \<longrightarrow>
-      (AOT_model_term_equiv (\<phi> x) (\<phi> y) \<or> (\<not>AOT_model_denotes (\<phi> x) \<and> \<not>AOT_model_denotes (\<phi> y)))\<close>
+      (AOT_model_term_equiv (\<phi> x) (\<phi> y) \<or>
+       (\<not>AOT_model_denotes (\<phi> x) \<and> \<not>AOT_model_denotes (\<phi> y)))\<close>
 definition AOT_instance_of_cqt_2_exe_rel :: \<open>('a::AOT_\<kappa>s \<Rightarrow> <'b::AOT_\<kappa>s>) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_exe_rel \<equiv> \<lambda> \<phi> . \<forall> x y z v .
       AOT_model_denotes x \<and> AOT_model_denotes y \<and>
