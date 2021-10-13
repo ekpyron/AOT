@@ -1827,7 +1827,7 @@ discussion in section~\ref{pred}).
 Given this extended Aczel model structure we can model the terms of AOT.
 \<close>
 
-subsection\<open>Individual Terms as Type Classes and Relation Terms\<close>
+subsection\<open>Individual Terms as Type Classes\<close>
 
 text\<open>
 As a first step in representing the terms of AOT, we introduce a concrete
@@ -1876,7 +1876,9 @@ its values on regular terms. We will discuss this in more detail in the context 
 @{text n}-ary relation identity (TODO: ref). An unary individual term is always
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
-
+\<close>
+section\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
+text\<open>
 We can now introduce a generic type of relation terms as the type of
 proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
 (see~\nameref{AOT:AOT_model.rel}).
@@ -1898,7 +1900,13 @@ This is crucial for validating the comprehension principle of abstract objects, 
 are modelled as sets of urrelations.
 
 TODO: model encoding; maybe some more words about the tuple instantiation; trivial
-instantiations for propositions.
+instantiations for propositions. Relate to co-existence and Kirchner's theorem.
+
+Before we describe how we derive an abstract semantics of AOT from this model
+construction in section~\ref{Semantics}, we briefly discuss how we extend Isabelle's
+inner syntax by an approximation of the syntax used in PLM and how we extend
+Isabelle's outer syntax by custom commands used for structures reasoning in
+the embedding. (TODO: reformulate)
 \<close>
 
 section\<open>Syntax of the Target Theory\<close>
@@ -1921,7 +1929,7 @@ text\<open>
   \<^item> @{command AOT_find_theorems} and @{command AOT_sledgehammer}
 \<close>
 
-section\<open>Representation of an Abstract Semantics of AOT\<close>
+section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
 text\<open>
   \<^item> Abstraction of the properties of the models required for deriving the axiom system.
   \<^item> Heavy use of @{command specification} to allow for general models and obtain some degree of guaranteed automatic abstraction.
