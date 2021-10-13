@@ -1827,7 +1827,7 @@ discussion in section~\ref{pred}).
 Given this extended Aczel model structure we can model the terms of AOT.
 \<close>
 
-subsection\<open>Individual and Relation Terms\<close>
+subsection\<open>Individual Terms as Type Classes and Relation Terms\<close>
 
 text\<open>
 As a first step in representing the terms of AOT, we introduce a concrete
@@ -1856,21 +1856,49 @@ concrete types for two reasons:
     any statement about relations on the type class individual terms implicitly holds
     for relations among tuples of an arbitrary amount of objects of type @{typ \<kappa>}, i.e.
     we can capture statements about arbitrary @{text n}-ary relations.
-    
-\<close>
 
-subsection\<open>TODO\<close>
+The most basic type class we introduce is @{class AOT_Term} (see~\nameref{AOT:AOT_model.AOT_Term}).
+It involves an abstract notion of a term to denote @{const AOT_model_denotes} for which
+it is merely required that it is satisfied by at least one object. For example, for
+type @{typ \<kappa>} @{const AOT_model_denotes} is true for all objects that are not null-objects.
+We will later define quantifiers relative to this type class and prove the quantifier axioms, which are
+independent of the concrete definition of the conditions under which an object of any
+concrete type denotes.
 
-text\<open>
+The generic type class for individual terms based on which we will define relation terms
+is @{class AOT_IndividualTerm} (see~\nameref{AOT:AOT_model.AOT_Term}).
+The most important parameter of this type class is @{const AOT_model_term_equiv}, an
+equivalence relation which is satisfied for two objects, if they have common urelements.
+We furthermore introduce the notion of individual terms to be @{emph \<open>regular\<close>} and
+specify a transformation of proposition-valued functions acting on individual terms, s.t.
+the after the transformation the behaviour of the function is solely determined by
+its values on regular terms. We will discuss this in more detail in the context of
+@{text n}-ary relation identity (TODO: ref). An unary individual term is always
+regular, while a tuple will only be regular, if at most one of its elements does not
+denote.
 
-TODO: extensive description of the actual models used in the embedding.
-  \<^item> Aczel Models
-  \<^item> Hyperintensional Propositions
-  \<^item> Relations as Proposition Valued Functions
-  \<^item> Terms implemented as type classes with a partial equivalence relation signifying exemplification-indistinguishability and determining when terms denote.
-  \<^item> Nary terms as relations on tuples, abstracted by type classes instantiated to the product type.
-  \<^item> "Regular" and "irregular" terms for precisely modelling nary-relation identity.
-  
+We can now introduce a generic type of relation terms as the type of
+proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
+(see~\nameref{AOT:AOT_model.rel}).
+To instantiate the type class @{class AOT_Term} to this generic type of relation terms,
+we have to define the conditions under which a relation term denotes.
+
+A relation term denotes, if it is represented by a proposition-valued functions @{term \<phi>} on
+individual terms, such that (TODO: figure out how to reference):
+  \<^item> @{term \<phi>} agrees on equivalent terms, i.e. it evaluates to the same proposition for
+    individual terms that share the same urelements.
+  \<^item> For non-denoting individual terms, @{term \<phi>} evaluates to necessarily false propositions.
+  \<^item> @{term \<phi>} is well-behaved on irregular terms (i.e. on irregular terms it evaluates
+    to the proposition given by @{term \<open>AOT_model_irregular \<phi>\<close>}, which solely depends
+    on @{term \<phi>}'s behaviour on regular terms).
+
+Based on this definition, we can derive that denoting relation terms among type @{typ \<kappa>}
+correspond to the urrelations of type @{typ urrel} we introduced earlier (see~\nameref{AOT:AOT_model.rel_to_urrel}).
+This is crucial for validating the comprehension principle of abstract objects, since abstract objects
+are modelled as sets of urrelations.
+
+TODO: model encoding; maybe some more words about the tuple instantiation; trivial
+instantiations for propositions.
 \<close>
 
 section\<open>Syntax of the Target Theory\<close>
