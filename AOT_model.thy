@@ -758,7 +758,7 @@ next
 qed
 
 
-text\<open>Denoting relations among terms of type @{term \<kappa>} correspond to urrelations.\<close>
+text\<open>Denoting relations among terms of type @{typ \<kappa>} correspond to urrelations.\<close>
 
 definition rel_to_urrel :: \<open><\<kappa>> \<Rightarrow> urrel\<close> where
   \<open>rel_to_urrel \<equiv> \<lambda> \<Pi> . Abs_urrel (\<lambda> u . Rep_rel \<Pi> (SOME x . \<kappa>\<upsilon> x = u))\<close>
