@@ -1578,7 +1578,8 @@ subsection\<open>Aczel Models\<close>
 text\<open>
 The general structure of our models is based on Aczel models (TODO: cite).
 Aczel models are extensional models that validate both
-the Comprehension Principle of Abstract Objects and classical relation comprehension
+the Comprehension Principle of Abstract Objects (the last axiom in section~\ref{AxiomSystem},
+resp. \nameref{AOT:A-objects} in the embedding) and classical relation comprehension
 in the absence of encoding formulas.
 
 The following figure is illustrates the basic idea of Aczel models:
@@ -1723,7 +1724,7 @@ equivalent propositions:
     @{command nitpick}:
 \<close>
 
-lemma \<open>\<forall> v . [v \<Turnstile> p] = [v \<Turnstile> q]\<close> and \<open>p \<noteq> q\<close>
+lemma \<open>\<forall> v . [v \<Turnstile> p] \<longleftrightarrow> [v \<Turnstile> q]\<close> and \<open>p \<noteq> q\<close>
   nitpick[satisfy, user_axioms, expect=genuine]
   (*<*)oops(*>*)
 
@@ -1736,7 +1737,7 @@ Note, however, that the construction also @{emph \<open>allows\<close>} for nece
 propositions to be collapsed:
 \<close>
 
-lemma \<open>\<forall> p q . (\<forall> v . AOT_model_valid_in v p = AOT_model_valid_in v q) \<longrightarrow> p = q\<close>
+lemma \<open>\<forall> p q . (\<forall> v . [v \<Turnstile> p] \<longleftrightarrow> [v \<Turnstile> q]) \<longrightarrow> p = q\<close>
   nitpick[satisfy, user_axioms, expect=genuine]
   (*<*)oops(*>*)
 
@@ -1745,7 +1746,7 @@ In this case @{command nitpick} chooses a model in which the type @{typ \<o>} is
 isomorphic to the type of Kripke-extensions @{typ \<open>w \<Rightarrow> bool\<close>}, i.e. there are
 just as many objects of type @{typ \<o>} as there are Kripke-extensions.
 
-So just as AOT, the model construction does not presuppose the degree of hyperintensionality of
+So just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
 propositions.
 
 As a next step we construct a variant of Aczel models on top of the hyperintensional
@@ -1753,35 +1754,84 @@ propositions that aims to preserve hyperintensionality for relations and account
 for AOT's free logic.
 \<close>
 
-subsection\<open>Urelements, Individuals and Relations\<close>
+subsection\<open>Extended Aczel Model Structure\<close>
+
+(*<*)
+(* TODO: ugly hack *)
+consts explicitParen :: 'a
+syntax (input) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>'(_\<^bold>')")
+syntax (output) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("'(_')")
+translations
+  "_explicitParen x" == "CONST explicitParen x"
+(*>*)
 
 text\<open>
-AOT involves complex terms that may not have a denotation. However, all formulas
-in AOT, even if they involve non-denoting terms, have well-defined truth conditions
-(e.g. atomic formulas involving a primary term that does not denote are false).
-Moreover, complex terms may denote, even if they involve subterms that do not denote.
-To avoid artifactual theorems, it is important to consider the identity conditions of
-such terms.
+The embedding introduces a type of urelements @{typ \<upsilon>} (see~\nameref{AOT:AOT_model.<upsilon>})
+that is comprised of three separate kinds of urelements:
 
-In particular, let @{term p} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
-and let @{term q} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<psi>{x}\<guillemotright>\<close>.
-Furthermore, assume that provably neither of the descriptions denote,
-i.e. both \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<phi>{x})\<down>\<guillemotright>\<close> and  \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<psi>{x})\<down>\<guillemotright>\<close> are theorems.
-Now while AOT requires @{term p} and @{term q} to be necessarily equivalent,
-in particular they are both necessarily false, it does not presuppose that @{term p} is
-@{emph \<open>identical\<close>} to @{term \<open>q\<close>}.
+  \<^item> Ordinary urelements of type @{typ \<omega>} (see~\nameref{AOT:AOT_model.<omega>}),
+  \<^item> Special urelements of type @{typ \<sigma>} (see~\nameref{AOT:AOT_model.<sigma>}) and
+  \<^item> Null-urelements of type @{typ null} (see~\nameref{AOT:AOT_model.null}).
 
-So the proposition of @{term F} being exemplified by one non-denoting term is not
-required to be identical to the proposition of @{term F} being exemplified by another
-non-denoting term.
+Following the structure of Aczel models, ordinary urelements are used to model
+ordinary objects and special urelements determine the exemplification behaviour of
+abstract objects. The additional null-urelements are introduced to be able to
+distinguish between distinct non-denoting individual terms.
 
-This means that the models have to distinguish between non-denoting individual terms.
+For simple models, a plain primitive type for the special urelements suffices. However,
+to model our proposed extended relation comprehension, we use a richer type
+for special urelements and model them as subset of the set of triples of two copies
+of sets of exemplification extensions on Ordinary urelements and one
+very special urelements (type @{typ \<sigma>'}).
+This is discussed in more detail in section~\ref{pred}.
 
+Hyperintensional relations are modelled as proposition-valued functions.
+In particular, the embedding introduces the type @{typ urrel} (see~\nameref{AOT:AOT_model.urrel})
+that is represented by the set of all functions from urelements to propositions (type
+@{typ \<open>\<upsilon> \<Rightarrow> \<o>\<close>}), which map null-urelements to necessarily false propositions.
+This type or @{emph \<open>urrelations\<close>} will correspond to denoting property terms.
 
+The additional null-urelements serve to avoid two kinds of artifactual theorems:
+  \<^item> Let @{term p} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
+    and let @{term q} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<psi>{x}\<guillemotright>\<close>.
+    Furthermore, assume that provably neither of the descriptions denote,
+    i.e. both \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<phi>{x})\<down>\<guillemotright>\<close> and  \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<psi>{x})\<down>\<guillemotright>\<close> are theorems.
+    Now while AOT requires @{term p} and @{term q} to be necessarily equivalent,
+    in particular they are both necessarily false, it does not presuppose that @{term p} is
+    @{emph \<open>identical\<close>} to @{term \<open>q\<close>}. In the model this is achieved by allowing
+    both descriptions to be mapped to distinct null-urelements to which the urrelation
+    corresponding to @{term F} can assign distinct (albeit necessarily false)
+    propositions.
+  \<^item> In AOT there may be distinct properties, s.t. for any object exemplifying either of
+    them necessarily results in the same proposition, i.e. @{term \<open>print_as_theorem \<guillemotleft>\<forall>x \<box>\<^bold>(([F]x) = ([G]x)\<^bold>)\<guillemotright>\<close>}
+    does @{emph \<open>not\<close>} imply @{term \<open>F = G\<close>}. The @{text \<open>\<forall>\<close>}-quantifier ranges over all denoting
+    individuals. If relations were merely modelled as functions from urelements that
+    correspond to denoting individual terms to propositions, the identity would follow,
+    since two functions are identical, if they map to identical values for all arguments.
+    By introducing null-urelements, however, we allow @{term F} and @{term G} to vary
+    on additional urelements outside of the range of the quantifier.
+
+As a last ingredient of our Aczel model structure, we require a mapping @{text \<alpha>\<sigma>}
+from sets of urrelations (which will be used to represent abstract objects) to
+special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>}).
+
+For urrelations to become a proper quotient of proposition-valued functions acting
+on individual @{emph \<open>terms\<close>}, as described below, we require this mapping to be
+surjective. For simple models that do not validate extended relation comprehension
+it is easy to show that suitable surjective mappings exist (see~\nameref{AOT:AOT_model.<alpha><sigma>_restr})
+and @{emph \<open>any\<close>} such surjective mapping is admissible. For the extended models,
+we require additional properties and proving that those properties can be satisfied
+is more involved (see~\nameref{AOT:AOT_model.<alpha><sigma>_ext} and the more detailed
+discussion in section~\ref{pred}).
+
+Given this extended Aczel model structure we can model the terms of AOT.
 \<close>
 
-subsection\<open>Non-\<close>
+subsection\<open>Individual and Relation Terms\<close>
 
+text\<open>
+
+\<close>
 
 subsection\<open>TODO\<close>
 
