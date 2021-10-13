@@ -127,6 +127,7 @@ unicode_map = {
 }
 
 labelPattern = re.compile(r'\u2039\\label{([^}]*)}\u203A', re.UNICODE)
+specialAntiquotePattern = re.compile(r'\\<\^([^>]*)>')
 
 class ReferenceChecker(HTMLParser):
 	def __init__(self, theories):
@@ -244,10 +245,13 @@ class PideXMLParser(HTMLParser):
 	def handle_data(self, data):
 		tokens = []
 		data_clean = ""
-		if self.is_plain_text:
-			m = labelPattern.match(data)
-			if m:
-				print("\\plmlabelnosec[{}.{}.{}]{{{}}}".format(self.chapter,self.section, self.line, m.group(1)), end="")
+		specialAntiquote = False
+		if m := specialAntiquotePattern.match(data):
+			print("\\begin{pidespecialantiquote}", end="")
+			data = m.group(1)
+			specialAntiquote = True
+		if self.is_plain_text and (m := labelPattern.match(data)):
+			print("\\plmlabelnosec[{}.{}.{}]{{{}}}".format(self.chapter,self.section, self.line, m.group(1)), end="")
 		for c in data:
 			if c == "\n":
 				if self.start_of_line:
@@ -300,9 +304,9 @@ class PideXMLParser(HTMLParser):
 				elif c == '$':
 					data_clean += "$\$$"
 				elif c == '{':
-					data_clean += "\{"
+					data_clean += "\\{"
 				elif c == '}':
-					data_clean += "\}"
+					data_clean += "\\}"
 				elif c == '%':
 					data_clean += "\\%"
 				elif c == '#':
@@ -330,6 +334,8 @@ class PideXMLParser(HTMLParser):
 		for token in tokens:
 			content = content + "{{{}}}".format(token)
 		print(content, end="")
+		if specialAntiquote:
+			print("\\end{pidespecialantiquote}", end="")
 		if self.is_plain_text:
 			self.is_plain_text = False
 			if self.is_section:
