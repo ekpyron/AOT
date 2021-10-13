@@ -15,6 +15,7 @@
 \usepackage{lineno}
 \usepackage[T1]{fontenc}
 \usepackage{environ}
+\usepackage[headsepline,automark]{scrlayer-scrpage}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 \newcommand{\bigbox}{}
@@ -395,6 +396,8 @@ TODO
 \tableofcontents
 
 \cleardoublepage
+
+\pagestyle{scrheadings}
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
