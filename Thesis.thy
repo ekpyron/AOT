@@ -1758,8 +1758,24 @@ text\<open>
 AOT involves complex terms that may not have a denotation. However, all formulas
 in AOT, even if they involve non-denoting terms, have well-defined truth conditions
 (e.g. atomic formulas involving a primary term that does not denote are false).
+Moreover, complex terms may denote, even if they involve subterms that do not denote.
+To avoid artifactual theorems, it is important to consider the identity conditions of
+such terms.
 
-Consequently, non-denoting terms have to be accounted for explicitly in the embedding.
+In particular, let @{term p} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
+and let @{term q} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<psi>{x}\<guillemotright>\<close>.
+Furthermore, assume that provably neither of the descriptions denote,
+i.e. both \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<phi>{x})\<down>\<guillemotright>\<close> and  \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<psi>{x})\<down>\<guillemotright>\<close> are theorems.
+Now while AOT requires @{term p} and @{term q} to be necessarily equivalent,
+in particular they are both necessarily false, it does not presuppose that @{term p} is
+@{emph \<open>identical\<close>} to @{term \<open>q\<close>}.
+
+So the proposition of @{term F} being exemplified by one non-denoting term is not
+required to be identical to the proposition of @{term F} being exemplified by another
+non-denoting term.
+
+This means that the models have to distinguish between non-denoting individual terms.
+
 
 \<close>
 
