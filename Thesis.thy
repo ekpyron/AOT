@@ -1877,7 +1877,7 @@ its values on regular terms. We will discuss this in more detail in the context 
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
 \<close>
-section\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
+subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
 text\<open>
 We can now introduce a generic type of relation terms as the type of
 proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
