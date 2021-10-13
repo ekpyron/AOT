@@ -88,17 +88,12 @@ typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<
   by (rule exI[where x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close>])
      (auto simp: AOT_model_proposition_choice_simp)
 
-text\<open>Individual terms are either ordinary objects, represented by ordinary urelements,
-     abstract objects, modelled as sets of Urrelations, or null objects, used to
-     represent non-denoting definite descriptions.\<close>
-datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
-
-text\<open>We define a mapping from abstract objects to special urelements.
+text\<open>We define a mapping from sets of urrelations (abstract objects)
+     to special urelements.
      For extended models that validate extended relation comprehension
      (and consequently the predecessor axiom), the construction is
-     non-trivial.
-
-     For simple models see the alternative implementation of @{text \<alpha>\<sigma>_restr} below.\<close>
+     non-trivial. For simple models see the alternative simpler implementation
+     of @{text \<alpha>\<sigma>_restr} below.\<close>
 consts \<alpha>\<sigma>_ext :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
 
 definition urrel_to_\<omega>rel :: \<open>urrel \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool)\<close> where
@@ -495,6 +490,11 @@ abbreviation (input) \<alpha>\<sigma> where \<open>\<alpha>\<sigma> \<equiv> \<a
 lemmas \<alpha>\<sigma>_surj = \<alpha>\<sigma>_restr_surj
 abbreviation (input) AOT_ExtendedModel where \<open>AOT_ExtendedModel \<equiv> False\<close>
 *)
+
+text\<open>Individual terms are either ordinary objects, represented by ordinary urelements,
+     abstract objects, modelled as sets of Urrelations, or null objects, used to
+     represent non-denoting definite descriptions.\<close>
+datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
 text\<open>The mapping from abstract objects to urelements can be naturally
      lifted to a surjective mapping from individual terms to urelements.\<close>
