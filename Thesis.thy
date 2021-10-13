@@ -1830,7 +1830,33 @@ Given this extended Aczel model structure we can model the terms of AOT.
 subsection\<open>Individual and Relation Terms\<close>
 
 text\<open>
+As a first step in representing the terms of AOT, we introduce a concrete
+type of individual terms @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}).
+The type @{typ \<kappa>} consists of ordinary objects of type @{typ \<omega>} (shared with ordinary
+urelements), abstract objects modelled as sets of urelements (type @{typ \<open>urrel set\<close>})
+and null-objects of type @{typ null} (shared with null-urelements) that will
+serve to model non-denoting definite descriptions.
 
+However, we also introduce a system of @{emph \<open>type classes\<close>} that abstract over
+concrete types for two reasons:
+  \<^item> AOT involves axioms and theorems with (meta-)variables that may be instantiated
+    to terms of several different types. In order not to have to restate multiple
+    instances of such statements we formulate type classes that abstract over the
+    required shared properties of all admissible types and prove the respective
+    statement relative to this type class (which is instantiated to all concrete types
+    that satisfy the necessary requirements).
+  \<^item> AOT involves statements about @{text n}-ary relations for arbitrary @{text \<open>n \<ge> 0\<close>},
+    so to cover the full extend of such statements, enumerating all concrete instances
+    would be impossible. Instead we model relations acting on any type of an abstract
+    type class of individual terms and then show that the product of an unary
+    individual term (which constitutes another more restricted type class which
+    abstracts the distinctive properties of the concrete type @{typ \<kappa>}) and another
+    individual term (which may itself be an unary individual term or a product) again
+    satisfies the requirements of the type class of individual terms. This way
+    any statement about relations on the type class individual terms implicitly holds
+    for relations among tuples of an arbitrary amount of objects of type @{typ \<kappa>}, i.e.
+    we can capture statements about arbitrary @{text n}-ary relations.
+    
 \<close>
 
 subsection\<open>TODO\<close>
