@@ -261,6 +261,10 @@ AOT_theorem act_closure_act:
 text\<open>The following are not part of PLM and only hold in the extended models.
      They are a generalization of the predecessor axiom.\<close>
 
+locale AOT_ExtendedModel =
+  assumes AOT_ExtendedModel: \<open>AOT_ExtendedModel\<close>
+begin
+
 AOT_axiom indistinguishable_ord_enc_all:
   \<open>\<Pi>\<down> & A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
   ((\<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])) \<equiv>
@@ -305,7 +309,7 @@ proof (rule AOT_model_axiomI)
             using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
         } note 4 = this
         AOT_have \<open>y[\<Pi>']\<close>
-          apply (rule AOT_sem_enc_indistinguishable_all)
+          apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
           apply (fact 0)
                apply (auto simp: 0 1 \<Pi>_den 2[simplified AOT_sem_forall
                                  AOT_sem_box AOT_sem_equiv])
@@ -347,7 +351,7 @@ proof (rule AOT_model_axiomI)
             using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
         } note 4 = this
         AOT_have \<open>x[\<Pi>']\<close>
-          apply (rule AOT_sem_enc_indistinguishable_all)
+          apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
                 apply (fact 1)
                apply (auto simp: 0 1 \<Pi>_den 2[simplified AOT_sem_forall
                                  AOT_sem_box AOT_sem_equiv])
@@ -412,7 +416,8 @@ proof (rule AOT_model_axiomI)
           \<Pi>''_den: \<open>\<Pi>''\<down>\<close> and
           \<Pi>''_indist: \<open>[\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0 \<rightarrow> \<box>([\<Pi>'']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> and
           y_enc_\<Pi>'': \<open>y[\<Pi>'']\<close> for \<kappa>\<^sub>0
-        using AOT_sem_enc_indistinguishable_ex[OF 0, OF 1, rotated, OF \<Pi>_den,
+        using AOT_sem_enc_indistinguishable_ex[OF AOT_ExtendedModel,
+                OF 0, OF 1, rotated, OF \<Pi>_den,
                 OF exI[where x=\<Pi>'], OF conjI, OF \<Pi>'_den, OF conjI,
                 OF x_enc_\<Pi>', OF allI, OF impI,
                 OF 3[simplified AOT_sem_box AOT_sem_equiv], simplified, OF
@@ -454,6 +459,7 @@ proof (rule AOT_model_axiomI)
       by (auto simp: AOT_sem_imp AOT_sem_conj)
   }
 qed
+end
 
 (*<*)
 end

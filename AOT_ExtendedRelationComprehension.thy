@@ -4,6 +4,9 @@ begin
 
 section\<open>Extended Relation Comprehension\<close>
 
+text\<open>This theory depends choosing extended models.\<close>
+interpretation AOT_ExtendedModel by (standard; auto)
+
 AOT_register_rigid_restricted_type
   Ordinary: \<open>O!\<kappa>\<close>
 proof
