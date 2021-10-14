@@ -1835,10 +1835,13 @@ type of individual terms @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}).
 The type @{typ \<kappa>} consists of ordinary objects of type @{typ \<omega>} (shared with ordinary
 urelements), abstract objects modelled as sets of urelements (type @{typ \<open>urrel set\<close>})
 and null-objects of type @{typ null} (shared with null-urelements) that will
-serve to model non-denoting definite descriptions.
+serve to model non-denoting definite descriptions. We can lift the surjective
+mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a full mapping
+from individual terms to urelements @{text \<kappa>\<upsilon>} of type @{typ \<open>\<kappa> \<Rightarrow> \<upsilon>\<close>} (see~\nameref{AOT:AOT_model.<kappa><upsilon>}),
+s.t. for any urelement we can find an individual term that is mapped to that urelement.
 
 However, we also introduce a system of @{emph \<open>type classes\<close>} that abstract over
-concrete types for two reasons:
+concrete types for two reasons (TODO: reference some to-be-done discussion of type classes?):
   \<^item> AOT involves axioms and theorems with (meta-)variables that may be instantiated
     to terms of several different types. In order not to have to restate multiple
     instances of such statements we formulate type classes that abstract over the
