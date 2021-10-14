@@ -966,7 +966,7 @@ In the following sections, we provide a brief overview of the language, the axio
 the deductive system of PLM. For a full account and detailed discussion refer to (TODO: cite PLM).
 \<close>
 
-section\<open>The Language\<close>
+section\<open>The Language\<close>text\<open>\label{AOTLanguage}\<close>
 
 text\<open>
 
@@ -1444,7 +1444,7 @@ Necessity (see~\nameref{PLM: 9.9}); Relations (see~\nameref{PLM: 9.10}); Objects
 Propositional Properties (see~\nameref{PLM: 9.12}).
 \<close>
 
-subsection\<open>Restricted Variables\<close>
+subsection\<open>Restricted Variables\<close>text\<open>\label{RestrictedVariables}\<close>
 
 text\<open>
 
@@ -1900,7 +1900,7 @@ individual terms, such that (TODO: figure out how to reference):
 Based on this definition, we can derive that denoting relation terms among type @{typ \<kappa>}
 correspond to the urrelations of type @{typ urrel} we introduced earlier (see~\nameref{AOT:AOT_model.rel_to_urrel}).
 This is crucial for validating the comprehension principle of abstract objects, since abstract objects
-are modelled as sets of urrelations.
+were modelled as sets of urrelations.
 
 TODO: model encoding; maybe some more words about the tuple instantiation; trivial
 instantiations for propositions. Relate to co-existence and Kirchner's theorem.
@@ -1915,15 +1915,84 @@ the embedding. (TODO: reformulate)
 section\<open>Syntax of the Target Theory\<close>
 
 text\<open>
-  \<^item> Independent grammar root with extensive use of parse translations
-  \<^item> Splitting of identifiers in atomic formulas like @{term \<open>\<guillemotleft>[F]xy\<guillemotright>\<close>}.
-  \<^item> Registering symbols for implied types; handling of meta-variables; simulating ellipses with type classes.
-  \<^item> Multiple printing modes.
+We already discussed the possibility of extending Isabelle's inner syntax in general
+in section~\ref{SSESyntax}. However, Isabelle's high-level mechanisms for defining
+custom syntax has certain limitations that make an accurate representation of
+AOT's usual syntax challenging.
+
+In particular, Isabelle's lexical analysis is not designed to be configurable.
+It presupposes that identifiers consist of multiple characters and have to be
+delimited by whitespace or certain delimiter tokens.
+
+While requiring identifiers to be delimited can be considered as a reasonable syntactic
+concession, we found that reproducing the compact form of atomic formulas used in PLM
+results in significantly improved readability.
+
+Therefore we utilize Isabelle's low-level mechanisms to customize syntax by providing
+transformations on its AST and its term representation written in Standard ML.
+
+TODO: change to meta-variables, add @{const AOT_term_of_var} or comment about it.
+In particular, we use @{command parse_ast_translation}s and @{command parse_translation}s (TODO cite)
+to split what Isabelle would natively regard as a single identifier. That way we are
+able to e.g. translate the term @{term \<open>print_as_theorem \<guillemotleft>[F]xy\<guillemotright>\<close>} to
+@{text \<open>AOT_exe F (x, y)\<close>}. The 2-ary exemplification formula is translated to
+an application of the constant @{const AOT_exe} to the relation term and a tuple of
+individuals. Similarly, @{term \<open>print_as_theorem \<guillemotleft>xy[F]\<guillemotright>\<close>} is translated to
+@{text \<open>AOT_enc (x,y) F\<close>}. The involved constants are introduced in~\ref{AOT:AOT_syntax}
+as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which will only
+later be enriched with semantic structure using @{command specification}s (TODO: refs).
+
+Furthermore, PLM associates the symbols used for its terms with their types, as described in
+section~\ref{AOTLanguage}. While it is possible to rely on Isabelle's type inference,
+this will not always result in correctly typed terms without additional type annotations
+which would negatively affect readability.
+
+For that reason, we construct an extensible system for typing terms based on their names.
+In particular we introduce the command @{command AOT_register_type_constraints} that
+can be used to introduce named categories of types and equip them with type constraints
+both for unary terms and tuples. We then allow registering symbols as variables and
+metavariables of the given category with @{command AOT_register_variable_names} and
+@{command AOT_register_metavariable_names}. The extensible design allows for reproducing
+AOT's concept of @{emph \<open>restricted variables\<close>} (see~\ref{RestrictedVariables}) by further
+associating a term category with a restriction condition (see~\ref{AOT:AOT_RestrictedVariables})
+as required. TODO: details?
+
+A danger in the extensive use of complex custom syntax is silent errors in the syntactic
+translations that could result in an expression to be parsed contrary to their intended
+meaning. To alleviate this danger we define multiple @{emph \<open>printing modes\<close>}. The
+embedding can be configured to print terms in an approximation of AOT's syntax, e.g.:
+
+@{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
+
+using meta-syntax, an enriched version of HOL's syntax without complex transformations, e.g.:
+\<close>(*<*) unbundle AOT_no_syntax context AOT_meta_syntax begin (*>*)text\<open>
+@{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
+
+or as plain HOL terms without any syntactic sugar, e.g.:\<close>(*<*) end (*>*)text\<open>
+@{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
+\<close>
+(*<*) unbundle AOT_syntax (*>*)
+text\<open>
+
+Note that while the meta-syntax already involves distracting complexities like the
+annotation of non-meta-variables using @{text \<open>\<langle>_\<rangle>\<close>}, additional explicit syntax for
+exemplification @{text \<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>} and explicit tuples, plain HOL syntax quickly
+becomes unreadable for complex terms.
+
+For the purpose of implementing a full theory with an extensive body of theorems
+we feel that the improved readability outweighs the potential danger of complex
+syntax transformations, especially given the ability to confirm the accuracy of
+the translation using less complex printing modes.
+
+TODO: mention ellipses?
 \<close>
 
 section\<open>Extending Isabelle's Outer Syntax\<close>
 
 text\<open>
+
+See~\ref{AOT:AOT_commands}.
+
   \<^item> ML implemented copy of the Isar language.
   \<^item> Automatically parses inner syntax at @{typ AOT_prop} grammar root.
   \<^item> Tracks semantic possible worlds.

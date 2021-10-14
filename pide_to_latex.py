@@ -26,6 +26,7 @@ referencedEntities = {
 	"AOT_model.rel",
 	"AOT_model.rel_to_urrel",
 	"AOT_model.<kappa><upsilon>",
+	"AOT_syntax.AOT_denotes",
 	"AOT_semantics.AOT_instance_of_cqt_2",
 	"AOT_NaturalNumbers.numbers_prop_den",
 	"AOT_Axioms.indistinguishable_ord_enc_all",
