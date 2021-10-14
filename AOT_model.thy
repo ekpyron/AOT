@@ -766,7 +766,7 @@ definition urrel_to_rel :: \<open>urrel \<Rightarrow> <\<kappa>>\<close> where
   \<open>urrel_to_rel \<equiv> \<lambda> \<phi> . Abs_rel (\<lambda> x . Rep_urrel \<phi> (\<kappa>\<upsilon> x))\<close>
 
 definition AOT_rel_equiv :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
-  "AOT_rel_equiv \<equiv> (\<lambda> x y . AOT_model_denotes x \<and> AOT_model_denotes y \<and> x = y)"
+  "AOT_rel_equiv \<equiv> (\<lambda> F G . AOT_model_denotes F \<and> AOT_model_denotes G \<and> F = G)"
 
 lemma urrel_quotient3: \<open>Quotient3 AOT_rel_equiv rel_to_urrel urrel_to_rel\<close>
 proof (rule Quotient3I)
