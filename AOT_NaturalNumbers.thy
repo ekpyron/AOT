@@ -4857,14 +4857,14 @@ proof(rule AOT_model_axiomI)
   {
     fix r
     have \<open>AOT_model_denotes (urrel_to_rel r)\<close>
-      by (meson AOT_rel_equiv_def Quotient_rel_rep urrel_quotient)
+      by (meson AOT_model_term_equiv_rel_def Quotient_rel_rep urrel_quotient)
     AOT_hence r_rel_den: \<open>\<^bold>\<turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<down>\<close>
       by (simp add: AOT_sem_denotes)
     assume \<open>r \<in> zero\<close>
     AOT_hence \<open>\<^bold>\<turnstile> 0[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
       unfolding AOT_enc_\<kappa>_meta
       by (metis (full_types, lifting)
-            AOT_model_enc_\<kappa>_def AOT_rel_equiv_def AOT_sem_denotes "zero:2"
+            AOT_model_enc_\<kappa>_def AOT_model_term_equiv_rel_def AOT_sem_denotes "zero:2"
             Quotient3_def \<kappa>.simps(11) local.zero_def urrel_quotient3)
     AOT_hence r_notex: \<open>\<^bold>\<turnstile> \<not>\<exists>u [\<guillemotleft>urrel_to_rel r\<guillemotright>]u\<close>
       using "zero=:2"[unvarify F, THEN "\<equiv>E"(1), OF r_rel_den] by blast
@@ -4922,7 +4922,8 @@ proof(rule AOT_model_axiomI)
       by (metis "reductio-aa:1")
     AOT_hence \<open>\<^bold>\<turnstile> 0[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
       apply (rule "zero=:2"[unvarify F, THEN "\<equiv>E"(2), rotated])
-      by (metis AOT_rel_equiv_def AOT_sem_denotes Quotient3_rel_rep urrel_quotient3)
+      by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes
+                Quotient3_rel_rep urrel_quotient3)
     hence \<open>r \<in> zero\<close>
       unfolding zero_def[symmetric] AOT_enc_\<kappa>_meta
       by (metis (no_types, lifting) AOT_model_enc_\<kappa>_def Quotient3_abs_rep
@@ -4984,14 +4985,14 @@ proof(rule AOT_model_axiomI)
       using "equi:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
     have Rep_rel_\<Pi>_simp:
       \<open>Rep_rel \<Pi> (\<omega>\<kappa> a) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, best) AOT_rel_equiv_def AOT_sem_denotes Abs_rel_inverse
+      by (smt (verit, best) AOT_model_term_equiv_rel_def AOT_sem_denotes
             Quotient3_def \<Pi>_den \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3
-            urrel_to_rel_def)
+            urrel_to_rel_def Abs_rel_inverse)
     have Rep_rel_\<Pi>'_simp:
       \<open>Rep_rel \<Pi>' (\<omega>\<kappa> a) = Rep_urrel (rel_to_urrel \<Pi>') (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, best) AOT_rel_equiv_def AOT_sem_denotes Abs_rel_inverse
+      by (smt (verit, best) AOT_model_term_equiv_rel_def AOT_sem_denotes
             Quotient3_def \<Pi>'_den \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3
-            urrel_to_rel_def)
+            urrel_to_rel_def Abs_rel_inverse)
     fix p :: \<open>\<omega> \<Rightarrow> \<omega>\<close>
     define b1 :: \<open>\<omega> \<Rightarrow> \<omega>\<close> where
       \<open>b1 \<equiv> \<lambda> u . THE v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
@@ -5242,15 +5243,15 @@ proof(rule AOT_model_axiomI)
       have Rep_rel_G_simp:
         \<open>Rep_rel (AOT_term_of_var G) (\<omega>\<kappa> a) =
          Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> a)\<close> for a
-        by (smt (verit, del_insts) AOT_model.AOT_term_of_var AOT_rel_equiv_def
+        by (smt (verit, del_insts) AOT_model.AOT_term_of_var
               Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-              urrel_quotient3 urrel_to_rel_def)
+              urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
       have Rep_rel_F_simp:
         \<open>Rep_rel (AOT_term_of_var F) (\<omega>\<kappa> a) =
          Rep_urrel (rel_to_urrel (AOT_term_of_var F)) (\<omega>\<upsilon> a)\<close> for a
-        by (smt (verit, del_insts) AOT_model.AOT_term_of_var AOT_rel_equiv_def
+        by (smt (verit, del_insts) AOT_model.AOT_term_of_var
               Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-              urrel_quotient3 urrel_to_rel_def)
+              urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
 
       AOT_have \<open>[F]z' \<rightarrow> ([G]z' \<or> z = z')\<close> for z'
         apply (rule "rule=E"[rotated, OF G_def[symmetric]])
@@ -5303,8 +5304,8 @@ proof(rule AOT_model_axiomI)
           AOT_hence 0: \<open>y[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
             unfolding y_def
             unfolding AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def
-            by (metis AOT_model.AOT_term_of_var AOT_rel_equiv_def Quotient3_def
-                      \<kappa>.simps(11) urrel_quotient3 y_def)
+            by (metis AOT_model.AOT_term_of_var AOT_model_term_equiv_rel_def
+                      \<kappa>.simps(11) urrel_quotient3 y_def Quotient3_def)
           AOT_hence \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<approx>\<^sub>E F\<close>
             apply (rule y_enc_cond[unvarify G, THEN "\<equiv>E"(1), rotated])
             using "0" AOT_sem_enc_denotes by auto
@@ -5362,9 +5363,9 @@ proof(rule AOT_model_axiomI)
     have Rep_rel_G_simp:
       \<open>Rep_rel (AOT_term_of_var G) (\<omega>\<kappa> a) =
        Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, del_insts) AOT_model.AOT_term_of_var AOT_rel_equiv_def
+      by (smt (verit, del_insts) AOT_model.AOT_term_of_var
             Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-            urrel_quotient3 urrel_to_rel_def)
+            urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
     AOT_have notGx: \<open>\<not>[G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
     proof (rule "raa-cor:2")
       AOT_assume \<open>[G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
