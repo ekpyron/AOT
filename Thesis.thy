@@ -1675,7 +1675,7 @@ that @{text \<phi>} does not involve encoding claims.
 
 While Aczel models generally demonstrate that abstract objects and encoding can be
 modelled without being subject to the Clark-Boolos paradox (TODO: ref), there are
-several issues that are remain unaddressed:
+several issues that remain unaddressed:
 
   \<^item> AOT's relations are not extensional and not even merely intensional,
     but fully hyperintensional.
@@ -1824,10 +1824,10 @@ we require additional properties and proving that those properties can be satisf
 is more involved (see~\nameref{AOT:AOT_model.<alpha><sigma>_ext} and the more detailed
 discussion in section~\ref{pred}).
 
-Given this extended Aczel model structure we can model the terms of AOT.
+Given this extended Aczel model structure we can represent the terms of AOT.
 \<close>
 
-subsection\<open>Individual Terms as Type Classes\<close>
+subsection\<open>Individual Terms and Type Classes for Terms\<close>
 
 text\<open>
 As a first step in representing the terms of AOT, we introduce a concrete
