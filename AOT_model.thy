@@ -677,8 +677,6 @@ lift_definition AOT_model_denotes_rel :: \<open><'a> \<Rightarrow> bool\<close> 
 definition AOT_model_term_equiv_rel :: \<open><'a> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
   \<open>AOT_model_term_equiv_rel \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and>
                                       f = g\<close>
-definition AOT_model_regular_rel :: \<open><'a> \<Rightarrow> bool\<close> where
-  \<open>AOT_model_regular_rel \<equiv> \<lambda> r . True\<close>
 instance proof
   have \<open>AOT_model_irregular (fix_special \<phi>) x = AOT_model_irregular \<phi> x\<close>
     for \<phi> and x :: 'a
