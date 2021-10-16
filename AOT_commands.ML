@@ -624,6 +624,13 @@ val _ =
     (structured_statement >> (fn stmt =>
       Toplevel.proof' (fn int => Proof.chain #> (gen_cmd Proof.have stmt int #> #2))));
 val _ =
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_world\<close> "explicitly set world"
+    (Parse.term >> (fn trm =>
+       (Toplevel.proof' (fn _ => (Proof.map_context (fn ctxt => let
+        val ctxt = AOT_ProofData.put (SOME (Syntax.read_term ctxt trm)) ctxt
+        in ctxt end))))));
+
+val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict {\<close>
     "begin explicit AOT modally-strict proof block"
     (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let

@@ -8,7 +8,7 @@ section\<open>The Deductive System PLM\<close>
 text\<open>\label{PLM: 9}\<close>
 
 (* constrain sledgehammer to the abstraction layer *)
-unbundle AOT_no_atp
+(* unbundle AOT_no_atp *)
 
 subsection\<open>Primitive Rule of PLM: Modus Ponens\<close>
 text\<open>\label{PLM: 9.1}\<close>
