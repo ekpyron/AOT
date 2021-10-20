@@ -1575,7 +1575,7 @@ tuples of individuals.
 Note that while we talk about @{emph \<open>modelling\<close>} AOT, we do not construct concrete
 models of AOT's logic in the classical sense. Instead, we @{emph \<open>implement\<close>} AOT in
 Isabelle/HOL using a SSE and any set-theoretic model of the HOL theory we use as
-meta-logic can be lifted to a full model of AOT. This way, in particular, we
+meta-logic can be lifted to a full set-theoretic model of AOT. This way, in particular, we
 can avoid defining concrete interpretation and assignment functions, since we can
 rely on Isabelle's semantics for constants and variables instead. This technique
 was discussed in more detail in section~\ref{SSE:MetaModel}.
@@ -2313,8 +2313,9 @@ instance without simultaneously renaming the bound variable. Even though, intern
 names are eliminated, concrete variable names, of course, still make a difference when @{emph \<open>parsing\<close>}
 inner syntax.
 
-Given this discussion and the meta-rule derived above, the fact that Isabelle implicitly generalizes
-free variables to schematic variables remains faithful to the derivational system of AOT.
+Given this discussion and the meta-rule derived above, we may conclude that the fact that
+Isabelle implicitly generalizes free variables to schematic variables remains faithful
+to the derivational system of AOT.
 \<close>
 
 subsection\<open>Trivial Accessibility Relation for the Modal Logic\<close>
