@@ -2176,7 +2176,7 @@ this entails strictly more cases than the formulation given above.
 Accounting for this change in the embedding would entail extending the encoding formula
 base cases of the construction. While the current version of the embedding given in the
 appendix specifically does not validate this alternative formulation of the axiom in
-order to avoid theorems that would be artifactual without the extended axiom, it would
+order to avoid theorems that would be artifactual without the extended axiom (TODO: mention), it would
 be straightforward to extend the implementation to encompass this new extended
 version of the axiom, once it is clear that PLM will move in that direction. (TODO: watch formulation).
 

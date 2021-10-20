@@ -1838,6 +1838,46 @@ TODO: check if this duplicates earlier discussion.
 
 \<close>
 
+section\<open>On the Prospect of an Enhanced Version of the Construction\<close>
+
+text\<open>
+At the time of writing, there is a debate over the changing the analysis of Natural
+Numbers. Instead of restricting the analysis to ordinary objects, identity on the
+ordinary objects and equinumerosity on the ordinary object, the idea is to instead
+follow the same basic construction relative to @{emph \<open>discernible objects\<close>}.
+
+Being discernible (@{text \<open>D!\<close>}) could, for example, be defined as the following
+relation:
+
+@{term[display] \<open>\<guillemotleft>[\<lambda>x O!x \<or> A!x & \<forall>y (y \<noteq> x \<rightarrow> \<exists>F \<not>([F]x \<equiv> [F]y))]\<guillemotright>\<close>}
+
+It can be proven using the necessary and sufficient conditions for relations to denote
+discussed in section (TODO: cite), that this relation denotes. Furthermore, similarly
+to being ordinary, @{text \<open>D!\<close>} constitutes a rigid restriction condition. Similar to
+@{text \<open>=\<^sub>E\<close>} on the ordinary objects, an identity on the discernible objects can be
+defined as @{term \<open>\<guillemotleft>[\<lambda>xy \<box>\<forall>F([F]x \<equiv> [F]y)]\<guillemotright>\<close>}. The construction up until the
+modal axiom requiring possible richness of ordinary objects works without any major
+changes relative to being discernible, the identity of discernibles and being
+equinumerous@{text \<open>\<^sub>D\<close>} (defined just as equinumerous@{text \<open>\<^sub>E\<close>} above, just relative
+to discernible objects instead).
+
+Now the idea is that @{emph \<open>being a number\<close>} becomes a property and natural numbers
+themselves become discernible. This would allow for abandoning the modal axiom for
+possible richness of ordinary objects and instead to more closely follow Frege's
+construction, in which the successor of a number @{text n} was defined as the number
+of the property being smaller-or-equal to @{text n}.
+
+At the time of writing, we have prototypes for models of this new derivation available,
+but not all details of the new construction have been worked out yet (both on the
+proof-theoretic and the model-theoretic side).
+
+However, we conjecture that not only a version of this new construction can be shown
+to be sound, but also that it will allow refining generalized relation comprehension.
+In particular, in the future we expect arbitrary sets of classes of abstract objects to be
+distinguishable, as long as the magnitute of this set of classes is independently bounded in its
+cardinality, e.g. if there is only countably many such distinguishable classes of abstract objects.
+\<close>
+
 section\<open>Summary\<close>
 
 text\<open>
