@@ -841,7 +841,7 @@ Concepts (PLM chapter 13) and Natural Numbers (PLM chapter 14).
 The applications of higher-order object theory and the challenges in representing it in Isabelle/HOL are
 briefly discussed in chapter~\ref{HigherOrderAOT}. To get an intuition for the level of expressiveness of
 higher-order object theory, note that it can be used to analyze e.g. Zermelo-Fraenkel set-theory itself as
-one of its abstract object. (TODO: consult with Ed on this one. Ideally cite.)
+one of its abstract objects.
 \<close>
 section\<open>Overview\<close>
 
@@ -2065,7 +2065,7 @@ arities of relations.
   \<^item> Proof by types using type classes.
 \<close>
 
-subsection\<open>Base Cases of Denoting Terms\<close>
+subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-impl}\<close>
 
 text\<open>\<close>
 
