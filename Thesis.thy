@@ -1277,7 +1277,7 @@ their modal closures are taken as axioms as well.
 
 
 
-section\<open>The Deductive System\<close>
+section\<open>The Deductive System\<close>text\<open>\label{DeductiveSystem}\<close>
 
 (*<*)
 definition AOT_print_as_rule :: \<open>prop \<Rightarrow> prop\<close> where \<open>AOT_print_as_rule \<equiv> \<lambda> x . PROP x\<close>
@@ -1916,7 +1916,9 @@ section\<open>Syntax of the Target Theory\<close>
 
 text\<open>
 We already discussed the possibility of extending Isabelle's inner syntax in general
-in section~\ref{SSESyntax}. However, Isabelle's high-level mechanisms for defining
+in section~\ref{SSESyntax}. Following the method described in that section, we introduce
+@{type AOT_prop} as syntactic root type for propsitions in AOT and define a custom grammar
+for AOT on top of it. However, Isabelle's high-level mechanisms for defining
 custom syntax has certain limitations that make an accurate representation of
 AOT's usual syntax challenging.
 
@@ -1991,29 +1993,96 @@ section\<open>Extending Isabelle's Outer Syntax\<close>
 
 text\<open>
 
-See~\ref{AOT:AOT_commands}.
+While the syntax transformations described in the last section go a long way in
+allowing the intuitive statement of propositions of AOT, @{emph \<open>reasoning\<close>}
+in the target logic entails additional challenges.
 
-  \<^item> ML implemented copy of the Isar language.
-  \<^item> Automatically parses inner syntax at @{typ AOT_prop} grammar root.
-  \<^item> Tracks semantic possible worlds.
-  \<^item> Reproducing AOT's system of definitions using @{command AOT_define}; implicit tracking
-    of defined constants; implicit instantiation, internally using the @{command specification} backend.
-  \<^item> @{command AOT_find_theorems} and @{command AOT_sledgehammer}
+In particular, reasoning in the embedding involves keeping track of the semantic
+possible world in which statements are valid. To avoid this cognitive overhead,
+we implement a copy of Isabelle's Isar language in Standard ML that automatically
+handles semantic possible worlds and allows theorem statements and proofs to be
+transferred directly from PLM without the need of explicitly mention semantic possible
+worlds. The list of commands can be found in~\ref{AOT:AOT_commands}, while the actual
+ML implementation is available at (TODO: cite github repository).
+
+Apart from tracking semantic possible worlds, the introduced commands also automatically
+parse formulas relative to the @{type AOT_prop} grammar root mentioned in the last
+section.
+
+Additionally, we introduce the command @{command AOT_define}, which allows to directly
+state definitions as in PLM. Internally, this involves introducing a new constant for
+the defined entity, setting up the syntax for parsing and printing according to the
+specified @{emph \<open>syntactic\<close>} type of the defined entity (while the logical type of
+the constant is deduced). This new constant is then automatically specified to
+fulfill the given definition using a mechanism similar to the @{command specification}
+command, while the entailed existence proof is constructed automatically.
+
+Furthermore, we introduce convenience commands like @{command AOT_find_theorems} and
+@{command AOT_sledgehammer}. @{command AOT_find_theorems} works similar to the Isar
+command @{command find_theorems}, but automatically parses AOT syntax and generalizes
+concrete variables to schematic variables for pattern matching (TODO: explain, cite?).
+@{command AOT_sledgehammer} is a wrapper around @{command sledgehammer} that invokes
+@{command sledgehammer} while restricting its search for theorems, s.t. the model-specific
+theorems are ignored and only the theorems of the abstraction layers are allowed for proofs.
+
 \<close>
 
 section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
 text\<open>
-  \<^item> Abstraction of the properties of the models required for deriving the axiom system.
-  \<^item> Heavy use of @{command specification} to allow for general models and obtain some degree of guaranteed automatic abstraction.
+In~\ref{AOT:AOT_semantics}, we derive an abstract semantics for the primitive and
+some of the basic defined notions of AOT. This layer of abstraction is still allowed
+to refer to the details of the model construction, but attempts to only derive just the
+properties of the models that are required to derive the axiom system and fundamental
+metarules of AOT later.
+
+The defined semantics heavily rely on Isabelle's @{command specification} command to
+abstract specific model choices to more general semantic properties.
+
+The main purpose of this intermediate layer is to keep the derivation of the abstraction
+layer used for the axiom system and deductive system of AOT, impervious to minor changes
+in the models.
+
+TODO: say more? examples?
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>
 text\<open>
+The axiom system as derived in the embedding was already described in
+section~\ref{AxiomSystem} and the fundamental metarules were mentioned in
+section~\ref{DeductiveSystem}. By construction, most of them can be derived from the
+abstract semantics described in the last section using simple, automatic proofs.
+
+In the following sections we will focus on some particular axioms, rules and proofs
+that are challenging to properly represent in the embedding. This mostly happens due to
+PLM's statement involving either complex preconditions given in natural language or
+due to the statement involving complex ellipses to generalize across e.g. arbitrary
+arities of relations. 
+
+
   \<^item> Deriving Axioms and Fundamental Meta-Rules from semantics.
   \<^item> Challenge in stating the natural language conditions with focus on cqt.2 (base cases of denoting terms).
   \<^item> Custom proving methods for substitutition.
   \<^item> Proof by types using type classes.
+\<close>
+
+subsection\<open>Base Cases of Denoting Terms\<close>
+
+text\<open>\<close>
+
+subsection\<open>The Rule of Substitution\<close>
+
+text\<open>\<close>
+
+subsection\<open>Proofs by Type Distinction\<close>
+
+text\<open>\<close>
+
+subsection\<open>Auxiliary Constructs\<close>
+
+text\<open>
+  \<^item> Attributes for instantiating AOT axioms.
   \<^item> Attributes for "rulifying" AOT theorems.
+  \<^item> Attributes for unconstraining constrained variables.
 \<close>
 
 section\<open>Meta Theorems\<close>
