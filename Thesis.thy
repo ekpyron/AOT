@@ -673,7 +673,7 @@ no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 text\<open>TODO: explain limitations wrt polymorphic constants; move on to type classes and locales.\<close>
 
 
-section\<open>Implicit Interpretation and Assignment Function in SSEs\<close>
+section\<open>Implicit Interpretation and Assignment Function in SSEs\<close>text\<open>\label{SSE:MetaModel}\<close>
 
 text\<open>TODO: This section will be important and will need a lot of care. Current plan:
 
@@ -1571,6 +1571,14 @@ to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
 it employs type classes to model relations of arbitrary arity as relations among
 tuples of individuals.
+
+Note that while we talk about @{emph \<open>modelling\<close>} AOT, we do not construct concrete
+models of AOT's logic in the classical sense. Instead, we @{emph \<open>implement\<close>} AOT in
+Isabelle/HOL using a SSE and any set-theoretic model of the HOL theory we use as
+meta-logic can be lifted to a full model of AOT. This way, in particular, we
+can avoid defining concrete interpretation and assignment functions, since we can
+rely on Isabelle's semantics for constants and variables instead. This technique
+was discussed in more detail in section~\ref{SSE:MetaModel}.
 \<close>
 
 subsection\<open>Aczel Models\<close>
