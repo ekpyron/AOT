@@ -1136,7 +1136,7 @@ Additionally, PLM establishes a base set of denoting terms with the following ax
 
 \begin{quote}
   \Squ{@{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>}, provided @{term \<tau>} is a primitive constant, a variable, or a @{text \<open>\<lambda>\<close>}-expression
-  in which the initial @{text \<open>\<lambda>\<close>} does not bind any variable in any encoding formula substerm.}
+  in which the initial @{text \<open>\<lambda>\<close>} does not bind any variable in any encoding formula subterm.}
 \end{quote}
 
 Reproducing the natural language condition on @{term \<tau>} in the embedding is non-trivial (see~\nameref{AOT:cqt:2[const_var]},
@@ -1835,7 +1835,7 @@ discussion in section~\ref{pred}).
 Given this extended Aczel model structure we can represent the terms of AOT.
 \<close>
 
-subsection\<open>Individual Terms and Type Classes for Terms\<close>
+subsection\<open>Individual Terms and Type Classes for Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
 
 text\<open>
 As a first step in representing the terms of AOT, we introduce a concrete
@@ -1887,6 +1887,17 @@ its values on regular terms. We will discuss this in more detail in the context 
 @{text n}-ary relation identity (TODO: ref). An unary individual term is always
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
+
+We successively define more refined type classes on top of the basic class of
+@{class AOT_IndividualTerm} to capture further and more abstract notions of
+individual terms, e.g. we define an abstract notion of @{text n}-ary encoding
+using the type classes @{class AOT_UnaryEnc} and @{class AOT_Enc} (see~\nameref{AOT:AOT_semantics.AOT_UnaryEnc} and~\nameref{AOT:AOT_semantics.AOT_Enc}).
+
+We end up at the most refined classes @{class AOT_\<kappa>s} with the unary case
+@{class AOT_\<kappa>} (see~\nameref{AOT:AOT_semantics.AOT_<kappa>s}), which will be used as the
+default type classes for individuals and relations among them for the
+formulation of the axiom system.
+
 \<close>
 subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
 text\<open>
@@ -2075,7 +2086,50 @@ arities of relations.
 
 subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-impl}\<close>
 
-text\<open>\<close>
+text\<open>
+
+One of the axioms we mentioned explicitly as difficult to implement in section~\ref{AxiomSystem} was
+the second quantifier axiom (see~\nameref{AOT:cqt:2[const_var]}) which establishes
+a set of base cases of denoting terms. Recall the formulation of the axiom in PLM:
+
+\begin{quote}
+  \Squ{@{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>}, provided @{term \<tau>} is a primitive constant, a variable, or a @{text \<open>\<lambda>\<close>}-expression
+  in which the initial @{text \<open>\<lambda>\<close>} does not bind any variable in any encoding formula subterm.}
+\end{quote}
+
+We implement this axiom by splitting it up into cases. The first and obvious way
+to split the axiom is to split it into the separate cases listed in the natural language
+formulation: constants, variables and @{text \<open>\<lambda>\<close>}-expressions.
+
+As discussed in more detail in section (TODO), the embedding does not have to distinguish
+explicitly between constants and variables, so it suffices to state one case for
+constants @{emph \<open>and\<close>} variables:
+
+\begin{quote}
+  @{thm[display] "cqt:2[const_var]"[axiom_inst, of _ \<alpha>, print_as_theorem]}
+\end{quote}
+
+This covers all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
+The embedding defines this type for each base type @{typ 'a} of class @{class AOT_Term} as all
+members of the type that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
+n section~\ref{IndividualTermsAndClasses}). Any variable name is decorated with the constant
+@{term AOT_term_of_var} of type @{typ \<open>'a AOT_var \<Rightarrow> 'a\<close>} and thereby implicitly denotes.
+By construction there exists an object of type @{typ \<open>'a AOT_var\<close>} for every denoting
+object of type @{typ 'a} and vice-versa.
+
+The second base case for @{text \<open>\<lambda>\<close>}-expressions is more complex to represent.
+While we cannot capture the syntactic restriction that the initial @{text \<open>\<lambda>\<close>}
+does not bind any variable in any encoding formula subterm, we can inductively construct
+the set of all formulas that match this description.
+
+To that end we define the auxiliary constant @{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}),
+which acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions among individuals
+of a type of class @{class AOT_\<kappa>s} (see~\ref{IndividualTermsAndClasses}).
+
+
+
+
+\<close>
 
 subsection\<open>The Rule of Substitution\<close>
 
