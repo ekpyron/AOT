@@ -2036,7 +2036,7 @@ the constant is deduced). This new constant is then automatically specified to
 fulfill the given definition using a mechanism similar to the @{command specification}
 command, while the entailed existence proof is constructed automatically.
 
-Furthermore, we introduce convenience commands like @{command AOT_find_theorems} and
+Furthermore, we introduce convenience commands like @{command AOT_find_theorems} and 
 @{command AOT_sledgehammer}. @{command AOT_find_theorems} works similar to the Isar
 command @{command find_theorems}, but automatically parses AOT syntax and generalizes
 concrete variables to schematic variables for pattern matching (TODO: explain, cite?).
@@ -2126,7 +2126,59 @@ To that end we define the auxiliary constant @{const AOT_instance_of_cqt_2} (see
 which acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions among individuals
 of a type of class @{class AOT_\<kappa>s} (see~\ref{IndividualTermsAndClasses}).
 
+@{const AOT_instance_of_cqt_2} itself is merely defined to be true for a matrix,
+if using it as matrix for a @{text \<open>\<lambda>\<close>}-expression results in a term that necessarily
+denotes. Internally, a @{text \<open>\<lambda>\<close>}-expression denotes, just in case that its
+matrix is necessarily equivalent on all denoting objects that share an urelement, or
+formally (see~\nameref{AOT:AOT_semantics.AOT_model_lambda_denotes}):
 
+\begin{quote}
+  @{thm[display] AOT_model_lambda_denotes[of \<phi>]}
+\end{quote}
+
+However, this does not correspond to the formulation of above axiom. So instead
+we derive inductive introduction rules for the predicate @{const AOT_instance_of_cqt_2}.
+
+There are several cases:
+
+  \<^item> Matrices with no free occurrences of the @{text \<open>\<lambda>\<close>}-bound variables trivially fall
+    under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_const}).
+  \<^item> Exemplification formulas fall under the formulation of the axiom, if all primary terms
+    fall under the formulation of the axiom, neither in the relation term nor in any of the
+    individual terms that exemplify the relation occurs any @{text \<open>\<lambda>\<close>}-bound variable
+    in an encoding subformula (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe}).
+  \<^item> Similarly, encoding formulas fall under the formulation of the axiom, if all primary
+    terms fall under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_enc}).
+    However, this in turn is only the case if they do not involve any free occurrences of
+    the @{text \<open>\<lambda>\<close>}-bound variables. Thus this case is actually already covered by the
+    first case.
+  \<^item> Complex formulas fall under the formulation of the axiom, just in case all its operands
+    fall under the formulation of the axiom. E.g. a negation formula falls under the axiom,
+    just in case the negated formula falls under the axiom
+    (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_not}).
+
+The cases of relation terms and individual terms in exemplification position are
+further split up into multiple cases, including cases for definite descriptions.
+A full account of the cases can be found in the embedding (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}).
+
+Note that at the time of writing, an extension of the axiom is under discussion that
+would generalize it to the following:
+
+\begin{quote}
+  \Squ{@{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>}, provided @{term \<tau>} is a primitive constant, a variable, or a @{text \<open>\<lambda>\<close>}-expression
+  in which the initial @{text \<open>\<lambda>\<close>} does not bind any variable that is a primary term in an encoding formula subterm.}
+\end{quote}
+
+In an encoding formula @{text \<open>[\<Pi>]\<kappa>\<^sub>1\<cdots>\<kappa>\<^sub>n\<close>} only @{text \<open>\<Pi>\<close>} as well as @{text \<open>\<kappa>\<^sub>1\<close>} through
+@{text \<open>\<kappa>\<^sub>n\<close>} are defined to be primary terms, but no nested term counts as primary term, so
+this entails strictly more cases than the formulation given above.
+
+Accounting for this change in the embedding would entail extending the encoding formula
+base cases of the construction. While the current version of the embedding given in the
+appendix specifically does not validate this alternative formulation of the axiom in
+order to avoid theorems that would be artifactual without the extended axiom, it would
+be straightforward to extend the implementation to encompass this new extended
+version of the axiom, once it is clear that PLM will move in that direction. (TODO: watch formulation).
 
 
 \<close>
@@ -2137,7 +2189,20 @@ text\<open>\<close>
 
 subsection\<open>Proofs by Type Distinction\<close>
 
-text\<open>\<close>
+text\<open>
+PLM involves proofs that involve a case distinction by type. An example is the theorem
+that for two terms to be identical implies that both denote (see~\nameref{AOT:AOT_PLM.AOT_Term_id}).
+
+In our embedding we reproduce this kind of reasoning by introducing a new type class,
+in this case @{class AOT_Term_id}, and then by instantiating this type class to all
+the types the statement is supposed to apply to. We then redefine the default type
+constraints for terms of the given types to entail the newly defined class.
+
+In a future version of the embedding, we would like to use Standard ML to define
+a simple outer syntax command that will hide the complexity of this process and
+will allow for an intuitive statement of theorems that are to be proven by type
+distinction.
+\<close>
 
 subsection\<open>Auxiliary Constructs\<close>
 
