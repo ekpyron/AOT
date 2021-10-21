@@ -675,7 +675,24 @@ text\<open>TODO: explain limitations wrt polymorphic constants; move on to type 
 
 section\<open>Implicit Interpretation and Assignment Function in SSEs\<close>text\<open>\label{SSE:MetaModel}\<close>
 
-text\<open>TODO: This section will be important and will need a lot of care. Current plan:
+text\<open>While in the following chapters we will say that we construct models of the target
+logic AOT using our embedding, we do not (and do not have to) construct full models in the classical
+sense. In particular, we do not construct explicit interpretations and assignment functions.
+
+While a deep embedding would make the full models explicit, they remain implicit
+in shallow embeddings. The meta-logic (TODO: check hyphenation everywhere) Isabelle/HOL
+itself involves meta-logical constants and variables. In simple models of HOL, every
+type has a set as its domain and a statement is valid in HOL, if it holds for every
+interpretation of the constants of a type and every assignment of its variables.
+
+A model of the embedded logic can be constructed by lifting a model of HOL through
+the defined semantics. The model-finding tool @{command nitpick} (TODO: cite?) can
+aid in making these lifted models concrete.
+
+Technically, a shallow embedding defines a substructure in the models of HOL, which
+yields a model of the embedded logic under the defined validity. (TODO: check.)
+
+TODO: Elaborate? Original notes: This section will be important and will need a lot of care. Current plan:
 
 Propose a simplified general model of Isabelle/HOL with domains for types, interpretations
 of constants and variable assignments.
@@ -1565,7 +1582,9 @@ section\<open>Model\<close>
 
 text\<open>
 While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
-this section provides a high-level description of the construction.
+this section provides a high-level description of the construction.\footnote{Recall
+the discussion in~\ref{SSE:MetaModel} for a precise meaning of constructing models
+using an SSE.}
 The general construction is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
@@ -1818,6 +1837,15 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     since two functions are identical, if they map to identical values for all arguments.
     By introducing null-urelements, however, we allow @{term F} and @{term G} to vary
     on additional urelements outside of the range of the quantifier.
+  \<^item> It is important to note that the additional null-urelements have no impact on
+    minimal models of AOT. In minimal models, propositions are extensional, i.e. they are
+    in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
+    on possible worlds there is exactly one proposition.
+    Since urrelations are required to necessarily be false on null-urelements, the
+    introduction of one null-urelement does not increase the amount of relations in the
+    models: while urrelations have to assign a Kripke-extensions to this null-urelement,
+    there is only one choice for doing so, namely the constant-false function on possible
+    worlds.
 
 As a last ingredient of our Aczel model structure, we require a mapping @{text \<alpha>\<sigma>}
 from sets of urrelations (which will be used to represent abstract objects) to
