@@ -862,9 +862,9 @@ We restrict ourselves to the discussion of the second-order fragment of AOT whic
 our embedding in Isabelle/HOL.\footnote{In the following chapters up until chapter~\ref{HigherOrderAOT}, we will
 refer to the second-order fragment of AOT plainly as AOT or \emph{object theory}.}
 The second-order fragment is expressive enough for the analysis of a wide variety of objects occurring in Philosophy and Mathematics,
-including Basic Logical Objects like Truh Values and Extensions of Propositions (see PLM chapter 10 TODO cite);
-Platonic Forms (PLM chapter 11); Situations, Worlds, Times, and Stories (PLM chapter 12);
-Concepts (PLM chapter 13) and Natural Numbers (PLM chapter 14).
+including Basic Logical Objects like Truh Values and Extensions of Propositions (see~\ref{AOT:AOT_BasicLogicalObjects}, resp. PLM chapter~10);
+Platonic Forms (see PLM chapter~11); Situations, Worlds, Times, and Stories (see~\ref{AOT:AOT_PossibleWorlds}, resp. PLM chapter~12);
+Concepts (see PLM chapter 13) and Natural Numbers (see~\ref{AOT:AOT_NaturalNumbers}, resp. PLM chapter~13). TODO: rethink references.
 
 The applications of higher-order object theory and the challenges in representing it in Isabelle/HOL are
 briefly discussed in chapter~\ref{HigherOrderAOT}. To get an intuition for the level of expressiveness of
@@ -909,6 +909,7 @@ Ernst Mally and formalized by Edward Zalta.
 While the theory has been evolving for several decades (see TODO: cite), its most recent canonical
 presentation is given in @{emph \<open>Principia Logico-Metaphysica\<close>} (PLM), which is continuously
 developed further and the most recent version of which can be accessed as online monograph (TODO cite PLM).
+This thesis is written relative to the version dated October 12, 2021 (TODO cite).
 
 TODO: the following is pretty much the section of the Review of Symbolic Logic Paper and will need
 some more revision and adjustment for the use as overview here.
