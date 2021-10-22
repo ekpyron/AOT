@@ -3187,8 +3187,6 @@ next
     using BF[THEN "\<rightarrow>E"] by fast
 qed
 
-
-
 AOT_theorem "rigid-rel-thms:3": \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
   by (AOT_subst_thm "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2"(1)];
       AOT_subst_thm "rigid-rel-thms:2")
