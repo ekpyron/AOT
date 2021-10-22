@@ -3128,10 +3128,71 @@ qed
 
 AOT_theorem "rigid-rel-thms:2":
   \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
-  oops (* TODO *)
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n))\<close>
+  AOT_hence 0: \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+    using CBF[THEN "\<rightarrow>E"] by blast
+  AOT_show \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
+  proof(rule GEN)
+    fix x\<^sub>1x\<^sub>n
+    AOT_have 1: \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+      using 0[THEN "\<forall>E"(2)].
+    AOT_hence 2: \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n \<rightarrow> [F]x\<^sub>1...x\<^sub>n\<close>
+      using "B\<diamond>" "Hypothetical Syllogism" "K\<diamond>" "vdash-properties:10" by blast
+    AOT_have \<open>[F]x\<^sub>1...x\<^sub>n \<or> \<not>[F]x\<^sub>1...x\<^sub>n\<close>
+      using "exc-mid".
+    moreover {
+      AOT_assume \<open>[F]x\<^sub>1...x\<^sub>n\<close>
+      AOT_hence \<open>\<box>[F]x\<^sub>1...x\<^sub>n\<close>
+        using 1[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] by blast
+    }
+    moreover {
+      AOT_assume 3: \<open>\<not>[F]x\<^sub>1...x\<^sub>n\<close>
+      AOT_have \<open>\<box>\<not>[F]x\<^sub>1...x\<^sub>n\<close>
+      proof(rule "raa-cor:1")
+        AOT_assume \<open>\<not>\<box>\<not>[F]x\<^sub>1...x\<^sub>n\<close>
+        AOT_hence \<open>\<diamond>[F]x\<^sub>1...x\<^sub>n\<close>
+          by (AOT_subst_def "conventions:5")
+        AOT_hence \<open>[F]x\<^sub>1...x\<^sub>n\<close> using 2[THEN "\<rightarrow>E"] by blast
+        AOT_thus \<open>[F]x\<^sub>1...x\<^sub>n & \<not>[F]x\<^sub>1...x\<^sub>n\<close>
+          using 3 "&I" by blast
+      qed
+    }
+    ultimately AOT_show \<open>\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n\<close>
+      by (metis "\<or>I"(1,2) "raa-cor:1")
+  qed
+next
+  AOT_assume 0: \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n(\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
+  {
+    fix x\<^sub>1x\<^sub>n
+    AOT_have \<open>\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n\<close> using 0[THEN "\<forall>E"(2)] by blast
+    moreover {
+      AOT_assume \<open>\<box>[F]x\<^sub>1...x\<^sub>n\<close>
+      AOT_hence \<open>\<box>\<box>[F]x\<^sub>1...x\<^sub>n\<close>
+        using "S5Basic:6"[THEN "\<equiv>E"(1)] by blast
+      AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+        using "KBasic:1"[THEN "\<rightarrow>E"] by blast
+    }
+    moreover {
+      AOT_assume \<open>\<box>\<not>[F]x\<^sub>1...x\<^sub>n\<close>
+      AOT_hence \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+        using "KBasic:2"[THEN "\<rightarrow>E"] by blast
+    }
+    ultimately AOT_have \<open>\<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+      using "con-dis-i-e:4:b" "raa-cor:1" by blast
+  }
+  AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+    by (rule GEN)
+  AOT_thus \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n ([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n))\<close>
+    using BF[THEN "\<rightarrow>E"] by fast
+qed
+
+
 
 AOT_theorem "rigid-rel-thms:3": \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<forall>x\<^sub>n (\<box>[F]x\<^sub>1...x\<^sub>n \<or> \<box>\<not>[F]x\<^sub>1...x\<^sub>n)\<close>
-  oops (* TODO *)
+  by (AOT_subst_thm "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2"(1)];
+      AOT_subst_thm "rigid-rel-thms:2")
+     (simp add: "oth-class-taut:3:a")
 
 (*<*)
 end
