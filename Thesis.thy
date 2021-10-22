@@ -954,11 +954,12 @@ condition; formally: @{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem
 
 Here @{text "\<phi>{F}"} is the notation we use in the embedding to signify that @{term \<phi>} may contain
 a free occurrence of the bound variable @{term F} (@{term \<phi>} may not contain a free occurrence of @{term x},
-unless we had explicitly added @{term x} in curly braces as well; TODO: cite later section).\footnote{PLM, on the
+unless we had explicitly added @{term x} in curly braces as well).\footnote{PLM, on the
 other hand, uses the opposite convention: any @{emph \<open>metavariable\<close>} like @{term \<phi>} may contain free
-occurrences of arbitrary variables unless explicitly excluded, i.e. instead of @{text "\<phi>{F}"}, PLM
-simply states @{term \<open>\<phi>\<close>} and uses natural language to add the proviso that @{term x} may
-@{emph \<open>not\<close>} occur free in @{term \<phi>}.} Taken together, the comprehension principle and the identity conditions
+occurrences of arbitrary variables (even those that are bound at the occurrence of @{term \<phi>}) unless explicitly excluded,
+i.e. instead of @{text "\<phi>{F}"}, PLM simply states @{term \<open>\<phi>\<close>} and uses natural language to add the proviso that @{term x} may
+@{emph \<open>not\<close>} occur free in @{term \<phi>}. See~\ref{substitutability} for a more detailed discussion.} Taken together,
+the comprehension principle and the identity conditions
 of abstract objects imply that abstract objects can be modeled as elements of the power set of properties:
 every abstract object uniquely corresponds to a specific set of properties.
 
@@ -1047,8 +1048,10 @@ Furthermore, AOT introduces the following primitive formula- and term-forming op
   \<^item> @{term \<open>AOT_TERM[(\<forall>\<alpha> \<phi>{\<alpha>})]\<close>}, the @{emph \<open>universal quantifier\<close>}@{footnote \<open>As mentioned in the previous section,
   PLM, by default, allows any free variables to occur instances of a schematic meta-variable, unless specified otherwise.
   For technical reasons, we choose the opposite convention, i.e. while a schematic meta-variable may still contain
-  any occurrence of variables that would remain @{emph \<open>free\<close>}, any @{emph \<open>bound\<close>} variables that may
-  occur in an instance of the schematic meta-variable have to be explicitly listed in curly brackets.\<close>}
+  any occurrence of variables that would remain @{emph \<open>free\<close>} (and which is not already named in the current context),
+  any @{emph \<open>bound\<close>} variables (or variables that already have a name in the current context) that may
+  occur in an instance of the schematic meta-variable have to be explicitly listed in curly brackets. See~\ref{substitutability} for
+  a more detailed discussion.\<close>}
   \<^item> @{term \<open>AOT_TERM[\<^bold>\<iota>x \<phi>{x}]\<close>}, the @{emph \<open>definite description\<close>} operator
   \<^item> @{term \<open>AOT_TERM[[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]]\<close>}, the @{emph \<open>relation abstraction\<close>}- or @{text \<open>\<lambda>\<close>}-operator@{footnote \<open>Note
 that this includes the zero-place case @{term \<open>AOT_TERM[[\<lambda> \<phi>]]\<close>}, read as @{emph \<open>that @{term \<phi>}\<close>}\<close>}
@@ -1147,7 +1150,8 @@ following Mendelsson's axiom system
 The next set of axioms constructs a quantifier logic for a free logic with non-denoting
 terms (see~\nameref{AOT:cqt:1},~\nameref{AOT:cqt:3}).
 Formulas of the form @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>} can be read as @{emph \<open>the term @{term \<open>\<tau>\<close>} denotes\<close>} and refer
-to the notion of logical existence that was @{emph \<open>defined\<close>} in the previous section.
+to the notion of logical existence that was @{emph \<open>defined\<close>} in the previous section.\footnote{See
+section~\ref{substitutability} for a discussion of the free variable notation using curly brackets.}
 
 \begin{quote}
 @{thm[display] "cqt:1"[axiom_inst, of _ \<phi> \<tau>, print_as_theorem]
@@ -1170,11 +1174,14 @@ Additionally, PLM establishes a base set of denoting terms with the following ax
 
 Reproducing the natural language condition on @{term \<tau>} in the embedding is non-trivial (see~\nameref{AOT:cqt:2[const_var]},
 which uses the auxiliary predicate @{text \<open>INSTANCE_OF_CQT_2\<close>} defined in~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}); we discuss
-the implementation of this axiom in detail in section (TODO: cite).
+the implementation of this axiom in detail in section~\ref{cqt:2-impl}.
 
 The next axiom states that identical objects can be substituted in formulas. Note that the used identity
-is not primitive, but was @{emph \<open>defined\<close>} in the last section (see~\nameref{AOT:l-identity}).@{footnote \<open>TODO: say something
-about "being substitutable" vs the free variable notation.\<close>} 
+is not primitive, but was @{emph \<open>defined\<close>} in the last section (see~\nameref{AOT:l-identity}).@{footnote \<open>PLM formulates
+the axiom as: @{term \<open>\<guillemotleft>\<alpha> = \<beta> \<rightarrow> (\<phi> \<rightarrow> \<phi>')\<guillemotright>\<close>}, whenever @{text \<beta>} is @{emph \<open>substitutable for\<close>} @{text \<alpha>} in @{text \<phi>}, and
+@{text \<open>\<phi>'\<close>} is the result of replacing zero or more free occurrences of @{text \<alpha>} in @{text \<phi>} with occurrences of @{text \<beta>}.
+This precisely matches the formulation given above in our explicit free variable notation. This is discussed in more detail
+in section~\ref{substitutability}.\<close>} 
 
 \begin{quote}
 @{thm[display] "l-identity"[axiom_inst, of _ \<alpha> \<beta> \<phi>, print_as_theorem]}
@@ -2248,7 +2255,7 @@ formally (see~\nameref{AOT:AOT_semantics.AOT_model_lambda_denotes}):
   @{thm[display] AOT_model_lambda_denotes[of \<phi>]}
 \end{quote}
 
-However, this does not correspond to the formulation of above axiom. So instead
+However, this is a semantic criterion and does not directly correspond to the formulation of above axiom. So instead
 we derive inductive introduction rules for the predicate @{const AOT_instance_of_cqt_2}.
 
 There are several cases:
@@ -2432,7 +2439,7 @@ It is straightforward to strengthen this further to the following:
 \Squ{@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
 of @{text \<phi>} and @{text \<open>\<Gamma>'\<close>} is a set of alphabetic variants of @{text \<open>\<Gamma>\<close>}, i.e.
 for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} there is an alphabetic variant @{text \<open>\<psi>'\<close>} of @{text \<open>\<psi>\<close>},
-s.t. @{text \<open>\<psi>' \<in> \<Gamma>'\<close>}, and vice-verse.}
+s.t. @{text \<open>\<psi>' \<in> \<Gamma>'\<close>}, and vice-versa.}
 \end{quote}
 
 For a proof it suffices to realize that for every @{text \<open>\<psi> \<in> \<Gamma>\<close>} and @{text \<open>\<psi>' \<in> \<Gamma>'\<close>} by the above rule it holds that
@@ -2446,13 +2453,75 @@ linked groups of bound variables.
 
 \<close>
 
+subsection\<open>Explicit Free Variable Notation and Substitutability\<close>text\<open>\label{substitutability}\<close>
+
+text\<open>
+TODO: recheck and refine all references to this section.
+
+As mentioned in chapter~\ref{AOT}, PLM allows terms and formulas with arbitrary free variables
+to be used in place of of its meta-variables, except for free variables that are explicitly excluded
+in natural language. The embedding on the other hand requires to explicitly mention any variables that
+already have a name in the current context, if they should be allowed to occur in an instance of a meta-variable.
+
+For example, PLM formulates the first quantifier axiom as follows:
+
+\begin{quote}
+\Squ{$\forall \alpha\,\varphi\;\rightarrow\;(\tau\downarrow\,\rightarrow\,\varphi^{\tau}_{\alpha})$,
+provided @{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>}}
+\end{quote}
+
+Here $\varphi^{\tau}_{\alpha}$ is defined in PLM item (14) (TODO: cite) as recursively replacing all occurrences
+of @{text \<open>\<alpha>\<close>} in @{text \<open>\<phi>\<close>} that are not bound @{emph \<open>within @{text \<phi>} itself\<close>} with @{text \<tau>}.
+
+The precise definition of @{emph \<open>being substitutable\<close>} can be found in PLM item (15) (TODO: cite).
+In particular, it states the following summary:
+
+\begin{quote}
+@{text \<tau>} is substitutable at an occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in
+case every occurrence of any variable @{text \<beta>} free in @{text \<tau>} remains an occurrence
+that is free when @{text \<tau>} is substituted for that occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.
+\end{quote}
+
+and further:
+
+\begin{quote}
+@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case @{text \<tau>}
+is substitutable at every free occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.
+\end{quote}
+
+In the embedding, the same axiom is stated as follows:
+
+\begin{quote}
+@{thm[display] "cqt:1"[axiom_inst, print_as_theorem, of _ \<phi> \<tau>]}
+\end{quote}
+
+Technically, @{term \<phi>} here is a function acting on terms and both @{text \<open>\<phi>{\<alpha>}\<close>}, resp.
+@{text \<open>\<phi>{\<tau>}\<close>}, are the function application of @{term \<phi>} to @{text \<alpha>}, resp. @{text \<tau>}.
+
+
+\begin{quote}
+@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case every
+occurrence of any variable @{text \<beta>} free in @{text \<tau>} @{text \<open>[\<dots>]\<close>} remains an
+occurrence that is free when @{text \<tau>} is substituted for every free occurrence of @{text \<alpha>}
+in @{text \<phi>} or @{text \<sigma>}.
+\end{quote}
+
+
+TODO
+
+
+
+TODO
+\<close>
+
 subsection\<open>Generalizing Free Variables to Schematic Variables\<close>text\<open>\label{free-variables-schematic}\<close>
 
 text\<open>
 After a theorem is proven in Isabelle, it is implicitly exported to the current theory context in
 @{emph \<open>schematic\<close>} form. That means each free variable used in the theorem is implicitly
 generalized to a @{emph \<open>schematic variable\<close>} that can be instantiated to any variable or term of
-the same type. Since the embedding uses distinct types for variables and terms that have the same type in AOT (TODO: cite),
+the same type. Since the embedding uses distinct types for (denoting) variables and (potentially non-denoting) terms
+that have the same type in AOT (see~\ref{cqt:2-impl}),
 this does @{emph \<open>not\<close>} mean that any theorem involving AOT variables can be directly instantiated
 to AOT terms, however, it does mean that all theorems of AOT are implicitly stated using
 meta-variables ranging over all variable names. As an example the theorem

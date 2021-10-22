@@ -873,6 +873,17 @@ next
     by (auto intro: "rule-id-df:2:b"[OF TransitiveClosure]
              intro!: "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"])
 qed
+(*<*)
+(* TODO: think about mentioning this (especially due to opposite meaning of * and +): *)
+find_theorems trancl
+find_theorems tranclp
+lemma \<open>R\<^sup>+ = {(a,b) . \<forall>R' . trans R' \<and> (R \<subseteq> R') \<longrightarrow> (a,b) \<in> R'}\<close>
+  apply (rule; rule)
+   apply simp
+   apply (metis trancl_id trancl_mono)
+  apply simp
+  by (simp add: subrelI)
+(*>*)
 
 section\<open>Weak Ancestral of a Relation and the Non-Existence of a General Relation of Identity\<close>
 
