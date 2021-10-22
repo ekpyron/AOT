@@ -79,7 +79,6 @@ of the Peano-Dedekind postulates, including Mathematical Induction, described in
 Logico-Metaphysica (TODO: cite) are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
-
 \<close>
 
 section\<open>Prior Work\<close>
@@ -231,6 +230,18 @@ more detail in (TODO: actually do and cite).
 
 Whenever a theorem in the appendix refers to a specific item number in PLM, the
 corresponding item number can be found in parentheses at the right page margin.
+
+TODO: Überleitung.
+
+Bullet point thoughts:
+  \<^item> General method for analyzing philosophical arguments and theories: SSEs.
+  \<^item> AOT as challenging target, but feasible to implement to the benefit of the theory
+    and the method.
+  \<^item> Reproduction of the full deductive system of the theory in readable and usable
+    form.
+  \<^item> Demonstration of the extend of the target theory and the practical feasibility
+    to reason in the target system in Natural Number theory.
+  \<^item> Extensions and Progress in the target theory due to our work.
 \<close>
 
 
@@ -1169,8 +1180,11 @@ about "being substitutable" vs the free variable notation.\<close>}
 \end{quote}
 
 The following axiom is the single @{emph \<open>modally fragile axiom\<close>} of the system (see~\nameref{AOT:logic-actual}). All other axioms
-are considered @{emph \<open>modally strict\<close>}. The distinction is discussed in more detail in TODO: cite.
-TODO: note a few things here as well, including the turnstile operator.
+are considered @{emph \<open>modally strict\<close>}. This is significed by the turnstile operator
+@{text \<open>\<^bold>\<turnstile>\<close>}, while all other axioms are modally strict (for simplicity, we assume the
+corresponding turnstile operator @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>} by default and refrain from mentioning it
+explicitly).
+The distinction is discussed further in section~\ref{ModallyStrictFragile}.
 
 \begin{quote}
 @{thm[display] "logic-actual"[act_axiom_inst, of \<phi>]}
@@ -1339,7 +1353,7 @@ found in~\ref{AOT:AOT_PLM}, a full discussion of the entire system would go beyo
 However, we will discuss some aspects (TODO: that are required for understanding the rest of the thesis?) in detail.
 \<close>
 
-subsection\<open>Primitive and Derived Meta-Rules\<close>
+subsection\<open>Primitive and Derived Meta-Rules\<close>text\<open>\label{MetaRules}\<close>
 
 text\<open>
 Since the axioms of AOT are to be understood as axiom schemata, i.e. their statement
@@ -1366,6 +1380,9 @@ The rule of necessitation RN (see~\nameref{AOT:RN}):\footnote{TODO: refer to mor
 @{thm[display] "RN"[print_as_rule]}
 \end{quote}
 
+The rule RN can only be applied to a formula @{term \<phi>}, if @{term \<phi>} has a @{emph \<open>modally-strict proof\<close>},
+as signified by @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>}. We discuss this in more detail in section~\ref{ModallyStrictFragile}.
+
 The rule of generalization GEN (see~\nameref{AOT:rule-gen}):
 \begin{quote}
 @{thm[display] "GEN"[print_as_rule]}
@@ -1378,15 +1395,15 @@ text\<open>
 PLM uses two kinds of definitions: definitions-by-equivalence @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} and definitions-by-identity
 @{text \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close>}.
 While, intuitively, definitions by equivalence imply definiens and definiendum to be equivalent (@{text \<open>\<equiv>\<close>})
-and definitions by identity imply them to be identical, further care is required when stating their
+and definitions by identity imply them to be identical (@{text \<open>=\<close>}), further care is required when stating their
 precise inferential roles.
 \<close>
 
 subsubsection\<open>Definitions by Equivalence\<close>
 
-text\<open>Since equivalence (@{text \<open>\<equiv>\<close>}) is itself @{emph \<open>defined\<close>} using a definition-by-equivalence,
-it cannot be used to specify the inferential role of definitions-by-equivalence. Instead the inferential role
-has to be formulated relative in terms of primitives of the language, i.e. of implication.
+text\<open>Since equivalence (@{text \<open>\<equiv>\<close>}) is itself @{emph \<open>defined\<close>} using a definition-by-equivalence (as mentioned in section~\ref{AOTLanguage}),
+equivalence itself cannot be used to specify the inferential role of definitions-by-equivalence. Instead the inferential role
+has to be formulated relative in terms of primitives of the language, i.e. in terms of implications.
 
 To that end, PLM formulates a @{emph \<open>Rule of Definition by Equivalence\<close>} that we reproduce in
 the embedding as follows (see~\nameref{AOT:df-rules-formulas[1]}):
@@ -1399,8 +1416,8 @@ the embedding as follows (see~\nameref{AOT:df-rules-formulas[1]}):
 In other words (and as formulated in PLM TODO: cite), a definition-by-equivalence of the form @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} introduces the closures of
 @{text \<open>\<phi> \<rightarrow> \<psi>\<close>} and @{text \<open>\<psi> \<rightarrow> \<phi>\<close>} as necessary axioms.
 
-The maybe more natural principle that a definition-by-equivalence implies definiens and definiendum to
-in fact be equivalent can then be derived (see~\nameref{AOT:rule-eq-df:1}):
+The derived principle that a definition-by-equivalence implies definiens and definiendum to
+in fact be equivalent becomes a theorem (see~\nameref{AOT:rule-eq-df:1}):
 
 \begin{quote}
 @{thm[display] "\<equiv>Df"[of \<phi> \<psi>, print_as_rule]}
@@ -1418,8 +1435,8 @@ However, replacing @{term F} and @{term G} by any property term constitutes a va
 definition. In order to avoid confusion for a reader that is not familiar with this convention, we
 choose to either state the definitions using meta-variables instead, or state a derived equivalence
 as theorem using object-variables in its place (which allows forgoing clauses about the significance
-of the involved terms in the definiendum). I.e. in the upcoming chapters, instead of stating e.g. the full
-definition-by-equivalence for property identity, we may illustrate the definition using a simpler
+of the involved terms in the definiendum). I.e. in the upcoming chapters, instead of stating the full
+definition-by-equivalence for e.g. property identity, we may illustrate the definition using a simpler
 theorem using regular object-level variables while dropping significance constraints:
 
 \begin{quote}
@@ -1538,14 +1555,86 @@ Natural Numbers, discussed in chapter~\ref{NaturalNumbers}.
 
 subsection\<open>Definite Descriptions\<close>
 
-subsection\<open>TODO\<close>
-text\<open>
+text\<open>The following axiom that was already mentioned in section~\ref{AxiomSystem} governs
+definite descriptions:
 
-TODO: needs to mention (since referenced later):
-  \<^item> Two deductive systems: modally-strict and modally-fragile.
-  \<^item> Rigid restriction conditions and restricted variables.
-  \<^item> Definition of identity on the ordinary objects.
-  \<^item> At least brief mention of the analysis of Definite Descriptions and their being modally rigid by referring to the actual world.
+\begin{quote}
+@{thm descriptions[axiom_inst, of _ x \<phi>, print_as_theorem]}
+\end{quote}
+
+In particular, definite descriptions are @{emph \<open>modally rigid\<close>} and refer to objects
+in the actual world. While an extensive set of theorems and rules for reasoning with
+definite descriptions is given in section 9.8 of PLM (see~\nameref{PLM: 9.8}), for
+an intuitive understanding of descriptions in AOT it suffices to note that they follow
+Russell's analysis of definite descriptions. In particular, atomic formulas involving
+definite descriptions can be translated to existence claims as follows (for
+simplicity we restrict ourselves to the case of unary exemplification and encoding):
+
+\begin{quote}
+@{lemma[display] \<open>print_as_theorem \<guillemotleft>[\<Pi>]\<^bold>\<iota>x \<phi>{x} \<equiv> \<exists>x (\<^bold>\<A>\<phi>{x} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & [\<Pi>]x)\<guillemotright>\<close>
+  by (safe intro!: print_as_theoremI "russell-axiom[exe,1].nec-russell-axiom")}
+@{lemma[display] \<open>print_as_theorem \<guillemotleft>\<^bold>\<iota>x \<phi>{x}[\<Pi>] \<equiv> \<exists>x (\<^bold>\<A>\<phi>{x} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & x[\<Pi>])\<guillemotright>\<close>
+  by (safe intro!: print_as_theoremI "russell-axiom[enc,1].nec-russell-axiom")}
+\end{quote}
+
+I.e. an atomic formula involving a description is equivalent to there being a unique
+object that actually satisfies the matrix of the description and this object satisfies
+the given atomic formula.
+
+Similarly, a definite description denotes, just in case that there is a unique object
+that actually satisfies its matrix:
+
+\begin{quote}
+@{thm[display] "actual-desc:1"[print_as_theorem, of \<phi>]}
+\end{quote}
+\<close>
+
+subsection\<open>Modally-Strict and Modally-Fragile Theorems\<close>text\<open>\label{ModallyStrictFragile}\<close>
+
+text\<open>
+PLM constructs two derivational systems, a modally-fragile one, @{text \<open>\<^bold>\<turnstile>\<close>}, and
+a modally-strict one @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>}.
+The main difference between the two is that the modally-fragile system is equipped with
+the modally-fragile axiom of actuality and its universal and actual (though not its necessary)
+closures (as mentioned in section~\ref{AxiomSystem}):
+
+\begin{quote}
+@{thm[display] "logic-actual"[act_axiom_inst, of \<phi>]}
+\end{quote}
+
+As indicated by this axiom, semantically, the modally-fragile system is concerned with
+all actual truths, whereas the modally-strict system is used to reason about truths that
+are necessary.
+
+Consequently, the fundamental meta-rule RN mentioned in section~\ref{MetaRules} is restricted
+to modally-strict derivations: If @{term \<phi>} has a modally-strict proof, then its necessitation
+@{term \<open>\<guillemotleft>\<box>\<phi>\<guillemotright>\<close>} is an (again modally-strict) theorem.
+
+PLM's axiom system has the property that the actualization of any modally-fragile
+axiom (in particular @{thm "act-conj-act:4"[print_as_theorem, of \<phi>]}) is a modally-strict
+theorem (see~\nameref{AOT:act-conj-act:4}).
+
+Consequently, for any formula that is derivable as modally-fragile theorem, i.e.
+@{text \<open>\<^bold>\<turnstile> \<phi>\<close>}, it holds that @{text \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>}. In particular, it follows from
+@{text \<open>\<^bold>\<turnstile> \<box>\<phi>\<close>} that @{text \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<box>\<phi>\<close>}, which implies @{text \<open>\<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close>}. PLM refers
+to this principle as the @{emph \<open>weak converse of RN\<close>}.
+
+However, while true in our semantics and derivable in the axiom system of PLM,
+PLM rejects the weak converse of RN in general.
+The goal is to explicitly allow augmenting the theory by asserting contingent truths without
+having to assert their actualization as modally-strict fact. After doing so, the weak
+converse of RN would indeed fail, so in order to keep the reasoning system robust against
+additional assertions of this, PLM does not allow reasoning using the weak converse of RN.
+A detailed discussion of this choice can be found in PLM (TODO: cite discussion in PLM).
+
+While section~\ref{TrivialAccessibilityRelation} hints at a potential way of reproducing
+this strict distinction using a more complex semantics, for simplicity we refrain from
+doing so in our embedding and instead rely on our abstraction layers to prevent
+reasoning using the weak converse of RN, while it remains valid in our semantics.\footnote{Note
+that it is still possible to add contingent truths to the modally-fragile system of the
+embedding and - while it would immediately become derivable semantically - just refrain
+from adding a modally-strict actualization of the assertion to the abstraction
+layer.}
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>
@@ -2104,12 +2193,6 @@ that are challenging to properly represent in the embedding. This mostly happens
 PLM's statement involving either complex preconditions given in natural language or
 due to the statement involving complex ellipses to generalize across e.g. arbitrary
 arities of relations. 
-
-
-  \<^item> Deriving Axioms and Fundamental Meta-Rules from semantics.
-  \<^item> Challenge in stating the natural language conditions with focus on cqt.2 (base cases of denoting terms).
-  \<^item> Custom proving methods for substitutition.
-  \<^item> Proof by types using type classes.
 \<close>
 
 subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-impl}\<close>
@@ -2465,7 +2548,7 @@ Isabelle implicitly generalizes free variables to schematic variables remains fa
 to the derivational system of AOT.
 \<close>
 
-subsection\<open>Trivial Accessibility Relation for the Modal Logic\<close>
+subsection\<open>Trivial Accessibility Relation for the Modal Logic\<close>text\<open>\label{TrivialAccessibilityRelation}\<close>
 
 text\<open>As already hinted at in section (TODO cite), choosing a trivial accessibility relation (respectively, equivalently,
 no accessibility relation at all) is a natural choice for modelling the modal logic of AOT.
@@ -2541,7 +2624,15 @@ Ideas:
 
 \<close>
 
-subsection\<open>Discussion\<close>
+section\<open>Artifactual Theorems\<close>
+
+text\<open>
+
+\<close>
+
+term \<open>\<guillemotleft>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<guillemotright>\<close>
+
+section\<open>Discussion\<close>
 
 text\<open>
   \<^item> Sparse documentation of Isabelle/ML's internals.
