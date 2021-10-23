@@ -1645,6 +1645,116 @@ from adding a modally-strict actualization of the assertion to the abstraction
 layer.}
 \<close>
 
+section\<open>Avoiding Known Paradoxes\<close>
+
+subsection\<open>The Clark-Boolos Paradox\<close>
+(*<*)
+AOT_register_variable_names
+  Relation: K
+(*>*)
+text\<open>
+Naive formulation of AOT, in which all @{text \<open>\<lambda>\<close>}-expression are assumed to
+denote relations, are subject to the Clark-Boolos Paradox (TODO: cite).
+
+In particular consider the @{text \<open>\<lambda>\<close>}-expression @{term \<open>\<guillemotleft>[\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}.
+The assumption that this property denotes leads to paradox (see~\nameref{AOT:block-paradox:1}):
+Assuming that the @{text \<open>\<lambda>\<close>}-expression denote, call if @{term K}, s.t. 
+@{term \<open>\<guillemotleft>K = [\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}.
+By the comprehension principle of abstract objects, there is an abstract object @{term a}
+that encodes exactly @{term K} and no other properties.
+Now if @{term a} were to exemplify @{term K}, it would follow by @{text \<open>\<beta>\<close>}-conversion
+that there is a property that @{term a} encodes, but does not exemplify. However, the
+only property encoded by @{term a} is @{term K}, which @{emph \<open>is\<close>} exemplified by
+@{term a} by assumption yielding a contradiction.
+
+If, on the other hand, @{term a} were to not exemplify @{term K}, it would follow
+that @{term a} encodes @{term K} and does not exemplify @{term K}, so it serves a witness to the claim
+@{term \<open>\<guillemotleft>\<exists>F (a[F] & \<not>[F]a)\<guillemotright>\<close>}. Thus it follows again by @{text \<open>\<beta>\<close>}-conversion that
+@{term a} @{emph \<open>does\<close>} exemplify @{term K} yielding a contradiction.
+
+Previous formulations of PLM disbarred @{text \<open>\<lambda>\<close>}-expressions like the one discussed
+above syntactically: a @{text \<open>\<lambda>\<close>}-expression was only considered to be @{emph \<open>well-formed\<close>},
+if its matrix was what was called a @{emph \<open>propositional formula\<close>}, which were
+formulas that did not contain encoding subformulas. However, an oversight in the precise
+formulation of these provisos made it possible to reintroduce above paradox as described
+in the following section.
+
+In the current formulation of PLM, the @{text \<open>\<lambda>\<close>}-expression does not fall under
+the second quantifier axiom that stipulates base cases of denoting terms (see~\ref{AxiomSystem}):
+The initial @{text \<open>\<lambda>\<close>} binds a variable that occurs in an encoding subformula.
+
+Given that the assumption that the @{text \<open>\<lambda>\<close>}-expression denotes leads to contradiction,
+it provably fails to denote (see~\nameref{AOT:block-paradox:1}):
+
+\begin{quote}
+@{thm[display] "block-paradox:1"[print_as_theorem]}
+\end{quote}
+\<close>
+
+subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>
+
+text\<open>
+When attempting to construct an embedding of the old formulation of PLM that relied
+on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>},
+we found the following oversight (as reported in~\ref{MScThesis}):
+
+Encoding formulas embedded in the matrix of definite descriptions within complex formulas
+were not considered @{emph \<open>encoding subformulas\<close>} and thereby such complex formulas
+were still considered propositional.
+
+This allowed constructing @{text \<open>\<lambda>\<close>}-expressions that were considered well-formed, but
+(actually) equivalent to the paradoxical property @{term K} discussed above, namely:
+
+\begin{quote}
+@{term[display] \<open>\<guillemotleft>K' = [\<lambda>x [\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))]\<guillemotright>\<close>}
+\end{quote}
+
+Since @{term \<open>\<guillemotleft>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<guillemotright>\<close>} is universally exemplified by all objects, it being
+exemplified be a definite description is equivalent to the matrix of the description
+being @{emph \<open>actually\<close>} satisfied by a unique object, i.e.:
+\<close>
+
+AOT_theorem \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z)) \<equiv> \<exists>!z (\<^bold>\<A>(z = x & \<exists>F (z[F] & \<not>[F]z)))\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<close>
+  AOT_hence \<open>\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<down>\<close>
+    using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] by blast
+  AOT_thus \<open>\<exists>!z (\<^bold>\<A>(z = x & \<exists>F (z[F] & \<not>[F]z)))\<close>
+    using "actual-desc:1"[THEN "\<equiv>E"(1)] by blast
+next
+  AOT_assume \<open>\<exists>!z (\<^bold>\<A>(z = x & \<exists>F (z[F] & \<not>[F]z)))\<close>
+  AOT_hence \<open>\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<down>\<close>
+    using "actual-desc:1"[THEN "\<equiv>E"(2)] by simp
+  AOT_thus \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<close>
+    by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2" GEN "\<rightarrow>I")
+qed
+
+text\<open>
+The left-hand side is equivalent to @{term \<open>\<guillemotleft>[K']x\<guillemotright>\<close>} by @{text \<open>\<beta>\<close>}-conversion (assuming
+it is a well-formed, respectively denoting @{text \<open>\<lambda>\<close>}-expression).
+
+The right-hand side can be simplified to @{term \<open>\<guillemotleft>\<^bold>\<A>\<exists>F (x[F] & \<not>[F]x)\<guillemotright>\<close>}, so 
+it is equivalent to @{term \<open>\<guillemotleft>\<^bold>\<A>[K]x\<guillemotright>\<close>}. Thereby, assuming @{term \<open>K'\<close>} denotes
+yields to a modally-fragile proof of a contradiction, respectively to a modally
+strict proof of an actual contradiction, following the argument given in the previous
+section.
+
+An obvious solution to this issue was to extend the definition of encoding subformula
+to also consider matrices of descriptions and thereby disbarring @{term \<open>K'\<close>} as not
+well-formed.
+
+However, this had resulted in the loss of the ability to formulate interesting
+@{text \<open>\<lambda>\<close>}-expressions involving descriptions that are safe and were deemed worthwhile
+to preserve. Therefore, the simple solution was rejected in favour of extending
+AOT's free logic to relation terms as described in the next section.
+
+\<close>
+
+section\<open>Extending AOT's Free Logic to Relations\<close>
+
+text\<open>
+\<close>
+
 section\<open>Interesting Theorems of AOT\<close>
 
 text\<open>
