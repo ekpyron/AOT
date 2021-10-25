@@ -1706,7 +1706,7 @@ This allowed constructing @{text \<open>\<lambda>\<close>}-expressions that were
 (actually) equivalent to the paradoxical property @{term K} discussed above, namely:
 
 \begin{quote}
-@{term[display] \<open>\<guillemotleft>K' = [\<lambda>x [\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))]\<guillemotright>\<close>}
+@{term[display] \<open>AOT_model_id_def (\<lambda>(). K') (\<lambda>(). \<guillemotleft>[\<lambda>x [\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))]\<guillemotright>)\<close>}
 \end{quote}
 
 Since @{term \<open>\<guillemotleft>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<guillemotright>\<close>} is universally exemplified by all objects, it being
@@ -1714,7 +1714,8 @@ exemplified be a definite description is equivalent to the matrix of the descrip
 being @{emph \<open>actually\<close>} satisfied by a unique object, i.e.:
 \<close>
 
-AOT_theorem \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z)) \<equiv> \<exists>!z (\<^bold>\<A>(z = x & \<exists>F (z[F] & \<not>[F]z)))\<close>
+AOT_theorem \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z)) \<equiv>
+             \<exists>!z (\<^bold>\<A>(z = x & \<exists>F (z[F] & \<not>[F]z)))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<close>
   AOT_hence \<open>\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))\<down>\<close>
@@ -1731,7 +1732,7 @@ qed
 
 text\<open>
 The left-hand side is equivalent to @{term \<open>\<guillemotleft>[K']x\<guillemotright>\<close>} by @{text \<open>\<beta>\<close>}-conversion (assuming
-it is a well-formed, respectively denoting @{text \<open>\<lambda>\<close>}-expression).
+@{text \<open>K'\<close>} is a well-formed, respectively denoting relation).
 
 The right-hand side can be simplified to @{term \<open>\<guillemotleft>\<^bold>\<A>\<exists>F (x[F] & \<not>[F]x)\<guillemotright>\<close>}, so 
 it is equivalent to @{term \<open>\<guillemotleft>\<^bold>\<A>[K]x\<guillemotright>\<close>}. Thereby, assuming @{term \<open>K'\<close>} denotes
@@ -1748,6 +1749,8 @@ However, this had resulted in the loss of the ability to formulate interesting
 to preserve. Therefore, this solution was rejected in favour of extending
 AOT's free logic to relation terms as described in the next section.
 
+In the most recent formulation of AOT, it becomes a theorem that the paradoxical relation
+@{text \<open>K'\<close>} does not denote (see~\nameref{AOT:block-paradox2:1}).
 \<close>
 
 section\<open>Extending AOT's Free Logic to Relations\<close>
@@ -1851,11 +1854,11 @@ our work with the embedding.}
 \end{quote}
 
 The proof (see~\nameref{AOT:kirchner-thm:1}) relies on the fact that under the
-assumption of the right-hand-side, it follows that @{term \<open>\<guillemotleft>\<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<guillemotright>\<close>}.
-Now since @{term \<open>\<guillemotleft>[\<lambda>y \<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x})]\<down>\<guillemotright>\<close>} by axiom (by construction
+assumption of the right-hand-side, it follows that @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<guillemotright>\<close>}.
+Now since @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>y \<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x})]\<down>\<guillemotright>\<close>} by axiom (by construction
 the initial @{text \<open>\<lambda>\<close>} does not bind a variable that occurs in an encoding subformula),
-@{term \<open>\<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
-can be shown by instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
+@{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
+can be shown by instantiating @{term F} to @{term \<open>print_term \<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
 
 This theorem has several repercussions. It provides an analytical means to judge
 whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system of AOT itself.
@@ -1946,7 +1949,7 @@ the Comprehension Principle of Abstract Objects (the last axiom in section~\ref{
 resp. \nameref{AOT:A-objects} in the embedding) and classical relation comprehension
 in the absence of encoding formulas.
 
-The following figure is illustrates the basic idea of Aczel models:
+Figure~\ref{fig:aczel-model} illustrates the basic idea of Aczel models:
 
 \tikzset{font=\fontsize{8pt}{10pt}\selectfont}
 \begin{figure}[h!]
@@ -2089,8 +2092,7 @@ equivalent propositions:
 \<close>
 
 lemma \<open>\<forall> v . [v \<Turnstile> p] \<longleftrightarrow> [v \<Turnstile> q]\<close> and \<open>p \<noteq> q\<close>
-  nitpick[satisfy, user_axioms, expect=genuine]
-  (*<*)oops(*>*)
+  nitpick[satisfy, user_axioms, expect=genuine](*<*)oops(*>*)
 
 text\<open>
 @{command nitpick} can find a model in which @{term p} and @{term q} are mapped
@@ -2102,8 +2104,7 @@ propositions to be collapsed:
 \<close>
 
 lemma \<open>\<forall> p q . (\<forall> v . [v \<Turnstile> p] \<longleftrightarrow> [v \<Turnstile> q]) \<longrightarrow> p = q\<close>
-  nitpick[satisfy, user_axioms, expect=genuine]
-  (*<*)oops(*>*)
+  nitpick[satisfy, user_axioms, expect=genuine](*<*)oops(*>*)
 
 text\<open>
 In this case @{command nitpick} chooses a model in which the type @{typ \<o>} is
