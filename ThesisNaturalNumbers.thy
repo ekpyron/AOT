@@ -1036,6 +1036,8 @@ Restricting to the domain of @{term \<R>}, two object are now exactly in the wea
 relation @{term \<open>\<guillemotleft>[\<R>]\<^sup>*\<guillemotright>\<close>}) or identical:
 
 @{thm[display] ances_in_domain[of _ x \<R> y, print_as_theorem]}
+
+In other words, the weak ancestral of a relation is its transitive and reflexive closure.
 \<close>
 
 section\<open>Generalized Induction\<close>
