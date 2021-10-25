@@ -1484,6 +1484,10 @@ Negations and Conditionals (see~\nameref{PLM: 9.5}); Quantification (see~\namere
 Logical Existence, Identity and Truth (see~\nameref{PLM: 9.7}); Actuality and Descriptions (see~\nameref{PLM: 9.8});
 Necessity (see~\nameref{PLM: 9.9}); Relations (see~\nameref{PLM: 9.10}); Objects (see~\nameref{PLM: 9.11}) and
 Propositional Properties (see~\nameref{PLM: 9.12}).
+
+While an exhaustive discussion of the deductive system is beyond the scope of this thesis,
+in the following sections we describe some aspects of it that will be relevant for the
+construction of Natural Numbers in chapter~\ref{NaturalNumbers} in more detail.
 \<close>
 
 subsection\<open>Restricted Variables\<close>text\<open>\label{RestrictedVariables}\<close>
