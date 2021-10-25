@@ -949,7 +949,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(2); drule "&E"(1); frule "&E"(2); drule
     then AOT_obtain a where
       a_prop: \<open>O!a & ([F]a & [R]av & \<forall>t([F]t & [R]tv \<rightarrow> t =\<^sub>E a))\<close>
       using "equi:1"[THEN "\<equiv>E"(1)] "\<exists>E"[rotated] by fastforce
-    AOT_hence oa: \<open>O!a\<close> and fa: \<open>[F]a\<close> and Rav: \<open>[R]av\<close>
+    AOT_hence Oa: \<open>O!a\<close> and fa: \<open>[F]a\<close> and Rav: \<open>[R]av\<close>
       using "&E" by blast+
     AOT_have \<open>O!t \<rightarrow> ([F]t & [R]tv \<rightarrow> t =\<^sub>E a)\<close> for t
       using a_prop "&E" "\<forall>E"(2) by blast
@@ -1254,13 +1254,13 @@ proof (rule "\<rightarrow>I"; frule "&E"(2); drule "&E"(1); frule "&E"(2); drule
           using "=E-simple:2" "\<rightarrow>E" by blast
         AOT_have \<open>\<exists>!u ([F]u & [R\<^sub>1]uv')\<close>
         proof (safe intro!: "equi:1"[THEN "\<equiv>E"(2)] "\<exists>I"(2)[where \<beta>=a] "&I"
-                            Ordinary.GEN "\<rightarrow>I" b_prop[THEN "&E"(1)] oa fa
+                            Ordinary.GEN "\<rightarrow>I" b_prop[THEN "&E"(1)] Oa fa
                             b_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(1)])
           AOT_show \<open>[R\<^sub>1]av'\<close>
             apply (rule "rule=E"[rotated, OF R\<^sub>1_def[symmetric]])
             apply (safe intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" "&I" prod_denotesI)
             apply (rule "\<or>I"(1); rule "\<or>I"(2); rule "&I")
-            using oa "ord=Eequiv:1" "\<rightarrow>E" apply blast
+            using Oa "ord=Eequiv:1" "\<rightarrow>E" apply blast
             using "0" by blast
         next
           fix u'
