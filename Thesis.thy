@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM AOT_RestrictedVariables AOT_BasicLogicalObjects "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
+  imports AOT_PLM AOT_RestrictedVariables AOT_PossibleWorlds "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
 begin
 (*>*)
 
@@ -1785,7 +1785,7 @@ the most recent of which allows to derive necessary and sufficient conditions fo
 
 section\<open>Interesting Theorems of AOT\<close>
 
-subsection\<open>Truth Values as Abstract Objects\<close>
+subsection\<open>Truth Values as Abstract Objects\<close>text\<open>\label{TruthValues}\<close>
 
 text\<open>An example of AOT's ability to @{emph \<open>define\<close>} metaphysical entities
 and derive interesting properties about them, is Truth Values.
@@ -1835,7 +1835,10 @@ For instance:
     @{thm[display] "valueof-facts:1"[of x p]}
     @{thm[display] "valueof-facts:2"[of x p]}
 
-TODO: elaborate? Semantic entities as syntactic abstract objects? Relative to actual world?
+Thereby the analysis of Truth Values is an example of AOT's ability to define and analyse
+abstract objects that faithfully represent entities that are usually only considered
+semantically. Another example of this is AOT's analysis of Possible Worlds described
+in section~\ref{PossibleWorldTheory} below.
 \<close>
 
 
@@ -1878,19 +1881,167 @@ this potential change is not yet complete, so the current version of PLM at the 
 of writing does not yet contain this new enhanced derivation.
 
 In general, this theorem is a prime example of the benefits of the semantic analysis
-of AOT using our embedding that has led to significant theoretical improvements and
+of AOT using our embedding that has led to significant theoretical improvements of AOT and
 may yet allow for further improvements in the future.
 \<close>
 
-subsection\<open>Fundamental Theorems of Possible Worlds\<close>
+subsection\<open>Fundamental Theorems of Possible Worlds\<close>text\<open>\label{PossibleWorldTheory}\<close>
+
+(*<*)
+AOT_theorem trueInSituation: \<open>s \<Turnstile> p \<equiv> s[\<lambda>y p]\<close>
+  apply (AOT_subst_def "true-in-s")
+  apply (AOT_subst_def "prop-enc")
+  by (metis "df-simplify:1" "ex:1:a" "oth-class-taut:3:a" "rule-ui:2[const_var]" Situation.restricted_var_condition)
+(*>*)
 
 text\<open>
+Another interesting aspect of AOT is its analysis of Possible Worlds.
+Similarly to Truth Values whose analysis was hinted at in section~\ref{TruthValues}, Possible Worlds are
+usually solely considered semantically. However, in AOT it is possible to define
+Possible Worlds as abstract objects and derive fundamental theorems about them.
 
+As a first step, consider the following definition of a @{emph \<open>Situation\<close>} (see~\nameref{AOT:situations}):
+
+\begin{quote}
+@{thm[display] "situations"[of x]}
+\end{quote}
+
+A situation is an abstract object that only encodes propositional properties.
+A property @{term F} is propositional, just in case that there is a proposition @{term p}, s.t.
+@{term \<open>print_as_theorem \<guillemotleft>F = [\<lambda>y p]\<guillemotright>\<close>} (see~\nameref{AOT:prop-prop1}):
+
+\begin{quote}
+@{thm[display] "prop-prop1"[of F]}
+\end{quote}
+
+Being a situations is a @{emph \<open>rigid restriction condition\<close>}, so as explained in
+section~\ref{RestrictedVariables}, we can use @{text s} as a restricted variable that ranges
+over situations. A situation makes a proposition true, written @{term \<open>print_as_theorem \<guillemotleft>s \<Turnstile> p\<guillemotright>\<close>}, just
+in case it encodes @{term \<open>\<guillemotleft>[\<lambda>y p]\<guillemotright>\<close>}:\footnote{Note that the double turnstile symbol @{text \<open>\<Turnstile>\<close>} used here
+is a defined symbol in AOT and not the semantic symbol used in chapter~\ref{SSEs} and again starting
+from section~\ref{HyperintensionalPropositions} to symbolize truth conditions in a semantic possible world
+relative to the meta-logic HOL. Also note that by convention the defined double turnstile
+symbol @{text \<open>\<Turnstile>\<close>} of AOT is to be understood to have the narrowest possible scope, i.e.
+@{text \<open>w \<Turnstile> p & q\<close>} is to be read as @{text \<open>(w \<Turnstile> p) & q\<close>}.}
+
+\begin{quote}
+@{thm[display] "trueInSituation"[print_as_theorem, of s p]}
+\end{quote}
+
+Now a @{emph \<open>possible world\<close>} can be defined as a situation that possibly makes 
+exactly those propositions true that are true (see~\nameref{AOT:world:1}):
+
+\begin{quote}
+@{thm[display] "world:1"[of x]}
+\end{quote}
+
+Similarly to situations, it can be shown that being a possible world is a rigid restriction condition, allowing
+the use of @{text w} as a restricted variable ranging over possible worlds.
+
+Now it can be derived that possible worlds are @{emph \<open>possible\<close>} (i.e. @{emph \<open>possibly actual\<close>}), @{emph \<open>consistent\<close>} and @{emph \<open>maximal\<close>}
+situations and furthermore that any abstract object that is a possible and maximal situation is a possible world:
+
+TODO: printing of definitions with restricted variables.
+
+  \<^item> @{thm[display] "actual"[of s]}
+    A situation is actual, if it only makes true propositions true (see~\nameref{AOT:actual}).
+  \<^item> @{thm[display] "pos"[of s]}
+    A situation is possible, if it is possibly actual (see~\nameref{AOT:pos}).
+  \<^item> @{thm[display] "cons"[of s]}
+    A situation is consistent, if it does not make any proposition and its negation
+    true at the same time  (see~\nameref{AOT:cons}).
+  \<^item> @{thm[display] "max"[of s]}
+    A situation is maximal, if any proposition is either true or false in it (see~\nameref{AOT:max}).
+  \<^item> @{thm "world-pos"[print_as_theorem, of w]}, @{thm "world-cons:1"[print_as_theorem, of w]}, @{thm "world-max"[print_as_theorem, of w]}\\
+    Possible worlds are possible, consistent and maximal (see~\nameref{AOT:world-pos}, \nameref{AOT:world-cons:1} and \nameref{AOT:world-max}).
+  \<^item> @{thm[display] "world=maxpos:2"[print_as_theorem, of x]}
+    An abstract object is a possible world, if and only if it is a maximal and possible situation (see~\nameref{AOT:world=maxpos:2}).
+
+The fundamental theorems of possible world theories relate the defined possible worlds
+to possibility and necessity of the modal logic of AOT (see~\nameref{AOT:fund:1} and~\nameref{AOT:fund:2}):
+
+\begin{quote}
+  @{thm[display] "fund:1"[print_as_theorem, of p]}
+  @{thm[display] "fund:2"[print_as_theorem, of p]}
+\end{quote}
+
+Furthermore, it can be shown that the basic connectives and quantifiers are well-behaved
+with respect to being true in a possible world, i.e. (see~\nameref{AOT:conj-dist-w:1} and following):
+
+  \<^item> @{thm[display] "conj-dist-w:1"[print_as_theorem, of w p q]}
+  \<^item> @{thm[display] "conj-dist-w:2"[print_as_theorem, of w p q]}
+  \<^item> @{thm[display] "conj-dist-w:3"[print_as_theorem, of w p q]}
+  \<^item> @{thm[display] "conj-dist-w:4"[print_as_theorem, of w p q]}
+  \<^item> @{thm[display] "conj-dist-w:5"[print_as_theorem, of w \<phi>]}
+  \<^item> @{thm[display] "conj-dist-w:6"[print_as_theorem, of w \<phi>]}
+
+Taken together this reproduces the semantic analysis of AOT with Kripke semantics
+syntactically within the derivational system of AOT itself using abstract objects.
 \<close>
 
 subsection\<open>World-Relative Relations and Rigidifying Relations\<close>text\<open>\label{WorldRelativeRelations}\<close>
+(*<*)
+(* TODO: ugly hack *)
+definition explicitParen :: \<open>'a \<Rightarrow> 'a\<close> where \<open>explicitParen x \<equiv> x\<close>
+syntax (input) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>'(_\<^bold>')")
+syntax (output) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("'(_')")
+translations
+  "_explicitParen x" == "CONST explicitParen x"
+AOT_theorem rigidExplicitParens: \<open>Rigid(F) \<equiv> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<^bold>([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n\<^bold>)\<close>
+  unfolding explicitParen_def
+  using "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2[const_var]"[axiom_inst]]
+  by blast
+AOT_theorem rigidifiesExplicitParens: \<open>Rigidifies(F,G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n \<^bold>([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n\<^bold>)\<close>
+  unfolding explicitParen_def using "df-rigid-rel:2".
+(*>*)
+text\<open>A notable consequence of the theory of possible worlds outlined in the previous section
+and the necessary and sufficient conditions of relations to denote described in section~\ref{KirchnersTheorem} is
+the fact that world-relative relations denote.
 
-text\<open>\<close>
+In particular, it can be derived that any denoting @{text \<open>\<lambda>\<close>}-expression can be relativized
+to a possible world, i.e. (see~\nameref{AOT:w-rel:1} and~\nameref{AOT:w-rel:2}):
+
+\begin{quote}
+@{thm[display] "w-rel:1"[print_as_theorem, of \<phi> w]}
+@{thm[display] "w-rel:2"[print_as_theorem, of \<phi> w]}
+\end{quote}
+
+This allows for a definition of world-relative relations as follows (see~\nameref{AOT:w-index}):
+
+\begin{quote}
+@{thm[display] "w-index"}
+\end{quote}
+
+Notably, this consequence of the necessary and sufficient conditions of relations to denote we
+contributed based on our work, allowed for eliminating an additional axiom that was
+previously required for the analysis of Natural Numbers. In particular, it becomes a
+theorem that there exist @{emph \<open>rigidifying relations\<close>}.
+
+A relation is @{emph \<open>rigid\<close>}, if exemplifying it is modally collapsed (see~\nameref{AOT:df-rigid-rel:1}):
+
+\begin{quote}
+@{thm[display] rigidExplicitParens[print_as_theorem, of F]}
+\end{quote}
+
+And a relation @{term F} @{emph \<open>rigidifies\<close>} a relation @{term G}, just in case
+@{term F} is rigid and exemplifying it is equivalent to exemplifying @{term G} (see~\nameref{AOT:df-rigid-rel:2}):
+
+\begin{quote}
+@{thm[display] rigidifiesExplicitParens[of F G]}
+\end{quote}
+
+World-relative relations can now be used as a witness to show that there exist
+rigidifying relations (see~\nameref{AOT:rigid-der:3}):
+
+\begin{quote}
+@{thm[display] "rigid-der:3"[print_as_theorem, of G]}
+\end{quote}
+
+Rigidifying relations will play an important role in the derivation of Natural
+Numbers described in chapter~\ref{NaturalNumbers} and their existence previously
+had to be ensured by axiom.
+
+\<close>
 
 subsection\<open>TODO\<close>
 
@@ -1899,9 +2050,6 @@ TODO: needs to mention:
   \<^item> There are distinct, but exemplification-indistinguishable abstract objects.
   \<^item> There is no general relation of identity.
   \<^item> There are 16 distinct properties (proof contributed by us). Relate to minimal models of AOT.
-  \<^item> Blocking of the "Kirchner Paradox", referring to previous work.
-  \<^item> "Kirchner's Theorem": Necessary and sufficient conditions for relations to denote (proof contributed by us).
-  \<^item> Parts of possible world theory and in particular world-relative relations and the existence of Rigidifying relation (proof contributed by us, replacing it being an unnecessary axiom)
   \<^item> Maybe some "teasers" like the @{emph \<open>There are exactly two Truth Values.\<close>} or @{emph \<open>The True is identical to the Actual World.\<close>} or
     the Fundamental Theorems of Possible Worlds, etc. Maybe mention and cite extensibility e.g. to Temporal Logic as discussed in PLM's theory of stories (even though not yet embedded).
 
@@ -2062,7 +2210,7 @@ the general model structure. As a first step, we describe the implementation of
 AOT's hyperintensionality.
 \<close>
 
-subsection\<open>Hyperintensional Propositions\<close>
+subsection\<open>Hyperintensional Propositions\<close>text\<open>\label{HyperintensionalPropositions}\<close>
 
 text\<open>
 
@@ -2078,7 +2226,8 @@ to Kripke-extensions, i.e. boolean valued functions on possible worlds (type @{t
 see~\nameref{AOT:AOT_model.AOT_model_d<o>}).
 
 We define for a proposition @{term p} of type @{typ \<o>} to be valid in a given semantic possible
-world @{term v} (written @{term \<open>AOT_model_valid_in v p\<close>}), just in case @{term AOT_model_d\<o>} maps @{term p}
+world @{term v} (written @{term \<open>AOT_model_valid_in v p\<close>})\footnote{Note that this use of the double turnstile symbol
+@{text \<open>\<Turnstile>\<close>} is defined within the meta-logic HOL and distinct from the use in AOT's possible world theory described in section~\ref{PossibleWorldTheory}.}, just in case @{term AOT_model_d\<o>} maps @{term p}
 to a Kripke-extension that evaluates to @{term True} for @{term v} (see~\nameref{AOT:AOT_model.AOT_model_valid_in}).
 
 This way, our type of propositions @{typ \<o>} is assured to contain a proposition for
@@ -2124,15 +2273,6 @@ for AOT's free logic.
 \<close>
 
 subsection\<open>Extended Aczel Model Structure\<close>
-
-(*<*)
-(* TODO: ugly hack *)
-consts explicitParen :: 'a
-syntax (input) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>'(_\<^bold>')")
-syntax (output) "_explicitParen" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("'(_')")
-translations
-  "_explicitParen x" == "CONST explicitParen x"
-(*>*)
 
 text\<open>
 The embedding introduces a type of urelements @{typ \<upsilon>} (see~\nameref{AOT:AOT_model.<upsilon>})
@@ -2187,7 +2327,7 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     introduction of one null-urelement does not increase the amount of relations in the
     models: while urrelations have to assign a Kripke-extensions to this null-urelement,
     there is only one choice for doing so, namely the constant-false function on possible
-    worlds.
+    worlds. Consequently, the number of relations in minimal models of AOT is unaffected. 
 
 As a last ingredient of our Aczel model structure, we require a mapping @{text \<alpha>\<sigma>}
 from sets of urrelations (which will be used to represent abstract objects) to
