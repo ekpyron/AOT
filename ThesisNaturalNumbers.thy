@@ -1587,7 +1587,7 @@ in case they differ only in encoding properties with the same extension on the o
 distinct @{emph \<open>very special\<close>} urelements).
 
 This extended model validates the following two axioms
-(see~\nameref{AOT:AOT_Axioms.indistinguishable_ord_enc_all},~\nameref{AOT:AOT_Axioms.indistinguishable_ord_enc_ex}):
+(see~\nameref{AOT:AOT_Axioms.AOT_ExtendedModel.indistinguishable_ord_enc_all},~\nameref{AOT:AOT_Axioms.AOT_ExtendedModel.indistinguishable_ord_enc_ex}):
 
   \<^item> @{thm indistinguishable_ord_enc_all[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
   \<^item> @{thm indistinguishable_ord_enc_ex[rename_abs F G u G u, of \<Pi> x y, axiom_inst, print_as_theorem]}
@@ -1822,7 +1822,7 @@ Recall that the axiom of possible richness of objects was stated as follows (see
 
 Compared with the predecessor axiom, modelling possible richness of objects is straightforward.
 The axiom implies that there are countably infinitely many ordinary (even though potentially
-not @{emph \<open>actually\<close>}, but merely @{emph \<open>possible\<close>} concrete) objects, so in our models we simply require there being a surjection from our type
+not @{emph \<open>actually\<close>}, but merely @{emph \<open>possibly\<close>} concrete) objects, so in our models we simply require there being a surjection from our type
 @{typ \<omega>} of ordinary urelements to Isabelle's type of natural numbers @{typ nat}.
 While deriving the axiom from this change in the model is still non-trivial, we can prove (notably,
 we use AOT's defined mathematical induction for the proof), that @{emph \<open>being a natural number\<close>} in the models
