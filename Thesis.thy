@@ -1,6 +1,6 @@
 (*<*)
 theory Thesis
-  imports AOT_PLM AOT_RestrictedVariables "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
+  imports AOT_PLM AOT_RestrictedVariables AOT_BasicLogicalObjects "HOL-Library.LaTeXsugar" (* "HOL-Library.OptionalSugar" *)
 begin
 (*>*)
 
@@ -1260,7 +1260,7 @@ the syntactically distinct terms @{text \<open>p\<close>} and @{text \<open>[\<l
 the natural-language distinction between the statement @{text p} itself and the statement
 @{emph \<open>that @{text p} is true\<close>}. TODO: rethink; mention subtlety of terms instead of variables.}
 
-The following axiom is specific to AOT and, together with generally extending AOT's free logic
+The following axiom of @{emph \<open>coexistence\<close>} is specific to AOT and, together with generally extending AOT's free logic
 to relation terms and the refinement of base cases of denoting terms, a main aspect in the evolution
 of PLM that was originally triggered by its analysis using our embedding (TODO: cite MSc thesis).
 It states that whenever a @{text \<lambda>}-expression denotes, any @{text \<lambda>}-expression with a matrix
@@ -1696,7 +1696,7 @@ subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>
 text\<open>
 When attempting to construct an embedding of the old formulation of PLM that relied
 on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>},
-we found the following oversight (as reported in~\ref{MScThesis}):
+we found the following oversight (as reported in~\cite{MScThesis}):
 
 Encoding formulas embedded in the matrix of definite descriptions within complex formulas
 were not considered @{emph \<open>encoding subformulas\<close>} and thereby such complex formulas
@@ -1735,7 +1735,7 @@ it is a well-formed, respectively denoting @{text \<open>\<lambda>\<close>}-expr
 
 The right-hand side can be simplified to @{term \<open>\<guillemotleft>\<^bold>\<A>\<exists>F (x[F] & \<not>[F]x)\<guillemotright>\<close>}, so 
 it is equivalent to @{term \<open>\<guillemotleft>\<^bold>\<A>[K]x\<guillemotright>\<close>}. Thereby, assuming @{term \<open>K'\<close>} denotes
-yields to a modally-fragile proof of a contradiction, respectively to a modally
+yields a modally-fragile proof of a contradiction, respectively a modally
 strict proof of an actual contradiction, following the argument given in the previous
 section.
 
@@ -1745,7 +1745,7 @@ well-formed.
 
 However, this had resulted in the loss of the ability to formulate interesting
 @{text \<open>\<lambda>\<close>}-expressions involving descriptions that are safe and were deemed worthwhile
-to preserve. Therefore, the simple solution was rejected in favour of extending
+to preserve. Therefore, this solution was rejected in favour of extending
 AOT's free logic to relation terms as described in the next section.
 
 \<close>
@@ -1753,9 +1753,139 @@ AOT's free logic to relation terms as described in the next section.
 section\<open>Extending AOT's Free Logic to Relations\<close>
 
 text\<open>
+In the aftermath of the discovery of the reintroduction of the Clark-Boolos paradox
+described in the previous section, AOT's free logic was extended to all its types (while
+it was previously restricted to individual terms).
+
+The definitions for logical existence (@{text \<open>\<tau>\<down>\<close>}) were already mentioned in section~\ref{AOTLanguage}.
+Notably, it is possible to define the conditions under which relation terms denote
+using @{emph \<open>encoding\<close>}, i.e. @{thm "existence:2"[of \<Pi>]}, while a similar definition
+using exemplification would fail in the second-order fragment, since there are denoting,
+but necessarily unexemplified properties, i.e. @{term \<open>print_as_theorem \<guillemotleft>\<exists>x\<^sub>1...\<exists>x\<^sub>n [\<Pi>]x\<^sub>1...x\<^sub>n\<guillemotright>\<close>}
+may be false for denoting @{term \<open>\<Pi>\<close>}.
+
+The switch to a richer free logic also involved multiple changes to the axiom system (see~\ref{AxiomSystem}).
+The quantifier axioms were reformulated using the defined notion of @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>}.
+Furthermore, @{text \<open>\<alpha>\<close>}- and @{text \<open>\<beta>\<close>}-conversion were restricted to denoting
+@{text \<open>\<lambda>\<close>}-expressions, the coexistence axiom was added and the base cases
+for denoting terms were adjusted.
+
+There were multiple iterations of formulations of the base cases of denoting terms,
+the most recent of which allows to derive necessary and sufficient conditions for
+@{text \<open>\<lambda>\<close>}-expressions to denote, as explained in section~\ref{KirchnersTheorem} below.
+
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>
+
+subsection\<open>Truth Values as Abstract Objects\<close>
+
+text\<open>An example of AOT's ability to @{emph \<open>define\<close>} metaphysical entities
+and derive interesting properties about them, is Truth Values.
+
+In AOT, it is possible to provide a @{emph \<open>syntactic\<close>} definition of what it means to
+be a truth value of a proposition (see~\nameref{AOT:tv-p}):
+
+\begin{quote}
+@{thm[display] "tv-p"[of x p]}
+\end{quote}
+
+An abstract object @{text x} is the Truth Value of a proposition @{text p}, just in
+case it encodes a property @{term F}, just in case that there is a proposition @{term q}
+that is equivalent to @{term p} and @{term F} is the propositional property
+@{emph \<open>being an @{text x}, s.t. @{term q}\<close>}.
+
+A definite description can be used to talk about @{emph \<open>the\<close>} truth value @{text \<open>\<circ>p\<close>} of a proposition @{text p}:
+
+\begin{quote}
+@{thm[display] "the-tv-p"}
+\end{quote}
+
+We say that an abstract object encodes a proposition @{term p}, if it encodes the
+property @{emph \<open>being an @{text x}, s.t. @{term p}\<close>} @{term \<open>\<guillemotleft>[\<lambda>x p]\<guillemotright>\<close>}.
+Using that notion, it is possible to define two particular truth values, i.e. The True
+and The False, as @{emph \<open>the\<close>} abstract object that encodes all propositions that
+are true, resp. all propositions that are false (see~\nameref{AOT:the-true:1}):
+
+\begin{quote}
+@{thm[display] "the-true:1"}
+@{thm[display] "the-true:2"}
+\end{quote}
+
+Now it becomes possible to @{emph \<open>derive\<close>} natural properties of truth values analytically.
+For instance:
+
+  \<^item> There are exactly two truth values (see~\nameref{AOT:two-T}):
+    @{thm[display] "two-T"[print_as_theorem]}
+  \<^item> The True is distinct from The False (see~\nameref{AOT:the-true:3}): @{thm "the-true:3"[print_as_theorem]}
+  \<^item> The True and The False are truth values (see~\nameref{AOT:T-T-value:1}):\footnote{Note that
+    since descriptions are modally rigid and refer to objects in the actual world, these theorems are
+    modally-fragile, i.e. @{emph \<open>actual\<close>}, but not @{emph \<open>necessary\<close>} truths.}
+    @{thm[display] "T-T-value:1"}
+    @{thm[display] "T-T-value:2"}
+  \<^item> A proposition is true, iff its truth value is The True and
+    it is false, iff its truth value is The False (see~\nameref{AOT:valueof-facts:1}):
+    @{thm[display] "valueof-facts:1"[of x p]}
+    @{thm[display] "valueof-facts:2"[of x p]}
+
+TODO: elaborate? Semantic entities as syntactic abstract objects? Relative to actual world?
+\<close>
+
+
+subsection\<open>Indistinguishable Abstract Objects\<close>
+
+text\<open>
+
+\<close>
+
+subsection\<open>Necessary and Sufficient Condition for Relations to Denote\<close>text\<open>\label{KirchnersTheorem}\<close>
+
+text\<open>
+The move to a free logic for relation terms and the iterative extension of the
+base cases of denoting terms mentioned in the last section, ultimately led to
+the following theorem:\footnote{We could contribute this theorem to AOT based on
+our work with the embedding.}
+
+\begin{quote}
+@{thm[display] "kirchner-thm:1"[print_as_theorem, of \<phi>]}
+\end{quote}
+
+The proof (see~\nameref{AOT:kirchner-thm:1}) relies on the fact that under the
+assumption of the right-hand-side, it follows that @{term \<open>\<guillemotleft>\<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<guillemotright>\<close>}.
+Now since @{term \<open>\<guillemotleft>[\<lambda>y \<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x})]\<down>\<guillemotright>\<close>} by axiom (by construction
+the initial @{text \<open>\<lambda>\<close>} does not bind a variable that occurs in an encoding subformula),
+@{term \<open>\<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
+can be shown by instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
+
+This theorem has several repercussions. It provides an analytical means to judge
+whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system of AOT itself.
+Notably, this led to a proof of the existence of world-relative relations and
+thereby of rigidifying relations, which play an important role in the derivation
+of natural numbers and whose existence previously had to be assured by axiom. This
+is explained in more detail in the section~\ref{WorldRelativeRelations} (TODO: adjust ref).
+
+Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
+that does not rely on a modal axiom of infinity. This is mentioned briefly in
+section~\ref{NewNumberTheory}, although at the time of writing, the analysis of
+this potential change is not yet complete, so the current version of PLM at the time
+of writing does not yet contain this new enhanced derivation.
+
+In general, this theorem is a prime example of the benefits of the semantic analysis
+of AOT using our embedding that has led to significant theoretical improvements and
+may yet allow for further improvements in the future.
+\<close>
+
+subsection\<open>Fundamental Theorems of Possible Worlds\<close>
+
+text\<open>
+
+\<close>
+
+subsection\<open>World-Relative Relations and Rigidifying Relations\<close>text\<open>\label{WorldRelativeRelations}\<close>
+
+text\<open>\<close>
+
+subsection\<open>TODO\<close>
 
 text\<open>
 TODO: needs to mention:
@@ -2271,8 +2401,9 @@ the constant is deduced). This new constant is then automatically specified to
 fulfill the given definition using a mechanism similar to the @{command specification}
 command, while the entailed existence proof is constructed automatically.
 
-Furthermore, we introduce convenience commands like @{command AOT_find_theorems} and 
-@{command AOT_sledgehammer}. @{command AOT_find_theorems} works similar to the Isar
+Furthermore, we introduce commands like @{command AOT_find_theorems} and 
+@{command AOT_sledgehammer} to aid in constructing proofs.
+@{command AOT_find_theorems} works similar to the Isar
 command @{command find_theorems}, but automatically parses AOT syntax and generalizes
 concrete variables to schematic variables for pattern matching (TODO: explain, cite?).
 @{command AOT_sledgehammer} is a wrapper around @{command sledgehammer} that invokes
@@ -2414,7 +2545,34 @@ version of the axiom, once it is clear that PLM will move in that direction. (TO
 
 subsection\<open>The Rule of Substitution\<close>
 
-text\<open>\<close>
+text\<open>
+Similar to the axiom above, there is also derived rules in PLM that are challenging
+to reproduce in the embedding. A prime example is the Rule of Substitution.
+PLM formulates this rule as follows  (PLM item (159) TODO: cite properly):\footnote{PLM
+formulates the rule relative to modally-fragile derivations @{text \<open>\<turnstile>\<close>}, but further
+argues that it is equally valid for modally-strict derivations @{text \<open>\<turnstile>\<^sub>\<box>\<close>}. Furthermore,
+it also states a variant in which the precondition is weakened to @{text \<open>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<chi>\<close>},
+which allows to derive @{text \<open>\<turnstile>\<^sub>\<box> \<box>(\<phi> \<equiv> \<chi>)\<close>} by RN. TODO: references.}
+
+\begin{quote}
+\Squ{If @{text \<open>\<turnstile> \<box>(\<phi> \<equiv> \<chi>)\<close>}, then where @{text \<open>\<Gamma>\<close>} is any set of formulas and
+@{text \<open>\<phi>'\<close>} is the result of substituting the formula @{text \<chi>} for zero or more
+occurrences of @{text \<psi>} where the latter is a subformula of @{text \<phi>}, @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if
+and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}.}
+\end{quote}
+
+The notably restriction in this formulation is the proviso that 
+@{text \<open>\<psi>\<close>} is a @{emph \<open>subformula\<close>} of @{text \<phi>}. Subformulas are defined recursively
+in PLM item (6) (TODO: proper reference), but notably do not entail matrices of
+descriptions or @{text \<open>\<lambda>\<close>}-expressions: The formula @{text \<phi>} is @{emph \<open>not\<close>} a
+subformula of @{term \<open>\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>]\<guillemotright>\<close>} (for @{text \<open>n \<ge> 1\<close>}).
+
+While the inductive base cases for proving the rule can easily be reproduced in the
+embedding (see~\nameref{AOT:rule-sub-lem:1:a}), combining the rule to a single statement
+in Isabelle is challenging. Therefore we instead provide a customly written proving
+@{theory_text method}s that allow applying the rule as intended by PLM.
+TODO: elaborate?
+\<close>
 
 subsection\<open>Proofs by Type Distinction\<close>
 
@@ -2509,11 +2667,13 @@ is the list of all variables that occur bound in @{term \<phi>}, including repet
 Further @{text \<open>\<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>} refers to the result of replacing @{text \<open>\<alpha>\<^sub>i\<close>} by @{text \<open>\<beta>\<^sub>i\<close>}
 in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>}. Now @{term \<phi>'} is defined to be an @{emph \<open>alphabetic variant\<close>} of @{term \<phi>}
 just in case for some @{text n}:
+\Squ{
   \<^item> @{text \<open>\<phi>' = \<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>},
   \<^item> @{text \<phi>'} has the same number of bound variable occurrences as @{text \<phi>} and so can be written as
     @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots>, \<beta>\<^sub>n]\<close>}, and
   \<^item> for @{text \<open>1 \<le> i, j \<le> n\<close>}, @{text \<alpha>\<^sub>i} and @{text \<alpha>\<^sub>j} are linked in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>} if and
     only if @{text \<beta>\<^sub>i} and @{text \<beta>\<^sub>j} are linked in @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots> \<beta>\<^sub>n]\<close>}.
+}
 
 By definition each group of @{emph \<open>linked\<close>} variable occurrences in AOT corresponds to exactly
 one abstraction in Isabelle's internal representation and all de-Bruijin indexed @{text Bound} terms
@@ -2587,16 +2747,16 @@ The precise definition of @{emph \<open>being substitutable\<close>} can be foun
 In particular, it states the following summary:
 
 \begin{quote}
-@{text \<tau>} is substitutable at an occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in
+\Squ{@{text \<tau>} is substitutable at an occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in
 case every occurrence of any variable @{text \<beta>} free in @{text \<tau>} remains an occurrence
-that is free when @{text \<tau>} is substituted for that occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.
+that is free when @{text \<tau>} is substituted for that occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.}
 \end{quote}
 
 and further:
 
 \begin{quote}
-@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case @{text \<tau>}
-is substitutable at every free occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.
+\Squ{@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case @{text \<tau>}
+is substitutable at every free occurrence of @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>}.}
 \end{quote}
 
 In the embedding, the same axiom is stated as follows:
@@ -2610,10 +2770,10 @@ Technically, @{term \<phi>} here is a function acting on terms and both @{text \
 
 
 \begin{quote}
-@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case every
+\Squ{@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case every
 occurrence of any variable @{text \<beta>} free in @{text \<tau>} @{text \<open>[\<dots>]\<close>} remains an
 occurrence that is free when @{text \<tau>} is substituted for every free occurrence of @{text \<alpha>}
-in @{text \<phi>} or @{text \<sigma>}.
+in @{text \<phi>} or @{text \<sigma>}.}
 \end{quote}
 
 

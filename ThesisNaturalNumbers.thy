@@ -1849,7 +1849,7 @@ TODO: check if this duplicates earlier discussion.
 
 \<close>
 
-section\<open>On the Prospect of an Enhanced Version of the Construction\<close>
+section\<open>On the Prospect of an Enhanced Version of the Construction\<close>text\<open>\label{NewNumberTheory}\<close>
 
 text\<open>
 At the time of writing, there is a debate over the changing the analysis of Natural
