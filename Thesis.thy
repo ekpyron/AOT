@@ -2464,7 +2464,7 @@ formulation: constants, variables and @{text \<open>\<lambda>\<close>}-expressio
 
 As discussed in more detail in section (TODO), the embedding does not have to distinguish
 explicitly between constants and variables, so it suffices to state one case for
-constants @{emph \<open>and\<close>} variables:
+constants @{emph \<open>and\<close>} variables (see~\nameref{AOT:cqt:2[const_var]}):
 
 \begin{quote}
   @{thm[display] "cqt:2[const_var]"[axiom_inst, of _ \<alpha>, print_as_theorem]}
@@ -2473,7 +2473,7 @@ constants @{emph \<open>and\<close>} variables:
 This covers all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
 The embedding defines this type for each base type @{typ 'a} of class @{class AOT_Term} as all
 members of the type that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
-n section~\ref{IndividualTermsAndClasses}). Any variable name is decorated with the constant
+in section~\ref{IndividualTermsAndClasses}). Any variable name is internally decorated with the constant
 @{term AOT_term_of_var} of type @{typ \<open>'a AOT_var \<Rightarrow> 'a\<close>} and thereby implicitly denotes.
 By construction there exists an object of type @{typ \<open>'a AOT_var\<close>} for every denoting
 object of type @{typ 'a} and vice-versa.
@@ -2668,13 +2668,13 @@ is the list of all variables that occur bound in @{term \<phi>}, including repet
 Further @{text \<open>\<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>} refers to the result of replacing @{text \<open>\<alpha>\<^sub>i\<close>} by @{text \<open>\<beta>\<^sub>i\<close>}
 in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>}. Now @{term \<phi>'} is defined to be an @{emph \<open>alphabetic variant\<close>} of @{term \<phi>}
 just in case for some @{text n}:
-\Squ{
+
   \<^item> @{text \<open>\<phi>' = \<phi>[\<beta>\<^sub>1/\<alpha>\<^sub>1, \<dots>, \<beta>\<^sub>n/\<alpha>\<^sub>n]\<close>},
   \<^item> @{text \<phi>'} has the same number of bound variable occurrences as @{text \<phi>} and so can be written as
     @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots>, \<beta>\<^sub>n]\<close>}, and
   \<^item> for @{text \<open>1 \<le> i, j \<le> n\<close>}, @{text \<alpha>\<^sub>i} and @{text \<alpha>\<^sub>j} are linked in @{text \<open>\<phi>[\<alpha>\<^sub>1, \<dots>, \<alpha>\<^sub>n]\<close>} if and
     only if @{text \<beta>\<^sub>i} and @{text \<beta>\<^sub>j} are linked in @{text \<open>\<phi>'[\<beta>\<^sub>1, \<dots> \<beta>\<^sub>n]\<close>}.
-}
+
 
 By definition each group of @{emph \<open>linked\<close>} variable occurrences in AOT corresponds to exactly
 one abstraction in Isabelle's internal representation and all de-Bruijin indexed @{text Bound} terms
