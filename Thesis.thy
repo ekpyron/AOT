@@ -12,7 +12,9 @@ text\<open>
 
 Automated reasoning environments are already a vital part of the modern analysis
 of mathematics and formal systems in general and their importance can only be expected
-to increase in the future. However, building up a sound reasoning environment from scratch is a highly
+to increase in the future. A prime examples is Hales' proof of the Kepler conjecture that was
+only broadly accepted after reconstructing the argument as a formal proof that could be verified
+by computerized theorem proving environments (TODO: cite). However, building up a sound reasoning environment from scratch is a highly
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isabelle/HOL (TODO: cite).
 Furthermore, most of these systems have at least parts of their logical foundation in common,
