@@ -1649,7 +1649,7 @@ from adding a modally-strict actualization of the assertion to the abstraction
 layer.}
 \<close>
 
-section\<open>Avoiding Known Paradoxes\<close>
+section\<open>Avoiding Known Paradoxes\<close>text\<open>\label{AvoidingParadoxes}\<close>
 
 subsection\<open>The Clark-Boolos Paradox\<close>
 (*<*)
@@ -1757,7 +1757,7 @@ In the most recent formulation of AOT, it becomes a theorem that the paradoxical
 @{text \<open>K'\<close>} does not denote (see~\nameref{AOT:block-paradox2:1}).
 \<close>
 
-section\<open>Extending AOT's Free Logic to Relations\<close>
+section\<open>Extending AOT's Free Logic to Relations\<close>text\<open>\label{MoveToFreeLogic}\<close>
 
 text\<open>
 In the aftermath of the discovery of the reintroduction of the Clark-Boolos paradox
@@ -1784,6 +1784,105 @@ the most recent of which allows to derive necessary and sufficient conditions fo
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>
+
+
+subsection\<open>Indistinguishable Abstract Objects\<close>
+
+text\<open>
+The issue raised in form of the Clark-Boolos Paradox and its variants in section~\ref{AvoidingParadoxes}
+is a general issue of the general comprehension principle for abstract object and their identity conditions, which
+intuitively imply that abstract objects correspond to sets of properties, together with
+the fact that abstract objects are simultaneously meant to themselves @{emph \<open>exemplify\<close>} properties:
+
+Properties have exemplification-extensions which are traditionally conceived of as sets of
+individuals.\footnote{In a modal setting properties are even associated with multiple sets of
+objects for different semantic possible worlds or, equivalently, extensions of modal properties are conceived of as mapping
+objects to sets of possible worlds in which the property is exemplified by the object.} However, if abstract objects correspond
+to sets of properties and exemplification-extensions of properties themselves were to be sets of objects,
+one may wonder how this can be achieved without a violation of Cantor's Theorem (TODO: cite):
+how can abstract objects be sets of properties and simultaneously (in the simplest case of non-modal
+and extensional properties) elements of properties?
+
+A semantic solution to this dilemma is given by Aczel models which are described in
+section~\ref{AczelModels}. But there are also derivable theorems of AOT that serve
+to clarify how this dangling paradox may be avoided.
+
+In particular, it is derivable that there are distinct, but exemplification-indistinguishable
+abstract objects (see~\nameref{AOT:aclassical2}):
+
+\begin{quote}
+@{thm[display] "aclassical2"[print_as_theorem]}
+\end{quote}
+
+The comprehension principle for abstract objects requires the existence of that
+many abstract objects, such that it has to be the case that some of them collapse
+under exemplification. In light of avoiding a violation of Cantor's Theorem
+one may even argue that @{emph \<open>most\<close>} abstract objects are indistinguishable, since
+the cardinality of the set of abstract objects is strictly larger than the set
+of properties.\footnote{And even properties in turn have a strictly larger cardinality than
+urelements, which in Aczel models will serve as proxies for abstract objects to define
+their exemplification behaviour, as described in more detail in section~\ref{AczelModels}.}
+
+Interestingly, though, it is impossible to independently construct two concrete
+abstract objects that fail to be distinguishable. This is also discussed
+in section~\ref{JustificationExtendedComprehension} in the context of our proposed
+extended comprehension principle for relations among abstract objects as well as in
+section~\ref{NewNumberTheory} in the context of a potential future improvement in the
+derivation of Natural Numbers in AOT.
+
+In the following section, we will see another prominent example of a theorem of AOT involving
+indistinguishable objects that relates to Aczel models.
+\<close>
+
+subsection\<open>Necessary and Sufficient Condition for Relations to Denote\<close>text\<open>\label{KirchnersTheorem}\<close>
+
+text\<open>
+The move to a free logic for relation terms and the iterative extension of the
+base cases of denoting terms mentioned in the section~\ref{MoveToFreeLogic}, ultimately led to
+the following theorem:\footnote{We could contribute this theorem to AOT based on
+our work with the embedding.}
+
+\begin{quote}
+@{thm[display] "kirchner-thm:1"[print_as_theorem, of \<phi>]}
+\end{quote}
+
+A @{text \<open>\<lambda>\<close>}-expression denotes, if and only if necessarily its matrix agrees on
+all indistinguishable objects.
+
+The proof (see~\nameref{AOT:kirchner-thm:1}) relies on the fact that under the
+assumption of the right-hand-side, it follows that @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<guillemotright>\<close>}.
+Now since @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>y \<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x})]\<down>\<guillemotright>\<close>} by axiom (by construction
+the initial @{text \<open>\<lambda>\<close>} does not bind a variable that occurs in an encoding subformula),
+@{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
+can be shown by instantiating @{term F} to @{term \<open>print_term \<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
+
+This theorem has several repercussions. It provides an analytical means to judge
+whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system of AOT itself.
+Notably, this led to a proof of the existence of world-relative relations and
+thereby of rigidifying relations, which play an important role in the derivation
+of natural numbers and whose existence previously had to be assured by axiom. This
+is explained in more detail in the section~\ref{WorldRelativeRelations} (TODO: adjust ref).
+
+Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
+that does not rely on a modal axiom of infinity. This is mentioned briefly in
+section~\ref{NewNumberTheory}, although at the time of writing, the analysis of
+this potential change is not yet complete, so the current version of PLM at the time
+of writing does not yet contain this new enhanced derivation.
+
+In general, this theorem is a prime example of the benefits of the semantic analysis
+of AOT using our embedding that has led to significant theoretical improvements of AOT and
+may yet allow for further improvements in the future.
+
+Semantically, the theorem is closely related to Aczel models of AOT.
+The condition of being indistinguishable, @{term \<open>print_term \<guillemotleft>\<forall>F ([F]x \<equiv> [F]y)\<guillemotright>\<close>},
+semantically corresponds to @{term x} and @{term y} sharing the same @{emph \<open>urelement\<close>}.
+Consequently, the theorem states that @{text \<open>\<lambda>\<close>}-expressions denote, if their matrix
+agrees on objects with the same urelements, or in other words, if they can be represented
+as functions acting on urelements. A more detailed semantic discussion and a precise
+construction involving a mapping individuals to urelements and constructing relations as
+proposition-valued functions acting on these urelements can be found in chapter~\ref{SSEofAOT}.
+\<close>
+
 
 subsection\<open>Truth Values as Abstract Objects\<close>text\<open>\label{TruthValues}\<close>
 
@@ -1839,50 +1938,6 @@ Thereby the analysis of Truth Values is an example of AOT's ability to define an
 abstract objects that faithfully represent entities that are usually only considered
 semantically. Another example of this is AOT's analysis of Possible Worlds described
 in section~\ref{PossibleWorldTheory} below.
-\<close>
-
-
-subsection\<open>Indistinguishable Abstract Objects\<close>
-
-text\<open>
-
-\<close>
-
-subsection\<open>Necessary and Sufficient Condition for Relations to Denote\<close>text\<open>\label{KirchnersTheorem}\<close>
-
-text\<open>
-The move to a free logic for relation terms and the iterative extension of the
-base cases of denoting terms mentioned in the last section, ultimately led to
-the following theorem:\footnote{We could contribute this theorem to AOT based on
-our work with the embedding.}
-
-\begin{quote}
-@{thm[display] "kirchner-thm:1"[print_as_theorem, of \<phi>]}
-\end{quote}
-
-The proof (see~\nameref{AOT:kirchner-thm:1}) relies on the fact that under the
-assumption of the right-hand-side, it follows that @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<guillemotright>\<close>}.
-Now since @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>y \<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x})]\<down>\<guillemotright>\<close>} by axiom (by construction
-the initial @{text \<open>\<lambda>\<close>} does not bind a variable that occurs in an encoding subformula),
-@{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
-can be shown by instantiating @{term F} to @{term \<open>print_term \<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
-
-This theorem has several repercussions. It provides an analytical means to judge
-whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system of AOT itself.
-Notably, this led to a proof of the existence of world-relative relations and
-thereby of rigidifying relations, which play an important role in the derivation
-of natural numbers and whose existence previously had to be assured by axiom. This
-is explained in more detail in the section~\ref{WorldRelativeRelations} (TODO: adjust ref).
-
-Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
-that does not rely on a modal axiom of infinity. This is mentioned briefly in
-section~\ref{NewNumberTheory}, although at the time of writing, the analysis of
-this potential change is not yet complete, so the current version of PLM at the time
-of writing does not yet contain this new enhanced derivation.
-
-In general, this theorem is a prime example of the benefits of the semantic analysis
-of AOT using our embedding that has led to significant theoretical improvements of AOT and
-may yet allow for further improvements in the future.
 \<close>
 
 subsection\<open>Fundamental Theorems of Possible Worlds\<close>text\<open>\label{PossibleWorldTheory}\<close>
@@ -2040,25 +2095,40 @@ rigidifying relations (see~\nameref{AOT:rigid-der:3}):
 Rigidifying relations will play an important role in the derivation of Natural
 Numbers described in chapter~\ref{NaturalNumbers} and their existence previously
 had to be ensured by axiom.
+\<close>
 
+subsection\<open>Sixteen Distinct Properties\<close>
+
+text\<open>Another result that can be traced back directly to the construction of
+the embedding is the derivation a more refined theorem about minimal models
+of AOT. While previously PLM merely derived that there are six distinct properties,
+it is a natural consequence of our constructed models that there are at least
+sixteen distinct properties. This is due to the fact that there need to be at least
+two distinguishable individuals (discerned by being ordinary and being abstract) and
+two possible worlds (required by the axiom asserting the existence of a contingently
+non-concrete objects object as mentioned in~\ref{AxiomSystem}). Two possible worlds
+imply that there are at least @{text \<open>2^2=4\<close>} distinct propositions. Mapping two discernible objects
+to 4 propositions can be done in @{text \<open>2^4=16\<close>} distinct ways.
+
+And indeed we could construct a proof in the system of AOT itself that verifies that
+this is not a mere artifact of the model construction, but a proper theorem in AOT.
+See~\nameref{AOT:sixteen} for a detailed proof.
+
+Notably, this result also implies that there is at least @{text \<open>2^16 = 65556\<close>} distinct
+abstract objects in minimal models of AOT. On the other hand, models that validate the
+theory of natural numbers described in chapter~\ref{NaturalNumbers} involve at
+least countably many ordinary objects\footnote{At least in the current construction.
+A potential future version of the construction mentioned in section~\ref{NewNumberTheory}
+may instead require at least countably many @{emph \<open>special urelements\<close>}, but not
+ordinary objects.} and thereby uncountably many properties and abstract objects.
 \<close>
 
 subsection\<open>TODO\<close>
 
 text\<open>
 TODO: needs to mention:
-  \<^item> There are distinct, but exemplification-indistinguishable abstract objects.
   \<^item> There is no general relation of identity.
-  \<^item> There are 16 distinct properties (proof contributed by us). Relate to minimal models of AOT.
-  \<^item> Maybe some "teasers" like the @{emph \<open>There are exactly two Truth Values.\<close>} or @{emph \<open>The True is identical to the Actual World.\<close>} or
-    the Fundamental Theorems of Possible Worlds, etc. Maybe mention and cite extensibility e.g. to Temporal Logic as discussed in PLM's theory of stories (even though not yet embedded).
-
-Maybe split into a part of interesting theorems and a part of interesting challenges (like the paradoxes and the free logic of lambda expressions).
 \<close>
-
-section\<open>Examples of Applications\<close>
-
-text\<open>\<close>
 
 section\<open>Implications for the Philosophy of Mathematics\<close>text\<open>\label{ImplicationsForPhilosophyOfMathematics}\<close>
 
@@ -2092,7 +2162,7 @@ rely on Isabelle's semantics for constants and variables instead. This technique
 was discussed in more detail in section~\ref{SSE:MetaModel}.
 \<close>
 
-subsection\<open>Aczel Models\<close>
+subsection\<open>Aczel Models\<close>text\<open>\label{AczelModels}\<close>
 
 text\<open>
 The general structure of our models is based on Aczel models (TODO: cite).
