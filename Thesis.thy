@@ -1056,10 +1056,11 @@ In this section we provide a simplified informal description while explaining so
 from AOT's conventions we use in our embedding.
 
 The language distinguishes between constants, variables and terms at each type. The types of
-the second-order fragment consist of a type of individuals and, for each @{text \<open>n \<ge> 0\<close>}, of a type
-of @{text n}-place relations, i.e. relations among @{text n} individuals.
+the second-order fragment consist of a type of individuals and of a type
+of @{text n}-place relations (for each @{text \<open>n \<ge> 0\<close>}), i.e. relations among @{text n} individuals.
 Formulas are considered as @{text 0}-place relation terms. PLM uses the following conventions for
-referring to the primitive language elements in each type:
+referring to the primitive language elements of each type:
+TODO: remark x,y,z,F,G,H.
 
   \<^item> Primitive individual constants: @{text \<open>a\<^sub>1, a\<^sub>2, \<dots>\<close>}
   \<^item> Individual variables: @{text \<open>x\<^sub>1, x\<^sub>2, \<dots>\<close>}
@@ -1067,7 +1068,7 @@ referring to the primitive language elements in each type:
   \<^item> @{text n}-place relation variables: @{text \<open>F\<^sup>n\<^sub>1, F\<^sup>n\<^sub>2, \<dots>\<close>}
   \<^item> A distinguished 1-place relation constant for @{emph \<open>being concrete\<close>}: @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}
 
-Additionally, PLM uses Greek letters for @{emph \<open>meta-variables\<close>}, i.e. schematic meta-logical variables,
+Additionally, PLM uses Greek letters for @{emph \<open>meta-variables\<close>}, i.e. schematic meta-logical variables
 that may range over all variable names or all terms at a given type. By convention, it associates specific kinds of
 meta-variables with Greek letters (with additional numbered subscripts as needed) as follows:
 
@@ -1119,7 +1120,7 @@ written as @{text \<open>\<kappa>\<^sub>1\<dots>\<kappa>\<^sub>n\<Pi>\<close>}. 
 
 Furthermore, PLM allows for extending above language using two kinds of definitions: definitions
 by identity and definitions by equivalence. While the inferential role of these definitions will be
-discussed in more detail in (TODO: cite), for now we rely on an intuitive understanding of their meaning.
+discussed in more detail in section~\ref{InferentialRoleOfDefinitions}, for now we rely on an intuitive understanding of their meaning.
 PLM @{emph \<open>defines\<close>} multiple concepts that are commonly taken as primitive, such as logical existence
 and identity. These basic definitions can be found in (TODO: cite PLM section) and are
 implemented in our embedding in section~\ref{AOT:AOT_Definitions}.
@@ -1184,7 +1185,7 @@ text\<open>
 In the following, we reproduce the full axiom system of the latest formulation of AOT, while
 commenting on several aspects that are specific to AOT. Unless explicitly noted otherwise, we
 will directly cite the axioms from our implementation while explaining notational and conceptual
-differences to the original axiom system of AOT. The original axiom system is stated in (TODO: cite PLM)
+differences to the original axiom system. The original axiom system is stated in (TODO: cite PLM)
 with detailed explanations. The implementation in our embedding can be found in~\ref{AOT:AOT_Axioms}.
 Throughout the section we will refer to the statement of the axioms in~\ref{AOT:AOT_Axioms},
 which will in turn refer to the item numbers of the axioms in PLM.
@@ -1216,8 +1217,7 @@ slight differences in the formulation compared to PLM.}
 \end{quote}
 
 The last two axioms in the list above are noteworthy: they establish that if any
-atomic exemplification or encoding formula (which are specific to AOT) is true,
-then its primary terms are significant.
+atomic exemplification or encoding formula is true, then its primary terms are significant.
 
 Additionally, PLM establishes a base set of denoting terms with the following axiom:
 
@@ -1414,7 +1414,8 @@ text\<open>
 
 While an implementation of the complete deductive system of PLM chapter~9 (TODO: cite properly) can be
 found in~\ref{AOT:AOT_PLM}, a full discussion of the entire system would go beyond the scope of this thesis.
-However, we will discuss some aspects (TODO: that are required for understanding the rest of the thesis?) in detail.
+However, we will discuss some aspects in detail with a particular focus on concepts that are required
+for the derivation of Natural Numbers in chapter~\ref{NaturalNumbers}.
 \<close>
 
 subsection\<open>Primitive and Derived Meta-Rules\<close>text\<open>\label{MetaRules}\<close>
@@ -1428,11 +1429,13 @@ using a special printing mode for meta-rules.\<close>}
 @{thm[display] "modus-ponens"[print_as_rule]}
 \end{quote}
 
-While PLM can refer to structural induction on the complexity of a formula to derive further
-meta-rules, by the nature of a Shallow Semantic Embedding, the precise term structure is not
-preserved, but instead terms are directly represented as objects in their semantic domain. For that reason,
-in our embedding we derive the rules in question by referring to the semantic properties of the
-embedding. In particular, we derive the following rules semantically:
+While PLM can refer to structural induction on the complexity of a formula and the length of derivations
+to derive further meta-rules, by the nature of a Shallow Semantic Embedding, the precise term structure is not
+preserved, but instead terms are directly represented as objects in their semantic domain, and validity is not defined
+by means of derivations but internally constructed in terms of semantic validity.
+For that reason, in our embedding we derive the rules in question by referring to the semantic
+properties of the embedding.
+In particular, we derive the following rules semantically:
 
 The deduction theorem (see~\nameref{AOT:deduction-theorem}):
 \begin{quote}
@@ -1455,7 +1458,7 @@ The rule of generalization GEN (see~\nameref{AOT:rule-gen}):
 TODO: discuss @{emph \<open>for arbitrary\<close>}, etc.
 \<close>
 
-subsection\<open>The Inferential Role of Definitions\<close>
+subsection\<open>The Inferential Role of Definitions\<close>text\<open>\label{InferentialRoleOfDefinitions}\<close>
 
 text\<open>
 PLM uses two kinds of definitions: definitions-by-equivalence @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} and definitions-by-identity
@@ -1469,7 +1472,7 @@ subsubsection\<open>Definitions by Equivalence\<close>
 
 text\<open>Since equivalence (@{text \<open>\<equiv>\<close>}) is itself @{emph \<open>defined\<close>} using a definition-by-equivalence (as mentioned in section~\ref{AOTLanguage}),
 equivalence itself cannot be used to specify the inferential role of definitions-by-equivalence. Instead the inferential role
-has to be formulated relative in terms of primitives of the language, i.e. in terms of implications.
+has to be formulated in terms of primitives of the language, i.e. in terms of implications.
 
 To that end, PLM formulates a @{emph \<open>Rule of Definition by Equivalence\<close>} that we reproduce in
 the embedding as follows (see~\nameref{AOT:df-rules-formulas[1]}):
@@ -1479,11 +1482,11 @@ the embedding as follows (see~\nameref{AOT:df-rules-formulas[1]}):
                "df-rules-formulas[2]"[axiom_inst, of \<phi> \<psi>, print_as_rule]}
 \end{quote}
 
-In other words (and as formulated in PLM TODO: cite), a definition-by-equivalence of the form @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} introduces the closures of
+In other words, a definition-by-equivalence of the form @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} introduces the closures of
 @{text \<open>\<phi> \<rightarrow> \<psi>\<close>} and @{text \<open>\<psi> \<rightarrow> \<phi>\<close>} as necessary axioms.
 
-The derived principle that a definition-by-equivalence implies definiens and definiendum to
-in fact be equivalent becomes a theorem (see~\nameref{AOT:rule-eq-df:1}):
+The principle that a definition-by-equivalence in fact implies definiens and definiendum to
+be equivalent becomes a derived rule (see~\nameref{AOT:rule-eq-df:1}):
 
 \begin{quote}
 @{thm[display] "\<equiv>Df"[of \<phi> \<psi>, print_as_rule]}
@@ -1491,7 +1494,7 @@ in fact be equivalent becomes a theorem (see~\nameref{AOT:rule-eq-df:1}):
 
 Another noteworthy subtlety in PLM's use of definitions by equivalence is its convention that such definitions
 are stated using object-level variables, even though those variables act as meta-variables.
-For instance, following PLM's conventions, the definition of identity for properties (TODO cite) can be stated as:
+For instance, following PLM's conventions, the definition of identity for properties (see~\ref{AOTLanguage}) can be stated as:
 
 \begin{quote}
 @{thm[display] "identity:2"[of F G]}
@@ -1499,9 +1502,10 @@ For instance, following PLM's conventions, the definition of identity for proper
 
 However, replacing @{term F} and @{term G} by any property term constitutes a valid instance of this
 definition. In order to avoid confusion for a reader that is not familiar with this convention, we
-choose to either state the definitions using meta-variables instead, or state a derived equivalence
-as theorem using object-variables in its place (which allows forgoing clauses about the significance
-of the involved terms in the definiendum). I.e. in the upcoming chapters, instead of stating the full
+choose to either state the definitions using meta-variables instead,@{footnote \<open>at the example of property identity: @{thm "identity:2"[of \<Pi> \<Pi>']}\<close>}
+or state a derived equivalence as theorem using object-variables in its place (which allows
+forgoing clauses about the significance of the involved terms in the definiendum).
+I.e. in the upcoming chapters, instead of stating the full
 definition-by-equivalence for e.g. property identity, we may illustrate the definition using a simpler
 theorem using regular object-level variables while dropping significance constraints:
 
@@ -1527,7 +1531,7 @@ This is made explicit in the formulation of the Rule of Definition by Identity (
 @{thm[display] "df-rules-terms[1]"[axiom_inst, print_as_rule, of \<tau> \<sigma> _ \<tau>\<^sub>1\<tau>\<^sub>n]}
 \end{quote}
 
-I.e. if the definiens denotes, a definition by identity implies identity, if the definitions fails to denote,
+I.e. if the definiens denotes, a definition by identity implies identity, if the definiens fails to denote,
 a definition by identity implies that the definiendum fails to denote as well.
 In the simplest case of a definition-by-identity that does not involve any free variables,
 the definition-by-identity reduces to a plain identity, if the definiens provably denotes.
@@ -1543,9 +1547,19 @@ Logical Existence, Identity and Truth (see~\nameref{PLM: 9.7}); Actuality and De
 Necessity (see~\nameref{PLM: 9.9}); Relations (see~\nameref{PLM: 9.10}); Objects (see~\nameref{PLM: 9.11}) and
 Propositional Properties (see~\nameref{PLM: 9.12}).
 
-While an exhaustive discussion of the deductive system is beyond the scope of this thesis,
-in the following sections we describe some aspects of it that will be relevant for the
-construction of Natural Numbers in chapter~\ref{NaturalNumbers} in more detail.
+Apart from the specific items discussed in the following sections,
+it may generally be helpful to be aware of the following derived
+properties of the deductive system:
+
+  \<^item> Propositional reasoning in AOT is classical.@{footnote \<open>In particular, as stated in PLM item TODO: cite,
+all classical propositional tautologies are theorems of AOT.\<close>}
+  \<^item> Modal reasoning can be read semantically as following Kripke-semantics without accessibility relation and
+with a fixed designated actual world for the actuality operator. Formally, it is a S5 modal logic with actuality operator and
+Barcan formulas. (TODO)
+  \<^item> The free logic extends to all types, but all propositions provably denote.
+    Quantifiers range over denoting objects and the used identity is an @{emph \<open>existing identity\<close>},
+    i.e. to be identical two entities need to @{emph \<open>denote and\<close>} be identical.
+
 \<close>
 
 subsection\<open>Restricted Variables\<close>text\<open>\label{RestrictedVariables}\<close>
@@ -1637,8 +1651,9 @@ in the actual world. While an extensive set of theorems and rules for reasoning 
 definite descriptions is given in section 9.8 of PLM (see~\nameref{PLM: 9.8}), for
 an intuitive understanding of descriptions in AOT it suffices to note that they follow
 Russell's analysis of definite descriptions. In particular, atomic formulas involving
-definite descriptions can be translated to existence claims as follows (for
-simplicity we restrict ourselves to the case of unary exemplification and encoding):
+definite descriptions can be translated to existence claims as follows:\footnote{For
+simplicity we restrict ourselves to the case of unary exemplification and encoding. Analog
+principles hold for @{text n}-ary exemplification and encoding formulas.}
 
 \begin{quote}
 @{lemma[display] \<open>print_as_theorem \<guillemotleft>[\<Pi>]\<^bold>\<iota>x \<phi>{x} \<equiv> \<exists>x (\<^bold>\<A>\<phi>{x} & \<forall>z (\<^bold>\<A>\<phi>{z} \<rightarrow> z = x) & [\<Pi>]x)\<guillemotright>\<close>
@@ -1718,7 +1733,8 @@ text\<open>
 Naive formulation of AOT, in which all @{text \<open>\<lambda>\<close>}-expression are assumed to
 denote relations, are subject to the Clark-Boolos Paradox (TODO: cite).
 
-In particular consider the @{text \<open>\<lambda>\<close>}-expression @{term \<open>\<guillemotleft>[\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}.
+In particular consider the @{text \<open>\<lambda>\<close>}-expression @{term \<open>\<guillemotleft>[\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}, i.e.
+@{emph \<open>being an object, s.t. there is a property it encodes, but does not exemplify\<close>}.
 The assumption that this property denotes leads to paradox (see~\nameref{AOT:block-paradox:1}):
 Assuming that the @{text \<open>\<lambda>\<close>}-expression denote, call if @{term K}, s.t. 
 @{term \<open>\<guillemotleft>K = [\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}.
@@ -1734,10 +1750,10 @@ that @{term a} encodes @{term K} and does not exemplify @{term K}, so it serves 
 @{term \<open>\<guillemotleft>\<exists>F (a[F] & \<not>[F]a)\<guillemotright>\<close>}. Thus it follows again by @{text \<open>\<beta>\<close>}-conversion that
 @{term a} @{emph \<open>does\<close>} exemplify @{term K} yielding a contradiction.
 
-Previous formulations of PLM disbarred @{text \<open>\<lambda>\<close>}-expressions like the one discussed
-above syntactically: a @{text \<open>\<lambda>\<close>}-expression was only considered to be @{emph \<open>well-formed\<close>},
-if its matrix was what was called a @{emph \<open>propositional formula\<close>}, which were
-formulas that did not contain encoding subformulas. However, an oversight in the precise
+Previous formulations of PLM disbarred @{text \<open>\<lambda>\<close>}-expressions like @{term K} syntactically:
+a @{text \<open>\<lambda>\<close>}-expression was only considered to be @{emph \<open>well-formed\<close>},
+if its matrix was a so-called @{emph \<open>propositional formula\<close>}. A formula was defined to be
+propositional, just in case that does not contain encoding subformulas. However, an oversight in the precise
 formulation of these provisos made it possible to reintroduce above paradox as described
 in the following section.
 
@@ -1757,15 +1773,15 @@ subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>
 
 text\<open>
 When attempting to construct an embedding of the old formulation of PLM that relied
-on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>},
-we found the following oversight (as reported in~\cite{MScThesis}):
+on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>}
+as defined in the previous section, we found the following oversight (as reported in~\cite{MScThesis}):
 
 Encoding formulas embedded in the matrix of definite descriptions within complex formulas
 were not considered @{emph \<open>encoding subformulas\<close>} and thereby such complex formulas
 were still considered propositional.
 
 This allowed constructing @{text \<open>\<lambda>\<close>}-expressions that were considered well-formed, but
-(actually) equivalent to the paradoxical property @{term K} discussed above, namely:
+(actually) equivalent to the paradoxical Clark-Boolos property @{term K} discussed above, namely:
 
 \begin{quote}
 @{term[display] \<open>AOT_model_id_def (\<lambda>(). K') (\<lambda>(). \<guillemotleft>[\<lambda>x [\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))]\<guillemotright>)\<close>}
@@ -1810,19 +1826,26 @@ However, this had resulted in the loss of the ability to formulate interesting
 @{text \<open>\<lambda>\<close>}-expressions involving descriptions that are safe and were deemed worthwhile
 to preserve. Therefore, this solution was rejected in favour of extending
 AOT's free logic to relation terms as described in the next section.
-
 In the most recent formulation of AOT, it becomes a theorem that the paradoxical relation
-@{text \<open>K'\<close>} does not denote (see~\nameref{AOT:block-paradox2:1}).
+@{text \<open>K'\<close>} does not denote on pain of contradiction (see~\nameref{AOT:block-paradox2:1}).
 \<close>
 
 section\<open>Extending AOT's Free Logic to Relations\<close>text\<open>\label{MoveToFreeLogic}\<close>
 
 text\<open>
 In the aftermath of the discovery of the reintroduction of the Clark-Boolos paradox
-described in the previous section, AOT's free logic was extended to all its types (while
-it was previously restricted to individual terms).
+described in the previous section, AOT's free logic was extended to all its types.@{footnote \<open>AOT previously
+also involved a free logic. However, it was restricted to individual terms to account for non-denoting
+definite descriptions. While there were @{text \<open>\<lambda>\<close>}-expressions that were not considered well-formed
+syntactically, all @{text \<open>\<lambda>\<close>}-expressions that @{emph \<open>were\<close>} well-formed were implicitly assumed
+to denote.\<close>}
 
-The definitions for logical existence (@{text \<open>\<tau>\<down>\<close>}) were already mentioned in section~\ref{AOTLanguage}.
+In the process, the definitions for logical existence (@{text \<open>\<tau>\<down>\<close>}) mentioned in section~\ref{AOTLanguage}
+were introduced.\footnote{Previously, the free logic for individuals relied on a notion of logical existence
+that was based on identity, i.e. @{term \<open>\<kappa>\<close>} was considered to denote, just in case @{term \<open>\<guillemotleft>\<exists>x (x = \<kappa>)\<guillemotright>\<close>}.
+While the new definition of logical existence is more primitive, i.e. it is formulated in terms of primitives
+of the language rather than defined identity, it now becomes a theorem that @{thm "free-thms:1"[print_as_theorem, of \<tau>]}
+(see~\nameref{AOT:free-thms:1}).}
 Notably, it is possible to define the conditions under which relation terms denote
 using @{emph \<open>encoding\<close>}, i.e. @{thm "existence:2"[of \<Pi>]}, while a similar definition
 using exemplification would fail in the second-order fragment, since there are denoting,
@@ -1833,12 +1856,12 @@ The switch to a richer free logic also involved multiple changes to the axiom sy
 The quantifier axioms were reformulated using the defined notion of @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>}.
 Furthermore, @{text \<open>\<alpha>\<close>}- and @{text \<open>\<beta>\<close>}-conversion were restricted to denoting
 @{text \<open>\<lambda>\<close>}-expressions, the coexistence axiom was added and the base cases
-for denoting terms were adjusted.
+for denoting terms were adjusted. The coexistence axiom was based on a similar principle
+that was discovered as an artifactual theorem of the embedding of AOT at the time.
 
-There were multiple iterations of formulations of the base cases of denoting terms,
-the most recent of which allows to derive necessary and sufficient conditions for
-@{text \<open>\<lambda>\<close>}-expressions to denote, as explained in section~\ref{KirchnersTheorem} below.
-
+Since the move to a free logic for all types, the base cases of axiomatically denoting terms
+was successively refined. The most recent version at the time of writing allows to derive necessary
+and sufficient conditions for @{text \<open>\<lambda>\<close>}-expressions to denote, as explained in section~\ref{KirchnersTheorem} below.
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>
@@ -3376,7 +3399,7 @@ This process is ongoing and in the remainder of this section we will discuss the
 known examples of such artifactual theorems and the current state of their discussion.
 \<close>
 
-subsection\<open>Identity of Projections to Indistinguishable Objects\<close>
+subsection\<open>Identity of Projections to Indistinguishable Objects\<close>text\<open>\label{ArtifactAczel}\<close>
 
 (*<*)
 AOT_theorem Artifactual1: \<open>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<close>
