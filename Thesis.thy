@@ -1788,7 +1788,7 @@ the most recent of which allows to derive necessary and sufficient conditions fo
 section\<open>Interesting Theorems of AOT\<close>
 
 
-subsection\<open>Indistinguishable Abstract Objects\<close>
+subsection\<open>Indistinguishable Abstract Objects\<close>text\<open>\label{IndistinguishableAbstractObjects}\<close>
 
 text\<open>
 The issue raised in form of the Clark-Boolos Paradox and its variants in section~\ref{AvoidingParadoxes}
@@ -2109,14 +2109,14 @@ sixteen distinct properties. This is due to the fact that there need to be at le
 two distinguishable individuals (discerned by being ordinary and being abstract) and
 two possible worlds (required by the axiom asserting the existence of a contingently
 non-concrete objects object as mentioned in~\ref{AxiomSystem}). Two possible worlds
-imply that there are at least @{text \<open>2^2=4\<close>} distinct propositions. Mapping two discernible objects
-to 4 propositions can be done in @{text \<open>2^4=16\<close>} distinct ways.
+imply that there are at least $2^2=4$ distinct propositions. Mapping two discernible objects
+to 4 propositions can be done in $2^4=16$ distinct ways.
 
 And indeed we could construct a proof in the system of AOT itself that verifies that
 this is not a mere artifact of the model construction, but a proper theorem in AOT.
 See~\nameref{AOT:sixteen} for a detailed proof.
 
-Notably, this result also implies that there is at least @{text \<open>2^16 = 65556\<close>} distinct
+Notably, this result also implies that there is at least $2^16 = 65556$ distinct
 abstract objects in minimal models of AOT. On the other hand, models that validate the
 theory of natural numbers described in chapter~\ref{NaturalNumbers} involve at
 least countably many ordinary objects\footnote{At least in the current construction.
@@ -2816,7 +2816,7 @@ text\<open>
   \<^item> Attributes for unconstraining constrained variables.
 \<close>
 
-section\<open>Meta Theorems\<close>
+section\<open>Meta Theorems\<close>text\<open>\label{MetaTheorems}\<close>
 
 subsection\<open>The Collapse of Alphabetic Variants\<close>text\<open>\label{alphabetic-variants}\<close>
 
@@ -3183,12 +3183,350 @@ Ideas:
 
 section\<open>Artifactual Theorems\<close>
 
-text\<open>
+text\<open>Artifactual Theorems are theorems that are valid in a concrete model, respectively
+valid with respect to a concrete defined semantics, but which are not derivable from
+a formal system itself.
 
+The abstraction layer we define in our embedding aims to disallow deriving artifactual
+theorems by restricting proofs to solely rely on the implementation of the axiom system and
+derivation rules of AOT itself.
+We have discussed in section~\ref{MetaTheorems} that for technical reasons the
+embedding collapses certain classes of statements (e.g. alphabetic variants), but that
+this merely extends to statements that are interderivable in AOT itself. As a result
+we can assume that every statement that is derivable in the abstraction layer of
+our embedding also has a derivation in AOT as defined in PLM (TODO: cite), i.e.
+the abstraction layer of our embedding does not contain artifactual theorems.
+
+Nonetheless, it is still a valid question whether the underlying semantics and model structure
+used in the construction of this abstraction layer allows for deriving artifactual theorems,
+respectively whether our embedding allows deriving artifactual theorems when ignoring
+the abstraction layer and allowing to use the semantic properties of the embedding in proofs.
+
+As a matter of fact, comparing derivability in the abstraction layer of the embedding
+(respectively, equivalently, in the formal system of AOT itself) with
+validity in our underlying semantic structure has been the driving force in our
+collaboration with the original authors of AOT.
+
+In particular, whenever a potential artifactual theorem was recognized, this resulted
+in an analysis of the discrepancy which regularly led to either a further abstraction
+of the semantics used in the embedding to eliminate the theorem or to an extension of AOTs
+axiom system itself, in case it turned out that (1) the discrepancy could be resolved by
+a natural extension of AOT's axiom system, (2) this extension had merit in that it allowed
+for deriving new interesting theorems in AOT or that it simplified existing derivations
+and (3) the extension was philosophically justifiable.
+
+An example of a statement that is now a theorem of AOT, but originated as an artifactual
+theorem of the embedding is the necessary and sufficient conditions for relations to denote
+discussed in section~\ref{KirchnersTheorem}. An earlier example is the coexistence axiom
+mentioned in~\ref{AxiomSystem}, the formulation of which was based on a similar
+principle that was discovered in the analysis of the semantic properties of the embedding.
+
+This process is ongoing and in the remainder of this section we will discuss the remaining
+known examples of such artifactual theorems and the current state of their discussion.
 \<close>
 
-term \<open>\<guillemotleft>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<guillemotright>\<close>
+subsection\<open>Identity of Projections to Indistinguishable Objects\<close>
 
+(*<*)
+unbundle AOT_no_syntax
+lemma Aux1: \<open>AOT_instance_of_cqt_2_enc_rel (\<lambda>\<kappa>. \<guillemotleft>[\<lambda>z [R]z\<kappa>]\<guillemotright>)\<close>
+  unfolding AOT_instance_of_cqt_2_enc_rel_def
+proof(safe)
+  fix \<kappa>\<^sub>1 \<kappa>\<^sub>2 \<kappa>\<^sub>3 :: \<kappa>
+  assume \<open>AOT_model_term_equiv \<kappa>\<^sub>1 \<kappa>\<^sub>2\<close>
+  hence \<open>\<guillemotleft>[R]\<kappa>\<kappa>\<^sub>1\<guillemotright> = \<guillemotleft>[R]\<kappa>\<kappa>\<^sub>2\<guillemotright>\<close> for \<kappa>
+    by (metis (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(1) AOT_term_of_var
+          AOT_model_denotes_rel.rep_eq AOT_sem_exe_denoting)
+  thus \<open>\<guillemotleft>\<kappa>\<^sub>3[\<lambda>z [R]z\<kappa>\<^sub>1]\<guillemotright> = \<guillemotleft>\<kappa>\<^sub>3[\<lambda>z [R]z\<kappa>\<^sub>2]\<guillemotright>\<close>
+    by simp
+qed
+lemma Aux2: \<open>AOT_instance_of_cqt_2_enc_arg (\<lambda>x. c)\<close>
+  unfolding AOT_instance_of_cqt_2_enc_arg_def by simp
+lemma Aux3:
+  assumes \<open>\<And> \<kappa> . AOT_instance_of_cqt_2 (\<lambda>\<kappa>' :: 'b::{AOT_Term_id_2,AOT_\<kappa>s} . \<phi> \<kappa> \<kappa>')\<close>
+  assumes \<open>\<And> \<kappa>' . AOT_instance_of_cqt_2 (\<lambda>\<kappa> :: 'a::{AOT_Term_id_2,AOT_\<kappa>s} . \<phi> \<kappa> \<kappa>')\<close>
+  shows \<open>AOT_instance_of_cqt_2_enc_rel (\<lambda>\<kappa> :: 'a::{AOT_Term_id_2,AOT_\<kappa>s}. AOT_lambda (\<lambda>\<kappa>'. \<phi> \<kappa> \<kappa>'))\<close>
+proof -
+  {
+    fix x y :: 'a and z ::'b
+    assume \<open>AOT_model_term_equiv x y\<close>
+    moreover assume \<open>AOT_model_denotes x\<close>
+    moreover assume \<open>AOT_model_denotes y\<close>
+    ultimately have \<open>\<phi> x = \<phi> y\<close>
+      using assms unfolding AOT_instance_of_cqt_2_def by blast
+    hence \<open>AOT_enc z (AOT_lambda (\<phi> x)) = AOT_enc z (AOT_lambda (\<phi> y))\<close>
+      by simp
+  }
+  thus ?thesis
+    unfolding AOT_instance_of_cqt_2_enc_rel_def by auto
+qed
+AOT_theorem test: \<open>[\<lambda>z (c[\<lambda>x [R]xz])]\<down>\<close>
+  by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
+AOT_theorem test': \<open>[\<lambda>z (c[\<lambda>x [F]z])]\<down>\<close>
+  by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
+
+AOT_theorem Artifactual1: \<open>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<close>
+  sorry
+(*
+proof(rule "\<rightarrow>I")
+  have 1: \<open>\<forall>x. \<kappa>\<upsilon> (AOT_term_of_var a) \<noteq> null\<upsilon> x\<close> 
+    by (metis AOT_model.AOT_term_of_var AOT_model_denotes_\<kappa>_def \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def)
+  AOT_assume \<open>\<forall>F ([F]a \<equiv> [F]b)\<close>
+  moreover AOT_have 0: \<open>[\<guillemotleft>urrel_to_rel (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . \<kappa>\<upsilon> (AOT_term_of_var a) = u))\<guillemotright>]\<down>\<close> (is \<open>[\<guillemotleft>?r\<guillemotright>]\<down>\<close>)
+    by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes Quotient3_rel_rep urrel_quotient3)
+  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a \<equiv> [\<guillemotleft>?r\<guillemotright>]b\<close>
+    using "\<forall>E"(1) by blast
+  moreover AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a\<close>
+    unfolding AOT_sem_exe_denoting[OF 0]
+    unfolding urrel_to_rel_def
+    by (subst (0 1) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1))
+  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]b\<close>
+    using "\<equiv>E"(1) by blast
+  hence \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>
+    unfolding AOT_sem_exe_denoting[OF 0]
+    unfolding urrel_to_rel_def
+    apply (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
+    by (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
+  AOT_have 1: \<open>[\<lambda>x [R]xa]\<down>\<close> for a by "cqt:2"
+  have \<open>\<guillemotleft>[\<lambda>x [R]xa]\<guillemotright> = Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]\<kappa>a\<guillemotright>)\<close>
+    apply (rule AOT_sem_lambda_denoting[where \<phi>=\<open>\<lambda> \<kappa> . \<guillemotleft>[R]\<kappa>a\<guillemotright>\<close>])
+    unfolding AOT_sem_denotes AOT_model_denotes_rel_def
+    apply auto
+      apply (subst (0 1) Abs_rel_inverse)
+       apply simp
+    using AOT_sem_exe_denoting
+      apply (mets (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(2) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq)
+     apply (subst (asm) Abs_rel_inverse)
+      apply simp
+     apply (meson "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" AOT_sem_denotes)
+    apply (subst (0 1) Abs_rel_inverse)
+     apply simp
+    by (simp add: AOT_model_regular_\<kappa>_def)
+  moreover have \<open>Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]\<kappa>a\<guillemotright>) = Abs_rel (\<lambda>\<kappa> . \<guillemotleft>[R]\<kappa>b\<guillemotright>)\<close>
+    apply (subst (0 1) AOT_sem_exe_denoting)
+      apply (simp add: AOT_sem_vars_denote)+
+    by (meson AOT_meta_prod_equivI(1) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq AOT_model_term_equiv_\<kappa>_def \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>)
+  ultimately have \<open>\<guillemotleft>[\<lambda>x [R]xa]\<guillemotright> = \<guillemotleft>[\<lambda>x [R]xb]\<guillemotright>\<close>
+    by (metis Abs_rel_inverse iso_tuple_UNIV_I)
+  AOT_thus \<open>[\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<close>
+    by (simp add: "rule=I:1" 1)
+qed
+*)
+AOT_theorem Artifactual2: \<open>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]ax] = [\<lambda>x [R]bx]\<close>
+  sorry
+(*
+proof(rule "\<rightarrow>I")
+  have 1: \<open>\<forall>x. \<kappa>\<upsilon> (AOT_term_of_var a) \<noteq> null\<upsilon> x\<close> 
+    by (metis AOT_model.AOT_term_of_var AOT_model_denotes_\<kappa>_def \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def)
+  AOT_assume \<open>\<forall>F ([F]a \<equiv> [F]b)\<close>
+  moreover AOT_have 0: \<open>[\<guillemotleft>urrel_to_rel (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . \<kappa>\<upsilon> (AOT_term_of_var a) = u))\<guillemotright>]\<down>\<close> (is \<open>[\<guillemotleft>?r\<guillemotright>]\<down>\<close>)
+    by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes Quotient3_rel_rep urrel_quotient3)
+  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a \<equiv> [\<guillemotleft>?r\<guillemotright>]b\<close>
+    using "\<forall>E"(1) by blast
+  moreover AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a\<close>
+    unfolding AOT_sem_exe_denoting[OF 0]
+    unfolding urrel_to_rel_def
+    by (subst (0 1) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1))
+  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]b\<close>
+    using "\<equiv>E"(1) by blast
+  hence \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>
+    unfolding AOT_sem_exe_denoting[OF 0]
+    unfolding urrel_to_rel_def
+    apply (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
+    by (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
+  AOT_have 1: \<open>[\<lambda>x [R]ax]\<down>\<close> for a by "cqt:2"
+  have \<open>\<guillemotleft>[\<lambda>x [R]ax]\<guillemotright> = Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]a\<kappa>\<guillemotright>)\<close>
+    apply (rule AOT_sem_lambda_denoting[where \<phi>=\<open>\<lambda> \<kappa> . \<guillemotleft>[R]a\<kappa>\<guillemotright>\<close>])
+    unfolding AOT_sem_denotes AOT_model_denotes_rel_def
+    apply auto
+      apply (subst (0 1) Abs_rel_inverse)
+       apply simp
+    using AOT_sem_exe_denoting
+      apply (metis (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(1) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq)
+     apply (subst (asm) Abs_rel_inverse)
+      apply simp
+     apply (meson "russell-axiom[exe,2,1,2].\<psi>_denotes_asm" AOT_sem_denotes)
+    apply (subst (0 1) Abs_rel_inverse)
+     apply simp
+    by (simp add: AOT_model_regular_\<kappa>_def)
+  moreover have \<open>Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]a\<kappa>\<guillemotright>) = Abs_rel (\<lambda>\<kappa> . \<guillemotleft>[R]b\<kappa>\<guillemotright>)\<close>
+    apply (subst (0 1) AOT_sem_exe_denoting)
+      apply (simp add: AOT_sem_vars_denote)+
+    by (meson AOT_meta_prod_equivI(2) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq AOT_model_term_equiv_\<kappa>_def \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>)
+  ultimately have \<open>\<guillemotleft>[\<lambda>x [R]ax]\<guillemotright> = \<guillemotleft>[\<lambda>x [R]bx]\<guillemotright>\<close>
+    by (metis Abs_rel_inverse iso_tuple_UNIV_I)
+  AOT_thus \<open>[\<lambda>x [R]ax] = [\<lambda>x [R]bx]\<close>
+    by (simp add: "rule=I:1" 1)
+qed
+*)
+AOT_theorem Artifactual3:
+  shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> \<forall>G\<^bold>(([G]a) = ([G]b)\<^bold>)\<close>
+  unfolding explicitParen_def
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix G
+    {
+      fix c
+      AOT_have \<open>[\<lambda>x (c[\<lambda>z [G]x])]\<down>\<close>
+        by (safe intro!: GEN "cqt:2" AOT_instance_of_cqt_2_intro_next)
+      AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(c[\<lambda>z [G]x] \<equiv> c[\<lambda>z [G]y]))\<close>
+        using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"] \<comment> \<open>see~\nameref{AOT:kirchner-thm-cor:1}\<close>
+        by blast
+      AOT_have \<open>\<box>(c[\<lambda>z [G]a] \<equiv> c[\<lambda>z [G]b])\<close>
+        using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+    }
+    AOT_hence \<open>\<forall>c \<box>(c[\<lambda>z [G]a] \<equiv> c[\<lambda>z [G]b])\<close>
+      by (rule GEN)
+    AOT_hence \<open>\<box>\<forall>c(c[\<lambda>z [G]a] \<equiv> c[\<lambda>z [G]b])\<close>
+      by (rule BF[THEN "\<rightarrow>E"]) \<comment> \<open>see~\nameref{AOT:BFs:1}\<close>
+    AOT_hence \<open>[\<lambda>z [G]a] = [\<lambda>z [G]b]\<close>
+      by (AOT_subst_def "identity:2") \<comment> \<open>see~\nameref{AOT:identity:2}\<close>
+         (auto intro!: "&I" "cqt:2")
+    AOT_hence \<open>([G]a) = ([G]b)\<close>
+      by (AOT_subst_def "identity:4")
+        (auto intro!: "&I" "log-prop-prop:2")
+  }
+  AOT_thus \<open>\<forall>G([G]a) = ([G]b)\<close>
+    by (rule GEN)
+qed
+(*>*)
+
+text\<open>
+A more general version of the fact that there are indistinguishable abstract object
+discussed in section~\ref{IndistinguishableAbstractObjects} is the fact that for every
+two-place relation of AOT there are distinct abstract objects, s.t. the projections of the relation
+to these abstract objects are identical (see~\nameref{AOT:aclassical:1} and~\nameref{AOT:aclassical:2}):
+
+\begin{quote}
+@{thm[display] "aclassical:1"[THEN "\<forall>E"(2), print_as_theorem, of R]}
+@{thm[display] "aclassical:2"[THEN "\<forall>E"(2), print_as_theorem, of R]}
+\end{quote}
+
+However, the semantics of the embedding make the following stronger statements true:
+
+\begin{quote}
+@{thm[display] Artifactual1[print_as_theorem, of a b R]}
+@{thm[display] Artifactual2[print_as_theorem, of a b R]}
+\end{quote}
+
+This is an artifact of modelling relations as proposition-valued functions acting
+on urelements. Since being indistinguishable, @{term \<open>print_term \<guillemotleft>\<forall>F ([F]a \<equiv> [F]b)\<guillemotright>\<close>},
+semantically implies that @{term a} and @{term b} share the same urelement, the
+relation projections are forced to collapse.
+
+However, we already mentioned in section~\ref{cqt:2-impl} that it is currently being
+considered to extend the base cases of denoting @{text \<open>\<lambda>\<close>}-expressions. This extension
+has particular merit in deriving theorems in higher-order object theory. This would, in
+particular, mean that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
+@{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<guillemotright>\<close>}.
+
+Under this assumption, however, the currently artifactual theorems above would become
+proper theorems of AOT, respectively theorems of the abstraction layer of the embedding:
+\<close>
+
+AOT_theorem
+  assumes \<open>\<forall>y [\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<close>
+  shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix c
+    AOT_have \<open>[\<lambda>x (c[\<lambda>z [R]zx])]\<down>\<close>
+      using assms[THEN "\<forall>E"(2)].
+    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(c[\<lambda>z [R]zx] \<equiv> c[\<lambda>z [R]zy]))\<close>
+      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"] \<comment> \<open>see~\nameref{AOT:kirchner-thm-cor:1}\<close>
+      by blast
+    AOT_have \<open>\<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+  }
+  AOT_hence \<open>\<forall>c \<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+    by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>c(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+    by (rule BF[THEN "\<rightarrow>E"]) \<comment> \<open>see~\nameref{AOT:BFs:1}\<close>
+  AOT_thus \<open>[\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
+    by (AOT_subst_def "identity:2") \<comment> \<open>see~\nameref{AOT:identity:2}\<close>
+       (auto intro!: "&I" "cqt:2")
+qed
+
+text\<open>
+By an analogous proof that replaces @{term \<open>\<guillemotleft>[\<lambda>z [R]za]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>z [R]zb]\<guillemotright>\<close>}
+by @{term \<open>\<guillemotleft>[\<lambda>z [G]a]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>z [G]b]\<guillemotright>\<close>} respectively, even the following
+becomes derivable:
+
+\begin{quote}
+@{thm[display] (concl) Artifactual3[print_as_theorem, of a b]}
+\end{quote}
+
+Semantically, this theorem states that whenever two objects share an urelement,
+then exemplifying any property results in the same proposition for both of them,
+which further consolidates the derivational system of AOT with representation
+of relations as proposition-valued functions.
+
+So while at the time of writing the mentioned theorems remain artifactual, they
+are likely to become proper theorems of AOT after its extension described in
+section~\ref{cqt:2-impl}.
+\<close>
+
+subsection\<open>Generalizations of @{text \<open>\<^bold>\<eta>\<close>}-Conversion\<close>
+(*<*)
+AOT_theorem Artifactual4: \<open>([\<lambda>x [F]xy]x) = ([F]xy)\<close>
+  sorry
+(*
+  unfolding AOT_sem_eq
+  apply (auto simp: "log-prop-prop:2")
+proof (subst AOT_sem_lambda_denoting)
+  AOT_modally_strict {
+    AOT_show \<open>\<guillemotleft>Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[F]\<kappa>y\<guillemotright>)\<guillemotright>\<down>\<close>
+    unfolding AOT_sem_denotes AOT_model_denotes_rel_def
+    apply auto
+      apply (subst (0 1) Abs_rel_inverse)
+       apply simp
+    using AOT_sem_exe_denoting
+    apply (metis (no_types, lifting) AOT_meta_prod_equivI(2) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq AOT_sem_denotes)
+     apply (subst (asm) Abs_rel_inverse)
+      apply simp
+     apply (meson "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" AOT_sem_denotes)
+    apply (subst (0 1) Abs_rel_inverse)
+     apply simp
+    by (simp add: AOT_model_regular_\<kappa>_def)
+  } note 0 = this
+  show \<open>AOT_exe (Abs_rel (\<lambda>x. AOT_exe (AOT_term_of_var F) (x, AOT_term_of_var y))) (AOT_term_of_var x) =
+    AOT_exe (AOT_term_of_var F) (AOT_term_of_var x, AOT_term_of_var y)\<close>
+    by (simp add: "0" AOT_sem_exe_denoting Abs_rel_inverse)
+qed
+*)
+(*>*)
+
+text\<open>
+AOT involves two axiomatic, respectively definitional claims about identity between
+relation terms (besides the identity of alphabetic variants), in particular @{text \<open>\<eta>\<close>}-conversion:
+
+\begin{quote}
+@{thm[display] "lambda-predicates:3"[axiom_inst, print_as_theorem, of F]}
+\end{quote}
+
+As well as @{text \<open>n\<close>}-ary relation identity, e.g. for @{text \<open>n = 2\<close>}:
+
+\begin{quote}
+@{thm[display] "identity:3[2]"[of F G]}
+\end{quote}
+
+However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conversion, i.e. the following
+is @{emph \<open>not\<close>} a theorem of AOT, even though it is a theorem in the embedding (ignoring
+the abstraction layer):
+
+\begin{quote}
+@{thm[display] Artifactual4[print_as_theorem, of F y x]}
+\end{quote}
+
+This is an artifact of the semantic construction that validates the two principles
+above. To validate @{text \<eta>}-conversion, the embedding directly chooses a relation @{term F}
+as denotation for a @{text \<lambda>}-expression if its matrix is @{emph \<open>identical\<close>}
+to @{emph \<open>exemplifying @{term F}\<close>}. TODO.
+
+\<close>
+  
 section\<open>Discussion\<close>
 
 text\<open>
