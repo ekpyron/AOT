@@ -180,16 +180,16 @@ then considered as ground truth while "forgetting" the underlying semantic struc
 reasoning system is prevented from using the semantics for proofs, but is instead configured to solely
 rely on the derived axioms and deduction rules.
 Abstraction layers turned out to be a helpful means for reasoning within a target theory without
-the danger of deriving artifactual theories, even in the absence of a formal completeness result
-about the used semantics.
+the danger of deriving artifactual theories, while simultaneously allowing to maintain a flexible
+semantic backend that can be used to explore axiomatic extensions and variations of the target theory.
 
 A major initial result of this project, reported in~\cite{MScThesis}, was the discovery of an oversight
 in the formulation of AOT that allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
 of the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
-while previously it was restricted to individual terms only (to account for non-denoting
-definite descriptions). This reworking of AOT was accompanied by a continuous further development of its
+while previously it was restricted to individual terms only.
+This evolution of AOT was accompanied by a continuous further development of its
 embedding in Isabelle/HOL. This mutually beneficial mode of work was described in
 (TODO cite Open Philosophy) and resulted in a now stabilized and improved formulation of AOT and a
 matching embedding of its second-order fragment. The details of this process and its results are
@@ -374,10 +374,13 @@ In general, a Kripke frame consists of a set of possible worlds and a binary rel
 called @{emph \<open>accessibility relation\<close>}. For S5 there are two versions of semantics, one in which the
 accessibility relation is an equivalence relation and one in which there is no accessibility relation at
 all (TODO: cite M. Fitting "A Simple propositional S5 Tableau System"). For our purpose the simpler
-model suffices.@{footnote \<open>We will later argue that this is a natural choice for the particular modal
-logic of Abstract Object Theory due to its additional actuality operator and rigid definite descriptions. TODO: actually do that.\<close>}
+model suffices.@{footnote \<open>We will later argue that this is also a natural choice for the particular modal
+logic of Abstract Object Theory due to its additional actuality operator and rigid definite descriptions,
+see section~\ref{TrivialAccessibilityRelation}.\<close>}
 
-For possible worlds we can introduce a primitive type in Isabelle/HOL.
+For possible worlds we can introduce a primitive type @{text w} in Isabelle/HOL.\footnote{A
+set-theoretic model of HOL would represent this type with a non-empty set of objects that
+may serve as denotation for objects of type @{text w}.}
 \<close>
 
 typedecl w
@@ -396,8 +399,8 @@ type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
 
 text\<open>
 A proposition is @{emph \<open>valid\<close>} in case it is satisfied in all worlds.@{footnote \<open>The specification
-in parentheses after the type @{typ \<open>\<o> \<Rightarrow> bool\<close>} is @{emph \<open>mixfix notation\<close>} used to introduce
-the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid}. The ability to
+in parentheses after the type of the defined constant, @{typ \<open>\<o> \<Rightarrow> bool\<close>}, is @{emph \<open>mixfix notation\<close>} used to introduce
+the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid} with a specified precedence. The ability to
 introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.\<close>}
 \<close>
 
@@ -433,7 +436,8 @@ lemma T: \<open>\<Turnstile> \<^bold>\<box>p \<^bold>\<rightarrow> p\<close>
 lemma 5: \<open>\<Turnstile> \<^bold>\<diamond>p \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<diamond>p\<close>
   by (auto simp: box_def dia_def imp_def valid_def)
 
-text\<open>The proofs of both axioms are automatically found by @{command sledgehammer} (TODO cite?).
+text\<open>The proofs of both axioms are automatically found by @{command sledgehammer}, Isabelle/HOL's
+main tool for automation\footnote{@{command sledgehammer} is discussed in more detail in the following section.}.
 
 So far we have constructed an embedding of propositional S5 modal logic using what is commonly
 known as \emph{Standard Translation} of modal logic (TODO: cite). However it is straightforward
@@ -445,7 +449,7 @@ definition forall :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (
 definition exists :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<exists>\<close> 110) where
   \<open>\<^bold>\<exists> x . \<phi> x \<equiv> \<lambda>w . \<exists> x . \<phi> x w\<close>
 
-text\<open>Note that we didn't have to introduce any particular type for individuals, but stated
+text\<open>Note that we didn't introduce any particular type for individuals, but stated
 polymorphic definitions relative to a type variable @{typ 'a}. This way the same quantifier
 can be used for propositions themselves, any desired type for individuals or even properties of
 any order.
@@ -497,7 +501,7 @@ as described in more detail in the following section.
 
 TODO: more high-level description before technical details?
 
-The main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite again?).
+As mentioned in the last section, the main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite!).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
 the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
 refer to TODO: cite.\<close>} it collects all theorems derived in the current @{command theory} context
@@ -540,8 +544,8 @@ logic. This includes theorems @{command sledgehammer} relies on and disbarring t
 non-functional (conceptually, such theorems in question can be thought of as meta-theorems about
 derivations in our context TODO: rethink that, maybe collect examples).
 
-The solution used in the current embedding of Abstract Object Theory is the use of option (2), while
-using Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
+The solution used in the current embedding of Abstract Object Theory is the use of 
+Isabelle's internal ML API to automatically collect theorems to be added to an exclusion
 list. For convenience, an new command @{command AOT_sledgehammer} is introduced that internally
 configures @{command sledgehammer} (TODO: rethink; in practice I usually set up sledgehammer globally instead)
 to use the desired set of theorems and then passes the current
@@ -553,16 +557,15 @@ the earlier version in \cite{MScThesis}.
 section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>
 
 text\<open>
-TODO: reformulate along the lines of "While for the purpose above constructing a minimal model
-would suffice, there are several reasons to..." plus "to that end we use Isabelle's abstraction mechanisms..."
-plus "However, the use of these mechanisms in turn is not sufficient to provide the same assurances as
-abstraction layers, respectively cannot sufficiently deal with polymorphic assumptions, etc.".
-Also: explain rationale of being able to judge extensions of the system with new axioms and
-using @{command nitpick}.
+While abstraction layers provide a means to insulate our embedding from artifactual theorems (i.e. theorems
+that are merely semantically valid but not derivable from the target theory), we additionally
+use Isabelle's native abstraction mechanisms. This serves to establish an additional intermediate
+abstraction between the concrete model construction and the derivation of the axiom and derivational
+system of the target theory, which helps in exploring changes to the model structure without
+having to adjust the full derivation of the abstraction layer and furthermore allows
+@{command nitpick} (TODO: explain/cite) to provide more meaningful and helpful models. (TODO: elaborate).
 
-Additionally, we attempt to keep the constructed embedding as abstract as possible and try to make it
-logically impossible for details of the used model to "bleed through" to the abstraction layer.
-To that end, for example, we extensively use @{command specification}s instead of definitions (TODO: cite).
+To that end, we, for example, extensively use @{command specification}s.
 A @{command specification} is used to assert statements about previously uninterpreted constants
 (as introduced using @{command consts}). The @{command specification} command opens a proof context
 that requires the user to show that there exists a concrete instantiation for the given constants,
@@ -683,12 +686,54 @@ lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close> \<commen
 no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 (*>*)
 
-text\<open>TODO: explain limitations wrt polymorphic constants; move on to type classes and locales.\<close>
+text\<open>While the above describes a general mechanism that, given a careful choice
+of types, can be used to force Isabelle to rely on a specific set of specified properties
+for constants while simultaneously retaining assured soundness, given that the process
+involves giving witness proofs, the mechnaism has limitations.
+
+In particular, @{command specification}s are limited in their capability to specify
+polymorphic constants. While it is both possible to provide a shared specification
+for all types of a polymorphic constant, as well as to provide separate specifications for 
+concrete type instantiations of a polymorphic constant, doing both at the same time
+is impossible.
+
+Isabelle provides further abstraction mechanisms, e.g. type @{command class}es and
+@{command locale}s, but each comes with its own limitations.
+Technically, a @{command locale} is a functor that maps parameters and a specification
+to a list of declarations.(TODO: cite isar-ref) In practice, this can be used to reason
+relative to abstract parameters that validate a set of assumptions and then @{command interpret}
+the @{command locale} by proving the assumptions for a concrete instantiation of its
+parameters. As a result of this interpretation of the locale, all declarations of and
+in particular all theorems proven in the locale will be instantiated to the given parameters
+and added to the theory context.
+
+Type @{command class}es are technically @{command locale}s that depend on @{emph \<open>exactly one\<close>}
+type variable and additionally introduce an axiomatic type class for which, roughly speaking,
+the parameters of the locale are introduced as global constants that satisfy the locale
+assumptions.(TODO: cite isar-ref) In practice, type classes can be used to define properties
+on types and reason about any type with those properties. Type classes can then be
+@{emph \<open>instantiated\<close>} for a concrete type (or more precisely a type constructor that
+may depend on additional types that can be restricted to certain type classes, resp. more precisely
+sorts) by proving that the assumptions are satisfied for a concrete definition of
+the locale parameters at that type. 
+
+In particular, it is possible to instantiate a type class for products of two generic types, i.e.
+type variables, of a specific classes. We use this mechanism to inductively define
+properties of @{term n}-ary relations of AOT as relations among arbitrary tuples.
+
+While a full discussion of the subtleties of @{command locale}s and type @{command class}es
+goes beyond the scope of this thesis, a more detailed discussion can be found in TODO: refs.
+The short summary we provided above should, however, be sufficient for understanding
+our use of especially type classes in chapter~\ref{SSEofAOT}. Furthermore, it is
+important to note that while we use type classes to formulate theorems generically
+for several types, logically the type classes can be eliminated for each concrete instantiation
+of such a theorem with fully specified concrete types.
+\<close>
 
 
 section\<open>Implicit Interpretation and Assignment Function in SSEs\<close>text\<open>\label{SSE:MetaModel}\<close>
 
-text\<open>While in the following chapters we will say that we construct models of the target
+text\<open>While in the following chapters we will say that we construct @{emph \<open>models\<close>} of the target
 logic AOT using our embedding, we do not (and do not have to) construct full models in the classical
 sense. In particular, we do not construct explicit interpretations and assignment functions.
 
@@ -776,7 +821,8 @@ syntax valid_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> bool\<close> 
 text\<open>Furthermore, we need to specify how propositions can be produced from terminals in the grammar.
 We want to use simple identifiers to refer to proposition variables. To that end we introduce a
 @{emph \<open>copy-production\<close>} rule (a rule that is not tied to a constant). The terminal
-@{typ id_position} is used for identifiers with additional markup information (TODO: reference and cite PIDE markup).
+@{typ id_position} is used for identifiers with additional markup information used e.g. for
+pretty-printing terms (TODO: reference and cite PIDE markup).
 \<close>
 syntax "" :: \<open>id_position \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>_\<close>)
 
@@ -798,8 +844,8 @@ definition box_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<c
 definition dia_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>dia_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<exists>v . p v\<close>
 
 text\<open>And then define syntax for them in our grammar subtree. We can reuse the same symbols
-used in the syntax of HOL, since they will apply only be used for parsing the sublanguage, i.e.
-terms behind the marker @{text \<Turnstile>} introduced above.\<close>
+used in the syntax of HOL, since they will only be used for parsing the sublanguage, i.e.
+terms in the grammar tree spanned by the marker @{text \<Turnstile>} introduced above.\<close>
 
 syntax not_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>\<not>_\<close> [40] 40)
 syntax imp_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (infixl \<open>\<longrightarrow>\<close> 25)
@@ -811,14 +857,16 @@ syntax dia_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>
 text\<open>Now we can start to produce complex terms in our new syntax:\<close>
 term \<open>\<Turnstile> \<box>p \<longrightarrow> q \<or> \<diamond>r\<close>
 
-text\<open>However, it is noteworthy that, since the introduced grammar subtree is independent of the
+text\<open>However, it is noteworthy that since the introduced grammar subtree is independent of the
 usual HOL grammar, a lot of details need to be considered. For example, without further work it is
 not possible to specify the types of terms in our grammar sub-tree.
-For that to work the @{text \<open>::\<close>} syntax would need to be reintroduced, which involves becoming
-more familiar with Isabelle's internals like the purely syntactic constant @{text \<open>_constrain\<close>}
-(TODO: cite isar-ref 8.5.4). TODO: hint at the fact that only scarce documentation is available
-for any of this and this usually involves reading through the theory files of Isabelle/Pure
-and/or Isabelle/HOL as reference.
+For that to work the @{text \<open>::\<close>} syntax using in HOL would need to be reintroduced,\footnote{Or, alternatively,
+new syntax could be introduced for the same purpose.} which requires some familiarity with Isabelle's
+internals like the purely syntactic constant @{text \<open>_constrain\<close>}
+(TODO: cite isar-ref 8.5.4) that are generally only sparsely documented.\footnote{At times,
+the theory files of Isabelle/HOL and its accompanying ML implementation, which construct
+the HOL logic on the basis of Isabelle/Pure and are shipped with the Isabelle distribution,
+are considered to be the documentation of these internals.}
 
 As a simpler example, we also need to introduce parentheses explicitly in our grammar subtree:\<close>
 
@@ -838,13 +886,14 @@ While the mechanisms described above are sufficient to introduce an accurate rep
 of the syntax of most target theories that are compatible with the lexical syntax of
 Isabelle/Pure,@{footnote \<open>Note that @{emph \<open>Abstract Object Theory\<close>} does not fall into this category
 and requires additional and more complex means to arrive at a good approximation of its syntax as
-described in (TODO: refer to later section.).\<close>} @{emph \<open>reasoning\<close>} in the logic of the target theory
-entails additional challenges (TODO: refer to last section - in particular reasoning relative to
-a fixed but arbitrary possible world and the need to mention this world syntactically).
+described in section~\ref{AOTSyntax}.\<close>} @{emph \<open>reasoning\<close>} in the logic of the target theory
+entails additional challenges (for example, reasoning using Kripke-semantics usually
+involves proving statements relative to a fixed, but arbitrary possible world - however
+semantic possible worlds are not part of the syntax of the target theory and managing
+them can become a distraction). TODO: \ref{AOTOuterSyntax}
 
-Chapter~\ref{SSEofAOT} describes these challenges in more detail and presents the
-embedding of Abstract Object Theory in Isabelle/HOL as an example of a successful,
-albeit technically complex solution. TODO: adjust references.
+The next chapter is formulated relative to our implementation of the syntax of Abstract
+Object Theory. TODO: adjust references. Ueberleitung.
 \<close>
 
 chapter\<open>Abstract Object Theory\<close>text\<open>\label{AOT}\<close>
@@ -854,9 +903,9 @@ The following sections provide a brief introduction to Abstract Object Theory. W
 section will explain the general idea and motivation of object theory, the following sections
 reproduce the language and axiom system of AOT as implemented in our embedding. In the process,
 we hint at the major differences between the formulation of AOT in PLM and its incarnation in
-our embedding, hinting at implementational details that will be discussed in the
-next chapter.
-Recall that, as mentioned in section~\ref{Structure} all definitions and theorems are
+our embedding, referencing the discussion of implementational details in the next chapter where
+applicable.
+Recall that, as mentioned in section~\ref{Structure} (TODO: ref may change) all definitions and theorems are
 cited directly from our embedding and thereby verified by Isabelle. Exceptions to this
 rule are explicitly stated and marked by vertical bars at the page margins.
 
@@ -962,7 +1011,7 @@ occurrences of arbitrary variables (even those that are bound at the occurrence 
 i.e. instead of @{text "\<phi>{F}"}, PLM simply states @{term \<open>\<phi>\<close>} and uses natural language to add the proviso that @{term x} may
 @{emph \<open>not\<close>} occur free in @{term \<phi>}. See~\ref{substitutability} for a more detailed discussion.} Taken together,
 the comprehension principle and the identity conditions
-of abstract objects imply that abstract objects can be modeled as elements of the power set of properties:
+of abstract objects imply that abstract objects can be modelled as elements of the power set of properties:
 every abstract object uniquely corresponds to a specific set of properties.
 
 Given this basic theory of abstract objects, AOT can elegantly define
@@ -1048,15 +1097,17 @@ Furthermore, AOT introduces the following primitive formula- and term-forming op
   \<^item> @{term \<open>\<guillemotleft>\<^bold>\<A>\<phi>\<guillemotright>\<close>}, the @{emph \<open>actuality\<close>} operator
   \<^item> @{term \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>\<close>}, the @{emph \<open>conditional\<close>} operator
   \<^item> @{term \<open>AOT_TERM[(\<forall>\<alpha> \<phi>{\<alpha>})]\<close>}, the @{emph \<open>universal quantifier\<close>}@{footnote \<open>As mentioned in the previous section,
-  PLM, by default, allows any free variables to occur instances of a schematic meta-variable, unless specified otherwise.
+  PLM, by default, allows any free variables to occur in instances of a schematic meta-variable, unless specified otherwise.
   For technical reasons, we choose the opposite convention, i.e. while a schematic meta-variable may still contain
-  any occurrence of variables that would remain @{emph \<open>free\<close>} (and which is not already named in the current context),
-  any @{emph \<open>bound\<close>} variables (or variables that already have a name in the current context) that may
+  any occurrence of variables that would remain @{emph \<open>free\<close>}, any @{emph \<open>bound\<close>} variables that may
   occur in an instance of the schematic meta-variable have to be explicitly listed in curly brackets. See~\ref{substitutability} for
-  a more detailed discussion.\<close>}
-  \<^item> @{term \<open>AOT_TERM[\<^bold>\<iota>x \<phi>{x}]\<close>}, the @{emph \<open>definite description\<close>} operator
+  a more detailed discussion. Also note that while the meta-logical @{text \<open>\<forall>\<close>}-quantifier in HOL has wide scope, the
+  universal quantifier of AOT has narrow scope and quantifying over complex formulas generally requires parentheses.\<close>}
+  \<^item> @{term \<open>AOT_TERM[\<^bold>\<iota>x \<phi>{x}]\<close>}, the @{emph \<open>definite description\<close>} operator\footnote{Note that similarly to the universal
+    quantifier above, definite descriptions have narrow scope and using complex formulas as matrix requires parentheses.}
   \<^item> @{term \<open>AOT_TERM[[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]]\<close>}, the @{emph \<open>relation abstraction\<close>}- or @{text \<open>\<lambda>\<close>}-operator@{footnote \<open>Note
-that this includes the zero-place case @{term \<open>AOT_TERM[[\<lambda> \<phi>]]\<close>}, read as @{emph \<open>that @{term \<phi>}\<close>}\<close>}
+that this includes the zero-place case @{term \<open>AOT_TERM[[\<lambda> \<phi>]]\<close>}, read as @{emph \<open>that @{term \<phi>}\<close>}. The scope of the
+@{text \<open>\<lambda>\<close>}-expression is explicitly given with the surrounding square brackets.\<close>}
 
 AOT uses two kinds of atomic formulas, @{emph \<open>exemplification\<close>} formulas and @{emph \<open>encoding\<close>} formulas.
 In PLM exemplification formulas are written as @{text \<open>\<Pi>\<kappa>\<^sub>1\<dots>\<kappa>\<^sub>n\<close>}, whereas encoding formulas are
@@ -1153,7 +1204,8 @@ The next set of axioms constructs a quantifier logic for a free logic with non-d
 terms (see~\nameref{AOT:cqt:1},~\nameref{AOT:cqt:3}).
 Formulas of the form @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>} can be read as @{emph \<open>the term @{term \<open>\<tau>\<close>} denotes\<close>} and refer
 to the notion of logical existence that was @{emph \<open>defined\<close>} in the previous section.\footnote{See
-section~\ref{substitutability} for a discussion of the free variable notation using curly brackets.}
+section~\ref{substitutability} for a discussion of the free variable notation using curly brackets and
+slight differences in the formulation compared to PLM.}
 
 \begin{quote}
 @{thm[display] "cqt:1"[axiom_inst, of _ \<phi> \<tau>, print_as_theorem]
@@ -1182,8 +1234,9 @@ The next axiom states that identical objects can be substituted in formulas. Not
 is not primitive, but was @{emph \<open>defined\<close>} in the last section (see~\nameref{AOT:l-identity}).@{footnote \<open>PLM formulates
 the axiom as: @{term \<open>\<guillemotleft>\<alpha> = \<beta> \<rightarrow> (\<phi> \<rightarrow> \<phi>')\<guillemotright>\<close>}, whenever @{text \<beta>} is @{emph \<open>substitutable for\<close>} @{text \<alpha>} in @{text \<phi>}, and
 @{text \<open>\<phi>'\<close>} is the result of replacing zero or more free occurrences of @{text \<alpha>} in @{text \<phi>} with occurrences of @{text \<beta>}.
-This precisely matches the formulation given above in our explicit free variable notation. This is discussed in more detail
-in section~\ref{substitutability}.\<close>} 
+This is equivalent to the formulation in the embedding modulo the equivalence of alphabetic variants (see~\ref{alphabetic-variants}).
+The precise correspondence is discussed in more detail in section~\ref{substitutability} at the example of the first quantifier
+axiom above.\<close>}
 
 \begin{quote}
 @{thm[display] "l-identity"[axiom_inst, of _ \<alpha> \<beta> \<phi>, print_as_theorem]}
@@ -1249,7 +1302,7 @@ follow the classical principles of @{text \<alpha>}-, @{text \<beta>}- and @{tex
 suitably restricted to denoting terms, since not all @{text \<open>\<lambda>\<close>}-expressions are guaranteed to denote.
 Also note that the embedding generally collapses alphabetic variants (see~\ref{alphabetic-variants}),
 so while @{text \<alpha>}-conversion can be stated, it effectively reduces to the statement that denoting
-@{text \<lambda>}-expressions are self-identical (TODO: cite discussion) (see~\nameref{AOT:lambda-predicates:1}).
+@{text \<lambda>}-expressions are self-identical. PLM formulates the following axioms (see~\nameref{AOT:lambda-predicates:1}):
 
 \begin{quote}
 @{thm[display] "lambda-predicates:1"[axiom_inst, of _ \<phi>, print_as_theorem]
@@ -1257,14 +1310,15 @@ so while @{text \<alpha>}-conversion can be stated, it effectively reduces to th
                "lambda-predicates:3"[axiom_inst, of _ F, print_as_theorem]}
 \end{quote}
 Note that the last of the above axioms, @{text \<eta>}-conversion, also has the @{text 0}-place case
-@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.\footnote{While identical by axiom,
+@{thm "lambda-predicates:3[zero]"[axiom_inst, of _ p, print_as_theorem]}.@{footnote\<open>While identical by axiom,
 the syntactically distinct terms @{text \<open>p\<close>} and @{text \<open>[\<lambda> p]\<close>} in AOT are meant to capture
 the natural-language distinction between the statement @{text p} itself and the statement
-@{emph \<open>that @{text p} is true\<close>}. TODO: rethink; mention subtlety of terms instead of variables.}
+@{emph \<open>that @{text p} is true\<close>}. Also note that in the embedding the @{text 0}-place case
+is stated separately (see~\nameref{AOT:lambda-predicates:3[zero]}).\<close>}
 
 The following axiom of @{emph \<open>coexistence\<close>} is specific to AOT and, together with generally extending AOT's free logic
 to relation terms and the refinement of base cases of denoting terms, a main aspect in the evolution
-of PLM that was originally triggered by its analysis using our embedding (TODO: cite MSc thesis).
+of PLM that was originally triggered by its analysis using our embedding.
 It states that whenever a @{text \<lambda>}-expression denotes, any @{text \<lambda>}-expression with a matrix
 that is necessarily equivalent on all abstracted variables will denote as well (see~\nameref{AOT:safe-ext}):
 
@@ -1312,7 +1366,7 @@ properties that satisfy the condition (see~\nameref{AOT:A-objects}):
 
 All above axioms are to be understood as axiom @{emph \<open>schemata\<close>}, i.e. their universal closures
 are axioms as well. Furthermore, for all axioms except the modally-fragile axiom of actuality,
-their modal closures are taken as axioms as well.
+their modal closures (i.e. actualizations and necessitations) are taken as axioms as well.
 \<close>
 
 
@@ -1397,6 +1451,8 @@ The rule of generalization GEN (see~\nameref{AOT:rule-gen}):
 \begin{quote}
 @{thm[display] "GEN"[print_as_rule]}
 \end{quote}
+
+TODO: discuss @{emph \<open>for arbitrary\<close>}, etc.
 \<close>
 
 subsection\<open>The Inferential Role of Definitions\<close>
@@ -1653,7 +1709,7 @@ layer.}
 
 section\<open>Avoiding Known Paradoxes\<close>text\<open>\label{AvoidingParadoxes}\<close>
 
-subsection\<open>The Clark-Boolos Paradox\<close>
+subsection\<open>The Clark-Boolos Paradox\<close>text\<open>\label{ClarkBoolosParadox}\<close>
 (*<*)
 AOT_register_variable_names
   Relation: K
@@ -2146,9 +2202,7 @@ section\<open>Model\<close>
 
 text\<open>
 While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
-this section provides a high-level description of the construction.\footnote{Recall
-the discussion in~\ref{SSE:MetaModel} for a precise meaning of constructing models
-using an SSE.}
+this section provides a high-level description of the construction.
 The general construction is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
@@ -2156,12 +2210,12 @@ it employs type classes to model relations of arbitrary arity as relations among
 tuples of individuals.
 
 Note that while we talk about @{emph \<open>modelling\<close>} AOT, we do not construct concrete
-models of AOT's logic in the classical sense. Instead, we @{emph \<open>implement\<close>} AOT in
+models of AOT's logic in the classical sense.\footnote{See also
+the discussion in section~\ref{SSE:MetaModel}.} Instead, we @{emph \<open>implement\<close>} AOT in
 Isabelle/HOL using a SSE and any set-theoretic model of the HOL theory we use as
 meta-logic can be lifted to a full set-theoretic model of AOT. This way, in particular, we
 can avoid defining concrete interpretation and assignment functions, since we can
-rely on Isabelle's semantics for constants and variables instead. This technique
-was discussed in more detail in section~\ref{SSE:MetaModel}.
+rely on Isabelle's semantics for constants and variables instead.
 \<close>
 
 subsection\<open>Aczel Models\<close>text\<open>\label{AczelModels}\<close>
@@ -2265,7 +2319,7 @@ by exactly those objects that satisfy @{term \<phi>}: @{text \<open>\<exists>F\<
 that @{text \<phi>} does not involve encoding claims.
 
 While Aczel models generally demonstrate that abstract objects and encoding can be
-modelled without being subject to the Clark-Boolos paradox (TODO: ref), there are
+modelled without being subject to the Clark-Boolos paradox (see~\ref{ClarkBoolosParadox}), there are
 several issues that remain unaddressed:
 
   \<^item> AOT's relations are not extensional and not even merely intensional,
@@ -2373,10 +2427,10 @@ that is represented by the set of all functions from urelements to propositions 
 This type or @{emph \<open>urrelations\<close>} will correspond to denoting property terms.
 
 The additional null-urelements serve to avoid two kinds of artifactual theorems:
-  \<^item> Let @{term p} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
-    and let @{term q} be the proposition denoted by the term \<^term>\<open>\<guillemotleft>[F]\<^bold>\<iota>x \<psi>{x}\<guillemotright>\<close>.
+  \<^item> Let @{term p} be the proposition denoted by the term \<^term>\<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
+    and let @{term q} be the proposition denoted by the term \<^term>\<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<psi>{x}\<guillemotright>\<close>.
     Furthermore, assume that provably neither of the descriptions denote,
-    i.e. both \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<phi>{x})\<down>\<guillemotright>\<close> and  \<^term>\<open>\<guillemotleft>\<not>\<^bold>\<iota>x(\<psi>{x})\<down>\<guillemotright>\<close> are theorems.
+    i.e. both \<^term>\<open>print_term \<guillemotleft>\<not>\<^bold>\<iota>x(\<phi>{x})\<down>\<guillemotright>\<close> and  \<^term>\<open>print_term \<guillemotleft>\<not>\<^bold>\<iota>x(\<psi>{x})\<down>\<guillemotright>\<close> are theorems.
     Now while AOT requires @{term p} and @{term q} to be necessarily equivalent,
     in particular they are both necessarily false, it does not presuppose that @{term p} is
     @{emph \<open>identical\<close>} to @{term \<open>q\<close>}. In the model this is achieved by allowing
@@ -2391,15 +2445,16 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     since two functions are identical, if they map to identical values for all arguments.
     By introducing null-urelements, however, we allow @{term F} and @{term G} to vary
     on additional urelements outside of the range of the quantifier.
-  \<^item> It is important to note that the additional null-urelements have no impact on
-    minimal models of AOT. In minimal models, propositions are extensional, i.e. they are
-    in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
-    on possible worlds there is exactly one proposition.
-    Since urrelations are required to necessarily be false on null-urelements, the
-    introduction of one null-urelement does not increase the amount of relations in the
-    models: while urrelations have to assign a Kripke-extensions to this null-urelement,
-    there is only one choice for doing so, namely the constant-false function on possible
-    worlds. Consequently, the number of relations in minimal models of AOT is unaffected. 
+
+Note that the additional null-urelements have no impact on
+minimal models of AOT. In minimal models, propositions are extensional, i.e. they are
+in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
+on possible worlds there is exactly one proposition.
+Since urrelations are required to necessarily be false on null-urelements, the
+introduction of one null-urelement does not increase the amount of relations in the
+models: while urrelations have to assign a Kripke-extensions to this null-urelement,
+there is only one choice for doing so, namely the constant-false function on possible
+worlds. Consequently, the number of relations in minimal models of AOT is unaffected. 
 
 As a last ingredient of our Aczel model structure, we require a mapping @{text \<alpha>\<sigma>}
 from sets of urrelations (which will be used to represent abstract objects) to
@@ -2513,12 +2568,50 @@ Isabelle's outer syntax by custom commands used for structures reasoning in
 the embedding. (TODO: reformulate)
 \<close>
 
-section\<open>Syntax of the Target Theory\<close>
+subsection\<open>Representing Quantifiers using Function Applications\<close>
+
+(*<*)
+setup\<open>
+let
+val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
+(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
+in
+antiquotation_pretty_source
+end @{binding "ML_print_term"} Args.term (
+fn ctxt => fn trm => 
+  Pretty.chunks [
+  Pretty.block [Syntax.pretty_term ctxt trm],
+  Pretty.str "\n",
+  Pretty.markup_block {consistent = true, indent = 8, markup = Markup.ML_string}
+    [Pretty.str (ML_Pretty.string_of_polyml (ML_system_pretty (trm, FixedInt.fromInt 100)))]]
+)\<close>
+setup\<open>
+let
+val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
+(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
+in
+antiquotation_pretty_source
+end @{binding "ML_print_term'"} Args.term (
+fn ctxt => fn trm => 
+  Pretty.chunks [
+  Pretty.markup_block {consistent = true, indent = 8, markup = Markup.ML_string}
+    [Pretty.str (ML_Pretty.string_of_polyml (ML_system_pretty (trm, FixedInt.fromInt 100)))]]
+)\<close>
+(*>*)
+
+text\<open>
+In our meta-logic HOL, quantification is represented as the application of a higher-order
+function @{const All} (often written as @{text \<open>\<Pi>\<close>} in other contexts) to a function acting on the bound
+variable. I.e. @{term \<open>\<forall> \<alpha> . \<phi> \<alpha>\<close>} is the same as @{text \<open>All (\<lambda> \<alpha> . \<phi> \<alpha>)\<close>}, respectively
+@{term \<open>All \<phi>\<close>}.
+\<close>
+
+section\<open>Syntax of the Target Theory\<close>text\<open>\label{AOTSyntax}\<close>
 
 text\<open>
 We already discussed the possibility of extending Isabelle's inner syntax in general
 in section~\ref{SSESyntax}. Following the method described in that section, we introduce
-@{type AOT_prop} as syntactic root type for propsitions in AOT and define a custom grammar
+@{type AOT_prop} as syntactic root type for propositions in AOT and define a custom grammar
 for AOT on top of it. However, Isabelle's high-level mechanisms for defining
 custom syntax has certain limitations that make an accurate representation of
 AOT's usual syntax challenging.
@@ -2590,7 +2683,7 @@ the translation using less complex printing modes.
 TODO: mention ellipses?
 \<close>
 
-section\<open>Extending Isabelle's Outer Syntax\<close>
+section\<open>Extending Isabelle's Outer Syntax\<close>text\<open>\label{AOTOuterSyntax}\<close>
 
 text\<open>
 
@@ -2665,7 +2758,7 @@ subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-imp
 
 text\<open>
 
-One of the axioms we mentioned explicitly as difficult to implement in section~\ref{AxiomSystem} was
+One of the axioms we mentioned explicitly as difficult to implement in section~\ref{AxiomSystem} is
 the second quantifier axiom (see~\nameref{AOT:cqt:2[const_var]}) which establishes
 a set of base cases of denoting terms. Recall the formulation of the axiom in PLM:
 
@@ -2687,25 +2780,15 @@ constants @{emph \<open>and\<close>} variables (see~\nameref{AOT:cqt:2[const_var
 \end{quote}
 
 This covers all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
-The embedding defines this type for each base type @{typ 'a} of class @{class AOT_Term} as all
-members of the type that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
+For each base type @{typ 'a} of class @{class AOT_Term}, the embedding defines this type @{typ \<open>'a AOT_var\<close>} as all
+members of type @{typ 'a} that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
 in section~\ref{IndividualTermsAndClasses}). Any variable name is internally decorated with the constant
 @{term AOT_term_of_var} of type @{typ \<open>'a AOT_var \<Rightarrow> 'a\<close>} and thereby implicitly denotes.
-By construction there exists an object of type @{typ \<open>'a AOT_var\<close>} for every denoting
-object of type @{typ 'a} and vice-versa.
+By construction there exists an object @{term x} of type @{typ \<open>'a AOT_var\<close>} for every denoting
+individual term @{term \<kappa>} of type @{typ 'a} and it holds that @{term \<open>AOT_term_of_var x = \<kappa>\<close>}.
 
 The second base case for @{text \<open>\<lambda>\<close>}-expressions is more complex to represent.
-While we cannot capture the syntactic restriction that the initial @{text \<open>\<lambda>\<close>}
-does not bind any variable in any encoding formula subterm, we can inductively construct
-the set of all formulas that match this description.
-
-To that end we define the auxiliary constant @{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}),
-which acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions among individuals
-of a type of class @{class AOT_\<kappa>s} (see~\ref{IndividualTermsAndClasses}).
-
-@{const AOT_instance_of_cqt_2} itself is merely defined to be true for a matrix,
-if using it as matrix for a @{text \<open>\<lambda>\<close>}-expression results in a term that necessarily
-denotes. Internally, a @{text \<open>\<lambda>\<close>}-expression denotes, just in case that its
+Internally, a @{text \<open>\<lambda>\<close>}-expression denotes, just in case that its
 matrix is necessarily equivalent on all denoting objects that share an urelement, or
 formally (see~\nameref{AOT:AOT_semantics.AOT_model_lambda_denotes}):
 
@@ -2713,26 +2796,45 @@ formally (see~\nameref{AOT:AOT_semantics.AOT_model_lambda_denotes}):
   @{thm[display] AOT_model_lambda_denotes[of \<phi>]}
 \end{quote}
 
-However, this is a semantic criterion and does not directly correspond to the formulation of above axiom. So instead
-we derive inductive introduction rules for the predicate @{const AOT_instance_of_cqt_2}.
+However, this is a semantic criterion and does not directly correspond to the formulation of above axiom.
+While, for arbitrary complex terms, we cannot directly capture the syntactic restriction
+stating that the initial @{text \<open>\<lambda>\<close>} does not bind any variable in any encoding formula subterm,
+we can construct a set of introduction rules that will cover all terms that match the
+natural language description.
+To that end, we define two auxiliary constants:
+@{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}),
+acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions among entities
+of a type of class @{class AOT_\<kappa>s} (recall that this may either be an unary individual or 
+a tuple of individuals see~\ref{IndividualTermsAndClasses}).
+@{const AOT_instance_of_cqt_2_exe_arg} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_exe_arg})
+acts on functions taking entities of a type @{typ 'a} of class @{class AOT_\<kappa>s} to
+entities of a type @{typ 'b} of class @{class AOT_\<kappa>s}.
+
+@{const AOT_instance_of_cqt_2} holds for any function that agrees on arguments
+that denote and are @{const AOT_model_term_equiv}-equivalent (i.e. share the same
+urelements). By construction of @{text \<open>\<lambda>\<close>}-expressions the use of any such function
+in a @{text \<open>\<lambda>\<close>}-expression will result in a denoting relation term.
+
+@{const AOT_instance_of_cqt_2_exe_arg} holds for any function that sends denoting and
+@{const AOT_model_term_equiv}-equivalent arguments to again @{const AOT_model_term_equiv}-equivalent
+arguments. 
+
 
 There are several cases:
 
   \<^item> Matrices with no free occurrences of the @{text \<open>\<lambda>\<close>}-bound variables trivially fall
     under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_const}).
   \<^item> Exemplification formulas fall under the formulation of the axiom, if all primary terms
-    fall under the formulation of the axiom, neither in the relation term nor in any of the
+    fall under the formulation of the axiom, i.e. neither in the relation term nor in any of the
     individual terms that exemplify the relation occurs any @{text \<open>\<lambda>\<close>}-bound variable
-    in an encoding subformula (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe}).
-  \<^item> Similarly, encoding formulas fall under the formulation of the axiom, if all primary
-    terms fall under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_enc}).
-    However, this in turn is only the case if they do not involve any free occurrences of
-    the @{text \<open>\<lambda>\<close>}-bound variables. Thus this case is actually already covered by the
-    first case.
+    in an encoding subformula (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_const}).
   \<^item> Complex formulas fall under the formulation of the axiom, just in case all its operands
     fall under the formulation of the axiom. E.g. a negation formula falls under the axiom,
     just in case the negated formula falls under the axiom
     (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_not}).
+  \<^item> In the current formulation of PLM, encoding formulas only fall under the formulation of the axiom,
+    if they do not involve any free occurrence of any @{text \<open>\<lambda>\<close>}-bound variable. Therefore,
+    they are already covered by the first case above.
 
 The cases of relation terms and individual terms in exemplification position are
 further split up into multiple cases, including cases for definite descriptions.
@@ -2750,14 +2852,9 @@ In an encoding formula @{text \<open>[\<Pi>]\<kappa>\<^sub>1\<cdots>\<kappa>\<^s
 @{text \<open>\<kappa>\<^sub>n\<close>} are defined to be primary terms, but no nested term counts as primary term, so
 this entails strictly more cases than the formulation given above.
 
-Accounting for this change in the embedding would entail extending the encoding formula
-base cases of the construction. While the current version of the embedding given in the
-appendix specifically does not validate this alternative formulation of the axiom in
-order to avoid theorems that would be artifactual without the extended axiom (TODO: mention), it would
-be straightforward to extend the implementation to encompass this new extended
-version of the axiom, once it is clear that PLM will move in that direction. (TODO: watch formulation).
-
-
+In anticipation of this change, this is already validated by the embedding, however,
+the corresponding introduction rules are not yet added to @{const AOT_instance_of_cqt_2}
+to prevent their use in the abstraction layer for the time being (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_enc_arg}).
 \<close>
 
 subsection\<open>The Rule of Substitution\<close>
@@ -2808,12 +2905,27 @@ will allow for an intuitive statement of theorems that are to be proven by type
 distinction.
 \<close>
 
-subsection\<open>Auxiliary Constructs\<close>
+subsection\<open>Auxiliary Theorem Attributes\<close>
 
 text\<open>
-  \<^item> Attributes for instantiating AOT axioms.
-  \<^item> Attributes for "rulifying" AOT theorems.
-  \<^item> Attributes for unconstraining constrained variables.
+The embedding defines several auxiliary @{emph \<open>theorem attributes\<close>} that help
+in reproducing common reasoning patterns of PLM that would otherwise be subject
+to technical complications.
+
+PLM often prefers stating theorems using object level variables rather than
+meta-variables (that would range over potentially non-denoting terms) in order to avoid
+having to specifically state the precondition of the respective terms to denote.
+
+However, whenever a term is trivially known to denote from context, PLM simply
+instantiates such theorem directly to terms. This is valid, since it is always possible
+to apply GEN followed by @{text \<open>\<forall>\<close>}-elimination for terms to the theorem. To reproduce
+this transformation within the embedding the theorem attribute @{attribute unvarify}
+is introduced (see~\nameref{AOT:AOT_PLM.unvarify}), which takes the variable to be
+generalized as argument and automatically performs the required transformation on
+the theorem. Similarly, the attribute @{attribute unconstrain} (see~\nameref{AOT:AOT_RestrictedVariables.unconstrain})
+can be used to transform a theorem formulated with restricted variables to a theorem
+involving unconstrained variables under the assumption that they satisfy the restriction
+condition of the restricted variable.
 \<close>
 
 section\<open>Meta Theorems\<close>text\<open>\label{MetaTheorems}\<close>
@@ -2829,40 +2941,32 @@ showcase this mechanism in detail below. As a consequence, terms that are alphab
 are meta-logically indistinguishable. To justify representing AOT's bound variables directly
 using bound variables in Isabelle, we need to show that both (1) AOT's notion of alphabetic
 variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any two formulas
-involving alphabetic variants are inter-derivable in AOT (fortunately, PLM already derives a suitable
-meta-rule).
+involving alphabetic variants are inter-derivable in AOT (as a generalization of PLM's
+existing @{emph \<open>Rule of Alphabetic Variants\<close>}).
 
 \<close>
 
-subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijin Indices\<close>
-
-(*<*)
-setup\<open>
-let
-val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
-(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
-in
-antiquotation_pretty_source
-end @{binding "ML_print_term"} Args.term (
-fn ctxt => fn trm => 
-  Pretty.chunks [
-  Pretty.block [Syntax.pretty_term ctxt trm],
-  Pretty.str "\n",
-  Pretty.markup_block {consistent = true, indent = 8, markup = Markup.ML_string}
-    [Pretty.str (ML_Pretty.string_of_polyml (ML_system_pretty (trm, FixedInt.fromInt 100)))]]
-)\<close>
-(*>*)
+subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijin Indices\<close>text\<open>\label{alphabetic-variants-de-bruijin}\<close>
 
 text\<open>
 Internally, Isabelle represents binding notation by function application and abstraction.
-E.g. if we let Isabelle print the internal representation of the term @{term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>},
-we arrive at the following:@{footnote \<open>Technically, we have setup an @{emph \<open>antiquotation\<close>} that
-allows us to print a term together with the internal ML representation of the term. TODO: cite isar-ref?\<close>}
+E.g. if we let Isabelle print the internal ML representation of the term @{term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>},
+we arrive at the following:@{footnote \<open>Note that we are not merely talking about a representation in
+the meta-logic HOL, but about the internal ML representation of HOL terms.
+Technically, we have setup an @{emph \<open>antiquotation\<close>} that
+allows us to print a term together its internal representation. TODO: cite isar-ref?\<close>}
 
 @{ML_print_term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>}
 
-Note that while the internal representation retains the name of the bound variable @{text p}, it
-has no logical meaning and is merely used for term printing, while, logically, occurrences of the
+While a complete discussion of the ML representation of terms goes beyond the scope of
+this thesis, it suffices to have a rough understanding of the involved syntax.
+Relevant atomic terms are typed constants, @{text \<open>Const ([identifier], [type])\<close>},
+bound variables @{text \<open>Bound [de-Bruijin index]\<close>} and free variables @{text \<open>Free ([identifier], [type])\<close>}.
+@{text \<open>$\<close>} is a binary operator that signifies function application between terms.
+@{text \<open>Abs ([name], [type], [term])\<close>} is the abstraction of @{text \<open>[term]\<close>} over a
+bound variable of type @{text \<open>[type]\<close>}. Note that while the internal representation retains
+the name of the bound variable @{text p}, it has no logical meaning and is merely used
+e.g. for term printing, while, logically, occurrences of the
 bound variables are referred to by @{text \<open>Bound\<close>} with a de-Bruijin index. An index of zero
 refers to the innermost abstraction the bound variable is contained in. An index of one
 refers to the next outer abstraction, e.g.
@@ -2899,9 +3003,6 @@ de-Bruijin indices, the de-Bruijin representation of two alphabetic variants is 
 Conversely, changing any index in the de-Bruijin representation translates to breaking a linking
 group as defined in PLM, thereby terms with different de-Bruijin representation are not alphabetic
 variants.
-
-TODO: consider trying to come up with a constructive proof, even though the correspondence is rather
-obvious.
 
 Now that it is established that the formulas and terms that are collapsed in Isabelle's internal
 representation are exactly the alphabetic variants of AOT, it remains to argue that the collapse
@@ -2940,7 +3041,7 @@ linked groups of bound variables.
 
 \<close>
 
-subsection\<open>Explicit Free Variable Notation and Substitutability\<close>text\<open>\label{substitutability}\<close>
+subsection\<open>Free Variable Notation, Substitutability and Bound Variables\<close>text\<open>\label{substitutability}\<close>
 
 text\<open>
 TODO: recheck and refine all references to this section.
@@ -2948,7 +3049,10 @@ TODO: recheck and refine all references to this section.
 As mentioned in chapter~\ref{AOT}, PLM allows terms and formulas with arbitrary free variables
 to be used in place of of its meta-variables, except for free variables that are explicitly excluded
 in natural language. The embedding on the other hand requires to explicitly mention any variables that
-already have a name in the current context, if they should be allowed to occur in an instance of a meta-variable.
+are bound at the occurrence of a meta-variable, if they should be allowed to occur in an instance of the
+meta-variable. This is due to the fact that binders are implemented in the embedding as
+operators that act on functions. Similarly, the substitution of variables in meta-variables
+is implemented using function application.
 
 For example, PLM formulates the first quantifier axiom as follows:
 
@@ -2982,23 +3086,68 @@ In the embedding, the same axiom is stated as follows:
 @{thm[display] "cqt:1"[axiom_inst, print_as_theorem, of _ \<phi> \<tau>]}
 \end{quote}
 
-Technically, @{term \<phi>} here is a function acting on terms and both @{text \<open>\<phi>{\<alpha>}\<close>}, resp.
+Internally, @{term \<phi>} is a function acting on terms and both @{text \<open>\<phi>{\<alpha>}\<close>}, resp.
 @{text \<open>\<phi>{\<tau>}\<close>}, are the function application of @{term \<phi>} to @{text \<alpha>}, resp. @{text \<tau>}.
+The following is the HOL representation of the formula in above axiom:
+\<close>
+(*<*)unbundle AOT_no_syntax(*>*)
+text\<open>\begin{quote}@{term \<open>\<guillemotleft>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> (\<tau>\<down> \<rightarrow> \<phi>{\<tau>})\<guillemotright>\<close>}\end{quote}\<close>
+(*<*)unbundle AOT_syntax(*>*)
+text\<open>
 
+The @{text \<open>\<forall>\<close>}-quantifier is represented as the function application
+of the constant @{const AOT_forall} to the meta-logical @{text \<open>\<lambda>\<close>}-abstraction of
+@{term \<phi>} applied to the bound variable @{term \<alpha>}.
+The substitution of @{term \<tau>} for @{term \<alpha>} in @{term \<phi>} is represented as the
+function application of @{term \<phi>} to @{term \<tau>}.
+
+As mentioned in section~\ref{alphabetic-variants-de-bruijin}, internally Isabelle
+represents bound variables using de-Bruijin indices that uniquely associate any
+bound variable with its binder, independently of the name of the variable. @{text \<open>\<beta>\<close>}-reduction of 
+the function application of an abstraction to a term merely replaces the bound variables
+referring to the outermost abstracted variable. Thereby, substitutability is implicit
+in the construction: applying a meta-variable that is represented as a function
+to different arguments does not affect variables bound by nested binders.
+
+Therefore, strictly speaking, the implementation of the axiom in the embedding is stronger
+than the axiom stated in PLM. Consider the following instance of the axiom:
 
 \begin{quote}
-\Squ{@{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>} or @{text \<sigma>} just in case every
-occurrence of any variable @{text \<beta>} free in @{text \<tau>} @{text \<open>[\<dots>]\<close>} remains an
-occurrence that is free when @{text \<tau>} is substituted for every free occurrence of @{text \<alpha>}
-in @{text \<phi>} or @{text \<sigma>}.}
+@{thm[display] "cqt:1"[where \<phi>=\<open>\<lambda>\<tau> . \<guillemotleft>\<exists> \<beta>\<^bold>(\<beta> = \<tau>\<^bold>)\<guillemotright>\<close>, axiom_inst, print_as_theorem, of \<tau>]}
 \end{quote}
 
+Here @{term \<phi>} is @{term \<open>\<guillemotleft>\<exists>\<beta>(\<beta> = \<alpha>)\<guillemotright>\<close>}. Now in PLM's terms, @{text \<beta>} itself would
+not be substitutable for @{term \<alpha>} in @{term \<phi>}, since substituting @{term \<beta>} for @{term \<alpha>}
+directly would result in @{term \<beta>} being bound by the existence quantifier.
+However, Isabelle allows this instantiation and resolves this issue by automatically
+generating an alphabetic variant of the nested binder. The following is the direct result
+of instantiating @{term \<phi>} to @{term \<open>\<guillemotleft>\<exists>\<beta>(\<beta> = \<alpha>)\<guillemotright>\<close>} and @{term \<open>\<tau>\<close>} to @{term \<beta>} in
+above axiom:
 
-TODO
+\begin{quote}
+@{thm[display] "cqt:1"[where \<phi>=\<open>\<lambda>\<tau> . \<guillemotleft>\<exists> \<beta>\<^bold>(\<beta> = \<tau>\<^bold>)\<guillemotright>\<close> and \<tau>=\<open>\<beta>\<close>, axiom_inst, print_as_theorem]}
+\end{quote}
 
+While this is not a direct instance of the axiom, we have argued in section~\ref{alphabetic-variants}
+that it is a meta-theorem of AOT that all alphabetic variants are interderivable.
+Furthermore, for any @{term \<phi>} an alphabetic variant can be constructed that makes
+any @{term \<tau>} substitutable for an occurrence of @{term \<alpha>} in @{term \<phi>} by replacing
+all variables bound in @{term \<phi>} that occur free in @{term \<tau>} by fresh variables.
 
-
-TODO
+This signifies one of the main advantages and simultaneously disadvantages of the
+use of SSEs. While the use of the meta-logical mechanisms to deal with alphabetic
+variants and binders allows the implementation to forgo a custom implementation
+of concepts like substitutions and substitutability, this in turn requires a careful
+meta-theoretical analysis to assure that the resulting implementation remains faithful.
+However, for practical purposes the advantages outweigh the disadvantages. Not only
+is a custom implementation of substitutions and alphabetic variants error-prone and cumbersome,
+since it is at the same time seemingly trivial, but nonetheless implementationally complex, but relying
+on the meta-logical implementation has also significant advantages for automated reasoning:
+For example, while by construction Isabelle will see alphabetic variants as identical entities and
+can freely substitute them, manual substitution, as it would be required for deep embeddings,
+would require rigorous proofs about recursively defined transformations on the deep syntax representation
+that can quickly go beyond the limits of the available automation capabilities, even without
+attempting to prove complex theorems. TODO: think about phrasing.
 \<close>
 
 subsection\<open>Generalizing Free Variables to Schematic Variables\<close>text\<open>\label{free-variables-schematic}\<close>
@@ -3027,6 +3176,8 @@ principle, some care has to be taken and we have to additionally rely on the col
 alphabetic variants.
 
 We start by stating and proving the trivial case as a meta-rule in AOT's system:
+
+TODO: fix subscripts and superscripts.
 
 \begin{quote}
 \Squ{If @{text \<open>\<turnstile> \<phi>\<close>}, then @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.}
@@ -3228,137 +3379,48 @@ known examples of such artifactual theorems and the current state of their discu
 subsection\<open>Identity of Projections to Indistinguishable Objects\<close>
 
 (*<*)
-unbundle AOT_no_syntax
-lemma Aux1: \<open>AOT_instance_of_cqt_2_enc_rel (\<lambda>\<kappa>. \<guillemotleft>[\<lambda>z [R]z\<kappa>]\<guillemotright>)\<close>
-  unfolding AOT_instance_of_cqt_2_enc_rel_def
-proof(safe)
-  fix \<kappa>\<^sub>1 \<kappa>\<^sub>2 \<kappa>\<^sub>3 :: \<kappa>
-  assume \<open>AOT_model_term_equiv \<kappa>\<^sub>1 \<kappa>\<^sub>2\<close>
-  hence \<open>\<guillemotleft>[R]\<kappa>\<kappa>\<^sub>1\<guillemotright> = \<guillemotleft>[R]\<kappa>\<kappa>\<^sub>2\<guillemotright>\<close> for \<kappa>
-    by (metis (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(1) AOT_term_of_var
-          AOT_model_denotes_rel.rep_eq AOT_sem_exe_denoting)
-  thus \<open>\<guillemotleft>\<kappa>\<^sub>3[\<lambda>z [R]z\<kappa>\<^sub>1]\<guillemotright> = \<guillemotleft>\<kappa>\<^sub>3[\<lambda>z [R]z\<kappa>\<^sub>2]\<guillemotright>\<close>
-    by simp
-qed
-lemma Aux2: \<open>AOT_instance_of_cqt_2_enc_arg (\<lambda>x. c)\<close>
-  unfolding AOT_instance_of_cqt_2_enc_arg_def by simp
-lemma Aux3:
-  assumes \<open>\<And> \<kappa> . AOT_instance_of_cqt_2 (\<lambda>\<kappa>' :: 'b::{AOT_Term_id_2,AOT_\<kappa>s} . \<phi> \<kappa> \<kappa>')\<close>
-  assumes \<open>\<And> \<kappa>' . AOT_instance_of_cqt_2 (\<lambda>\<kappa> :: 'a::{AOT_Term_id_2,AOT_\<kappa>s} . \<phi> \<kappa> \<kappa>')\<close>
-  shows \<open>AOT_instance_of_cqt_2_enc_rel (\<lambda>\<kappa> :: 'a::{AOT_Term_id_2,AOT_\<kappa>s}. AOT_lambda (\<lambda>\<kappa>'. \<phi> \<kappa> \<kappa>'))\<close>
-proof -
-  {
-    fix x y :: 'a and z ::'b
-    assume \<open>AOT_model_term_equiv x y\<close>
-    moreover assume \<open>AOT_model_denotes x\<close>
-    moreover assume \<open>AOT_model_denotes y\<close>
-    ultimately have \<open>\<phi> x = \<phi> y\<close>
-      using assms unfolding AOT_instance_of_cqt_2_def by blast
-    hence \<open>AOT_enc z (AOT_lambda (\<phi> x)) = AOT_enc z (AOT_lambda (\<phi> y))\<close>
-      by simp
-  }
-  thus ?thesis
-    unfolding AOT_instance_of_cqt_2_enc_rel_def by auto
-qed
-AOT_theorem test: \<open>[\<lambda>z (c[\<lambda>x [R]xz])]\<down>\<close>
-  by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
-AOT_theorem test': \<open>[\<lambda>z (c[\<lambda>x [F]z])]\<down>\<close>
-  by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
-
 AOT_theorem Artifactual1: \<open>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<close>
-  sorry
-(*
 proof(rule "\<rightarrow>I")
-  have 1: \<open>\<forall>x. \<kappa>\<upsilon> (AOT_term_of_var a) \<noteq> null\<upsilon> x\<close> 
-    by (metis AOT_model.AOT_term_of_var AOT_model_denotes_\<kappa>_def \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def)
-  AOT_assume \<open>\<forall>F ([F]a \<equiv> [F]b)\<close>
-  moreover AOT_have 0: \<open>[\<guillemotleft>urrel_to_rel (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . \<kappa>\<upsilon> (AOT_term_of_var a) = u))\<guillemotright>]\<down>\<close> (is \<open>[\<guillemotleft>?r\<guillemotright>]\<down>\<close>)
-    by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes Quotient3_rel_rep urrel_quotient3)
-  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a \<equiv> [\<guillemotleft>?r\<guillemotright>]b\<close>
-    using "\<forall>E"(1) by blast
-  moreover AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a\<close>
-    unfolding AOT_sem_exe_denoting[OF 0]
-    unfolding urrel_to_rel_def
-    by (subst (0 1) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1))
-  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]b\<close>
-    using "\<equiv>E"(1) by blast
-  hence \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>
-    unfolding AOT_sem_exe_denoting[OF 0]
-    unfolding urrel_to_rel_def
-    apply (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
-    by (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
-  AOT_have 1: \<open>[\<lambda>x [R]xa]\<down>\<close> for a by "cqt:2"
-  have \<open>\<guillemotleft>[\<lambda>x [R]xa]\<guillemotright> = Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]\<kappa>a\<guillemotright>)\<close>
-    apply (rule AOT_sem_lambda_denoting[where \<phi>=\<open>\<lambda> \<kappa> . \<guillemotleft>[R]\<kappa>a\<guillemotright>\<close>])
-    unfolding AOT_sem_denotes AOT_model_denotes_rel_def
-    apply auto
-      apply (subst (0 1) Abs_rel_inverse)
-       apply simp
-    using AOT_sem_exe_denoting
-      apply (mets (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(2) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq)
-     apply (subst (asm) Abs_rel_inverse)
-      apply simp
-     apply (meson "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" AOT_sem_denotes)
-    apply (subst (0 1) Abs_rel_inverse)
-     apply simp
-    by (simp add: AOT_model_regular_\<kappa>_def)
-  moreover have \<open>Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]\<kappa>a\<guillemotright>) = Abs_rel (\<lambda>\<kappa> . \<guillemotleft>[R]\<kappa>b\<guillemotright>)\<close>
-    apply (subst (0 1) AOT_sem_exe_denoting)
-      apply (simp add: AOT_sem_vars_denote)+
-    by (meson AOT_meta_prod_equivI(1) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq AOT_model_term_equiv_\<kappa>_def \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>)
-  ultimately have \<open>\<guillemotleft>[\<lambda>x [R]xa]\<guillemotright> = \<guillemotleft>[\<lambda>x [R]xb]\<guillemotright>\<close>
-    by (metis Abs_rel_inverse iso_tuple_UNIV_I)
-  AOT_thus \<open>[\<lambda>x [R]xa] = [\<lambda>x [R]xb]\<close>
-    by (simp add: "rule=I:1" 1)
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix c
+    AOT_have \<open>[\<lambda>x (c[\<lambda>z [R]zx])]\<down>\<close>
+      by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
+    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(c[\<lambda>z [R]zx] \<equiv> c[\<lambda>z [R]zy]))\<close>
+      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"] \<comment> \<open>see~\nameref{AOT:kirchner-thm-cor:1}\<close>
+      by blast
+    AOT_have \<open>\<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+  }
+  AOT_hence \<open>\<forall>c \<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+    by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>c(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
+    by (rule BF[THEN "\<rightarrow>E"]) \<comment> \<open>see~\nameref{AOT:BFs:1}\<close>
+  AOT_thus \<open>[\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
+    by (AOT_subst_def "identity:2") \<comment> \<open>see~\nameref{AOT:identity:2}\<close>
+       (auto intro!: "&I" "cqt:2")
 qed
-*)
 AOT_theorem Artifactual2: \<open>\<forall>F ([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>x [R]ax] = [\<lambda>x [R]bx]\<close>
-  sorry
-(*
 proof(rule "\<rightarrow>I")
-  have 1: \<open>\<forall>x. \<kappa>\<upsilon> (AOT_term_of_var a) \<noteq> null\<upsilon> x\<close> 
-    by (metis AOT_model.AOT_term_of_var AOT_model_denotes_\<kappa>_def \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def)
-  AOT_assume \<open>\<forall>F ([F]a \<equiv> [F]b)\<close>
-  moreover AOT_have 0: \<open>[\<guillemotleft>urrel_to_rel (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . \<kappa>\<upsilon> (AOT_term_of_var a) = u))\<guillemotright>]\<down>\<close> (is \<open>[\<guillemotleft>?r\<guillemotright>]\<down>\<close>)
-    by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes Quotient3_rel_rep urrel_quotient3)
-  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a \<equiv> [\<guillemotleft>?r\<guillemotright>]b\<close>
-    using "\<forall>E"(1) by blast
-  moreover AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]a\<close>
-    unfolding AOT_sem_exe_denoting[OF 0]
-    unfolding urrel_to_rel_def
-    by (subst (0 1) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1))
-  ultimately AOT_have \<open>[\<guillemotleft>?r\<guillemotright>]b\<close>
-    using "\<equiv>E"(1) by blast
-  hence \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>
-    unfolding AOT_sem_exe_denoting[OF 0]
-    unfolding urrel_to_rel_def
-    apply (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
-    by (subst (asm) Abs_urrel_inverse Abs_rel_inverse; (simp add: AOT_model_proposition_choice_simp 1)?)
-  AOT_have 1: \<open>[\<lambda>x [R]ax]\<down>\<close> for a by "cqt:2"
-  have \<open>\<guillemotleft>[\<lambda>x [R]ax]\<guillemotright> = Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]a\<kappa>\<guillemotright>)\<close>
-    apply (rule AOT_sem_lambda_denoting[where \<phi>=\<open>\<lambda> \<kappa> . \<guillemotleft>[R]a\<kappa>\<guillemotright>\<close>])
-    unfolding AOT_sem_denotes AOT_model_denotes_rel_def
-    apply auto
-      apply (subst (0 1) Abs_rel_inverse)
-       apply simp
-    using AOT_sem_exe_denoting
-      apply (metis (no_types, hide_lams) "cqt:2"(1) AOT_meta_prod_equivI(1) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq)
-     apply (subst (asm) Abs_rel_inverse)
-      apply simp
-     apply (meson "russell-axiom[exe,2,1,2].\<psi>_denotes_asm" AOT_sem_denotes)
-    apply (subst (0 1) Abs_rel_inverse)
-     apply simp
-    by (simp add: AOT_model_regular_\<kappa>_def)
-  moreover have \<open>Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[R]a\<kappa>\<guillemotright>) = Abs_rel (\<lambda>\<kappa> . \<guillemotleft>[R]b\<kappa>\<guillemotright>)\<close>
-    apply (subst (0 1) AOT_sem_exe_denoting)
-      apply (simp add: AOT_sem_vars_denote)+
-    by (meson AOT_meta_prod_equivI(2) AOT_model.AOT_term_of_var AOT_model_denotes_rel.rep_eq AOT_model_term_equiv_\<kappa>_def \<open>\<kappa>\<upsilon> (AOT_term_of_var a) = \<kappa>\<upsilon> (AOT_term_of_var b)\<close>)
-  ultimately have \<open>\<guillemotleft>[\<lambda>x [R]ax]\<guillemotright> = \<guillemotleft>[\<lambda>x [R]bx]\<guillemotright>\<close>
-    by (metis Abs_rel_inverse iso_tuple_UNIV_I)
-  AOT_thus \<open>[\<lambda>x [R]ax] = [\<lambda>x [R]bx]\<close>
-    by (simp add: "rule=I:1" 1)
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix c
+    AOT_have \<open>[\<lambda>x (c[\<lambda>z [R]xz])]\<down>\<close>
+      by (safe intro!: "cqt:2" AOT_instance_of_cqt_2_intro_next)
+    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(c[\<lambda>z [R]xz] \<equiv> c[\<lambda>z [R]yz]))\<close>
+      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"] \<comment> \<open>see~\nameref{AOT:kirchner-thm-cor:1}\<close>
+      by blast
+    AOT_have \<open>\<box>(c[\<lambda>z [R]az] \<equiv> c[\<lambda>z [R]bz])\<close>
+      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+  }
+  AOT_hence \<open>\<forall>c \<box>(c[\<lambda>z [R]az] \<equiv> c[\<lambda>z [R]bz])\<close>
+    by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>c(c[\<lambda>z [R]az] \<equiv> c[\<lambda>z [R]bz])\<close>
+    by (rule BF[THEN "\<rightarrow>E"]) \<comment> \<open>see~\nameref{AOT:BFs:1}\<close>
+  AOT_thus \<open>[\<lambda>z [R]az] = [\<lambda>z [R]bz]\<close>
+    by (AOT_subst_def "identity:2") \<comment> \<open>see~\nameref{AOT:identity:2}\<close>
+       (auto intro!: "&I" "cqt:2")
 qed
-*)
 AOT_theorem Artifactual3:
   shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> \<forall>G\<^bold>(([G]a) = ([G]b)\<^bold>)\<close>
   unfolding explicitParen_def
@@ -3455,7 +3517,7 @@ by @{term \<open>\<guillemotleft>[\<lambda>z [G]a]\<guillemotright>\<close>} and
 becomes derivable:
 
 \begin{quote}
-@{thm[display] (concl) Artifactual3[print_as_theorem, of a b]}
+@{thm[display] Artifactual3[print_as_theorem, of a b]}
 \end{quote}
 
 Semantically, this theorem states that whenever two objects share an urelement,
@@ -3471,7 +3533,7 @@ section~\ref{cqt:2-impl}.
 subsection\<open>Generalizations of @{text \<open>\<^bold>\<eta>\<close>}-Conversion\<close>
 (*<*)
 AOT_theorem Artifactual4: \<open>([\<lambda>x [F]xy]x) = ([F]xy)\<close>
-  sorry
+  oops
 (*
   unfolding AOT_sem_eq
   apply (auto simp: "log-prop-prop:2")
@@ -3516,9 +3578,7 @@ However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conve
 is @{emph \<open>not\<close>} a theorem of AOT, even though it is a theorem in the embedding (ignoring
 the abstraction layer):
 
-\begin{quote}
-@{thm[display] Artifactual4[print_as_theorem, of F y x]}
-\end{quote}
+TODO
 
 This is an artifact of the semantic construction that validates the two principles
 above. To validate @{text \<eta>}-conversion, the embedding directly chooses a relation @{term F}
