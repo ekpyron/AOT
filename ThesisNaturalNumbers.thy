@@ -1426,7 +1426,7 @@ The Predecessor relation is functional (see~\nameref{AOT:pred-func:1}):
                "pred-func:2"[of _ n m k, print_as_theorem]}
 \<close>
 
-section\<open>Possible Richness of Objects\<close>
+section\<open>Possible Richness of Objects\<close>text\<open>\label{ModalAxiom}\<close>
 
 text\<open>
 As mentioned above, the construction so far is valid in models with only a single ordinary 

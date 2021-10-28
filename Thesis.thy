@@ -554,7 +554,7 @@ the earlier version in \cite{MScThesis}.
 
 \<close>
 
-section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>
+section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
 
 text\<open>
 While abstraction layers provide a means to insulate our embedding from artifactual theorems (i.e. theorems
@@ -1909,7 +1909,7 @@ abstract objects that fail to be distinguishable. This is also discussed
 in section~\ref{JustificationExtendedComprehension} in the context of our proposed
 extended comprehension principle for relations among abstract objects as well as in
 section~\ref{NewNumberTheory} in the context of a potential future improvement in the
-derivation of Natural Numbers in AOT.
+construction of Natural Numbers in AOT.
 
 In the following section, we will see another prominent example of a theorem of AOT involving
 indistinguishable objects that relates to Aczel models.
@@ -1942,11 +1942,12 @@ whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system 
 Notably, this led to a proof of the existence of world-relative relations and
 thereby of rigidifying relations, which play an important role in the derivation
 of natural numbers and whose existence previously had to be assured by axiom. This
-is explained in more detail in the section~\ref{WorldRelativeRelations} (TODO: adjust ref).
+is explained in more detail in the section~\ref{WorldRelativeRelations}.
 
 Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
-that does not rely on a modal axiom of infinity. This is mentioned briefly in
-section~\ref{NewNumberTheory}, although at the time of writing, the analysis of
+that does not require a modal axiom of infinity.\footnote{I.e. the axiom described in section~\nameref{ModalAxiom}
+may not be required in future versions of the construction.} This is mentioned in section~\ref{NewNumberTheory},
+although at the time of writing, the analysis of
 this potential change is not yet complete, so the current version of PLM at the time
 of writing does not yet contain this new enhanced derivation.
 
@@ -1958,16 +1959,16 @@ Semantically, the theorem is closely related to Aczel models of AOT.
 The condition of being indistinguishable, @{term \<open>print_term \<guillemotleft>\<forall>F ([F]x \<equiv> [F]y)\<guillemotright>\<close>},
 semantically corresponds to @{term x} and @{term y} sharing the same @{emph \<open>urelement\<close>}.
 Consequently, the theorem states that @{text \<open>\<lambda>\<close>}-expressions denote, if their matrix
-agrees on objects with the same urelements, or in other words, if they can be represented
+agrees on objects with the same urelements or, in other words, if they can be represented
 as functions acting on urelements. A more detailed semantic discussion and a precise
-construction involving a mapping individuals to urelements and constructing relations as
+construction involving a mapping from individuals to urelements and constructing relations as
 proposition-valued functions acting on these urelements can be found in chapter~\ref{SSEofAOT}.
 \<close>
 
 
 subsection\<open>Truth Values as Abstract Objects\<close>text\<open>\label{TruthValues}\<close>
 
-text\<open>An example of AOT's ability to @{emph \<open>define\<close>} metaphysical entities
+text\<open>An example of AOT's ability to define metaphysical entities as abstract objects
 and derive interesting properties about them, is Truth Values.
 
 In AOT, it is possible to provide a @{emph \<open>syntactic\<close>} definition of what it means to
@@ -1978,9 +1979,9 @@ be a truth value of a proposition (see~\nameref{AOT:tv-p}):
 \end{quote}
 
 An abstract object @{text x} is the Truth Value of a proposition @{text p}, just in
-case it encodes a property @{term F}, just in case that there is a proposition @{term q}
+case it encodes a property @{term F}, if and only if there is a proposition @{term q}
 that is equivalent to @{term p} and @{term F} is the propositional property
-@{emph \<open>being an @{text x}, s.t. @{term q}\<close>}.
+@{emph \<open>being a @{text y}, s.t. @{term q}\<close>}.
 
 A definite description can be used to talk about @{emph \<open>the\<close>} truth value @{text \<open>\<circ>p\<close>} of a proposition @{text p}:
 
@@ -2007,7 +2008,9 @@ For instance:
   \<^item> The True is distinct from The False (see~\nameref{AOT:the-true:3}): @{thm "the-true:3"[print_as_theorem]}
   \<^item> The True and The False are truth values (see~\nameref{AOT:T-T-value:1}):\footnote{Note that
     since descriptions are modally rigid and refer to objects in the actual world, these theorems are
-    modally-fragile, i.e. @{emph \<open>actual\<close>}, but not @{emph \<open>necessary\<close>} truths.}
+    modally-fragile, i.e. @{emph \<open>actual\<close>}, but not @{emph \<open>necessary\<close>} truths: While there are
+    necessarily exactly two truth values, different possible worlds have different truth values (exactly two in each world).
+    The defined @{text \<open>\<top>\<close>} and @{text \<open>\<bottom>\<close>} are the truth values of the actual world.}
     @{thm[display] "T-T-value:1"}
     @{thm[display] "T-T-value:2"}
   \<^item> A proposition is true, iff its truth value is The True and
@@ -2015,10 +2018,10 @@ For instance:
     @{thm[display] "valueof-facts:1"[of x p]}
     @{thm[display] "valueof-facts:2"[of x p]}
 
-Thereby the analysis of Truth Values is an example of AOT's ability to define and analyse
+The analysis of Truth Values is an example of AOT's ability to define and analyze
 abstract objects that faithfully represent entities that are usually only considered
-semantically. Another example of this is AOT's analysis of Possible Worlds described
-in section~\ref{PossibleWorldTheory} below.
+semantically. AOT's analysis of Possible Worlds that is discussed in the next section
+is another example of this.
 \<close>
 
 subsection\<open>Fundamental Theorems of Possible Worlds\<close>text\<open>\label{PossibleWorldTheory}\<close>
@@ -2031,10 +2034,9 @@ AOT_theorem trueInSituation: \<open>s \<Turnstile> p \<equiv> s[\<lambda>y p]\<c
 (*>*)
 
 text\<open>
-Another interesting aspect of AOT is its analysis of Possible Worlds.
-Similarly to Truth Values whose analysis was hinted at in section~\ref{TruthValues}, Possible Worlds are
-usually solely considered semantically. However, in AOT it is possible to define
-Possible Worlds as abstract objects and derive fundamental theorems about them.
+Similarly to Truth Values, Possible Worlds are usually solely considered semantically.
+However, AOT allows to @{emph \<open>define\<close>} Possible Worlds as a class of abstract objects
+and derive fundamental theorems about them.
 
 As a first step, consider the following definition of a @{emph \<open>Situation\<close>} (see~\nameref{AOT:situations}):
 
@@ -2050,7 +2052,7 @@ A property @{term F} is propositional, just in case that there is a proposition 
 @{thm[display] "prop-prop1"[of F]}
 \end{quote}
 
-Being a situations is a @{emph \<open>rigid restriction condition\<close>}, so as explained in
+Being a situation is a @{emph \<open>rigid restriction condition\<close>}, so as explained in
 section~\ref{RestrictedVariables}, we can use @{text s} as a restricted variable that ranges
 over situations. A situation makes a proposition true, written @{term \<open>print_as_theorem \<guillemotleft>s \<Turnstile> p\<guillemotright>\<close>}, just
 in case it encodes @{term \<open>\<guillemotleft>[\<lambda>y p]\<guillemotright>\<close>}:\footnote{Note that the double turnstile symbol @{text \<open>\<Turnstile>\<close>} used here
@@ -2079,21 +2081,21 @@ situations and furthermore that any abstract object that is a possible and maxim
 
 TODO: printing of definitions with restricted variables.
 
-  \<^item> @{thm[display] "actual"[of s]}
+  \<^item> @{thm[display] "actual"[of x]}
     A situation is actual, if it only makes true propositions true (see~\nameref{AOT:actual}).
-  \<^item> @{thm[display] "pos"[of s]}
+  \<^item> @{thm[display] "pos"[of x]}
     A situation is possible, if it is possibly actual (see~\nameref{AOT:pos}).
-  \<^item> @{thm[display] "cons"[of s]}
+  \<^item> @{thm[display] "cons"[of x]}
     A situation is consistent, if it does not make any proposition and its negation
     true at the same time  (see~\nameref{AOT:cons}).
-  \<^item> @{thm[display] "max"[of s]}
+  \<^item> @{thm[display] "max"[of x]}
     A situation is maximal, if any proposition is either true or false in it (see~\nameref{AOT:max}).
   \<^item> @{thm "world-pos"[print_as_theorem, of w]}, @{thm "world-cons:1"[print_as_theorem, of w]}, @{thm "world-max"[print_as_theorem, of w]}\\
     Possible worlds are possible, consistent and maximal (see~\nameref{AOT:world-pos}, \nameref{AOT:world-cons:1} and \nameref{AOT:world-max}).
   \<^item> @{thm[display] "world=maxpos:2"[print_as_theorem, of x]}
     An abstract object is a possible world, if and only if it is a maximal and possible situation (see~\nameref{AOT:world=maxpos:2}).
 
-The fundamental theorems of possible world theories relate the defined possible worlds
+The @{emph \<open>fundamental theorems of possible worlds\<close>} relate the defined possible worlds
 to possibility and necessity of the modal logic of AOT (see~\nameref{AOT:fund:1} and~\nameref{AOT:fund:2}):
 
 \begin{quote}
@@ -2112,7 +2114,8 @@ with respect to being true in a possible world, i.e. (see~\nameref{AOT:conj-dist
   \<^item> @{thm[display] "conj-dist-w:6"[print_as_theorem, of w \<phi>]}
 
 Taken together this reproduces the semantic analysis of AOT with Kripke semantics
-syntactically within the derivational system of AOT itself using abstract objects.
+syntactically within the derivational system of AOT itself. It is a notable feature
+of AOT that it can accurately reason about its own semantics.
 \<close>
 
 subsection\<open>World-Relative Relations and Rigidifying Relations\<close>text\<open>\label{WorldRelativeRelations}\<close>
@@ -2148,9 +2151,9 @@ This allows for a definition of world-relative relations as follows (see~\namere
 @{thm[display] "w-index"}
 \end{quote}
 
-Notably, this consequence of the necessary and sufficient conditions of relations to denote we
-contributed based on our work, allowed for eliminating an additional axiom that was
-previously required for the analysis of Natural Numbers. In particular, it becomes a
+Notably, this theorem that was discovered using our embedding
+allowed to eliminate an additional axiom that was previously required
+for the analysis of Natural Numbers. In particular, it becomes a
 theorem that there exist @{emph \<open>rigidifying relations\<close>}.
 
 A relation is @{emph \<open>rigid\<close>}, if exemplifying it is modally collapsed (see~\nameref{AOT:df-rigid-rel:1}):
@@ -2173,15 +2176,15 @@ rigidifying relations (see~\nameref{AOT:rigid-der:3}):
 @{thm[display] "rigid-der:3"[print_as_theorem, of G]}
 \end{quote}
 
-Rigidifying relations will play an important role in the derivation of Natural
+Rigidifying relations will play an important role in the construction of Natural
 Numbers described in chapter~\ref{NaturalNumbers} and their existence previously
-had to be ensured by axiom.
+had to be ensured stating this last theorem as axiom.
 \<close>
 
 subsection\<open>Sixteen Distinct Properties\<close>
 
 text\<open>Another result that can be traced back directly to the construction of
-the embedding is the derivation a more refined theorem about minimal models
+the embedding is the derivation of a more refined theorem about minimal models
 of AOT. While previously PLM merely derived that there are six distinct properties,
 it is a natural consequence of our constructed models that there are at least
 sixteen distinct properties. This is due to the fact that there need to be at least
@@ -2193,9 +2196,9 @@ to 4 propositions can be done in $2^4=16$ distinct ways.
 
 And indeed we could construct a proof in the system of AOT itself that verifies that
 this is not a mere artifact of the model construction, but a proper theorem in AOT.
-See~\nameref{AOT:sixteen} for a detailed proof.
+See~\nameref{AOT:sixteen} for a detailed (though somewhat tedious) proof.
 
-Notably, this result also implies that there is at least $2^16 = 65556$ distinct
+Notably, this result also implies that there is at least $2^{16} = 65556$ distinct
 abstract objects in minimal models of AOT. On the other hand, models that validate the
 theory of natural numbers described in chapter~\ref{NaturalNumbers} involve at
 least countably many ordinary objects\footnote{At least in the current construction.
@@ -2209,6 +2212,7 @@ subsection\<open>TODO\<close>
 text\<open>
 TODO: needs to mention:
   \<^item> There is no general relation of identity.
+  \<^item> Section about hyperintensionality?
 \<close>
 
 section\<open>Implications for the Philosophy of Mathematics\<close>text\<open>\label{ImplicationsForPhilosophyOfMathematics}\<close>
@@ -2229,14 +2233,15 @@ this section provides a high-level description of the construction.
 The general construction is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
-it employs type classes to model relations of arbitrary arity as relations among
-tuples of individuals.
+it employs a system type classes to model relations of arbitrary arity as relations among
+tuples of individuals.\footnote{However, for each fixed arity of relations
+the type classes can be logically eliminated.}
 
 Note that while we talk about @{emph \<open>modelling\<close>} AOT, we do not construct concrete
 models of AOT's logic in the classical sense.\footnote{See also
 the discussion in section~\ref{SSE:MetaModel}.} Instead, we @{emph \<open>implement\<close>} AOT in
-Isabelle/HOL using a SSE and any set-theoretic model of the HOL theory we use as
-meta-logic can be lifted to a full set-theoretic model of AOT. This way, in particular, we
+Isabelle/HOL using a SSE and any set-theoretic model of our meta-logic HOL
+ can be lifted to a full set-theoretic model of AOT. This way, in particular, we
 can avoid defining concrete interpretation and assignment functions, since we can
 rely on Isabelle's semantics for constants and variables instead.
 \<close>
@@ -2244,13 +2249,15 @@ rely on Isabelle's semantics for constants and variables instead.
 subsection\<open>Aczel Models\<close>text\<open>\label{AczelModels}\<close>
 
 text\<open>
+TODO: watch figure placement.
+
 The general structure of our models is based on Aczel models (TODO: cite).
 Aczel models are extensional models that validate both
-the Comprehension Principle of Abstract Objects (the last axiom in section~\ref{AxiomSystem},
-resp. \nameref{AOT:A-objects} in the embedding) and classical relation comprehension
-in the absence of encoding formulas.
+the Comprehension Principle of Abstract Objects\footnote{The last axiom in section~\ref{AxiomSystem},
+resp. \nameref{AOT:A-objects} in the embedding: @{thm "A-objects"[axiom_inst, print_as_theorem, of \<phi>]}}
+and classical relation comprehension in the absence of encoding formulas.
 
-Figure~\ref{fig:aczel-model} illustrates the basic idea of Aczel models:
+Figure~\ref{fig:aczel-model} illustrates the basic idea of Aczel models.
 
 \tikzset{font=\fontsize{8pt}{10pt}\selectfont}
 \begin{figure}[h!]
@@ -2301,7 +2308,7 @@ In the extensional, non-modal setting, the power set of the set of Urelements su
 for representing properties. Abstract objects in turn are modelled using the power set
 of properties.
 
-Furthermore the models involve a (non-injective) mapping from abstract objects to
+Furthermore, the models involve a (non-injective) mapping from abstract objects to
 special urelements. The special urelement @{text \<open>||x||\<close>} to which an abstract object
 @{text x} is mapped determines which properties the abstract object @{text x} @{emph \<open>exemplifies\<close>}.
 
@@ -2385,10 +2392,11 @@ equivalent propositions:
 
   \<^item> For any given Kripke-extension @{term \<phi>}, the inverse of @{term AOT_model_d\<o>}
     yields a proposition of type @{term \<o>} that is valid in exactly those worlds
-    for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).
+    for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).\footnote{This
+    fact relies on the surjectivity of @{const AOT_model_d\<o>}.}
   \<^item> However, the construction allows for the type @{typ \<o>} to contain more propositions
-    than there are Kripke-extensions. For example, there may be two distinct
-    objects @{term p} and @{term q} of type @{typ \<o>} that are necessarilily equivalent,
+    than there are Kripke-extensions. I.e there may be two distinct
+    objects @{term p} and @{term q} of type @{typ \<o>} that are necessarily equivalent,
     i.e. they are valid in the same semantic possible worlds. This can be confirmed by
     @{command nitpick}:
 \<close>
@@ -2416,8 +2424,8 @@ just as many objects of type @{typ \<o>} as there are Kripke-extensions.
 So just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
 propositions.
 
-As a next step we construct a variant of Aczel models on top of the hyperintensional
-propositions that aims to preserve hyperintensionality for relations and accounts
+As a next step we construct a variant of Aczel models relative to the introduced type of
+propositions while preserving the constructed hyperintensionality for relations and accounting
 for AOT's free logic.
 \<close>
 
@@ -2434,7 +2442,7 @@ that is comprised of three separate kinds of urelements:
 Following the structure of Aczel models, ordinary urelements are used to model
 ordinary objects and special urelements determine the exemplification behaviour of
 abstract objects. The additional null-urelements are introduced to be able to
-distinguish between distinct non-denoting individual terms.
+distinguish between non-denoting individual terms.
 
 For simple models, a plain primitive type for the special urelements suffices. However,
 to model our proposed extended relation comprehension, we use a richer type
@@ -2459,22 +2467,38 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     @{emph \<open>identical\<close>} to @{term \<open>q\<close>}. In the model this is achieved by allowing
     both descriptions to be mapped to distinct null-urelements to which the urrelation
     corresponding to @{term F} can assign distinct (albeit necessarily false)
-    propositions.
+    propositions.\footnote{Note that this is not a merely technicality, but it may be desirable
+    to distinguish e.g. between the proposition @{emph \<open>The number smaller than 3 is a natural number.\<close>} (which fails due
+    to there not being a unique such number) and @{emph \<open>The number greater than 3 and smaller than 2 is a natural number.\<close>} (which
+    fails due to there not being any such number). Furthermore, it might make sense to consider
+    the proposition @{emph \<open>The present king of France is a natural number.\<close>} to be an entirely different
+    proposition than the first two. The embedding allows to assign each of the non-denoting definite descriptions
+    distinct null-urelements and thereby allows the propositions to differ. However, it also allows to choose
+    a model with only a single null-urelement which would collapse these propositions.}
   \<^item> In AOT there may be distinct properties, s.t. for any object exemplifying either of
     them necessarily results in the same proposition, i.e. @{term \<open>print_as_theorem \<guillemotleft>\<forall>x \<box>\<^bold>(([F]x) = ([G]x)\<^bold>)\<guillemotright>\<close>}
     does @{emph \<open>not\<close>} imply @{term \<open>F = G\<close>}. The @{text \<open>\<forall>\<close>}-quantifier ranges over all denoting
     individuals. If relations were merely modelled as functions from urelements that
     correspond to denoting individual terms to propositions, the identity would follow,
-    since two functions are identical, if they map to identical values for all arguments.
+    since two functions are identical, if they agree on all arguments.
     By introducing null-urelements, however, we allow @{term F} and @{term G} to vary
-    on additional urelements outside of the range of the quantifier.
+    on additional urelements outside of the range of the quantifier.@{footnote \<open>An alternative
+    would be to introduce a primitive type of relations that is merely assigned a proposition-valued
+    function as extension, similarly to how Kripke-extensions are assigned to a primitive type of
+    propositions. However, this would require a polymorphic axiomatization to account for relations
+    of all arities which is incompatible with the model-checking tool @{command nitpick}. Even
+    only axiomatizing a subset of all arities would require @{command nitpick} to construct
+    significantly larger models and thereby restrict its usefulness. Furthermore, the
+    construction would remain equivalent since the type of propositions can conceptually be
+    chosen as a pair of primitive urrelations and propositions@{text \<open>\<^sup>*\<close>}, s.t. each relation can
+    map to distinct propositions, i.e. the same granularity of relations can be achieved.\<close>}
 
 Note that the additional null-urelements have no impact on
 minimal models of AOT. In minimal models, propositions are extensional, i.e. they are
 in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
 on possible worlds there is exactly one proposition.
 Since urrelations are required to necessarily be false on null-urelements, the
-introduction of one null-urelement does not increase the amount of relations in the
+introduction of a null-urelements does not increase the amount of relations in the
 models: while urrelations have to assign a Kripke-extensions to this null-urelement,
 there is only one choice for doing so, namely the constant-false function on possible
 worlds. Consequently, the number of relations in minimal models of AOT is unaffected. 
@@ -2492,14 +2516,15 @@ we require additional properties and proving that those properties can be satisf
 is more involved (see~\nameref{AOT:AOT_model.<alpha><sigma>_ext} and the more detailed
 discussion in section~\ref{pred}).
 
-Given this extended Aczel model structure we can represent the terms of AOT.
+Based on the now introduced types of urelements @{typ \<upsilon>} and urrelations @{typ urrel}
+we can represent the terms of AOT.
 \<close>
 
 subsection\<open>Individual Terms and Type Classes for Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
 
 text\<open>
-As a first step in representing the terms of AOT, we introduce a concrete
-type of individual terms @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}).
+As a first step in representing the terms of AOT, we introduce a type of individual
+terms @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}).
 The type @{typ \<kappa>} consists of ordinary objects of type @{typ \<omega>} (shared with ordinary
 urelements), abstract objects modelled as sets of urelements (type @{typ \<open>urrel set\<close>})
 and null-objects of type @{typ null} (shared with null-urelements) that will
@@ -2509,7 +2534,8 @@ from individual terms to urelements @{text \<kappa>\<upsilon>} of type @{typ \<o
 s.t. for any urelement we can find an individual term that is mapped to that urelement.
 
 However, we also introduce a system of @{emph \<open>type classes\<close>} that abstract over
-concrete types for two reasons (TODO: reference some to-be-done discussion of type classes?):
+concrete types for two reasons (see section~\ref{NativeAbstractionMechanisms} for a
+brief discussion of type classes or TODO: cite for a more detailed description):
   \<^item> AOT involves axioms and theorems with (meta-)variables that may be instantiated
     to terms of several different types. In order not to have to restate multiple
     instances of such statements we formulate type classes that abstract over the
@@ -2539,25 +2565,29 @@ concrete type denotes.
 The generic type class for individual terms based on which we will define relation terms
 is @{class AOT_IndividualTerm} (see~\nameref{AOT:AOT_model.AOT_Term}).
 The most important parameter of this type class is @{const AOT_model_term_equiv}, an
-equivalence relation which is satisfied for two objects, if they have common urelements.
+equivalence relation which is satisfied for two objects\footnote{Note that an @{emph \<open>object\<close>} of a type
+of class @{class AOT_IndividualTerm} may itself e.g. be a pair of two objects of type @{typ \<kappa>}, since
+the product of @{typ \<kappa>} with itself, i.e. type @{typ \<open>\<kappa>\<times>\<kappa>\<close>}, is also of class @{class AOT_IndividualTerm}.},
+if they have common urelements.
 We furthermore introduce the notion of individual terms to be @{emph \<open>regular\<close>} and
 specify a transformation of proposition-valued functions acting on individual terms, s.t.
-the after the transformation the behaviour of the function is solely determined by
+after the transformation the behaviour of the function is solely determined by
 its values on regular terms. We will discuss this in more detail in the context of
 @{text n}-ary relation identity (TODO: ref). An unary individual term is always
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
 
-We successively define more refined type classes on top of the basic class of
-@{class AOT_IndividualTerm} to capture further and more abstract notions of
-individual terms, e.g. we define an abstract notion of @{text n}-ary encoding
+We successively define more refined type classes on top of the basic class
+@{class AOT_IndividualTerm}, e.g. we define an abstract notion of @{text n}-ary encoding
 using the type classes @{class AOT_UnaryEnc} and @{class AOT_Enc} (see~\nameref{AOT:AOT_semantics.AOT_UnaryEnc} and~\nameref{AOT:AOT_semantics.AOT_Enc}).
 
-We end up at the most refined classes @{class AOT_\<kappa>s} with the unary case
-@{class AOT_\<kappa>} (see~\nameref{AOT:AOT_semantics.AOT_<kappa>s}), which will be used as the
-default type classes for individuals and relations among them for the
-formulation of the axiom system.
-
+We end up at the most refined class @{class AOT_\<kappa>s} with the unary case abstracted as
+class @{class AOT_\<kappa>} (see~\nameref{AOT:AOT_semantics.AOT_<kappa>s}). When formulating the
+axiom system, individuals in ellipses notation will be allowed to have any type of class @{class AOT_\<kappa>s},
+and relations will be assumed to act among any type of class @{class AOT_\<kappa>s}. This
+way axioms about relations can be stated for all multiple arities at the same time (the
+concrete type of individuals @{typ \<kappa>} as well as arbitrary iterated products of it, e.g.
+@{typ \<open>\<kappa>\<times>\<kappa>\<times>\<kappa>\<close>}, are all of class @{class AOT_\<kappa>s}).
 \<close>
 subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
 text\<open>
@@ -2626,7 +2656,7 @@ text\<open>
 In our meta-logic HOL, quantification is represented as the application of a higher-order
 function @{const All} (often written as @{text \<open>\<Pi>\<close>} in other contexts) to a function acting on the bound
 variable. I.e. @{term \<open>\<forall> \<alpha> . \<phi> \<alpha>\<close>} is the same as @{text \<open>All (\<lambda> \<alpha> . \<phi> \<alpha>)\<close>}, respectively
-@{term \<open>All \<phi>\<close>}.
+@{term \<open>All \<phi>\<close>}. TODO: extend or delete.
 \<close>
 
 section\<open>Syntax of the Target Theory\<close>text\<open>\label{AOTSyntax}\<close>
@@ -2650,16 +2680,17 @@ results in significantly improved readability.
 Therefore we utilize Isabelle's low-level mechanisms to customize syntax by providing
 transformations on its AST and its term representation written in Standard ML.
 
-TODO: change to meta-variables, add @{const AOT_term_of_var} or comment about it.
 In particular, we use @{command parse_ast_translation}s and @{command parse_translation}s (TODO cite)
 to split what Isabelle would natively regard as a single identifier. That way we are
 able to e.g. translate the term @{term \<open>print_as_theorem \<guillemotleft>[F]xy\<guillemotright>\<close>} to
-@{text \<open>AOT_exe F (x, y)\<close>}. The 2-ary exemplification formula is translated to
+@{text \<open>AOT_exe F (x,y)\<close>}. The 2-ary exemplification formula is translated to
 an application of the constant @{const AOT_exe} to the relation term and a tuple of
 individuals. Similarly, @{term \<open>print_as_theorem \<guillemotleft>xy[F]\<guillemotright>\<close>} is translated to
-@{text \<open>AOT_enc (x,y) F\<close>}. The involved constants are introduced in~\ref{AOT:AOT_syntax}
+@{text \<open>AOT_enc (x,y) F\<close>}.\footnote{We omitted an additional @{const AOT_term_of_var} decorations
+on @{text x}, @{text y} and @{text F} for improved readbility. @{const AOT_term_of_var} is mentioned
+below and described in section~\ref{cqt:2-impl}.} The involved constants are introduced in~\ref{AOT:AOT_syntax}
 as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which will only
-later be enriched with semantic structure using @{command specification}s (TODO: refs).
+later be enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).
 
 Furthermore, PLM associates the symbols used for its terms with their types, as described in
 section~\ref{AOTLanguage}. While it is possible to rely on Isabelle's type inference,
@@ -2673,8 +2704,7 @@ both for unary terms and tuples. We then allow registering symbols as variables 
 metavariables of the given category with @{command AOT_register_variable_names} and
 @{command AOT_register_metavariable_names}. The extensible design allows for reproducing
 AOT's concept of @{emph \<open>restricted variables\<close>} (see~\ref{RestrictedVariables}) by further
-associating a term category with a restriction condition (see~\ref{AOT:AOT_RestrictedVariables})
-as required. TODO: details?
+associating a term category with a restriction condition (see~\ref{AOT:AOT_RestrictedVariables}).
 
 A danger in the extensive use of complex custom syntax is silent errors in the syntactic
 translations that could result in an expression to be parsed contrary to their intended
@@ -2683,7 +2713,7 @@ embedding can be configured to print terms in an approximation of AOT's syntax, 
 
 @{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
 
-using meta-syntax, an enriched version of HOL's syntax without complex transformations, e.g.:
+using @{emph \<open>meta-syntax\<close>}, an enriched version of HOL's syntax without complex transformations, e.g.:
 \<close>(*<*) unbundle AOT_no_syntax context AOT_meta_syntax begin (*>*)text\<open>
 @{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
 
@@ -2699,11 +2729,9 @@ exemplification @{text \<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>} and e
 becomes unreadable for complex terms.
 
 For the purpose of implementing a full theory with an extensive body of theorems
-we feel that the improved readability outweighs the potential danger of complex
+the improved readability outweighs the potential danger of complex
 syntax transformations, especially given the ability to confirm the accuracy of
 the translation using less complex printing modes.
-
-TODO: mention ellipses?
 \<close>
 
 section\<open>Extending Isabelle's Outer Syntax\<close>text\<open>\label{AOTOuterSyntax}\<close>
@@ -2727,14 +2755,18 @@ parse formulas relative to the @{type AOT_prop} grammar root mentioned in the la
 section.
 
 Additionally, we introduce the command @{command AOT_define}, which allows to directly
-state definitions as in PLM. Internally, this involves introducing a new constant for
-the defined entity, setting up the syntax for parsing and printing according to the
+state definitions of PLM (see~\ref{InferentialRoleOfDefinitions}). Internally, this involves
+introducing a new constant for the defined entity, setting up the syntax for parsing and printing according to the
 specified @{emph \<open>syntactic\<close>} type of the defined entity (while the logical type of
 the constant is deduced). This new constant is then automatically specified to
 fulfill the given definition using a mechanism similar to the @{command specification}
-command, while the entailed existence proof is constructed automatically.
+command, while the entailed existence proof is constructed automatically.\footnote{The existence
+proofs are generally trivial: the definiens itself can be chosen as witness. However, while the use
+of @{command specification}s requires to provide a witness that fulfills the required properties (here: which
+validates the definition), it does not assert identity to the witness (here: definitions by equivalence
+will preserve hyperintensionality, i.e. definiens and definiendum will be equivalent, but not necessarily identical).}
 
-Furthermore, we introduce commands like @{command AOT_find_theorems} and 
+We also introduce auxiliary commands like @{command AOT_find_theorems} and 
 @{command AOT_sledgehammer} to aid in constructing proofs.
 @{command AOT_find_theorems} works similar to the Isar
 command @{command find_theorems}, but automatically parses AOT syntax and generalizes
@@ -2747,20 +2779,27 @@ theorems are ignored and only the theorems of the abstraction layers are allowed
 
 section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
 text\<open>
-In~\ref{AOT:AOT_semantics}, we derive an abstract semantics for the primitive and
-some of the basic defined notions of AOT. This layer of abstraction is still allowed
+In~\ref{AOT:AOT_semantics}, we derive an abstract semantics for the primitive (and
+some of the basic defined) notions of AOT. This layer of abstraction is still allowed
 to refer to the details of the model construction, but attempts to only derive just the
-properties of the models that are required to derive the axiom system and fundamental
+properties of the models that are required to easily derive the axiom system and fundamental
 metarules of AOT later.
 
 The defined semantics heavily rely on Isabelle's @{command specification} command to
 abstract specific model choices to more general semantic properties.
 
 The main purpose of this intermediate layer is to keep the derivation of the abstraction
-layer used for the axiom system and deductive system of AOT, impervious to minor changes
+layer used for the axiom system and deductive system of AOT impervious to minor changes
 in the models.
 
-TODO: say more? examples?
+However, it also eliminates artifactual theorems: instead of simply defining @{text \<lambda>}-abstraction
+and exemplification using a concrete model construction, we introduce them using abstracted
+properties and merely provide a concrete witness that satisfies those properties.
+This increases the choice of admissible models of HOL, since a model is not restricted
+to the provided witness, but is merely bound by the abstract properties. This eliminates
+artifactual theorems that would merely be true for our provided witness, but are not derivable
+from the required properties, and also results in @{command nitpick} to more accurately
+report satisfiability and countermodels.
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>
@@ -2773,8 +2812,7 @@ abstract semantics described in the last section using simple, automatic proofs.
 In the following sections we will focus on some particular axioms, rules and proofs
 that are challenging to properly represent in the embedding. This mostly happens due to
 PLM's statement involving either complex preconditions given in natural language or
-due to the statement involving complex ellipses to generalize across e.g. arbitrary
-arities of relations. 
+due to the statement extending over multiple types. 
 \<close>
 
 subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-impl}\<close>
