@@ -2809,7 +2809,7 @@ section~\ref{AxiomSystem} and the fundamental metarules were mentioned in
 section~\ref{DeductiveSystem}. By construction, most of them can be derived from the
 abstract semantics described in the last section using simple, automatic proofs.
 
-In the following sections we will focus on some particular axioms, rules and proofs
+In the following, we will focus on some particular axioms, rules and proofs
 that are challenging to properly represent in the embedding. This mostly happens due to
 PLM's statement involving either complex preconditions given in natural language or
 due to the statement extending over multiple types. 
@@ -2818,6 +2818,7 @@ due to the statement extending over multiple types.
 subsection\<open>Base Cases of Denoting Terms\<close>text\<open>\label{cqt:2-impl}\<close>
 
 text\<open>
+TODO: refine this.
 
 One of the axioms we mentioned explicitly as difficult to implement in section~\ref{AxiomSystem} is
 the second quantifier axiom (see~\nameref{AOT:cqt:2[const_var]}) which establishes
@@ -2832,9 +2833,12 @@ We implement this axiom by splitting it up into cases. The first and obvious way
 to split the axiom is to split it into the separate cases listed in the natural language
 formulation: constants, variables and @{text \<open>\<lambda>\<close>}-expressions.
 
-As discussed in more detail in section (TODO), the embedding does not have to distinguish
-explicitly between constants and variables, so it suffices to state one case for
-constants @{emph \<open>and\<close>} variables (see~\nameref{AOT:cqt:2[const_var]}):
+As mentioned in section~\ref{SSE:MetaModel} (TODO: maybe more discussion there or another section),
+the embedding does not have to distinguish
+explicitly between constants and variables: both constants and variables are modelled
+as objects of the same type and the distinction between constants and variables is
+done by declaring the object as a constant or a variable in the meta-logic. So it suffices
+to state one case for constants @{emph \<open>and\<close>} variables (see~\nameref{AOT:cqt:2[const_var]}):
 
 \begin{quote}
   @{thm[display] "cqt:2[const_var]"[axiom_inst, of _ \<alpha>, print_as_theorem]}
@@ -2843,14 +2847,15 @@ constants @{emph \<open>and\<close>} variables (see~\nameref{AOT:cqt:2[const_var
 This covers all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
 For each base type @{typ 'a} of class @{class AOT_Term}, the embedding defines this type @{typ \<open>'a AOT_var\<close>} as all
 members of type @{typ 'a} that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
-in section~\ref{IndividualTermsAndClasses}). Any variable name is internally decorated with the constant
-@{term AOT_term_of_var} of type @{typ \<open>'a AOT_var \<Rightarrow> 'a\<close>} and thereby implicitly denotes.
+in section~\ref{IndividualTermsAndClasses}). Any constant or variable name is internally decorated with the constant
+@{term AOT_term_of_var} of type @{typ \<open>'a AOT_var \<Rightarrow> 'a\<close>}, i.e. it refers to an object of type @{typ \<open>'a AOT_var\<close>} that
+(and thereby implicitly denotes) and then mapped to the type @{typ 'a} using @{term AOT_term_of_var}.
 By construction there exists an object @{term x} of type @{typ \<open>'a AOT_var\<close>} for every denoting
-individual term @{term \<kappa>} of type @{typ 'a} and it holds that @{term \<open>AOT_term_of_var x = \<kappa>\<close>}.
+individual term @{term \<kappa>} of type @{typ 'a}, s.t. @{term \<open>AOT_term_of_var x = \<kappa>\<close>}.
 
-The second base case for @{text \<open>\<lambda>\<close>}-expressions is more complex to represent.
+The remaining case involves @{text \<open>\<lambda>\<close>}-expressions is more complex to represent.
 Internally, a @{text \<open>\<lambda>\<close>}-expression denotes, just in case that its
-matrix is necessarily equivalent on all denoting objects that share an urelement, or
+matrix @{term \<phi>} is necessarily equivalent on all denoting objects that share an urelement, or
 formally (see~\nameref{AOT:AOT_semantics.AOT_model_lambda_denotes}):
 
 \begin{quote}
@@ -2862,46 +2867,81 @@ While, for arbitrary complex terms, we cannot directly capture the syntactic res
 stating that the initial @{text \<open>\<lambda>\<close>} does not bind any variable in any encoding formula subterm,
 we can construct a set of introduction rules that will cover all terms that match the
 natural language description.
-To that end, we define two auxiliary constants:
-@{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}),
-acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions among entities
+
+To that end, we define the auxiliary constant @{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}).
+@{const AOT_instance_of_cqt_2} acts on matrices of @{text \<open>\<lambda>\<close>}-expressions, i.e. on functions that map entities
 of a type of class @{class AOT_\<kappa>s} (recall that this may either be an unary individual or 
-a tuple of individuals see~\ref{IndividualTermsAndClasses}).
-@{const AOT_instance_of_cqt_2_exe_arg} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_exe_arg})
+a tuple of individuals, see~\ref{IndividualTermsAndClasses}) to propositions.
+
+@{const AOT_instance_of_cqt_2} is true for any such function that agrees on arguments
+that denote and are @{const AOT_model_term_equiv}-equivalent, i.e. it has identical
+values for arguments that share the same urelements. By construction of
+@{text \<open>\<lambda>\<close>}-expressions the use of any such function as matrix of a @{text \<open>\<lambda>\<close>}-expression
+will result in a denoting relation term.
+
+Now we enrich the abstraction layer with several introduction rules for @{const AOT_instance_of_cqt_2}:
+
+  \<^item> Functions that do not depend on their argument correspond to matrices in which
+    the @{text \<open>\<lambda>\<close>}-bound variables do not occur. Therefore such functions trivially fall
+    under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_const}).
+  \<^item> Exemplification formulas of the form @{term \<open>print_term \<guillemotleft>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<guillemotright>\<close>} in which
+    the @{text \<open>\<lambda>\<close>}-bound variable does not occur in @{term \<Pi>} fall under the axiom,
+    if all individual terms @{term \<open>\<kappa>\<^sub>i\<close>} do not contain an occurrence of the
+    @{text \<open>\<lambda>\<close>}-bound variable in encoding formulas. This is captures in another
+    auxiliary constant @{const AOT_instance_of_cqt_2_exe_arg} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_exe_arg})
+    described below.
+  \<^item> Let @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} be the variables bound by the initial @{text \<lambda>}. Then an exemplification formula of the form
+    @{term \<open>print_term \<guillemotleft>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<guillemotright>\<close>} as matrix falls under the axiom, if
+    (1) all individual terms @{text \<open>\<kappa>\<^sub>i\<close>} fall under the axiom as described below and
+    (2) @{term \<phi>} falls under the axiom wrt. @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>}, i.e. @{term \<phi>} does not
+    contain any occurrences of @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} in encoding subformulas, respectively
+    for any @{text \<open>\<mu>\<^sub>1...\<mu>\<^sub>n\<close>} it holds that @{text \<open>\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<mu>\<^sub>1...\<mu>\<^sub>n})\<close>} as function on
+    @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} satisfies @{const AOT_instance_of_cqt_2}.
+  \<^item> Complex formulas fall under the formulation of the axiom, just in case all its
+    operands fall under the formulation of the axiom. E.g. a negation falls under the
+    axiom, just in case the negated formula falls under the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_not}).
+  \<^item> Encoding formulas only fall under the axiom, if the @{text \<open>\<lambda>\<close>}-bound variables do
+    not occur in them at all. This is already covered in the first case above.
+    However, this may be refined in the future anticipating an upcoming change in PLM
+    as discussed at the end of this section.
+
+The above rules cover all cases except the primary individual terms in exemplification
+formulas. The additional auxiliary constant @{const AOT_instance_of_cqt_2_exe_arg} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_exe_arg})
 acts on functions taking entities of a type @{typ 'a} of class @{class AOT_\<kappa>s} to
 entities of a type @{typ 'b} of class @{class AOT_\<kappa>s}.
-
-@{const AOT_instance_of_cqt_2} holds for any function that agrees on arguments
-that denote and are @{const AOT_model_term_equiv}-equivalent (i.e. share the same
-urelements). By construction of @{text \<open>\<lambda>\<close>}-expressions the use of any such function
-in a @{text \<open>\<lambda>\<close>}-expression will result in a denoting relation term.
-
-@{const AOT_instance_of_cqt_2_exe_arg} holds for any function that sends denoting and
+@{const AOT_instance_of_cqt_2_exe_arg} holds for any such function that sends denoting and
 @{const AOT_model_term_equiv}-equivalent arguments to again @{const AOT_model_term_equiv}-equivalent
-arguments. 
+arguments. By construction, if the application of any such function to the variables @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>}
+occurs as primary individual term in an exemplification formula, then a @{text \<open>\<lambda>\<close>}-expression
+binding @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} can fall under the axiom (since the result of the exemplification
+is known to agree on objects with the same urelements).
 
+Similarly to @{const AOT_instance_of_cqt_2} we add introduction rules for
+@{const AOT_instance_of_cqt_2_exe_arg} to the abstraction layer:
 
-There are several cases:
+  \<^item> The identity function falls under @{const AOT_instance_of_cqt_2_exe_arg} (this is the case
+    in which the @{text \<open>\<lambda>\<close>}-bound variables themselves occur as primary individual terms in an 
+    exemplification formula).
+  \<^item> Constant functions (that do not depend on their argument) fall under @{const AOT_instance_of_cqt_2}
+    (this is the case in which the @{text \<open>\<lambda>\<close>}-bound variables do @{emph \<open>not\<close>} occur
+    in a primary term of an exemplification formula).
+  \<^item> Definite descriptions fall under @{const AOT_instance_of_cqt_2_exe_arg} just in case their
+    matrix falls under @{const AOT_instance_of_cqt_2}, i.e. a description may occur in
+    a primary term of an exemplification formula, if its matrix does not contain the
+    @{text \<open>\<lambda>\<close>}-bound variables in encoding subformulas.
+  \<^item> There are further technical introduction rules due to the implementation of n-ary
+    relations as relations acting on tuples, e.g. the @{const Pair} function and
+    the @{const fst} and @{const snd} projections fall under @{const AOT_instance_of_cqt_2_exe_arg}.
 
-  \<^item> Matrices with no free occurrences of the @{text \<open>\<lambda>\<close>}-bound variables trivially fall
-    under the formulation of the axiom (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_const}).
-  \<^item> Exemplification formulas fall under the formulation of the axiom, if all primary terms
-    fall under the formulation of the axiom, i.e. neither in the relation term nor in any of the
-    individual terms that exemplify the relation occurs any @{text \<open>\<lambda>\<close>}-bound variable
-    in an encoding subformula (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_const}).
-  \<^item> Complex formulas fall under the formulation of the axiom, just in case all its operands
-    fall under the formulation of the axiom. E.g. a negation formula falls under the axiom,
-    just in case the negated formula falls under the axiom
-    (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_not}).
-  \<^item> In the current formulation of PLM, encoding formulas only fall under the formulation of the axiom,
-    if they do not involve any free occurrence of any @{text \<open>\<lambda>\<close>}-bound variable. Therefore,
-    they are already covered by the first case above.
+While the details of this construction are complex, the result is a set of introduction
+rules that allow proving @{const AOT_instance_of_cqt_2} exactly for those matrices that
+fall under the natural language condition of the axiom. The axiom itself is then implemented
+conditionally: a @{text \<open>\<lambda>\<close>}-expression denotes axiomatically, if its matrix satisfied
+@{const AOT_instance_of_cqt_2} (see~\nameref{AOT:cqt:2[lambda]}), while allowing
+the introduced introduction rules to be used in the abstraction layer (while it is
+inadmissible to unfold the definition of @{const AOT_instance_of_cqt_2} itself).
 
-The cases of relation terms and individual terms in exemplification position are
-further split up into multiple cases, including cases for definite descriptions.
-A full account of the cases can be found in the embedding (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2}).
-
-Note that at the time of writing, an extension of the axiom is under discussion that
+Note that at the time of writing, an extension of the axiom is being discussed that
 would generalize it to the following:
 
 \begin{quote}
@@ -2909,20 +2949,21 @@ would generalize it to the following:
   in which the initial @{text \<open>\<lambda>\<close>} does not bind any variable that is a primary term in an encoding formula subterm.}
 \end{quote}
 
-In an encoding formula @{text \<open>[\<Pi>]\<kappa>\<^sub>1\<cdots>\<kappa>\<^sub>n\<close>} only @{text \<open>\<Pi>\<close>} as well as @{text \<open>\<kappa>\<^sub>1\<close>} through
+In an encoding formula @{text \<open>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>} only @{text \<open>\<Pi>\<close>} as well as @{text \<open>\<kappa>\<^sub>1\<close>} through
 @{text \<open>\<kappa>\<^sub>n\<close>} are defined to be primary terms, but no nested term counts as primary term, so
 this entails strictly more cases than the formulation given above.
 
 In anticipation of this change, this is already validated by the embedding, however,
 the corresponding introduction rules are not yet added to @{const AOT_instance_of_cqt_2}
-to prevent their use in the abstraction layer for the time being (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_enc_arg}).
+to prevent their use in the abstraction layer for the time being
+(see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_enc_arg}).
 \<close>
 
 subsection\<open>The Rule of Substitution\<close>
 
 text\<open>
 Similar to the axiom above, there is also derived rules in PLM that are challenging
-to reproduce in the embedding. A prime example is the Rule of Substitution.
+to reproduce in the embedding. An example is the Rule of Substitution.
 PLM formulates this rule as follows  (PLM item (159) TODO: cite properly):\footnote{PLM
 formulates the rule relative to modally-fragile derivations @{text \<open>\<turnstile>\<close>}, but further
 argues that it is equally valid for modally-strict derivations @{text \<open>\<turnstile>\<^sub>\<box>\<close>}. Furthermore,
@@ -2936,7 +2977,7 @@ occurrences of @{text \<psi>} where the latter is a subformula of @{text \<phi>}
 and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}.}
 \end{quote}
 
-The notably restriction in this formulation is the proviso that 
+The notable restriction in this formulation is the proviso that 
 @{text \<open>\<psi>\<close>} is a @{emph \<open>subformula\<close>} of @{text \<phi>}. Subformulas are defined recursively
 in PLM item (6) (TODO: proper reference), but notably do not entail matrices of
 descriptions or @{text \<open>\<lambda>\<close>}-expressions: The formula @{text \<phi>} is @{emph \<open>not\<close>} a
@@ -2956,11 +2997,11 @@ PLM involves proofs that involve a case distinction by type. An example is the t
 that for two terms to be identical implies that both denote (see~\nameref{AOT:AOT_PLM.AOT_Term_id}).
 
 In our embedding we reproduce this kind of reasoning by introducing a new type class,
-in this case @{class AOT_Term_id}, and then by instantiating this type class to all
-the types the statement is supposed to apply to. We then redefine the default type
-constraints for terms of the given types to entail the newly defined class.
+in this case @{class AOT_Term_id} that assumes the statement of the theorem, and then
+by instantiating this type class to all the types the statement is supposed to apply to.
+We then redefine the default type constraints for terms to include the newly defined class.
 
-In a future version of the embedding, we would like to use Standard ML to define
+In a future version of the embedding, we intend to use Standard ML to define
 a simple outer syntax command that will hide the complexity of this process and
 will allow for an intuitive statement of theorems that are to be proven by type
 distinction.
@@ -3001,9 +3042,10 @@ Isabelle internally represents bound variables using de-Bruijin indices (TODO: c
 showcase this mechanism in detail below. As a consequence, terms that are alphabetic variants
 are meta-logically indistinguishable. To justify representing AOT's bound variables directly
 using bound variables in Isabelle, we need to show that both (1) AOT's notion of alphabetic
-variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any two formulas
-involving alphabetic variants are inter-derivable in AOT (as a generalization of PLM's
-existing @{emph \<open>Rule of Alphabetic Variants\<close>}).
+variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any rule of AOT is still valid
+if any assumption or the conclusion are replaced by an alphabetic variant (as a generalization of PLM's
+existing @{emph \<open>Rule of Alphabetic Variants\<close>}).\footnote{This includes theorems and axioms by
+thinking of them as rules with an empty set of assumptions.}
 
 \<close>
 
@@ -3208,7 +3250,7 @@ For example, while by construction Isabelle will see alphabetic variants as iden
 can freely substitute them, manual substitution, as it would be required for deep embeddings,
 would require rigorous proofs about recursively defined transformations on the deep syntax representation
 that can quickly go beyond the limits of the available automation capabilities, even without
-attempting to prove complex theorems. TODO: think about phrasing.
+attempting to prove complex theorems. TODO: think about phrasing. Maybe move to its own section.
 \<close>
 
 subsection\<open>Generalizing Free Variables to Schematic Variables\<close>text\<open>\label{free-variables-schematic}\<close>
@@ -3583,11 +3625,12 @@ becomes derivable:
 
 Semantically, this theorem states that whenever two objects share an urelement,
 then exemplifying any property results in the same proposition for both of them,
-which further consolidates the derivational system of AOT with representation
+which further consolidates the derivational system of AOT with the representation
 of relations as proposition-valued functions.
 
-So while at the time of writing the mentioned theorems remain artifactual, they
-are likely to become proper theorems of AOT after its extension described in
+While at the time of writing the mentioned theorems remain artifactual, they
+are likely to become proper theorems of AOT after the next refinement of the second
+quantifier axiom (i.e. the base cases of axiomatically denoting terms) described in
 section~\ref{cqt:2-impl}.
 \<close>
 
