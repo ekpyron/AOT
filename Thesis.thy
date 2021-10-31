@@ -1960,7 +1960,7 @@ extended comprehension principle for relations among abstract objects as well as
 section~\ref{NewNumberTheory} in the context of a potential future improvement in the
 construction of Natural Numbers in AOT. While PLM's proof of above theorem (see~\nameref{AOT:aclassical2})
 uses a slightly different construction, we can provide a proof that makes it explicit
-that we can construct an abstract object particularly in such a way that it there has
+that we can construct an abstract object particularly in such a way that there has
 to be a distinct abstract object that is indistinguishable from it:
 \<close>
 
@@ -1977,23 +1977,29 @@ proof -
   AOT_have 0: \<open>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
   proof (rule "raa-cor:1")
     AOT_assume 1: \<open>\<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
-    AOT_hence \<open>\<not>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+    AOT_hence \<open>\<not>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] &
+                    \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
       by (safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(3)] "cqt:2")
-    AOT_hence \<open>\<forall>y \<not>(A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+    AOT_hence \<open>\<forall>y \<not>(A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] &
+                    \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
       using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
-    AOT_hence \<open>\<not>(A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] & \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)])\<close>
+    AOT_hence \<open>\<not>(A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] &
+                 \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)])\<close>
       using "\<forall>E"(2) by blast
-    moreover AOT_have \<open>A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] & \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
+    moreover AOT_have \<open>A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] &
+                       \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
       by (safe intro!: a_prop[THEN "&E"(1)] "&I" "rule=I:1" "cqt:2" 1)
     ultimately AOT_show \<open>p & \<not>p\<close> for p using "reductio-aa:1" by blast
   qed
   \<comment> \<open>Hence, by construction, there is an abstract object, s.t. being indistinguishable from
       it is identical to being indistinguishable from @{term a}, but which does not encode being
       indistinguishable from itself.\<close>
-  AOT_hence \<open>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+  AOT_hence \<open>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] &
+                 \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
     by (safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "cqt:2")
-  \<comment> \<open>Call this object @{text b}\<close>
-  then AOT_obtain b where b_prop: \<open>A!b & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]b)] & \<not>b[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]\<close>
+  \<comment> \<open>Call this object @{text b}.\<close>
+  then AOT_obtain b where b_prop:
+    \<open>A!b & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]b)] & \<not>b[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]\<close>
     using "\<exists>E"[rotated] by blast
   \<comment> \<open>Now @{term a} and @{term b} are indistinguishable.\<close>
   AOT_have \<open>\<forall>G([G]a \<equiv> [G]b)\<close>
@@ -2057,7 +2063,7 @@ of natural numbers and whose existence previously had to be assured by axiom. Th
 is explained in more detail in the section~\ref{WorldRelativeRelations}.
 
 Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
-that does not require a modal axiom of infinity.\footnote{I.e. the axiom described in section~\nameref{ModalAxiom}
+that does not require a modal axiom of infinity.\footnote{I.e. the axiom described in section~\ref{ModalAxiom}
 may not be required in future versions of the construction.} This is mentioned in section~\ref{NewNumberTheory},
 although at the time of writing, the analysis of
 this potential change is not yet complete, so the current version of PLM at the time
@@ -2191,8 +2197,6 @@ the use of @{text w} as a restricted variable ranging over possible worlds.
 Now it can be derived that possible worlds are @{emph \<open>possible\<close>} (i.e. @{emph \<open>possibly actual\<close>}), @{emph \<open>consistent\<close>} and @{emph \<open>maximal\<close>}
 situations and furthermore that any abstract object that is a possible and maximal situation is a possible world:
 
-TODO: printing of definitions with restricted variables.
-
   \<^item> @{thm[display] "actual"[of x]}
     A situation is actual, if it only makes true propositions true (see~\nameref{AOT:actual}).
   \<^item> @{thm[display] "pos"[of x]}
@@ -2257,10 +2261,7 @@ This allows for a definition of world-relative relations as follows (see~\namere
 @{thm[display] "w-index"}
 \end{quote}
 
-Notably, this theorem that was discovered using our embedding
-allowed to eliminate an additional axiom that was previously required
-for the analysis of Natural Numbers. In particular, it becomes a
-theorem that there exist @{emph \<open>rigidifying relations\<close>}.
+Notably, it becomes a theorem that there exist @{emph \<open>rigidifying relations\<close>}.
 
 A relation is @{emph \<open>rigid\<close>}, if exemplifying it is modally collapsed (see~\nameref{AOT:df-rigid-rel:1}):
 
@@ -2336,7 +2337,7 @@ section\<open>Model\<close>
 text\<open>
 While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
 this section provides a high-level description of the construction.
-The general construction is based on Aczel models of AOT, which are extended
+The general idea is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
 it employs a system type classes to model relations of arbitrary arity as relations among
@@ -2475,10 +2476,9 @@ AOT's hyperintensionality.
 subsection\<open>Hyperintensional Propositions\<close>text\<open>\label{HyperintensionalPropositions}\<close>
 
 text\<open>
-
-TODO: reference previous discussion of hyperintensionality, if any.
-
 The hyperintensionality of AOT is modelled at the level of propositions.
+The construction follows the general principle outlined in section~\ref{NativeAbstractionMechanisms}.
+
 A primitive type @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>})
 is used to represent hyperintensional propositions and is associated with modal extensions
 following Kripke semantics: a primitive type @{typ w} for semantic possible
@@ -2554,7 +2554,7 @@ For simple models, a plain primitive type for the special urelements suffices. H
 to model our proposed extended relation comprehension, we use a richer type
 for special urelements and model them as subset of the set of triples of two copies
 of sets of exemplification extensions on Ordinary urelements and one
-very special urelements (type @{typ \<sigma>'}).
+very special urelement (type @{typ \<sigma>'}).
 This is discussed in more detail in section~\ref{pred}.
 
 Hyperintensional relations are modelled as proposition-valued functions.
@@ -3092,8 +3092,7 @@ subformula of @{term \<open>\<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemo
 While the inductive base cases for proving the rule can easily be reproduced in the
 embedding (see~\nameref{AOT:rule-sub-lem:1:a}), combining the rule to a single statement
 in Isabelle is challenging. Therefore we instead provide a customly written proving
-@{theory_text method}s that allow applying the rule as intended by PLM.
-TODO: elaborate?
+@{theory_text method}s that allow applying the rule as intended by PLM. TODO: elaborate?
 \<close>
 
 subsection\<open>Proofs by Type Distinction\<close>
@@ -3528,17 +3527,6 @@ statement to be true in @{emph \<open>all\<close>} actual worlds. This would con
 i.e. @{text \<open>\<turnstile> \<box>\<phi>\<close>} would no longer imply @{text \<open>\<turnstile>\<^sub>\<box> \<phi>\<close>} (while the former merely requires @{text \<open>\<phi>\<close>}
 to be valid in all worlds accessible from the globally-fixed actual world, the latter also requires
 @{text \<open>\<phi>\<close>} to be true even in worlds inaccessible from the global actual world).
-\<close>
-
-subsection\<open>Further Meta-Theorems\<close>
-
-text\<open>
-Ideas:
-  \<^item> Relation of AOT's existential elimination and @{command obtain}.
-  \<^item> Tuples as accurate representation of most of the general n-ary statements justified by the ability to define
-    matching tuples in AOT.
-  \<^item> More on generalization and e.g. constants?
-
 \<close>
 
 section\<open>Artifactual Theorems\<close>
