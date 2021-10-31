@@ -1615,7 +1615,7 @@ formulas, etc.) can be extended to restricted variables introduced using a stric
 restriction condition.
 \<close>
 
-subsection\<open>Identity on the Ordinary Objects\<close>
+subsection\<open>Identity on the Ordinary Objects\<close>text\<open>\label{IdentitySubE}\<close>
 
 text\<open>
 While the general definition of identity for individuals was given in TODO: ref,
@@ -1909,8 +1909,71 @@ abstract objects that fail to be distinguishable. This is also discussed
 in section~\ref{JustificationExtendedComprehension} in the context of our proposed
 extended comprehension principle for relations among abstract objects as well as in
 section~\ref{NewNumberTheory} in the context of a potential future improvement in the
-construction of Natural Numbers in AOT.
+construction of Natural Numbers in AOT. While PLM's proof of above theorem (see~\nameref{AOT:aclassical2})
+uses a slightly different construction, we can provide a proof that makes it explicit
+that we can construct an abstract object particularly in such a way that it there has
+to be a distinct abstract object that is indistinguishable from it:
+\<close>
 
+
+AOT_theorem \<open>\<exists>a\<exists>b(A!a & A!b & a \<noteq> b & \<forall>F([F]a \<equiv> [F]b))\<close>
+proof -
+  \<comment> \<open>Consider the object @{term a} that encodes being indistinguishable from any
+      abstract object that does not encode being indistinguishable from itself.\<close>
+  AOT_obtain a where a_prop:
+    \<open>A!a & \<forall>F (a[F] \<equiv> \<exists>y(A!y & F = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)]))\<close>
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
+
+  \<comment> \<open>We show that @{term a} encodes being indistinguishable from itself using a proof by contradiction.\<close>
+  AOT_have 0: \<open>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
+  proof (rule "raa-cor:1")
+    AOT_assume 1: \<open>\<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
+    AOT_hence \<open>\<not>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+      by (safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(3)] "cqt:2")
+    AOT_hence \<open>\<forall>y \<not>(A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+      using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
+    AOT_hence \<open>\<not>(A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] & \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)])\<close>
+      using "\<forall>E"(2) by blast
+    moreover AOT_have \<open>A!a & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] & \<not>a[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]\<close>
+      by (safe intro!: a_prop[THEN "&E"(1)] "&I" "rule=I:1" "cqt:2" 1)
+    ultimately AOT_show \<open>p & \<not>p\<close> for p using "reductio-aa:1" by blast
+  qed
+  \<comment> \<open>Hence, by construction, there is an abstract object, s.t. being indistinguishable from
+      it is identical to being indistinguishable from @{term a}, but which does not encode being
+      indistinguishable from itself.\<close>
+  AOT_hence \<open>\<exists>y (A!y & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]y)] & \<not>y[\<lambda>z \<forall>G([G]z \<equiv> [G]y)])\<close>
+    by (safe intro!: a_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "cqt:2")
+  \<comment> \<open>Call this object @{text b}\<close>
+  then AOT_obtain b where b_prop: \<open>A!b & [\<lambda>z \<forall>G([G]z \<equiv> [G]a)] = [\<lambda>z \<forall>G([G]z \<equiv> [G]b)] & \<not>b[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]\<close>
+    using "\<exists>E"[rotated] by blast
+  \<comment> \<open>Now @{term a} and @{term b} are indistinguishable.\<close>
+  AOT_have \<open>\<forall>G([G]a \<equiv> [G]b)\<close>
+  proof -
+    AOT_have \<open>[\<lambda>z \<forall>G([G]z \<equiv> [G]a)]a\<close>
+      by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2" GEN "\<equiv>I" "\<rightarrow>I")
+    AOT_hence \<open>[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]a\<close>
+      using b_prop[THEN "&E"(1), THEN "&E"(2)] "rule=E" by fast
+    thus ?thesis
+      using "\<beta>\<rightarrow>C" by blast
+  qed
+  \<comment> \<open>But while @{term a} encodes being indistinguishable from @{term b}, @{term b} does not
+      encode being indistinguishable from itself and therefore @{term a} is not identical
+      to @{term b}.\<close>
+  moreover {
+    AOT_have \<open>a[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]\<close>
+      using b_prop[THEN "&E"(1), THEN "&E"(2)] 0 "rule=E" by fast
+    AOT_hence \<open>a \<noteq> b\<close>
+      by (safe intro!: "ab-obey:2"[THEN "\<rightarrow>E"] "\<or>I"(1) "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>z \<forall>G([G]z \<equiv> [G]b)]\<guillemotright>\<close>]
+                       "&I" b_prop[THEN "&E"(2)] "cqt:2")
+  }
+  \<comment> \<open>Therefore, @{term a} and @{term b} are witnesses to the claim of the theorem.\<close>
+  ultimately AOT_have \<open>A!a & A!b & a \<noteq> b & \<forall>G([G]a \<equiv> [G]b)\<close>
+    using "&I" a_prop[THEN "&E"(1)] b_prop[THEN "&E"(1), THEN "&E"(1)] by blast
+  AOT_hence \<open>\<exists>b(A!a & A!b & a \<noteq> b & \<forall>G([G]a \<equiv> [G]b))\<close> by (rule "\<exists>I")
+  AOT_thus \<open>\<exists>a\<exists>b(A!a & A!b & a \<noteq> b & \<forall>G([G]a \<equiv> [G]b))\<close> by (rule "\<exists>I")
+qed
+
+text\<open>
 In the following section, we will see another prominent example of a theorem of AOT involving
 indistinguishable objects that relates to Aczel models.
 \<close>
@@ -2429,7 +2492,7 @@ propositions while preserving the constructed hyperintensionality for relations 
 for AOT's free logic.
 \<close>
 
-subsection\<open>Extended Aczel Model Structure\<close>
+subsection\<open>Extended Aczel Model Structure\<close>text\<open>\label{ExtendedAczelModelStructure}\<close>
 
 text\<open>
 The embedding introduces a type of urelements @{typ \<upsilon>} (see~\nameref{AOT:AOT_model.<upsilon>})
