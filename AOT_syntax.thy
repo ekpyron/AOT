@@ -80,8 +80,13 @@ syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> ("_")
        "_AOT_box" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<box>_\<close> [49] 54)
        "_AOT_act" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<A>_\<close> [49] 54)
        "_AOT_all" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_ _\<close> [1,40])
+syntax (input)
        "_AOT_all_ellipse"
             :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_ _\<close> [1,40])
+syntax (output)
+       "_AOT_all_ellipse"
+            :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_'(_')\<close> [1,40])
+syntax
        "_AOT_eq" :: \<open>[\<tau>, \<tau>] \<Rightarrow> \<phi>\<close> (infixl \<open>=\<close> 50)
        "_AOT_desc" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> desc\<close> ("\<^bold>\<iota>__" [1,1000])
        "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> ("_")
@@ -383,8 +388,10 @@ no_notation AOT_exists (binder "\<^bold>\<exists>" 8)
 end
 
 
-syntax
+syntax (input)
    "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ _\<close> [1,40])
+syntax (output)
+   "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ '(_')\<close> [1,40])
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists")
     [Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]])]\<close>
