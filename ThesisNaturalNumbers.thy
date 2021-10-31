@@ -886,7 +886,7 @@ lemma \<open>R\<^sup>+ = {(a,b) . \<forall>R' . trans R' \<and> (R \<subseteq> R
   by (simp add: subrelI)
 (*>*)
 
-section\<open>Weak Ancestral of a Relation and the Non-Existence of a General Relation of Identity\<close>
+section\<open>Weak Ancestral Relations\<close>
 
 text\<open>
 As mentioned above the goal is to define being a Natural Number as either being Zero or being an
@@ -1852,7 +1852,7 @@ discussed in the next section.
 
 \<close>
 
-section\<open>On the Prospect of an Enhanced Version of the Construction\<close>text\<open>\label{NewNumberTheory}\<close>
+section\<open>Prospect of an Enhanced Version of the Construction\<close>text\<open>\label{NewNumberTheory}\<close>
 
 text\<open>
 At the time of writing, there is an ongoing debate over changing the analysis of Natural
