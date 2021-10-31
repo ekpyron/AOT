@@ -1908,8 +1908,9 @@ it was safe to assert that the @{text \<open>\<lambda>\<close>}-expression denot
 However, since then, the base cases of axiomatically denoting terms
 were successively refined further, which allowed dropping the syntactic distinction between propositional and
 non-propositional formulas altogether.@{footnote \<open>I.e. all @{text \<open>\<lambda>\<close>}-expressions are well-formed, but not all
-of them denote.\<close>} The most recent version at the time of writing is general enough to derive necessary
+of them denote.\<close>} The most recent version at the time of writing (and given in section~\ref{AxiomsSystem}) is general enough to derive necessary
 and sufficient conditions for @{text \<open>\<lambda>\<close>}-expressions to denote, as explained in section~\ref{KirchnersTheorem} below.
+A potential further refinement is discussed in section~\ref{cqt:2-impl}.
 \<close>
 
 section\<open>Interesting Theorems of AOT\<close>
@@ -1919,7 +1920,7 @@ subsection\<open>Indistinguishable Abstract Objects\<close>text\<open>\label{Ind
 
 text\<open>
 The issue raised in form of the Clark-Boolos Paradox and its variants in section~\ref{AvoidingParadoxes}
-is a general issue of the general comprehension principle for abstract object and their identity conditions, which
+is a general issue of the comprehension principle for abstract object and their identity conditions, which
 intuitively imply that abstract objects correspond to sets of properties, together with
 the fact that abstract objects are simultaneously meant to themselves @{emph \<open>exemplify\<close>} properties:
 
@@ -1929,7 +1930,7 @@ objects for different semantic possible worlds or, equivalently, extensions of m
 objects to sets of possible worlds in which the property is exemplified by the object.} However, if abstract objects correspond
 to sets of properties and exemplification-extensions of properties themselves were to be sets of objects,
 one may wonder how this can be achieved without a violation of Cantor's Theorem (TODO: cite):
-how can abstract objects be sets of properties and simultaneously (in the simplest case of non-modal
+How can abstract objects be sets of properties and simultaneously (in the simplest case of non-modal
 and extensional properties) elements of properties?
 
 A semantic solution to this dilemma is given by Aczel models which are described in
