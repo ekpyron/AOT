@@ -3529,6 +3529,17 @@ to be valid in all worlds accessible from the globally-fixed actual world, the l
 @{text \<open>\<phi>\<close>} to be true even in worlds inaccessible from the global actual world).
 \<close>
 
+subsection\<open>Further Meta-Theorems\<close>
+
+text\<open>
+Ideas:
+  \<^item> Relation of AOT's existential elimination and @{command obtain}.
+  \<^item> Tuples as accurate representation of most of the general n-ary statements justified by the ability to define
+    matching tuples in AOT.
+  \<^item> More on generalization and e.g. constants?
+
+\<close>
+
 section\<open>Artifactual Theorems\<close>
 
 text\<open>Artifactual Theorems are theorems that are valid in a concrete model, respectively
