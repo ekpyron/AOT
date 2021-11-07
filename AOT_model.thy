@@ -67,8 +67,14 @@ typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<
 text\<open>Abstract objects will be modelled as sets of urrelations and will
      have to be mapped back surjectively into the set of special urelements.
      We show that any mapping from abstract objects to special urelements
-     has to involve at least one large set of collapsed abstract objects.\<close>
+     has to involve at least one large set of collapsed abstract objects.
+     We will use this fact to extend arbitrary mappings from abstract objects
+     to special urelements to surjective mappings.\<close>
 lemma \<alpha>\<sigma>_pigeonhole:
+  \<comment> \<open>For any arbitrary mapping @{term \<alpha>\<sigma>} from sets of urrelations to special
+     urelements, there exists an abstract object x, s.t. the cardinal of the set
+     of special urelements is strictly smaller than the cardinal of the set of
+     abstract objects that are mapped to the same urelement as x under @{term \<alpha>\<sigma>}.\<close>
   \<open>\<exists>x . |UNIV::\<sigma> set| <o |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}|\<close>
   for \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
 proof(rule ccontr)
@@ -142,7 +148,7 @@ proof(rule ccontr)
 
     have \<open>2^2^m = (2::nat)^(card (UNIV::\<sigma> set set))\<close>
       by (metis Pow_UNIV card_Pow finite_\<sigma>_set m_def)
-    moreover have \<open>card (UNIV::\<sigma> set set) \<le> (card (UNIV:: urrel set))\<close>
+    moreover have \<open>card (UNIV::\<sigma> set set) \<le> (card (UNIV::urrel set))\<close>
       using card_\<sigma>_set_set_bound
       by (meson Finite_Set.finite_set card_of_ordLeq finite_\<alpha>set
                 finite_\<sigma>_set inj_on_iff_card_le)
@@ -202,7 +208,7 @@ proof(rule ccontr)
                    |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
       using card_of_UNION_Sigma by blast
     hence \<open>|UNIV::urrel set set| \<le>o
-                     |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+           |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
       using union_univ by argo
     moreover have \<open>|Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})| \<le>o |UNIV::\<sigma> set|\<close>
       using card_of_Sigma_ordLeq_Cinfinite[OF Cinf\<sigma>, OF 1, OF 2] by blast
