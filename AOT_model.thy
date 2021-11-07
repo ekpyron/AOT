@@ -180,11 +180,279 @@ text\<open>Individual terms are either ordinary objects, represented by ordinary
      represent non-denoting definite descriptions.\<close>
 datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
+consts \<alpha>\<sigma>' :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+
+lemma Aux0: \<open>\<exists>x . |UNIV::\<sigma> set| <o |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}|\<close> for \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+proof(rule ccontr)
+
+  assume \<open>\<nexists>x . |UNIV::\<sigma> set| <o |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}|\<close>
+  hence A: \<open>\<forall>x . |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+    by auto
+  have \<open>\<exists>f :: \<sigma> \<Rightarrow> urrel. inj f\<close>
+  proof
+    show \<open>inj (\<lambda>s . Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . \<sigma>\<upsilon> s = u))\<close>
+      apply (safe intro!: injI)
+      apply (subst (asm) Abs_urrel_inject)
+      apply (auto simp add: AOT_model_proposition_choice_def AOT_model_valid_in_def d\<o>_surj surj_f_inv_f)
+      by (metis (mono_tags, lifting) AOT_model_proposition_choice_def AOT_model_proposition_choice_simp \<upsilon>.inject(2))
+  qed
+  hence B: \<open>|UNIV::\<sigma> set| \<le>o |UNIV::urrel set|\<close>
+    by (metis card_of_image inj_imp_surj_inv)
+
+  {
+    assume \<open>finite (UNIV::\<sigma> set)\<close>
+    hence \<open>finite {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}\<close> for x using A
+      using card_of_ordLeq_infinite by blast
+    hence 1: \<open>\<forall>x . card {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y} \<le> card (UNIV::\<sigma> set)\<close>
+      by (metis A \<open>finite UNIV\<close> card_of_ordLeq inj_on_iff_card_le)
+    have 2: \<open>card (range (inv \<alpha>\<sigma>)) \<le> card (UNIV::\<sigma> set)\<close>
+      using \<open>finite UNIV\<close> card_image_le by blast
+    hence 0: \<open>finite (range (inv \<alpha>\<sigma>))\<close>
+      using \<open>finite UNIV\<close> by blast
+    have \<open>card (\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}) \<le> (\<Sum>i\<in>range (inv \<alpha>\<sigma>). card {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})\<close>
+      using card_UN_le[where I = \<open>range (inv \<alpha>\<sigma>)\<close> and A=\<open>\<lambda>x. {y. \<alpha>\<sigma> x = \<alpha>\<sigma> y}\<close>, OF 0] by blast
+    also have \<open>\<dots> \<le> (\<Sum>i\<in>range (inv \<alpha>\<sigma>). card (UNIV::\<sigma> set))\<close>
+      by (metis (no_types, lifting) "1" sum_mono)
+    also have \<open>\<dots> \<le> card (range (inv \<alpha>\<sigma>)) * card (UNIV::\<sigma> set)\<close>
+      using sum_bounded_above by auto
+    also have \<open>\<dots> \<le> card (UNIV::\<sigma> set) * card (UNIV::\<sigma> set)\<close>
+      using 2 by force
+    moreover have \<open>(\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}) = UNIV\<close>
+      by auto (meson f_inv_into_f range_eqI)
+    ultimately have \<open>card (UNIV::urrel set set) \<le> card (UNIV::\<sigma> set) * card (UNIV::\<sigma> set)\<close>
+      using order_trans by fastforce
+    hence \<open>finite (UNIV::urrel set set)\<close> sledgehammer sorry
+    have \<open>card (UNIV::\<sigma> set) \<le> card (UNIV::urrel set)\<close>
+      sorry
+
+    thm card_UN_le[where I = \<open>range (inv \<alpha>\<sigma>)\<close> and A=\<open>\<lambda>x. {y. \<alpha>\<sigma> x = \<alpha>\<sigma> y}\<close>, OF 0]
+    have \<open>False\<close> sorry
+  }
+  moreover {
+    assume \<open>infinite (UNIV::\<sigma> set)\<close>
+    hence \<open>natLeq <=o |UNIV::\<sigma> set|\<close>
+      by (meson card_of_UNIV card_of_ordLeq_infinite finite_prod infinite_iff_natLeq_ordLeq)
+    hence \<open>cinfinite |UNIV::\<sigma> set|\<close>
+      using cinfinite_mono natLeq_cinfinite by blast
+    hence Cinf\<sigma>: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
+      using Cnotzero_UNIV by blast
+    have 1: \<open>|range (inv \<alpha>\<sigma>)| \<le>o |UNIV::\<sigma> set|\<close>
+      by auto
+    have 2: \<open>\<forall>i\<in>range (inv \<alpha>\<sigma>). |{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+    proof
+      fix i :: \<open>urrel set\<close>
+      assume \<open>i \<in> range (inv \<alpha>\<sigma>)\<close>
+      show \<open>|{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+        using A by blast
+    qed
+    have \<open>\<Union> ((\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y}) ` (range (inv \<alpha>\<sigma>))) = UNIV\<close>
+      by auto (meson f_inv_into_f rangeI)
+    moreover have \<open>|\<Union> ((\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y}) ` (range (inv \<alpha>\<sigma>)))| \<le>o |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+      using card_of_UNION_Sigma by blast
+    ultimately have \<open>|UNIV::urrel set set| \<le>o |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+      by argo
+    moreover have \<open>|Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})| \<le>o |UNIV::\<sigma> set|\<close>
+      using card_of_Sigma_ordLeq_Cinfinite[OF Cinf\<sigma>, OF 1, OF 2] by blast
+    ultimately have \<open>|UNIV::urrel set set| \<le>o |UNIV::\<sigma> set|\<close>
+      using ordLeq_transitive by blast
+    moreover {
+      have \<open>\<exists>f :: \<sigma> \<Rightarrow> urrel. inj f\<close>
+      proof
+        show \<open>inj (\<lambda>s . Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . \<sigma>\<upsilon> s = u))\<close>
+          apply (safe intro!: injI)
+          apply (subst (asm) Abs_urrel_inject)
+          apply (auto simp add: AOT_model_proposition_choice_def AOT_model_valid_in_def d\<o>_surj surj_f_inv_f)
+          by (metis (mono_tags, lifting) AOT_model_proposition_choice_def AOT_model_proposition_choice_simp \<upsilon>.inject(2))
+      qed
+      hence \<open>|UNIV::\<sigma> set| \<le>o |UNIV::urrel set|\<close>
+        by (metis card_of_image inj_imp_surj_inv)
+      moreover have \<open>|UNIV::urrel set| <o |UNIV::urrel set set|\<close>
+        by simp
+      ultimately have \<open>|UNIV::\<sigma> set| <o |UNIV::urrel set set|\<close>
+         by (metis ordLeq_ordLess_trans)
+    }
+    ultimately have \<open>False\<close>
+      using not_ordLeq_ordLess by blast
+  }
+
+  have \<open>\<exists>f :: nat \<Rightarrow> \<sigma> . inj f\<close>
+    by (rule_tac x=\<open>number\<sigma>\<close> in exI)
+       (simp add: inj_on_def)
+  hence \<open>infinite (UNIV::\<sigma> set)\<close>
+    by (metis finite_imageI infinite_UNIV_char_0 inj_imp_surj_inv)
+  hence \<open>natLeq <=o |UNIV::\<sigma> set|\<close>
+    by (meson card_of_UNIV card_of_ordLeq_infinite finite_prod infinite_iff_natLeq_ordLeq)
+  hence \<open>cinfinite |UNIV::\<sigma> set|\<close>
+    using cinfinite_mono natLeq_cinfinite by blast
+  hence Cinf\<sigma>: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
+    using Cnotzero_UNIV by blast
+  have 1: \<open>|range (inv \<alpha>\<sigma>)| \<le>o |UNIV::\<sigma> set|\<close>
+    by auto
+  have 2: \<open>\<forall>i\<in>range (inv \<alpha>\<sigma>). |{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+  proof
+    fix i :: \<open>urrel set\<close>
+    assume \<open>i \<in> range (inv \<alpha>\<sigma>)\<close>
+    show \<open>|{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+      using A by blast
+  qed
+  have \<open>\<Union> ((\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y}) ` (range (inv \<alpha>\<sigma>))) = UNIV\<close>
+    by auto (meson f_inv_into_f rangeI)
+  moreover have \<open>|\<Union> ((\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y}) ` (range (inv \<alpha>\<sigma>)))| \<le>o |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+    using card_of_UNION_Sigma by blast
+  ultimately have \<open>|UNIV::urrel set set| \<le>o |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+    by argo
+  moreover have \<open>|Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})| \<le>o |UNIV::\<sigma> set|\<close>
+    using card_of_Sigma_ordLeq_Cinfinite[OF Cinf\<sigma>, OF 1, OF 2] by blast
+  ultimately have \<open>|UNIV::urrel set set| \<le>o |UNIV::\<sigma> set|\<close>
+    using ordLeq_transitive by blast
+  moreover {
+    have \<open>\<exists>f :: \<sigma> \<Rightarrow> urrel. inj f\<close>
+    proof
+      show \<open>inj (\<lambda>s . Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . \<sigma>\<upsilon> s = u))\<close>
+        apply (safe intro!: injI)
+        apply (subst (asm) Abs_urrel_inject)
+        apply (auto simp add: AOT_model_proposition_choice_def AOT_model_valid_in_def d\<o>_surj surj_f_inv_f)
+        by (metis (mono_tags, lifting) AOT_model_proposition_choice_def AOT_model_proposition_choice_simp \<upsilon>.inject(2))
+    qed
+    hence \<open>|UNIV::\<sigma> set| \<le>o |UNIV::urrel set|\<close>
+      by (metis card_of_image inj_imp_surj_inv)
+    moreover have \<open>|UNIV::urrel set| <o |UNIV::urrel set set|\<close>
+      by simp
+    ultimately have \<open>|UNIV::\<sigma> set| <o |UNIV::urrel set set|\<close>
+       by (metis ordLeq_ordLess_trans)
+  }
+  ultimately show \<open>False\<close>
+    using not_ordLeq_ordLess by blast
+qed
+
+lemma \<open>\<exists> \<alpha>\<sigma> :: urrel set \<Rightarrow> \<sigma> . surj \<alpha>\<sigma> \<and> (\<forall> x y . \<alpha>\<sigma> x = \<alpha>\<sigma> y \<longrightarrow> \<alpha>\<sigma>' x = \<alpha>\<sigma>' y)\<close> for \<alpha>\<sigma>' :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+proof -
+  obtain x where \<open>|UNIV::\<sigma> set| <o |{y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y}|\<close>
+    using Aux0 by blast
+  hence \<open>\<exists>f :: urrel set \<Rightarrow> \<sigma> . f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+    by (simp add: card_of_ordLeq2 ordLess_imp_ordLeq)
+  then obtain f :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
+    f_prop: \<open>f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+    by blast
+  obtain a where a_prop: \<open>f a = \<alpha>\<sigma>' x\<close> and a_prop': \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' x\<close>
+    by (smt (verit, best) UNIV_I f_prop image_iff mem_Collect_eq)
+  define f' where f'_def: \<open>f' \<equiv> f(a := f x, x := f a)\<close>
+  have f'_prop: \<open>f' ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+  proof -
+    {
+      fix y
+      obtain x' where A: \<open>f x' = y\<close> and B: \<open>\<alpha>\<sigma>' x = \<alpha>\<sigma>' x'\<close>
+        by (smt (verit, best) UNIV_I f_prop image_iff mem_Collect_eq)
+      {
+        assume \<open>x' = a\<close>
+        hence \<open>f' x = y\<close>
+          using \<open>f x' = y\<close> f'_def by fastforce
+        hence \<open>y \<in> (f' ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y})\<close>
+          by blast
+      }
+      moreover {
+        assume \<open>x' = x\<close>
+        hence \<open>f' a = y\<close>
+          using \<open>f x' = y\<close> f'_def by force
+        hence \<open>y \<in> (f' ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y})\<close>
+          by (auto simp add: a_prop')
+      }
+      moreover {
+        assume \<open>x' \<noteq> a \<and> x' \<noteq> x\<close>
+        hence \<open>f' x' = y\<close>
+          by (simp add: \<open>f x' = y\<close> f'_def)
+        hence \<open>y \<in> (f' ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y})\<close>
+          using B by blast
+      }
+      ultimately have \<open>y \<in> (f' ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y})\<close>
+        by argo
+    }
+    thus ?thesis
+      by blast
+  qed
+  have \<open>f' x = \<alpha>\<sigma>' x\<close>
+    by (simp add: a_prop f'_def)
+
+  define \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
+    \<open>\<alpha>\<sigma> \<equiv> \<lambda> urrels . if \<alpha>\<sigma>' urrels = \<alpha>\<sigma>' x \<and> f' urrels \<notin> range \<alpha>\<sigma>' then f' urrels else \<alpha>\<sigma>' urrels\<close>
+  have \<open>surj \<alpha>\<sigma>\<close>
+  proof -
+    {
+    fix s :: \<sigma>
+    {
+      assume \<open>s \<in> range \<alpha>\<sigma>'\<close>
+      hence 0: \<open>\<alpha>\<sigma>' (inv \<alpha>\<sigma>' s) = s\<close>
+        by (meson f_inv_into_f)
+      {
+        assume \<open>s = \<alpha>\<sigma>' x\<close>
+        have \<open>\<alpha>\<sigma> x = s\<close>
+          using \<alpha>\<sigma>_def \<open>f' x = \<alpha>\<sigma>' x\<close> \<open>s = \<alpha>\<sigma>' x\<close> by presburger
+        have \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+          by (meson \<open>\<alpha>\<sigma> x = s\<close>)
+      }
+      moreover {
+        assume \<open>s \<noteq> \<alpha>\<sigma>' x\<close>
+        hence \<open>\<alpha>\<sigma> (inv \<alpha>\<sigma>' s) = s\<close>
+          unfolding \<alpha>\<sigma>_def 0 by presburger
+        hence \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+          by blast
+      }
+      ultimately have \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+        by blast
+    }
+    moreover {
+      assume \<open>s \<notin> range \<alpha>\<sigma>'\<close>
+      obtain urrels where \<open>f' urrels = s\<close> and \<open>\<alpha>\<sigma>' x = \<alpha>\<sigma>' urrels\<close>
+        by (smt (verit, best) UNIV_I f'_prop image_iff mem_Collect_eq)
+      hence \<open>\<alpha>\<sigma> urrels = s\<close>
+        using \<alpha>\<sigma>_def \<open>s \<notin> range \<alpha>\<sigma>'\<close> by presburger
+      hence \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+        by (meson f_inv_into_f range_eqI)
+    }
+    ultimately have \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+      by blast
+    }
+    thus ?thesis
+      by (metis surj_def)
+  qed
+  moreover have \<open>\<forall>x y. \<alpha>\<sigma> x = \<alpha>\<sigma> y \<longrightarrow> \<alpha>\<sigma>' x = \<alpha>\<sigma>' y\<close>
+    by (metis \<alpha>\<sigma>_def rangeI)
+  ultimately show ?thesis
+    by blast
+qed
+
+
+lemma \<open>\<exists> x . |UNIV::\<sigma> set| <o |{ y . \<alpha>\<sigma> y = x}|\<close>
+proof(rule ccontr)
+  assume \<open>\<nexists>x. |UNIV::\<sigma> set| <o |{y. \<alpha>\<sigma> y = x}|\<close>
+  hence \<open>\<forall>x . \<not>( |UNIV::\<sigma> set| <o |{y. \<alpha>\<sigma> y = x}| )\<close>
+    by blast
+  hence A: \<open>\<forall>x . |{y. \<alpha>\<sigma> y = x}| <=o |UNIV::\<sigma> set|\<close>
+    by auto
+  have \<open>\<exists>f :: nat \<Rightarrow> \<sigma> . inj f\<close>
+    apply (rule_tac x=\<open>number\<sigma>\<close> in exI)
+    by (simp add: inj_on_def)
+  hence \<open>infinite (UNIV::\<sigma> set)\<close>
+    by (metis finite_imageI infinite_UNIV_char_0 inj_imp_surj_inv)
+  hence \<open>natLeq <=o |UNIV::\<sigma> set|\<close>
+    by (meson card_of_UNIV card_of_ordLeq_infinite finite_prod infinite_iff_natLeq_ordLeq)
+  hence \<open>cinfinite |UNIV::\<sigma> set|\<close>
+    using cinfinite_mono natLeq_cinfinite by blast
+  hence Cinf\<sigma>: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
+    using Cnotzero_UNIV by blast
+  have 1: \<open>|range (inv \<alpha>\<sigma>)| <=o |UNIV::\<sigma> set|\<close>
+    using card_of_image by blast
+  have \<open>\<forall>x\<in> range (inv \<alpha>\<sigma>) . P x\<close>
+  find_theorems \<open>Cinfinite\<close>
+  thm vimage_ordLeq
+  thm card_of_Sigma_ordLeq_Cinfinite[OF Cinf\<sigma>, OF 1]
+  find_theorems "?a <=o ?b"
+  oops
+
 locale \<alpha>\<sigma>_props =
   fixes \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
   assumes \<alpha>\<sigma>_surj: \<open>surj \<alpha>\<sigma>\<close>
-  assumes \<alpha>\<sigma>_disc_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. finite_card { \<kappa> . (\<forall> y . (case (y,\<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a=b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a=b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | _ \<Rightarrow> False)  \<longrightarrow> \<kappa> = y) \<and>
-            AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} = Some n} \<Longrightarrow> x = y\<close>
+  assumes \<alpha>\<sigma>_disc_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. finite_card { u . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = Some n} \<Longrightarrow> x = y\<close>
 begin
 end
 
@@ -201,14 +469,9 @@ proof -
     by (metis atLeast0LessThan bij_betw_finite bij_betw_same_card card_lessThan finite_card_def finite_lessThan)
 qed
 
-fun \<upsilon>disc :: \<open>\<upsilon> \<Rightarrow> bool\<close> where
-  \<open>\<upsilon>disc (\<omega>\<upsilon> x) = True\<close>
-| \<open>\<upsilon>disc (\<sigma>\<upsilon> (number\<sigma> x)) = True\<close>
-| \<open>\<upsilon>disc _ = False\<close>
-
 definition urrel_number :: \<open>urrel \<Rightarrow> nat \<Rightarrow> bool\<close> where
   \<open>urrel_number \<equiv> \<lambda> urrel n . finite_card
-              {u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} =
+              {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} =
              Some n\<close>
 
 lemma urrel_number_eq:
@@ -221,7 +484,7 @@ lemma urrel_number_zeroI:
   assumes \<open>\<nexists>x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)\<close>
   shows \<open>urrel_number urrel 0\<close>
 proof -
-  have 0: \<open>{u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = {}\<close>
+  have 0: \<open>{u. AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = {}\<close>
     using assms by blast
   show \<open>urrel_number urrel 0\<close>
     unfolding urrel_number_def 0
@@ -229,17 +492,17 @@ proof -
 qed
 
 lemma urrel_number_oneI:
-  assumes \<open>\<exists>!x . \<upsilon>disc x \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)\<close>
+  assumes \<open>\<exists>!x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)\<close>
   shows \<open>urrel_number urrel 1\<close>
 proof -
-  obtain x where A: \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)\<close> and B: \<open>\<upsilon>disc x\<close> and
-                 C: \<open>\<forall>y . \<upsilon>disc y \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y) \<longrightarrow> y = x\<close>
+  obtain x where A: \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)\<close> and
+                 C: \<open>\<forall>y . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y) \<longrightarrow> y = x\<close>
     using assms by blast
-  have 0: \<open>{u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = {x}\<close> (is \<open>?lhs = ?rhs\<close>)
+  have 0: \<open>{u. AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = {x}\<close> (is \<open>?lhs = ?rhs\<close>)
   proof(rule; rule)
     fix y
     assume \<open>y \<in> ?lhs\<close>
-    hence \<open>\<upsilon>disc y\<close> and \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y)\<close>
+    hence \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y)\<close>
       by blast+
     hence \<open>y = x\<close> using C by blast
     thus \<open>y \<in> {x}\<close> by blast
@@ -247,8 +510,8 @@ proof -
     fix y
     assume \<open>y \<in> {x}\<close>
     hence \<open>y = x\<close> by blast
-    hence \<open>\<upsilon>disc y\<close> and \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y)\<close> using A B by blast+
-    thus \<open>y \<in> {u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)}\<close>
+    hence \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel y)\<close> using A by blast+
+    thus \<open>y \<in> {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)}\<close>
       by blast
   qed
   show \<open>urrel_number urrel 1\<close>
@@ -259,14 +522,15 @@ qed
 
 lemma urrel_number_ex: \<open>\<exists> urrel . urrel_number urrel n\<close>
 proof
-  have 0: \<open>{u. \<upsilon>disc u \<and>
-     (case u of \<sigma>\<upsilon> (\<sigma>'\<sigma> \<sigma>'') \<Rightarrow> False | \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False)} =
-      {u. case u of \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False}\<close> for n apply auto
-    by (metis \<sigma>.simps(5) \<upsilon>.case_eq_if \<upsilon>.disc(6) \<upsilon>.sel(2) \<upsilon>disc.elims(1))
-  thus \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w. case u of \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False)) n\<close>
+  have 0: \<open>{u. AOT_model_valid_in w\<^sub>0 (\<epsilon>\<^sub>\<o> w. case u of \<sigma>\<upsilon> (\<sigma>'\<sigma> \<sigma>'') \<Rightarrow> False | \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False)}
+= {u. case u of \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False}\<close> for n
+    by (simp add: AOT_model_proposition_choice_simp)+
+  show \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w. case u of \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False)) n\<close>
     unfolding urrel_number_def
     apply (subst Abs_urrel_inverse)
-    by (auto simp add: AOT_model_proposition_choice_simp 0 Aux)
+     apply (simp add: AOT_model_proposition_choice_simp)
+    unfolding 0
+    by (simp add: Aux)
 qed
 
 definition urrel_set_is_number :: \<open>urrel set \<Rightarrow> nat \<Rightarrow> bool\<close> where
@@ -291,61 +555,53 @@ proof
     using AOT_model_nonactual_world by blast
     have surj_\<alpha>\<sigma>: \<open>surj \<alpha>\<sigma>\<close>
     proof -
-      have 1: \<open>\<nexists>n. \<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
+      have 1: \<open>\<nexists>n. \<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
                    urrel_number urrel n\<close> for s'
       proof
-        assume \<open>\<exists>n. \<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
+        assume \<open>\<exists>n. \<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
                 urrel_number urrel n\<close>
-        then obtain n where \<open>\<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
+        then obtain n where \<open>\<forall>urrel\<in>{Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False), Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))}.
                              urrel_number urrel n\<close>
           by blast
         hence 0: \<open>urrel_number (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) n\<close>
           and
-          1: \<open>urrel_number (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) n\<close>
+          1: \<open>urrel_number (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) n\<close>
           by blast+
-        have 2: \<open>{u. \<upsilon>disc u \<and>
-                AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} =
-          {}\<close>
-          apply auto
-          apply (subst (asm) Abs_urrel_inverse)
-          by (auto simp: AOT_model_proposition_choice_simp)
-        have 3: \<open>{u. \<upsilon>disc u \<and>
-                AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)} =
-                { \<omega>\<upsilon> someord }\<close>
-          apply auto
-          apply (subst (asm) Abs_urrel_inverse)
-            apply (auto simp: AOT_model_proposition_choice_simp)
-           apply (metis (full_types) \<upsilon>.case_eq_if \<upsilon>.collapse(1))
+        have 2: \<open>finite {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)}\<close>
           apply (subst Abs_urrel_inverse)
           by (auto simp: AOT_model_proposition_choice_simp)
-        have \<open>n = 0\<close> using 1 unfolding urrel_number_def unfolding 2 finite_card_def by auto
-        moreover have \<open>n = 1\<close> using 0 unfolding 3 urrel_number_def finite_card_def by auto
+        have \<open>{u. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False} = {\<omega>\<upsilon> someord}\<close>
+          by (smt (verit, ccfv_SIG) Collect_cong \<upsilon>.case_eq_if \<upsilon>.collapse(1) \<upsilon>.disc(1) \<upsilon>.sel(1) singleton_conv)
+        have 3: \<open>{u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)} = {\<omega>\<upsilon> someord}\<close>
+          apply (subst Abs_urrel_inverse)
+           apply (auto simp: AOT_model_proposition_choice_simp)
+          using \<open>{u. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False} = {\<omega>\<upsilon> someord}\<close> by fastforce
+        have \<open>n = 0\<close> using 1 unfolding urrel_number_def unfolding finite_card_def
+          apply (simp add: 2)
+          apply (subst (asm) Abs_urrel_inverse)
+          by (auto simp: AOT_model_proposition_choice_simp)
+        moreover have \<open>n = 1\<close> using 0 apply (simp add: 3) unfolding urrel_number_def finite_card_def
+          by (simp add: "3")
         ultimately show \<open>False\<close>
           by auto
       qed
       have 2: \<open>finite_card
-          {u. \<upsilon>disc u \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} \<noteq>
+          {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} \<noteq>
          finite_card
-          {u. \<upsilon>disc u \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)}\<close>
+          {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)}\<close>
         for s'
       proof
         assume 1: \<open>finite_card
-          {u. \<upsilon>disc u \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} =
+          {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} =
          finite_card
-          {u. \<upsilon>disc u \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)}\<close>
+          {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)}\<close>
           (* TODO: unify with above *)
-        have 2: \<open>{u. \<upsilon>disc u \<and>
-                AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} =
+        have 2: \<open>{u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and>  u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) u)} =
           {}\<close>
           apply auto
           apply (subst (asm) Abs_urrel_inverse)
           by (auto simp: AOT_model_proposition_choice_simp)
-        have 3: \<open>{u. \<upsilon>disc u \<and>
-                AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)} =
+        have 3: \<open>{u. AOT_model_valid_in w\<^sub>0 (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) u)} =
                 { \<omega>\<upsilon> someord }\<close>
           apply auto
           apply (subst (asm) Abs_urrel_inverse)
@@ -362,7 +618,7 @@ proof
         {
           assume \<open>\<exists> n . s = number\<sigma> n\<close>
           then obtain n where s_def: \<open>s = number\<sigma> n\<close> by blast
-          have \<open>\<alpha>\<sigma> { urrel . finite_card { u . \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u) } = Some n} = s\<close>
+          have \<open>\<alpha>\<sigma> { urrel . finite_card { u . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u) } = Some n} = s\<close>
             unfolding \<alpha>\<sigma>_def s_def urrel_set_is_number_def
             apply (auto simp add: Let_def)
             apply (rule the1_equality)
@@ -387,7 +643,7 @@ proof
              (\<exists>v. v \<noteq> w\<^sub>0 \<and>
                   AOT_model_valid_in v
                    (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False)) (\<sigma>\<upsilon> (\<sigma>'\<sigma> \<sigma>')))) \<or>
-             (\<exists>v. v \<noteq> w\<^sub>0 \<and> AOT_model_valid_in v (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) (\<sigma>\<upsilon> (\<sigma>'\<sigma> \<sigma>'))))) =
+             (\<exists>v. v \<noteq> w\<^sub>0 \<and> AOT_model_valid_in v (Rep_urrel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s'))) (\<sigma>\<upsilon> (\<sigma>'\<sigma> \<sigma>'))))) =
             s\<close>
             unfolding s_def
             apply simp
@@ -395,7 +651,7 @@ proof
              apply (rule_tac a="s'" in ex1I)
             by ((subst Abs_urrel_inverse | subst (asm) Abs_urrel_inverse); simp add: AOT_model_proposition_choice_simp AOT_model_nonactual_world)+
           have \<open>\<alpha>\<sigma> ({ Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w.  case u of \<omega>\<upsilon> x \<Rightarrow> x = someord | _ \<Rightarrow> False),
-                      Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w.  u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s')) }) = s\<close>
+                      Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w.  w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s')) }) = s\<close>
             unfolding \<alpha>\<sigma>_def Let_def s_def urrel_set_is_number_def
             apply (auto simp add: 1 2 3)
             using "1" apply auto[1]
@@ -421,240 +677,16 @@ proof
       unfolding \<alpha>\<sigma>_def
       by (metis \<sigma>.distinct(2))
     assume A: \<open>x =
-       {urrel.
-        finite_card
-         {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<kappa> = y) \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
-        Some n}\<close>
-    {
-      fix a
-      assume 0: \<open>\<forall>y. (case (y,\<alpha>\<kappa> a) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<alpha>\<kappa> a = y\<close>
-      {
-        fix b
-        have \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b \<longrightarrow> \<alpha>\<kappa> a = \<alpha>\<kappa> b\<close>
-          using 0 by force
-      } note 1 = this
-      {
-        assume \<open>\<exists>s . \<alpha>\<sigma> a = \<sigma>'\<sigma> s\<close>
-        then obtain s where \<open>\<alpha>\<sigma> a = \<sigma>'\<sigma> s\<close> by blast
-        define b where \<open>b = { Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord), Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))}\<close>
-        define c where \<open>c = { Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))}\<close>
-        have \<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord) \<noteq> Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close>
-        proof
-          assume \<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord) = Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close>
-          hence \<open>(\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord) = (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close>
-            apply (subst (asm) Abs_urrel_inject)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          thus \<open>False\<close>
-            by (metis (mono_tags, lifting) AOT_model_proposition_choice_simp)
-        qed
-        hence \<open>b \<noteq> c\<close> unfolding b_def c_def by auto
-        have b_not_num: \<open>\<nexists>n . urrel_set_is_number b n\<close>
-        proof
-          assume \<open>\<exists>n . urrel_set_is_number b n\<close>
-          then obtain n where 0: \<open>urrel_set_is_number b n\<close> by blast
-          hence \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord)) n\<close>
-            by (metis (no_types, lifting) b_def insertI1 mem_Collect_eq urrel_set_is_number_def)
-          moreover have \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))) n\<close>
-            using 0
-            by (metis (mono_tags, lifting) b_def insertI1 insert_commute mem_Collect_eq urrel_set_is_number_def)
-          moreover have \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w = w\<^sub>0 \<and> u = \<omega>\<upsilon> someord)) 1\<close>
-            apply (rule urrel_number_oneI)
-            apply (rule_tac a = \<open>\<omega>\<upsilon> someord\<close> in ex1I)
-             apply (subst Abs_urrel_inverse)
-            apply (auto simp: AOT_model_proposition_choice_simp)
-             apply (subst (asm) Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          moreover have \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))) 0\<close>
-            apply (rule urrel_number_zeroI)
-            apply (subst Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          ultimately show \<open>False\<close> using urrel_number_eq
-            using zero_neq_one by blast
-        qed
-        have \<open>\<alpha>\<sigma> b = \<sigma>'\<sigma> s\<close>
-          unfolding \<alpha>\<sigma>_def apply (simp add: b_not_num)
-          apply (rule the1_equality)
-           apply (rule_tac a=\<open>s\<close> in ex1I)
-            apply (rule_tac x=\<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close> in bexI)
-             apply (rule_tac x=\<open>w\<^sub>1\<close> in exI)
-             apply (subst Abs_urrel_inverse)
-              apply (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-          unfolding b_def apply simp
-           apply simp
-          using AOT_model_proposition_choice_simp Abs_urrel_inverse apply force
-            apply (rule_tac x=\<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close> in bexI)
-           apply (rule_tac x=\<open>w\<^sub>1\<close> in exI)
-           apply (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-          apply (subst Abs_urrel_inverse)
-          by (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-        have c_not_num: \<open>\<nexists>n . urrel_set_is_number c n\<close>
-        proof
-          assume \<open>\<exists>n . urrel_set_is_number c n\<close>
-          then obtain n where 0: \<open>urrel_set_is_number c n\<close> by blast
-          hence \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))) n\<close>
-            by (metis c_def mem_Collect_eq singletonI urrel_set_is_number_def)
-          moreover have \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))) 0\<close>
-            apply (rule urrel_number_zeroI)
-            apply (subst Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          ultimately have n0: \<open>n = 0\<close>
-            using urrel_number_eq by blast
-          have \<open>urrel_number (Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . False)) 0\<close>
-            apply (rule urrel_number_zeroI)
-            apply (subst Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          hence \<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . False) \<in> c\<close>
-            by (metis "0" mem_Collect_eq n0 urrel_set_is_number_def)
-          hence \<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . False) = Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close>
-            using c_def by blast
-          thus \<open>False\<close>
-            apply (subst (asm) Abs_urrel_inject)
-              apply (auto simp: AOT_model_proposition_choice_simp)
-            by (smt (z3) AOT_model_proposition_choice_simp w\<^sub>1)
-        qed
-        have \<open>\<alpha>\<sigma> c = \<sigma>'\<sigma> s\<close>
-          unfolding \<alpha>\<sigma>_def apply (simp add: c_not_num)
-          apply (rule the1_equality)
-           apply (rule_tac a=\<open>s\<close> in ex1I)
-            apply (rule_tac x=\<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close> in bexI)
-             apply (rule_tac x=\<open>w\<^sub>1\<close> in exI)
-             apply (subst Abs_urrel_inverse)
-              apply (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-          unfolding c_def apply simp
-           apply simp
-          using AOT_model_proposition_choice_simp Abs_urrel_inverse apply force
-            apply (rule_tac x=\<open>Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w . w \<noteq> w\<^sub>0 \<and> u = \<sigma>\<upsilon> (\<sigma>'\<sigma> s))\<close> in bexI)
-           apply (rule_tac x=\<open>w\<^sub>1\<close> in exI)
-           apply (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-          apply (subst Abs_urrel_inverse)
-          by (auto simp: AOT_model_proposition_choice_simp w\<^sub>1)
-        have \<open>\<alpha>\<sigma> b = \<alpha>\<sigma> c\<close>
-          using \<open>\<alpha>\<sigma> b = \<sigma>'\<sigma> s\<close> \<open>\<alpha>\<sigma> c = \<sigma>'\<sigma> s\<close> by auto
-        have \<open>False\<close>
-          by (metis "1" \<kappa>.sel(2) \<open>\<alpha>\<sigma> a = \<sigma>'\<sigma> s\<close> \<open>\<alpha>\<sigma> b = \<sigma>'\<sigma> s\<close> \<open>\<alpha>\<sigma> c = \<sigma>'\<sigma> s\<close> \<open>b \<noteq> c\<close>)
-      }
-      hence \<open>\<exists> n. \<alpha>\<sigma> a = number\<sigma> n\<close>
-        by (meson \<sigma>.exhaust)
-    }
-    moreover {
-      fix a
-      assume \<open>\<exists> n. \<alpha>\<sigma> a = number\<sigma> n\<close>
-      then obtain n where a_num_n: \<open>\<alpha>\<sigma> a = number\<sigma> n\<close> by blast
-      hence a_num_n': \<open>urrel_set_is_number a n\<close>
-        unfolding \<alpha>\<sigma>_def
-        by (metis (mono_tags, lifting) \<sigma>.distinct(1) \<sigma>.inject(2) mem_Collect_eq theI urrel_number_eq urrel_number_ex urrel_set_is_number_def)
-      {
-        fix b
-        assume \<open>\<alpha>\<sigma> b = \<alpha>\<sigma> a\<close>
-        hence b_num_n: \<open>\<alpha>\<sigma> b = number\<sigma> n\<close> using a_num_n by auto
-        hence b_num_n': \<open>urrel_set_is_number b n\<close>
-          unfolding \<alpha>\<sigma>_def
-          by (metis (mono_tags, lifting) \<sigma>.distinct(1) \<sigma>.inject(2) mem_Collect_eq theI urrel_number_eq urrel_number_ex urrel_set_is_number_def)
-        have \<open>a = b\<close>
-          by (metis a_num_n' b_num_n' urrel_set_is_number_def)
-      } note 0 = this
-      have \<open>\<forall>y. (case (y,\<alpha>\<kappa> a) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<alpha>\<kappa> a = y\<close>
-      proof -
-        {
-          fix y
-          assume \<open>(case (y,\<alpha>\<kappa> a) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False)\<close>
-          hence \<open>\<alpha>\<kappa> a = y\<close>
-            apply (induct y)
-              apply simp
-             apply simp
-            using 0 apply simp
-            by simp
-        }
-        thus ?thesis by auto
-      qed
-    }
-    ultimately have simp1: \<open>(\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-         | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-        \<kappa> = y) = (\<upsilon>disc (\<kappa>\<upsilon> \<kappa>))\<close> if \<open>\<not>is_null\<kappa> \<kappa>\<close> for \<kappa>
-      using that
-      apply (induct \<kappa>)
-        apply (simp_all add: \<kappa>\<upsilon>_def)
-      apply (smt (verit, best) \<kappa>.case_eq_if \<kappa>.disc(4) \<kappa>.disc(7) \<kappa>.distinct_disc(1) \<kappa>.expand)
-      by (metis \<upsilon>.sel(2) \<upsilon>.simps(5) \<upsilon>disc.elims(2) \<upsilon>disc.simps(2))
-
-    have simp2: \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x)) \<Longrightarrow> \<not>is_null\<kappa> \<kappa>\<close>
-      for urrel \<kappa> using Rep_urrel
-      by (metis (mono_tags, lifting) \<kappa>.case_eq_if \<kappa>.distinct_disc(3) \<kappa>.distinct_disc(6) mem_Collect_eq)
-
-    have \<open>{\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<kappa> = y) \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
-          {\<kappa> . \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}\<close>
-        (is \<open>?lhs = ?rhs\<close>)
-      for urrel
-    proof(rule; rule)
-      fix \<kappa>
-      assume 0: \<open>\<kappa> \<in> ?lhs\<close>
-      hence 1: \<open>\<not>is_null\<kappa> \<kappa>\<close>
-        using simp2 by blast
-      thus \<open>\<kappa> \<in> ?rhs\<close>
-        using 0[simplified] simp1[OF simp2]
-        by auto
-    next
-      fix \<kappa>
-      assume 0: \<open>\<kappa> \<in> ?rhs\<close>
-      hence 1: \<open>\<not>is_null\<kappa> \<kappa>\<close>
-        using simp2 by force
-      thus \<open>\<kappa> \<in> ?lhs\<close>
-        using 0[simplified] simp1[OF simp2]
-        by auto
-    qed
-    hence B: \<open>x =
-    {urrel.
-     finite_card
-      {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
-     Some n}\<close> using A by auto
-
-    {
-      fix urrel
-      fix x
-      obtain y where y_def: \<open>\<kappa>\<upsilon> y = x\<close>
-        by (meson \<kappa>\<upsilon>_surj surj_f_inv_f)
-      have \<open>\<upsilon>disc x \<Longrightarrow>
-         AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x) \<Longrightarrow>
-         \<exists>xa. \<upsilon>disc (\<kappa>\<upsilon> xa) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case xa of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x)) \<and> x = \<kappa>\<upsilon> xa\<close>
-        apply (rule_tac x=y in exI)
-        apply (auto simp add: y_def)
-        using \<kappa>\<upsilon>_def y_def by blast
-    } note aux = this
-    have \<open>bij_betw \<kappa>\<upsilon>
-        {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}
-        {u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)}\<close> for urrel
-      unfolding bij_betw_def
-      apply auto
-        apply (rule inj_onI)
-        apply auto
-      apply (smt (verit, ccfv_threshold) \<kappa>.collapse(1) \<kappa>.disc(5) \<kappa>.disc(6) \<kappa>.disc(9) \<kappa>.distinct(1) \<kappa>.distinct(3) \<kappa>.distinct(5) \<kappa>.distinct_disc(2) \<kappa>.exhaust_disc \<kappa>.exhaust_sel \<kappa>.inject(1) \<kappa>.sel(2) \<kappa>.simps(10) \<kappa>.simps(11) \<kappa>.split_sel_asm \<kappa>\<upsilon>_def \<open>\<And>urrel. {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow> \<kappa> = y) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} = {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}\<close> \<upsilon>.distinct(1) \<upsilon>.distinct(3) \<upsilon>.distinct(5) \<upsilon>.exhaust \<upsilon>.inject(1) \<upsilon>.inject(2) \<upsilon>disc.cases \<upsilon>disc.elims(2) accp.simps accp_induct_rule case_prodI empty_def is_\<alpha>\<kappa>_def mem_Collect_eq not_accp_down simp2)
-      using \<kappa>\<upsilon>_def apply blast
-      unfolding image_def
-      apply auto
-      using aux by blast
-
-    hence x_num_n: \<open>urrel_set_is_number x n\<close>
-      unfolding urrel_set_is_number_def urrel_number_def
-      by (smt (verit, best) B Collect_cong bij_betw_finite bij_betw_same_card finite_card_def)
-    hence x_num_ex: \<open>\<exists>n . urrel_set_is_number x n\<close>
-      by auto
-    have \<open>\<alpha>\<sigma> x = number\<sigma> n\<close>
-      unfolding \<alpha>\<sigma>_def apply (simp add: x_num_n x_num_ex)
-      apply (rule the1_equality)
-       apply (rule_tac a=n in ex1I)
-      apply (auto simp: x_num_n)
-      by (simp add: urrel_is_number_eq x_num_n)
-    {
-      have \<open>\<exists> n . urrel_set_is_number y n\<close>
-        using is_num_eq x_num_n by blast
-      hence \<open>urrel_set_is_number y n\<close>
-        using x_num_n
-        by (metis \<alpha>\<sigma>_def \<alpha>\<sigma>_eq \<sigma>.inject(2) theI urrel_is_number_eq)
-    }
-    thus \<open>x = y\<close> using x_num_n
-      by (simp add: urrel_set_is_number_def)
+       {urrel. finite_card {u. AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)} = Some n}\<close>
+    have \<open>urrel_set_is_number x n\<close>
+      unfolding A urrel_set_is_number_def urrel_number_def by blast
+    hence \<open>\<exists>n . urrel_set_is_number y n\<close>
+      using \<alpha>\<sigma>_eq unfolding \<alpha>\<sigma>_def
+      using is_num_eq by blast
+    hence \<open>urrel_set_is_number y n\<close>
+      by (metis \<alpha>\<sigma>_def \<alpha>\<sigma>_eq \<open>urrel_set_is_number x n\<close> \<sigma>.inject(2) the_equality urrel_is_number_eq)
+    thus \<open>x = y\<close>
+      by (metis \<open>urrel_set_is_number x n\<close> urrel_set_is_number_def)
   qed
 qed
 
