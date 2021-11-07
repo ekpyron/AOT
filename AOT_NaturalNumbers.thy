@@ -4762,10 +4762,11 @@ proof(rule AOT_model_axiomI)
       unfolding urrel_card_n_def using urrel_act_\<omega>ext_eq by metis
   qed
   have 0: \<open>\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-    if eq: \<open>\<alpha>\<sigma>_ext a = \<alpha>\<sigma>_ext b\<close>
+    if eq: \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
     and counts: \<open>\<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
     for a b
   proof -
+    have eq: \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' b\<close> using eq \<alpha>\<sigma>_\<alpha>\<sigma>' by blast
     show \<open>\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
     proof(rule allI; rule)
     {
@@ -4782,14 +4783,14 @@ proof(rule AOT_model_axiomI)
   qed
   have 0: \<open>(\<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)) =
            (\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r))\<close>
-    if \<open>\<alpha>\<sigma>_ext a = \<alpha>\<sigma>_ext b\<close>
+    if \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
     for a b
     using 0[OF that] 0[OF that[symmetric]]
     
     by blast
   hence 0: \<open>(\<epsilon>\<^sub>\<o> w. \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)) =
             (\<epsilon>\<^sub>\<o> w. \<exists>n. \<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r))\<close>
-    if \<open>\<alpha>\<sigma>_ext a = \<alpha>\<sigma>_ext b\<close>
+    if \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
     for a b
     apply (subst 0[OF that])
     by metis
@@ -4800,7 +4801,8 @@ proof(rule AOT_model_axiomI)
     for x y
     apply (induct x; induct y)
             apply (auto simp: AOT_model_term_equiv_\<kappa>_def)
-    by (metis (mono_tags, lifting) \<alpha>\<sigma>_eq_ord_exts_ex eq_same_card urrel_card_n_def)
+    by (metis (mono_tags, lifting) \<alpha>\<sigma>_\<alpha>\<sigma>' \<alpha>\<sigma>_eq_ord_exts_ex eq_same_card
+                                   urrel_card_n_def)
   have model_nat_den: \<open>AOT_model_denotes model_nat\<close>
     unfolding model_nat_def
     apply (rule AOT_model_denotes_Abs_rel_fix_specialI)

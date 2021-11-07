@@ -1,6 +1,6 @@
 (*<*)
 theory AOT_model
-  imports Main
+  imports Main "HOL-Cardinals.Cardinals"
 begin
 
 declare[[typedef_overloaded]]
@@ -44,37 +44,13 @@ lemma \<open>True\<close> nitpick[satisfy, user_axioms, expect = genuine] ..
 
 typedecl \<omega> \<comment>\<open>The primtive type of ordinary objects/urelements.\<close>
 
-text\<open>Construction of special urelements for validating
-     extended relation comprehension.
-     See the comment below for simpler models.\<close>
+text\<open>Validating extended relation comprehension requires a large set of
+     special urelements. For simple models that do not validate extended
+     relation comprehension (and consequently the predecessor axiom in the
+     theory of natural numbers), it suffices to use a primitive type as @{text \<sigma>},
+     i.e. @{theory_text \<open>typedecl \<sigma>\<close>}.\<close>
 typedecl \<sigma>'
-consts \<sigma>'\<^sub>0 :: \<sigma>'
-definition \<sigma>cond :: \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> bool\<close> where
-  \<open>\<sigma>cond \<equiv> \<lambda> (intersection_set, union_set, \<sigma>').
-          (intersection_set \<subseteq> union_set) \<and>
-          (union_set = intersection_set \<longrightarrow> \<sigma>' = \<sigma>'\<^sub>0)\<close>
-definition \<sigma>set where \<open>\<sigma>set \<equiv> Collect \<sigma>cond\<close>
-abbreviation (input) ordext_intersection ::
-  \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set\<close> where
-  \<open>ordext_intersection \<equiv> fst\<close>
-abbreviation (input) ordext_union ::
-  \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set\<close> where
-  \<open>ordext_union \<equiv> \<lambda> set . fst (snd set)\<close>
-abbreviation (input) \<sigma>\<sigma>' ::
-  \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>' \<Rightarrow> \<sigma>'\<close> where
-  \<open>\<sigma>\<sigma>' \<equiv> \<lambda> set . snd (snd set)\<close>
-lemma \<sigma>condI:
-  assumes \<open>\<forall> x \<in> ordext_intersection \<sigma> . x \<in> ordext_union \<sigma>\<close>
-  assumes \<open>ordext_union \<sigma> = {} \<Longrightarrow> \<sigma>\<sigma>' \<sigma> = \<sigma>'\<^sub>0\<close>
-  assumes \<open>ordext_union \<sigma> \<noteq> {} \<Longrightarrow> ordext_intersection \<sigma> = ordext_union \<sigma> \<Longrightarrow>
-           \<sigma>\<sigma>' \<sigma> = \<sigma>'\<^sub>0\<close>
-  shows \<open>\<sigma>cond \<sigma>\<close>
-  unfolding \<sigma>cond_def using assms by fastforce
-typedef \<sigma> = \<open>\<sigma>set\<close> unfolding \<sigma>set_def \<sigma>cond_def by auto
-text\<open>For simple models that do not validate extended relation comprehension
-     (and consequently the predecessor axiom in the theory of natural numbers),
-     it suffices to use a primitive type as @{typ \<sigma>}, i.e.
-     @{theory_text \<open>typedecl \<sigma>\<close>}.\<close>
+typedef \<sigma> = \<open>UNIV::((\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>') set\<close> ..
 
 typedecl null \<comment> \<open>Null-Urelements representing non-denoting terms.\<close>
 
@@ -88,13 +64,247 @@ typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<
   by (rule exI[where x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close>])
      (auto simp: AOT_model_proposition_choice_simp)
 
-text\<open>We define a mapping from sets of urrelations (abstract objects)
-     to special urelements.
-     For extended models that validate extended relation comprehension
-     (and consequently the predecessor axiom), the construction is
-     non-trivial. For simple models see the alternative simpler implementation
-     of @{text \<alpha>\<sigma>_restr} below.\<close>
-consts \<alpha>\<sigma>_ext :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+text\<open>Abstract objects will be modelled as sets of urrelations and will
+     have to be mapped back surjectively into the set of special urelements.
+     We show that any mapping from abstract objects to special urelements
+     has to involve at least one large set of collapsed abstract objects.\<close>
+lemma \<alpha>\<sigma>_pigeonhole:
+  \<open>\<exists>x . |UNIV::\<sigma> set| <o |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}|\<close>
+  for \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+proof(rule ccontr)
+  have card_\<sigma>_set_set_bound: \<open>|UNIV::\<sigma> set set| \<le>o |UNIV::urrel set|\<close>
+  proof -
+    let ?pick = \<open>\<lambda>u s . \<epsilon>\<^sub>\<o> w . case u of (\<sigma>\<upsilon> s') \<Rightarrow> s' \<in> s | _ \<Rightarrow> False\<close>
+    have \<open>\<exists>f :: \<sigma> set \<Rightarrow> urrel . inj f\<close>
+    proof
+      show \<open>inj (\<lambda>s . Abs_urrel (\<lambda>u . ?pick u s))\<close>
+      proof(rule injI)
+        fix x y
+        assume \<open>Abs_urrel (\<lambda>u. ?pick u x) = Abs_urrel (\<lambda>u. ?pick u y)\<close>
+        hence \<open>(\<lambda>u. ?pick u x) = (\<lambda>u. ?pick u y)\<close>
+          by (auto intro!: Abs_urrel_inject[THEN iffD1]
+                     simp: AOT_model_proposition_choice_simp)
+        hence \<open>AOT_model_valid_in w\<^sub>0 (?pick (\<sigma>\<upsilon> s) x) =
+               AOT_model_valid_in w\<^sub>0 (?pick (\<sigma>\<upsilon> s) y)\<close>
+          for s by metis
+        hence \<open>(s \<in> x) = (s \<in> y)\<close> for s
+          by (auto simp: AOT_model_proposition_choice_simp)
+        thus \<open>x = y\<close>
+          by blast
+      qed
+    qed
+    thus ?thesis
+      by (metis card_of_image inj_imp_surj_inv)
+  qed
+
+  text\<open>Assume, for a proof by contradiction, that there is no large collapsed set.\<close>
+  assume \<open>\<nexists>x . |UNIV::\<sigma> set| <o |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}|\<close>
+  hence A: \<open>\<forall>x . |{y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+    by auto
+  have union_univ: \<open>(\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}) = UNIV\<close>
+    by auto (meson f_inv_into_f range_eqI)
+
+  text\<open>We prove by case distinction: there is either finitely many or
+       infinitely many special urelements.\<close>
+  {
+    text\<open>Finite case.\<close>
+    assume finite_\<sigma>_set: \<open>finite (UNIV::\<sigma> set)\<close>
+    hence finite_collapsed: \<open>finite {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}\<close> for x
+      using A card_of_ordLeq_infinite by blast
+    hence 0: \<open>\<forall>x . card {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y} \<le> card (UNIV::\<sigma> set)\<close>
+      by (metis A \<open>finite UNIV\<close> card_of_ordLeq inj_on_iff_card_le)
+    have 1: \<open>card (range (inv \<alpha>\<sigma>)) \<le> card (UNIV::\<sigma> set)\<close>
+      using \<open>finite UNIV\<close> card_image_le by blast
+    hence 2: \<open>finite (range (inv \<alpha>\<sigma>))\<close>
+      using \<open>finite UNIV\<close> by blast
+
+    define n where \<open>n = card (UNIV::urrel set set)\<close>
+    define m where \<open>m = card (UNIV::\<sigma> set)\<close>
+
+    have \<open>n = card (\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y})\<close>
+      unfolding n_def using union_univ by argo
+    also have \<open>\<dots> \<le> (\<Sum>i\<in>range (inv \<alpha>\<sigma>). card {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})\<close>
+      using card_UN_le 2 by blast
+    also have \<open>\<dots> \<le> (\<Sum>i\<in>range (inv \<alpha>\<sigma>). card (UNIV::\<sigma> set))\<close>
+      by (metis (no_types, lifting) 0 sum_mono)
+    also have \<open>\<dots> \<le> card (range (inv \<alpha>\<sigma>)) * card (UNIV::\<sigma> set)\<close>
+      using sum_bounded_above by auto
+    also have \<open>\<dots> \<le> card (UNIV::\<sigma> set) * card (UNIV::\<sigma> set)\<close>
+      using 1 by force
+    also have \<open>\<dots> = m*m\<close>
+      unfolding m_def by blast
+    finally have n_upper: \<open>n \<le> m*m\<close>.
+
+    have \<open>finite (\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y})\<close>
+      using 2 finite_collapsed by blast
+    hence finite_\<alpha>set: \<open>finite (UNIV::urrel set set)\<close>
+      using union_univ by argo
+
+    have \<open>2^2^m = (2::nat)^(card (UNIV::\<sigma> set set))\<close>
+      by (metis Pow_UNIV card_Pow finite_\<sigma>_set m_def)
+    moreover have \<open>card (UNIV::\<sigma> set set) \<le> (card (UNIV:: urrel set))\<close>
+      using card_\<sigma>_set_set_bound
+      by (meson Finite_Set.finite_set card_of_ordLeq finite_\<alpha>set
+                finite_\<sigma>_set inj_on_iff_card_le)
+    ultimately have \<open>2^2^m \<le> (2::nat)^(card (UNIV:: urrel set))\<close>
+      by simp
+    also have \<open>\<dots> = n\<close>
+      unfolding n_def
+      by (metis Finite_Set.finite_set Pow_UNIV card_Pow finite_\<alpha>set)
+    finally have \<open>2^2^m \<le> n\<close> by blast
+    hence \<open>2^2^m \<le> m*m\<close> using n_upper by linarith
+    moreover {
+      have \<open>(2::nat)^(2^m) \<ge> (2^(m + 1))\<close>
+        by (metis Suc_eq_plus1 Suc_leI less_exp one_le_numeral power_increasing)
+      also have \<open>(2^(m + 1)) = (2::nat) * 2^m\<close>
+        by auto
+      have \<open>m < 2^m\<close>
+        by (simp add: less_exp)
+      hence \<open>m*m < (2^m)*(2^m)\<close>
+        by (simp add: mult_strict_mono)
+      moreover have \<open>\<dots> = 2^(m+m)\<close>
+        by (simp add: power_add)
+      ultimately have \<open>m*m < 2 ^ (m + m)\<close> by presburger
+      moreover have \<open>m+m \<le> 2^m\<close>
+      proof (induct m)
+        case 0
+        thus ?case by auto
+      next
+        case (Suc m)
+        thus ?case
+          by (metis Suc_leI less_exp mult_2 mult_le_mono2 power_Suc)
+      qed
+      ultimately have \<open>m*m < 2^2^m\<close>
+        by (meson less_le_trans one_le_numeral power_increasing)
+    }
+    ultimately have False by auto
+  }
+  moreover {
+    text\<open>Infinite case.\<close>
+    assume \<open>infinite (UNIV::\<sigma> set)\<close>
+    hence \<open>natLeq <=o |UNIV::\<sigma> set|\<close>
+      by (meson card_of_UNIV card_of_ordLeq_infinite finite_prod
+                infinite_iff_natLeq_ordLeq)
+    hence \<open>cinfinite |UNIV::\<sigma> set|\<close>
+      using cinfinite_mono natLeq_cinfinite by blast
+    hence Cinf\<sigma>: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
+      using Cnotzero_UNIV by blast
+    have 1: \<open>|range (inv \<alpha>\<sigma>)| \<le>o |UNIV::\<sigma> set|\<close>
+      by auto
+    have 2: \<open>\<forall>i\<in>range (inv \<alpha>\<sigma>). |{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+    proof
+      fix i :: \<open>urrel set\<close>
+      assume \<open>i \<in> range (inv \<alpha>\<sigma>)\<close>
+      show \<open>|{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
+        using A by blast
+    qed
+    have \<open>|\<Union> ((\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y}) ` (range (inv \<alpha>\<sigma>)))| \<le>o
+                   |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+      using card_of_UNION_Sigma by blast
+    hence \<open>|UNIV::urrel set set| \<le>o
+                     |Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})|\<close>
+      using union_univ by argo
+    moreover have \<open>|Sigma (range (inv \<alpha>\<sigma>)) (\<lambda>i. {y. \<alpha>\<sigma> i = \<alpha>\<sigma> y})| \<le>o |UNIV::\<sigma> set|\<close>
+      using card_of_Sigma_ordLeq_Cinfinite[OF Cinf\<sigma>, OF 1, OF 2] by blast
+    ultimately have \<open>|UNIV::urrel set set| \<le>o |UNIV::\<sigma> set|\<close>
+      using ordLeq_transitive by blast
+    moreover {
+      have \<open>|UNIV::\<sigma> set| <o |UNIV::\<sigma> set set|\<close>
+        by auto
+      moreover have \<open>|UNIV::\<sigma> set set| \<le>o |UNIV::urrel set|\<close>
+        using card_\<sigma>_set_set_bound by blast
+      moreover have \<open>|UNIV::urrel set| <o |UNIV::urrel set set|\<close>
+        by auto
+      ultimately have \<open>|UNIV::\<sigma> set| <o |UNIV::urrel set set|\<close>
+        by (metis ordLess_imp_ordLeq ordLess_ordLeq_trans)
+    }
+    ultimately have False
+      using not_ordLeq_ordLess by blast
+  }
+  ultimately show False by blast
+qed
+
+text\<open>We introduce a mapping from abstract objects (i.e. sets of urrelations) to
+     special urelements @{text \<open>\<alpha>\<sigma>\<close>} that is surjective and distinguishes all
+     abstract objects that are distinguished by a (not necessarily surjective)
+     mapping @{text \<open>\<alpha>\<sigma>'\<close>}. @{text \<open>\<alpha>\<sigma>'\<close>} will be used to model extended relation
+     comprehension.\<close>
+consts \<alpha>\<sigma>' :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+consts \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+specification(\<alpha>\<sigma>)
+  \<alpha>\<sigma>_surj: \<open>surj \<alpha>\<sigma>\<close>
+  \<alpha>\<sigma>_\<alpha>\<sigma>': \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> \<alpha>\<sigma>' x = \<alpha>\<sigma>' y\<close>
+proof -
+  obtain x where x_prop: \<open>|UNIV::\<sigma> set| <o |{y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y}|\<close>
+    using \<alpha>\<sigma>_pigeonhole by blast
+  have \<open>\<exists>f :: urrel set \<Rightarrow> \<sigma> . f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV \<and> f x = \<alpha>\<sigma>' x\<close>
+  proof -
+    have \<open>\<exists>f :: urrel set \<Rightarrow> \<sigma> . f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+      by (simp add: x_prop card_of_ordLeq2 ordLess_imp_ordLeq)
+    then obtain f :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where \<open>f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+      by presburger
+    moreover obtain a where \<open>f a = \<alpha>\<sigma>' x\<close> and \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' x\<close>
+      by (smt (verit, best) calculation UNIV_I image_iff mem_Collect_eq)
+    ultimately show ?thesis
+      by (auto intro!: exI[where x=\<open>Fun.swap x a f\<close>])
+  qed
+  then obtain f where fimage: \<open>f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
+                  and fx: \<open>f x = \<alpha>\<sigma>' x\<close>
+    by blast
+
+  define \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
+    \<open>\<alpha>\<sigma> \<equiv> \<lambda> urrels . if \<alpha>\<sigma>' urrels = \<alpha>\<sigma>' x \<and> f urrels \<notin> range \<alpha>\<sigma>'
+                      then f urrels
+                      else \<alpha>\<sigma>' urrels\<close>
+  have \<open>surj \<alpha>\<sigma>\<close>
+  proof -
+    {
+    fix s :: \<sigma>
+    {
+      assume \<open>s \<in> range \<alpha>\<sigma>'\<close>
+      hence 0: \<open>\<alpha>\<sigma>' (inv \<alpha>\<sigma>' s) = s\<close>
+        by (meson f_inv_into_f)
+      {
+        assume \<open>s = \<alpha>\<sigma>' x\<close>
+        hence \<open>\<alpha>\<sigma> x = s\<close>
+          using \<alpha>\<sigma>_def fx by presburger
+        hence \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+          by auto
+      }
+      moreover {
+        assume \<open>s \<noteq> \<alpha>\<sigma>' x\<close>
+        hence \<open>\<alpha>\<sigma> (inv \<alpha>\<sigma>' s) = s\<close>
+          unfolding \<alpha>\<sigma>_def 0 by presburger
+        hence \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+          by blast
+      }
+      ultimately have \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+        by blast
+    }
+    moreover {
+      assume \<open>s \<notin> range \<alpha>\<sigma>'\<close>
+      moreover obtain urrels where \<open>f urrels = s\<close> and \<open>\<alpha>\<sigma>' x = \<alpha>\<sigma>' urrels\<close>
+        by (smt (verit, best) UNIV_I fimage image_iff mem_Collect_eq)
+      ultimately have \<open>\<alpha>\<sigma> urrels = s\<close>
+        using \<alpha>\<sigma>_def by presburger
+      hence \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+        by (meson f_inv_into_f range_eqI)
+    }
+    ultimately have \<open>\<exists>f . \<alpha>\<sigma> (f s) = s\<close>
+      by blast
+    }
+    thus ?thesis
+      by (metis surj_def)
+  qed
+  moreover have \<open>\<forall>x y. \<alpha>\<sigma> x = \<alpha>\<sigma> y \<longrightarrow> \<alpha>\<sigma>' x = \<alpha>\<sigma>' y\<close>
+    by (metis \<alpha>\<sigma>_def rangeI)
+  ultimately show ?thesis
+    by blast
+qed
+
+text\<open>For extended models that validate extended relation comprehension
+     (and consequently the predecessor axiom), we specify which
+     abstract objects are distinguished by @{term \<alpha>\<sigma>'}.\<close>
 
 definition urrel_to_\<omega>rel :: \<open>urrel \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool)\<close> where
   \<open>urrel_to_\<omega>rel \<equiv> \<lambda> r u w . AOT_model_valid_in w (Rep_urrel r (\<omega>\<upsilon> u))\<close>
@@ -144,13 +354,12 @@ next
   qed
 qed
 
-specification (\<alpha>\<sigma>_ext)
-  \<alpha>\<sigma>_ext_surj: \<open>surj \<alpha>\<sigma>_ext\<close>
+specification (\<alpha>\<sigma>')
   \<alpha>\<sigma>_eq_ord_exts_all:
-    \<open>\<alpha>\<sigma>_ext a = \<alpha>\<sigma>_ext b \<Longrightarrow> (\<And>s . urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> a)
+    \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' b \<Longrightarrow> (\<And>s . urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> a)
       \<Longrightarrow> (\<And> s . urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> b)\<close>
   \<alpha>\<sigma>_eq_ord_exts_ex:
-    \<open>\<alpha>\<sigma>_ext a = \<alpha>\<sigma>_ext b \<Longrightarrow> (\<exists> s . s \<in> a \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel r)
+    \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' b \<Longrightarrow> (\<exists> s . s \<in> a \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel r)
       \<Longrightarrow> (\<exists>s . s \<in> b \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel r)\<close>
 proof -
   define \<alpha>\<sigma>_wit_intersection where
@@ -159,260 +368,16 @@ proof -
   define \<alpha>\<sigma>_wit_union where
       \<open>\<alpha>\<sigma>_wit_union \<equiv> \<lambda> urrels .
         {ordext . \<exists>urrel\<in>urrels . urrel_to_\<omega>rel urrel = ordext}\<close>
-  define \<alpha>\<sigma>_wit_\<sigma>' where \<open>\<alpha>\<sigma>_wit_\<sigma>' \<equiv> \<lambda> urrels . THE \<sigma>' . \<exists> urrel \<in> urrels .
-          urrel_to_\<omega>rel urrel \<notin> \<alpha>\<sigma>_wit_intersection urrels \<and>
-          (\<forall> w \<sigma> . AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>)) \<longrightarrow>
-                   \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>) = \<sigma>')\<close>
 
   let ?\<alpha>\<sigma>_wit = \<open>\<lambda> urrels . 
     let ordexts = \<alpha>\<sigma>_wit_intersection urrels in
     let ordexts' = \<alpha>\<sigma>_wit_union urrels in
-    (ordexts, ordexts',
-     if \<forall> x \<in> ordexts' . x \<in> ordexts then \<sigma>'\<^sub>0 else \<alpha>\<sigma>_wit_\<sigma>' urrels)\<close>
+    (ordexts, ordexts', undefined)\<close>
   define \<alpha>\<sigma>_wit :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
     \<open>\<alpha>\<sigma>_wit \<equiv> \<lambda> urrels . Abs_\<sigma> (?\<alpha>\<sigma>_wit urrels)\<close>
   have 1: \<open>\<forall>urrel. urrel_to_\<omega>rel urrel = y \<longrightarrow> urrel \<in> x \<Longrightarrow>
            \<exists>urrel\<in>x. urrel_to_\<omega>rel urrel = y\<close> for y x
     by (meson Quotient3_abs_rep urrel_\<omega>rel_quot)
-  have wits_in_\<sigma>set: \<open>?\<alpha>\<sigma>_wit x \<in> \<sigma>set\<close> for x
-    unfolding \<sigma>set_def
-    apply simp
-    apply (rule \<sigma>condI)
-    by (auto simp: Let_def 1 \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-
-  {
-    fix \<sigma>
-    have \<sigma>cond: \<open>\<sigma>cond (Rep_\<sigma> \<sigma>)\<close>
-      using Rep_\<sigma> \<sigma>set_def by blast
-    have \<sigma>cond_empty: \<open>fst (snd (Rep_\<sigma> \<sigma>)) = {} \<Longrightarrow> (fst (Rep_\<sigma> \<sigma>)) = {}\<close>
-      by (metis (no_types, lifting) Product_Type.Collect_case_prodD Rep_\<sigma> \<sigma>cond_def
-            \<sigma>set_def curryI curry_case_prod prod.collapse subset_empty)
-    have \<sigma>cond_univ: \<open>(fst (Rep_\<sigma> \<sigma>)) = UNIV \<Longrightarrow> fst (snd (Rep_\<sigma> \<sigma>)) = UNIV\<close>
-      by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def iso_tuple_UNIV_I split_def
-            subsetI subset_antisym)
-    {
-      assume \<open>ordext_union (Rep_\<sigma> \<sigma>) = {}\<close>
-      moreover have \<open>ordext_intersection (Rep_\<sigma> \<sigma>) = {}\<close>
-        by (simp add: \<sigma>cond_empty calculation)
-      moreover have \<open>\<sigma>\<sigma>' (Rep_\<sigma> \<sigma>) = \<sigma>'\<^sub>0\<close>
-        by (metis (mono_tags, lifting) \<sigma>cond \<sigma>cond_def calculation prod.case_eq_if)
-      moreover have \<open>\<alpha>\<sigma>_wit {} = Abs_\<sigma> ({},{},\<sigma>'\<^sub>0)\<close>
-        unfolding \<alpha>\<sigma>_wit_def
-        apply (subst Abs_\<sigma>_inject)
-        using wits_in_\<sigma>set apply blast
-         apply (metis \<sigma>cond \<sigma>set_def calculation(1,2,3) mem_Collect_eq
-                  prod.exhaust_sel)
-        apply (auto simp: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-        by (metis Quotient3_def urrel_\<omega>rel_quot)
-      ultimately have \<open>\<alpha>\<sigma>_wit {} = \<sigma>\<close>
-        unfolding \<alpha>\<sigma>_wit_def
-        by (metis Rep_\<sigma>_inverse prod.collapse)
-      hence \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close> by blast
-    }
-    moreover {
-      assume 0: \<open>ordext_union (Rep_\<sigma> \<sigma>) \<noteq> {}\<close>
-      assume \<open>ordext_union (Rep_\<sigma> \<sigma>) = ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-      moreover have \<open>snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>'\<^sub>0\<close>
-        by (metis (mono_tags, lifting) Rep_\<sigma> \<sigma>cond_def \<sigma>set_def calculation
-              mem_Collect_eq prod.case_eq_if)
-      moreover {
-        have 2: \<open>{ordext. \<exists>urrel\<in>{urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)}.
-                          urrel_to_\<omega>rel urrel = ordext} \<noteq> {}\<close>
-          using "0" Quotient3_abs_rep calculation urrel_\<omega>rel_quot by fastforce
-        have \<open>\<alpha>\<sigma>_wit {urrel . urrel_to_\<omega>rel urrel \<in> ordext_intersection (Rep_\<sigma> \<sigma>)}
-              = Abs_\<sigma> (ordext_intersection (Rep_\<sigma> \<sigma>),
-                       ordext_intersection (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>0)\<close>
-        unfolding \<alpha>\<sigma>_wit_def
-        apply (subst Abs_\<sigma>_inject)
-        unfolding \<sigma>set_def
-          apply simp
-          apply (rule \<sigma>condI)
-            apply (simp add: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-            apply (metis 1)
-           apply (simp add: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-          apply (simp add: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-        apply (metis Rep_\<sigma> \<sigma>set_def calculation(1) calculation(2) prod.exhaust_sel)
-        apply (simp only: Let_def 2 \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
-        apply simp
-        using 1 by blast
-      }
-      moreover have \<open>\<sigma>cond (ordext_union (Rep_\<sigma> \<sigma>), ordext_union (Rep_\<sigma> \<sigma>), \<sigma>'\<^sub>0)\<close>
-        by (metis \<sigma>cond calculation(1,2) surjective_pairing)
-      ultimately have
-        \<open>\<alpha>\<sigma>_wit {urrel . urrel_to_\<omega>rel urrel \<in> ordext_union (Rep_\<sigma> \<sigma>)} = \<sigma>\<close>
-        by (metis Rep_\<sigma>_inverse prod.exhaust_sel)
-      hence \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close> by blast
-    }
-    moreover {
-      assume \<open>ordext_intersection (Rep_\<sigma> \<sigma>) \<noteq> UNIV\<close>
-      assume \<open>ordext_union (Rep_\<sigma> \<sigma>) \<noteq> ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-      moreover {
-        have \<open>ordext_intersection (Rep_\<sigma> \<sigma>) \<subseteq> ordext_union (Rep_\<sigma> \<sigma>)\<close>
-          by (metis (no_types, lifting) \<sigma>cond \<sigma>cond_def prod.case_eq_if)
-        hence \<open>\<forall>x \<in> ordext_intersection (Rep_\<sigma> \<sigma>) . x \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
-          by blast
-      }
-      ultimately obtain r where
-            r_notin_intersection: \<open>r \<notin> ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-        and r_in_union: \<open>r \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
-        by blast
-      have \<alpha>\<sigma>wit_eqI: \<open>\<alpha>\<sigma>_wit x = \<sigma>\<close> if
-        \<open>\<alpha>\<sigma>_wit_intersection x = ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-    and \<open>\<alpha>\<sigma>_wit_union x = ordext_union (Rep_\<sigma> \<sigma>)\<close>
-    and \<open>\<alpha>\<sigma>_wit_\<sigma>' x = \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>)\<close> for x
-        using that unfolding \<alpha>\<sigma>_wit_def apply auto
-        by (smt (z3) emptyE r_in_union r_notin_intersection surjective_pairing
-                     type_definition.Rep_inverse type_definition_\<sigma>)
-      let ?intersection_part =
-        \<open>{urrel . urrel_to_\<omega>rel urrel \<in> ordext_intersection (Rep_\<sigma> \<sigma>)}\<close>
-      let ?union_part =
-        \<open>{urrel . (urrel_to_\<omega>rel urrel \<in> ordext_union (Rep_\<sigma> \<sigma>)) \<and>
-                  (\<forall> \<sigma>' w . AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) \<longleftrightarrow>
-                            \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>') = \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>))}\<close>
-      have simp0: \<open>urrel_to_\<omega>rel
-         (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w. case u of \<omega>\<upsilon> x \<Rightarrow> r x w |
-                      \<sigma>\<upsilon> x \<Rightarrow> snd (snd (Rep_\<sigma> x)) = snd (snd (Rep_\<sigma> \<sigma>)) |
-                      null\<upsilon> null \<Rightarrow> False)) = r\<close>
-        unfolding urrel_to_\<omega>rel_def
-        apply (subst Abs_urrel_inverse)
-        by (auto simp: AOT_model_proposition_choice_simp)
-      let ?\<sigma>_part = \<open>\<lambda> r . Abs_urrel (\<lambda>u . \<epsilon>\<^sub>\<o> w .
-                                      case u of (\<omega>\<upsilon> x) \<Rightarrow> r x w |
-                                      \<sigma>\<upsilon> x \<Rightarrow> \<sigma>\<sigma>' (Rep_\<sigma> x) = \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>) |
-                                      _ \<Rightarrow> False)\<close>
-      have \<sigma>_part_in_union: \<open>?\<sigma>_part r \<in> ?union_part\<close>
-        apply (auto simp: simp0 r_in_union)
-         apply (subst (asm) Abs_urrel_inverse)
-          apply (auto simp: AOT_model_proposition_choice_simp)
-        apply (subst Abs_urrel_inverse)
-        by (auto simp: AOT_model_proposition_choice_simp)
-      have \<sigma>_part_not_in_intersection: \<open>?\<sigma>_part r \<notin> ?intersection_part\<close>
-        apply (simp add: urrel_to_\<omega>rel_def)
-        apply (subst Abs_urrel_inverse)
-        by (auto simp: AOT_model_proposition_choice_simp r_notin_intersection)
-      have \<open>\<alpha>\<sigma>_wit (?intersection_part \<union> ?union_part) = \<sigma>\<close> 
-      proof (rule \<alpha>\<sigma>wit_eqI)
-        show \<open>\<alpha>\<sigma>_wit_intersection (?intersection_part \<union> ?union_part) =
-              ordext_intersection (Rep_\<sigma> \<sigma>)\<close>
-          apply (auto simp: \<alpha>\<sigma>_wit_intersection_def)
-          by (smt (z3) AOT_model_proposition_choice_simp Abs_urrel_inverse
-                       Quotient3_abs_rep \<omega>rel_to_urrel_def \<upsilon>.case(3) \<upsilon>.simps(11)
-                       mem_Collect_eq urrel_\<omega>rel_quot)
-      next
-        {
-          fix ordext
-          assume ordext_in_union: \<open>ordext \<in> ordext_union (Rep_\<sigma> \<sigma>)\<close>
-          have ordext_simp: \<open>urrel_to_\<omega>rel (Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w.
-                                case u of \<omega>\<upsilon> x \<Rightarrow> ordext x w |
-                                \<sigma>\<upsilon> x \<Rightarrow> snd (snd (Rep_\<sigma> x)) = snd (snd (Rep_\<sigma> \<sigma>)) |
-                                null\<upsilon> null \<Rightarrow> False))
-              = ordext\<close>
-            unfolding urrel_to_\<omega>rel_def
-            apply (subst Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-          have \<open>\<exists>urrel . (urrel
-          \<in>{urrel. urrel_to_\<omega>rel urrel \<in> ordext_intersection (Rep_\<sigma> \<sigma>)} \<union>
-            {urrel.
-             urrel_to_\<omega>rel urrel \<in> ordext_union (Rep_\<sigma> \<sigma>) \<and>
-             (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                     (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
-            urrel_to_\<omega>rel urrel = ordext\<close>
-            apply (rule exI[where x=\<open>?\<sigma>_part ordext\<close>])
-            apply (auto simp: ordext_simp ordext_in_union)
-             apply (subst (asm) Abs_urrel_inverse)
-            apply (auto simp: AOT_model_proposition_choice_simp)
-             apply (subst Abs_urrel_inverse)
-            by (auto simp: AOT_model_proposition_choice_simp)
-        } note 0 = this
-        show \<open>\<alpha>\<sigma>_wit_union (?intersection_part \<union> ?union_part) =
-              ordext_union (Rep_\<sigma> \<sigma>)\<close>
-          apply (auto simp: \<alpha>\<sigma>_wit_union_def)
-           apply (simp add: \<open>\<forall>x\<in>fst (Rep_\<sigma> \<sigma>). x \<in> fst (snd (Rep_\<sigma> \<sigma>))\<close>)
-          using 0 by blast
-      next
-        have 1: \<open>\<exists>urrel . urrel \<in> ({urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-       {urrel.
-        urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-        (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
-        urrel_to_\<omega>rel urrel \<notin> \<alpha>\<sigma>_wit_intersection
-           ({urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-            {urrel.
-             urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-             (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                     (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
-             (\<forall>w \<sigma>'. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) \<longrightarrow>
-                     snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>)))\<close>
-          apply (rule exI[where x=\<open>?\<sigma>_part r\<close>])
-          using \<sigma>_part_in_union \<sigma>_part_not_in_intersection
-          by (smt (verit, del_insts) AOT_model_proposition_choice_simp
-                  Abs_urrel_inverse Quotient3_abs_rep UnE UnI2 mem_Collect_eq
-                  \<omega>rel_to_urrel_def \<upsilon>.simps(11,12) \<alpha>\<sigma>_wit_intersection_def
-                  r_notin_intersection simp0 urrel_\<omega>rel_quot)
-        {
-          fix \<sigma>'
-          assume \<open>\<exists>urrel
-           \<in>{urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-             {urrel.
-              urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-              (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                      (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}.
-             urrel_to_\<omega>rel urrel
-             \<notin> \<alpha>\<sigma>_wit_intersection
-                 ({urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-                  {urrel.
-                   urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-                   (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                           (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}) \<and>
-             (\<forall>w \<sigma>. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>)) \<longrightarrow>
-                    snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>')\<close>
-          then obtain urrel where
-              A: \<open>urrel \<in> {urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-             {urrel.
-              urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-              (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                      (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}\<close>
-              and B: \<open>urrel_to_\<omega>rel urrel \<notin> \<alpha>\<sigma>_wit_intersection
-                     ({urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-                      {urrel. urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-                         (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                                 (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))})\<close>
-              and C: \<open>\<forall>w \<sigma>. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>)) \<longrightarrow>
-                            snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>'\<close>
-            by blast
-          {
-            assume \<open>urrel \<in> {urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)}\<close>
-            hence \<open>urrel_to_\<omega>rel urrel \<in> \<alpha>\<sigma>_wit_intersection
-                   ({urrel. urrel_to_\<omega>rel urrel \<in> fst (Rep_\<sigma> \<sigma>)} \<union>
-                    {urrel. urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-                       (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                               (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))})\<close>
-              by (simp add: \<alpha>\<sigma>_wit_intersection_def)
-          }
-          hence \<open>urrel \<in> {urrel.
-              urrel_to_\<omega>rel urrel \<in> fst (snd (Rep_\<sigma> \<sigma>)) \<and>
-              (\<forall>\<sigma>' w. AOT_model_valid_in w (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>')) =
-                      (snd (snd (Rep_\<sigma> \<sigma>')) = snd (snd (Rep_\<sigma> \<sigma>))))}\<close>
-            using A B by fastforce
-          moreover have \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (\<sigma>\<upsilon> \<sigma>)) \<longrightarrow>
-                          snd (snd (Rep_\<sigma> \<sigma>)) = \<sigma>'\<close>
-            using C calculation by blast
-          ultimately have \<open>\<sigma>' = snd (snd (Rep_\<sigma> \<sigma>))\<close>
-            by blast
-        } note 2 = this
-        show \<open>\<alpha>\<sigma>_wit_\<sigma>' (?intersection_part \<union> ?union_part) = \<sigma>\<sigma>' (Rep_\<sigma> \<sigma>)\<close>
-          apply (auto simp: \<alpha>\<sigma>_wit_\<sigma>'_def)
-          apply (rule the_equality)
-          using 1 apply blast
-          using 2 by blast
-      qed
-      hence \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close> by auto
-    }
-    ultimately have \<open>\<exists>urrels . \<alpha>\<sigma>_wit urrels = \<sigma>\<close>
-      using \<sigma>cond_univ by blast
-  }
-  hence \<open>surj \<alpha>\<sigma>_wit\<close>
-    using surjI by metis
   moreover {
     fix a b :: \<open>urrel set\<close> and r s
     assume \<open>\<alpha>\<sigma>_wit a = \<alpha>\<sigma>_wit b\<close>
@@ -420,8 +385,6 @@ proof -
               {ordext. \<forall>urrel. urrel_to_\<omega>rel urrel = ordext \<longrightarrow> urrel \<in> b}\<close>
       unfolding \<alpha>\<sigma>_wit_def Let_def
       apply (subst (asm) Abs_\<sigma>_inject)
-        apply (metis wits_in_\<sigma>set)
-       apply (metis wits_in_\<sigma>set)
       by (auto simp: \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
     assume \<open>urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> a\<close> for s
     hence \<open>urrel_to_\<omega>rel r \<in>
@@ -441,8 +404,6 @@ proof -
               {ordext. \<exists>urrel \<in> b. urrel_to_\<omega>rel urrel = ordext}\<close>
       unfolding \<alpha>\<sigma>_wit_def
       apply (subst (asm) Abs_\<sigma>_inject)
-        apply (metis wits_in_\<sigma>set)
-       apply (metis wits_in_\<sigma>set)
       by (auto simp: Let_def \<alpha>\<sigma>_wit_intersection_def \<alpha>\<sigma>_wit_union_def)
     assume \<open>s \<in> a\<close>
     hence \<open>urrel_to_\<omega>rel s \<in> {ordext. \<exists>urrel \<in> a. urrel_to_\<omega>rel urrel = ordext}\<close>
@@ -458,41 +419,15 @@ proof -
     by (safe intro!: exI[where x=\<alpha>\<sigma>_wit]; metis)
 qed
 
-text\<open>For simple models that do not validate extended relation comprehension,
-     the mapping from abstract objects to urelements is merely required to be
-     surjective and a suitable such mapping can be constructed for any choice of
-     a type @{typ \<sigma>}.\<close>
-consts \<alpha>\<sigma>_restr :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
-
-specification (\<alpha>\<sigma>_restr)
-  \<alpha>\<sigma>_restr_surj: \<open>surj \<alpha>\<sigma>_restr\<close>
-proof -
-  obtain \<phi> where \<phi>_def: \<open>\<phi> = (\<lambda> \<sigma> u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> \<sigma>)\<close> by auto
-  show ?thesis
-  proof (safe intro!: exI[where x=\<open>\<lambda> x . THE \<sigma> . x = { Abs_urrel (\<phi> \<sigma>) }\<close>]
-         surjI[where f=\<open>\<lambda> \<sigma> . { Abs_urrel (\<phi> \<sigma>) }\<close>])
-    have \<open>(\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> x) = (\<lambda>u. \<epsilon>\<^sub>\<o> w. u = \<sigma>\<upsilon> \<sigma>) \<Longrightarrow> x = \<sigma>\<close> for x \<sigma>
-      by (metis (mono_tags) \<upsilon>.inject(2) AOT_model_proposition_choice_simp)
-    hence \<open>({Abs_urrel (\<phi> x)} = {Abs_urrel (\<phi> \<sigma>)}) = (x = \<sigma>)\<close> for x \<sigma>
-      using Abs_urrel_inject[THEN iffD1, of \<open>\<phi> x\<close> \<open>\<phi> \<sigma>\<close>]
-      by (simp add: \<phi>_def AOT_model_proposition_choice_simp) blast
-    thus \<open>(THE \<sigma>. {Abs_urrel (\<phi> x)} = {Abs_urrel (\<phi> \<sigma>)}) = x\<close> for x
-      by simp
-  qed
-qed
-
-text\<open>We use the extended model version.\<close>
-abbreviation (input) \<alpha>\<sigma> where \<open>\<alpha>\<sigma> \<equiv> \<alpha>\<sigma>_ext\<close>
-lemmas \<alpha>\<sigma>_surj = \<alpha>\<sigma>_ext_surj
+text\<open>We enable the extended model version.\<close>
 abbreviation (input) AOT_ExtendedModel where \<open>AOT_ExtendedModel \<equiv> True\<close>
 (*
-abbreviation (input) \<alpha>\<sigma> where \<open>\<alpha>\<sigma> \<equiv> \<alpha>\<sigma>_restr\<close>
-lemmas \<alpha>\<sigma>_surj = \<alpha>\<sigma>_restr_surj
 abbreviation (input) AOT_ExtendedModel where \<open>AOT_ExtendedModel \<equiv> False\<close>
 *)
 
+
 text\<open>Individual terms are either ordinary objects, represented by ordinary urelements,
-     abstract objects, modelled as sets of Urrelations, or null objects, used to
+     abstract objects, modelled as sets of urrelations, or null objects, used to
      represent non-denoting definite descriptions.\<close>
 datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
@@ -997,7 +932,7 @@ next
   hence \<open>\<And>s. urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> a\<close>
     by (metis urrel_to_\<omega>rel_def)
   hence 0: \<open>\<And>s. urrel_to_\<omega>rel s = urrel_to_\<omega>rel r \<Longrightarrow> s \<in> b\<close>
-    using \<alpha>\<sigma>_eq_ord_exts_all \<alpha>\<sigma>_eq ext by blast
+    using \<alpha>\<sigma>_eq_ord_exts_all \<alpha>\<sigma>_eq ext \<alpha>\<sigma>_\<alpha>\<sigma>' by blast
 
   assume \<Pi>'_den: \<open>AOT_model_denotes \<Pi>'\<close>
   assume \<open>\<exists>w. AOT_model_concrete w x \<Longrightarrow> AOT_model_valid_in v (Rep_rel \<Pi>' x) =
@@ -1082,7 +1017,7 @@ next
     apply (metis AOT_model_enc_\<kappa>_def \<kappa>.simps(11) \<kappa>_enc_\<Pi>' a_def)
     by (metis Quotient3_rel 0 urrel_\<omega>rel_quot)
   hence \<open>\<exists>s. s \<in> b \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel (rel_to_urrel \<Pi>)\<close>
-    using \<alpha>\<sigma>_eq_ord_exts_ex \<alpha>\<sigma>_eq ext by blast
+    using \<alpha>\<sigma>_eq_ord_exts_ex \<alpha>\<sigma>_eq ext \<alpha>\<sigma>_\<alpha>\<sigma>' by blast
   then obtain s where
     s_prop: \<open>s \<in> b \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel (rel_to_urrel \<Pi>)\<close>
     by blast
