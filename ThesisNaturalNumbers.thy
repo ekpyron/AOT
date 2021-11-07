@@ -1545,11 +1545,11 @@ objects. Since the domains of special urelements and ordinary urelements are ind
 consistently possible to require there being an injective function mapping any kind of function
 (or sets of functions) acting on ordinary urelements alone to special urelements.
 
-In our general models we chose an @{emph \<open>abstract\<close>} type @{typ \<sigma>} as type of special urelements.@{footnote \<open>I.e.
+In our general models we may choose an @{emph \<open>abstract\<close>} type @{typ \<sigma>} as type of special urelements.@{footnote \<open>I.e.
 we allow any non-empty domain for @{typ \<sigma>} in models of the meta-logic without restriction.\<close>}
-In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} a concrete
-type by choosing a subset of the sets of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
-as representation set for @{typ \<sigma>}.
+In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} the
+type @{typ \<sigma>} using the sets of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
+as representation set.
 Recall that the type @{typ \<omega>} is the type of ordinary urelements and @{typ w} is the type of
 semantic possible worlds. @{typ \<sigma>'} is an additional abstract type of @{emph \<open>very special urelements\<close>}
 that retains the model's ability to distinguish between abstract objects beyond those that
@@ -1565,19 +1565,10 @@ we insert a property extension on ordinary objects into the intersection set, ju
 And we insert an extension into the union set, just in case that there @{emph \<open>exists\<close>}
 a property with that extension (on the ordinary objects) that is encoded by @{term a}.
 
-To retain the surjectivity of the mapping from abstract objects to special urelements (see the discussion
-of this requirement in section~\ref{ExtendedAczelModelStructure}), we need to impose further restrictions on the representation set of special urelements.
-In particular:
-  \<^item> Whenever an extension on the ordinary objects is in the intersection set, it also has
-    to be in the union set.
-  \<^item> We choose a designated @{emph \<open>very special urelement\<close>} @{term \<open>\<sigma>'\<^sub>0\<close>} for the case that the union set is identical
-    to the intersection set.
-    In this case the abstract object encodes @{emph \<open>exactly\<close>} those properties with an extension on
-    the ordinary objects that is contained in either of the (identical) extension sets. For each such set of
-    extensions, there is a single unique such abstract object, therefore we can only assign a single
-    unique special urelement to this case.
+We use this construction as witness for a specification of the mapping @{term \<open>\<alpha>\<sigma>'\<close>}, which will then be
+extended to a surjective mapping @{term \<alpha>\<sigma>} as explained in section~\ref{ExtendedAczelModelStructure}.
 
-This construction @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
+The specification @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
 in case either (1) one of them encodes a property with a given extension on the ordinary object, while the other doesn't
 encode any such property, or (2) one of them encodes all properties with a given extension on the ordinary object,
 while the other fails to encode at least one such property.

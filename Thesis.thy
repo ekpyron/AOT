@@ -2552,7 +2552,7 @@ distinguish between non-denoting individual terms.
 
 For simple models, a plain primitive type for the special urelements suffices. However,
 to model our proposed extended relation comprehension, we use a richer type
-for special urelements and model them as subset of the set of triples of two copies
+for special urelements and model them as sets of triples of two copies
 of sets of exemplification extensions on Ordinary urelements and one
 very special urelement (type @{typ \<sigma>'}).
 This is discussed in more detail in section~\ref{pred}.
@@ -2615,12 +2615,25 @@ special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>}).
 
 For urrelations to become a proper quotient of proposition-valued functions acting
 on individual @{emph \<open>terms\<close>}, as described below, we require this mapping to be
-surjective. For simple models that do not validate extended relation comprehension
-it is easy to show that suitable surjective mappings exist (see~\nameref{AOT:AOT_model.<alpha><sigma>_restr})
-and @{emph \<open>any\<close>} such surjective mapping is admissible. For the extended models,
-we require additional properties and proving that those properties can be satisfied
-is more involved (see~\nameref{AOT:AOT_model.<alpha><sigma>_ext} and the more detailed
-discussion in section~\ref{pred}).
+surjective. However, we can show that any mapping from sets of urrelations to
+special urelements @{term \<open>\<alpha>\<sigma>'\<close>} can be extended to a surjective mapping
+@{term \<open>\<alpha>\<sigma>\<close>} that distinguishes all abstract objects that are distinguished by
+@{term \<open>\<alpha>\<sigma>'\<close>}, i.e. if @{term \<open>\<alpha>\<sigma>' x \<noteq> \<alpha>\<sigma>' y\<close>}, then @{term \<open>\<alpha>\<sigma> x \<noteq> \<alpha>\<sigma> y\<close>}.
+This is possible due to the fact that the set of abstract objects is significantly
+larger than the set of special urelements. In particular, under any arbitary
+mapping from abstract objects to special urelements, there has to be at least
+one abstract object @{term a} that shares the same urelement with at least as many
+other abstract objects as there are special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>_pigeonhole}).
+Therefore, any mapping @{term \<alpha>\<sigma>'} that is not surjective, can be extended to a surjective
+mapping by further differentiating the abstract objects that share their urelements with @{term a}.
+
+To keep the construction as flexible as possible, we first introduce an uninterpreted
+constant @{term \<alpha>\<sigma>'} and then generically extend it to a surjective
+mapping @{term \<alpha>\<sigma>} (see~\nameref{AOT:AOT_model.<alpha><sigma>'}).
+
+To validate extended relation comprehension we can then augment @{term \<alpha>\<sigma>'} using a
+suitable @{command specification}. The precise construction of @{term \<alpha>\<sigma>'} needed for
+extended relation comprehension is discussed in more detail in section~\ref{pred}.
 
 Based on the now introduced types of urelements @{typ \<upsilon>} and urrelations @{typ urrel}
 we can represent the terms of AOT.

@@ -1,4 +1,4 @@
-session "Thesis" in ".." = "HOL" +
+session "Thesis" in ".." = "HOL-Cardinals" +
   options [show_question_marks = false, names_short = true, document = pdf, document_output = "output"]
   sessions
     "HOL-Eisbach"
