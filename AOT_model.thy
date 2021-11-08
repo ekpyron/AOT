@@ -1006,12 +1006,67 @@ datatype disc = Number nat | InfiniteCardinal | Other nat
 instance disc :: countable
   by countable_datatype
 
+(*
 definition is_number :: \<open>urrel set \<Rightarrow> bool\<close> where
   \<open>is_number \<equiv> \<lambda> urrels . \<exists> r :: ((\<upsilon>\<times>\<upsilon>) set) . card_order_on (Field r) r \<and>
+               urrels \<noteq> {} \<and>
                urrels = { urrel . r =o |{ x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}|}\<close>
+*)
+
+definition urrel_act_ext :: \<open>urrel \<Rightarrow> \<upsilon> set\<close> where
+  \<open>urrel_act_ext \<equiv> \<lambda> urrel . { x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}\<close>
+
+definition is_number :: \<open>urrel set \<Rightarrow> bool\<close> where
+  \<open>is_number \<equiv> \<lambda> urrels . \<exists> urrel . urrel \<in> urrels \<and>
+        (\<forall> urrel' . urrel' \<in> urrels \<longleftrightarrow> (\<exists>f . bij_betw f (urrel_act_ext urrel') (urrel_act_ext urrel)))\<close>
 
 definition is_natural_number :: \<open>urrel set \<Rightarrow> nat \<Rightarrow> bool\<close> where
-  \<open>is_natural_number \<equiv> \<lambda> urrels n . urrels = { urrel . |{m :: nat . m \<le> n}| =o |{ x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}|}\<close>
+  \<open>is_natural_number \<equiv> \<lambda> urrels n . is_number urrels \<and>
+    (\<forall> urrel \<in> urrels . finite (urrel_act_ext urrel) \<and> card (urrel_act_ext urrel) = n)\<close>
+
+lemma is_natural_number_inject:
+  assumes \<open>is_natural_number x n\<close>
+      and \<open>is_natural_number y n\<close>
+  shows \<open>x = y\<close>
+proof -
+  have \<open>is_number x\<close>
+    using assms unfolding is_natural_number_def by blast
+  then obtain urrelx where x: \<open>urrelx \<in> x \<and> (\<forall> urrel' . urrel' \<in> x \<longleftrightarrow> (\<exists>f . bij_betw f (urrel_act_ext urrel') (urrel_act_ext urrelx)))\<close>
+    unfolding is_number_def by blast
+  hence x': \<open>finite (urrel_act_ext urrelx) \<and> card (urrel_act_ext urrelx) = n\<close>
+    using assms unfolding is_natural_number_def by blast
+
+  have \<open>is_number y\<close>
+    using assms unfolding is_natural_number_def by blast
+  then obtain urrely where y: \<open>urrely \<in> y \<and> (\<forall> urrel' . urrel' \<in> y \<longleftrightarrow> (\<exists>f . bij_betw f (urrel_act_ext urrel') (urrel_act_ext urrely)))\<close>
+    unfolding is_number_def by blast
+  hence y': \<open>finite (urrel_act_ext urrely) \<and> card (urrel_act_ext urrely) = n\<close>
+    using assms unfolding is_natural_number_def by blast
+  {
+    fix r
+    assume \<open>r \<in> x\<close>
+    hence \<open>finite (urrel_act_ext r) \<and> card (urrel_act_ext r) = n\<close>
+      by (meson assms(1) is_natural_number_def)
+    hence \<open>r \<in> y\<close>
+      by (simp add: y' finite_same_card_bij y)
+  }
+  moreover {
+    fix r
+    assume \<open>r \<in> y\<close>
+    hence \<open>finite (urrel_act_ext r) \<and> card (urrel_act_ext r) = n\<close>
+      by (meson assms(2) is_natural_number_def)
+    hence \<open>r \<in> x\<close>
+      by (simp add: x' finite_same_card_bij x)
+  }
+  ultimately show \<open>x = y\<close>
+    by blast
+qed
+
+lemma the_natural_number_eq:
+  assumes \<open>\<exists>n . is_natural_number x n\<close>
+  assumes \<open>\<exists>n . is_natural_number y n\<close>
+  shows \<open>((THE n . is_natural_number x n) = (THE n . is_natural_number y n)) = (x = y)\<close>
+  by (metis assms(1) assms(2) is_natural_number_def is_natural_number_inject theI)
 
 definition \<alpha>disc :: \<open>urrel set \<Rightarrow> disc\<close> where
   \<open>\<alpha>disc \<equiv> \<lambda> urrels . if is_number urrels
