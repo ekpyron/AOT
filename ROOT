@@ -1,4 +1,4 @@
-session "AOT" = "HOL" +
+session "AOT" = "HOL-Cardinals" +
   options [show_question_marks = false, names_short = true, browser_info]
   sessions
     "HOL-Eisbach"

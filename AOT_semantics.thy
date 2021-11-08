@@ -134,17 +134,14 @@ specification(AOT_exe AOT_lambda)
   AOT_sem_lambda_coex: \<open>[w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>] \<Longrightarrow>
     (\<forall> w \<kappa>\<^sub>1\<kappa>\<^sub>n . [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<longrightarrow> [w \<Turnstile> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}] = [w \<Turnstile> \<psi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}]) \<Longrightarrow>
     [w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close>
-  AOT_sem_lambda_denoting:
-    \<open>[w \<Turnstile> \<guillemotleft>Abs_rel \<phi>\<guillemotright>\<down>] \<Longrightarrow> \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<guillemotright> = Abs_rel \<phi>\<close>
-  AOT_sem_exe_denoting: \<open>[w \<Turnstile> \<Pi>\<down>] \<Longrightarrow> AOT_exe \<Pi> \<kappa>s = Rep_rel \<Pi> \<kappa>s\<close>
   AOT_sem_lambda_eq_prop_eq: \<open>\<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>]\<guillemotright> = \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>]\<guillemotright> \<Longrightarrow> \<phi> = \<psi>\<close>
+  AOT_sem_exe_denoting: \<open>[w \<Turnstile> \<Pi>\<down>] \<Longrightarrow> AOT_exe \<Pi> \<kappa>s = Rep_rel \<Pi> \<kappa>s\<close>
+  AOT_sem_exe_equiv: \<open>AOT_model_term_equiv x y \<Longrightarrow> AOT_exe \<Pi> x = AOT_exe \<Pi> y\<close>
 proof -
   have \<open>\<exists> x :: <'a> . \<not>AOT_model_denotes x\<close>
     by (rule exI[where x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w. True)\<close>])
        (meson AOT_model_denotes_rel.abs_eq AOT_model_nondenoting_ex
               AOT_model_proposition_choice_simp)
-  then obtain nondenoting_rel :: \<open><'a>\<close> where
-    nondenoting_rel: \<open>\<not>AOT_model_denotes nondenoting_rel\<close> by blast
   obtain exe :: \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close> where
     exe_def: \<open>exe \<equiv> \<lambda> \<Pi> \<kappa>s . if AOT_model_denotes \<Pi>
                               then Rep_rel \<Pi> \<kappa>s
@@ -160,7 +157,7 @@ proof -
                                       then \<phi> (SOME y . AOT_model_term_equiv x y)
                                       else  (\<epsilon>\<^sub>\<o> w . False)))
         else 
-          nondenoting_rel\<close> by blast
+          Abs_rel \<phi>\<close> by blast
   have fix_special_denoting_simp[simp]:
     \<open>fix_special (\<lambda>x. if AOT_model_denotes x then \<phi> x else \<psi> x) \<kappa> = \<phi> \<kappa>\<close>
     if \<open>AOT_model_denotes \<kappa>\<close>
@@ -185,7 +182,7 @@ proof -
     if \<open>[w \<Turnstile> \<guillemotleft>lambda \<phi>\<guillemotright>\<down>]\<close> and \<open>[w \<Turnstile> \<guillemotleft>\<kappa>\<guillemotright>\<down>]\<close>
     for \<phi> \<kappa> w
     using that unfolding exe_def AOT_sem_denotes
-    by (auto simp: lambda_def Abs_rel_inverse nondenoting_rel split: if_split_asm)
+    by (auto simp: lambda_def Abs_rel_inverse split: if_split_asm)
   moreover have lambda_denotes_simp:
     \<open>[w \<Turnstile> \<guillemotleft>lambda \<phi>\<guillemotright>\<down>] = (\<forall> v \<kappa>\<^sub>1\<kappa>\<^sub>n \<kappa>\<^sub>1'\<kappa>\<^sub>n' . [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> [v \<Turnstile> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'\<down>] \<and>
         (\<forall> \<Pi> v . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>exe \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>] = [v \<Turnstile> \<guillemotleft>exe \<Pi> \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<guillemotright>]) \<longrightarrow>
@@ -199,7 +196,7 @@ proof -
       if \<open>AOT_model_denotes \<kappa>\<close> and \<open>AOT_model_term_equiv \<kappa> \<kappa>'\<close>
       for w \<kappa> \<kappa>'
       by (metis (no_types, lifting) AOT_model_denotes_rel.abs_eq lambda_def
-                                    that calculation nondenoting_rel)+
+                                    that calculation)+
     ultimately show \<open>\<forall> v \<kappa>\<^sub>1\<kappa>\<^sub>n \<kappa>\<^sub>1'\<kappa>\<^sub>n' . [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> [v \<Turnstile> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'\<down>] \<and>
         (\<forall> \<Pi> v . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>exe \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>] = [v \<Turnstile> \<guillemotleft>exe \<Pi> \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<guillemotright>]) \<longrightarrow>
         [v \<Turnstile> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}] = [v \<Turnstile> \<phi>{\<kappa>\<^sub>1'...\<kappa>\<^sub>n'}]\<close>
@@ -234,14 +231,15 @@ proof -
     if \<open>[w \<Turnstile> \<guillemotleft>lambda \<phi>\<guillemotright>\<down>]\<close>
     and \<open>\<forall> w \<kappa>\<^sub>1\<kappa>\<^sub>n . [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<longrightarrow> [w \<Turnstile> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}] = [w \<Turnstile> \<psi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}]\<close>
     for \<phi> \<psi> w using that unfolding lambda_denotes_simp by auto
-  moreover have \<open>[w \<Turnstile> \<guillemotleft>Abs_rel \<phi>\<guillemotright>\<down>] \<Longrightarrow> lambda \<phi> = Abs_rel \<phi>\<close> for w \<phi>
-    by (simp add: AOT_sem_denotes lambda_def)
   moreover have \<open>[w \<Turnstile> \<Pi>\<down>] \<Longrightarrow> exe \<Pi> \<kappa>s = Rep_rel \<Pi> \<kappa>s\<close> for \<Pi> \<kappa>s w
     by (simp add: exe_def AOT_sem_denotes)
   moreover have \<open>lambda (\<lambda>x. p) = lambda (\<lambda>x. q) \<Longrightarrow> p = q\<close> for p q
     unfolding lambda_def
     by (auto split: if_split_asm simp: Abs_rel_inject fix_special_def)
        (meson AOT_model_irregular_nondenoting AOT_model_denoting_ex)+
+  moreover have \<open>AOT_model_term_equiv x y \<Longrightarrow> exe \<Pi> x = exe \<Pi> y\<close> for x y \<Pi>
+    unfolding exe_def
+    by (meson AOT_model_denotes_rel.rep_eq)
   note calculation = calculation this
   show ?thesis
     apply (safe intro!: exI[where x=exe] exI[where x=lambda])
@@ -266,9 +264,7 @@ proof(safe)
     assume d: \<open>AOT_model_denotes \<kappa>\<^sub>1\<kappa>\<^sub>n \<and> AOT_model_denotes \<kappa>\<^sub>1'\<kappa>\<^sub>n' \<and>
                AOT_model_term_equiv \<kappa>\<^sub>1\<kappa>\<^sub>n \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<close>
     hence \<open>\<forall>\<Pi> w. AOT_model_denotes \<Pi> \<longrightarrow> [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<close>
-      using AOT_model_term_equiv_rel_equiv
-      using AOT_sem_exe_denoting
-      by (metis AOT_sem_exe)
+      by (metis AOT_sem_exe_equiv)
     hence \<open>[v \<Turnstile> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}] = [v \<Turnstile> \<phi>{\<kappa>\<^sub>1'...\<kappa>\<^sub>n'}]\<close> using d 1 by auto
   }
   moreover assume \<open>AOT_model_denotes \<kappa>\<close>
@@ -288,7 +284,7 @@ next
                    [v \<Turnstile> [\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = [v \<Turnstile> [\<Pi>]\<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<close>
     hence \<open>\<forall>\<Pi> v . AOT_model_denotes \<Pi> \<longrightarrow>
                    [v \<Turnstile> \<guillemotleft>Rep_rel \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>] = [v \<Turnstile> \<guillemotleft>Rep_rel \<Pi> \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<guillemotright>]\<close>
-      by (metis AOT_sem_denotes AOT_sem_exe_denoting)
+      by (simp add: AOT_sem_denotes AOT_sem_exe den den')
     hence "AOT_model_term_equiv \<kappa>\<^sub>1\<kappa>\<^sub>n \<kappa>\<^sub>1'\<kappa>\<^sub>n'"
       unfolding AOT_model_term_equiv_rel_equiv[OF den, OF den']
       by argo
@@ -438,19 +434,17 @@ instance proof
   have AOT_meta_proj_denotes1: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (z, \<beta>)))\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close> and \<beta>
     using that unfolding AOT_model_denotes_rel.rep_eq
-    (* TODO *)
     apply (auto simp: Abs_rel_inverse AOT_meta_prod_equivI(2) AOT_sem_denotes
-                      AOT_sem_exe_denoting that)
-    apply (metis AOT_model_denotes_prod_def case_prodD)
+                      that intro!: AOT_sem_exe_equiv)
+    apply (metis AOT_model_denotes_prod_def AOT_sem_exe case_prodD)
     using AOT_model_no_special_nondenoting by blast
   {
     fix \<kappa> :: 'a and \<Pi> :: \<open><'a\<times>'b>\<close>
     assume \<Pi>_denotes: \<open>AOT_model_denotes \<Pi>\<close>
     assume \<alpha>_denotes: \<open>AOT_model_denotes \<kappa>\<close>
     hence \<open>AOT_exe \<Pi> (\<kappa>, x) = AOT_exe \<Pi> (\<kappa>, y)\<close>
-       if \<open>AOT_model_term_equiv x y\<close> for x y :: 'b
-      by (metis that AOT_meta_prod_equivI(1) AOT_model_denotes_rel.rep_eq
-                AOT_sem_denotes AOT_sem_exe_denoting \<Pi>_denotes)
+      if \<open>AOT_model_term_equiv x y\<close> for x y :: 'b
+      by (simp add: AOT_meta_prod_equivI(1) AOT_sem_exe_equiv that)
     moreover have \<open>AOT_model_denotes \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<close>
                if \<open>[w \<Turnstile> [\<Pi>]\<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<close> for w \<kappa>\<^sub>1'\<kappa>\<^sub>n'
       by (metis that AOT_model_denotes_prod_def AOT_sem_exe
@@ -482,9 +476,33 @@ instance proof
         unfolding AOT_sem_exe_denoting[simplified AOT_sem_denotes, OF \<Pi>_denotes]
         by auto
     }
-    ultimately have "AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (\<kappa>, z)))"
+    ultimately have \<open>AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (\<kappa>, z)))\<close>
       by (simp add: Abs_rel_inverse AOT_model_denotes_rel.rep_eq)
   } note AOT_meta_proj_denotes2 = this
+  {
+    fix \<kappa>\<^sub>1'\<kappa>\<^sub>n' :: 'b and \<Pi> :: \<open><'a\<times>'b>\<close>
+    assume \<Pi>_denotes: \<open>AOT_model_denotes \<Pi>\<close>
+    assume \<beta>_denotes: \<open>AOT_model_denotes \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<close>
+    hence \<open>AOT_exe \<Pi> (x, \<kappa>\<^sub>1'\<kappa>\<^sub>n') = AOT_exe \<Pi> (y, \<kappa>\<^sub>1'\<kappa>\<^sub>n')\<close>
+      if \<open>AOT_model_term_equiv x y\<close> for x y :: 'a
+      by (simp add: AOT_meta_prod_equivI(2) AOT_sem_exe_equiv that)
+    moreover have \<open>AOT_model_denotes \<kappa>\<close>
+               if \<open>[w \<Turnstile> [\<Pi>]\<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<close> for w \<kappa>
+      by (metis that AOT_model_denotes_prod_def AOT_sem_exe
+                AOT_sem_denotes case_prodD)
+    moreover {
+      fix x :: 'a
+      assume x_special: \<open>\<not>AOT_model_regular x\<close>
+      hence \<open>False\<close>
+        using AOT_model_no_special_nondenoting by blast
+      hence
+        \<open>AOT_exe \<Pi> (x,\<kappa>\<^sub>1'\<kappa>\<^sub>n') = AOT_model_irregular (\<lambda>z. AOT_exe \<Pi> (z,\<kappa>\<^sub>1'\<kappa>\<^sub>n')) x\<close>
+        unfolding AOT_sem_exe_denoting[simplified AOT_sem_denotes, OF \<Pi>_denotes]
+        by auto
+    }
+    ultimately have \<open>AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (z,\<kappa>\<^sub>1'\<kappa>\<^sub>n')))\<close>
+      by (simp add: Abs_rel_inverse AOT_model_denotes_rel.rep_eq)
+  } note AOT_meta_proj_denotes1 = this
   {
     assume \<Pi>_denotes: \<open>AOT_model_denotes \<Pi>\<close>
     assume \<Pi>'_denotes: \<open>AOT_model_denotes \<Pi>'\<close>
@@ -495,6 +513,14 @@ instance proof
     have \<Pi>'_proj2_den: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. Rep_rel \<Pi>' (\<alpha>, z)))\<close>
       if \<open>AOT_model_denotes \<alpha>\<close> for \<alpha>
       using that AOT_meta_proj_denotes2[OF \<Pi>'_denotes]
+            AOT_sem_exe_denoting[simplified AOT_sem_denotes,OF \<Pi>'_denotes] by simp
+    have \<Pi>_proj1_den: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. Rep_rel \<Pi> (z, \<alpha>)))\<close>
+      if \<open>AOT_model_denotes \<alpha>\<close> for \<alpha>
+      using that AOT_meta_proj_denotes1[OF \<Pi>_denotes]
+            AOT_sem_exe_denoting[simplified AOT_sem_denotes,OF \<Pi>_denotes] by simp
+    have \<Pi>'_proj1_den: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. Rep_rel \<Pi>' (z, \<alpha>)))\<close>
+      if \<open>AOT_model_denotes \<alpha>\<close> for \<alpha>
+      using that AOT_meta_proj_denotes1[OF \<Pi>'_denotes]
             AOT_sem_exe_denoting[simplified AOT_sem_denotes,OF \<Pi>'_denotes] by simp
     {
       fix \<kappa> :: 'a and \<kappa>\<^sub>1'\<kappa>\<^sub>n' :: 'b
@@ -568,15 +594,27 @@ instance proof
       {
         fix \<kappa>\<^sub>1'\<kappa>\<^sub>n' :: 'b
         assume \<beta>den: \<open>AOT_model_denotes \<kappa>\<^sub>1'\<kappa>\<^sub>n'\<close>
-        have \<open>Abs_rel (\<lambda>x. AOT_exe \<Pi> (x, \<kappa>\<^sub>1'\<kappa>\<^sub>n')) = Abs_rel (\<lambda>\<kappa>. \<guillemotleft>[\<Pi>']\<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'\<guillemotright>)\<close>
-          using AOT_sem_lambda_denoting[of v \<open>\<lambda>\<kappa>. \<guillemotleft>[\<Pi>]\<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'\<guillemotright>\<close>]
-          using AOT_sem_lambda_denoting[of v \<open>\<lambda>\<kappa>. \<guillemotleft>[\<Pi>']\<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'\<guillemotright>\<close>]
-          using AOT_meta_proj_denotes1[OF \<Pi>_denotes]
-                AOT_meta_proj_denotes1[OF \<Pi>'_denotes] 0[OF \<alpha>den, OF \<beta>den]
-          by (simp add: AOT_sem_denotes)
+        have 1: \<open>\<guillemotleft>[\<lambda>z [\<Pi>]z \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<guillemotright> = \<guillemotleft>[\<lambda>z [\<Pi>']z \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<guillemotright>\<close>
+          using 0 \<beta>den AOT_model_denoting_ex by blast
+        hence \<open>Abs_rel (\<lambda>z. Rep_rel \<Pi> (z, \<kappa>\<^sub>1'\<kappa>\<^sub>n')) =
+               Abs_rel (\<lambda>z. Rep_rel \<Pi>' (z, \<kappa>\<^sub>1'\<kappa>\<^sub>n'))\<close> (is \<open>?a = ?b\<close>)
+          apply (safe intro!: AOT_sem_proj_id_prop[of v \<open>?a\<close> \<open>?b\<close>,
+                  simplified AOT_sem_eq AOT_sem_conj AOT_sem_forall
+                  AOT_sem_denotes, THEN iffD2, THEN conjunct2, THEN conjunct2]
+                  \<Pi>_proj1_den[OF \<beta>den] \<Pi>'_proj1_den[OF \<beta>den])
+          unfolding AOT_sem_exe_denoting[simplified AOT_sem_denotes, OF \<Pi>_denotes]
+                    AOT_sem_exe_denoting[simplified AOT_sem_denotes, OF \<Pi>'_denotes]
+                    AOT_sem_exe_denoting[simplified AOT_sem_denotes,
+                                         OF \<Pi>_proj1_den[OF \<beta>den]]
+                    AOT_sem_exe_denoting[simplified AOT_sem_denotes,
+                                         OF \<Pi>'_proj1_den[OF \<beta>den]]
+          by (subst (0 1) Abs_rel_inverse; simp?)
+             (metis (no_types, lifting) AOT_model_denotes_rel.abs_eq
+                            AOT_model_lambda_denotes AOT_sem_denotes AOT_sem_eq
+                            AOT_sem_unary_proj_id \<Pi>_proj1_den[OF \<beta>den])
         hence \<open>Rep_rel \<Pi> (x,\<kappa>\<^sub>1'\<kappa>\<^sub>n') = Rep_rel \<Pi>' (x,\<kappa>\<^sub>1'\<kappa>\<^sub>n')\<close> for x
           by (simp add: Abs_rel_inject)
-             (metis AOT_sem_exe_denoting AOT_sem_denotes \<Pi>'_denotes \<Pi>_denotes)
+             metis
       } note \<beta>denotes = this
       {
         fix \<alpha> :: 'a and \<beta> :: 'b
@@ -947,14 +985,11 @@ next
   have \<open>AOT_model_denotes \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<guillemotleft>\<Pi>\<guillemotright>]\<nu>\<^sub>1...\<nu>\<^sub>n \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<guillemotright>\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close>
     unfolding AOT_model_lambda_denotes
-    by (metis (no_types, hide_lams)
-          that AOT_meta_prod_equivI(2) AOT_model_denotes_rel.abs_eq
-          AOT_sem_exe AOT_sem_exe_denoting Rep_rel_inverse)
+    by (metis AOT_meta_prod_equivI(2) AOT_sem_exe_equiv)
   moreover have \<open>AOT_model_denotes  \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<guillemotleft>\<Pi>\<guillemotright>]\<kappa> \<nu>\<^sub>1...\<nu>\<^sub>n]\<guillemotright>\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close>
     unfolding AOT_model_lambda_denotes
-    by (metis that AOT_meta_prod_equivI(1) AOT_model_denotes_rel.rep_eq
-              AOT_sem_denotes AOT_sem_exe_denoting)
+    by (metis AOT_meta_prod_equivI(1) AOT_sem_exe_equiv)
   ultimately have 1: \<open>[v \<Turnstile> \<guillemotleft>(\<kappa>,\<kappa>\<^sub>1'\<kappa>\<^sub>n')\<guillemotright>\<down>]\<close>
               and 2: \<open>(\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow>  [v \<Turnstile> \<kappa> \<kappa>\<^sub>1'...\<kappa>\<^sub>n'[\<Pi>]])\<close>
     using a_prop b_prop
@@ -1063,25 +1098,20 @@ lemma AOT_model_\<alpha>\<kappa>_ordinary: \<open>[v \<Turnstile> A!\<guillemotl
             AOT_sem_lambda_beta AOT_sem_concrete AOT_sem_denotes AOT_sem_dia
             AOT_sem_not \<kappa>.disc(8))
 
-  
+
 definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>) \<Rightarrow> bool\<close> where
-  \<open>AOT_instance_of_cqt_2 \<equiv> \<lambda> \<phi> . \<forall> v . [v \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close>
+  \<open>AOT_instance_of_cqt_2 \<equiv> \<lambda> \<phi> . \<forall> x y . AOT_model_denotes x \<and> AOT_model_denotes y \<and>
+                                          AOT_model_term_equiv x y \<longrightarrow> \<phi> x = \<phi> y\<close>
 definition AOT_instance_of_cqt_2_exe_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_exe_arg \<equiv> \<lambda> \<phi> . \<forall> x y .
-      AOT_model_denotes x \<and> AOT_model_term_equiv x y \<longrightarrow>
-      (AOT_model_term_equiv (\<phi> x) (\<phi> y) \<or>
-       (\<not>AOT_model_denotes (\<phi> x) \<and> \<not>AOT_model_denotes (\<phi> y)))\<close>
-definition AOT_instance_of_cqt_2_exe_rel :: \<open>('a::AOT_\<kappa>s \<Rightarrow> <'b::AOT_\<kappa>s>) \<Rightarrow> bool\<close> where
-  \<open>AOT_instance_of_cqt_2_exe_rel \<equiv> \<lambda> \<phi> . \<forall> x y z v .
-      AOT_model_denotes x \<and> AOT_model_denotes y \<and>
-      AOT_model_denotes z \<and> AOT_model_term_equiv x y \<longrightarrow>
-      [v \<Turnstile> \<guillemotleft>AOT_exe (\<phi> x) z\<guillemotright>] = [v \<Turnstile> \<guillemotleft>AOT_exe (\<phi> y) z\<guillemotright>]\<close>
-definition AOT_instance_of_cqt_2_enc_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
-  \<open>AOT_instance_of_cqt_2_enc_arg \<equiv> \<lambda> \<phi> . \<forall> x y z .
-      AOT_model_term_equiv x y \<longrightarrow> AOT_enc (\<phi> x) z = AOT_enc (\<phi> y) z\<close>
-definition AOT_instance_of_cqt_2_enc_rel :: \<open>('a::AOT_\<kappa>s \<Rightarrow> <'b::AOT_\<kappa>s>) \<Rightarrow> bool\<close> where
-  \<open>AOT_instance_of_cqt_2_enc_rel \<equiv> \<lambda> \<phi> . \<forall> x y z .
-      AOT_model_term_equiv x y \<longrightarrow> AOT_enc z (\<phi> x) = AOT_enc z (\<phi> y)\<close>
+      AOT_model_denotes x \<and> AOT_model_denotes y \<and> AOT_model_term_equiv x y \<longrightarrow>
+      AOT_model_term_equiv (\<phi> x) (\<phi> y)\<close>
+
+lemma AOT_sem_cqt_2:
+  assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
+  shows \<open>[v \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close>
+  using assms
+  by (metis AOT_instance_of_cqt_2_def AOT_model_lambda_denotes AOT_sem_denotes)
 
 syntax AOT_instance_of_cqt_2 :: \<open>id_position \<Rightarrow> AOT_prop\<close>
   ("INSTANCE'_OF'_CQT'_2'(_')")
@@ -1094,8 +1124,7 @@ lemma AOT_instance_of_cqt_2_intros_not[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<not>\<phi>{\<tau>}\<guillemotright>)\<close>
   using assms
-  by (simp add: AOT_instance_of_cqt_2_def AOT_sem_denotes
-                AOT_model_lambda_denotes AOT_sem_not)
+  by (metis (no_types, lifting) AOT_instance_of_cqt_2_def)
 lemma AOT_instance_of_cqt_2_intros_imp[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close> and \<open>AOT_instance_of_cqt_2 \<psi>\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<phi>{\<tau>} \<rightarrow> \<psi>{\<tau>}\<guillemotright>)\<close>
@@ -1150,17 +1179,6 @@ lemma AOT_instance_of_cqt_2_intros_exists[AOT_instance_of_cqt_2_intro]:
   using assms
   by (auto simp: AOT_instance_of_cqt_2_def AOT_sem_denotes
                  AOT_model_lambda_denotes AOT_sem_exists)
-
-lemma AOT_instance_of_cqt_2_intros_exe_rel[AOT_instance_of_cqt_2_intro]:
-  \<open>AOT_instance_of_cqt_2_exe_rel (\<lambda> x . \<Pi>)\<close>
-  by (simp add: AOT_instance_of_cqt_2_exe_rel_def)
-lemma AOT_instance_of_cqt_2_intros_exe_lambda[AOT_instance_of_cqt_2_intro]:
-  assumes \<open>\<And> z . AOT_instance_of_cqt_2 (\<lambda>x. \<phi> z x)\<close>
-      and \<open>\<And> z . AOT_instance_of_cqt_2 (\<lambda>x. \<phi> x z)\<close>
-  shows \<open>AOT_instance_of_cqt_2_exe_rel (\<lambda> \<kappa>\<^sub>1\<kappa>\<^sub>n. \<guillemotleft>[\<lambda>z\<^sub>1...z\<^sub>n \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n, z\<^sub>1...z\<^sub>n}]\<guillemotright>)\<close>
-  using assms
-  unfolding AOT_instance_of_cqt_2_exe_rel_def AOT_instance_of_cqt_2_def
-  by (simp add: AOT_sem_lambda_beta AOT_model_lambda_denotes AOT_sem_denotes)
 lemma AOT_instance_of_cqt_2_intros_exe_arg_self[AOT_instance_of_cqt_2_intro]:
    \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda>x. x)\<close>
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
@@ -1169,7 +1187,7 @@ lemma AOT_instance_of_cqt_2_intros_exe_arg_self[AOT_instance_of_cqt_2_intro]:
 lemma AOT_instance_of_cqt_2_intros_exe_arg_fst[AOT_instance_of_cqt_2_intro]:
    \<open>AOT_instance_of_cqt_2_exe_arg fst\<close>
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
-  by (simp add: AOT_model_term_equiv_prod_def AOT_sem_denotes AOT_sem_lambda_denotes)
+  by (simp add: AOT_model_term_equiv_prod_def case_prod_beta)
 lemma AOT_instance_of_cqt_2_intros_exe_arg_snd[AOT_instance_of_cqt_2_intro]:
    \<open>AOT_instance_of_cqt_2_exe_arg snd\<close>
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
@@ -1191,55 +1209,94 @@ lemma AOT_instance_of_cqt_2_intros_desc[AOT_instance_of_cqt_2_intro]:
   assumes \<open>\<And>z :: 'a::AOT_\<kappa>. AOT_instance_of_cqt_2 (\<Phi> z)\<close>
   shows \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda> \<kappa> :: 'b::AOT_\<kappa> . \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>)\<close>
 proof -
-  have 0: \<open>\<forall> \<kappa> \<kappa>'. AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and>
-                   AOT_model_term_equiv \<kappa> \<kappa>' \<longrightarrow>
-                   [w\<^sub>0 \<Turnstile> \<guillemotleft>\<Phi> z \<kappa>\<guillemotright>] = [w\<^sub>0 \<Turnstile> \<guillemotleft>\<Phi> z \<kappa>'\<guillemotright>]\<close> for z
+  have 0: \<open>\<And> \<kappa> \<kappa>'. AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and>
+                   AOT_model_term_equiv \<kappa> \<kappa>' \<Longrightarrow>
+                   \<Phi> z \<kappa> = \<Phi> z \<kappa>'\<close> for z
     using assms
     unfolding AOT_instance_of_cqt_2_def
-              AOT_sem_denotes AOT_model_lambda_denotes by simp
+              AOT_sem_denotes AOT_model_lambda_denotes by force
   {
-    fix \<kappa> \<kappa>' :: 'b
-    assume 1: \<open>AOT_model_denotes \<kappa> \<and> AOT_model_term_equiv \<kappa> \<kappa>'\<close>
-    {
-      assume \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>\<close>
-      moreover have \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
-        using calculation 0 1 AOT_model_term_equiv_denotes
-        unfolding AOT_sem_desc_denotes[unfolded AOT_sem_denotes]
-        by blast
-      ultimately have \<open>\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<and>
-                       \<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
-        by simp
-    }
-    moreover {
-      assume \<open>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>\<close>
-      moreover have \<open>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
-        using calculation 0 1 AOT_model_term_equiv_denotes
-        unfolding AOT_sem_desc_denotes[unfolded AOT_sem_denotes]
-        by blast
-      ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
-        by (smt (verit) "0" "1" AOT_model_term_equiv_denotes
-                        AOT_model_term_equiv_rel_equiv AOT_sem_denotes
-                        AOT_sem_desc_denotes AOT_sem_desc_prop) 
-    }
-    ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright> \<or>
-                     (\<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<and>
-                      \<not>AOT_model_denotes \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>)\<close> by blast
+    fix \<kappa> \<kappa>'
+    have \<open>\<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> = \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+      if \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> AOT_model_term_equiv \<kappa> \<kappa>'\<close>
+      using 0[OF that]
+      by auto
+    moreover have \<open>AOT_model_term_equiv x x\<close> for x :: \<open>'a::AOT_\<kappa>\<close>
+      by (metis AOT_instance_of_cqt_2_exe_arg_def
+                AOT_instance_of_cqt_2_intros_exe_arg_var
+                AOT_model_A_objects AOT_model_term_equiv_denotes
+                AOT_model_term_equiv_eps(1))
+    ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+      if \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> AOT_model_term_equiv \<kappa> \<kappa>'\<close>
+      using that by simp
   }
-  thus ?thesis
-    unfolding AOT_instance_of_cqt_2_exe_arg_def by simp
+  thus ?thesis using 0
+    unfolding AOT_instance_of_cqt_2_exe_arg_def
+    by simp
 qed
 
-lemma AOT_instance_of_cqt_2_intros_exe[AOT_instance_of_cqt_2_intro]:
-  assumes \<open>AOT_instance_of_cqt_2_exe_rel \<Pi>\<close> and \<open>AOT_instance_of_cqt_2_exe_arg \<kappa>s\<close>
-  shows \<open>AOT_instance_of_cqt_2 (\<lambda>x :: 'b::AOT_\<kappa>s. AOT_exe \<guillemotleft>[\<guillemotleft>\<Pi> x\<guillemotright>]\<guillemotright> (\<kappa>s x))\<close>
+lemma AOT_instance_of_cqt_2_intros_exe_const[AOT_instance_of_cqt_2_intro]:
+  assumes \<open>AOT_instance_of_cqt_2_exe_arg \<kappa>s\<close>
+  shows \<open>AOT_instance_of_cqt_2 (\<lambda>x :: 'b::AOT_\<kappa>s. AOT_exe \<Pi> (\<kappa>s x))\<close>
   using assms
   unfolding AOT_instance_of_cqt_2_def AOT_sem_denotes AOT_model_lambda_denotes
-            AOT_instance_of_cqt_2_exe_rel_def AOT_sem_disj AOT_sem_conj
+            AOT_sem_disj AOT_sem_conj
             AOT_sem_not AOT_sem_box AOT_sem_act AOT_instance_of_cqt_2_exe_arg_def
             AOT_sem_equiv AOT_sem_imp AOT_sem_forall AOT_sem_exists AOT_sem_dia
-  by (meson AOT_model_term_equiv_denotes AOT_model_term_equiv_rel_equiv
-            AOT_sem_denotes AOT_sem_exe)
-lemma AOT_instance_of_cqt_2_intros_enc[AOT_instance_of_cqt_2_intro]:
+  by (auto intro!: AOT_sem_exe_equiv)
+lemma AOT_instance_of_cqt_2_intros_exe_lam[AOT_instance_of_cqt_2_intro]:
+  assumes \<open>\<And> y . AOT_instance_of_cqt_2 (\<lambda>x. \<phi> x y)\<close>
+      and \<open>AOT_instance_of_cqt_2_exe_arg \<kappa>s\<close>
+    shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<kappa>\<^sub>1\<kappa>\<^sub>n :: 'b::AOT_\<kappa>s.
+              \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n,\<nu>\<^sub>1...\<nu>\<^sub>n}]\<guillemotleft>\<kappa>s \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>\<guillemotright>)\<close>
+proof -
+  {
+    fix x y :: 'b
+    assume \<open>AOT_model_denotes x\<close>
+    moreover assume \<open>AOT_model_denotes y\<close>
+    moreover assume \<open>AOT_model_term_equiv x y\<close>
+    moreover have 1: \<open>\<phi> x = \<phi> y\<close>
+      using assms calculation unfolding AOT_instance_of_cqt_2_def by blast
+    ultimately have \<open>AOT_exe (AOT_lambda (\<phi> x)) (\<kappa>s x) =
+                     AOT_exe (AOT_lambda (\<phi> y)) (\<kappa>s y)\<close>
+      unfolding 1
+      apply (safe intro!: AOT_sem_exe_equiv)
+      by (metis AOT_instance_of_cqt_2_exe_arg_def assms(2))
+  }
+  thus ?thesis
+  unfolding AOT_instance_of_cqt_2_def
+            AOT_instance_of_cqt_2_exe_arg_def
+  by blast
+qed
+lemma AOT_instance_of_cqt_2_intro_prod[AOT_instance_of_cqt_2_intro]:
+  assumes \<open>\<And> x . AOT_instance_of_cqt_2 (\<phi> x)\<close>
+      and \<open>\<And> x . AOT_instance_of_cqt_2 (\<lambda> z . \<phi> z x)\<close>
+  shows \<open>AOT_instance_of_cqt_2 (\<lambda>(x,y) . \<phi> x y)\<close>
+  using assms unfolding AOT_instance_of_cqt_2_def
+  by (auto simp add: AOT_model_lambda_denotes AOT_sem_denotes
+                AOT_model_denotes_prod_def
+                AOT_model_term_equiv_prod_def)
+
+AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesE[AOT del]
+AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesI[AOT del]
+
+text\<open>The following are already derivable semantically, but not yet added
+     to @{text \<open>AOT_instance_of_cqt_2_intro\<close>}. They will be added with the
+     next planned extension of axiom @{text \<open>cqt:2\<close>}.\<close>
+named_theorems AOT_instance_of_cqt_2_intro_next
+definition AOT_instance_of_cqt_2_enc_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
+  \<open>AOT_instance_of_cqt_2_enc_arg \<equiv> \<lambda> \<phi> . \<forall> x y z .
+      AOT_model_denotes x \<and> AOT_model_denotes y \<and> AOT_model_term_equiv x y \<longrightarrow>
+      AOT_enc (\<phi> x) z = AOT_enc (\<phi> y) z\<close>
+definition AOT_instance_of_cqt_2_enc_rel :: \<open>('a::AOT_\<kappa>s \<Rightarrow> <'b::AOT_\<kappa>s>) \<Rightarrow> bool\<close> where
+  \<open>AOT_instance_of_cqt_2_enc_rel \<equiv> \<lambda> \<phi> . \<forall> x y z .
+      AOT_model_denotes x \<and> AOT_model_denotes y \<and> AOT_model_term_equiv x y \<longrightarrow>
+      AOT_enc z (\<phi> x) = AOT_enc z (\<phi> y)\<close>
+lemma AOT_instance_of_cqt_2_intros_enc[AOT_instance_of_cqt_2_intro_next]:
   assumes \<open>AOT_instance_of_cqt_2_enc_rel \<Pi>\<close> and \<open>AOT_instance_of_cqt_2_enc_arg \<kappa>s\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>x . AOT_enc (\<kappa>s x) \<guillemotleft>[\<guillemotleft>\<Pi> x\<guillemotright>]\<guillemotright>)\<close>
   using assms
@@ -1248,20 +1305,47 @@ lemma AOT_instance_of_cqt_2_intros_enc[AOT_instance_of_cqt_2_intro]:
             AOT_sem_dia AOT_sem_conj AOT_sem_disj AOT_sem_equiv AOT_sem_imp
             AOT_sem_forall AOT_sem_exists AOT_instance_of_cqt_2_enc_arg_def
   by fastforce+
-lemma [AOT_instance_of_cqt_2_intro]:
-  assumes \<open>\<And> x . AOT_instance_of_cqt_2 (\<phi> x)\<close>
-      and \<open>\<And> x . AOT_instance_of_cqt_2 (\<lambda> z . \<phi> z x)\<close>
-  shows \<open>AOT_instance_of_cqt_2 (\<lambda>(x,y) . \<phi> x y)\<close>
-  using assms unfolding AOT_instance_of_cqt_2_def
-  by (simp add: AOT_model_lambda_denotes AOT_sem_denotes AOT_model_denotes_prod_def
-                AOT_model_term_equiv_prod_def) blast
-
-AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
-  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
-declare prod_denotesE[AOT del]
-AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
-  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
-declare prod_denotesI[AOT del]
+lemma AOT_instance_of_cqt_2_enc_arg_intro_const[AOT_instance_of_cqt_2_intro_next]:
+  \<open>AOT_instance_of_cqt_2_enc_arg (\<lambda>x. c)\<close>
+  unfolding AOT_instance_of_cqt_2_enc_arg_def by simp
+lemma AOT_instance_of_cqt_2_enc_arg_intro_desc[AOT_instance_of_cqt_2_intro_next]:
+  assumes \<open>\<And>z :: 'a::AOT_\<kappa>. AOT_instance_of_cqt_2 (\<Phi> z)\<close>
+  shows \<open>AOT_instance_of_cqt_2_enc_arg (\<lambda> \<kappa> :: 'b::AOT_\<kappa> . \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright>)\<close>
+proof -
+  have 0: \<open>\<And> \<kappa> \<kappa>'. AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and>
+                   AOT_model_term_equiv \<kappa> \<kappa>' \<Longrightarrow>
+                   \<Phi> z \<kappa> = \<Phi> z \<kappa>'\<close> for z
+    using assms
+    unfolding AOT_instance_of_cqt_2_def
+              AOT_sem_denotes AOT_model_lambda_denotes by force
+  {
+    fix \<kappa> \<kappa>'
+    have \<open>\<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> = \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
+      if \<open>AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<kappa>' \<and> AOT_model_term_equiv \<kappa> \<kappa>'\<close>
+      using 0[OF that]
+      by auto
+  }
+  thus ?thesis using 0
+    unfolding AOT_instance_of_cqt_2_enc_arg_def by meson
+qed
+lemma AOT_instance_of_cqt_2_enc_rel_intro[AOT_instance_of_cqt_2_intro_next]:
+  assumes \<open>\<And> \<kappa> . AOT_instance_of_cqt_2 (\<lambda>\<kappa>' :: 'b::AOT_\<kappa>s . \<phi> \<kappa> \<kappa>')\<close>
+  assumes \<open>\<And> \<kappa>' . AOT_instance_of_cqt_2 (\<lambda>\<kappa> :: 'a::AOT_\<kappa>s . \<phi> \<kappa> \<kappa>')\<close>
+  shows \<open>AOT_instance_of_cqt_2_enc_rel (\<lambda>\<kappa> :: 'a::AOT_\<kappa>s. AOT_lambda (\<lambda>\<kappa>'. \<phi> \<kappa> \<kappa>'))\<close>
+proof -
+  {
+    fix x y :: 'a and z ::'b
+    assume \<open>AOT_model_term_equiv x y\<close>
+    moreover assume \<open>AOT_model_denotes x\<close>
+    moreover assume \<open>AOT_model_denotes y\<close>
+    ultimately have \<open>\<phi> x = \<phi> y\<close>
+      using assms unfolding AOT_instance_of_cqt_2_def by blast
+    hence \<open>AOT_enc z (AOT_lambda (\<phi> x)) = AOT_enc z (AOT_lambda (\<phi> y))\<close>
+      by simp
+  }
+  thus ?thesis
+    unfolding AOT_instance_of_cqt_2_enc_rel_def by auto
+qed
 
 AOT_register_type_constraints
   Individual: \<open>\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close>

@@ -21,8 +21,7 @@ AOT_axiom "cqt:2[const_var]": \<open>\<alpha>\<down>\<close>
 AOT_axiom "cqt:2[lambda]":
   assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
   shows \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
-  using assms
-  by (simp add: AOT_sem_denotes AOT_instance_of_cqt_2_def AOT_model_axiomI)
+  by (auto intro!: AOT_model_axiomI AOT_sem_cqt_2[OF assms])
 AOT_axiom "cqt:2[lambda0]":
   shows \<open>[\<lambda> \<phi>]\<down>\<close>
   by (auto intro!: AOT_model_axiomI
