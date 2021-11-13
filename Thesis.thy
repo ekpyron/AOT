@@ -3431,13 +3431,13 @@ not require the proviso that @{text \<beta>} is substitutable for @{text \<alpha
 To that end the next step is to generalize above rule to include premises:
 
 \begin{quote}
-\Squ{If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
-in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} @{text \<beta>} is sustitutable for @{text \<alpha>} in @{text \<psi>} and @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} is
+\Squ{If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where (1) @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
+(2) in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} @{text \<beta>} is sustitutable for @{text \<alpha>} in @{text \<psi>} and (3) @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} is
 the set of all @{text \<open>\<psi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.}
 \end{quote}
 
-One way to show this is by first eliminating all premises @{text \<Gamma>} using the deduction theorem (TODO: cite),
-applying GEN to the resulting theorem, instantiating the introduced quantifier to @{text \<beta>}. The resulting
+One way to show this is by first eliminating all premises in @{text \<Gamma>} using the deduction theorem (TODO: cite),
+applying GEN to the resulting theorem and instantiating the introduced quantifier to @{text \<beta>}. The resulting
 theorem will yield @{text \<open>\<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} from @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} by successive applications of modus ponens.
 
 In particular, let @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n\<close>} be the list of premises in @{text \<open>\<Gamma>\<close>}, s.t.
@@ -3547,8 +3547,8 @@ with a different actual world for each equivalence class of worlds, and that doi
 lead to a means to reproduce the strict distinction between modally-strict and modally-fragile theorems
 in AOT as follows: while modally-strict theorems could be modelled as being valid in all possible worlds,
 i.e. across all equivalence classes in the accessibility relation, modally-fragile axioms could be
-modelled as being valid in a globally-fixed actual world, despite the fact that actuality may choose
-a different actual world depending on the modal context. This way, adding a contingent truth to the
+modelled as being valid in a globally-fixed actual world, despite the fact that the actuality operator may choose
+a different actual world in each equivalence class of worlds. This way, adding a contingent truth to the
 modally-fragile derivation system would merely assert that it holds in the globally-fixed actual world,
 whereas a modally-strict proof of some statement being @{emph \<open>actually true\<close>} would require that
 statement to be true in @{emph \<open>all\<close>} actual worlds. This would constitute a model in which 
@@ -3583,7 +3583,7 @@ embedding collapses certain classes of statements (e.g. alphabetic variants), bu
 this merely extends to statements that are interderivable in AOT itself. As a result
 we can assume that every statement that is derivable in the abstraction layer of
 our embedding also has a derivation in AOT as defined in PLM (TODO: cite), i.e.
-the abstraction layer of our embedding does not contain artifactual theorems.
+the abstraction layer of our embedding does not contain artifactual theorems. TODO: careful here.
 
 Nonetheless, it is still a valid question whether the underlying semantics and model structure
 used in the construction of this abstraction layer allows for deriving artifactual theorems,
@@ -3607,7 +3607,8 @@ An example of a statement that is now a theorem of AOT, but originated as an art
 theorem of the embedding is the necessary and sufficient conditions for relations to denote
 discussed in section~\ref{KirchnersTheorem}. An earlier example is the coexistence axiom
 mentioned in~\ref{AxiomSystem}, the formulation of which was based on a similar
-principle that was discovered in the analysis of the semantic properties of the embedding.
+principle that was discovered in the analysis of the semantic properties of the embedding
+at the time.
 
 This process is ongoing and in the remainder of this section we will discuss the remaining
 known examples of such artifactual theorems and the current state of their discussion.
@@ -3716,8 +3717,8 @@ relation projections are forced to collapse.
 
 However, we already mentioned in section~\ref{cqt:2-impl} that it is currently being
 considered to extend the base cases of denoting @{text \<open>\<lambda>\<close>}-expressions. This extension
-has particular merit in deriving theorems in higher-order object theory. This would, in
-particular, mean that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
+has particular merit in deriving theorems in higher-order object theory. In the second-order
+fragment this would in particular mean that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
 @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<guillemotright>\<close>}.
 
 Under this assumption, however, the currently artifactual theorems above would become
@@ -3813,30 +3814,38 @@ As well as @{text \<open>n\<close>}-ary relation identity, e.g. for @{text \<ope
 \end{quote}
 
 However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conversion, i.e. the following
-is @{emph \<open>not\<close>} a theorem of AOT, even though it is a theorem in the embedding (ignoring
-the abstraction layer):
+is @{emph \<open>not\<close>} a theorem of AOT:
 
-TODO
+\begin{quote}
+@{term[display] \<open>print_as_theorem \<guillemotleft>[\<lambda>xy [\<lambda>z [F]zy]y] = [\<lambda>xy [\<lambda>z [F]yz]x]\<guillemotright>\<close>}
+\end{quote}
 
-This is an artifact of the semantic construction that validates the two principles
-above. To validate @{text \<eta>}-conversion, the embedding directly chooses a relation @{term F}
-as denotation for a @{text \<lambda>}-expression if its matrix is @{emph \<open>identical\<close>}
-to @{emph \<open>exemplifying @{term F}\<close>}. TODO.
+The embedding constructs @{text \<open>\<lambda>\<close>}-abstraction and exemplification using the
+@{command specification} command by postulating that @{text \<open>\<lambda>\<close>}-abstraction and exemplification
+have to exhibit certain properties (e.g. @{text \<open>\<beta>\<close>}-conversion) and by then providing
+a concrete witness that satisfies these properties.
 
+The postulated properties of the @{command specification} are still slightly stronger
+than the axioms of AOT they ultimately validate (validating the axioms of AOT for arbitrary
+@{text n}-ary relations in the embedding, at least in the current construction, requires
+slightly stronger properties for @{text \<open>\<lambda>\<close>}-abstraction and exemplification than
+implied by AOT's axiom for each fixed arity).
+
+While the artifactual theorem above is validated by the provided witness, it
+is currently unknown whether the properties postulated in the @{command specification}
+are sufficient to derive it as artifactual theorem. Neither can @{command nitpick}
+provide a counterexample for the theorem, nor can @{command sledgehammer} construct
+a proof from the specification, so further manual inspection of the situation is
+required.
+
+TODO: refine.
 \<close>
   
 section\<open>Discussion\<close>
 
 text\<open>
-  \<^item> Sparse documentation of Isabelle/ML's internals.
-  \<^item> Danger of hiding the actual reasoning behind too much syntax and custom infrastructure vs. readability and ease of reasoning transfer.
-  \<^item> Concessions due to limitations of the type system, type classes, etc.
-  \<^item> Challenges due to inability:
-    \<^item> Configure root grammar nonterminal.
-    \<^item> Hooking into @{command sledgehammer}'s fact selection.
-    \<^item> A sub-optimal interface to the internals of theorem specifications and other commands.
-  \<^item> Option to define a completely independent Isabelle/Pure based object logic vs. ensured soundness via
-    @{command nitpick}-validated constructive models and working tools like @{command sledgehammer}.
+TODO: Option to define a completely independent Isabelle/Pure based object logic vs. ensured soundness via
+@{command nitpick}-validated constructive models and working tools like @{command sledgehammer}?
 \<close>
 
 (*<*)
