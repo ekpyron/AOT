@@ -42,10 +42,43 @@ lemma AOT_model_proposition_choice_simp: \<open>AOT_model_valid_in w (\<epsilon>
 text\<open>Nitpick can trivially show that there are models for the axioms above.\<close>
 lemma \<open>True\<close> nitpick[satisfy, user_axioms, expect = genuine] ..
 
-typedecl \<omega> \<comment>\<open>The primtive type of ordinary objects/urelements.\<close>
+definition nonEmptySetOfNats :: \<open>nat \<Rightarrow> nat set\<close> where
+  \<open>nonEmptySetOfNats \<equiv> SOME \<phi> . \<forall> a . \<exists> x . x \<in> \<phi> a\<close>
+lemma nonEmptySetOfNats_nonempty: \<open>\<exists>\<phi> . \<forall> a . \<exists> x . x \<in> \<phi> a\<close>
+  by (auto intro!: exI[where x=\<open>{undefined}\<close>])
 
-typedecl \<sigma>'
+lemma nonEmptySetOfNats: \<open>\<exists> x . x \<in> nonEmptySetOfNats t\<close>
+  using someI_ex[OF nonEmptySetOfNats_nonempty] unfolding nonEmptySetOfNats_def by fast
+
+typedef \<omega> = \<open>nonEmptySetOfNats 0\<close>
+  using nonEmptySetOfNats by blast
+typedef \<sigma>' = \<open>nonEmptySetOfNats 1\<close>
+  using nonEmptySetOfNats by blast
+
+instance \<omega> :: countable
+proof
+  show \<open>\<exists>to_nat :: \<omega> \<Rightarrow> nat. inj to_nat\<close>
+    by (auto intro!: exI[where x=Rep_\<omega>] simp add: Rep_\<omega>_inject inj_on_def)
+qed
+instance \<sigma>' :: countable
+proof
+  show \<open>\<exists>to_nat :: \<sigma>' \<Rightarrow> nat. inj to_nat\<close>
+    by (auto intro!: exI[where x=Rep_\<sigma>'] simp add: Rep_\<sigma>'_inject inj_on_def)
+qed
+
 typedef \<sigma> = \<open>UNIV::(nat\<times>\<sigma>') set\<close>..
+
+term \<open>\<lambda>(x, y). prod_encode (to_nat x, to_nat y)\<close>
+
+instance \<sigma> :: countable
+proof (rule countable_classI)
+  fix x y
+  assume \<open>((\<lambda>(x, y). prod_encode (to_nat x, to_nat y)) \<circ> Rep_\<sigma>) x =
+          ((\<lambda>(x, y). prod_encode (to_nat x, to_nat y)) \<circ> Rep_\<sigma>) y\<close>
+  thus \<open>x = y\<close>
+    by (induct x; induct y)
+       (auto simp: Abs_\<sigma>_inverse prod_encode_eq)
+qed
 
 lemma \<sigma>_inf: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
 proof -
@@ -57,7 +90,7 @@ proof -
 qed
 
 
-typedecl null \<comment> \<open>Null-Urelements representing non-denoting terms.\<close>
+type_synonym null = nat \<comment> \<open>Null-Urelements representing non-denoting terms.\<close>
 
 datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> | is_null\<upsilon>: null\<upsilon> null \<comment> \<open>Type of Urelements\<close>
 
@@ -1001,21 +1034,70 @@ proof -
     by (auto intro!: exI[where x=\<open>g o f o \<alpha>disc\<close>] simp: injD)
 qed
 
-datatype disc = Number nat | InfiniteCardinal | Other nat
+definition urrel_act_ext :: \<open>urrel \<Rightarrow> \<upsilon> set\<close> where
+  \<open>urrel_act_ext \<equiv> \<lambda> urrel . { x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}\<close>
+instance \<upsilon> :: countable
+  by countable_datatype
+
+lemma \<open>|urrel_act_ext X| \<le>o |UNIV::nat set|\<close>
+  by (meson ex_inj card_of_ordLeqI inj_on_to_nat iso_tuple_UNIV_I)
+
+quotient_type cards = \<open>\<upsilon> set\<close> / \<open>\<lambda> x y . |x| =o |y|\<close>
+  by (auto intro!: equivpI reflpI transpI sympI intro: ordIso_transitive ordIso_symmetric)
+
+instance cards :: countable
+proof
+  show \<open>\<exists>to_nat :: cards \<Rightarrow> nat . inj to_nat\<close>
+  proof (safe intro!: exI[where x=\<open>\<lambda> cards . if finite (rep_cards cards) then Suc (card (rep_cards cards)) else 0\<close>] injI)
+    fix x y :: cards
+    assume 0: \<open>(if finite (rep_cards x) then Suc (card (rep_cards x)) else 0) =
+           (if finite (rep_cards y) then Suc (card (rep_cards y)) else 0)\<close>
+    {
+      assume \<open>finite (rep_cards x)\<close>
+      moreover have \<open>finite (rep_cards y)\<close>
+        using 0 calculation by presburger
+      moreover have \<open>card (rep_cards x) = card (rep_cards y)\<close>
+        using 0 calculation by presburger
+      ultimately have \<open>|rep_cards x| =o |rep_cards y|\<close>
+        using finite_card_of_iff_card by blast
+    }
+    moreover {
+      assume \<open>\<not>finite (rep_cards x)\<close>
+      moreover have \<open>\<not>finite (rep_cards y)\<close>
+        using 0 calculation by fastforce
+      ultimately have \<open>|UNIV::nat set| \<le>o |rep_cards x|\<close> and \<open>|UNIV::nat set| \<le>o |rep_cards y|\<close>
+        using infinite_iff_card_of_nat by blast+
+      moreover have \<open>|rep_cards x| \<le>o |UNIV::nat set|\<close> and \<open>|rep_cards y| \<le>o |UNIV::nat set|\<close>
+        by (meson card_of_ordLeqI inj_on_to_nat iso_tuple_UNIV_I)+
+      ultimately have \<open>|rep_cards x| =o |UNIV::nat set|\<close> and \<open>|rep_cards y| =o |UNIV::nat set|\<close>
+        by (auto simp add: ordIso_iff_ordLeq)
+      hence \<open>|rep_cards x| =o |rep_cards y|\<close>
+        by (meson ordIso_symmetric ordIso_transitive)
+    }
+    ultimately show \<open>x = y\<close>
+        using Quotient3_cards Quotient3_rel_rep by fastforce
+  qed
+qed
+
+datatype disc = Cardinal cards | Other nat
 
 instance disc :: countable
   by countable_datatype
 
-(*
-definition is_number :: \<open>urrel set \<Rightarrow> bool\<close> where
-  \<open>is_number \<equiv> \<lambda> urrels . \<exists> r :: ((\<upsilon>\<times>\<upsilon>) set) . card_order_on (Field r) r \<and>
-               urrels \<noteq> {} \<and>
-               urrels = { urrel . r =o |{ x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}|}\<close>
-*)
+definition is_cardinal :: \<open>urrel set \<Rightarrow> cards \<Rightarrow> bool\<close> where
+  \<open>is_cardinal \<equiv> \<lambda> urrels card . \<forall> urrel . (urrel \<in> urrels) \<longleftrightarrow> |urrel_act_ext urrel| =o |rep_cards card|\<close>
 
-definition urrel_act_ext :: \<open>urrel \<Rightarrow> \<upsilon> set\<close> where
-  \<open>urrel_act_ext \<equiv> \<lambda> urrel . { x . AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x)}\<close>
 
+definition \<alpha>disc :: \<open>urrel set \<Rightarrow> disc\<close> where
+  \<open>\<alpha>disc \<equiv> \<lambda> urrels . if \<exists> card . is_cardinal urrels card
+          then Cardinal (SOME card. is_cardinal urrels card)
+          else Other (undefined urrels)\<close>
+
+lemma card_\<alpha>disc_eq: assumes \<open>is_cardinal x c\<close>
+          and \<open>\<alpha>disc x = \<alpha>disc y\<close>
+        shows \<open>is_cardinal y c\<close>
+  by (smt (verit, best) \<alpha>disc_def assms(1) assms(2) disc.distinct(2) disc.inject(1) exE_some is_cardinal_def)
+  
 definition is_number :: \<open>urrel set \<Rightarrow> bool\<close> where
   \<open>is_number \<equiv> \<lambda> urrels . \<exists> urrel . urrel \<in> urrels \<and>
         (\<forall> urrel' . urrel' \<in> urrels \<longleftrightarrow> (\<exists>f . bij_betw f (urrel_act_ext urrel') (urrel_act_ext urrel)))\<close>
@@ -1067,13 +1149,15 @@ lemma the_natural_number_eq:
   assumes \<open>\<exists>n . is_natural_number y n\<close>
   shows \<open>((THE n . is_natural_number x n) = (THE n . is_natural_number y n)) = (x = y)\<close>
   by (metis assms(1) assms(2) is_natural_number_def is_natural_number_inject theI)
-
+(*
 definition \<alpha>disc :: \<open>urrel set \<Rightarrow> disc\<close> where
   \<open>\<alpha>disc \<equiv> \<lambda> urrels . if is_number urrels
           then (if \<exists>n . is_natural_number urrels n
                 then Number (THE n . is_natural_number urrels n)
                 else InfiniteCardinal)
           else Other (undefined urrels)\<close>
+*)
+
 
 specification (\<alpha>\<sigma>')
   \<alpha>\<sigma>_disc: \<open>\<alpha>\<sigma>' x = \<alpha>\<sigma>' y \<Longrightarrow> \<alpha>disc x = \<alpha>disc y\<close>
