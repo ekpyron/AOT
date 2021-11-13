@@ -11,7 +11,7 @@ section\<open>Motivation\<close>
 text\<open>
 
 Automated reasoning environments are already a vital part of the modern analysis
-of mathematics and formal systems in general and their importance can only be expected
+of mathematics and their importance can only be expected
 to increase in the future. A prime examples is Hales' proof of the Kepler conjecture that was
 only broadly accepted after reconstructing the argument as a formal proof that could be verified
 by computerized theorem proving environments (TODO: cite). However, building up a sound reasoning environment from scratch is a highly
@@ -215,13 +215,13 @@ principle for relations among abstract objects.
 Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
 encompass the full higher-order type-theoretic version of Abstract Object Theory.
 
-Bullet point thoughts:
+TODO: Bullet point thoughts:
   \<^item> General method for analyzing philosophical arguments and theories: SSEs.
   \<^item> AOT as challenging target, but feasible to implement to the benefit of the theory
     and the method.
   \<^item> Reproduction of the full deductive system of the theory in readable and usable
     form.
-  \<^item> Demonstration of the extend of the target theory and the practical feasibility
+  \<^item> Demonstration of the extent of the target theory and the practical feasibility
     to reason in the target system in Natural Number theory.
   \<^item> Extensions and Progress in the target theory due to our work.
 
@@ -558,6 +558,10 @@ proof state to it.@{footnote \<open>Alternatively, we allow configuring @{comman
 only use the restricted set of theorems.\<close>} With this method we can achieve significantly better proof
 automation than~\cite{MScThesis}.
 
+It is important to note that Abstraction Layers still rely on the implicit assumption
+that meta-logical reasoning about derivations in the target logic is faithfully represented
+by the constructed meta-logical reasoning in HOL. TODO: elaborate.
+
 \<close>
 
 section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
@@ -607,7 +611,7 @@ text\<open>We need to prove that there is a term satisfying the above specificat
   by (rule exI[where x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close>])
      (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
 
-text\<open>However, even though the identity of commuted conunctions not part of the @{command specification},
+text\<open>However, even though the identity of commuted conjunctions is not part of the @{command specification},
      it is @{emph \<open>still\<close>} derivable.\<close>
 lemma \<open>p \<^bold>\<and> q = q \<^bold>\<and> p\<close>
   by (metis Rep_\<o>\<^sub>1_inject \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 valid_\<o>\<^sub>1_def)
@@ -628,7 +632,8 @@ of intentionality. In our example, we can introduce an opaque @{emph \<open>inte
 typedecl \<o>\<^sub>2 \<comment> \<open>Introduce an abstract type for propositions.\<close>
 
 text\<open>Axiomatically introduce a surjective extension function mapping the abstract propositions
-to their boolean extension.\<close>
+to their boolean extension. The surjectivity of the extension function excludes degenerate
+models in which either all proposition would be true or all propositions would be false.\<close>
 axiomatization \<o>\<^sub>2_ext :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> where
   \<o>\<^sub>2_ext_surj: \<open>surj \<o>\<^sub>2_ext\<close>
 
@@ -642,11 +647,8 @@ specification (\<o>\<^sub>2_conj) \<comment> \<open>We specify our conjunction b
   \<o>\<^sub>2_conjE2: \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>2 q\<close>
   \<o>\<^sub>2_conjI: \<open>valid_\<o>\<^sub>2 p \<Longrightarrow> valid_\<o>\<^sub>2 q \<Longrightarrow> valid_\<o>\<^sub>2 (p \<^bold>\<and> q)\<close>
   text\<open>We again need to prove the existence of a term satisfying the given specification.
-       For this it is important that we axiomatized the extension function to be surjective,
-       since otherwise there may not be an appropriate choice.@{footnote \<open>The axiom forces
-       our type of propositions to be modelled with at least as many members as the type
-       of booleans (i.e. two). Without the axiom, models with only one member of type @{typ \<o>\<^sub>2}
-       would be admissible, in which case there would be no witness for our specification.\<close>}\<close>
+       Since our extension function is surjective, we can generally find a suitable witness
+       using the inverse of the extension function. TODO: watch out here.\<close>
   by (rule exI[where x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close>])
      (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
 
