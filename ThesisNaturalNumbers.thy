@@ -58,11 +58,11 @@ Frege showed that the Peano axioms can be derived from @{emph \<open>Hume's Prin
 Logic. Hume's Principle states that the number of @{term F}s is equal to the number of @{term G}s if and
 only if @{term F} and @{term G} are @{emph \<open>equinumerous\<close>}. Two relations are @{emph \<open>equinumerous\<close>},
 if and only if there is a one-to-one correspondence between them or, in other words, if and only if
-there is a bijection between the objects exemplifying @{term F} and @{term G}. (TODO: add some citations).
+there is a bijection between the objects exemplifying @{term F} and the objects exemplifying @{term G}. (TODO: add some citations).
 
 Frege himself derived Hume's Principle from @{emph \<open>Basic Law V\<close>}, which together with second-order
 logic leads to Russel's Paradox. However, deriving Peano arithmetic @{emph \<open>from\<close>} Hume's Principle
-itself does not require @{emph \<open>Basic Law V\<close>}. In Chapter 14 PLM, Nodelman and Zalta propose a
+itself does not require @{emph \<open>Basic Law V\<close>}. In PLM's chapter 14, Nodelman and Zalta propose a
 definition of @{emph \<open>equinumerosity\<close>} and @{emph \<open>the number of @{term F}s\<close>} in object theory
 and derive Hume's Principle. Based on that, Natural Numbers and Peano Arithmetic become consistently
 derivable as expected.
@@ -95,21 +95,21 @@ every object @{term y} that exemplifies @{term G}, there is a unique object @{te
 @{term F}, s.t. @{term x} bears @{term R} to @{term y}. Formally (see~\nameref{AOT:1-1-cor}):@{footnote \<open>Note that as mentioned in section~\ref{InferentialRoleOfDefinitions}, instead of stating
 the original definitions-by-equivalence of AOT that involve additional significance
 clauses, we may instead illustrate the definitions in simpler form using
-derived equivalences formulated using object-level variables. In each case the
-full definition in the appendix is referenced.\<close>}
+derived equivalences formulated using object-level variables throughout this chapter.
+In each case the full definition in the appendix is referenced.\<close>}
 
 @{lemma[display] \<open>print_as_theorem \<guillemotleft>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow> G \<equiv> \<forall>x ([F]x \<rightarrow> \<exists>!y ([G]y & [R]xy)) & \<forall>y ([G]y \<rightarrow> \<exists>!x ([F]x & [R]xy))\<guillemotright>\<close> by (auto dest: "&E" "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fE"] intro!: print_as_theoremI "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2[const_var]"[axiom_inst] "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fI"])}
 
 However, this unrestricted notion of one-to-one correspondence is not well suited for a definition
 of equinumerosity that validates Hume's principle in AOT. The intuitive reason for this is that abstract
 objects cannot be counted. In particular, recall that there are distinct, but
-exemplification-indistinguishable abstract objects (TODO: make sure this is mentioned earlier; see~\nameref{AOT:aclassical2}):
+exemplification-indistinguishable abstract objects (see section~\ref{IndistinguishableAbstractObjects} and~\nameref{AOT:aclassical2}):
 
 @{thm[display] "aclassical2"[print_as_theorem]}
 
 Based on this fact, we can prove that there is no one-to-one correspondence between @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>}
 and itself:@{footnote \<open>We choose this opportunity to once more showcase that reasoning in object theory using
-our embedding in Isabelle is intuitively understandable by directly providing an Isabelle proof.\<close>}
+our embedding in Isabelle is intuitively understandable by directly stating an Isabelle proof.\<close>}
 \<close>
 
 AOT_theorem \<open>\<not>\<exists>R R |: A! \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow> A!\<close>
@@ -120,7 +120,7 @@ proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
   \<comment> \<open>By definition of a one-to-one correspondence it follows that:\<close>
   AOT_hence \<open>\<forall>x ([A!]x \<rightarrow> \<exists>!y ([A!]y & [R]xy))\<close>
     using "1-1-cor"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-  \<comment> \<open>Now let @{term a} and @{term b} be witnesses to the theorem cited earlier in the text.\<close>
+  \<comment> \<open>Now let @{term a} and @{term b} be witnesses to the theorem cited above.\<close>
   moreover AOT_obtain a b where 1: \<open>A!a & A!b & a \<noteq> b & \<forall>F([F]a \<equiv> [F]b)\<close>
     using "aclassical2" "\<exists>E"(*<*)[rotated](*>*) by blast
   \<comment> \<open>Taken together, this means there has to be a unique abstract object to which @{term a} bears @{term R}.\<close>
@@ -160,9 +160,13 @@ text\<open>
 So if @{emph \<open>equinumerosity\<close>} was contingent on the existence of a full one-to-one correspondence,
 @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>} would not be equinumerous to itself and consequently equinumerosity
 would not be an equivalence relation. However, Frege's Theorem does rely on equinumerosity being
-an equivalence relation. (TODO: work out this requirement later on) Fortunately, there is a natural solution to this issue, namely restricting
-the analysis to the domain of @{emph \<open>ordinary objects\<close>}.\footnote{In section~\ref{NewNumberTheory} we will discuss that in the
-future the construction is likely to be generalized to the domain of @{emph \<open>discernible objects\<close>} instead.}
+an equivalence relation. (TODO: work out this requirement later on) Fortunately, there are
+several solutions to this issue. The current version of PLM at the time of writing restricts
+its analysis to @{emph \<open>ordinary objects\<close>} and we will therefore choose this option for
+the main discussion in this chapter.
+
+In section~\ref{NewNumberTheory} we will discuss alternative options to address the issue
+that may lead to an improvement of the construction in the future.
 \<close>
 
 subsection\<open>One-to-One Correspondences on the Ordinary Objects\<close>
@@ -170,9 +174,8 @@ subsection\<open>One-to-One Correspondences on the Ordinary Objects\<close>
 text\<open>
 As mentioned in the introduction of this chapter, natural mathematics arises from abstracting
 exemplification patterns. In case of natural numbers, those patterns in particular
-need to be among objects that can be counted. While abstract objects in general cannot,\footnote{Even though
-the subclass of discernible abstract objects can be counted and the construction might be extended to encompass
-them as well in the future, see~\ref{NewNumberTheory}.} ordinary objects can always naturally be counted.
+need to be among objects that can be counted. While abstract objects in general cannot,
+ordinary objects can always naturally be counted.
 Hence Nodelman and Zalta introduce the notion of one-to-one correspondences @{emph \<open>among the ordinary
 objects\<close>}. To that end, they introduce the restricted variables @{term u}, @{term v}, @{term r}, @{term s}
 that range over only the ordinary objects.@{footnote \<open>Recall the discussion about reproducing
@@ -289,7 +292,7 @@ equinumerosity is modally collapsed (see~\nameref{AOT:approx-nec:3}):
 @{thm[display] "approx-nec:3"[of _ F G, print_as_theorem]}
 \end{quote}
 
-The proofs of the last two theorems hinges on the existence of @{emph \<open>rigidifying\<close>} relations. Recall the
+The proofs of the last two theorems hinge on the existence of @{emph \<open>rigidifying\<close>} relations. Recall the
 earlier discussion of this topic in section~\ref{WorldRelativeRelations} - notably, in earlier versions of PLM,
 the existence of rigidifying relations had to be ensured by axiom. In the current formulation of AOT,
 the necessary and sufficient conditions for relations to denote that we contributed
@@ -379,7 +382,7 @@ due to the hyperintensionality of object theory, it does not have to be the case
 @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are the same property (as a matter of fact it is
 not even asserted @{emph \<open>a priori\<close>} that the latter even denotes a property at all). So
 @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are not the same object
-@{emph \<open>a priori\<close>}, even though it a theorem that they are identical. But this theorem
+@{emph \<open>a priori\<close>}, even though it is a theorem that they are identical. But this theorem
 has to appeal to the fact that both properties are equinumerous and to Hume's Theorem.
 Further examples of terms denoting the number zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
 @{term \<open>\<guillemotleft>#[\<lambda>x \<exists>p (p & \<not>p)]\<guillemotright>\<close>}.\<close>}
@@ -729,8 +732,8 @@ this traditional notion of a series is not an option.
 Instead we construct @{emph \<open>ancestral relations\<close>}. In particular the @{emph \<open>strong ancestral\<close>} of
 a relation will match the concept of the transitive closure of the relation.
 Natural numbers will be defined as the objects to which the number zero bears the
-@{emph \<open>weak ancestral\<close>} (i.e. the transitive @{emph \<open>and reflexive\<close>}
-closure) of the predecessor relation, i.e. the number zero itself or any
+@{emph \<open>weak ancestral\<close>} (i.e. the transitive and reflexive@{footnote \<open>We will see that reflexivity
+will have to be restricted to a specific domain.\<close>} closure) of the predecessor relation, i.e. the number zero itself or any
 object that is transitively preceded by zero.
 
 The first step in this process is to define being a @{emph \<open>hereditary\<close>} property with respect to
@@ -765,8 +768,8 @@ text\<open>
 Using the above definition, we can introduce the @{emph \<open>Strong Ancestral\<close>} of a relation @{term R},
 which is written as @{term \<open>\<guillemotleft>[R]\<^sup>*\<guillemotright>\<close>} (see~\nameref{AOT:ances-df}):\footnote{Note that while
 PLM uses @{text \<open>R\<^sup>*\<close>} for the strong ancestral, i.e. the transitive closure, of @{term R} and later @{text \<open>R\<^sup>+\<close>}
-for the weak ancestral, i.e. the transitive and reflexive closure, of @{term R}, the Isabelle's HOL library
-uses the opposite convention, i.e. uses @{text \<open>r\<^sup>+\<close>} as transitive and @{text \<open>r\<^sup>*\<close>} as reflexive-transitive closure.}
+for the weak ancestral, i.e. the transitive and reflexive closure, of @{term R}, Isabelle's HOL library
+uses the opposite convention, i.e. it uses @{text \<open>r\<^sup>+\<close>} as transitive and @{text \<open>r\<^sup>*\<close>} as reflexive-transitive closure.}
 
 @{thm[display] "ances-df"}
 
@@ -920,18 +923,20 @@ object @{term y}, s.t. @{term x} bears @{term R} to @{term y} (see~\nameref{AOT:
 
 While the predecessor relation will in fact be a functional relation, a relation that
 relates a single object to all other objects, but no other object to any object, is an example of a
-one-to-one relation that's succinctly non-functional.
+one-to-one relation that's succinctly non-functional. However, in order to introduce a restricted
+notion of identity, functionality is not a requirement.
 
-However, in order to introduce a restricted notion of identity, functionality is not a requirement.
-But the restricted identity we are about to define only makes sense for one-to-one relation, so we want to
-introduce restricted variables for them and only define the restricted identity relative
-to this restriction. Reasoning with non-rigid restricted variables, however, is cumbersome in modal settings (see section~\ref{RestrictedVariables}),
-so we define @{emph \<open>rigid one-to-one relations\<close>} as relations that are both one-to-one and rigid (see~\nameref{AOT:df-rigid-rel:1},~\nameref{AOT:df-1-1:2}):\footnote{Recall the discussion about rigid relations in section~\ref{WorldRelativeRelations}}
+On the other hand, in order to simplify modal reasoning and to be able to introduce well-behaved
+restricted variables, it is helpful to only consider @{emph \<open>rigid\<close>} one-to-one relations.
+A rigid one-to-one relation is a relation that is one-to-one and rigid (see~\nameref{AOT:df-rigid-rel:1},~\nameref{AOT:df-1-1:2}):\footnote{Recall the discussion about rigid relations in section~\ref{WorldRelativeRelations}.}
 
 @{thm[display] "df-1-1:2"[THEN "\<equiv>Df", of _ R, print_as_theorem]}
 
+Since being a rigid one-to-one relation is a rigid restriction condition, we can introduce 
+restricted variables that range over them.@{footnote \<open>Recall the discussion of restricted variables in section~\ref{RestrictedVariables}.\<close>}
+
 In the following we will use @{term \<R>} as a restricted variable ranging over rigid one-to-one relations.@{footnote \<open>Note
-that AOT uses $\underline{R}$, however, in our framework choosing @{term \<R>} is simpler for technical reasons.\<close>}
+that AOT uses $\underline{R}$. However, in our framework choosing @{term \<R>} is simpler for technical reasons.\<close>}
 \<close>
 
 subsection\<open>Identity Restricted to the Domain of Rigid One-to-one Relations\<close>
@@ -961,7 +966,7 @@ restriction of general identity to the domain of @{term \<R>}:
 @{thm[display] r_id_restr[of _ \<R> x y, print_as_theorem]}
 
 Consequently, the defined identity is a partial equivalence relation that is
-reflexive on the domain of the relation (see~\nameref{AOT:id-R-thm:5}):
+reflexive on the domain of @{term \<R>} (see~\nameref{AOT:id-R-thm:5}):
 
 @{thm "id-R-thm:5"[of _ x \<R>, print_as_theorem]
       "id-R-thm:6"[of _ \<R> x y, print_as_theorem]
@@ -996,7 +1001,8 @@ relation @{term \<open>\<guillemotleft>[\<R>]\<^sup>*\<guillemotright>\<close>})
 
 @{thm[display] ances_in_domain[of _ x \<R> y, print_as_theorem]}
 
-In other words, the weak ancestral of a relation is its transitive and reflexive closure on its domain.
+In other words, the weak ancestral of a relation is its transitive and reflexive closure, while
+only considering reflexivity on the domain of the relation.
 \<close>
 
 section\<open>Generalized Induction\<close>text\<open>\label{GeneralizedInduction}\<close>
@@ -1054,15 +1060,7 @@ arrive at the strengthened theorem.\<close>}
 @{thm[display] "pre-ind"[of _ F z \<R>, print_as_theorem]}
 
 We will show below that instantiating this generalized principle of induction to the predecessor relation
-we are about to define, yields classical mathematical induction (relative to a defined notion of natural numbers).
-
-Note, however, that while the predecessor relation will define a total order on the natural numbers, the
-generalized principle of induction can be applied more broadly: We say that an object is @{emph \<open>part of
-the @{term \<R>}-series starting at @{term z}\<close>}, just in case it either is identical to @{term z} or transitively @{term \<R>}-related to @{term z}.
-Then generalized induction shows that all objects on the @{term \<R>}-series
-starting at @{term z} exemplify @{term F}, just in case @{term z} exemplifies @{term F} and
-@{term F} is inherited from any object on an @{term \<R>}-series starting at @{term z} to any other such object
-to which it is @{term \<R>}-related. TODO: try to make the generality clearer; applicability beyond total orders. Or remove the paragraph entirely.
+we are about to define, yields classical mathematical induction (relative the upcoming definition of natural numbers).
 \<close>
 
 section\<open>The Predecessor Relation\<close>
@@ -1115,14 +1113,14 @@ It is important to realize that the @{text \<open>\<lambda>\<close>}-expression 
 trivially denote a relation in AOT.
 @{emph \<open>Numbering a property\<close>} is an encoding claim: an object numbers a property @{term G}, just in case
 it encodes all properties, s.t. actually exemplifying it is equinumerous to @{term G}.
-In general, encoding claims cannot be abstracted to denoting properties and relations.\footnote{This was
-thoroughly discussed in chapter~\ref{AOT}.}
+In general, encoding claims cannot be abstracted to denoting properties and relations.\footnote{Recall the
+discussion in section~\ref{AvoidingParadoxes}.}
 
 In fact it is easy to see that the minimal model of AOT does not validate this axiom: the minimal
 model contains one ordinary urelement (resp. one ordinary object) and one special urelement.
 Since special urelements determine the exemplification extensions of abstract objects, there being
 only one special urelement implies that all abstract objects exemplify the same properties and relations.
-This implies in particular that either all objects are preceded by zero or no object is, in particular:
+This implies in particular that either all objects are preceded by zero or no object is, i.e.
 @{term \<open>\<guillemotleft>[\<P>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that zero is
 not preceded by any object.@{footnote \<open>Both @{thm "no-pred-0:1"[print_as_theorem]} and @{thm "prec-facts:1"[print_as_theorem]} are formally 
 derived in~\nameref{AOT:no-pred-0:1}, resp.~\nameref{AOT:prec-facts:1}.\<close>} Hence in this model it would have to hold that @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}.
@@ -1147,8 +1145,10 @@ base system of AOT do not validate it.
 Using our embedding we can, however, contribute to this situation in two ways:
   \<^item> We can show that the axiom is consistent by constructing models that validate it.
   \<^item> We can generalize the axiom to a comprehension principle for relations among abstract objects, s.t.
-    it becomes a theorem that the predecessor relation in particular denotes. We are confident that
-    we can thereby alleviate any remaining doubt on the non-mathematical character of the axiom.
+    it becomes a theorem that the predecessor relation in particular denotes.@{footnote \<open>Note, however,
+    that in other variants of the construction that we will discuss in section~\ref{NewNumberTheory}, even though
+    we can still construct models for the predecessor axiom, a similar generalization to a general
+    comprehension principle may not be possible.\<close>}
 
 We defer our more detailed discussion of this axiom to section~\ref{pred} and in the following continue to
 reproduce the construction of Natural Numbers and Mathematical Induction as given by Nodelman and Zalta
@@ -1224,13 +1224,13 @@ Since it is a theorem (see~\nameref{AOT:o-objects-exist:1}) that there is an ord
 we can choose @{term a} to be a witness to this existential claim and choose @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x =\<^sub>E a]\<guillemotright>\<close>} as a witness
 to @{term \<open>\<guillemotleft>\<exists>y [\<P>]0 y\<guillemotright>\<close>}..\<close>}
 
-This constitutes one of the corrections to the construction that can be traced back directly to
-the embedding. Preliminary working versions of the chapter of PLM left this non-trivial proof
+Preliminary working versions of the chapter of PLM left this non-trivial proof
 as an exercise referring to it being a trivial consequence of the self-identity of the number Zero.
 Trying to prove the statement in the embedding showed that additional work is required due to the
 changes in the construction compared to previous versions and we could suggest the proof given in~\nameref{AOT:0-n} 
-and outlined in the footnote.@{footnote \<open>Note, however, that the chapter was under heavy revision at the time
-and this omission would likely have been independently uncovered eventually.\<close>}
+and outlined in the footnote.@{footnote \<open>Note that the chapter was under heavy revision at the time
+and this omission would likely have been independently uncovered eventually. However, it is one of
+the merits of working in a computer-verified setting that such omissions become immediately apparent.\<close>}
 \<close>
 
 section\<open>Being a Natural Number is Rigid\<close>
@@ -1242,11 +1242,12 @@ and @{term \<R>} to @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}
 and consequently that @{thm "mod-col-num:2"[print_as_theorem]} (see~\nameref{AOT:mod-col-num:1},~\nameref{AOT:mod-col-num:2}).
 
 Since furthermore Zero is a witness to the existence of natural numbers and it is easy to prove
-that @{term \<open>\<guillemotleft>[\<nat>]\<kappa> \<rightarrow> \<kappa>\<down>\<guillemotright>\<close>}, @{emph \<open>being a natural number\<close>} is a @{emph \<open>rigid restriction condition\<close>} and
+that @{term \<open>\<guillemotleft>[\<nat>]\<kappa> \<rightarrow> \<kappa>\<down>\<guillemotright>\<close>},@{footnote \<open>It is a simple consequence of one of the quantifier axioms mentioned
+in section~\ref{AxiomSystem}.\<close>} @{emph \<open>being a natural number\<close>} is a @{emph \<open>rigid restriction condition\<close>} and
 it is possible to introduce well-behaved restricted variables ranging over the natural numbers (recall section~\ref{RestrictedVariables}).
 
 In the following the variable names @{term m}, @{term n}, @{term k}, @{term i} and @{term j}
-range over natural numbers.
+are used to range over natural numbers.
 
 \<close>
 
