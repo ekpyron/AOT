@@ -4054,8 +4054,8 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
       AOT_assume numxF: \<open>Numbers(x,F)\<close> 
       AOT_hence 0: \<open>NaturalCardinal(x)\<close>
         by (metis "eq-num:6" "vdash-properties:10")
-      text\<open>We prove by case distinction to show that x equals y.
-           We first handle the non-zero case.\<close>
+      text\<open>We show by case distinction that x equals y.
+           As first case we consider x to be non-zero.\<close>
       {
         AOT_assume \<open>\<not>(x = 0)\<close>
         AOT_hence \<open>x \<noteq> 0\<close>
@@ -4093,7 +4093,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           using "pre-Hume"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), OF "&I"]
                 v_prop u_prop "&E" by blast
       }
-      text\<open>The second case handles zero.\<close>
+      text\<open>The second case handles x being equal to zero.\<close>
       moreover {
         fix u
         AOT_assume x_is_zero: \<open>x = 0\<close>
@@ -4277,6 +4277,9 @@ next
     }
   qed
 qed
+
+text\<open>The two theorems above allow us to derive
+     the predecessor axiom of PLM as theorem.\<close>
 
 AOT_theorem pred: \<open>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<down>\<close>
   using pred_coex numbers_prop_den["\<forall>I" G] "\<equiv>E" by blast
