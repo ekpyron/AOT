@@ -1392,14 +1392,14 @@ As mentioned above, the construction so far is valid in models with only a singl
 object and consequently with only two natural numbers, which is not sufficient to
 derive that every natural number has a successor.
 
-The following axiom, by which Nodelman and Zalta proceed to extend the system, changes this (see~\nameref{AOT:modal-axiom}):
+The following modal axiom, by which Nodelman and Zalta proceed to extend the system, changes this (see~\nameref{AOT:modal-axiom}):
 
 @{thm[display] "modal-axiom"[axiom_inst, of _ G, print_as_theorem]}
 
 If there is a natural number which numbers @{term G}, then there might have been a concrete object
 @{term y} which is distinct from every ordinary object that @{emph \<open>actually\<close>} exemplifies @{term G}.
 We will explain in detail how we extend our models to be able to validate this axiom in section~\ref{modell-modal-axiom}.
-In summary the axiom requires extending the domain of ordinary urelements/objects to an at least
+In summary, the axiom requires extending the domain of ordinary urelements/objects to an at least
 countably infinite set (while there may still only be a single @{emph \<open>concrete\<close>} object).
 
 This axiom requires some justification, especially given the claim that the construction is
@@ -1422,29 +1422,40 @@ long as that does not imply that there is @{emph \<open>actually\<close>} more t
 
 Independently of the question whether this axiom may or may not be considered as @{emph \<open>purely logical\<close>},
 towards which we refrain from presuming to pass judgement either way, we certainly agree that it captures a pretheoretic
-intuition: it is a prerequisite of talking about natural numbers to be able to imagine that
+intuition: it can be considered as a prerequisite of talking about natural numbers to be able to imagine that
 no matter how many objects we currently consider that there @{emph \<open>possibly might have been\<close>} yet another object,
 even though for doing so we do not need to be able to point to this object in the actual world (i.e. it may not be concrete, but
-merely @{emph \<open>possibly concrete\<close>}). (TODO: rephrase and improve this entire discussion)
+merely @{emph \<open>possibly concrete\<close>}).
 
-Interestingly, at the time of writing a refinement of the construction is being discussed
-that, if successful, would make this axiom obsolete (see section~\ref{NewNumberTheory}).
+While this may serve as justification for the axiom, Frege's original construction does
+not rely on a similar assumption, but can use the number of the property @{emph \<open>being smaller
+or equal to @{term n}\<close>}, @{text \<open>#[\<lambda>x x \<le> n]\<close>}, as witness for a successor of every
+natural number @{term n}. In the presented construction that relies on equinumerosity amount
+the ordinary objects, this is not an option, since natural numbers are abstract.
+However, we will discuss two variants of the construction in section~\ref{NewNumberTheory}
+in which a certain class of, resp. all abstract objects @{emph \<open>can\<close>} be counted and
+which therefore does not require above axiom.
 \<close>
 
 section\<open>Every Number has a Unique Successor\<close>
 
 text\<open>
-The above axiom is now sufficient to derive the last Dedekind-Peano postulate, i.e. that every
+The above axiom is sufficient to derive the last Dedekind-Peano postulate, i.e. that every
 natural number has a unique successor (see~\nameref{AOT:th-succ}):
 
 @{thm[display] "th-succ"[print_as_theorem]}
 
+The modal axiom above implies that for every property @{term G} that is numbered by a natural
+number @{term n},@{footnote \<open>@{term \<open>\<guillemotleft>Numbers(n,G)\<guillemotright>\<close>} implies that @{term G} is actually exemplified by only finitely many
+objects.\<close>} there is an object @{term v}, s.t. @{term G} does not actually exemplify @{term v}.
+Hence, the object that numbers @{term \<open>\<guillemotleft>[\<lambda>x \<^bold>\<A>[G]x \<or> x =\<^sub>E v]\<guillemotright>\<close>} can be used as witness
+for a successor of @{term n}.
+
 While PLM continues to derive further theorems of Number Theory, defines mathematical
 functions and operations, including recursively defined functions such as addition and proceeds to
-derive Second-Order Dedekind-Peano arithmetic,@{footnote \<open>In the future, we hope to be able to
-provide a full implementation of this chapter of PLM relative to our embedding.\<close>} we will conclude
-our discussion of the topic here and instead discuss in more detail how we modelled the two required
-axioms introduced in the last sections in our models and our implementation.
+derive Second-Order Dedekind-Peano arithmetic, we will conclude our discussion of the topic here@{footnote \<open>In the future, we plan to
+construct a full implementation of this chapter of PLM.\<close>} and instead discuss in
+more detail how we modelled the two required axioms introduced.
 \<close>
 
 
@@ -1458,22 +1469,24 @@ Recall that the predecessor axiom of PLM is stated as follows (see~\nameref{AOT:
 \end{quote}
 
 In section~\ref{pred-denotes} we have already established that the relation in question
-distinguishes between certain abstract objects that number properties and that this relation
+distinguishes certain abstract objects that number properties and that this relation
 does @{emph \<open>not\<close>} denote in the minimal models of the base system of AOT. We also have already
 discussed that there cannot be a relation in AOT that generally distinguishes between arbitrary abstract
-objects (in particular @{term \<open>\<guillemotleft>[\<lambda>xy x = y]\<guillemotright>\<close>} does not denote; TODO: cite). So we want to determine
-what is special about the abstract objects that @{emph \<open>are\<close>} distinguished by the predecessor relation
-that allows to construct consistent models for it.
+objects (in particular @{term \<open>\<guillemotleft>[\<lambda>xy x = y]\<guillemotright>\<close>} does not denote). So we need to determine
+what is special about the abstract objects that are distinguished by the predecessor relation
+and allows us to construct models for it.
 
-To that end, we first note that if @{emph \<open>numbering a property\<close>} denotes a property, the
-predecessor relation denotes by coexistence, since then, using @{text \<open>\<beta>\<close>}-conversion, the matrix
-of the predecessor relation is necessarily universally equivalent to
-@{term \<open>\<guillemotleft>[\<lambda>xy \<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x)]\<guillemotright>\<close>}, which denotes axiomatically.
-(see~\nameref{AOT:pred})
+To that end, we first show that the predecessor relation coexists with @{emph \<open>numbering a property\<close>}.
+In particular we can prove the following (see~\nameref{AOT:AOT_NaturalNumbers.pred_coex}):
 
-We can indeed construct models in which @{thm numbers_prop_den[of _ F, print_as_theorem]} is
-a theorem (see~\nameref{AOT:AOT_NaturalNumbers.numbers_prop_den}).
-Recall that @{emph \<open>numbering a property\<close>} is equivalent to the following condition (see~\nameref{AOT:numbers[den]}):
+\begin{quote}
+@{thm[display] pred_coex[print_as_theorem]}
+\end{quote}
+
+So to validate the predecessor axiom, we can equivalently
+construct modules in which @{thm numbers_prop_den[of _ F, print_as_theorem]} is
+a theorem.
+Recall that @{emph \<open>numbering a property\<close>} is equivalent to the following (see~\nameref{AOT:numbers[den]}):
 
 \begin{quote}
 @{thm[display] "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst], of _ x G, print_as_theorem]}
@@ -1586,7 +1599,7 @@ I.e. for every condition @{term \<open>\<phi>\<close>} on extensions on ordinary
 It is easy to show that @{emph \<open>being an @{term F}, s.t. actually exemplifying @{term F} is equinumerous
 to @{term G}\<close>}, is a condition on extensions on ordinary objects. Hence it is a consequence of
 this last comprehension principle that @{term \<open>\<guillemotleft>[\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]\<down>\<guillemotright>\<close>} and
-thereby @{emph \<open>numbering a property\<close>} and, consequently, the predecessor relation denote by coexistence.
+thereby @{emph \<open>numbering a property\<close>} denotes by coexistence (see~\ref{AOT:AOT_NaturalNumbers.numbers_prop_den}).
 
 \<close>
 

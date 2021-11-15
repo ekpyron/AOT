@@ -42,6 +42,7 @@ referencedEntities = {
 	"AOT_PLM.AOT_Term_id",
 	"AOT_PLM.unvarify",
 	"AOT_RestrictedVariables.unconstrain",
+	"AOT_NaturalNumbers.pred_coex",
 	"AOT_NaturalNumbers.numbers_prop_den",
 	"AOT_Axioms.AOT_ExtendedModel.indistinguishable_ord_enc_all",
 	"AOT_Axioms.AOT_ExtendedModel.indistinguishable_ord_enc_ex",
