@@ -1519,14 +1519,14 @@ objects. Since the domains of special urelements and ordinary urelements are ind
 consistently possible to require there being an injective function mapping any kind of function
 (or sets of functions) acting on ordinary urelements alone to special urelements.
 
-In our general models we may choose an @{emph \<open>abstract\<close>} type @{typ \<sigma>} as type of special urelements.@{footnote \<open>I.e.
+In our general models we choose an @{emph \<open>abstract\<close>} type @{typ \<sigma>} as type of special urelements.@{footnote \<open>I.e.
 we allow any non-empty domain for @{typ \<sigma>} in models of the meta-logic without restriction.\<close>}
 In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} the
 type @{typ \<sigma>} using the sets of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
 as representation set.
 Recall that the type @{typ \<omega>} is the type of ordinary urelements and @{typ w} is the type of
 semantic possible worlds. @{typ \<sigma>'} is an additional abstract type of @{emph \<open>very special urelements\<close>}
-that retains the model's ability to distinguish between abstract objects beyond those that
+that will retain the model's ability to distinguish between abstract objects beyond those that
 differ in exemplification patterns on the ordinary objects.
 So in these models, special urelements are tuples of two copies of sets of property extensions on
 ordinary objects and a very special urelements. We refer to the first copy of extensions as the
@@ -1542,7 +1542,7 @@ a property with that extension (on the ordinary objects) that is encoded by @{te
 We use this construction as witness for a specification of the mapping @{term \<open>\<alpha>\<sigma>'\<close>}, which will then be
 extended to a surjective mapping @{term \<alpha>\<sigma>} as explained in section~\ref{ExtendedAczelModelStructure}.
 
-The specification @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
+This construction @{emph \<open>forces\<close>} two abstract objects to be assigned different special urelements,
 in case either (1) one of them encodes a property with a given extension on the ordinary object, while the other doesn't
 encode any such property, or (2) one of them encodes all properties with a given extension on the ordinary object,
 while the other fails to encode at least one such property.
@@ -1599,14 +1599,14 @@ I.e. for every condition @{term \<open>\<phi>\<close>} on extensions on ordinary
 It is easy to show that @{emph \<open>being an @{term F}, s.t. actually exemplifying @{term F} is equinumerous
 to @{term G}\<close>}, is a condition on extensions on ordinary objects. Hence it is a consequence of
 this last comprehension principle that @{term \<open>\<guillemotleft>[\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]\<down>\<guillemotright>\<close>} and
-thereby @{emph \<open>numbering a property\<close>} denotes by coexistence (see~\ref{AOT:AOT_NaturalNumbers.numbers_prop_den}).
+thereby @{emph \<open>numbering a property\<close>} denotes by coexistence (see~\nameref{AOT:AOT_NaturalNumbers.numbers_prop_den}).
 
 \<close>
 
 subsubsection\<open>Justification of the Comprehension Principles\<close>text\<open>\label{JustificationExtendedComprehension}\<close>
 
 text\<open>
-While the predecessor axiom (that asserts that the predecessor relation denotes) singles out a particular relation
+While the predecessor axiom singles out a particular relation
 among abstract objects for the sole purpose of defining a mathematical relation, the comprehension principles we
 suggest provide a general means to construct relations among abstract objects based on specific encoding
 patterns in a manner that is provably consistent, but also independently justifiable.
@@ -1633,10 +1633,8 @@ this becomes infeasible.
 This helps in consolidating the fact that there are indistinguishable abstract object with pre-theoretic
 intuition: given two independent abstract objects, we can always find ourselves thinking about one, but
 not the other. However, we can conceive of concepts that themselves involve @{emph \<open>being indistinguishable from other
-abstract objects\<close>}, for which a clever construction in fact yields distinct concepts that are indistinguishable.@{footnote \<open>In particular considering the concept of being
-indistinguishable from other abstract objects that do not encode being indistinguishable from themselves
-is the basic idea of the proof that there are indistinguishable abstract objects. We provide a variant of the
-proof that makes this idea more explicit in section~\ref{IndistinguishableAbstractObjects}.\<close>}
+abstract objects\<close>}, for which a clever construction in fact yields distinct concepts that are indistinguishable.@{footnote \<open>Recall
+the discussion in section~\ref{IndistinguishableAbstractObjects}.\<close>}
 
 So while we can always consistently distinguish between @{emph \<open>particular, independent\<close>} abstract objects,
 given that there still @{emph \<open>are\<close>} indistinguishable abstract objects, we cannot formulate
@@ -1674,7 +1672,7 @@ AOT_register_variable_names
 
 text\<open>
 
-While the comprehension principles suggested above are justifiable and allow for deriving
+While the comprehension principles suggested above have some justification and allow for deriving
 that useful encoding conditions such as @{emph \<open>numbering a property\<close>} can be abstracted to properties,
 they are not the only conceivable way of generically extending AOT with relations among abstract objects.
 
@@ -1688,15 +1686,11 @@ following properties denote:
 
 The notion of an @{emph \<open>extension on the ordinary objects\<close>} we used above would have to be defined as:
 
-\begin{quote}
 @{thm[display] OrdinaryExtensionOf[of x G]}
-\end{quote}
 
 In which case @{term \<open>\<guillemotleft>[\<lambda>x OrdinaryExtensionOf(x, [G])]\<down>\<guillemotright>\<close>} is in fact derivable from the suggested
-principles. 
-
-While there are merits to this conception of extensions on ordinary objects (TODO: elaborate?), it has some 
-potentially counter-intuitive implications:
+principles. However, using this conception of extensions on ordinary objects as the basis for
+our comprehension principles, has some potentially counter-intuitive implications:
 
 If one abstract objects encodes all properties that are necessarily equivalent to @{emph \<open>being
 an ordinary table\<close>}, but another one fails to encode any such property, our comprehension principles
@@ -1708,7 +1702,9 @@ being abstract\<close>}.
 
 We conjecture that it is possible to further extend the models to force abstract objects to be
 distinguishable, if they differ in encoding patterns among objects that are only true on the ordinary
-objects, i.e. that it is possible to model for example the following:
+objects, i.e. that it is possible to model for example the following:@{footnote \<open>However,
+this may require collapsing the necessarily false propositions that result from any abstract
+object exemplifying such a property @{term F}.\<close>}
 
   \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<forall>G (\<forall>x \<box>([G]x \<equiv> [F]x) \<rightarrow> x[G])]\<down>\<guillemotright>\<close>}
   \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<not>\<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & x[G])]\<down>\<guillemotright>\<close>}
@@ -1721,7 +1717,16 @@ general comprehension principles can be formulated for distinguishing objects
 that encode different patterns among @{emph \<open>discernible\<close>} objects. However, since
 there are abstract objects among the @{emph \<open>discernible\<close>} objects, there is an
 increased danger of general comprehension principles for encoding patterns among
-discernible objects to become self-referential and thereby inconsistent.
+discernible objects to become self-referential and thereby inconsistent. So while we
+expect to be able to formulate meta-theorems about the conditions under which it
+will be safe to assert the existence of relations among abstract objects that encode
+patterns among discernible objects, we do not expect that we will be able to arrive at
+similar general comprehension principles as for patterns among ordinary objects
+in the system itself. In that sense, the price of being
+able to eliminate the modal axiom described in section~\ref{ModalAxiom} using the
+new construction of section~\ref{NewNumberTheory} will be the fact that the
+predecessor axiom will become stronger and will have to rely on independent means
+of justification.
 \<close>
 
 (*<*)
@@ -1840,40 +1845,35 @@ changes relative to being discernible, the identity of discernibles and being
 equinumerous@{text \<open>\<^sub>D\<close>} (defined just as equinumerous@{text \<open>\<^sub>E\<close>} in section~\ref{DefinitionOfEquinumerosity}, just relative
 to discernible objects instead).
 
-Now the idea is that @{emph \<open>being a number\<close>} becomes a property and natural numbers
-themselves become discernible. This would allow for abandoning the modal axiom for
+The fact that @{emph \<open>numbering a property\<close>} coexists with the predecessor relation described
+in section~\ref{pred} is invariant under this change. As a consequence natural numbers will
+themselves become discernible. This allows for abandoning the modal axiom for
 possible richness of ordinary objects and instead to more closely follow Frege's
 construction, in which the successor of a number @{text n} is defined as the number
 of the property @{emph \<open>being smaller-or-equal to @{text n}\<close>}, i.e. @{text \<open>n\<^bold>' = #[\<lambda>m m \<le> n]\<close>}.
 
 At the time of writing, we have prototypes for models of this new derivation available,
-but not all details of the new construction have been worked out yet (both on the
-proof-theoretic and the model-theoretic side).
+however they require restricting the domain of discernible objects to be countably
+infinite.
 
-However, we conjecture that not only a version of this new construction can be shown
-to be sound, but also that it will allow refining generalized relation comprehension.
-In particular, in the future we expect it to be possible to distinguish abstract objects
-arbitrarily by adding special urelements, as long as the cardinality of the set of special
+While we do not expect to be able to formulate a generalized comprehension principle
+for relations among abstract objects based on patterns on discernible objects as we
+demonstrated relative to ordinary objects above, we expect to arrive at meta theorems
+that will formulate conditions under which it is consistent to assert that classes
+of abstract objects are distinguishable: in particular, we expect to be able
+to arbitrarily by adding special urelements, as long as the cardinality of the set of special
 urelements remains bounded, e.g. if there is only countably many such distinguishable classes of abstract objects
 (while countably many distinctions between abstract objects already implies that there are uncountably
 many abstract objects).
 
-While we do not expect it to be a strong requirement of such models (i.e. we do not
-expect that assuming larger cardinalities will lead to paradox), it may be reasonable to
-assume that while there are uncountably many abstract objects, it is only ever possible to
-distinguish at most countably many of them, resp. the set of abstract object can only
-ever be partitioned in countably many disjoint distinguishable subsets. Or in other words:
-letting special urelements form a countable disjoint covering of the uncountable set
-of abstract objects may lead to a class of models that is sufficiently large to cover
-most use cases of AOT.
-
-However, at the time of writing it is unclear whether it would be possible to formulate
-this new principle in form of a general comprehension principle in AOT itself similar to
-the extended relation comprehension we described in section~\ref{pred}, or whether it will
-merely result in a meta-theoretical principle by which concrete axiomatic extensions of the
-system that assert the existence of relations among abstract objects@{footnote \<open>Including the
-predecessor axiom.\<close>} can be easily judged with respect to their soundness.
+Another similar variant of the construction, for which we have already constructed
+complete models (TODO cite), does not restrict the domain of objects that can be counted at all, but rather
+instead of counting distinct objects rather counts equivalence classes of objects that
+are indistinguishable. This involves weakening the unique existence used
+in one-to-one correspondences to uniqueness up to distinguishability:
+ 
 \<close>
+
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
