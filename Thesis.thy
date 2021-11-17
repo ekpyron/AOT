@@ -1086,7 +1086,8 @@ from AOT's conventions we use in our embedding.
 
 The language distinguishes between constants, variables and terms at each type. The types of
 the second-order fragment consist of a type of individuals and of a type
-of @{text n}-place relations (for each @{text \<open>n \<ge> 0\<close>}), i.e. relations among @{text n} individuals.
+of @{text n}-place relations (for each @{text \<open>n \<ge> 0\<close>}), i.e. relations among @{text n} individuals.@{footnote \<open>We
+briefly discuss the full higher-order type theory in section~\ref{HigherOrderAOT}.\<close>}
 Formulas are considered as @{text 0}-place relation terms. PLM uses the following conventions for
 referring to the primitive language elements of each type:
 
@@ -1112,7 +1113,7 @@ meta-variables with Greek letters (with additional numbered subscripts as needed
   \<^item> Meta-variables ranging over terms of any type: @{text \<open>\<tau>, \<sigma>, \<dots>\<close>}
 
 
-AOT's system of constants, variables and meta-variables does not have to be reproduced
+PLM's system of constants, variables and meta-variables does not have to be reproduced
 in all detail for our embedding for the following reasons:
 
 
@@ -1200,7 +1201,7 @@ Identity of @{text \<open>n\<close>}-place relations (@{text \<open>n \<ge> 2\<c
 are identical. In the embedding it is tricky to reproduce the ellipse notation used for this definition
 directly, therefore the statement here is @{emph \<open>not\<close>} cited from the embedding. The implementation
 of this definition in the embedding can be found in~\nameref{AOT:identity:3} and is discussed
-in more detail in section TODO: cite.\<close>}
+in more detail in section~\ref{nary}.\<close>}
 
 \begin{quote}
   \Squ{@{text \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<dots>\<forall>y\<^bsub>n-1\<^esub> ([\<lambda>x [\<Pi>]xy\<^sub>1\<dots>y\<^bsub>n-1\<^esub>] = [\<lambda>x [\<Pi>']xy\<^sub>1\<dots>y\<^bsub>n-1\<^esub>] &
@@ -1275,9 +1276,8 @@ axiom above.\<close>}
 @{thm[display] "l-identity"[axiom_inst, of _ \<alpha> \<beta> \<phi>, print_as_theorem]}
 \end{quote}
 
-The following axiom (see~\nameref{AOT:logic-actual}) is the single @{emph \<open>modally fragile axiom\<close>} of the system. All other axioms
-are considered @{emph \<open>modally strict\<close>}. This is significed by the turnstile operator
-@{text \<open>\<^bold>\<turnstile>\<close>}, while all other axioms are modally strict (for simplicity, we assume the
+The following axiom (see~\nameref{AOT:logic-actual}) is the single @{emph \<open>modally fragile axiom\<close>} of the system.
+This is signified by the turnstile operator @{text \<open>\<^bold>\<turnstile>\<close>}. All other axioms are @{emph \<open>modally strict\<close>} (for simplicity, we assume the
 corresponding turnstile operator @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>} by default and refrain from mentioning it
 explicitly).
 The distinction is discussed further in section~\ref{ModallyStrictFragile}.
@@ -1347,7 +1347,9 @@ Note that the last of the above axioms, @{text \<eta>}-conversion, also has the 
 the syntactically distinct terms @{text \<open>p\<close>} and @{text \<open>[\<lambda> p]\<close>} in AOT are meant to capture
 the natural-language distinction between the statement @{text p} itself and the statement
 @{emph \<open>that @{text p} is true\<close>}. Also note that in the embedding the @{text 0}-place case
-is stated separately (see~\nameref{AOT:lambda-predicates:3[zero]}).\<close>}
+is stated separately for @{text \<eta>}-conversion (see~\nameref{AOT:lambda-predicates:3[zero]}) and
+@{text \<alpha>}-conversion (see~\nameref{AOT:lambda-predicates:1[zero]}), while @{text \<open>\<beta>\<close>}-conversion
+in PLM is only stated for @{text \<open>n \<ge> 1\<close>}.\<close>}
 
 The following axiom of @{emph \<open>coexistence\<close>} is specific to AOT and, together with generally extending AOT's free logic
 to relation terms and the refinement of base cases of denoting terms, a main aspect in the evolution
@@ -1369,7 +1371,7 @@ The first of these axioms reduces @{term n}-ary encoding to unary encoding of pr
 ellipses is non-trivial to reproduce in the embedding. Therefore we again do @{emph \<open>not\<close>} cite the axiom
 directly from the embedding, but state it as given in PLM modulo our notational conventions.
 The precise implementation in the embedding can be found in~\nameref{AOT:nary-encoding[2]} and is discussed in
-more detail in TODO: cite.\<close>}
+more detail in section~\ref{nary}.\<close>}
 
 
 \begin{quote}
@@ -1554,7 +1556,7 @@ that the definiens implies the significance of all free terms in the definiendum
 it can be assumed that the definiendum of a definition-by-equivalence is false for non-denoting terms.
 A notable example of an exception to this rule is the definition of non-identity: for two terms to be
 non-identical neither has to be significant, respectively non-significant terms are non-identical
-to any other terms.
+to all other terms (of the same type).
 \<close>
 
 subsubsection\<open>Definitions by Identity\<close>
@@ -3187,6 +3189,137 @@ a simple outer syntax command that will hide the complexity of this process and
 will allow for an intuitive statement of theorems that are to be proven by type
 distinction.
 \<close>
+
+subsection\<open>Definition of @{text \<open>n\<close>}-ary Relation Identity\<close>text\<open>\label{nary}\<close>
+(*<*)
+definition explicitVerbatim :: \<open>'a \<Rightarrow> 'a\<close> where \<open>explicitVerbatim x \<equiv> x\<close>
+syntax (input) "_explicitVerbatim" :: \<open>any \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>\<close>)
+syntax (input) "_explicitVerbatim" :: \<open>any \<Rightarrow> \<tau>\<close> (\<open>\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>\<close>)
+syntax (input) "_explicitVerbatim" :: \<open>\<phi> \<Rightarrow> any\<close> (\<open>\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>\<close>)
+syntax (input) "_explicitVerbatim" :: \<open>\<tau> \<Rightarrow> any\<close> (\<open>\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>\<close>)
+syntax (output) "_explicitVerbatim" :: \<open>any \<Rightarrow> \<phi>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+syntax (output) "_explicitVerbatim" :: \<open>any \<Rightarrow> \<tau>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+syntax (output) "_explicitVerbatim" :: \<open>\<phi> \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+syntax (output) "_explicitVerbatim" :: \<open>\<tau> \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+translations
+  "_explicitVerbatim x" == "CONST explicitVerbatim x"
+AOT_theorem prop_id_explicit:
+  \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>x\<^sub>1...\<forall>x\<^sub>n(\<^bold>\<guillemotleft>AOT_sem_proj_id (explicitVerbatim x\<^sub>1x\<^sub>n) (\<lambda>\<kappa>\<^sub>1\<kappa>\<^sub>n. \<^bold>\<guillemotleft>[\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<^bold>\<guillemotright>) (\<lambda>\<kappa>\<^sub>1\<kappa>\<^sub>n. \<^bold>\<guillemotleft>[\<Pi>']\<kappa>\<^sub>1...\<kappa>\<^sub>n\<^bold>\<guillemotright>)\<^bold>\<guillemotright>)\<close>
+  unfolding explicitVerbatim_def
+  using "identity:3".
+lemma unary_proj_id_explicit:
+  \<open>AOT_sem_proj_id \<kappa> \<phi> \<psi> = explicitVerbatim (print_term (AOT_eq (AOT_lambda (\<lambda>x :: 'a ::AOT_\<kappa>. \<phi> x)) (AOT_lambda (\<lambda>x. \<psi> x))))\<close>
+  unfolding explicitVerbatim_def print_term_def
+  using AOT_sem_unary_proj_id.
+lemma nary_proj_id_explicit:
+  \<open>AOT_sem_proj_id (\<kappa>\<^sub>1::'a::AOT_\<kappa>, \<kappa>\<^sub>2\<kappa>\<^sub>n::'b::AOT_\<kappa>s) (\<lambda>(x,y\<^sub>1y\<^sub>n) . explicitVerbatim (print_term (\<phi> x y\<^sub>1y\<^sub>n))) (\<lambda>(x,y\<^sub>1y\<^sub>n). explicitVerbatim (print_term (\<psi> x y\<^sub>1y\<^sub>n))) = explicitVerbatim (print_term (
+AOT_conj (AOT_eq (AOT_lambda (\<lambda>x :: 'a. \<phi> x \<kappa>\<^sub>2\<kappa>\<^sub>n)) (AOT_lambda (\<lambda>x. \<psi> x \<kappa>\<^sub>2\<kappa>\<^sub>n)))
+(explicitVerbatim (AOT_sem_proj_id \<kappa>\<^sub>2\<kappa>\<^sub>n (\<lambda>y\<^sub>1y\<^sub>n. explicitVerbatim (\<phi> \<kappa>\<^sub>1 y\<^sub>1y\<^sub>n)) (\<lambda>y\<^sub>1y\<^sub>n. explicitVerbatim (\<psi> \<kappa>\<^sub>1 y\<^sub>1y\<^sub>n))))
+))\<close>
+  unfolding explicitVerbatim_def print_term_def
+  AOT_sem_proj_id_prod_def by auto
+lemma unary_inst: \<open>AOT_model_equiv_def \<guillemotleft>\<Pi> = \<Pi>'\<guillemotright> \<guillemotleft>\<Pi>\<down> & \<Pi>'\<down> & \<forall>x \<^bold>([\<lambda>x [\<Pi>]x] = [\<lambda>x [\<Pi>']x]\<^bold>)\<guillemotright>\<close>
+  by (simp add: explicitParen_def "identity:3"[where 'a=\<kappa>, unfolded AOT_sem_unary_proj_id])
+
+(*>*)
+text\<open>
+Recall the definition of @{text n}-ary relation identity of PLM given in section~\ref{AOTLanguage}:
+
+\begin{quote}
+  \Squ{@{text \<open>\<Pi> = \<Pi>' \<equiv>\<^sub>d\<^sub>f \<Pi>\<down> & \<Pi>'\<down> & \<forall>y\<^sub>1\<dots>\<forall>y\<^bsub>n-1\<^esub> ([\<lambda>x [\<Pi>]xy\<^sub>1\<dots>y\<^bsub>n-1\<^esub>] = [\<lambda>x [\<Pi>']xy\<^sub>1\<dots>y\<^bsub>n-1\<^esub>] &
+[\<lambda>x [\<Pi>]y\<^sub>1xy\<^sub>2\<dots>y\<^bsub>n-1\<^esub>] = [\<lambda>x [\<Pi>']y\<^sub>1xy\<^sub>2\<dots>y\<^bsub>n-1\<^esub>] & \<dots> &
+[\<lambda>x [\<Pi>]y\<^sub>1\<dots>y\<^bsub>n-1\<^esub>x] = [\<lambda>x [\<Pi>']y\<^sub>1\<dots>y\<^bsub>n-1\<^esub>x]
+)\<close>}}
+\end{quote}
+
+While we can easily represent ellipses notation in terms that are uniform over arities, as e.g. in
+@{text \<beta>}-conversion, this definition involves additional conjunctive clauses depending on the
+arity and is thereby harder to implement.
+
+A solution would be to approximate the statement of the definition by stating it explicitly
+for finitely many arities.@{footnote \<open>In fact, for convenience we do this for arities up to
+four (see~\nameref{AOT:identity:3[2]}).\<close>} However, the construction using type class instantiations on
+product types mentioned above also allows us to state the definition generically, albeit that we have
+to rely on an auxiliary construction in the meta-logic.
+
+The generic version of the definition in our embedding is the following (see~\nameref{AOT:identity:3}):
+
+\begin{quote}
+@{thm[display] prop_id_explicit}
+\end{quote}
+
+The quotation marks @{text \<open>\<guillemotleft>_\<guillemotright>\<close>} allow us to inject meta-logical terms into the
+custom grammar we introduced for AOT syntax and vice-versa.
+Here ellipses like @{text \<open>x\<^sub>1...x\<^sub>n\<close>} are, meta-logically, a single variable @{text \<open>x\<^sub>1x\<^sub>n\<close>} restricted to an arbitrary type
+of the type class @{class AOT_\<kappa>s}. The auxiliary constant @{term AOT_sem_proj_id} satisfies
+an additional restriction on types of the class @{class AOT_\<kappa>} (resp. on the concrete type @{typ \<kappa>})
+and has a concrete definition on products of types of class @{class AOT_\<kappa>} and @{class AOT_\<kappa>s}:
+
+\begin{quote}
+@{thm[display] unary_proj_id_explicit}
+@{thm[display] nary_proj_id_explicit}
+\end{quote}
+
+Note that the outermost identities in these statements are meta-logical identities that
+thereby allow immediate meta-logical substitution.
+In the unary case, @{term AOT_sem_proj_id} reduces to the the identity of the one-place
+relations given by @{text \<open>\<lambda>\<close>}-abstracting the given matrices @{text \<open>\<phi>\<close>} and @{text \<open>\<psi>\<close>}.
+
+In the product case, it is defined for matrices acting on products of types @{typ 'a} and  @{typ 'b} of class @{class AOT_\<kappa>}
+and @{class AOT_\<kappa>s} as a conjunction. The first conjunct is the identity of the one-place
+relations resulting from @{text \<open>\<lambda>\<close>}-abstracting the applications of the matrices to
+the abstracted variable @{term x} and @{text \<open>\<kappa>\<^sub>2...\<kappa>\<^sub>n\<close>}.
+The second conjunct recursively refers to @{term AOT_sem_proj_id} on type @{typ 'b}
+acting on @{text \<open>\<kappa>\<^sub>2\<kappa>\<^sub>n\<close>} (corresponding to @{text \<open>\<kappa>\<^sub>2...\<kappa>\<^sub>n\<close>} in our AOT syntax implementation)
+and partial applications of the matrices to @{term \<kappa>}.
+
+Now restricting the generic definition to type @{term \<kappa>} (respectively to any type
+of class @{class AOT_\<kappa>}), yields the following instance:
+
+\begin{quote}
+@{thm prop_id_explicit[where 'a=\<kappa>, rename_abs x \<kappa> \<kappa>]}
+\end{quote}
+
+Unfolding the definition of @{term AOT_sem_proj_id} in the unary case, this yields
+\begin{quote}
+@{thm unary_inst}
+\end{quote}
+
+While this is technically not a definition of AOT, the implied equivalence is a theorem
+as a consequence of @{term \<eta>}-conversion.
+
+Restricting the definition to type @{term \<open>\<kappa>\<times>\<kappa>\<close>}, yields this instance:
+
+\begin{quote}
+@{thm prop_id_explicit[where 'a=\<open>\<kappa>\<times>\<kappa>\<close>, rename_abs x \<kappa>\<^sub>1\<kappa>\<^sub>2 \<kappa>\<^sub>1\<kappa>\<^sub>2]}
+\end{quote}
+
+Now unfolding the definition of @{term AOT_sem_proj_id} in the product case (i.e. for type @{typ \<open>\<kappa>\<times>\<kappa>\<close>}) followed
+by unfolding it for the recursive unary case, yields the proper definition of
+@{text 2}-ary relation identity:@{footnote \<open>Technically, this additionally involves expanding the
+@{text n}-ary quantifier to two unary quantifiers, one of which can be eliminated.\<close>}
+
+\begin{quote}
+@{thm "identity:3[2]"[where F=\<Pi> and G=\<Pi>']}
+\end{quote}
+
+Similarly, instantiating to type @{typ \<open>\<kappa>\<times>\<kappa>\<times>\<kappa>\<close>} yields ternary relation identity, etc.
+
+While this construction yields the technical means to state the definition
+of @{text n}-ary relation identity as well as the axiom of @{text n}-ary encoding generically,
+properly unfolding the meta-logical definitions can be cumbersome in practice.
+
+For that reason we additionally explicitly derive the definition of identity and the axiom
+of @{text n}-ary encoding for arities up to four, which is more than sufficient for
+the instances currently used in PLM. For @{text n}-ary encoding we currently do not
+formulate a generic version, even though the same mechanism as above can be applied
+to this case as well.
+
+In the future, we intend to define a convenient @{emph \<open>theorem attribute\<close>} that can
+be used to immediately instantiate @{text n}-ary statements of generic form directly to an arbitrary
+arity @{text n} given as argument to the attribute.
+\<close>
+
 
 subsection\<open>Auxiliary Theorem Attributes\<close>
 
