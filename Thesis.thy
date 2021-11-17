@@ -1477,7 +1477,7 @@ The deduction theorem (see~\nameref{AOT:deduction-theorem}):
 @{thm[display] "deduction-theorem"[print_as_rule]}
 \end{quote}
 
-The rule of necessitation RN (see~\nameref{AOT:RN}):\footnote{TODO: refer to more detailed discussion about the converse of RN.}
+The rule of necessitation RN (see~\nameref{AOT:RN}):
 \begin{quote}
 @{thm[display] "RN"[print_as_rule]}
 \end{quote}
@@ -1485,12 +1485,13 @@ The rule of necessitation RN (see~\nameref{AOT:RN}):\footnote{TODO: refer to mor
 The rule RN can only be applied to a formula @{term \<phi>}, if @{term \<phi>} has a @{emph \<open>modally-strict proof\<close>},
 as signified by @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>}. We discuss this in more detail in section~\ref{ModallyStrictFragile}.
 
-The rule of generalization GEN (see~\nameref{AOT:rule-gen}):
+The rule of generalization GEN (see~\nameref{AOT:rule-gen}):@{footnote \<open>@{text \<open>for arbitrary\<close>} is implemented
+using a meta-logical all quantifier. This means that @{term \<phi>} has to hold for an arbitrary choice for @{text \<alpha>} and
+therefore independently of any local assumptions about any concrete @{text \<alpha>}. This goes along with PLM's restriction
+of @{text \<alpha>} not to occur free in any assumption during the application of GEN.\<close>}
 \begin{quote}
 @{thm[display] "GEN"[print_as_rule]}
 \end{quote}
-
-TODO: discuss @{emph \<open>for arbitrary\<close>}, etc.
 \<close>
 
 subsection\<open>The Inferential Role of Definitions\<close>text\<open>\label{InferentialRoleOfDefinitions}\<close>
@@ -1592,11 +1593,13 @@ properties of the deductive system:
   \<^item> Propositional reasoning in AOT is classical.@{footnote \<open>In particular, as stated in PLM item TODO: cite,
 all classical propositional tautologies are theorems of AOT.\<close>}
   \<^item> Modal reasoning can be read semantically as following Kripke-semantics without accessibility relation and
-with a fixed designated actual world for the actuality operator. Formally, it is a S5 modal logic with actuality operator and
+with a fixed designated actual world for the actuality operator. In particular, AOT follows an S5 modal logic with actuality operator and
 Barcan formulas. (TODO)
   \<^item> The free logic extends to all types, but all propositions provably denote.
     Quantifiers range over denoting objects and the defined identity is an @{emph \<open>existing identity\<close>},
-    i.e. to be identical two entities need to @{emph \<open>denote and\<close>} be identical.
+    i.e. to be identical two entities need to both denote @{emph \<open>and\<close>} denote the same thing.@{footnote \<open>Respectively,
+    denote and satisfy the axiom of the substitution of identicals. Note that our implementation has the property that
+    PLM's defined identity implies meta-logical identity.\<close>}
 
 \<close>
 
