@@ -678,7 +678,7 @@ text\<open>However, commuted conjunctions are no longer identical. The model-fin
 
 lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
   nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q r, format = 2]
-  oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
+  oops \<comment> \<open>Abort proof and discard the lemma.\<close> (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
 text\<open>The model given by @{command nitpick}@{footnote \<open>The precise model may vary for different versions of Isabelle.\<close>}
      chooses a three-element set for type @{typ \<o>\<^sub>2}. We chose @{text p}, @{text q} and @{text r} as names for these elements.
@@ -686,10 +686,10 @@ text\<open>The model given by @{command nitpick}@{footnote \<open>The precise mo
      @{const \<o>\<^sub>2_conj} as @{text \<open>((p, p) := p, (p, q) := q, (p, r) := r, (q, p) := r, (q, q) := q, (q, r) := r, (r, p) := r, (r, q) := r,
      (r, r) := r)\<close>}.
 
-     This is indeed one of the minimal (non-degenerate@{footnote \<open>The specification for conjunctions alone
+     This is indeed one of the minimal (non-degenerate)@{footnote \<open>The specification for conjunctions alone
      can also be satisfied in degenerate models, in which either all propositions are true or all propositions
      are false, i.e. in particular for models with only one proposition. However, we excluded such degenerate models
-     by requiring a surjective extension function, which prevents @{command nitpick} from considering these degenerate cases.\<close>}) models for conjunctions that are classical under validity, but
+     by requiring a surjective extension function, which prevents @{command nitpick} from considering these degenerate cases.\<close>} models for conjunctions that are classical under validity, but
      are not identical under commutation.
      On the other hand, @{command nitpick} can also @{emph \<open>satisfy\<close>} the same statement by providing
      a model with cardinality 2 for type @{type \<o>\<^sub>2}:
