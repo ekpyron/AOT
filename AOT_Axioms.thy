@@ -133,27 +133,15 @@ AOT_axiom "lambda-predicates:1[zero]": \<open>[\<lambda> p]\<down> \<rightarrow>
      (simp add: AOT_sem_denotes AOT_sem_eq AOT_sem_imp)
 AOT_axiom "lambda-predicates:2":
   \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
-      by induct (simp add: AOT_sem_denotes AOT_sem_equiv
-                           AOT_sem_imp AOT_sem_lambda_beta)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_equiv AOT_sem_imp AOT_sem_lambda_beta AOT_sem_vars_denote)
 AOT_axiom "lambda-predicates:3": \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
-      by induct (simp add: AOT_sem_denotes AOT_sem_lambda_eta AOT_sem_vars_denote)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_lambda_eta AOT_sem_vars_denote)
 AOT_axiom "lambda-predicates:3[zero]": \<open>[\<lambda> p] = p\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda> p] = p\<close>
-      by induct (simp add: AOT_sem_eq AOT_sem_lambda0)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_eq AOT_sem_lambda0 AOT_sem_vars_denote)
+
 AOT_axiom "safe-ext":
   \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow>
    [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
