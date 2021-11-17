@@ -169,7 +169,7 @@ In section~\ref{NewNumberTheory} we will discuss alternative options to address 
 that may lead to an improvement of the construction in the future.
 \<close>
 
-subsection\<open>One-to-One Correspondences on the Ordinary Objects\<close>
+subsection\<open>One-to-One Correspondences on the Ordinary Objects\<close>text\<open>\label{OneToOneCorrespondenceE}\<close>
 
 text\<open>
 As mentioned in the introduction of this chapter, natural mathematics arises from abstracting
@@ -1823,57 +1823,147 @@ discussed in the next section.
 \<close>
 
 section\<open>Prospect of an Enhanced Version of the Construction\<close>text\<open>\label{NewNumberTheory}\<close>
+(*<*)
 
+AOT_define Discernible :: \<open>\<Pi>\<close> (\<open>D!\<close>)
+  \<open>D! =\<^sub>d\<^sub>f [\<lambda>x \<box>\<forall>y(y \<noteq> x \<rightarrow> \<exists>F \<not>([F]y \<equiv> [F]x))]\<close>
+
+AOT_define eq_D :: \<open>\<Pi>\<close> (\<open>'(=\<^sub>D')\<close>)
+  "=D": \<open>(=\<^sub>D) =\<^sub>d\<^sub>f [\<lambda>xy \<box>\<forall>F([F]x \<equiv> [F]y)]\<close>
+
+syntax "_AOT_eq_D_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>D" 50)
+translations
+  "_AOT_eq_D_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST eq_D) (CONST Pair \<kappa> \<kappa>')"
+print_translation\<open>
+AOT_syntax_print_translations
+[(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [
+  Const ("\<^const>AOT_PLM.eq_D", _),
+  Const (\<^const_syntax>\<open>Pair\<close>, _) $ lhs $ rhs
+] => Const (\<^syntax_const>\<open>_AOT_eq_D_infix\<close>, dummyT) $ lhs $ rhs)]\<close>
+
+
+AOT_define AOT_exists_unique_D :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>
+  "equi:1":  \<open>\<guillemotleft>AOT_exists_unique_D \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> =\<^sub>D \<alpha>))\<close>
+syntax "_AOT_exists_unique_D" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>!\<^sub>D_ _" [1,40])
+translations
+  "_AOT_exists_unique_D \<tau> \<phi>" <= "CONST AOT_exists_unique_D (_abs \<tau> \<phi>)"
+syntax
+   "_AOT_exists_unique_ellipse_D" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close>
+   (\<open>\<exists>!\<^sub>D_...\<exists>!\<^sub>D_ _\<close> [1,40])
+parse_ast_translation\<open>
+[(\<^syntax_const>\<open>_AOT_exists_unique_ellipse_D\<close>,
+  fn ctx => fn [a,b,c] => Ast.mk_appl (Ast.Constant "AOT_exists_unique_D")
+  [parseEllipseList "_AOT_vars" ctx [a,b],c]),
+ (\<^syntax_const>\<open>_AOT_exists_unique_D\<close>,
+  AOT_restricted_binder
+    \<^const_name>\<open>AOT_exists_unique_D\<close>
+    \<^const_syntax>\<open>AOT_conj\<close>)]\<close>
+print_translation\<open>[
+  AOT_preserve_binder_abs_tr'
+    \<^const_syntax>\<open>AOT_exists_unique_D\<close>
+    \<^syntax_const>\<open>_AOT_exists_unique_D\<close>
+    (\<^syntax_const>\<open>_AOT_exists_unique_ellipse_D\<close>, true)
+    \<^const_name>\<open>AOT_conj\<close>,
+  AOT_binder_trans
+    @{theory}
+    @{binding "AOT_exists_unique_binder_D"}
+    \<^syntax_const>\<open>_AOT_exists_unique_D\<close>
+]\<close>
+
+AOT_register_variable_names
+  Individual: u v t s r
+
+AOT_define CorrelatesDOneToOne :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>D _\<close>)
+  "equi:2": \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>D G \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & G\<down> &
+                               (\<forall>x ([F]x \<rightarrow> \<exists>!\<^sub>Dy([G]y & [R]xy)) &
+                               \<forall>y ([G]y \<rightarrow> \<exists>!\<^sub>Dx([F]x & [R]xy)))\<close>
+
+AOT_define EquinumerousE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<approx>\<^sub>D" 50)
+  "equi:3": \<open>F \<approx>\<^sub>D G \<equiv>\<^sub>d\<^sub>f \<exists>R (R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>D G)\<close>
+
+
+(*>*)
 text\<open>
-At the time of writing, there is an ongoing debate over changing the analysis of Natural
-Numbers given above. Instead of restricting the analysis to ordinary objects, identity on the
+At the time of writing, there is an ongoing debate concerning variations of the analysis of Natural
+Numbers given above. In particular, instead of restricting the analysis to ordinary objects, identity on the
 ordinary objects and equinumerosity on the ordinary object, Zalta and Nodelmann brought
 up the idea to instead follow the same basic construction relative to @{emph \<open>discernible objects\<close>}.
 
-Being discernible (@{text \<open>D!\<close>}) could, for example, be defined as the following
+@{emph \<open>Being discernible\<close>}, @{text \<open>D!\<close>}, can be defined as the following
 relation:
 
-@{term[display] \<open>\<guillemotleft>[\<lambda>x \<forall>y (y \<noteq> x \<rightarrow> \<exists>F \<not>([F]x \<equiv> [F]y))]\<guillemotright>\<close>}
+\begin{quote}
+@{thm Discernible}
+\end{quote}
 
-It can be proven using the necessary and sufficient conditions for relations to denote
-discussed in section~\ref{KirchnersTheorem}, that this relation denotes. Furthermore, similarly
-to being ordinary, @{text \<open>D!\<close>} constitutes a rigid restriction condition. Similar to
+Using the necessary and sufficient conditions for relations to denote
+discussed in section~\ref{KirchnersTheorem}, it can be shown that @{text \<open>D!\<close>} denotes.@{footnote \<open>Note that due to
+the matrix involving a non-identity claim and identity on individuals being defined in terms of
+encoding, the @{text \<open>\<lambda>\<close>}-expression does not denote axiomatically.\<close>} Furthermore, just as
+@{emph \<open>being ordinary\<close>}, @{emph \<open>being discernible\<close>} is a rigid restriction condition. Similar to
 @{text \<open>=\<^sub>E\<close>} on the ordinary objects, a relation of identity on the discernible objects @{text \<open>=\<^sub>D\<close>} can be
-defined as @{term \<open>\<guillemotleft>[\<lambda>xy \<box>\<forall>F([F]x \<equiv> [F]y)]\<guillemotright>\<close>}. The construction up until the
-modal axiom requiring possible richness of ordinary objects works without any major
-changes relative to being discernible, the identity of discernibles and being
-equinumerous@{text \<open>\<^sub>D\<close>} (defined just as equinumerous@{text \<open>\<^sub>E\<close>} in section~\ref{DefinitionOfEquinumerosity}, just relative
-to discernible objects instead).
+defined as @{term \<open>\<guillemotleft>[\<lambda>xy \<box>\<forall>F([F]x \<equiv> [F]y)]\<guillemotright>\<close>}, i.e. for discernible objects @{emph \<open>being indistinguishable\<close>}
+implies identity. The construction up until the modal axiom of section~\ref{ModalAxiom} can be preserved
+without any major changes. Being equinumerous@{text \<open>\<^sub>D\<close>} can be defined just as equinumerous@{text \<open>\<^sub>E\<close>} (see section~\ref{DefinitionOfEquinumerosity}), but relative
+to a one-to-one correspondence@{text \<open>\<^sub>D\<close>} on discernible objects, which in turn can be defined just as a
+one-to-one correspondence@{text \<open>\<^sub>E\<close>} (see section~\ref{OneToOneCorrespondenceE}), but using restricted variables
+ranging over discernible instead of ordinary objects.
 
 The fact that @{emph \<open>numbering a property\<close>} coexists with the predecessor relation described
 in section~\ref{pred} is invariant under this change. As a consequence natural numbers will
-themselves become discernible. This allows for abandoning the modal axiom for
+themselves become discernible (since by Hume's theorem for two objects numbering the same properties
+implies their identity). This allows for abandoning the modal axiom for
 possible richness of ordinary objects and instead to more closely follow Frege's
 construction, in which the successor of a number @{text n} is defined as the number
-of the property @{emph \<open>being smaller-or-equal to @{text n}\<close>}, i.e. @{text \<open>n\<^bold>' = #[\<lambda>m m \<le> n]\<close>}.
+of the property @{emph \<open>being smaller-or-equal to @{text n}\<close>}, i.e. @{text \<open>n\<^bold>' = #[\<lambda>m m \<le> n]\<close>},
+yielding @{term \<open>\<guillemotleft>[\<P>]n n\<^bold>'\<guillemotright>\<close>}.
 
-At the time of writing, we have prototypes for models of this new derivation available,
-however they require restricting the domain of discernible objects to be countably
-infinite.
+At the time of writing, we have prototypes for models of this new derivation available.
+In these models we restrict the domain of ordinary urelements to be at most countably
+infinite (i.e. either finite or in bijiection to the natural numbers), and require the
+domain of special urelements to be countably infinite.
+From this restriction it can be derived that class set cardinal numbers that measure
+the size of sets of urelements is itself a countable set. Since abstract objects that number properties
+are in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
+another variant mentioned below they will be in one-to-one correspondence with the cardinals of
+sets of arbitrary urelements.\<close>} they can thus injectively be mapped into the special
+urelements, making them discernible. Hence this validates the theorem that
+@{emph \<open>numbering a property\<close>} denotes and consequently yields models for the predecessor
+axiom.
 
 While we do not expect to be able to formulate a generalized comprehension principle
-for relations among abstract objects based on patterns on discernible objects as we
-demonstrated relative to ordinary objects above, we expect to arrive at meta theorems
+for relations among abstract objects based on patterns on discernible objects in the same
+way as we demonstrated relative to ordinary objects above, we expect to arrive at meta theorems
 that will formulate conditions under which it is consistent to assert that classes
-of abstract objects are distinguishable: in particular, we expect to be able
-to arbitrarily by adding special urelements, as long as the cardinality of the set of special
-urelements remains bounded, e.g. if there is only countably many such distinguishable classes of abstract objects
-(while countably many distinctions between abstract objects already implies that there are uncountably
-many abstract objects).
+of abstract objects are distinguishable: for example, any axiom that implies
+that certain abstract objects become discernible can be consistently modelled, as long as 
+it discerns at most countably many abstract objects.
 
 Another similar variant of the construction, for which we have already constructed
-complete models (TODO cite), does not restrict the domain of objects that can be counted at all, but rather
+full models (TODO cite), does not restrict the domain of objects that can be counted at all, but
 instead of counting distinct objects rather counts equivalence classes of objects that
 are indistinguishable. This involves weakening the unique existence used
-in one-to-one correspondences to uniqueness up to distinguishability:
- 
-\<close>
+in one-to-one correspondences to uniqueness up to distinguishability, i.e.
+we define unique existence@{text \<open>\<^sub>D\<close>} as follows:
 
+@{thm[display] "equi:1"[where \<phi> = \<open>\<lambda> \<alpha>. \<phi> \<alpha>\<close>]}
+
+And then construct one-to-one correspondences and equinumerosity relative to this
+restricted notion of unique existence:
+
+@{thm[display]
+"equi:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "&I", OF "cqt:2[const_var]"[axiom_inst],
+OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ R F G, print_as_theorem]}
+@{thm[display] "equi:3"[of F G]}
+
+While a construction based on discernible objects ignores objects that are indiscernible
+for the purpose of counting, i.e. a property that is exemplified by two indistinguishable
+abstract objects and no other objects is counted by Zero, this construction would count
+such objects in bulk, i.e. the same property would be counted by One.
+For properties that are only exemplified by discernible objects, both constructions
+are equivalent (i.e. such properties are equinumerous in the first variant if and
+only if they are equinumerous in the second).
+\<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 

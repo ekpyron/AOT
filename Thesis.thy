@@ -12,9 +12,9 @@ text\<open>
 
 Automated reasoning environments are already a vital part of the modern analysis
 of mathematics and their importance can only be expected
-to increase in the future. A prime examples is Hales' proof of the Kepler conjecture that was
+to increase in the future. A prime example is Hales' proof of the Kepler conjecture that was
 only broadly accepted after reconstructing the argument as a formal proof that could be verified
-by computerized theorem proving environments (TODO: cite). However, building up a sound reasoning environment from scratch is a highly
+by computerized theorem proving environments (TODO: cite). However, building up a sound reasoning environment from scratch is a
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq, HOL-Light or Isabelle/HOL (TODO: cite).
 Furthermore, most of these systems have at least parts of their logical foundation in common,
@@ -199,18 +199,19 @@ the main subject of this thesis.
 section\<open>Contributions and Structure of the Thesis\<close>text\<open>\label{Structure}\<close>
 
 text\<open>
-In the following, we first provide a more detailed description of Shallow Semantical Embeddings (chapter~\ref{SSEs}) and
+In the following, we first provide a more detailed description of Shallow Semantic Embeddings (chapter~\ref{SSEs}) and
 a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
 
 Based on that, chapter~\ref{SSEofAOT} describes
-the constructed embedding of the second-order fragment of Abstract Object Theory in Isabelle/HOL while
-highlighting the contributions of the embedding to the theory of abstract objects on the one hand and
-the techniques developed for its implementation (TODO: remove? up to the dedicated reasoning system implemented in
-Isabelle/ML) on the other hand.
+the constructed embedding of the second-order fragment of Abstract Object Theory in Isabelle/HOL.
+
+In the process we highlight the contributions of the embedding to the theory of abstract objects on the one hand and
+the techniques developed for its implementation on the other hand.
 
 In chapter~\ref{NaturalNumbers} we present the results on the derivation of Natural Numbers and
-Mathematical Induction and discuss our proposed extension of AOT with a more general comprehension
-principle for relations among abstract objects.
+Mathematical Induction and discuss an extension of AOT with a more general comprehension
+principle for relations among abstract objects. We also discuss some interesting
+variations of the construction that may be adopted by PLM in the future.
 
 Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
 encompass the full higher-order type-theoretic version of Abstract Object Theory.
@@ -363,7 +364,7 @@ High-level concept and motivation here versus more technical details in the foll
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>
 text\<open>
 
-An example of a non-classical logic that is used prominently in metaphysics is Quantified Higher-Order
+An example of a non-classical logic that is used prominently in philosophical arguments is Quantified Higher-Order
 Modal Logic in various different axiomatizations. While there have been extensive studies of
 modal logics using SSEs in Isabelle/HOL (see: TODO: cite a good paper about QML in Isabelle/HOL
 maybe: \url{http://page.mi.fu-berlin.de/cbenzmueller/papers/C47.pdf} or similar), we restrict ourselves
@@ -522,12 +523,12 @@ that can be directly inserted to prove the current goal.
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
 the initial selection of theorems from the @{command theory} context.
 We do not want @{command sledgehammer} to use the equational theorems that unfold our semantic definitions,
-but instead derive the goals from only the axioms and specific derivational rules we defined that correspond
+but instead derive the goals from only the axioms and specific derivational rules that correspond
 to the rules of the deductive system of the embedded theory.
 @{command sledgehammer} allows us to provide some guidance in its choice of theorems. It is possible
 to (1) indicate that a certain set of theorems is likely to be helpful in the proof (using @{text \<open>add:\<close>}),
 (2) prevent it from using certain theorems (either using @{text \<open>del:\<close>} or by marking the theorems with
-the special attribute @{attribute no_atp} or (3) to provide it with a specific set of theorems to use
+the special attribute @{attribute no_atp}) or (3) to provide it with a specific set of theorems to use
 directly without taking any other theorems into account.
 
 Conceptually, option (3) is the best fit for the purpose of abstraction layers and was used in
@@ -593,8 +594,8 @@ We first show a construction that will fail due to a choice of representation ty
 implies extensionality:
 \<close>
 
-typedef \<o>\<^sub>1 = \<open>UNIV::bool set\<close>.. \<comment> \<open>Introduce a type of propositions @{typ \<o>\<^sub>1} as a copy of the type of booleans.\<close>
-
+typedef \<o>\<^sub>1 = \<open>UNIV::bool set\<close>.. \<comment> \<open>Introduce an abstract type of propositions @{typ \<o>\<^sub>1} with the universal set
+of booleans (i.e. @{term \<open>{True, False}\<close>}) as representation set.\<close>
 definition valid_\<o>\<^sub>1 :: \<open>\<o>\<^sub>1 \<Rightarrow> bool\<close> where
   \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.\<close>
 
@@ -612,28 +613,41 @@ text\<open>We need to prove that there is a term satisfying the above specificat
      (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
 
 text\<open>However, even though the identity of commuted conjunctions is not part of the @{command specification},
-     it is @{emph \<open>still\<close>} derivable.\<close>
+     it is @{emph \<open>still\<close>} derivable.@{footnote \<open>Note that if we constructed abstraction layers
+     as discussed in the last section, @{command sledgehammer} would be prevented from considering the implicit
+     theorems introduced by the type definition of @{type \<o>\<^sub>1} (which relate the type to its representation type)
+     and, therefore, would not be able to prove this theorem.\<close>}\<close>
 lemma \<open>p \<^bold>\<and> q = q \<^bold>\<and> p\<close>
   by (metis Rep_\<o>\<^sub>1_inject \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 valid_\<o>\<^sub>1_def)
 
+text\<open>The reason is that there is only one choice for a conjunction operator on the booleans
+that satisfies our specification and this choice is commutative. We can in fact prove
+that our conjunction has to be identical to the witness we provided:
+\<close>
+
+lemma \<open>(\<^bold>\<and>) = (\<lambda>p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q))\<close>
+  by ((rule ext)+; smt (verit, ccfv_threshold) Rep_\<o>\<^sub>1_inverse \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 \<o>\<^sub>1_conjI valid_\<o>\<^sub>1_def)
 (*<*)
 no_notation \<o>\<^sub>1_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 (*>*)
 
-text\<open>The reason is that there is only one choice for a conjunction operator on the booleans
-that satisfies our specification and this choice is commutative.
-
-A way around this  issue is to not only introduce opaque constants by @{command specification}, but
-to also take care that the @{emph \<open>type\<close>} of these constants can actually deliver the desired degree
-of intentionality. In our example, we can introduce an opaque @{emph \<open>intensional type\<close>} for propositons
- that merely has a boolean @{emph \<open>extension\<close>} as follows:
+text\<open>
+So in order to avoid this issue, we cannot simply rely on the @{command specification} command, but
+also have to take care that the @{emph \<open>types\<close>} of the specified constants can actually deliver the desired degree
+of intensionality. In our example, we can introduce an abstract @{emph \<open>intensional type\<close>} for propositons
+that merely has a boolean @{emph \<open>extension\<close>}. First we introduce an abstract type:
 \<close>
 
 typedecl \<o>\<^sub>2 \<comment> \<open>Introduce an abstract type for propositions.\<close>
 
-text\<open>Axiomatically introduce a surjective extension function mapping the abstract propositions
-to their boolean extension. The surjectivity of the extension function excludes degenerate
-models in which either all proposition would be true or all propositions would be false.\<close>
+text\<open>
+Thus far, a model of our HOL satisfying our theory may choose any non-empty set as
+representation set for objects of type @{typ \<o>\<^sub>2}. To arrive at a meaningful type
+of propositions, we axiomatically introduce a surjective extension function mapping
+the abstract propositions to their boolean extension. The surjectivity of the extension function
+excludes degenerate models in which either all proposition would be true or
+all propositions would be false.\<close>
+
 axiomatization \<o>\<^sub>2_ext :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> where
   \<o>\<^sub>2_ext_surj: \<open>surj \<o>\<^sub>2_ext\<close>
 
@@ -642,13 +656,13 @@ definition valid_\<o>\<^sub>2 :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> 
 
 consts \<o>\<^sub>2_conj :: \<open>\<o>\<^sub>2 \<Rightarrow> \<o>\<^sub>2 \<Rightarrow> \<o>\<^sub>2\<close> (infixl \<open>\<^bold>\<and>\<close> 100)
 
-specification (\<o>\<^sub>2_conj) \<comment> \<open>We specify our conjunction by introduction and elimination rules.\<close>
+specification (\<o>\<^sub>2_conj) \<comment> \<open>We again specify our conjunction by introduction and elimination rules.\<close>
   \<o>\<^sub>2_conjE1: \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>2 p\<close>
   \<o>\<^sub>2_conjE2: \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>2 q\<close>
   \<o>\<^sub>2_conjI: \<open>valid_\<o>\<^sub>2 p \<Longrightarrow> valid_\<o>\<^sub>2 q \<Longrightarrow> valid_\<o>\<^sub>2 (p \<^bold>\<and> q)\<close>
   text\<open>We again need to prove the existence of a term satisfying the given specification.
-       Since our extension function is surjective, we can generally find a suitable witness
-       using the inverse of the extension function. TODO: watch out here.\<close>
+       Since our extension function is surjective, a natural suitable witness can be
+       constructed using the inverse of the extension function. TODO: watch out here.\<close>
   by (rule exI[where x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close>])
      (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
 
@@ -656,7 +670,7 @@ text\<open>Now as a consequence of our specification, our conjunction is still c
 
 lemma \<open>valid_\<o>\<^sub>2 (p \<^bold>\<and> q) = valid_\<o>\<^sub>2 (q \<^bold>\<and> p)\<close>
 text\<open>Note that the proof (found by @{command sledgehammer}) now solely relies on the properties of
-     @{const \<o>\<^sub>2_conj} given in our specification.\<close>
+     @{const \<o>\<^sub>2_conj} given in our specification:\<close>
   using \<o>\<^sub>2_conjE1 \<o>\<^sub>2_conjE2 \<o>\<^sub>2_conjI by blast
 
 text\<open>However, commuted conjunctions are no longer identical. The model-finding tool @{command nitpick} (TODO: cite)
@@ -666,7 +680,7 @@ lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
   nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q r, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
-text\<open>The model chosen by @{command nitpick}@{footnote \<open>The precise model may vary for different versions of Isabelle.\<close>}
+text\<open>The model given by @{command nitpick}@{footnote \<open>The precise model may vary for different versions of Isabelle.\<close>}
      chooses a three-element set for type @{typ \<o>\<^sub>2}. We chose @{text p}, @{text q} and @{text r} as names for these elements.
      @{const \<o>\<^sub>2_ext} is modelled as @{text \<open>(p := True, q := False, r := False)\<close>} and
      @{const \<o>\<^sub>2_conj} as @{text \<open>((p, p) := p, (p, q) := q, (p, r) := r, (q, p) := r, (q, q) := q, (q, r) := r, (r, p) := r, (r, q) := r,
@@ -688,13 +702,13 @@ lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
 text\<open>Note that for the above it is sufficient to find a concrete choice for @{term p} and @{term q},
      s.t. the identity holds for those two propositions. However, nitpick can also produce
      (in this case the same) model satisfying the identity for all propositions,
-     respectively - equivalently - refute the identity failing to hold.\<close>
+     respectively - equivalently - refute the identity failing to hold:\<close>
 
 lemma \<open>\<forall>p q . (p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close> \<comment> \<open>Satisfy the identity for all @{term p} and @{term q}.\<close>
   nitpick[satisfy, user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
-lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close> \<comment> \<open>Refute the non-identity for any @{term p} and @{term q}.\<close>
+lemma \<open>(p \<^bold>\<and> q) \<noteq> (q \<^bold>\<and> p)\<close> \<comment> \<open>Refute non-identity for arbitrary @{term p} and @{term q}.\<close>
   nitpick[user_axioms, expect = genuine, show_consts, atoms \<o>\<^sub>2 = p q, format = 2]
   oops (* Note that this additionally satisfies the axioms of the imported theory AOT_PLM *)
 
@@ -704,10 +718,12 @@ no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 
 text\<open>While the above describes a general mechanism that (given a careful choice
 of types) can be used to force Isabelle to rely on a specific set of specified properties
-for constants while simultaneously retaining assured soundness (since we provided an explicit
-witness in the process), the mechanism has limitations.
+for constants while simultaneously retaining assured soundness@{footnote \<open>The specification part is
+guaranteed to be sound, since we provided an explicit witness in the process; the
+consistency of the axiom assuring the surjectivity of the extension function is confirmed
+by @{command nitpick}.\<close>}, the mechanism has limitations.
 
-In particular, @{command specification}s are limited in their capability to specify
+For instance, @{command specification}s are limited in their capability to specify
 polymorphic constants. While it is both possible to provide a shared specification
 for all types of a polymorphic constant, as well as to provide separate specifications for 
 concrete type instantiations of a polymorphic constant, doing both at the same time
@@ -755,10 +771,9 @@ text\<open>While in the following chapters we will say that we construct @{emph 
 logic AOT using our embedding, we do not (and do not have to) construct full models in the classical
 sense. In particular, we do not construct explicit interpretations and assignment functions.
 
-While a deep embedding would make the full models explicit, they remain implicit
-in shallow embeddings. The meta-logic (TODO: check hyphenation everywhere) Isabelle/HOL
-itself involves meta-logical constants and variables. In simple models of HOL, every
-type has a set as its domain and a statement is valid in HOL, if it holds for every
+While a deep embedding would make the full models explicit, they remain partly implicit
+in shallow embeddings. The meta-logic Isabelle/HOL itself involves meta-logical constants and variables.
+In simple models of HOL, every type has a set as its domain and a statement is valid in HOL, if it holds for every
 interpretation of the constants of a type and every assignment of its variables.
 
 A model of the embedded logic can be constructed by lifting a model of HOL through
@@ -873,7 +888,8 @@ text\<open>However, it is noteworthy that since the introduced grammar subtree i
 usual HOL grammar, a lot of details need to be considered. For example, without further work it is
 not possible to specify the types of terms in our grammar sub-tree.
 For that to work the @{text \<open>::\<close>} syntax used in HOL would need to be reintroduced,\footnote{Or, alternatively,
-new syntax could be introduced for the same purpose.} which requires some familiarity with Isabelle's
+new syntax could be introduced for the same purpose. In our embedding of AOT we will instead reproduce the fact that
+PLM implicitly imposes type constraints based on the names of its (meta-)variables.} which requires some familiarity with Isabelle's
 internals like the purely syntactic constant @{text \<open>_constrain\<close>}
 (TODO: cite isar-ref 8.5.4) that are generally only sparsely documented.\footnote{The
 theory files of Isabelle/HOL and its accompanying ML implementation, which construct
@@ -2041,8 +2057,36 @@ proof -
 qed
 
 text\<open>
-In the following section, we will see another prominent example of a theorem of AOT involving
-indistinguishable objects that relates to Aczel models.
+Notably, the existence of indistinguishable abstract objects can be used to prove that
+there is no general relation of identity in AOT, i.e. @{term \<open>\<guillemotleft>[\<lambda>xy x = y]\<guillemotright>\<close>} does not
+denote:
+\<close>
+
+AOT_theorem \<open>\<not>[\<lambda>xy x = y]\<down>\<close>
+proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
+  AOT_assume 0: \<open>[\<lambda>xy x = y]\<down>\<close>
+  \<comment> \<open>Let a and b be witnesses to the theorem discussed above.\<close>
+  AOT_obtain a b where 1: \<open>A!a & A!b & a \<noteq> b & \<forall>F([F]a \<equiv> [F]b)\<close>
+    using "aclassical2" "\<exists>E"[rotated] by blast
+  \<comment> \<open>From our assumption and the fact that a is self-identical, it follows
+      that a exemplifies the projection of the identity relation to a.\<close>
+  moreover AOT_have \<open>[\<lambda>x [\<lambda>xy x = y]ax]a\<close>
+    by (safe intro!: 0 "\<beta>\<leftarrow>C" "cqt:2" tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "=I")
+  \<comment> \<open>Since a and b are indistinguishable, b has to exemplify this property as well.\<close>
+  ultimately AOT_have \<open>[\<lambda>x [\<lambda>xy x = y]ax]b\<close>
+    by (safe intro!: 1[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] 0 "cqt:2")
+  \<comment> \<open>Which by beta-conversion yields that a is identical to b.\<close>
+  AOT_hence \<open>a = b\<close>
+    by (safe dest!: "\<beta>\<rightarrow>C")
+  \<comment> \<open>Which contradicts the fact that a and b are distinct by construction.\<close>
+  AOT_thus \<open>p & \<not>p\<close> for p
+    using 1 "&E" "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "reductio-aa:1" by blast
+qed
+text\<open>
+This feature of AOT will be of notable importance during the construction of
+natural numbers in chapter~\ref{NaturalNumbers}.
+In the following section, we will see another prominent example of a theorem of AOT
+that involves objects and relates to Aczel models.
 \<close>
 
 subsection\<open>Necessary and Sufficient Condition for Relations to Denote\<close>text\<open>\label{KirchnersTheorem}\<close>
