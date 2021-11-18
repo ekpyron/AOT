@@ -1968,9 +1968,203 @@ only if they are equinumerous in the second).
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
 text\<open>
+While the second-order fragment of AOT is expressive enough for a variety of
+applications, including applications in @{emph \<open>Natural Mathematics\<close>}, as demonstrated
+in the last chapter at the example of the analysis of Natural Numbers, the theory can
+be generalized to a full type-theoretic higher-order version. A notably application of
+this generalized version of AOT is its analysis of theoretical mathematics.
+
+While natural mathematics involves the construction of mathematical objects directly
+by abstracting exemplification patterns and their properties are derived from the
+principles of AOT itself, theoretical mathematics involves analysing mathematical theories
+themselves as well as their objects, axioms and relations as abstract objects.
+
+While a full discussion of the full type-theoretic version of AOT is beyond the scope
+of this thesis, this chapter will provide a short, informal overview of its construction
+and the challenges in constructing an embedding of it in Isabelle/HOL.
+
+Note that while we reuse the notational conventions of our embedding for consistency
+with the last chapters (e.g. we use square brackets in exemplification and encoding
+formulas and the free-variable notation discussed in section~\ref{substitutability}),
+this chapter is @{emph \<open>not\<close>} written relative to an Isabelle representation, so
+in contrast to the last chapters, none of the statements and terms are cited from
+an embedding.
+\<close>
+section\<open>Overview of Higher-Order Object Theory\<close>
+text\<open>
+Our description is based on an at the time of writing unpublished draft of a chapter
+of PLM. However, the full type-theoretic version of AOT is also already discussed in
+(TODO cite) and a simplified version serves as the basis of the upcoming
+paper @{emph \<open>A Defense of Logicism\<close>} jointly authored by Hannes Leitgeb, Uri Nodelmann and
+Edward Zalta (TODO: cite preprint).
+
+We already hinted at AOT's system of types in section~\ref{AOTLanguage}.
+Formally, it involves the following types:
+
+  \<^item> @{text i} is a type.
+  \<^item> Whenever @{text \<open>t\<^sub>1,\<cdots>,t\<^sub>n\<close>} are types (@{text \<open>n \<ge> 0\<close>}), @{text \<open>\<langle>t\<^sub>1,\<dots>,t\<^sub>n\<rangle>\<close>} is a type.
+
+@{text i} is the primitive type of individuals, @{text \<open>\<langle>t\<^sub>1,\<dots>,t\<^sub>n\<rangle>\<close>} is the type of relations
+among @{text n} objects of the respective types @{text \<open>t\<^sub>1,\<dots>,t\<^sub>n\<close>}.
+Zero-place relations, i.e. @{text \<open>\<langle>\<rangle>\<close>}, form the type of propositions.
+@{text \<open>\<langle>i\<rangle>\<close>} is the type of properties among individuals. @{text \<open>\<langle>\<langle>i\<rangle>\<rangle>\<close>} is the type of
+properties of properties of individuals. @{text \<open>\<langle>\<langle>i\<rangle>, \<langle>\<rangle>\<rangle>\<close>} is the type of relations between
+properties and propositions, etc.
+
+The distinction between exemplification and encoding is reproduced for higher-order
+types, i.e. the language involves exemplification formulas of the form
+$[\tau^{\langle t_1,\dots,t_n \rangle}]\tau^{\tau_1}\dots\tau^{\tau_n}$ and
+encoding formulas of the form $\tau^{\tau_1}\dots\tau^{\tau_n}[\tau^{\langle t_1,\dots,t_n \rangle}]$.@{footnote \<open>Note
+that for consistency with the notational convention in the last chapters, we add
+additional square brackets around the relation terms.\<close>}
+
+Furthermore, the distinction between ordinary and abstract objects is generalized to
+all types. I.e. for every type @{text t} there is a distinguished constant
+$E!^{\langle t \rangle}$ exemplified by all concrete objects of type @{text t},
+which yields polymorphic definitions of @{emph \<open>being ordinary\<close>} and
+@{emph \<open>being abstract\<close>} at every type.
+
+While the definitions and axiom system are similar to the second-order version described in
+sections~\ref{AOTLanguage} and~\ref{AxiomSystem}, there are some notable differences.
+The following is a non-exhaustive list:
+
+  \<^item> Relation identity for relations of type @{text \<open>\<langle>t\<rangle>\<close>} is defined as:@{footnote \<open>@{text n}-ary
+    relation identity for @{text \<open>n \<ge> 1\<close>} and proposition identity are extended similarly to account
+    for abstract @{text n}-place relations, resp. propositions.\<close>}
+    @{text[display] \<open>F = G \<equiv>\<^sub>d\<^sub>f ([O!]F & [O!]G & \<box>\<forall>x(x[F] \<equiv> x[G])) \<or> ([A!]F & [A!]G & \<box>\<forall>\<H>(F[\<H>] \<equiv> G[\<H>]))\<close>}
+  \<^item> @{text \<lambda>}-expressions are ordinary by axiom.
+  \<^item> @{text \<eta>}-conversion is restricted to ordinary relations.
+
+Notably, the comprehension principle for abstract objects is retained at all types @{text t}.
+I.e. let @{text \<alpha>} by of type @{text t}, then the following is an axiom:
+\begin{quote}
+  @{text[display] \<open>\<exists>\<alpha>([A!]\<alpha> & \<forall>F(\<alpha>[F] \<equiv> \<phi>{F}))\<close>}
+\end{quote}
+\<close>
+section\<open>Applications to Theoretical Mathematics\<close>
+
+text\<open>
+The analysis of Theoretical Mathematics in higher-order object theory was described
+in (TODO: cite) and a simplified version is used in (TODO: cite logicism paper).
+
+While a full-discussion of the involved subtleties again goes beyond the scope of this
+thesis, we demonstrate the general idea at the example of the representation of
+Zermelo-Fraenkel set-theory as an abstract object @{text \<open>ZF\<close>} in higher-order AOT.
+
+Technically, a mathematical theory in AOT is a @{emph \<open>situation\<close>}, i.e. an abstract
+object that encodes only propositional properties.@{footnote \<open>Recall the discussion in
+section~\ref{PossibleWorldTheory}.\<close>} So we can reuse the notation @{text \<open>T \<Turnstile> p\<close>} as
+the proposition @{text p} is true in theory @{text T}.
+
+The cornerstones of the analysis are the @{emph \<open>Importation Principle\<close>}, stated in
+(cite logicism) as follows:
+
+\begin{quote}
+  When @{text \<phi>} is a closed theorem of @{text T}, then @{text \<open>T \<Turnstile> \<phi>\<^sup>*\<close>} shall be
+  an axiom, where @{text \<open>\<phi>\<^sup>*\<close>} is the result of indexing every occurrence of a term or
+  predicate of @{text T} to @{text T}.
+\end{quote}
+
+So taken @{term S} as the ZF's property of @{emph \<open>being a set\<close>}, it is a theorem of
+ZF that:
+
+\begin{quote}
+  @{text[display] \<open>\<turnstile>\<^sub>Z\<^sub>F \<not>\<exists>y([S]y & y \<in> \<emptyset>)\<close>}
+\end{quote}
+
+This theorem can be imported to AOT using the following instance of the Importation Principle:
+
+\begin{quote}
+  @{text[display] \<open>ZF \<Turnstile> \<not>\<exists>y([S\<^sub>Z\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F \<emptyset>\<^sub>Z\<^sub>F)\<close>}
+\end{quote}
+
+Further the involved indexed terms of ZF are in turn abstract objects in AOT, e.g.
+\begin{quote}
+  @{text[display] \<open>\<emptyset>\<^sub>Z\<^sub>F = \<^bold>\<iota>x([A!]x & \<forall>F(x[F] \<equiv> ZF \<Turnstile> [F]\<emptyset>\<^sub>Z\<^sub>F)\<close>}
+  @{text[display] \<open>S\<^sub>Z\<^sub>F = \<^bold>\<iota>F([A!]F & \<forall>\<F>(x[\<F>] \<equiv> ZF \<Turnstile> [\<F>]S\<^sub>Z\<^sub>F)\<close>}
+  @{text[display] \<open>\<in>\<^sub>Z\<^sub>F = \<^bold>\<iota>R([A!]R & \<forall>\<R>(x[\<R>] \<equiv> ZF \<Turnstile> [\<R>]\<in>\<^sub>Z\<^sub>F)\<close>}
+\end{quote}
+
+And exemplifying properties in ZF can be translated to encoding claims in AOT. E.g.
+in ZF, @{text \<open>\<emptyset>\<close>} exemplifies the property @{text \<open>[\<lambda>x \<not>\<exists>y([S\<^sub>Z\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F x)]\<close>}. This
+property can be captured as an @{emph \<open>abstract property\<close>} in AOT that is @{emph \<open>encoded\<close>}
+by @{text \<open>\<emptyset>\<^sub>Z\<^sub>F\<close>}:@{footnote \<open>While @{text \<lambda>}-expressions in higher-order AOT are ordinary,
+theory-indexed @{text \<lambda>}-expressions like below are abstract.\<close>}
+
+\begin{quote}
+  @{text[display] \<open>\<emptyset>\<^sub>Z\<^sub>F[[\<lambda>x \<not>\<exists>y([S\<^sub>S\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F x)]\<^sub>Z\<^sub>F]\<close>}
+\end{quote}
+
+While a detailed account of the construction and its implications is the topic of
+the upcoming paper TODO: cite logicism, we will discuss the general issue of embedding
+higher-order AOT in Isabelle/HOL in the next section.
+\<close>
+
+section\<open>Challenges for the Construction of an Embedding in Isabelle/HOL\<close>
+
+subsection\<open>The Class of Abstract Objects in Unbounded Models\<close>
+
+text\<open>
+The issue in constructing unbounded models for higher-order object theory becomes
+clear if we consider the extent of the generalized comprehension principle of
+abstract objects.
+
+In particular, note that the comprehension principle for
+abstract individuals has the following instance:
+
+\begin{quote}
+@{text[display] \<open>\<exists>x ([A!]x & \<forall>F (x[F] \<equiv> ([A!]F & \<forall>\<F> (F[\<F>] \<equiv> \<phi>{\<F>}))))\<close>}
+\end{quote}
+
+There exists an abstract object @{text x} that encodes exactly those abstract properties
+@{text F} that encode exactly those properties of properties @{text \<F>} that satisfy
+an arbitrary condition @{text \<phi>} on @{text \<F>}.
+
+This can be iterated further, since there are also abstract properties of properties,
+for which the comprehension principle of abstract object still applies.
+
+Hence, if we naively tried to model abstract objects as "sets of properties" we quickly
+run into issues:
+
+Consequently, in contrast to the second-order fragment, we can no longer safely state
+that abstract objects correspond to @{emph \<open>sets of properties\<close>}, since the properties
+of unbounded higher-order object theory no longer form a set.
+
 
 \<close>
 
+subsection\<open>Bounded Models\<close>
+text\<open>
+
+(TODO: cite logicism) constructs minimal extensional models for the simplified version
+of higher-order AOT it uses for its argumentation. This construction defines the
+@{emph \<open>height\<close>} of a type @{text t}, written @{text \<open>h(t)\<close>}, and
+the @{emph \<open>width\<close>} of a type @{text t}, written @{text \<open>w(t)\<close>} as:
+
+  \<^item> @{text \<open>h(i) = 0\<close>}
+  \<^item> @{text \<open>h(\<langle>\<rangle>) = 1\<close>}
+  \<^item> @{text \<open>h(\<langle>t\<^sub>1,\<dots>,t\<^sub>n\<rangle>) = 1 + max{h(t\<^sub>1),\<dots>,h(t\<^sub>n)}\<close>}
+  \<^item> @{text \<open>w(i) = 1\<close>}
+  \<^item> @{text \<open>w(\<langle>\<rangle>) = 1\<close>}
+  \<^item> $w(\langle t_1,\dots,t_n \rangle) = \sum_1^k w(t_k)$
+
+And then presents a concrete model construction for bounded languages @{text \<open>\<L>\<^sub>n\<^sub>,\<^sub>m\<close>} that are @{emph \<open>cut off\<close>}
+at width @{text n} and height @{text m}, i.e. the well-formed expressions of the language @{text \<open>\<L>\<^sub>n\<^sub>,\<^sub>m\<close>} are
+the expressions of the unbounded language @{text \<open>\<L>\<close>} in which only terms of type @{text t} are well-formed,
+if @{text \<open>w(t) \<le> n\<close>} and @{text \<open>h(t) \<le> m\<close>}.
+In particular, types of height @{text m} only involve ordinary objects, not abstract objects. For example,
+the second-order fragment described in the last chapters, is cut off at height @{text 1}: while it involves
+abstract objects, all relations and propositions are ordinary. Furthermore, while the
+second-order fragment considers properties of objects (height 1), it does not consider higher-order
+relations like properties of properties or properties of propositions.@{footnote \<open>Note that the cut-off involves
+subtle changes in the precise formulation of the definitions and the axiom system.\<close>}
+
+While we expect it to be feasible to construct a representation in Isabelle/HOL
+that allows for an arbitrary parameter as cut-off in height, we expect the details
+of such a construction to be non-trivial due to the non-uniform nature of the
+representation sets of types. We leave the construction of such an embedding to future
+research.
+\<close>
 
 chapter\<open>Conclusion\<close>
 

@@ -233,7 +233,8 @@ text\<open>
 The thesis is generated using Isabelle's document preparation system (TODO: cite).
 In particular, all statements cited in the thesis are renderings of verified theorems
 in the embedding, unless specifically stated otherwise and marked with vertical bars
-at the page margins.
+at the page margins.@{footnote \<open>With the exception of chapter~\ref{HigherOrderAOT} which
+is not written relative to an embedding in Isabelle and omits the marking at the page margins.\<close>}
 
 The appendix contains a rendering of the raw theory files of the embedding including all proofs. While
 Isabelle allows producing latex code for raw theories directly,@{footnote \<open>This mechanism is used
