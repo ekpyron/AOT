@@ -201,7 +201,6 @@ section\<open>Contributions and Structure of the Thesis\<close>text\<open>\label
 text\<open>
 In the following, we first provide a more detailed description of Shallow Semantic Embeddings (chapter~\ref{SSEs}) and
 a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
-
 Based on that, chapter~\ref{SSEofAOT} describes
 the constructed embedding of the second-order fragment of Abstract Object Theory in Isabelle/HOL.
 
@@ -213,8 +212,8 @@ Mathematical Induction and discuss an extension of AOT with a more general compr
 principle for relations among abstract objects. We also discuss some interesting
 variations of the construction that may be adopted by PLM in the future.
 
-Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of extending the current system to
-encompass the full higher-order type-theoretic version of Abstract Object Theory.
+Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of applying our method to
+the full higher-order type-theoretic version of Abstract Object Theory.
 
 TODO: Bullet point thoughts:
   \<^item> General method for analyzing philosophical arguments and theories: SSEs.
@@ -237,8 +236,9 @@ in the embedding, unless specifically stated otherwise and marked with vertical 
 at the page margins.
 
 The appendix contains a rendering of the raw theory files of the embedding including all proofs. While
-Isabelle allows producing latex code for raw theories directly, semantic information
-(e.g. color-coding of free vs. bound variables) are lost in the process, which reduces the
+Isabelle allows producing latex code for raw theories directly,@{footnote \<open>This mechanism is used
+for raw theory content that is inlined in the main thesis, but not for the appendix.\<close>} semantic information
+(e.g. color-coding of free vs. bound variables) is lost in the process, which reduces the
 readability. For that reason, we devised a custom theory presentation
 system written in Isabelle/Scala similar to Isabelle's HTML theory presentation that
 uses PIDE markup information (TODO: cite) to provide a color-coded rendering of the
@@ -329,8 +329,7 @@ in the deep embedding, namely @{typ \<open>int\<close>} in the example.
 
 There is a natural correspondence between the deep and shallow representations of this
 language. In particular it holds that @{thm[show_question_marks = false, names_short = false] Deep_Shallow_Literal} and
-@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition}.@{footnote \<open>TODO: Explain
-qualified names; mention that this gets more complex when involving interpretation and assignment functions.\<close>}
+@{thm[show_question_marks = false, names_short = false] Deep_Shallow_Addition}.
 So semantic evaluation is implicit in the shallow embedding.
 On the other hand there are also differences between the two representations. For example, in the
 deep embedding adding @{term x} to @{term y} results in an expression that is different from the expression of adding
@@ -401,7 +400,9 @@ propositions is boolean-valued function acting on (or, equivalently, sets of) po
 In an SSE we use the semantic domains as type for the formulas themselves, so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
-world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.
+world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.@{footnote \<open>Note
+that this choice of a representation of propositions commits us to an @{emph \<open>extensional\<close>} modal logic, in which
+necessary equivalence implies identity. We will later discuss how we can construct a (hyper-)intensional logic instead.\<close>}
 \<close>
 
 type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
@@ -515,10 +516,10 @@ refer to TODO: cite.\<close>} it collects all theorems derived in the current @{
 together with all local assumptions, and processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
-CVC4, E or SPASS (TODO: cite). This may, for example, involve a translation from higher-order problems
+E, SPASS or verit, Z3, CVC4 or vampire (TODO: cite). This may, for example, involve a translation from higher-order problems
 to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
-tries to reconstruct a short proof using Isabelle's proving methods (e.g. @{method metis} or @{method blast} TODO: cite?)
-that can be directly inserted to prove the current goal.
+tries to reconstruct a short proof using Isabelle's native proving methods@{footnote \<open>Which operate
+directly on Isabelle's trusted reasoning core.\<close>} that can be directly inserted to prove the current goal.
 
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
 the initial selection of theorems from the @{command theory} context.
@@ -921,9 +922,6 @@ semantic possible worlds are not part of the syntax of the target theory and man
 them can become a distraction. Therefore, we not only define custom inner syntax
 for the language of AOT, but also extend Isabelle's outer syntax by custom commands
 that hide this complexity (see section~\ref{AOTOuterSyntax}).
-
-The next chapter is formulated relative to our implementation of the syntax of Abstract
-Object Theory. TODO: adjust references. Ueberleitung.
 \<close>
 
 chapter\<open>Abstract Object Theory\<close>text\<open>\label{AOT}\<close>
