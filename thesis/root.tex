@@ -1,4 +1,5 @@
-\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on,twoside=true,bibliography=totoc]{scrreprt}
+%\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on,twoside=true,bibliography=totoc]{scrreprt}
+\documentclass[a4paper,enabledeprecatedfontcommands,abstract=on,twoside=true]{scrreprt}
 \usepackage{isabelle,isabellesym}
 \usepackage{url}
 \usepackage{xr}
@@ -16,6 +17,23 @@
 \usepackage[T1]{fontenc}
 \usepackage{environ}
 \usepackage[headsepline,automark]{scrlayer-scrpage}
+
+\usepackage{biblatex}
+
+\AtEveryBibitem{%
+  \iffieldundef{doi}{}{\clearfield{url}\clearfield{urldate}\clearfield{eprint}}%
+}
+
+\DefineBibliographyStrings{english}{%
+  bibliography = {References},
+}
+
+%\usepackage{natbib}
+
+%\bibliographystyle{plain}
+%\bibliographystyle{plainnat}
+\bibliography{root}
+%\addbibresource{root.bib}
 
 \newcommand{\embeddedstyle}[1]{{\color{blue}#1}}
 \newcommand{\bigbox}{}
@@ -442,9 +460,9 @@ TODO
 
 \restoregeometry
 
-% optional bibliography
-\bibliographystyle{abbrv}
-\bibliography{root}
+\newpage
+
+\printbibliography[heading=bibintoc]
 
 \cleardoublepage
 

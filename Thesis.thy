@@ -16,7 +16,7 @@ to increase in the future. A prime example is Hales' proof of the Kepler conject
 only broadly accepted after reconstructing the argument as a formal proof that could be verified
 by computerized theorem proving environments (TODO: cite). However, building up a sound reasoning environment from scratch is a
 non-trivial task. Consequently, there is only a limited number of trusted systems that can offer sophisticated
-interactive and automated reasoning tools like Coq, HOL-Light or Isabelle/HOL (TODO: cite).
+interactive and automated reasoning tools like Coq~\cite{coq}, HOL-Light~\cite{HOLLight} or Isabelle/HOL~\cite{Isabelle}.
 Furthermore, most of these systems have at least parts of their logical foundation in common,
 for example they are all based on some variation of functional type theory.
 
@@ -45,9 +45,9 @@ reasoning systems that are on par with the existing tools that are available for
 grounded in set theory or traditional functional higher-order type theory.
 
 The following represents an attempt at overcoming this issue. We utilize the concept of a
-@{emph \<open>shallow semantic embedding\<close>} (SSE) with abstraction layers (TODO: cite) to transfer the merits of
+@{emph \<open>shallow semantic embedding\<close>} (SSE) with abstraction layers to transfer the merits of
 the sophisticated interactive and automated reasoning system Isabelle/HOL to a fundamentally
-different foundational system, namely to Abstract Object Theory (AOT) (TODO: cite).
+different foundational system, namely to Abstract Object Theory (AOT).
 
 While it is not a requirement for our proposed general method, we demonstrate that
 we can extend Isabelle/HOL by a customized reasoning infrastructure written in Isabelle/ML
@@ -61,23 +61,23 @@ for the reuse of the automation infrastructure available for Isabelle/HOL.
 While our method can potentially be applied to a multitude of logical systems, Abstract Object Theory
 is a particularly well-suited target. On the one hand, it aims to be a foundational metaphysical system
 that can serve as the basis for mathematics and thereby stands in the tradition of Russell and
-Whitehead's Principia Mathematica (TODO: cite), while in fact extending its scope to e.g. linguistics and
+Whitehead's Principia Mathematica~\cite{PrincipiaMathematica}, while in fact extending its scope to e.g. linguistics and
 the sciences in general (TODO: rethink, cite). Furthermore, it attempts to overcome the dilemma noted
 by Quine by basing its analysis on an intuitive distinction between \emph{ordinary} and \emph{abstract} objects
 and equipping the latter with a very general and yet natural comprehension principle.(TODO: rethink, refer to later sections). On the other hand, it is based on logical foundations that significantly differ
-from classical functional higher-order type-theory and were even argued to be incompatible (see \cite{rtt}).
+from classical functional higher-order type-theory and were even argued to be incompatible (see~\cite{rtt}).
 Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
-models and semantics for such a system can be beneficial and vital for its soundness (TODO: refer to section with details).
+models and semantics for such a system can be beneficial and vital for its soundness (see~\ref{NewParadox}).
 During our continued work we could contribute to the evolution of Abstract Object Theory and
 simultaneously arrived at a faithful representation of its model structure, semantics and
 deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.\footnote{Note,
-however, that our embedding currently only extends to the second-order fragment of AOT, which is the subject
-of PLM chapters (TODO: cite). We briefly discuss the challenges of representing full higher-order
-object theory in chapter~\ref{HigherOrderAOT}.}
+however, that our embedding currently only extends to the second-order fragment of AOT.
+We briefly discuss the challenges of representing full higher-order object theory in chapter~\ref{HigherOrderAOT}.}
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
 of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
-Logico-Metaphysica (TODO: cite) are verifiably sound. Furthermore, we can suggest the generalization of
+Logico-Metaphysica (PLM)@{footnote \<open>PLM is available as continuously updated online draft/excerpt (see~\cite{PLM-current}).
+This thesis is written relative to the version dated October 13, 2021, archived in~\cite{PLM-Oct-13-2021}.\<close>} are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
 \<close>
@@ -89,17 +89,15 @@ The development of automated theorem provers has always been tied to the analysi
 systems. Already in the middle of the last century, Betrand Russell was quick to recognize the potential
 of computational methods, when confronted with the \emph{Logic Theorist}\footnote{A system developed by
 Allen Newell and Herbert Simon at Carnegie Mellon and programmed by J. C. Shaw using the vacuum tubes of
-the JOHNNIAC computer at the Institute for Advanced Study; TODO: cite.}, commonly regarded as the first
-automated theorem prover (TODO: cite \url{https://plato.stanford.edu/entries/computational-philosophy/}),
-and its ability to prove 38 out of 52 theorems from chapter two of Whitehead and Russell’s
-Principia Mathematica (TODO: cite), including a proof more elegant than one of
-Whitehead and Russell’s own (TODO: cite MacKenzie 1995, Loveland 1984, Davis 1957):\footnote{TODO: precise quote.
-Letter from Russell to Simon; source reference in \url{https://plato.stanford.edu/entries/computational-philosophy/}
-more text in \url{https://www.cl.cam.ac.uk/~jrh13/slides/lyon-04feb14/slides.pdf}. TODO: Verify primary source.}
+the JOHNNIAC computer at the Institute for Advanced Study; see~\cite{sep-computational-philosophy}.}, commonly regarded as the first
+automated theorem prover, and its ability to prove 38 out of 52 theorems from chapter two of Whitehead and Russell’s
+Principia Mathematica, including a proof more elegant than one of
+Whitehead and Russell’s own (see~\cite{sep-computational-philosophy}):
 
-\blockquote{I am delighted to know that Principia Mathematica can now be done by machinery \textelp{} I am quite
-willing to believe that everything in deductive logic can be done by machinery. \textelp{} I wish
-Whitehead and I had known of this possibility before we wasted 10 years doing it by hand.}
+\blockquote{I am delighted to know that Principia Mathematica can now be done by machinery.
+I wish Whitehead and I had known of this possibility before we both wasted ten years doing it by hand.
+I am quite willing to believe that everything in deductive logic can be done by a machine.\footnote{Letter
+from Russell to Simon dated 2 November, 1956; preserved in~\cite{Simon1996}, page 208.}}
 
 Since then there has been significant progress both in the development of automated theorem provers
 in general and in the application of computational methods to logical theories in particular. Some
@@ -111,7 +109,7 @@ subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 text\<open>
 
 The computational analysis of Abstract Object Theory (AOT) was pioneered by Fitelson and Zalta in
-\cite{FitelsonZalta}. They used the first-order system Prover9 (TODO: cite) for their work and were able to 
+\cite{FitelsonZalta}. They used the first-order system Prover9 (see~\cite{prover9-mace4}) for their work and were able to 
 verify the proofs of the theorems in AOT's analysis of situations and possible worlds in
 \cite{zalta1993}. Furthermore, they discovered an error in a theorem about Platonic Forms in~\cite{PelletierZalta}
 that was left as an exercise.
@@ -128,14 +126,14 @@ to translate the statements into the less-expressive language of multi-sorted fi
 resulting representation increases for expressive, higher-order philosophical claims.
 In general, this approach may be sufficient for analyzing concrete isolated arguments, but it becomes
 infeasible to construct a natural representation of an entire expressive higher-order theory and
-its full deductive system. (TODO: cite from paper)
+its full deductive system (see also~\cite{CrossFertilization}).
 \<close>
 subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>
 
 text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
 allows for a different approach, namely the analysis of arguments and theories directly in higher-order
-logic by constructing Shallow Semantic Embeddings (SSEs) \cite{UniversalReasoning}. In contrast to
+logic by constructing Shallow Semantic Embeddings (SSEs) (see~\cite{UniversalReasoning}). In contrast to
 a @{emph \<open>deep semantic embedding\<close>} which defines the syntax of a target system using an inductive data
 structure and evaluates statements semantically by recursively traversing this data structure,
 a @{emph \<open>shallow\<close>} semantic embedding instead provides a syntactic translation from the target logic
@@ -153,8 +151,7 @@ extensive analysis of G\"odel's ontological argument in second-order S5 modal lo
 such as KB (TODO cite), followed by a range of studies of similar ontological arguments (TODO cite).
 
 Another more recent example of the application of SSEs is the LogiKEy framework for
-ethical reasoning, normative theories and deontic logics.(TODO: cite \url{https://arxiv.org/abs/1903.10187}, resp.
-\url{https://doi.org/10.1016/j.artint.2020.103348} and the dataset \url{https://doi.org/10.1016/j.dib.2020.106409}).
+ethical reasoning, normative theories and deontic logics (see~\cite{LogiKEy} and~\cite{LogiKEyData}).
 The goal of LogiKEy is to develop the means for the control and governance of intelligent
 autonomous systems. The framework is based on a set of SSEs of different denotic logics,
 combinations thereof, as well as ethico-legal domain theories in higher-order logic
@@ -163,7 +160,7 @@ with an implementation in Isabelle/HOL. TODO: elaborate?
 The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
 proving environment is capable of automatically transforming statements into a suitable first-order
-representation on the fly to allow first-order theorem provers like E or SPASS (TODO: cite) to perform
+representation on the fly to allow first-order theorem provers like E (see~\cite{EProver}) or SPASS (see~\cite{SPASS}) to perform
 proof search much like e.g. Prover9 was able to do on a manually constructed first-order representation.
 
 These studies were still mainly concerned with case studies of concrete arguments or
@@ -177,10 +174,11 @@ Initial results of our own research were reported in~\cite{MScThesis}, in which 
 version of the technique of SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
 the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
 basis for the previous work using SSEs mentioned above. While the so-called Aczel models of object theory
-(TODO: cite) provide an important building block for constructing models of AOT in HOL, no full
+(see~\cite{zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
-of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica (PLM) (TODO: cite).
+of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica@{footnote \<open>The
+respective version of PLM is archived in~\cite{PLM-Oct-28-2016}.\<close>}.
 Furthermore, we introduced the new concept of @{emph \<open>abstraction layers\<close>}. An abstraction layer consists
 of a derivation of the axioms and deduction rules of a target system from a given semantics that is
 then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
@@ -190,15 +188,15 @@ Abstraction layers turned out to be a helpful means for reasoning within a targe
 the danger of deriving artifactual theories, while simultaneously allowing to maintain a flexible
 semantic backend that can be used to explore axiomatic extensions and variations of the target theory.
 
-A major initial result of this project, reported in~\cite{MScThesis}, was the discovery of an oversight
+A major initial result of this project, reported in~\cite{ReviewPaper}, was the discovery of an oversight
 in the formulation of AOT that allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
 of the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
 while previously it was restricted to individual terms only.
 This evolution of AOT was accompanied by a continuous further development of its
-embedding in Isabelle/HOL. This mutually beneficial mode of work was described in
-(TODO cite Open Philosophy) and resulted in a now stabilized and improved formulation of AOT and a
+embedding in Isabelle/HOL. This mutually beneficial mode of work was described in~\cite{CrossFertilization}
+and resulted in a now stabilized and improved formulation of AOT and a
 matching embedding of its second-order fragment. The details of this process and its results are
 the main subject of this thesis. 
 
@@ -238,7 +236,7 @@ TODO: Bullet point thoughts:
 section\<open>Verified Document Generation and Conventions\<close>text\<open>\label{Conventions}\<close>
 
 text\<open>
-The thesis is generated using Isabelle's document preparation system (TODO: cite).
+The thesis is generated using Isabelle's document preparation system (see~\cite{IsabelleSystemManual}).
 In particular, all statements cited in the thesis are renderings of verified theorems
 in the embedding, unless specifically stated otherwise and marked with vertical bars
 at the page margins.@{footnote \<open>With the exception of chapter~\ref{HigherOrderAOT} which
@@ -250,7 +248,7 @@ for raw theory content that is inlined in the main thesis, but not for the appen
 (e.g. color-coding of free vs. bound variables) is lost in the process, which reduces the
 readability. For that reason, we devised a custom theory presentation
 system written in Isabelle/Scala similar to Isabelle's HTML theory presentation that
-uses PIDE markup information (TODO: cite) to provide a color-coded rendering of the
+uses PIDE markup information (see~\cite{PIDE}) to provide a color-coded rendering of the
 theory files equipped with hyperlinks for cross-references.
 
 Whenever a theorem in the appendix refers to a specific item number in PLM, the
@@ -262,7 +260,7 @@ in the appendix being annotated with the item number of the corresponding statem
 While a certain degree of familiarity with the reasoning environment of Isabelle/HOL might be helpful,
 the fact that reasoning in Isabelle/HOL is designed to be natural and intelligible should allow
 following the constructions without extensive prior knowledge of Isabelle/HOL. An introduction
-to reasoning Isabelle/HOL can be found in (TODO: cite @{url \<open>https://isabelle.in.tum.de/doc/tutorial.pdf\<close>}).
+to reasoning in Isabelle/HOL can be found in~\cite{IsabelleTutorial}.
 \<close>
 
 
@@ -390,7 +388,7 @@ A natural semantic basis for SSEs of any modal logic is its Kripke-semantics (TO
 In general, a Kripke frame consists of a set of possible worlds and a binary relation on these worlds
 called @{emph \<open>accessibility relation\<close>}. For S5 there are two versions of semantics, one in which the
 accessibility relation is an equivalence relation and one in which there is no accessibility relation at
-all (TODO: cite M. Fitting "A Simple propositional S5 Tableau System"). For our purpose the simpler
+all (see~\cite{FittingS5}). For our purpose the simpler
 model suffices.@{footnote \<open>We will later argue that this is also a natural choice for the particular modal
 logic of Abstract Object Theory due to its additional actuality operator and rigid definite descriptions,
 see section~\ref{TrivialAccessibilityRelation}.\<close>}
@@ -459,7 +457,7 @@ text\<open>The proofs of both axioms are automatically found by @{command sledge
 main tool for automation.\footnote{@{command sledgehammer} is discussed in more detail in the following section.}
 
 So far we have constructed an embedding of propositional S5 modal logic using what is commonly
-known as \emph{Standard Translation} of modal logic (TODO: cite). However it is straightforward
+known as \emph{Standard Translation} of modal logic (see~\cite{ModalLogicSemanticPerspective}). However it is straightforward
 to enrich this embedding with quantification. (TODO: cite paper by Benzmueller)
 \<close>
 
@@ -471,7 +469,9 @@ definition exists :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (
 text\<open>Note that we didn't introduce any particular type for individuals, but stated
 polymorphic definitions relative to a type variable @{typ 'a}. This way the same quantifier
 can be used for propositions themselves, any desired type for individuals or even properties of
-any order.
+any order.@{footnote \<open>Note that this construction implies a shared domains for objects
+across possible worlds. An additional meta-logical predicate for @{emph \<open>existence
+in a possible world\<close>} can be added to model varying domains. TODO: cite?\<close>}
 
 As an example of theorems involving quantifiers and modal logic, we derive the Barcan formulas.
 @{command sledgehammer} can again automatically provide proofs.\<close>
@@ -518,17 +518,19 @@ its own mechanisms for abstract reasoning like type @{command class}es, @{comman
 limitations that can make them unsuitable to achieve that purpose on their own,
 as described in more detail in the following section.
 
-As mentioned in the last section, the main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (TODO: cite!).
+As mentioned in the last section, the main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (see~\cite{Sledgehammer}).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
 the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
 refer to TODO: cite.\<close>} it collects all theorems derived in the current @{command theory} context
 together with all local assumptions, and processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
-E, SPASS or verit, Z3, CVC4 or vampire (TODO: cite). This may, for example, involve a translation from higher-order problems
+E~\cite{EProver}, SPASS~\cite{SPASS} or verit~\cite{veriT, veriTIsabelle}, Z3~\cite{Z3, Z3Isabelle}, CVC4 or vampire (TODO: cite).
+This may, for example, involve a translation from higher-order problems
 to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
 tries to reconstruct a short proof using Isabelle's native proving methods@{footnote \<open>Which operate
-directly on Isabelle's trusted reasoning core.\<close>} that can be directly inserted to prove the current goal.
+directly on Isabelle's trusted reasoning core.\<close>} that can be directly inserted to prove the current goal.@{footnote \<open>TODO:
+mention veriT and Z3  proof reconstruction.\<close>}
 
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
 the initial selection of theorems from the @{command theory} context.
@@ -901,10 +903,7 @@ For that to work the @{text \<open>::\<close>} syntax used in HOL would need to 
 new syntax could be introduced for the same purpose. In our embedding of AOT we will instead reproduce the fact that
 PLM implicitly imposes type constraints based on the names of its (meta-)variables.} which requires some familiarity with Isabelle's
 internals like the purely syntactic constant @{text \<open>_constrain\<close>}
-(TODO: cite isar-ref 8.5.4) that are generally only sparsely documented.\footnote{The
-theory files of Isabelle/HOL and its accompanying ML implementation, which construct
-the HOL logic on the basis of Isabelle/Pure and are shipped with the Isabelle distribution,
-are generally considered to be the documentation of these internals.}
+(TODO: cite isar-ref 8.5.4).
 
 As a simpler example, we also need to introduce parentheses explicitly in our grammar subtree:\<close>
 
@@ -1819,12 +1818,12 @@ it now provably fails to denote (see~\nameref{AOT:block-paradox:1}):
 \end{quote}
 \<close>
 
-subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>
+subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>text\<open>\label{NewParadox}\<close>
 
 text\<open>
-When attempting to construct an embedding of the old formulation of PLM that relied
+When attempting to construct an embedding of a previous formulation of PLM (see~\ref{PLM-Oct-28-2016}) that relied
 on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>}
-as defined in the previous section, we found the following oversight (as reported in~\cite{MScThesis}):
+as defined in the previous section, we found the following oversight (see~\cite{MScThesis} and~\ref{ReviewPaper}):
 
 Encoding formulas embedded in the matrix of definite descriptions within complex formulas
 were not considered @{emph \<open>encoding subformulas\<close>} and thereby such complex formulas
