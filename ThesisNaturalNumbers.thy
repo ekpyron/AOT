@@ -1970,10 +1970,10 @@ chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label
 
 text\<open>
 While the second-order fragment of AOT is expressive enough for a variety of
-applications, including applications in @{emph \<open>Natural Mathematics\<close>}, as demonstrated
+applications, including applications in @{emph \<open>natural mathematics\<close>}, as demonstrated
 in the last chapter at the example of the analysis of Natural Numbers, the theory can
 be generalized to a full type-theoretic higher-order version. A notable application of
-this generalized version of AOT is its analysis of theoretical mathematics.
+this generalized version of AOT is its analysis of @{emph \<open>theoretical mathematics\<close>}.
 
 While natural mathematics involves the construction of mathematical objects directly
 by abstracting exemplification patterns and their properties are derived from the
@@ -2217,11 +2217,59 @@ conclude that the set of abstract individuals in non-trivial models of higher
 order AOT had to be sufficiently large to form a model of ZF itself (resp. that
 the cardinality of @{text \<open>A\<^sub>0\<close>} is strongly inaccessible).
 
+Consequently, a verifiably sound implementation relative to the unextended background theory
+of Isabelle/HOL may be challenging, since the expressive power of higher-order AOT may
+exceed the expressive power of this choice of a meta-logic. However, even if this turns
+out to be the case, it may be possible to construct a representation based on a stronger
+extension of Isabelle/HOL, for example HOLZF or one of its variants (TODO: cite), which
+axiomatizes the ZFC universe itself as a type in HOL. The feasibility of such an embedding
+as well as results about the relative strength of higher-order object theory, are
+interesting questions for future research.
 \<close>
 
 chapter\<open>Conclusion\<close>
 
 text\<open>
+We presented an implementation of a foundational metaphysical theory
+in an automated reasoning environment by leveraging and extending the concept of
+shallow semantic embeddings in classical higher-order logic.
+
+In the process, we could demonstrate that:
+  \<^item> The SSE approach is scalable and can not only be used for analyzing isolated arguments,
+    but can also be applied to a full metaphysical theory, while providing an accurate
+    implementation of its axioms and deductive system.
+  \<^item> Such an implementation is not merely a technical exercise, but can trigger a fruitful
+    exchange that in our case led to significant improvements of the analyzed theory
+    on the one hand and sched new light on the technical possibilities and limitations
+    of the SSE approach on the other hand. In particular, our embedding allows for the
+    rapid analysis of changes to and extensions of the axiom system of the target theory
+    on the one hand, and of the effects of variations to constructions within a given
+    axiomatization of the target system on the other hand.
+  \<^item> It is not only possible to technically reproduce the logic of a complex
+    target theory, but also to construct a nearly transparent representation of its
+    syntax and reasoning flow, allowing for an efficient and effortless exchange
+    of results between traditional pen-and-paper based reasoning and theorems and
+    properties of the system discovered on the basis of its computerized implementation.
+  \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
+    construct proofs that accurately correspond to derivations in the target system.
+    This way we effectively arrive at a dedicated automated theorem proving environment for
+    our target system, while retaining a verifiably sound meta-logical backend.
+  \<^item> The target theory AOT itself can verifiably live up to its claim to be able to
+    provide a philosophically grounded construction and analysis of natural mathematics.
+    In particular, we can confirm that AOT can serve as a sound basis for a variant of
+    Frege's construction of natural numbers. Furthermore, we could significantly contribute
+    to the evolution of this construction and provide further insights into the nature
+    of its required axioms.
+
+Curiously, our results simultaneously support the use of higher-order logic
+as universal meta-logic in that we can demonstrate that the SSE approach can be used
+to accurately represent even challenging foundational logical theories, while also
+strengthening the position of our target theory AOT as foundational system in confirming
+its ability to provide a philosophically grounded construction of mathematical objects.
+In this context, an attempt of an implementation of the full type-theoretic higher-order
+version of AOT using the SSE approach, as well as the formal analysis of its relative
+strength compared to HOL and ZF are fascinating opportunities for future research.
+
 
 \<close>
 

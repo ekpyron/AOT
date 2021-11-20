@@ -150,7 +150,15 @@ more detail in chapter~\ref{SSEs}.
 In \cite{ModalLogics} Benzm\"uller and Paulson represented quantified modal logic using SSEs by means
 of embedding modal operators based on their Kripke semantics (TODO cite). This allowed for an
 extensive analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
-such as KB (TODO cite), followed by a range of studies of similar ontological arguments (TODO cite). TODO: newer work by Benzm\"uller.
+such as KB (TODO cite), followed by a range of studies of similar ontological arguments (TODO cite).
+
+Another more recent example of the application of SSEs is the LogiKEy framework for
+ethical reasoning, normative theories and deontic logics.(TODO: cite \url{https://arxiv.org/abs/1903.10187}, resp.
+\url{https://doi.org/10.1016/j.artint.2020.103348} and the dataset \url{https://doi.org/10.1016/j.dib.2020.106409}).
+The goal of LogiKEy is to develop the means for the control and governance of intelligent
+autonomous systems. The framework is based on a set of SSEs of different denotic logics,
+combinations thereof, as well as ethico-legal domain theories in higher-order logic
+with an implementation in Isabelle/HOL. TODO: elaborate?
 
 The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
