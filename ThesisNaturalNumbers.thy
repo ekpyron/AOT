@@ -1720,13 +1720,12 @@ increased danger of general comprehension principles for encoding patterns among
 discernible objects to become self-referential and thereby inconsistent. So while we
 expect to be able to formulate meta-theorems about the conditions under which it
 will be safe to assert the existence of relations among abstract objects that encode
-patterns among discernible objects, we do not expect that we will be able to arrive at
+patterns among discernible objects, it is unclear if we will be able to arrive at
 similar general comprehension principles as for patterns among ordinary objects
-in the system itself. In that sense, the price of being
-able to eliminate the modal axiom described in section~\ref{ModalAxiom} using the
-new construction of section~\ref{NewNumberTheory} will be the fact that the
-predecessor axiom will become stronger and will have to rely on independent means
-of justification.
+in the system itself. In general, the price of being able to eliminate the modal axiom
+described in section~\ref{ModalAxiom} using the new construction of section~\ref{NewNumberTheory}
+will be the fact that the predecessor axiom will become stronger and may have to rely
+on independent means of justification.
 \<close>
 
 (*<*)
@@ -1922,8 +1921,10 @@ At the time of writing, we have prototypes for models of this new derivation ava
 In these models we restrict the domain of ordinary urelements to be at most countably
 infinite (i.e. either finite or in bijiection to the natural numbers), and require the
 domain of special urelements to be countably infinite.
-From this restriction it can be derived that class set cardinal numbers that measure
-the size of sets of urelements is itself a countable set. Since abstract objects that number properties
+From this restriction it can be derived that the class of cardinal numbers that measure
+the size of sets of urelements is itself a countable set.@{footnote \<open>There is one cardinal
+number for each finite set with @{text n} urelements and an additional cardinal for countably
+infinite sets of urelements.\<close>} Since abstract objects that number properties
 are in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
 another variant mentioned below they will be in one-to-one correspondence with the cardinals of
 sets of arbitrary urelements.\<close>} they can thus injectively be mapped into the special
@@ -1931,7 +1932,7 @@ urelements, making them discernible. Hence this validates the theorem that
 @{emph \<open>numbering a property\<close>} denotes and consequently yields models for the predecessor
 axiom.
 
-While we do not expect to be able to formulate a generalized comprehension principle
+While it is unclear if we can formulate a generalized comprehension principle
 for relations among abstract objects based on patterns on discernible objects in the same
 way as we demonstrated relative to ordinary objects above, we expect to arrive at meta theorems
 that will formulate conditions under which it is consistent to assert that classes
@@ -1971,15 +1972,15 @@ text\<open>
 While the second-order fragment of AOT is expressive enough for a variety of
 applications, including applications in @{emph \<open>Natural Mathematics\<close>}, as demonstrated
 in the last chapter at the example of the analysis of Natural Numbers, the theory can
-be generalized to a full type-theoretic higher-order version. A notably application of
+be generalized to a full type-theoretic higher-order version. A notable application of
 this generalized version of AOT is its analysis of theoretical mathematics.
 
 While natural mathematics involves the construction of mathematical objects directly
 by abstracting exemplification patterns and their properties are derived from the
-principles of AOT itself, theoretical mathematics involves analysing mathematical theories
-themselves as well as their objects, axioms and relations as abstract objects.
+principles of AOT itself, theoretical mathematics involves analyzing mathematical theories
+themselves (as well as their objects, axioms and relations) as abstract objects.
 
-While a full discussion of the full type-theoretic version of AOT is beyond the scope
+While a full discussion of the type-theoretic version of AOT is beyond the scope
 of this thesis, this chapter will provide a short, informal overview of its construction
 and the challenges in constructing an embedding of it in Isabelle/HOL.
 
@@ -1988,7 +1989,7 @@ with the last chapters (e.g. we use square brackets in exemplification and encod
 formulas and the free-variable notation discussed in section~\ref{substitutability}),
 this chapter is @{emph \<open>not\<close>} written relative to an Isabelle representation, so
 in contrast to the last chapters, none of the statements and terms are cited from
-an embedding.
+an embedding. We forgo marking the statements in this chapter using vertical bars at the page margin.
 \<close>
 section\<open>Overview of Higher-Order Object Theory\<close>
 text\<open>
@@ -2006,7 +2007,7 @@ Formally, it involves the following types:
 
 @{text i} is the primitive type of individuals, @{text \<open>\<langle>t\<^sub>1,\<dots>,t\<^sub>n\<rangle>\<close>} is the type of relations
 among @{text n} objects of the respective types @{text \<open>t\<^sub>1,\<dots>,t\<^sub>n\<close>}.
-Zero-place relations, i.e. @{text \<open>\<langle>\<rangle>\<close>}, form the type of propositions.
+Zero-place relations, i.e. relations of type @{text \<open>\<langle>\<rangle>\<close>}, form the type of propositions.
 @{text \<open>\<langle>i\<rangle>\<close>} is the type of properties among individuals. @{text \<open>\<langle>\<langle>i\<rangle>\<rangle>\<close>} is the type of
 properties of properties of individuals. @{text \<open>\<langle>\<langle>i\<rangle>, \<langle>\<rangle>\<rangle>\<close>} is the type of relations between
 properties and propositions, etc.
@@ -2021,18 +2022,17 @@ additional square brackets around the relation terms.\<close>}
 Furthermore, the distinction between ordinary and abstract objects is generalized to
 all types. I.e. for every type @{text t} there is a distinguished constant
 $E!^{\langle t \rangle}$ exemplified by all concrete objects of type @{text t},
-which yields polymorphic definitions of @{emph \<open>being ordinary\<close>} and
-@{emph \<open>being abstract\<close>} at every type.
+which yields definitions of @{emph \<open>being ordinary\<close>} and @{emph \<open>being abstract\<close>} at every type.
 
 While the definitions and axiom system are similar to the second-order version described in
 sections~\ref{AOTLanguage} and~\ref{AxiomSystem}, there are some notable differences.
 The following is a non-exhaustive list:
 
   \<^item> Relation identity for relations of type @{text \<open>\<langle>t\<rangle>\<close>} is defined as:@{footnote \<open>@{text n}-ary
-    relation identity for @{text \<open>n \<ge> 1\<close>} and proposition identity are extended similarly to account
+    relation identity for @{text \<open>n \<ge> 1\<close>} and proposition identity are extended in a similar manner to account
     for abstract @{text n}-place relations, resp. propositions.\<close>}
     @{text[display] \<open>F = G \<equiv>\<^sub>d\<^sub>f ([O!]F & [O!]G & \<box>\<forall>x(x[F] \<equiv> x[G])) \<or> ([A!]F & [A!]G & \<box>\<forall>\<H>(F[\<H>] \<equiv> G[\<H>]))\<close>}
-  \<^item> @{text \<lambda>}-expressions are ordinary by axiom.
+  \<^item> Denoting @{text \<lambda>}-expressions are ordinary by axiom.
   \<^item> @{text \<eta>}-conversion is restricted to ordinary relations.
 
 Notably, the comprehension principle for abstract objects is retained at all types @{text t}.
@@ -2048,7 +2048,7 @@ The analysis of Theoretical Mathematics in higher-order object theory was descri
 in (TODO: cite) and a simplified version is used in (TODO: cite logicism paper).
 
 While a full-discussion of the involved subtleties again goes beyond the scope of this
-thesis, we demonstrate the general idea at the example of the representation of
+thesis, we illustrate the general idea at the example of the representation of
 Zermelo-Fraenkel set-theory as an abstract object @{text \<open>ZF\<close>} in higher-order AOT.
 
 Technically, a mathematical theory in AOT is a @{emph \<open>situation\<close>}, i.e. an abstract
@@ -2056,7 +2056,7 @@ object that encodes only propositional properties.@{footnote \<open>Recall the d
 section~\ref{PossibleWorldTheory}.\<close>} So we can reuse the notation @{text \<open>T \<Turnstile> p\<close>} as
 the proposition @{text p} is true in theory @{text T}.
 
-The cornerstones of the analysis are the @{emph \<open>Importation Principle\<close>}, stated in
+One of the cornerstones of the analysis are the @{emph \<open>Importation Principle\<close>}, stated in
 (cite logicism) as follows:
 
 \begin{quote}
@@ -2085,7 +2085,7 @@ Further the involved indexed terms of ZF are in turn abstract objects in AOT, e.
   @{text[display] \<open>\<in>\<^sub>Z\<^sub>F = \<^bold>\<iota>R([A!]R & \<forall>\<R>(x[\<R>] \<equiv> ZF \<Turnstile> [\<R>]\<in>\<^sub>Z\<^sub>F)\<close>}
 \end{quote}
 
-And exemplifying properties in ZF can be translated to encoding claims in AOT. E.g.
+Exemplifying properties in ZF can be translated to encoding claims in AOT. E.g.
 in ZF, @{text \<open>\<emptyset>\<close>} exemplifies the property @{text \<open>[\<lambda>x \<not>\<exists>y([S\<^sub>Z\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F x)]\<close>}. This
 property can be captured as an @{emph \<open>abstract property\<close>} in AOT that is @{emph \<open>encoded\<close>}
 by @{text \<open>\<emptyset>\<^sub>Z\<^sub>F\<close>}:@{footnote \<open>While @{text \<lambda>}-expressions in higher-order AOT are ordinary,
@@ -2100,40 +2100,8 @@ the upcoming paper TODO: cite logicism, we will discuss the general issue of emb
 higher-order AOT in Isabelle/HOL in the next section.
 \<close>
 
-section\<open>Challenges for the Construction of an Embedding in Isabelle/HOL\<close>
+section\<open>Bounded Models\<close>
 
-subsection\<open>The Class of Abstract Objects in Unbounded Models\<close>
-
-text\<open>
-The issue in constructing unbounded models for higher-order object theory becomes
-clear if we consider the extent of the generalized comprehension principle of
-abstract objects.
-
-In particular, note that the comprehension principle for
-abstract individuals has the following instance:
-
-\begin{quote}
-@{text[display] \<open>\<exists>x ([A!]x & \<forall>F (x[F] \<equiv> ([A!]F & \<forall>\<F> (F[\<F>] \<equiv> \<phi>{\<F>}))))\<close>}
-\end{quote}
-
-There exists an abstract object @{text x} that encodes exactly those abstract properties
-@{text F} that encode exactly those properties of properties @{text \<F>} that satisfy
-an arbitrary condition @{text \<phi>} on @{text \<F>}.
-
-This can be iterated further, since there are also abstract properties of properties,
-for which the comprehension principle of abstract object still applies.
-
-Hence, if we naively tried to model abstract objects as "sets of properties" we quickly
-run into issues:
-
-Consequently, in contrast to the second-order fragment, we can no longer safely state
-that abstract objects correspond to @{emph \<open>sets of properties\<close>}, since the properties
-of unbounded higher-order object theory no longer form a set.
-
-
-\<close>
-
-subsection\<open>Bounded Models\<close>
 text\<open>
 
 (TODO: cite logicism) constructs minimal extensional models for the simplified version
@@ -2164,6 +2132,91 @@ that allows for an arbitrary parameter as cut-off in height, we expect the detai
 of such a construction to be non-trivial due to the non-uniform nature of the
 representation sets of types. We leave the construction of such an embedding to future
 research.
+\<close>
+
+section\<open>Abstract Objects in Unbounded Models\<close>
+
+text\<open>
+The issue in constructing unbounded models for higher-order object theory becomes
+clear if we consider the extent of the generalized comprehension principle of
+abstract objects and the identity conditions of abstract objects.
+
+In particular, note that the comprehension principle for
+abstract individuals has the following instance:
+
+\begin{quote}
+@{text[display] \<open>\<exists>x ([A!]x & \<forall>F (x[F] \<equiv> ([O!]F & \<phi>{F} \<or> [A!]F & \<forall>\<F> (F[\<F>] \<equiv> \<psi>{\<F>}))))\<close>}
+\end{quote}
+
+Such an abstract object @{text x} (at type @{text i})
+encodes all ordinary properties @{text F} (at type @{text \<open>\<langle>i\<rangle>\<close>}) that
+satisfy an arbitrary condition @{text \<phi>} and all abstract properties @{text F}
+that encode exactly those properties of properties @{text \<F>} (at type @{text \<open>\<langle>\<langle>i\<rangle>\<rangle>\<close>}) that satisfy
+an arbitrary condition @{text \<psi>} on @{text \<F>}.
+
+Now for two such abstract objects (at type @{text i}) to be identical,
+they not only have to encode the same ordinary properties (at type @{text \<open>\<langle>i\<rangle>\<close>}), but
+also the same abstract properties (at type @{text \<open>\<langle>i\<rangle>\<close>}).
+Those abstract properties in turn are identical, if they encode the same properties
+of properties (at type @{text \<open>\<langle>\<langle>i\<rangle>\<rangle>\<close>}).
+
+This can be iterated further, since there are also abstract properties of properties among individuals that
+may encode properties of properties of properties among individuals, etc. pp.
+
+While we leave a more detailed and rigorous analysis to future research, we try to
+informally illustrate the expected size of the set of abstract objects in unbounded
+models.
+
+Thinking in terms of Aczel models, let @{text \<open>O\<^sub>t\<close>} be the set of ordinary objects at
+type @{text t} and @{text \<open>S\<^sub>t\<close>} the set of special urelements of type @{text t}.
+Now the set of relations among objects of type @{text t}, i.e. @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle>\<close>} will
+be at least as large as the power set @{text \<open>\<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}. For simplicity, we consider
+minimal, extensional Aczel models, in which we have @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle> = \<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}.
+
+If we restrict ourselves to unary relations and write @{text 0} for the type of ordinary individuals @{text i},
+@{text 1} for the type of relations among individuals @{text \<open>\<langle>i\<rangle>\<close>} and so on, i.e. in general
+we choose @{text \<open>n+1\<close>} for unary relations among the type we identified with @{text n}, we get
+the following:
+
+@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S\<^sub>0)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S\<^sub>1)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S\<^sub>2)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>\<dots>\<close>}
+
+Now if we, solely for the purpose of arriving at a crude size estimate,
+further assume @{text \<open>O\<^sub>0\<close>} is empty and @{text \<open>S\<^sub>i = S\<^sub>0 = S\<close>}, we get:
+
+@{text \<open>O\<^sub>0 = \<emptyset>\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S) = \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S) = \<P>(\<P>(S) \<union> S) \<supseteq> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S) = \<P>(\<P>(\<P>(S) \<union> S) \<union> S) \<supseteq> \<P>(\<P>(\<P>(S))) \<union> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>\<dots>\<close>}
+
+Now if we assume that @{text S} has only one element and identify it with
+@{text \<open>\<P>(\<emptyset>)\<close>}, and (informally for the purpose of illustrating) consider the limit @{text \<open>O\<^sub>\<omega>\<close>}
+of relations at countably infinite height, we arrive at a model of
+the natural numbers, i.e. @{text \<open>|O\<^sub>\<omega>| \<ge> |\<nat>|\<close>}.
+
+The set of abstract objects at type @{text \<open>m - 1\<close>} is the power set of ordinary and
+abstract objects of type @{text m}, i.e. @{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}. So we get:
+
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>2 = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> A\<^sub>m\<^sub>-\<^sub>1) = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>3 = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> A\<^sub>m\<^sub>-\<^sub>2) = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m)))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>\<dots>\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>0 = \<P>(O\<^sub>1 \<union> \<P>(O\<^sub>2 \<union> \<P>(O\<^sub>3 \<union> \<P>(\<dots> \<union> A\<^sub>m)\<dots>)))\<close>}
+
+In particular, no finite application of power set operations is enough to
+construct @{text \<open>A\<^sub>0\<close>} from the (illustrative) limit set @{text \<open>A\<^sub>\<omega>\<close>}, which in turn would be the power set
+of @{text \<open>O\<^sub>\<omega>\<close>}, i.e. of a set at least as large as the natural numbers.
+
+While this informal argument will not hold up to scrutiny, it is safe to say that the
+set of abstract objects in an unbounded model of higher-order object theory will
+be huge. We wouldn't be surprised if a future more rigorous analysis were to
+conclude that the set of abstract individuals in non-trivial models of higher
+order AOT had to be sufficiently large to form a model of ZF itself (resp. that
+the cardinality of @{text \<open>A\<^sub>0\<close>} is strongly inaccessible).
+
 \<close>
 
 chapter\<open>Conclusion\<close>

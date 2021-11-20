@@ -2384,14 +2384,6 @@ TODO: needs to mention:
   \<^item> Section about hyperintensionality?
 \<close>
 
-section\<open>Implications for the Philosophy of Mathematics\<close>text\<open>\label{ImplicationsForPhilosophyOfMathematics}\<close>
-
-text\<open>
-TODO: Mention the use of higher-order AOT as logical meta-theory to argue for
-logicism. Refer to the derivation of Natural Numbers claiming to be a "purely logical" derivation
-in constract to a construction e.g. based on ZFC.
-\<close>
-
 chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<close>
 
 section\<open>Model\<close>
