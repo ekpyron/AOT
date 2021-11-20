@@ -8,7 +8,7 @@ chapter\<open>Natural Numbers in AOT\<close>text\<open>\label{NaturalNumbers}\<c
 
 text\<open>
 While AOT can represent mathematical theories (including their deductive systems) themselves
-as @{emph \<open>abstract objects\<close>}, as mentioned in section (TODO: adjust ref; likely~\ref{ImplicationsForPhilosophyOfMathematics}), it distinguishes this analysis of
+as @{emph \<open>abstract objects\<close>}, as mentioned in section (TODO: adjust ref), it distinguishes this analysis of
 @{emph \<open>Theoretical Mathematics\<close>} from the notion of @{emph \<open>Natural Mathematics\<close>}. @{emph \<open>Natural Mathematics\<close>}
 consists of ordinary, pretheoretic claims about mathematical objects (TODO: cite PLM (303))
 and arises directly as abstraction of the exemplification patterns among objects rather

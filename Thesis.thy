@@ -174,7 +174,7 @@ Initial results of our own research were reported in~\cite{MScThesis}, in which 
 version of the technique of SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
 the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
 basis for the previous work using SSEs mentioned above. While the so-called Aczel models of object theory
-(see~\cite{zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
+(see~\cite{zalta1983abstract,zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
 of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica@{footnote \<open>The
@@ -586,7 +586,7 @@ use Isabelle's native abstraction mechanisms. This serves to establish an additi
 abstraction between the concrete model construction and the derivation of the axiom and derivational
 system of the target theory, which helps in exploring changes to the model structure without
 having to adjust the full derivation of the abstraction layer and furthermore allows
-@{command nitpick} (TODO: explain/cite) to provide more meaningful and helpful models. (TODO: elaborate).
+@{command nitpick}~\cite{Nitpick} (TODO: explain/cite) to provide more meaningful and helpful models. (TODO: elaborate).
 
 For example, we extensively use @{command specification}s (TODO: cite).
 A @{command specification} is used to assert statements about previously uninterpreted constants
@@ -685,7 +685,7 @@ text\<open>Note that the proof (found by @{command sledgehammer}) now solely rel
      @{const \<o>\<^sub>2_conj} given in our specification:\<close>
   using \<o>\<^sub>2_conjE1 \<o>\<^sub>2_conjE2 \<o>\<^sub>2_conjI by blast
 
-text\<open>However, commuted conjunctions are no longer identical. The model-finding tool @{command nitpick} (TODO: cite)
+text\<open>However, commuted conjunctions are no longer identical. The model-finding tool @{command nitpick}~\cite{Nitpick}
      can provide a counterexample by constructing a model for @{typ \<o>\<^sub>2} that has more than two members.\<close>
 
 lemma \<open>(p \<^bold>\<and> q) = (q \<^bold>\<and> p)\<close>
@@ -743,8 +743,8 @@ is in general not possible.
 
 Isabelle provides further abstraction mechanisms, e.g. type @{command class}es and
 @{command locale}s, but each comes with its own limitations.
-Technically, a @{command locale} is a functor that maps parameters and a specification
-to a list of declarations.(TODO: cite isar-ref) In practice, this can be used to reason
+Technically, a @{command locale} (see~\S5.7~in~\cite{IsarRef}) is a functor that maps parameters and a specification
+to a list of declarations. In practice, this can be used to reason
 relative to abstract parameters that validate a set of assumptions and then @{command interpret}
 the @{command locale} by proving the assumptions for a concrete instantiation of its
 parameters. As a result of this interpretation of the locale, all declarations of and
@@ -753,10 +753,10 @@ and added to the theory context. Similarly to @{command specification}s, a limit
 of @{command locale}s is that they cannot involve polymorphic assumptions, which prevents
 us from formulating the full system of AOT abstractly as a single locale.
 
-Type @{command class}es are technically @{command locale}s that depend on @{emph \<open>exactly one\<close>}
+Type @{command class}es (see~\S5.8~in~\cite{IsarRef}) are technically @{command locale}s that depend on @{emph \<open>exactly one\<close>}
 type variable and additionally introduce an axiomatic type class for which, roughly speaking,
 the parameters of the locale are introduced as global constants that satisfy the locale
-assumptions.(TODO: cite isar-ref) In practice, type classes can be used to define properties
+assumptions. In practice, type classes can be used to define properties
 on types and reason about any type with those properties. Type classes can then be
 @{emph \<open>instantiated\<close>} for a concrete type@{footnote \<open>More precisely, a type constructor that
 may depend on additional types that can be restricted to certain type classes, resp. more precisely
@@ -767,13 +767,12 @@ For example, it is possible to instantiate a type class for products of two gene
 (i.e. type variables) of a specific classes. We use this mechanism to inductively define
 properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{IndividualTermsAndClasses}).
 
-While a full discussion of the subtleties of @{command locale}s and type @{command class}es
-goes beyond the scope of this thesis, a more detailed discussion can be found in TODO: refs.
-The short summary we provided above should, however, be sufficient for understanding
-our use of type classes in chapter~\ref{SSEofAOT}. Furthermore, it is
-important to note that while we use type classes to formulate theorems generically
-for several types, logically the type classes can be eliminated for each concrete instantiation
-of such a theorem with fully specified concrete types.
+While a full discussion of the subtleties of type @{command class}es
+goes beyond the scope of this thesis, the short summary we provided above should
+be sufficient for understanding our use of type classes in chapter~\ref{SSEofAOT}.
+Furthermore, it is important to note that while we use type classes to formulate
+theorems generically for several types, logically the type classes can be eliminated
+for each concrete instantiation of such a theorem with fully specified concrete types.
 \<close>
 
 
@@ -789,7 +788,7 @@ In simple models of HOL, every type has a set as its domain and a statement is v
 interpretation of the constants of a type and every assignment of its variables.
 
 A model of the embedded logic can be constructed by lifting a model of HOL through
-the defined semantics. The model-finding tool @{command nitpick} (TODO: cite?) can
+the defined semantics. The model-finding tool @{command nitpick}~\cite{Nitpick} can
 aid in making these lifted models concrete.
 
 Technically, a shallow embedding defines a substructure in the models of HOL, which
@@ -826,8 +825,8 @@ embedded theory, but has limited expertise in the particularities of the meta-lo
 in which the theory is embedded, can still use the embedding to reason in the target system
 without a steep learning curve.
 
-Isabelle's @{emph \<open>Isar\<close>} (@{emph \<open>Intelligible semi-automated reasoning\<close>}) language itself is, as the
-name suggests, specifically tailored towards being readable (TODO: cite isar-ref).
+Isabelle's @{emph \<open>Isar\<close>} (@{emph \<open>Intelligible semi-automated reasoning\<close>}) language itself (see~\cite{IsarRef}) is, as the
+name suggests, specifically tailored towards being readable.
 Isar makes up the @{emph \<open>outer syntax\<close>} of an Isabelle theory file and consists of commands that
 specify theorems and structured proofs acting on Isabelle's system of terms and types, which are
 formulated in @{emph \<open>inner syntax\<close>}.
@@ -902,8 +901,7 @@ not possible to specify the types of terms in our grammar sub-tree.
 For that to work the @{text \<open>::\<close>} syntax used in HOL would need to be reintroduced,\footnote{Or, alternatively,
 new syntax could be introduced for the same purpose. In our embedding of AOT we will instead reproduce the fact that
 PLM implicitly imposes type constraints based on the names of its (meta-)variables.} which requires some familiarity with Isabelle's
-internals like the purely syntactic constant @{text \<open>_constrain\<close>}
-(TODO: cite isar-ref 8.5.4).
+internals like the purely syntactic constant @{text \<open>_constrain\<close>} (see~\S8.5.4~in~\cite{IsarRef}).
 
 As a simpler example, we also need to introduce parentheses explicitly in our grammar subtree:\<close>
 
@@ -993,13 +991,11 @@ text\<open>
 
 Abstract Object Theory (AOT or @{emph \<open>object theory\<close>}) is a meta-physical theory inspired by ideas of
 Ernst Mally and formalized by Edward Zalta. 
-While the theory has been evolving for several decades (see TODO: cite), its most recent canonical
+While the theory has been evolving for several decades (see~\cite{zalta1983abstract, zalta1988intensional}), its most recent canonical
 presentation is given in @{emph \<open>Principia Logico-Metaphysica\<close>} (PLM), which is under continuous
-development and the most recent version of which can be accessed as online monograph (TODO cite PLM).
-This thesis is written relative to the version dated October 12, 2021 (TODO cite).
-
-TODO: the following is pretty much the section of the Review of Symbolic Logic Paper and will need
-some more revision and adjustment for the use as overview here.
+development and the most recent version of which can be accessed as online monograph (see~\cite{PLM-current}).
+This thesis is written relative to the version dated October 13, 2021 (see~\cite{PLM-Oct-13-2021}).
+A summary similar to the one in this section can also be found in~\cite{ReviewPaper}.
 
 AOT draws two fundamental distinctions, one between @{emph \<open>abstract\<close>} and
 @{emph \<open>ordinary\<close>} objects, and one between two modes of predication, namely,
@@ -1079,14 +1075,19 @@ and @{emph \<open>being a set of all those sets that aren't members of
 are necessarily equivalent (both necessarily fail to be exemplified).
 
 In the following sections, we provide a brief overview of the language, the axiom system and
-the deductive system of PLM. For a full account and detailed discussion refer to (TODO: cite PLM).
+the deductive system of PLM. For a full account and detailed discussion refer to~\cite{PLM-Oct-13-2021},
+respectively~\cite{PLM-current}.@{footnote \<open>At the time of writing both citations refer
+to the same version of PLM, but in the future \cite{PLM-current} will refer to the
+most recent formulation of PLM, while \cite{PLM-Oct-13-2021} will contain the archived
+version of the thesis that served as reference for this thesis. Naturally, referenced
+items and chapters numbers of PLM will be relative to \cite{PLM-Oct-13-2021}.\<close>}
 \<close>
 
 section\<open>The Language\<close>text\<open>\label{AOTLanguage}\<close>
 
 text\<open>
 
-A precise description of AOT's language can be found in (TODO: cite PLM).
+A precise description of AOT's language can be found in PLM chapter~7.
 In this section we provide a simplified informal description while explaining some of the deviations
 from AOT's conventions we use in our embedding.
 
@@ -1225,14 +1226,14 @@ text\<open>
 In the following, we reproduce the full axiom system of the latest formulation of AOT, while
 commenting on several aspects that are specific to AOT. Unless explicitly noted otherwise, we
 will directly cite the axioms from our implementation while explaining notational and conceptual
-differences to the original axiom system. The original axiom system is stated in (TODO: cite PLM)
+differences to the original axiom system. The original axiom system is stated in PLM chapter~8
 with detailed explanations. The implementation in our embedding can be found in~\ref{AOT:AOT_Axioms}.
 Throughout the section we will refer to the statement of the axioms in~\ref{AOT:AOT_Axioms},
 which will in turn refer to the item numbers of the axioms in PLM.
 
 The first set of axioms build up a Hilbert-style deductive system for negation and implications
-following Mendelsson's axiom system
-(TODO: cite Elliott Mendelson, Introduction to Mathematical Logic, Van Nostrand, New York, 1979, p. 31.)
+following Mendelsson's axiom system (see~\cite{Mendelson1987})
+(TODO: check year of reference; potentially switch to first edition)
 (see~\nameref{AOT:pl:1}):
 
 \begin{quote}
@@ -1453,7 +1454,7 @@ end))]\<close>
 (*>*)
 text\<open>
 
-While an implementation of the complete deductive system of PLM chapter~9 (TODO: cite properly) can be
+While an implementation of the complete deductive system of PLM chapter~9 can be
 found in~\ref{AOT:AOT_PLM}, a full discussion of the entire system would go beyond the scope of this thesis.
 However, we will discuss some aspects in detail with a particular focus on concepts that are required
 for the derivation of Natural Numbers in chapter~\ref{NaturalNumbers}.
@@ -1596,7 +1597,7 @@ Apart from the specific items discussed in the following sections,
 it may generally be helpful to be aware of the following derived
 properties of the deductive system:
 
-  \<^item> Propositional reasoning in AOT is classical.@{footnote \<open>In particular, as stated in PLM item TODO: cite,
+  \<^item> Propositional reasoning in AOT is classical.@{footnote \<open>In particular, as stated in PLM item (113),
 all classical propositional tautologies are theorems of AOT.\<close>}
   \<^item> Modal reasoning can be read semantically as following Kripke-semantics without accessibility relation and
 with a fixed designated actual world for the actuality operator. In particular, AOT follows an S5 modal logic with actuality operator and
@@ -1613,14 +1614,12 @@ subsection\<open>Restricted Variables\<close>text\<open>\label{RestrictedVariabl
 
 text\<open>
 
-TODO: cite discussion in PLM.
-
 A common theme in abstract object theory is the definition and analysis of certain families
 of objects. For instance, Possible Worlds, Logical Sets or Natural Numbers are families
 of abstract objects with specific properties. Furthermore, some constructions involve talking
 about the Ordinary Objects specifically. To be able to more conveniently state
 theorems involving such families of objects, PLM introduces a general mechansism for defining
-@{emph \<open>restricted variables\<close>} that range over objects satisfying a certain @{emph \<open>restriction condition\<close>}.
+@{emph \<open>restricted variables\<close>} that range over objects satisfying a certain @{emph \<open>restriction condition\<close>} (see PLM section~10.5).
 \<close>
 
 text\<open>
@@ -1638,11 +1637,11 @@ conditions.
 
 An example of a restriction condition is @{emph \<open>being ordinary\<close>}, i.e. @{term \<open>\<guillemotleft>O!x\<guillemotright>\<close>}.\footnote{It
 is a theorem that there necessarily exists an ordinary object @{thm "o-objects-exist:1"[print_as_theorem]}
-TODO: cite PLM and embedding, as a consequence of the modal axiom @{thm "qml:4"[axiom_inst, print_as_theorem]},
+(see~\nameref{AOT:o-objects-exist:1}), as a consequence of the modal axiom @{thm "qml:4"[axiom_inst, print_as_theorem]},
 the definition of @{emph \<open>being ordinary\<close>} as @{thm "oa:1"}, @{text \<open>\<beta>\<close>}-conversion and some modal reasoning.
-Furthermore, strict existential instance follows from the last quantifier axiom TODO: ref.}
+Furthermore, strict existential instance follows from the last quantifier axiom (see~\nameref{AOT:cqt:5:a}).}
 
-Restricted variables are governed by the following conventions (TODO: cite PLM):
+Restricted variables are governed by the following conventions (see PLM item (331)):
 Let @{term \<open>\<gamma>\<close>} be a variable that is restricted by the restriction condition @{text \<open>\<psi>{\<alpha>}\<close>}.
 Then a quantified formula of the form @{text \<open>\<forall>\<gamma> \<phi>{\<gamma>}\<close>} is to be understood as an
 abbreviation of @{text \<open>\<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<phi>{\<alpha>})\<close>} for an unrestricted variable @{text \<open>\<alpha>\<close>}.
@@ -1759,7 +1758,7 @@ The goal is to explicitly allow augmenting the theory by asserting contingent tr
 having to assert their actualization as modally-strict fact. After doing so, the weak
 converse of RN would indeed fail, so in order to keep the reasoning system robust against
 additional assertions of this kind, PLM does not allow reasoning using the weak converse of RN.
-A detailed discussion of this issue can be found in PLM (TODO: cite discussion in PLM).
+A detailed discussion of this issue can be found in PLM (see PLM item (71)).
 
 While section~\ref{TrivialAccessibilityRelation} hints at a potential way of reproducing
 this strict distinction using a more complex semantics, for simplicity we refrain from
@@ -1780,7 +1779,11 @@ AOT_register_variable_names
 (*>*)
 text\<open>
 Naive formulation of AOT, in which all @{text \<open>\<lambda>\<close>}-expression are assumed to
-denote relations, are subject to the Clark-Boolos Paradox (TODO: cite).
+denote relations, are subject to the Clark-Boolos Paradox.@{footnote \<open>The paradox was
+discovered by Romane Clark in a formalization of Meinong's theories by William Rapaport who
+reported it in~\cite{Rapaport}, p. 225. Independently, George Boolos constructs the same
+paradox in~\cite{BoolosFrege}, p. 17, under the name @{emph \<open>SuperRussell\<close>} in an analysis of
+Frege's foundations of arithmetic.\<close>}
 
 In particular consider the @{text \<open>\<lambda>\<close>}-expression @{term \<open>\<guillemotleft>[\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}, i.e.
 @{emph \<open>being an object, s.t. there is a property it encodes, but does not exemplify\<close>}.
@@ -1821,9 +1824,9 @@ it now provably fails to denote (see~\nameref{AOT:block-paradox:1}):
 subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>text\<open>\label{NewParadox}\<close>
 
 text\<open>
-When attempting to construct an embedding of a previous formulation of PLM (see~\ref{PLM-Oct-28-2016}) that relied
+When attempting to construct an embedding of a previous formulation of PLM (see~\cite{PLM-Oct-28-2016}) that relied
 on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>}
-as defined in the previous section, we found the following oversight (see~\cite{MScThesis} and~\ref{ReviewPaper}):
+as defined in the previous section, we found the following oversight (see~\cite{MScThesis} and~\cite{ReviewPaper}):
 
 Encoding formulas embedded in the matrix of definite descriptions within complex formulas
 were not considered @{emph \<open>encoding subformulas\<close>} and thereby such complex formulas
@@ -1933,8 +1936,7 @@ While, by construction, both @{text \<open>\<lambda>\<close>}-expressions are ne
 require them to be identical.\<close>}
 
 Initial versions of PLM that were equipped with a free logic on all types
-(TODO: cite @{url \<open>http://mally.stanford.edu/principia-2018-04-11.pdf\<close>}) still retained
-the concept of @{emph \<open>propositional formulas\<close>} (formulas without encoding subformulas), but
+still retained the concept of @{emph \<open>propositional formulas\<close>} (formulas without encoding subformulas), but
 dropped the implicit assumption that well-formed @{text \<open>\<lambda>\<close>}-expressions (i.e. @{text \<open>\<lambda>\<close>}-expressions
 with propositional matrix) generally denote, but instead excluded @{text \<open>\<lambda>\<close>}-expressions with matrices that
 contain definite descriptions from the base cases of axiomatically denoting terms.
