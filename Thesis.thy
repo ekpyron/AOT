@@ -115,7 +115,7 @@ verify the proofs of the theorems in AOT's analysis of situations and possible w
 that was left as an exercise.
 Other work with Prover9 that does not target AOT includes the simplification of the reconstruction
 of Anselm's ontological argument (in \cite{OppenheimerZalta2011}, Oppenheimer and Zalta show that
-only one of the three premises they used in \cite{OppenheimerZalta1991} is sufficient) or the
+only one of the three premises they used in \cite{OppenheimerZalta1991} (TODO: check citation and doi) is sufficient) or the
 reconstruction of theorems in Spinoza's @{emph \<open>Ethics\<close>} in \cite{SpinozaProver9}.
 
 However, there are inherent limitations to the approach of analyzing higher-order theories like AOT
@@ -552,7 +552,7 @@ the provided set of theorems. Consequently, the proving power and therefore the 
 In our current implementation, we therefore use option (2) instead. However, this comes with
 some challenges. While the equational theorems introduced by simple @{command definition}s can
 easily be collected and marked, other more advanced constructions in Isabelle like type definitions
-or @{command lift_definition}s (TODO: cite) introduce several theorems implicitly. While
+or @{command lift_definition}s (see~\cite{LiftingTransfer}) introduce several theorems implicitly. While
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
 TODO: cite sledgehammer user guide section 6.1.
 
