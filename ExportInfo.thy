@@ -1,5 +1,5 @@
 theory ExportInfo
-  imports AOT_NaturalNumbers
+  imports AOT_misc
 begin
 
 local_setup\<open>fn ctxt =>
