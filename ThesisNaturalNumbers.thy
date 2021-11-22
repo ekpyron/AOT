@@ -1725,7 +1725,7 @@ object exemplifying such a property @{term F}.
 subsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
  
 text\<open>
-Despite the concessions above, our comprehension principles aligns well with the analysis of other
+Despite the concessions above, our comprehension principles align well with the analysis of other
 philosophical objects in AOT.
 PLM defines for an abstract object to be the Leibnizian Concept of a property as follows (see~\nameref{AOT:concept-of-G}):
 
