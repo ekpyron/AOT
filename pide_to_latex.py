@@ -50,7 +50,9 @@ referencedEntities = {
 	"AOT_ExtendedRelationComprehension.denotes_ex_neg",
 	"AOT_ExtendedRelationComprehension.Comprehension_1",
 	"AOT_ExtendedRelationComprehension.Comprehension_2",
-	"AOT_ExtendedRelationComprehension.Comprehension_3"
+	"AOT_ExtendedRelationComprehension.Comprehension_3",
+	"AOT_misc.ConceptOfOrdinaryProperty",
+	"AOT_misc.FormOfOrdinaryProperty"
 }
 
 with open("./keys.list") as f:
@@ -389,7 +391,8 @@ theories = [
 	('AOT', 'AOT_RestrictedVariables', 'Restricted Variables'),
 	('AOT', 'AOT_ExtendedRelationComprehension', 'Extended Relation Comprehension'),
 	('AOT', 'AOT_PossibleWorlds', 'Possible Worlds'),
-	('AOT', 'AOT_NaturalNumbers', 'Natural Numbers')
+	('AOT', 'AOT_NaturalNumbers', 'Natural Numbers'),
+	('AOT', 'AOT_misc', 'Additional Theorems')
 ]
 
 blobs = [

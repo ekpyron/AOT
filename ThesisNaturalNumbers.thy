@@ -1,6 +1,6 @@
 (*<*)
 theory ThesisNaturalNumbers
-  imports Thesis AOT_NaturalNumbers
+  imports Thesis AOT_NaturalNumbers AOT_misc
 begin
 (*>*)
 
@@ -1567,11 +1567,11 @@ While this formulation of the axioms is rather complex and not particularly intu
 (see~\nameref{AOT:AOT_ExtendedRelationComprehension.denotes_all},~\nameref{AOT:AOT_ExtendedRelationComprehension.denotes_ex_neg}):
 
 \begin{quote}
-@{thm[display] denotes_all[of _ F, print_as_theorem] denotes_ex_neg[of _ F, print_as_theorem]}
+@{thm[display] denotes_ex[of _ F, print_as_theorem] denotes_ex_neg[of _ F, print_as_theorem]}
 \end{quote}
 
-I.e. (1) @{emph \<open>encoding @{emph \<open>all\<close>} properties that are necessarily equivalent on the ordinary objects to a
-given property @{term F}\<close>} denotes a property and (2) @{emph \<open>not encoding @{emph \<open>any\<close>} property that is necessarily
+I.e. (1) @{emph \<open>encoding a property that is necessarily equivalent on the ordinary objects to a
+given property @{term F}\<close>} denotes a property and (2) @{emph \<open>not encoding a property that is necessarily
 equivalent on the ordinary objects to a given property @{term F}\<close>} denotes a property.
 
 The following comprehension principles are derivable from the fact that above properties
@@ -1584,8 +1584,8 @@ denote (see~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_1},~\na
 We call @{term \<phi>} a @{emph \<open>condition on extensions on ordinary objects\<close>}, just in case that
 @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<guillemotright>\<close>}.
 Then the comprehension principles state that for any condition @{term \<phi>} on extensions on ordinary objects,
-both @{emph \<open>encoding all properties that satisfy @{term \<phi>}\<close>} and
-@{emph \<open>encoding only properties that satisfy @{term \<phi>}\<close>} denote properties.
+both @{emph \<open>encoding a property that satisfies @{term \<phi>}\<close>} and
+@{emph \<open>not encoding a property that satisfies @{term \<phi>}\<close>} denote properties.
 
 In combination these two principles yield the following (see~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_3}):@{footnote \<open>However, note that above
 principles are stronger, i.e. they are @{emph \<open>not\<close>} derivable from the combined principle.\<close>}
@@ -1642,17 +1642,25 @@ a completely general principle that allows for distinguishing @{emph \<open>arbi
 
 However, our suggested comprehension principles are restricted to abstract objects that have encoding
 conditions that differ in exemplification patterns on the @{emph \<open>ordinary\<close>} objects.
-If for two abstract objects we can point to a property @{term F}, s.t. one of the object encodes @{emph \<open>all\<close>} properties
-that are equivalent on the ordinary objects to @{term F} and the other one doesn't, or one
-encodes @{emph \<open>none\<close>} of the properties that are equivalent on the ordinary objects to @{term F},
-while the other one encodes at least one, we have a concrete criterion for telling the abstract objects
-apart, so there is no justification for them to remain indistinguishable.
+If for two abstract objects we can point to a pattern among the ordinary objects,
+s.t. one of the object involves this pattern (i.e. it encodes a property that satisfies
+this pattern), but the other one doesn't involve this pattern at all (i.e. it encodes no
+property that satisfies this pattern), we have a concrete criterion for telling
+the objects apart. The same can be said, if one of the object fails to fully encode such a pattern
+(i.e. there is a property with this pattern on the ordinary objects that it doesn't encode),
+while the other encodes all properties with this pattern.
 
-In the following, we note some caveats of the suggested comprehension principle and conjecture that
-it is possible to require further classes of abstract objects to be exemplification-distinguishable.
+The third, combined principle (which is weaker than the first two principles, but strong enough
+for @{emph \<open>numbering a property\<close>} to denote) is seemingly even easier to justify: if an abstract object
+encodes @{emph \<open>exactly\<close>} those properties that satisfy a given pattern on the ordinary objects, then it is fully determined
+by this pattern, so in this sense we can @{emph \<open>identify\<close>} such abstract objects with the
+respective pattern on the ordinary objects they encode. Assuming that there are distinct patterns
+among the ordinary objects that are indistinguishable seems hardly justifiable. However, this
+relies on a particular understanding of what it means to encode a pattern among the
+ordinary objects that may not be completely intuitive, as conceded in the next section.
+
 However, our construction already shows that it is not necessary to justify the predecessor relation directly
-as a denoting relation and thereby that requiring it to denote by axiom does not mean introducing
-an intrinstically mathematical axiom: We can generalize the issue to the question of when abstract objects can
+as a denoting relation: We can generalize the issue to the question of when abstract objects can
 be assured to be exemplification-distinguishable. In this more general question we no longer see any ties to
 Mathematics whatsoever, but rather a metaphysical discussion of the nature of abstract objects and
 relations among them.
@@ -1661,11 +1669,6 @@ relations among them.
 subsubsection\<open>Caveats of the Comprehension Principles\<close>
 
 (*<*)
-AOT_define ExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>ExtensionOf'(_,_')\<close>)
-  "exten-property:1": \<open>ExtensionOf(x,[G]) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> \<forall>z([F]z \<equiv> [G]z))\<close>
-
-AOT_define OrdinaryExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>OrdinaryExtensionOf'(_,_')\<close>)
-   \<open>OrdinaryExtensionOf(x,[G]) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> \<forall>z(O!z \<rightarrow> ([F]z \<equiv> [G]z)))\<close>
 AOT_register_variable_names
   Relation: T
 (*>*)
@@ -1681,6 +1684,8 @@ following properties denote:
 
   \<^item> @{term \<open>\<guillemotleft>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<box>\<forall>z ([F]z \<rightarrow> O!z))]\<guillemotright>\<close>}, i.e. @{emph \<open>encoding only properties that
      are necessarily restricted to ordinary objects.\<close>}
+  \<^item> @{term \<open>\<guillemotleft>[\<lambda>x (x[\<lambda>z O!z & \<phi>{z}])]\<guillemotright>\<close>}, i.e. encoding a particular pattern among the
+    ordinary objects.
   \<^item> @{term \<open>\<guillemotleft>[\<lambda>x ExtensionOf(x, [\<lambda>z O!z & [G]z])]\<guillemotright>\<close>} where @{term \<open>\<guillemotleft>ExtensionOf(x,[G])\<guillemotright>\<close>} is defined
     by PLM as @{thm "exten-property:1"[of x G]}.
 
@@ -1688,31 +1693,88 @@ The notion of an @{emph \<open>extension on the ordinary objects\<close>} we use
 
 @{thm[display] OrdinaryExtensionOf[of x G]}
 
-In which case @{term \<open>\<guillemotleft>[\<lambda>x OrdinaryExtensionOf(x, [G])]\<down>\<guillemotright>\<close>} is in fact derivable from the suggested
+@{term \<open>\<guillemotleft>[\<lambda>x OrdinaryExtensionOf(x, [G])]\<down>\<guillemotright>\<close>} is derivable from the suggested
 principles. However, using this conception of extensions on ordinary objects as the basis for
 our comprehension principles, has some potentially counter-intuitive implications:
 
-If one abstract objects encodes all properties that are necessarily equivalent to @{emph \<open>being
-an ordinary table\<close>}, but another one fails to encode any such property, our comprehension principles
-are @{emph \<open>not\<close>} sufficient for telling them apart. Our condition involves encoding all properties
-that are necessarily equivalent @{emph \<open>on the ordinary objects\<close>} to a given property, so we can merely
-tell an object apart that encodes @{emph \<open>all\<close>} properties that are equivalent @{emph \<open>on the ordinary objects\<close>}
-to @{emph \<open>being an ordinary table\<close>}, which also for example involves @{emph \<open>being an ordinary table or
-being abstract\<close>}.
+If one abstract objects encodes exactly the property @{emph \<open>being
+an ordinary table\<close>}, and another abstract object encodes exactly @{emph \<open>being an ordinary table or
+being abstract\<close>}, our comprehension principles are not sufficient for telling them
+apart. Both objects involve the same pattern among the ordinary objects, but neither encodes
+it fully, since, for instance, neither encodes @{emph \<open>being an ordinary table or being
+a natural numbers\<close>}, which also has the same pattern among the ordinary objects.
 
-We conjecture that it is possible to further extend the models to force abstract objects to be
+The third, combined principle cannot even distinguish between an object that
+encodes exactly @{emph \<open>being an ordinary table\<close>} and an object that encodes
+exactly @{emph \<open>being a mathematician\<close>} - neither of these objects are @{emph \<open>fully
+determined by a pattern on the ordinary objects\<close>} in the sense of our principles, since
+neither encodes @{emph \<open>all\<close>} properties with this pattern.
+
+We conjecture that it is also possible to further extend the models to force abstract objects to be
 distinguishable, if they differ in encoding patterns among objects that are only true on the ordinary
-objects, i.e. that it is possible to model for example the following:@{footnote \<open>However,
-this may require collapsing the necessarily false propositions that result from any abstract
-object exemplifying such a property @{term F}.\<close>}
+objects, i.e. that it is possible to model for example the following:
 
-  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<forall>G (\<forall>x \<box>([G]x \<equiv> [F]x) \<rightarrow> x[G])]\<down>\<guillemotright>\<close>}
-  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<not>\<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & x[G])]\<down>\<guillemotright>\<close>}
+  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & x[G])]\<down>\<guillemotright>\<close>}
+  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & \<not>x[G])]\<down>\<guillemotright>\<close>}
 
-However, at the time of writing, we have not yet constructed such models concretely.
+However, this may have the undesirable side-effect that it implies the collapse of
+the necessarily false propositions that result from any abstract
+object exemplifying such a property @{term F}.
+\<close>
+
+subsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
+ 
+text\<open>
+Despite the concessions above, our comprehension principles aligns well with the analysis of other
+philosophical objects in AOT.
+PLM defines for an abstract object to be the Leibnizian Concept of a property as follows (see~\nameref{AOT:concept-of-G}):
+
+\begin{quote}
+  @{thm "concept-of-G"[of x G]}
+\end{quote}
+
+An object @{text x} is a concept of @{term G}, just in case it encodes exactly those properties
+that are necessarily implied by @{term G}, using the following definition of necessary implications
+between properties (see~\nameref{AOT:F-imp-G}):@{footnote \<open>@{emph \<open>Being a concept\<close>} @{term \<open>\<guillemotleft>C!\<guillemotright>\<close>} is
+defined as @{thm concepts}.\<close>}
+
+\begin{quote}
+  @{thm "F-imp-G"[of F G]}
+\end{quote}
+
+Now our comprehension principles make it derivable that @{emph \<open>being a concept of @{term H}\<close>}
+is a property, just in case @{term H} necessarily implies @{emph \<open>being ordinary\<close>} (see~\nameref{AOT:AOT_misc.ConceptOfOrdinaryProperty}):
+
+\begin{quote}
+@{thm ConceptOfOrdinaryProperty[print_as_theorem, of H]}
+\end{quote}
+
+Reusing the example above, the concept of @{emph \<open>being an ordinary table\<close>}
+@{emph \<open>does\<close>} encode @{emph \<open>being an ordinary table or being abstract\<close>},
+since the former necessarily implies the latter. In fact it encodes all
+properties that are necessarily equivalent on the ordinary objects to @{emph \<open>being an ordinary table\<close>},
+since all those properties are necessarily implied by @{emph \<open>being an ordinary table\<close>}.
+Therefore, @{emph \<open>being the concept of being an ordinary table\<close>} becomes a property,
+given our comprehension principles.
+
+Thick platonic forms are defined similarly to Leibnizian concepts of properties as (see~\nameref{AOT:tform-of}):
+
+\begin{quote}
+@{thm[display] "tform-of"[of x G]}
+\end{quote}
+
+So we can also derive that @{emph \<open>being the (thick) platonic form of H\<close>} denotes a property,
+if @{term H} necessarily implies @{emph \<open>being ordinar\<close>} (see~\nameref{AOT:AOT_misc.FormOfOrdinaryProperty}):
+
+\begin{quote}
+@{thm[display] FormOfOrdinaryProperty[print_as_theorem, of H]}
+\end{quote}
+
+
+
 Given the prospect of a move from abstracting patterns among @{emph \<open>ordinary\<close>} objects
 to abstracting patterns among @{emph \<open>discernible\<close>} objects instead (see section~\ref{NewNumberTheory}),
-the more interesting question for future research will be whether similar
+is is an interesting question for future research whether similar
 general comprehension principles can be formulated for distinguishing objects
 that encode different patterns among @{emph \<open>discernible\<close>} objects. However, since
 there are abstract objects among the @{emph \<open>discernible\<close>} objects, there is an

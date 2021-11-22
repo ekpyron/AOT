@@ -15,6 +15,7 @@ session "Thesis" in ".." = "HOL-Cardinals" +
     AOT_ExtendedRelationComprehension
     AOT_PossibleWorlds
     AOT_NaturalNumbers
+    AOT_misc
     Thesis
     ThesisNaturalNumbers
   document_files (in "thesis")
