@@ -1455,7 +1455,7 @@ While PLM continues to derive further theorems of Number Theory, defines mathema
 functions and operations, including recursively defined functions such as addition and proceeds to
 derive Second-Order Dedekind-Peano arithmetic, we will conclude our discussion of the topic here@{footnote \<open>In the future, we plan to
 construct a full implementation of this chapter of PLM.\<close>} and instead discuss in
-more detail how we modelled the two required axioms introduced.
+more detail how we modelled the two required additional axioms.
 \<close>
 
 
@@ -1484,7 +1484,7 @@ In particular we can prove the following (see~\nameref{AOT:AOT_NaturalNumbers.pr
 \end{quote}
 
 So to validate the predecessor axiom, we can equivalently
-construct modules in which @{thm numbers_prop_den[of _ F, print_as_theorem]} is
+construct models in which @{thm numbers_prop_den[of _ F, print_as_theorem]} is
 a theorem.
 Recall that @{emph \<open>numbering a property\<close>} is equivalent to the following (see~\nameref{AOT:numbers[den]}):
 
@@ -1572,7 +1572,9 @@ While this formulation of the axioms is rather complex and not particularly intu
 
 I.e. (1) @{emph \<open>encoding a property that is necessarily equivalent on the ordinary objects to a
 given property @{term F}\<close>} denotes a property and (2) @{emph \<open>not encoding a property that is necessarily
-equivalent on the ordinary objects to a given property @{term F}\<close>} denotes a property.
+equivalent on the ordinary objects to a given property @{term F}\<close>} denotes a property.@{footnote \<open>Note that these
+properties coexist with their negations, i.e. @{thm denotes_all_neg[of _ F, print_as_theorem]} is equivalent
+to the first, @{thm denotes_all[of _ F, print_as_theorem]} is equivalent to the second.\<close>}
 
 The following comprehension principles are derivable from the fact that above properties
 denote (see~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_1},~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_2}):
@@ -1684,17 +1686,18 @@ following properties denote:
 
   \<^item> @{term \<open>\<guillemotleft>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<box>\<forall>z ([F]z \<rightarrow> O!z))]\<guillemotright>\<close>}, i.e. @{emph \<open>encoding only properties that
      are necessarily restricted to ordinary objects.\<close>}
-  \<^item> @{term \<open>\<guillemotleft>[\<lambda>x (x[\<lambda>z O!z & \<phi>{z}])]\<guillemotright>\<close>}, i.e. encoding a particular pattern among the
+  \<^item> @{term \<open>print_term \<guillemotleft>[\<lambda>x (x[\<lambda>z O!z & \<phi>{z}])]\<guillemotright>\<close>}, i.e. encoding a particular pattern among the
     ordinary objects.
   \<^item> @{term \<open>\<guillemotleft>[\<lambda>x ExtensionOf(x, [\<lambda>z O!z & [G]z])]\<guillemotright>\<close>} where @{term \<open>\<guillemotleft>ExtensionOf(x,[G])\<guillemotright>\<close>} is defined
-    by PLM as @{thm "exten-property:1"[of x G]}.
+    by PLM as @{thm "exten-property:1"[of x G]} (see~\nameref{AOT:exten-property:1}).
 
-The notion of an @{emph \<open>extension on the ordinary objects\<close>} we used above would have to be defined as:
+The notion of an @{emph \<open>extension on the ordinary objects\<close>} we used above would have to be defined as (see~\nameref{AOT:AOT_misc.OrdinaryExtensionOf}):
 
 @{thm[display] OrdinaryExtensionOf[of x G]}
 
-@{term \<open>\<guillemotleft>[\<lambda>x OrdinaryExtensionOf(x, [G])]\<down>\<guillemotright>\<close>} is derivable from the suggested
-principles. However, using this conception of extensions on ordinary objects as the basis for
+With this definition, @{thm BeingOrdinaryExtensionOfDenotes[print_as_theorem, of G]} is derivable from the suggested
+principles (see~\nameref{AOT:AOT_misc.BeingOrdinaryExtensionOfDenotes}).
+However, using this conception of extensions on ordinary objects as the basis for
 our comprehension principles, has some potentially counter-intuitive implications:
 
 If one abstract objects encodes exactly the property @{emph \<open>being
@@ -1702,24 +1705,16 @@ an ordinary table\<close>}, and another abstract object encodes exactly @{emph \
 being abstract\<close>}, our comprehension principles are not sufficient for telling them
 apart. Both objects involve the same pattern among the ordinary objects, but neither encodes
 it fully, since, for instance, neither encodes @{emph \<open>being an ordinary table or being
-a natural numbers\<close>}, which also has the same pattern among the ordinary objects.
+a natural number\<close>}, which also has the same exemplification pattern among the ordinary objects.
 
-The third, combined principle cannot even distinguish between an object that
+The third, combined principle alone cannot even distinguish between an object that
 encodes exactly @{emph \<open>being an ordinary table\<close>} and an object that encodes
 exactly @{emph \<open>being a mathematician\<close>} - neither of these objects are @{emph \<open>fully
 determined by a pattern on the ordinary objects\<close>} in the sense of our principles, since
-neither encodes @{emph \<open>all\<close>} properties with this pattern.
-
-We conjecture that it is also possible to further extend the models to force abstract objects to be
-distinguishable, if they differ in encoding patterns among objects that are only true on the ordinary
-objects, i.e. that it is possible to model for example the following:
-
-  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & x[G])]\<down>\<guillemotright>\<close>}
-  \<^item> @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>x(A!x \<rightarrow> \<not>[F]x) \<rightarrow> [\<lambda>x \<exists>G (\<forall>x \<box>([G]x \<equiv> [F]x) & \<not>x[G])]\<down>\<guillemotright>\<close>}
-
-However, this may have the undesirable side-effect that it implies the collapse of
-the necessarily false propositions that result from any abstract
-object exemplifying such a property @{term F}.
+neither encodes @{emph \<open>all\<close>} properties with this pattern.@{footnote \<open>However, they
+become distinguishable on the bases of the first principle above, since we can find
+a pattern among ordinary objects one of the abstract objects encodes, while the other
+one doesn't (assuming mathematicians aren't tables).\<close>}
 \<close>
 
 subsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
@@ -1754,40 +1749,30 @@ Reusing the example above, the concept of @{emph \<open>being an ordinary table\
 since the former necessarily implies the latter. In fact it encodes all
 properties that are necessarily equivalent on the ordinary objects to @{emph \<open>being an ordinary table\<close>},
 since all those properties are necessarily implied by @{emph \<open>being an ordinary table\<close>}.
-Therefore, @{emph \<open>being the concept of being an ordinary table\<close>} becomes a property,
-given our comprehension principles.
 
-Thick platonic forms are defined similarly to Leibnizian concepts of properties as (see~\nameref{AOT:tform-of}):
+Thick platonic forms are defined similarly to Leibnizian concepts of properties (see~\nameref{AOT:tform-of}):
 
 \begin{quote}
 @{thm[display] "tform-of"[of x G]}
 \end{quote}
 
 So we can also derive that @{emph \<open>being the (thick) platonic form of H\<close>} denotes a property,
-if @{term H} necessarily implies @{emph \<open>being ordinar\<close>} (see~\nameref{AOT:AOT_misc.FormOfOrdinaryProperty}):
+if @{term H} necessarily implies @{emph \<open>being ordinary\<close>} (see~\nameref{AOT:AOT_misc.FormOfOrdinaryProperty}):
 
 \begin{quote}
 @{thm[display] FormOfOrdinaryProperty[print_as_theorem, of H]}
 \end{quote}
 
+This shows that our comprehension principles are by no means @{emph \<open>ad hoc\<close>} and
+have relevant implications for philosophical objects beyond the natural numbers.
+A detailed study of the implications of the principles will be an interesting
+topic for future research.
 
-
-Given the prospect of a move from abstracting patterns among @{emph \<open>ordinary\<close>} objects
-to abstracting patterns among @{emph \<open>discernible\<close>} objects instead (see section~\ref{NewNumberTheory}),
-is is an interesting question for future research whether similar
-general comprehension principles can be formulated for distinguishing objects
-that encode different patterns among @{emph \<open>discernible\<close>} objects. However, since
-there are abstract objects among the @{emph \<open>discernible\<close>} objects, there is an
-increased danger of general comprehension principles for encoding patterns among
-discernible objects to become self-referential and thereby inconsistent. So while we
-expect to be able to formulate meta-theorems about the conditions under which it
-will be safe to assert the existence of relations among abstract objects that encode
-patterns among discernible objects, it is unclear if we will be able to arrive at
-similar general comprehension principles as for patterns among ordinary objects
-in the system itself. In general, the price of being able to eliminate the modal axiom
-described in section~\ref{ModalAxiom} using the new construction of section~\ref{NewNumberTheory}
-will be the fact that the predecessor axiom will become stronger and may have to rely
-on independent means of justification.
+However, given the prospect of a move from abstracting patterns among @{emph \<open>ordinary\<close>} objects
+to abstracting patterns among @{emph \<open>discernible\<close>} objects instead,
+the more interesting question may be whether similar general comprehension principles
+can be formulated for distinguishing objects that encode different patterns among @{emph \<open>discernible\<close>} objects.
+We will discuss this further in section~\ref{NewNumberTheory}.
 \<close>
 
 (*<*)
@@ -1946,7 +1931,7 @@ AOT_define EquinumerousE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<p
 (*>*)
 text\<open>
 At the time of writing, there is an ongoing debate concerning variations of the analysis of Natural
-Numbers given above. In particular, instead of restricting the analysis to ordinary objects, identity on the
+Numbers. In particular, instead of restricting the analysis to ordinary objects, identity on the
 ordinary objects and equinumerosity on the ordinary object, Zalta and Nodelmann brought
 up the idea to instead follow the same basic construction relative to @{emph \<open>discernible objects\<close>}.
 
@@ -1971,7 +1956,7 @@ one-to-one correspondence@{text \<open>\<^sub>E\<close>} (see section~\ref{OneTo
 ranging over discernible instead of ordinary objects.
 
 The fact that @{emph \<open>numbering a property\<close>} coexists with the predecessor relation described
-in section~\ref{pred} is invariant under this change. As a consequence natural numbers will
+in section~\ref{pred} is invariant under this change. Moreover, natural numbers will
 themselves become discernible (since by Hume's theorem for two objects numbering the same properties
 implies their identity). This allows for abandoning the modal axiom for
 possible richness of ordinary objects and instead to more closely follow Frege's
@@ -1982,25 +1967,39 @@ yielding @{term \<open>\<guillemotleft>[\<P>]n n\<^bold>'\<guillemotright>\<clos
 At the time of writing, we have prototypes for models of this new derivation available.
 In these models we restrict the domain of ordinary urelements to be at most countably
 infinite (i.e. either finite or in bijiection to the natural numbers), and require the
-domain of special urelements to be countably infinite.
+domain of special urelements to be countably infinite.@{footnote \<open>In a more general
+construction, it would be sufficient to require there being countably infinitely many
+special urelements that serve as proxies for discernible objects, while allowing an
+arbitrary number of special urelements for indiscernible objects.\<close>}
 From this restriction it can be derived that the class of cardinal numbers that measure
-the size of sets of urelements is itself a countable set.@{footnote \<open>There is one cardinal
-number for each finite set with @{text n} urelements and an additional cardinal for countably
-infinite sets of urelements.\<close>} Since abstract objects that number properties
-are in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
+the size of sets of discernible objects is itself a countable set.@{footnote \<open>There is at most
+one cardinal number for each finite set of @{text n} discernibles and an additional cardinal for countably
+infinite sets of discernibles.\<close>} Since abstract objects that number properties
+will be in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
 another variant mentioned below they will be in one-to-one correspondence with the cardinals of
 sets of arbitrary urelements.\<close>} they can thus injectively be mapped into the special
 urelements, making them discernible. Hence this validates the theorem that
 @{emph \<open>numbering a property\<close>} denotes and consequently yields models for the predecessor
 axiom.
 
-While it is unclear if we can formulate a generalized comprehension principle
-for relations among abstract objects based on patterns on discernible objects in the same
-way as we demonstrated relative to ordinary objects above, we expect to arrive at meta theorems
-that will formulate conditions under which it is consistent to assert that classes
-of abstract objects are distinguishable: for example, any axiom that implies
+As mentioned in section~\ref{JustificationExtendedComprehension}, is is an interesting question
+whether similar general comprehension principles can be formulated for distinguishing objects
+that encode different patterns among @{emph \<open>discernible\<close>} objects, as we could suggest
+for patterns among @{emph \<open>ordinary\<close>} objects. However, since
+there are abstract objects among the @{emph \<open>discernible\<close>} objects, there is an
+increased danger of general comprehension principles for encoding patterns among
+discernible objects to become self-referential and thereby inconsistent. So while we
+expect to be able to formulate meta-theorems about the conditions under which it
+will be safe to assert the existence of relations among abstract objects that encode
+patterns among discernible objects@{footnote \<open>For example, any axiom that implies
 that certain abstract objects become discernible can be consistently modelled, as long as 
-it discerns at most countably many abstract objects.
+it discerns at most countably many abstract objects.\<close>}, it is unclear if we will be able to arrive at
+general comprehension principles that can be formulated in the system itself.
+
+In general, the price of being able to eliminate the modal axiom
+described in section~\ref{ModalAxiom} using the new construction will be that
+the predecessor axiom will become stronger and may have to rely
+on independent means of justification.
 
 Another similar variant of the construction, for which we have already constructed
 full models (TODO cite), does not restrict the domain of objects that can be counted at all, but
@@ -2026,6 +2025,22 @@ such objects in bulk, i.e. the same property would be counted by One.
 For properties that are only exemplified by discernible objects, both constructions
 are equivalent (i.e. such properties are equinumerous in the first variant if and
 only if they are equinumerous in the second).
+\<close>
+
+section\<open>Summary\<close>
+
+text\<open>
+In summary, we can conclude that the construction of natural numbers and the derivation
+of the Dedekind-Peano postulates given in PLM is sound. While the construction relies
+on additional axioms, we can say that:
+  \<^item> PLM can present reasonable justifications for both axioms.
+  \<^item> The predecessor axiom in the current construction can be generalized to comprehension
+    principles that are independently justifiable, which strengthens the argument that the axiom
+    is not intrinsically mathematical.
+  \<^item> In a future construction, the modal axiom of possible richness of objects may no
+    longer be required, eliminating the need for its justification.
+  \<^item> It will be an interesting question for future research to determine whether the predecessor axiom
+    can be similarly generalized in this future construction.
 \<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
