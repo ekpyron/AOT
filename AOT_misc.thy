@@ -8,6 +8,53 @@ AOT_define ExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>
 AOT_define OrdinaryExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>OrdinaryExtensionOf'(_,_')\<close>)
    \<open>OrdinaryExtensionOf(x,[G]) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> \<forall>z(O!z \<rightarrow> ([F]z \<equiv> [G]z)))\<close>
 
+AOT_theorem BeingOrdinaryExtensionOfDenotes:
+  \<open>[\<lambda>x OrdinaryExtensionOf(x,[G])]\<down>\<close>
+proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+  AOT_show \<open>[\<lambda>x A!x & G\<down> & [\<lambda>x \<forall>F(x[F] \<equiv> \<forall>z(O!z \<rightarrow> ([F]z \<equiv> [G]z)))]x]\<down>\<close>
+    by "cqt:2"
+next
+  AOT_show \<open>\<box>\<forall>x (A!x & G\<down> & [\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]x \<equiv>
+            OrdinaryExtensionOf(x,[G]))\<close>
+  proof(safe intro!: RN GEN)
+    AOT_modally_strict {
+      fix x
+      AOT_modally_strict {
+        AOT_have \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]\<down>\<close>
+        proof (safe intro!: "Comprehension_3"[THEN "\<rightarrow>E"] RN GEN
+                            "\<rightarrow>I" "\<equiv>I" Ordinary.GEN)
+          AOT_modally_strict {
+            fix F H u
+            AOT_assume \<open>\<box>H \<equiv>\<^sub>E F\<close>
+            AOT_hence \<open>\<forall>u([H]u \<equiv> [F]u)\<close>
+              using eqE[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] "qml:2"[axiom_inst, THEN "\<rightarrow>E"]
+              by blast
+            AOT_hence 0: \<open>[H]u \<equiv> [F]u\<close> using "Ordinary.\<forall>E" by fast
+            {
+              AOT_assume \<open>\<forall>u([F]u \<equiv> [G]u)\<close>
+              AOT_hence 1: \<open>[F]u \<equiv> [G]u\<close> using "Ordinary.\<forall>E" by fast
+              AOT_show \<open>[G]u\<close> if \<open>[H]u\<close> using 0 1 "\<equiv>E"(1) that by blast
+              AOT_show \<open>[H]u\<close> if \<open>[G]u\<close> using 0 1 "\<equiv>E"(2) that by blast
+            }
+            {
+              AOT_assume \<open>\<forall>u([H]u \<equiv> [G]u)\<close>
+              AOT_hence 1: \<open>[H]u \<equiv> [G]u\<close> using "Ordinary.\<forall>E" by fast
+              AOT_show \<open>[G]u\<close> if \<open>[F]u\<close> using 0 1 "\<equiv>E"(1,2) that by blast 
+              AOT_show \<open>[F]u\<close> if \<open>[G]u\<close> using 0 1 "\<equiv>E"(1,2) that by blast 
+            }
+          }
+        qed
+      }
+      AOT_thus \<open>(A!x & G\<down> & [\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]x) \<equiv>
+                OrdinaryExtensionOf(x,[G])\<close>
+        apply (AOT_subst_def OrdinaryExtensionOf)
+        apply (AOT_subst \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]x\<close>
+                         \<open>\<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))\<close>)
+        by (auto intro!: "beta-C-meta"[THEN "\<rightarrow>E"] simp: "oth-class-taut:3:a")
+    }
+  qed
+qed
+
 AOT_define FimpG :: \<open>\<Pi> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (infixl \<open>\<Rightarrow>\<close> 50)
   "F-imp-G": \<open>[G] \<Rightarrow> [F] \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x ([G]x \<rightarrow> [F]x)\<close>
 
