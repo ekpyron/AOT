@@ -2141,7 +2141,7 @@ object that encodes only propositional properties.@{footnote \<open>Recall the d
 section~\ref{PossibleWorldTheory}.\<close>} So we can reuse the notation @{text \<open>T \<Turnstile> p\<close>} as
 the proposition @{text p} is true in theory @{text T}.
 
-One of the cornerstones of the analysis are the @{emph \<open>Importation Principle\<close>}, stated in
+One of the cornerstones of the analysis is the @{emph \<open>Importation Principle\<close>}, stated in
 (cite logicism) as follows:
 
 \begin{quote}
@@ -2150,7 +2150,7 @@ One of the cornerstones of the analysis are the @{emph \<open>Importation Princi
   predicate of @{text T} to @{text T}.
 \end{quote}
 
-So taken @{term S} as the ZF's property of @{emph \<open>being a set\<close>}, it is a theorem of
+So taking @{term S} as the ZF's property of @{emph \<open>being a set\<close>}, it is a theorem of
 ZF that:
 
 \begin{quote}
@@ -2163,7 +2163,7 @@ This theorem can be imported to AOT using the following instance of the Importat
   @{text[display] \<open>ZF \<Turnstile> \<not>\<exists>y([S\<^sub>Z\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F \<emptyset>\<^sub>Z\<^sub>F)\<close>}
 \end{quote}
 
-Further the involved indexed terms of ZF are in turn abstract objects in AOT, e.g.
+Furthermore, the involved indexed terms of ZF are in turn abstract objects in AOT, e.g.
 \begin{quote}
   @{text[display] \<open>\<emptyset>\<^sub>Z\<^sub>F = \<^bold>\<iota>x([A!]x & \<forall>F(x[F] \<equiv> ZF \<Turnstile> [F]\<emptyset>\<^sub>Z\<^sub>F)\<close>}
   @{text[display] \<open>S\<^sub>Z\<^sub>F = \<^bold>\<iota>F([A!]F & \<forall>\<F>(x[\<F>] \<equiv> ZF \<Turnstile> [\<F>]S\<^sub>Z\<^sub>F)\<close>}
