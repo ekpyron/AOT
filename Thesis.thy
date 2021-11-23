@@ -2675,14 +2675,15 @@ distinguish between non-denoting individual terms (see below).
 For simple models, a plain primitive type for the special urelements suffices. However,
 to model our proposed extended relation comprehension, we use a richer type
 for special urelements and model them as sets of triples of two copies
-of sets of exemplification extensions on Ordinary urelements and one
+of sets of exemplification extensions on ordinary urelements and one
 very special urelement (type @{typ \<sigma>'}).
 This is discussed in more detail in section~\ref{pred}.
 
 Hyperintensional relations are modelled as proposition-valued functions.
 In particular, the embedding introduces the type @{typ urrel} (see~\nameref{AOT:AOT_model.urrel})
 that is represented by the set of all functions from urelements to propositions (type
-@{typ \<open>\<upsilon> \<Rightarrow> \<o>\<close>}), which map null-urelements to necessarily false propositions.
+@{typ \<open>\<upsilon> \<Rightarrow> \<o>\<close>}), which map null-urelements to necessarily false propositions.@{footnote \<open>Note
+that our construction allows for multiple distinct propositions that are necessarily false.\<close>}
 This type of @{emph \<open>urrelations\<close>} will correspond to denoting property terms.
 
 The additional null-urelements serve to avoid two kinds of artifactual theorems:
@@ -2696,10 +2697,10 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     both descriptions to be mapped to distinct null-urelements to which the urrelation
     corresponding to @{term F} can assign distinct (albeit necessarily false)
     propositions.\footnote{Note that this is not a mere technicality, but it may be desirable
-    to distinguish e.g. between the proposition @{emph \<open>The number smaller than 3 is a natural number.\<close>} (which fails due
-    to there not being a unique such number) and @{emph \<open>The number greater than 3 and smaller than 2 is a natural number.\<close>} (which
+    to distinguish e.g. between the proposition @{emph \<open>The number smaller than 3 is a natural number\<close>} (which fails due
+    to there not being a unique such number) and @{emph \<open>The number greater than 3 and smaller than 2 is a natural number\<close>} (which
     fails due to there not being any such number). Furthermore, it might make sense to consider
-    the proposition @{emph \<open>The present king of France is a natural number.\<close>} to be an entirely different
+    the proposition @{emph \<open>The present king of France is a natural number\<close>} to be an entirely different
     proposition than the first two. The embedding allows to assign each of the non-denoting definite descriptions
     distinct null-urelements and thereby allows the propositions to differ. However, it also allows to choose
     a model with only a single null-urelement which would collapse these propositions.}
@@ -2710,23 +2711,25 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     correspond to denoting individual terms to propositions, the identity would follow,
     since two functions are identical, if they agree on all arguments.
     By introducing null-urelements, however, we allow @{term F} and @{term G} to vary
-    on additional urelements outside of the range of the quantifier.@{footnote \<open>An alternative
+    on additional urelements outside of the range of the quantifier.@{footnote \<open>An alternative approach
     would be to introduce a primitive type of relations that is merely assigned a proposition-valued
-    function as extension, similarly to how Kripke-extensions are assigned to a primitive type of
+    function as extension, similarly to how Kripke-extensions are assigned to the primitive type of
     propositions. However, this would require a polymorphic axiomatization to account for relations
     of all arities which is incompatible with the model-checking tool @{command nitpick}. Even
     only axiomatizing a finite subset of all arities would require @{command nitpick} to construct
-    significantly larger models and thereby restrict its usefulness. Furthermore, the
-    construction would remain equivalent since the type of propositions can conceptually be
-    chosen as a pair of primitive urrelations and propositions@{text \<open>\<^sup>*\<close>}, s.t. each relation can
-    map to distinct propositions, i.e. the same granularity of relations can be achieved.\<close>}
+    significantly larger models and thereby diminish its usefulness. Furthermore, the
+    same granularity of relations can be achieved with relations as proposition-valued functions: let @{text \<open>\<M>\<close>} be a model with proposition-valued functions and
+    @{text \<open>\<M>'\<close>} be a model with a primitive type of urrelations. The domain of propositions in @{text \<open>\<M>\<close>} can conceptually be
+    chosen as the pairs of elements of the domain of primitive urrelations in @{text \<open>\<M>'\<close>} and elements of the domain of proposition of @{text \<open>\<M>'\<close>}, s.t. relations
+    that are distinct in @{text \<open>\<M>'\<close>} can be modelled as distinct proposition-valued functions in @{text \<open>\<M>\<close>} (by choosing a function
+    that maps to propositions with the corresponding urrelation of @{text \<M>'} as projection).\<close>}
 
 Note that the additional null-urelements have no impact on
 minimal models of AOT. In minimal models, propositions are extensional, i.e. they are
 in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
 on possible worlds there is exactly one proposition.
-While urrelations have to assign a propositions to null-urelements,
-by constructions, urrelations are required to be false on null-urelements.
+While urrelations have to assign propositions to null-urelements,
+by constructions, urrelations are required to evaluate to necessarily false propositions on null-urelements.
 Hence, there is only one choice for doing so, namely the single proposition with the constant-false function
 as Kripke-extension. Consequently, the number of relations in minimal models of AOT is unaffected. 
 
