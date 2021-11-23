@@ -3239,8 +3239,8 @@ and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}.}
 The notable restriction in this formulation is the proviso that 
 @{text \<open>\<psi>\<close>} is a @{emph \<open>subformula\<close>} of @{text \<phi>}. Subformulas are defined recursively
 in PLM item (6) (TODO: proper reference), but notably do not entail matrices of
-descriptions or @{text \<open>\<lambda>\<close>}-expressions: The formula @{text \<phi>} is @{emph \<open>not\<close>} a
-subformula of @{term \<open>print_term \<guillemotleft>\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>]\<guillemotright>\<close>} (for @{text \<open>n \<ge> 1\<close>}).
+descriptions or @{text \<open>\<lambda>\<close>}-expressions: E.g. the formula @{text \<phi>} is @{emph \<open>not\<close>} a
+subformula of @{term \<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>} or of @{term \<open>print_term \<guillemotleft>[\<lambda>y \<phi>{y}]x\<guillemotright>\<close>}.
 
 While the inductive base cases for proving the rule can easily be reproduced in the
 embedding (see~\nameref{AOT:rule-sub-lem:1:a}), combining the rule to a single statement
