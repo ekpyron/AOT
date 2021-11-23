@@ -28,6 +28,9 @@ referencedEntities = {
 	"AOT_model.<kappa><upsilon>",
 	"AOT_model.AOT_var",
 	"AOT_syntax.AOT_denotes",
+	"AOT_semantics.AOT_sem_imp",
+	"AOT_semantics.AOT_sem_desc_denotes",
+	"AOT_semantics.AOT_sem_exe",
 	"AOT_semantics.AOT_Enc",
 	"AOT_semantics.AOT_UnaryEnc",
 	"AOT_semantics.AOT_<kappa>",
@@ -165,6 +168,7 @@ unicode_map = {
 }
 
 labelPattern = re.compile(r'\u2039\\label{([^}]*)}\u203A', re.UNICODE)
+lineLabelPattern = re.compile(r'\u2039\\linelabel{([^}]*)}\u203A', re.UNICODE)
 specialAntiquotePattern = re.compile(r'\\<\^([^>]*)>')
 
 class ReferenceChecker(HTMLParser):
@@ -290,6 +294,8 @@ class PideXMLParser(HTMLParser):
 			specialAntiquote = True
 		if self.is_plain_text and (m := labelPattern.match(data)):
 			print("\\plmlabelnosec[{}.{}.{}]{{{}}}".format(self.chapter,self.section, self.line, m.group(1)), end="")
+		if self.is_plain_text and (m := lineLabelPattern.match(data)):
+			print("\\plmlabel[{}.{}.{}]{{AOT:{}}}".format(self.chapter,self.section, self.line, m.group(1)), end="")
 		for c in data:
 			if c == "\n":
 				if self.start_of_line:

@@ -2772,19 +2772,19 @@ The type @{typ \<kappa>} consists of ordinary objects of type @{typ \<omega>} (s
 urelements), abstract objects modelled as sets of urelements (type @{typ \<open>urrel set\<close>})
 and null-objects of type @{typ null} (shared with null-urelements) that will
 serve to model non-denoting definite descriptions. We can lift the surjective
-mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a full mapping
+mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a surjective mapping
 from individual terms to urelements @{text \<kappa>\<upsilon>} of type @{typ \<open>\<kappa> \<Rightarrow> \<upsilon>\<close>} (see~\nameref{AOT:AOT_model.<kappa><upsilon>}),
 s.t. for any urelement we can find an individual term that is mapped to that urelement.
 
 Furthermore, we introduce a system of @{emph \<open>type classes\<close>} that abstract over
 concrete types for two reasons (see section~\ref{NativeAbstractionMechanisms} for a
-brief discussion of type classes or TODO: cite for a more detailed description):
+brief discussion of type classes):
   \<^item> AOT involves axioms and theorems with (meta-)variables that may be instantiated
     to terms of several different types. In order to avoid having to restate multiple
     instances of such statements we formulate type classes that abstract over the
     required shared properties of all admissible types and prove the respective
-    statement relative to this type class (which is instantiated to all concrete types
-    that satisfy the necessary requirements).
+    statements relative to this type class. The type class itself is then instantiated to all concrete types
+    that satisfy the necessary requirements.
   \<^item> AOT involves statements about @{text n}-ary relations for arbitrary @{text \<open>n \<ge> 0\<close>},
     so to cover the full extent of such statements, listing all concrete instances
     would be impossible. Instead we model relations as proposition-valued functions
@@ -2801,7 +2801,7 @@ The most basic type class we introduce is @{class AOT_Term} (see~\nameref{AOT:AO
 It involves an abstract notion of a term to denote @{const AOT_model_denotes} for which
 it is merely required that it is satisfied by at least one object. For example, for
 type @{typ \<kappa>} @{const AOT_model_denotes} is true for all objects that are not null-objects.
-We will later define quantifiers relative to this type class and prove the quantifier axioms, which are
+We will define quantifiers relative to this type class and derive the quantifier axioms, which are
 independent of the concrete definition of the conditions under which an object of any
 concrete type denotes.
 
@@ -2816,7 +2816,7 @@ We furthermore introduce the notion of individual terms to be @{emph \<open>regu
 specify a transformation of proposition-valued functions acting on individual terms, s.t.
 after the transformation the behaviour of the function is solely determined by
 its values on regular terms. We will discuss this in more detail in the context of
-@{text n}-ary relation identity (TODO: ref). An unary individual term is always
+@{text n}-ary relation identity (see~\ref{nary}). An unary individual term is always
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
 
@@ -2828,11 +2828,11 @@ We end up at the most refined class @{class AOT_\<kappa>s} with the unary case a
 class @{class AOT_\<kappa>} (see~\nameref{AOT:AOT_semantics.AOT_<kappa>s}). When formulating the
 axiom system, individuals in ellipses notation will be allowed to have any type of class @{class AOT_\<kappa>s},
 and relations will be assumed to act among any type of class @{class AOT_\<kappa>s}. This
-way axioms about relations can be stated for all arities at the same time (the
+way axioms about relations can be stated for all arities at the same time (since the
 concrete type of individuals @{typ \<kappa>} as well as arbitrary iterated products of it, e.g.
 @{typ \<open>\<kappa>\<times>\<kappa>\<times>\<kappa>\<close>}, are all of class @{class AOT_\<kappa>s}).
 \<close>
-subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>
+subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>text\<open>\label{RelationsAsPropositionValuedFunctions}\<close>
 text\<open>
 We can now introduce a generic type of relation terms as the type of
 proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
@@ -2841,21 +2841,27 @@ To instantiate the type class @{class AOT_Term} to this generic type of relation
 we have to define the conditions under which a relation term denotes.
 
 A relation term denotes, if it is represented by a proposition-valued functions @{term \<phi>} on
-individual terms, such that (TODO: figure out how to reference):
+individual terms, such that (see~\nameref{AOT:AOT_model_denotes_rel}):
   \<^item> @{term \<phi>} agrees on equivalent terms, i.e. it evaluates to the same proposition for
     individual terms that share the same urelements.
   \<^item> For non-denoting individual terms, @{term \<phi>} evaluates to necessarily false propositions.
   \<^item> @{term \<phi>} is well-behaved on irregular terms (i.e. on irregular terms it evaluates
     to the proposition given by @{term \<open>AOT_model_irregular \<phi>\<close>}, which solely depends
-    on @{term \<phi>}'s behaviour on regular terms).
+    on @{term \<phi>}'s behaviour on regular terms). This will be important to validate the
+    definition of @{text n}-ary relation identity and is discussed in section~\ref{nary}.
 
 Based on this definition, we can derive that denoting relation terms among type @{typ \<kappa>}
 correspond to the urrelations of type @{typ urrel} we introduced earlier (see~\nameref{AOT:AOT_model.rel_to_urrel}).
 This is crucial for validating the comprehension principle of abstract objects, since abstract objects
 were modelled as sets of urrelations.
 
-TODO: model encoding; maybe some more words about the tuple instantiation; trivial
-instantiations for propositions. Relate to co-existence and Kirchner's theorem.
+Given the fact that properties correspond to urrelations and abstract objects are
+modelled as sets of urrelations, unary encoding can simply be modelled in such a way
+that @{term \<open>\<kappa>[\<Pi>]\<close>} is:
+  \<^item> a necessarily true proposition, if @{term \<kappa>} denotes an abstract object @{term x}
+    and @{term \<Pi>} denotes a proposition @{term F} that corresponds to an urrelation
+    @{term r}, s.t. @{term \<open>r \<in> x\<close>}.
+  \<^item> a necessarily false proposition otherwise.
 
 Before we describe how we derive an abstract semantics of AOT from this model
 construction in section~\ref{Semantics}, we briefly discuss how we extend Isabelle's
@@ -3028,11 +3034,18 @@ to refer to the details of the model construction, but attempts to only derive j
 properties of the models that are required to easily derive the axiom system and fundamental
 metarules of AOT later.
 
-The defined semantics heavily rely on Isabelle's @{command specification} command to
+The defined semantics heavily relies on Isabelle's @{command specification} command to
 abstract specific model choices to more general semantic properties.
 
+As a simple example, we specify implications by requiring that @{term \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>\<close>}
+is true in a semantic possible world @{term w}, just in case @{term \<phi>} being true in
+@{term w} implies @{term \<psi>} being true in @{term w} (see~\nameref{AOT:AOT_imp_spec}).
+
+More complex examples include the specification of descriptions (see~\nameref{AOT:AOT_desc_spec})
+and the joint specification of exemplification and @{text \<lambda>}-abstraction (see~\nameref{AOT:AOT_exe_lambda_spec}).
+
 The main purpose of this intermediate layer is to keep the derivation of the abstraction
-layer used for the axiom system and deductive system of AOT impervious to minor changes
+layer that contains the axioms and the deductive system of AOT impervious to minor changes
 in the models.
 
 However, it also eliminates artifactual theorems: instead of simply defining @{text \<lambda>}-abstraction
@@ -3041,8 +3054,7 @@ properties and merely provide a concrete witness that satisfies those properties
 This increases the choice of admissible models of HOL, since a model is not restricted
 to the provided witness, but is merely bound by the abstract properties. This eliminates
 artifactual theorems that would merely be true for our provided witness, but are not derivable
-from the required properties, and also results in @{command nitpick} to more accurately
-report satisfiability and countermodels.
+from the required properties.
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>
@@ -3380,9 +3392,26 @@ the instances currently used in PLM. For @{text n}-ary encoding we currently do 
 formulate a generic version, even though the same mechanism as above can be applied
 to this case as well.
 
-In the future, we intend to define a convenient @{emph \<open>theorem attribute\<close>} that can
+In the future, we intend to define a convenient @{emph \<open>theorem attribute\<close>} (see below) that can
 be used to immediately instantiate @{text n}-ary statements of generic form directly to an arbitrary
 arity @{text n} given as argument to the attribute.
+
+Another subtlety in the definition of @{text n}-ary property identity is the fact
+that two @{text n}-ary relations already have to be identical, if all their
+projections to @{text \<open>n-1\<close>} @{emph \<open>denoting\<close>} individual terms are identical.
+However, in order to avoid artifactual theorems, we defined relations as
+functions that also act on @{typ null}-urelements, resp. on tuples that may involve
+@{typ null}-urelements. The identity of their projections merely implies that the @{text n}-ary relations
+in question evaluate to the same propositions for all tuples of @{text \<open>n-1\<close>} urelements that
+correspond to denoting individuals (i.e. that are not @{text null}-urelements) and one @{text null}-urelement.
+This is the reason why in section~\ref{RelationsAsPropositionValuedFunctions} we required the
+behaviour of an @{text n}-ary relation on @{emph \<open>irregular\<close>} individual terms (i.e.
+tuples that involve more than one @{text null}-urelement) to be completely determined
+by the behaviour of the relation on @{emph \<open>regular\<close>} individual terms (i.e. tuples
+that involve at most one @{text null}-urelement). This way the identity of the
+@{text \<open>n-1\<close>} projections of two @{text n}-ary relations indeed implies their
+identity as required for validating the definition, while we still avoid the
+artifactual theorem that @{text \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([\<Pi>]x\<^sub>1...x\<^sub>n = [\<Pi>']x\<^sub>1...x\<^sub>n) \<rightarrow> \<Pi> = \<Pi>'\<close>}.
 \<close>
 
 
