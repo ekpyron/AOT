@@ -611,6 +611,7 @@ text\<open>Relations among individual terms are (potentially non-denoting) terms
      well-behaved on irregular terms.\<close>
 instantiation rel :: (AOT_IndividualTerm) AOT_IncompleteTerm
 begin
+text\<open>\linelabel{AOT_model_denotes_rel}\<close>
 lift_definition AOT_model_denotes_rel :: \<open><'a> \<Rightarrow> bool\<close> is
   \<open>\<lambda> \<phi> . (\<forall> x y . AOT_model_term_equiv x y \<longrightarrow> \<phi> x = \<phi> y) \<and>
          (\<forall> w x . AOT_model_valid_in w (\<phi> x) \<longrightarrow> AOT_model_denotes x) \<and>
