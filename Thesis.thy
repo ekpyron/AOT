@@ -128,7 +128,7 @@ In general, this approach may be sufficient for analyzing concrete isolated argu
 infeasible to construct a natural representation of an entire expressive higher-order theory and
 its full deductive system (see also~\cite{CrossFertilization}).
 \<close>
-subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>
+subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>text\<open>\label{PriorSSEs}\<close>
 
 text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
@@ -177,8 +177,8 @@ basis for the previous work using SSEs mentioned above. While the so-called Acze
 (see~\cite{zalta1983abstract,zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
-of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica@{footnote \<open>The
-respective version of PLM is archived in~\cite{PLM-Oct-28-2016}.\<close>}.
+of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica.@{footnote \<open>The
+respective version of PLM is archived in~\cite{PLM-Oct-28-2016}.\<close>}
 Furthermore, we introduced the new concept of @{emph \<open>abstraction layers\<close>}. An abstraction layer consists
 of a derivation of the axioms and deduction rules of a target system from a given semantics that is
 then considered as ground truth while "forgetting" the underlying semantic structure, i.e. the
@@ -192,10 +192,10 @@ A major initial result of this project, reported in~\cite{ReviewPaper}, was the 
 in the formulation of AOT that allowed for the reintroduction of a previously known paradox into the system. While multiple quick
 fixes to restore the consistency of AOT were immediately available, in the aftermath of this result
 AOT was significantly reworked and improved. The result triggered an extensive debate
-of the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
+about the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
 while previously it was restricted to individual terms only.
 This evolution of AOT was accompanied by a continuous further development of its
-embedding in Isabelle/HOL. This mutually beneficial mode of work was described in~\cite{CrossFertilization}
+embedding in Isabelle/HOL. This mutually beneficial mode of work was already described in~\cite{CrossFertilization}
 and resulted in a now stabilized and improved formulation of AOT and a
 matching embedding of its second-order fragment. The details of this process and its results are
 the main subject of this thesis. 
@@ -221,7 +221,24 @@ variations of the construction that may be adopted by PLM in the future.
 Finally, in chapter~\ref{HigherOrderAOT} we briefly discuss the issue of applying our method to
 the full higher-order type-theoretic version of Abstract Object Theory.
 
-TODO: Bullet point thoughts:
+Our primary goals are to show that:
+  \<^item> SSEs can not only be used for case studies and the analysis of isolated arguments,
+    but also for implementing the axioms and full deductive system even of expressive
+    logical theories.
+  \<^item> The above is even feasible for a challenging target like AOT, which itself has
+    the ambition to be a foundational framework and is based on significantly different
+    logical foundations compared to our meta-logic HOL.
+  \<^item> We can reproduce the full deductive system of AOT in readable and usable form while
+    maintaining Isabelle's automation mechanisms. Thereby, we can effectively
+    construct a dedicated automated theorem proving environment for AOT.
+  \<^item> Using our method we could significantly contribute to our target theory.
+  \<^item> We can demonstrate the extent of our target theory and the practical feasibility
+    of reproducing complex reasoning in it by reproducing and validating its analysis
+    of natural numbers.
+  \<^item> In the process, we can provide valuable theoretical insights and analyze extensions and variations of the
+    construction of the natural numbers.
+
+TODO: Old bullet point thoughts:
   \<^item> General method for analyzing philosophical arguments and theories: SSEs.
   \<^item> AOT as challenging target, but feasible to implement to the benefit of the theory
     and the method.
@@ -230,13 +247,19 @@ TODO: Bullet point thoughts:
   \<^item> Demonstration of the extent of the target theory and the practical feasibility
     to reason in the target system in Natural Number theory.
   \<^item> Extensions and Progress in the target theory due to our work.
-
+In particular, our goals are to show that:
+  \<^item> SSEs can not only be used for case studies and the analysis of isolated arguments,
+    but also for implementing the axioms and deductive system even of expressive
+    logical theories.
+  \<^item> AOT, as a foundational metaphysical theory that is based on substantially
+    different logical foundations than the meta-logic HOL, is probably the most
+    ambitious target of the SSE approach to date. Nevertheless, we can show that...
 \<close>
 
 section\<open>Verified Document Generation and Conventions\<close>text\<open>\label{Conventions}\<close>
 
 text\<open>
-The thesis is generated using Isabelle's document preparation system (see~\cite{IsabelleSystemManual}).
+This thesis is generated using Isabelle's document preparation system (see~\cite{IsabelleSystemManual}).
 In particular, all statements cited in the thesis are renderings of verified theorems
 in the embedding, unless specifically stated otherwise and marked with vertical bars
 at the page margins.@{footnote \<open>With the exception of chapter~\ref{HigherOrderAOT} which
@@ -362,9 +385,32 @@ section\<open>SSEs as Universal Reasoning Tools\<close>
 text\<open>
 
 In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using @{emph \<open>Shallow Semantic Embeddings\<close>} (SSEs)
-in classical higher-order logics as a means for universal reasoning. TODO: paraphrase the idea a bit.
-High-level concept and motivation here versus more technical details in the following sections.
+in classical higher-order logics as a means for universal reasoning.
 
+He notes that while already Leibniz envisioned a @{emph \<open>characteristica universalis\<close>}, a most
+universal formal language in which all knowledge and (all arguments) about the world
+and the sciences can be encoded, in practice, today we rather find a @{emph \<open>rich and
+heterogenous zoo of different logical systems\<close>}.
+
+A solution to this dilemma is the use of a universal @{emph \<open>meta\<close>}-logic,
+in which a multitude of logic formalisms can be @{emph \<open>embedded\<close>}.
+
+While there are multiple such unifying approaches, for example using algebratic
+constructions or category theory as framework (TODO cite),  Benzm\"uller defends
+the use of classical higher-order logic (HOL) for pragmatic reasons:
+
+  \<^item> For HOL there are sophisticated automation tools readily available that have been
+developed for several decades.
+  \<^item> Since HOL itself is very expressive, an embedding into HOL can often be achieved
+    using simple techniques and can result in an elegant and concise representation of
+    the target logic.
+  \<^item> Using a @{emph \<open>shallow\<close>} embedding approach, the technical overhead of the
+    translation can be kept minimal, which enables the reuse of the automation
+    infrastructure available for the meta-logic.
+
+While we already mentioned a variety of results that were achieved using this general
+method (see section~\ref{PriorSSEs}), in the following we will demonstrate the
+process of building an SSE at a simple example.
 \<close>
 
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>

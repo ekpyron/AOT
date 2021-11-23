@@ -1717,7 +1717,7 @@ a pattern among ordinary objects one of the abstract objects encodes, while the 
 one doesn't (assuming mathematicians aren't tables).\<close>}
 \<close>
 
-subsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
+subsubsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
  
 text\<open>
 Despite the concessions above, our comprehension principles align well with the analysis of other
@@ -2041,6 +2041,14 @@ on additional axioms, we can say that:
     longer be required, eliminating the need for its justification.
   \<^item> It will be an interesting question for future research to determine whether the predecessor axiom
     can be similarly generalized in this future construction.
+
+Methodologically, we can conclude that:
+  \<^item> Our embedding can successfully reproduce even complex constructions and reasoning in our target system AOT.
+  \<^item> We can achieve our goal to provide a natural and readable implementation that accurately reproduces syntax and
+    reasoning in AOT without the need of keeping complex translations in mind.
+  \<^item> The automation infrastructure of Isabelle can be preserved even for complex constructions in the target system.
+  \<^item> Using our method we could provide insights into the construction and analyze potential extensions.
+
 \<close>
 
 chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
@@ -2320,7 +2328,7 @@ In the process, we could demonstrate that:
     on the one hand and sched new light on the technical possibilities and limitations
     of the SSE approach on the other hand. In particular, our embedding allows for the
     rapid analysis of changes to and extensions of the axiom system of the target theory
-    on the one hand, and of the effects of variations to constructions within a given
+    on the one hand, and of the effects of variations of complex constructions within a given
     axiomatization of the target system on the other hand.
   \<^item> It is not only possible to technically reproduce the logic of a complex
     target theory, but also to construct a nearly transparent representation of its
@@ -2346,8 +2354,6 @@ its ability to provide a philosophically grounded construction of mathematical o
 In this context, an attempt of an implementation of the full type-theoretic higher-order
 version of AOT using the SSE approach, as well as the formal analysis of its relative
 strength compared to HOL and ZF are fascinating opportunities for future research.
-
-
 \<close>
 
 (*<*)
