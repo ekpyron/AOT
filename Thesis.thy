@@ -58,7 +58,7 @@ effectively construct a dedicated theorem proving environment for AOT that (1) i
 to be sound, (2) can be used to explore the safety of axiomatic extensions to the system and (3) allows
 for the reuse of the automation infrastructure available for Isabelle/HOL.
 
-While our method can potentially be applied to a multitude of logical systems, Abstract Object Theory
+While our method can potentially be applied to a multitude of logical systems, AOT
 is a particularly well-suited target. On the one hand, it aims to be a foundational metaphysical system
 that can serve as the basis for mathematics and thereby stands in the tradition of Russell and
 Whitehead's Principia Mathematica~\cite{PrincipiaMathematica}, while in fact extending its scope to e.g. linguistics and
@@ -76,8 +76,8 @@ We briefly discuss the challenges of representing full higher-order object theor
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
 of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
-Logico-Metaphysica (PLM)@{footnote \<open>PLM is available as continuously updated online draft/excerpt (see~\cite{PLM-current}).
-This thesis is written relative to the version dated October 13, 2021, archived in~\cite{PLM-Oct-13-2021}.\<close>} are verifiably sound. Furthermore, we can suggest the generalization of
+Logico-Metaphysica (PLM)@{footnote \<open>PLM is a continuously developed online monograph (see~\cite{PLM-current}) written by Edward Zalta, that contains
+the most recent canonical presentation of AOT. This thesis is written relative to the version dated October 13, 2021, archived in~\cite{PLM-Oct-13-2021}.\<close>} are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
 the argument that the construction does not require any inherently mathematical axioms.
 \<close>
@@ -213,7 +213,7 @@ the constructed embedding of the second-order fragment of Abstract Object Theory
 In the process we highlight the contributions of the embedding to the theory of abstract objects on the one hand and
 the techniques developed for its implementation on the other hand.
 
-In chapter~\ref{NaturalNumbers} we present the results on the derivation of Natural Numbers and
+In chapter~\ref{NaturalNumbers} we present our results on the derivation of Natural Numbers and
 Mathematical Induction and discuss an extension of AOT with a more general comprehension
 principle for relations among abstract objects. We also discuss some interesting
 variations of the construction that may be adopted by PLM in the future.
@@ -223,7 +223,7 @@ the full higher-order type-theoretic version of Abstract Object Theory.
 
 Our primary goals are to show that:
   \<^item> SSEs can not only be used for case studies and the analysis of isolated arguments,
-    but also for implementing the axioms and full deductive system even of expressive
+    but also for implementing the axioms and full deductive system of entire
     logical theories.
   \<^item> The above is even feasible for a challenging target like AOT, which itself has
     the ambition to be a foundational framework and is based on significantly different
@@ -388,7 +388,7 @@ In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using @{emph \<o
 in classical higher-order logics as a means for universal reasoning.
 
 He notes that while already Leibniz envisioned a @{emph \<open>characteristica universalis\<close>}, a most
-universal formal language in which all knowledge and (all arguments) about the world
+universal formal language in which all knowledge (and all arguments) about the world
 and the sciences can be encoded, in practice, today we rather find a @{emph \<open>rich and
 heterogenous zoo of different logical systems\<close>}.
 
@@ -454,8 +454,8 @@ In an SSE we use the semantic domains as type for the formulas themselves, so we
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
 world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.@{footnote \<open>Note
-that this choice of a representation of propositions commits us to an @{emph \<open>extensional\<close>} modal logic, in which
-necessary equivalence implies identity. We will later discuss how we can construct a (hyper-)intensional logic instead.\<close>}
+that this choice of a representation of propositions commits us to a modal logic, in which
+necessary equivalence implies identity. We will later discuss how we can construct a hyperintensional logic instead.\<close>}
 \<close>
 
 type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
@@ -516,7 +516,7 @@ text\<open>Note that we didn't introduce any particular type for individuals, bu
 polymorphic definitions relative to a type variable @{typ 'a}. This way the same quantifier
 can be used for propositions themselves, any desired type for individuals or even properties of
 any order.@{footnote \<open>Note that this construction implies a shared domains for objects
-across possible worlds. An additional meta-logical predicate for @{emph \<open>existence
+across possible worlds. An additional meta-logical predicate for @{emph \<open>logical existence
 in a possible world\<close>} can be added to model varying domains. TODO: cite?\<close>}
 
 As an example of theorems involving quantifiers and modal logic, we derive the Barcan formulas.
@@ -567,7 +567,7 @@ as described in more detail in the following section.
 As mentioned in the last section, the main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (see~\cite{Sledgehammer}).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
 the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
-refer to TODO: cite.\<close>} it collects all theorems derived in the current @{command theory} context
+refer to~\cite{Sledgehammer}.\<close>} it collects all theorems derived in the current @{command theory} context
 together with all local assumptions, and processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
@@ -600,7 +600,6 @@ some challenges. While the equational theorems introduced by simple @{command de
 easily be collected and marked, other more advanced constructions in Isabelle like type definitions
 or @{command lift_definition}s (see~\cite{LiftingTransfer}) introduce several theorems implicitly. While
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
-TODO: cite sledgehammer user guide section 6.1.
 
 On the other hand, it is not possible to simply exclude @{emph \<open>all\<close>} theorems that were defined
 up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
@@ -623,7 +622,7 @@ by the constructed meta-logical reasoning in HOL. TODO: elaborate.
 
 \<close>
 
-section\<open>Isabelle's Native Abstraction Mechanisms and their Limitations\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
+section\<open>Isabelle's Native Abstraction Mechanisms\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
 
 text\<open>
 While abstraction layers provide a means to insulate reasoning in our embedding from artifactual theorems (i.e. theorems
@@ -631,12 +630,10 @@ that are merely semantically valid but not derivable in the target theory), we a
 use Isabelle's native abstraction mechanisms. This serves to establish an additional intermediate
 abstraction between the concrete model construction and the derivation of the axiom and derivational
 system of the target theory, which helps in exploring changes to the model structure without
-having to adjust the full derivation of the abstraction layer and furthermore allows
-@{command nitpick}~\cite{Nitpick} (TODO: explain/cite) to provide more meaningful and helpful models. (TODO: elaborate).
+having to adjust the full derivation of the abstraction layer.
 
 For example, we extensively use @{command specification}s (TODO: cite).
-A @{command specification} is used to assert statements about previously uninterpreted constants
-(as introduced using @{command consts}). The @{command specification} command opens a proof context
+A @{command specification} is used to assert statements about previously uninterpreted constants. The @{command specification} command opens a proof context
 that requires the user to show that there exists a concrete instantiation for the given constants,
 for which the desired statements hold. Internally it then uses Isabelle's Hilbert-Epsilon-operator
 @{term \<open>SOME x. \<phi> x\<close>} to augment the given constants with a concrete definition. As a consequence,
@@ -720,7 +717,7 @@ specification (\<o>\<^sub>2_conj) \<comment> \<open>We again specify our conjunc
   \<o>\<^sub>2_conjI: \<open>valid_\<o>\<^sub>2 p \<Longrightarrow> valid_\<o>\<^sub>2 q \<Longrightarrow> valid_\<o>\<^sub>2 (p \<^bold>\<and> q)\<close>
   text\<open>We again need to prove the existence of a term satisfying the given specification.
        Since our extension function is surjective, a natural suitable witness can be
-       constructed using the inverse of the extension function. TODO: watch out here.\<close>
+       constructed using the inverse of the extension function.\<close>
   by (rule exI[where x=\<open>\<lambda> p q . (inv \<o>\<^sub>2_ext) (\<o>\<^sub>2_ext p \<and> \<o>\<^sub>2_ext q)\<close>])
      (simp add: \<o>\<^sub>2_ext_surj f_inv_into_f valid_\<o>\<^sub>2_def)
 
@@ -810,7 +807,7 @@ sorts.\<close>} by proving that the assumptions are satisfied for a concrete def
 the locale parameters at that type. 
 
 For example, it is possible to instantiate a type class for products of two generic types
-(i.e. type variables) of a specific classes. We use this mechanism to inductively define
+(i.e. type variables) of specific sorts. We use this mechanism to inductively define
 properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{IndividualTermsAndClasses}).
 
 While a full discussion of the subtleties of type @{command class}es
@@ -995,7 +992,7 @@ refer to the second-order fragment of AOT plainly as AOT or \emph{object theory}
 The second-order fragment is expressive enough for the analysis of a wide variety of objects occurring in Philosophy and Mathematics,
 including Basic Logical Objects like Truh Values and Extensions of Propositions (see~\ref{AOT:AOT_BasicLogicalObjects}, resp. PLM chapter~10);
 Platonic Forms (see PLM chapter~11); Situations, Worlds, Times, and Stories (see~\ref{AOT:AOT_PossibleWorlds}, resp. PLM chapter~12);
-Concepts (see PLM chapter 13) and Natural Numbers (see~\ref{AOT:AOT_NaturalNumbers}, resp. PLM chapter~13). TODO: rethink references.
+Concepts (see PLM chapter 13) and Natural Numbers (see~\ref{AOT:AOT_NaturalNumbers}, resp. PLM chapter~13). TODO: note version of PLM.
 
 The applications of higher-order object theory and the challenges in representing it in Isabelle/HOL are
 briefly discussed in chapter~\ref{HigherOrderAOT}. To get an intuition for the level of expressiveness of
