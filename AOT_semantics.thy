@@ -28,6 +28,7 @@ lemma AOT_sem_var_induct[induct type: AOT_var]:
   shows \<open>[v \<Turnstile> \<phi>{\<alpha>}]\<close>
   by (simp add: AOT_denoting_term_case AOT_sem_denotes AOT_term_of_var)
 
+text\<open>\linelabel{AOT_imp_spec}\<close>
 specification(AOT_imp)
   AOT_sem_imp: \<open>[w \<Turnstile> \<phi> \<rightarrow> \<psi>] = ([w \<Turnstile> \<phi>] \<longrightarrow> [w \<Turnstile> \<psi>])\<close>
   by (rule exI[where x=\<open>\<lambda> \<phi> \<psi> . \<epsilon>\<^sub>\<o> w . ([w \<Turnstile> \<phi>] \<longrightarrow> [w \<Turnstile> \<psi>])\<close>])
@@ -74,6 +75,7 @@ specification(AOT_eq)
   by (rule exI[where x=\<open>\<lambda> \<tau> \<tau>' . \<epsilon>\<^sub>\<o> w . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>'\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
+text\<open>\linelabel{AOT_desc_spec}\<close>
 specification(AOT_desc)
   AOT_sem_desc_denotes: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] = (\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])\<close>
   AOT_sem_desc_prop: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] \<Longrightarrow> [w\<^sub>0 \<Turnstile> \<phi>{\<^bold>\<iota>x(\<phi>{x})}]\<close>
@@ -121,6 +123,7 @@ proof -
     by (safe intro!: exI[where x=desc]; presburger)
 qed
 
+text\<open>\linelabel{AOT_exe_lambda_spec}\<close>
 specification(AOT_exe AOT_lambda)
   AOT_sem_exe: \<open>[w \<Turnstile> [\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = ([w \<Turnstile> \<Pi>\<down>] \<and> [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and>
                                      [w \<Turnstile> \<guillemotleft>Rep_rel \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>])\<close>
