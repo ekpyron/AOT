@@ -3064,8 +3064,10 @@ section~\ref{AxiomSystem} and the fundamental metarules were mentioned in
 section~\ref{DeductiveSystem}. By construction, most of them can be derived from the
 abstract semantics using simple, automatically generated proofs.
 
-In the following, we will focus on some particular axioms, rules and proofs
-that are challenging to properly represent in the embedding. This mostly happens due to
+While the full derivation of the axiom system in the embedding can be found in~\ref{AOT:AOT_Axioms}
+and the deductive system of PLM chapter 9 is derived in~\ref{AOT:AOT_PLM},
+in the following, we will focus on some particular axioms, rules and proofs
+that are challenging to represent in the embedding. This mostly happens due to
 PLM's statement involving either complex preconditions given in natural language or
 due to the statement extending over multiple types. 
 \<close>
@@ -3076,7 +3078,7 @@ text\<open>
 TODO: refine this.
 
 One of the axioms we mentioned explicitly as difficult to implement in section~\ref{AxiomSystem} is
-the second quantifier axiom (see~\nameref{AOT:cqt:2[const_var]}) which establishes
+the second quantifier axiom which establishes
 a set of base cases of denoting terms. Recall the formulation of the axiom in PLM:
 
 \begin{quote}
