@@ -1044,7 +1044,7 @@ AOT draws two fundamental distinctions, one between @{emph \<open>abstract\<clos
 @{emph \<open>ordinary\<close>} objects, and one between two modes of predication, namely,
 classical @{emph \<open>exemplification\<close>}  @{term "\<guillemotleft>[F]x\<guillemotright>"}, or more generally, @{term "\<guillemotleft>[R]x\<^sub>1...x\<^sub>n\<guillemotright>"} and
 @{emph \<open>encoding\<close>} @{term "\<guillemotleft>x[F]\<guillemotright>"}, or more generally, @{term "\<guillemotleft>x\<^sub>1...x\<^sub>n[R]\<guillemotright>"}.@{footnote \<open>Note that we use additional square brackets around property terms
-in exemplification or encoding formulas, except for specific constants like @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}, @{term \<open>\<guillemotleft>O!\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>}.
+in exemplification or encoding formulas, except for specific (primitive or defined) constants like @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}, @{term \<open>\<guillemotleft>O!\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>A!\<guillemotright>\<close>}.
 This is a syntactic concession that makes the process of parsing atomic formulas in Isabelle simpler.
 In AOT's usual notation these square brackets would be omitted, i.e. exemplification would be written as
 $Fx_1\ldots x_n$ and encoding as $xF$.\<close>} The variables @{term x\<^sub>1}, @{term x\<^sub>2}, @{text \<open>\<dots>\<close>}, @{term x\<^sub>n}, resp. @{term x}, @{term y}, @{term z}, @{text \<open>\<dots>\<close>}, range over both ordinary and
@@ -1122,8 +1122,8 @@ the deductive system of PLM. For a full account and detailed discussion refer to
 respectively~\cite{PLM-current}.@{footnote \<open>At the time of writing both citations refer
 to the same version of PLM, but in the future \cite{PLM-current} will refer to the
 most recent formulation of PLM, while \cite{PLM-Oct-13-2021} will contain the archived
-version of the thesis that served as reference for this thesis. Naturally, referenced
-items and chapters numbers of PLM will be relative to \cite{PLM-Oct-13-2021}.\<close>}
+version of PLM that served as reference for this thesis. Naturally, referenced
+items and section numbers of PLM will be relative to \cite{PLM-Oct-13-2021}.\<close>}
 \<close>
 
 section\<open>The Language\<close>text\<open>\label{AOTLanguage}\<close>
@@ -1148,7 +1148,7 @@ referring to the primitive language elements of each type:
   \<^item> A distinguished 1-place relation constant for @{emph \<open>being concrete\<close>}: @{term \<open>\<guillemotleft>E!\<guillemotright>\<close>}
 
 For increased readability, it allows, by convention, to use less formal names, e.g. to use @{text \<open>x, y, z, \<dots>\<close>}
-in place of @{text \<open>x\<^sub>1, x\<^sub>2, \<dots>\<close>} or @{text \<open>F, G, H, \<dots>\<close>} in place of @{text \<open>F\<^sup>1\<^sub>1, F\<^sup>1\<^sub>2, \<dots>\<close>}.
+in place of @{text \<open>x\<^sub>1, x\<^sub>2, \<dots>\<close>} or @{text \<open>F, G, H, \<dots>\<close>} in place of $F^1_1, F^1_2, \dots$.
 
 Additionally, PLM uses Greek letters for @{emph \<open>meta-variables\<close>}, i.e. schematic meta-logical variables
 that may range over all variable names or all terms at a given type. By convention, it associates specific kinds of
@@ -1346,9 +1346,6 @@ modally-strict axioms (see~\nameref{AOT:logic-actual-nec:1}):
                "logic-actual-nec:4"[axiom_inst, of _ \<phi>, print_as_theorem]}
 \end{quote}
 
-TODO: say something about this together with the axiom relating actuality to necessity below is
-a "standard" actuality operator plus citation.
-
 The logic of necessity and possibility is axiomatized using the classical K, T and 5 axioms of a
 propositional S5 modal logic (see~\nameref{AOT:qml:1}):
 
@@ -1359,7 +1356,8 @@ propositional S5 modal logic (see~\nameref{AOT:qml:1}):
 \end{quote}
 
 Additionally, PLM states the following axiom that requires that there might be a concrete object
-that is not @{emph \<open>actually\<close>} concrete, thereby committing the system against modal collapse (see~\nameref{AOT:qml:4}).
+that is not @{emph \<open>actually\<close>} concrete, thereby ensuring that the domain of ordinary (i.e. possibly concrete) objects is
+non-empty and committing the system against modal collapse (see~\nameref{AOT:qml:4}).
 \begin{quote}
 @{thm[display] "qml:4"[axiom_inst, print_as_theorem]}
 \end{quote}
@@ -1644,12 +1642,12 @@ properties of the deductive system:
 all classical propositional tautologies are theorems of AOT.\<close>}
   \<^item> Modal reasoning can be read semantically as following Kripke-semantics without accessibility relation and
 with a fixed designated actual world for the actuality operator. In particular, AOT follows an S5 modal logic with actuality operator and
-Barcan formulas. (TODO)
+Barcan formulas.
   \<^item> The free logic extends to all types, but all propositions provably denote.
     Quantifiers range over denoting objects and the defined identity is an @{emph \<open>existing identity\<close>},
     i.e. to be identical two entities need to both denote @{emph \<open>and\<close>} denote the same thing.@{footnote \<open>Respectively,
     denote and satisfy the axiom of the substitution of identicals. Note that our implementation has the property that
-    PLM's defined identity implies meta-logical identity.\<close>}
+    PLM's defined identity implies meta-logical identity. TODO: refine\<close>}
 
 \<close>
 
@@ -1724,7 +1722,7 @@ identity. In particular, assuming that general identity among individuals is a r
 would contradict the existence of indistinguishable abstract objects discussed
 in section~\ref{IndistinguishableAbstractObjects}. 
 
-Identity on the Ordinary objects will play an important role in PLM's analysis of
+Identity on the ordinary objects will play an important role in PLM's analysis of
 Natural Numbers, discussed in chapter~\ref{NaturalNumbers}.
 \<close>
 
@@ -1780,7 +1778,9 @@ closures (as mentioned in section~\ref{AxiomSystem}):
 
 As indicated by this axiom, semantically, the modally-fragile system is concerned with
 all actual truths, whereas the modally-strict system is used to reason about truths that
-are necessary.
+are necessary.@{footnote \<open>Consequently, in our models modally-fragile axioms and theorems
+are semantically valid in a designated actual world, while modally-strict axioms and
+theorems are valid in all semantic possible worlds.\<close>}
 
 Consequently, the fundamental meta-rule RN mentioned in section~\ref{MetaRules} is restricted
 to modally-strict derivations: If @{term \<phi>} has a modally-strict proof, then its necessitation
@@ -1867,7 +1867,7 @@ it now provably fails to denote (see~\nameref{AOT:block-paradox:1}):
 subsection\<open>Reintroduction of the Clark-Boolos Paradox\<close>text\<open>\label{NewParadox}\<close>
 
 text\<open>
-When attempting to construct an embedding of a previous formulation of PLM (see~\cite{PLM-Oct-28-2016}) that relied
+When attempting to construct an embedding of a previous formulation of PLM~\cite{PLM-Oct-28-2016} that relied
 on restricting matrices of @{text \<open>\<lambda>\<close>}-expressions to @{emph \<open>propositional formulas\<close>}
 as defined in the previous section, we found the following oversight (see~\cite{MScThesis} and~\cite{ReviewPaper}):
 
@@ -2139,7 +2139,7 @@ proof(rule "raa-cor:2") \<comment> \<open>Proof by contradiction.\<close>
     using 1 "&E" "=-infix"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "reductio-aa:1" by blast
 qed
 text\<open>
-This feature of AOT will be of notable importance during the construction of
+This aspect of AOT will be of notable importance during the construction of
 natural numbers in chapter~\ref{NaturalNumbers}.
 In the following section, we will see another prominent example of a theorem of AOT
 that involves objects and relates to Aczel models.
@@ -2171,10 +2171,10 @@ whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system 
 Notably, this led to a proof of the existence of world-relative relations and
 thereby of rigidifying relations, which play an important role in the derivation
 of natural numbers and whose existence previously had to be assured by axiom. This
-is explained in more detail in the section~\ref{WorldRelativeRelations}.
+is explained in more detail in section~\ref{WorldRelativeRelations}.
 
 Furthermore, it can contribute to a potential reformulation of the derivation of Natural Numbers
-that does not require a modal axiom of infinity.\footnote{I.e. the axiom described in section~\ref{ModalAxiom}
+that does not require a modal axiom of possible infinity.\footnote{I.e. the axiom described in section~\ref{ModalAxiom}
 may not be required in future versions of the construction.} This is mentioned in section~\ref{NewNumberTheory},
 although at the time of writing, the analysis of
 this potential change is not yet complete, so the current version of PLM at the time
@@ -2218,8 +2218,8 @@ A definite description can be used to talk about @{emph \<open>the\<close>} trut
 @{thm[display] "the-tv-p"}
 \end{quote}
 
-We say that an abstract object encodes a proposition @{term p}, if it encodes the
-property @{emph \<open>being an @{text x}, s.t. @{term p}\<close>} @{term \<open>\<guillemotleft>[\<lambda>x p]\<guillemotright>\<close>}.
+We say that an abstract object @{term x} encodes a proposition @{term p}, if it encodes the
+property @{emph \<open>being a @{text y}, s.t. @{term p}\<close>}, i.e. if @{term \<open>\<guillemotleft>x[\<lambda>y p]\<guillemotright>\<close>}.
 Using that notion, it is possible to define two particular truth values, i.e. The True
 and The False, as @{emph \<open>the\<close>} abstract object that encodes all propositions that
 are true, resp. all propositions that are false (see~\nameref{AOT:the-true:1}):
@@ -2250,7 +2250,7 @@ For instance:
 The analysis of Truth Values is an example of AOT's ability to define and analyze
 abstract objects that faithfully represent entities that are usually only considered
 semantically. AOT's analysis of Possible Worlds that is discussed in the next section
-is another example of this.
+is another example of this feature.
 \<close>
 
 subsection\<open>Fundamental Theorems of Possible Worlds\<close>text\<open>\label{PossibleWorldTheory}\<close>
@@ -2563,7 +2563,7 @@ that @{text \<phi>} does not involve encoding claims.
 
 While Aczel models generally demonstrate that abstract objects and encoding can be
 modelled without being subject to the Clark-Boolos paradox (see~\ref{ClarkBoolosParadox}), there are
-several issues that remain unaddressed:
+several issues that remain unaddressed, including:
 
   \<^item> AOT's relations are not extensional and not even merely intensional,
     but fully hyperintensional.
@@ -2635,6 +2635,22 @@ just as many objects of type @{typ \<o>} as there are Kripke-extensions.
 
 So just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
 propositions.
+
+On top of this hyperintensional type of propositions, the logical connectives can be
+defined by @{command specification} as explained in section~\ref{NativeAbstractionMechanisms}.
+
+Notably, previous versions of our embedding (in particular the construction in~\cite{MScThesis}),
+modelled hyperintensionality more explicitly by using an additional primitive type @{text s} of
+@{emph \<open>intensional states\<close>}. Propositions were modelled explicitly as boolean-valued functions acting
+on states and possible worlds (type @{text \<open>s \<Rightarrow> w \<Rightarrow> bool\<close>}). Semantic validity was
+defined using the evaluation of propositions in a designated @{emph \<open>actual\<close>} state. The logical
+connectives were defined to have classical behaviour in the actual state, while their behaviour
+was left unspecified in non-actual states. This construction was inspired by the HYPE
+system of hyperintensional logic (see~\cite{HYPE}). While such an explicit construction
+using intensional states can still serve as a concrete model for our abstract type 
+@{typ \<o>}, the fact that AOT does not presuppose any additional structure on non-actual
+states allowed us to replace the explicit construction by the described abstraction
+involving an abstract type @{typ \<o>} and specifications for logical connectives.
 
 As a next step we construct a variant of Aczel models relative to the introduced type of
 propositions while preserving the constructed hyperintensionality for relations and accounting
