@@ -552,14 +552,28 @@ a given deductive system, we say that we introduce @{emph \<open>abstraction lay
 end
 (*>*)
 
-section\<open>SSEs with Abstraction Layers\<close>
+section\<open>SSEs with Abstraction Layers\<close>text\<open>\label{SSEsWithAbstractionLayers}\<close>
 
 text\<open>The concept of enriching traditional SSEs with abstraction layers was first introduced
 in \cite{MScThesis}. The goal is to be able to use the automated reasoning tools provided
 by a system like Isabelle/HOL not merely to analyze semantic validity of statements in the
 embedded theory, but to reliably determine the derivability of a statement from the deductive
-system of the theory itself, while still retaining ensured soundness. While Isabelle provides
-its own mechanisms for abstract reasoning like type @{command class}es, @{command locale}s and
+system of the theory itself, while still retaining ensured soundness.
+
+An abstraction layer is simply constructed by proving that the axioms and deduction
+rules of a target logic are semantically valid in the embedding, after which they
+are considered as ground truths: all subsequent reasoning in the abstraction layer
+is restricted to only rely on the derived axioms and rules and may no longer refer
+to the underlying semantics. Consequently, only proper theorems of the target logic
+are derivable in the abstraction layer.
+
+So while abstraction layers are conceptually rather simple,@{footnote \<open>Even though
+further care has to be taken to ensure that their construction is in fact faithful to the target
+system, as mentioned at the end of this section.\<close>} the interesting question is how
+the automation capabilities of the meta-logic can be preserved and reliably restricted
+to respect the imposed restrictions.
+
+While Isabelle provides its own mechanisms for abstract reasoning like type @{command class}es, @{command locale}s and
 @{command specification}s, those are not primarily designed for this exact purpose and come with
 limitations that can make them unsuitable to achieve that purpose on their own,
 as described in more detail in the following section.
@@ -574,9 +588,10 @@ theorems and assumptions in a format that can be consumed by external theorem pr
 E~\cite{EProver}, SPASS~\cite{SPASS} or verit~\cite{veriT, veriTIsabelle}, Z3~\cite{Z3, Z3Isabelle}, CVC4 or vampire (TODO: cite).
 This may, for example, involve a translation from higher-order problems
 to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
-tries to reconstruct a short proof using Isabelle's native proving methods@{footnote \<open>Which operate
-directly on Isabelle's trusted reasoning core.\<close>} that can be directly inserted to prove the current goal.@{footnote \<open>TODO:
-mention veriT and Z3  proof reconstruction.\<close>}
+tries to reconstruct a short proof using Isabelle's native proving methods (which operate
+directly on Isabelle's trusted reasoning core.) that can be directly inserted to prove the current goal.@{footnote \<open>Furthermore,
+for provers like veriT and Z3, @{emph \<open>proof reconstruction\<close>} using the @{method smt} tactic is available, i.e. they provide
+proofs that can (sometimes) be directly replayed relative to Isabelle's trusted reasoning core. See~\cite{veriTIsabelle} and~\cite{Z3Isabelle}.\<close>}
 
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
 the initial selection of theorems from the @{command theory} context.
@@ -618,8 +633,12 @@ automation than~\cite{MScThesis}.
 
 It is important to note that Abstraction Layers still rely on the implicit assumption
 that meta-logical reasoning about derivations in the target logic is faithfully represented
-by the constructed meta-logical reasoning in HOL. TODO: elaborate.
+by the meta-logical inferences in Isabelle enabled by the constructed deduction rules.
 
+In particular, the deductive system of our target theory is implemented as
+rules in Isabelle's Pure logic. Consequently, we need to convince ourselves that resulting
+inferences in Pure are reproducible in the target system. For our embedding of AOT
+we demonstrate such an argument in section~\ref{PureVsAOT}.
 \<close>
 
 section\<open>Isabelle's Native Abstraction Mechanisms\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
@@ -3831,15 +3850,88 @@ to be valid in all worlds accessible from the globally-fixed actual world, the l
 @{text \<open>\<phi>\<close>} to be true even in worlds inaccessible from the global actual world).
 \<close>
 
-subsection\<open>Further Meta-Theorems\<close>
+subsection\<open>Primitive Inferences of Isabelle/Pure and Derivations of AOT\<close>text\<open>\label{PureVsAOT}\<close>
 
 text\<open>
-Ideas:
-  \<^item> Relation of AOT's existential elimination and @{command obtain}.
-  \<^item> Tuples as accurate representation of most of the general n-ary statements justified by the ability to define
-    matching tuples in AOT.
-  \<^item> More on generalization and e.g. constants?
+As mentioned in section~\ref{SSEsWithAbstractionLayers}, being able to trust
+the abstraction layer constructed for AOT relies on verifying that the primitive
+inferences of Isabelle's Pure logic correspond to valid reasoning in the system of PLM,
+given that the set of available theorems and rules is suitably restricted.
 
+The primitive inferences of Pure are described in section 2.3 of~\cite{IsabelleImplementation}.@{footnote \<open>In
+particular figure~\ref{fig:prim-rules} is presented as figure 2.2 in section 2.3.1 of~\cite{IsabelleImplementation}.\<close>}
+In this section we will in particular argue that the rules in figure~\ref{fig:prim-rules},
+when applied in our abstraction layer, will correspond to valid reasoning in AOT.
+
+  \begin{figure}[H]
+  \begin{center}
+  \[
+  \infer[\<open>(axiom)\<close>]{\<open>\<turnstile> A\<close>}{\<open>A \<in> \<Theta>\<close>}
+  \qquad
+  \infer[\<open>(assume)\<close>]{\<open>A \<turnstile> A\<close>}{}
+  \]
+  \[
+  \infer[\<open>(\<And>\<hyphen>intro)\<close>]{\<open>\<Gamma> \<turnstile> \<And>x. B[x]\<close>}{\<open>\<Gamma>
+\<turnstile> B[x]\<close> & \<open>x \<notin> \<Gamma>\<close>}
+  \qquad
+  \infer[\<open>(\<And>\<hyphen>elim)\<close>]{\<open>\<Gamma> \<turnstile> B[a]\<close>}{\<open>\<Gamma> \<turnstile>
+\<And>x. B[x]\<close>}
+  \]
+  \[
+  \infer[\<open>(\<Longrightarrow>\<hyphen>intro)\<close>]{\<open>\<Gamma> - A \<turnstile> A \<Longrightarrow>
+B\<close>}{\<open>\<Gamma> \<turnstile> B\<close>}
+  \qquad
+  \infer[\<open>(\<Longrightarrow>\<hyphen>elim)\<close>]{\<open>\<Gamma>\<^sub>1 \<union> \<Gamma>\<^sub>2 \<turnstile>
+B\<close>}{\<open>\<Gamma>\<^sub>1 \<turnstile> A \<Longrightarrow> B\<close> & \<open>\<Gamma>\<^sub>2 \<turnstile>
+A\<close>}
+  \]
+  \caption{Primitive inferences of Pure}\label{fig:prim-rules}
+  \end{center}
+  \end{figure}
+
+The meta-logical @{emph \<open>axiom\<close>} rule corresponds to PLM items (63.1) and (63.3) which
+state that axioms and theorems of AOT can be used in derivations.
+
+@{emph \<open>assume\<close>} corresponds to the special case of PLM item (63.2) given as
+@{text \<open>\<phi> \<turnstile> \<phi>\<close>}.
+
+@{emph \<open>@{text \<open>\<And>\<close>}-intro\<close>} and @{emph \<open>@{text \<open>\<And>\<close>}-elim\<close>} align with our implementations of PLM's GEN rule and
+@{text \<open>\<forall>\<close>}-elimination:
+Using our notational convention, it is an instance of @{emph \<open>@{text \<open>\<And>\<close>}-intro\<close>} that
+@{text \<open>\<Gamma> \<turnstile> \<phi>{\<alpha>}\<close>} and @{text \<open>\<alpha> \<notin> \<Gamma>\<close>} implies @{text \<open>\<Gamma> \<turnstile> for arbitrary \<alpha>: \<phi>{\<alpha>}\<close>}.
+The latter is the precondition of our GEN rule, i.e. we can derive @{text \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close>}
+in AOT. Similarly, the @{emph \<open>@{text \<open>\<And>\<close>}-elim\<close>} rule corresponds to
+the rule given in~\nameref{AOT:rule-ui:3}, which states we can derive
+@{text \<open>\<phi>{\<beta>}\<close>} from @{text \<open>\<forall>\<alpha> \<phi>{\<alpha>}\<close>}.
+
+Note, however, that the @{emph \<open>@{text \<open>\<And>\<close>}-intro\<close>} and @{emph \<open>@{text \<open>\<And>\<close>}-elim\<close>}
+rules are not restricted to our defined types of object-level variables of AOT.
+In particular, they can also be applied to meta-variables ranging over terms of AOT.
+However, applications of @{emph \<open>@{text \<open>\<And>\<close>}-intro\<close>} and @{emph \<open>@{text \<open>\<And>\<close>}-elim\<close>}
+to meta-variables exactly corresponds to the fact that PLM allows to instantiate
+arbitrary terms of a given type in place of its meta-variables.
+
+The @{emph \<open>@{text \<open>\<Longrightarrow>\<close>}-intro\<close>} and @{emph \<open>@{text \<open>\<Longrightarrow>\<close>}-elim\<close>} rules correspond
+to the deduction theorem (PLM item (75)), which states that if @{text \<open>\<Gamma>, \<phi> \<turnstile> \<psi>\<close>},
+then @{text \<open>\<Gamma> \<turnstile> (\<phi> \<rightarrow> \<psi>)\<close>} and the metarule stated in PLM item (63.5) stating
+that if @{text \<open>\<Gamma>\<^sub>1 \<turnstile> \<phi>\<close>} and @{text \<open>\<Gamma>\<^sub>2 \<turnstile> (\<phi> \<rightarrow> \<psi>)\<close>}, then @{text \<open>\<Gamma>\<^sub>1,\<Gamma>\<^sub>2 \<turnstile> \<psi>\<close>}.
+
+Furthermore, Pure is equipped with a primitive equality that allows for
+substituting terms that are meta-logically equal.
+Such substitutions are justified, since it is a property of our embedding that
+PLM's identity corresponds to meta-logical equality on denoting terms
+on the one hand (see~\nameref{AOT:AOT_eq_spec}) and the fact that distinct
+non-denoting terms in our embedding are @{emph \<open>not\<close>} meta-logically identical on the
+other hand (recall the fact that e.g. non-denoting definite descriptions can be assigned distinct @{emph \<open>null\<close>}-urelements).
+Furthermore we argued in section~\ref{alphabetic-variants} that the meta-logical equality
+of alphabetic variants is consistent with reasoning in PLM.
+
+While we do not claim that this analysis is exhaustive, it nevertheless provides
+strong evidence that reasoning in our abstraction layer in fact corresponds to
+derivations in the sense of PLM. For the purpose of a seamless exchange of results
+between our embedding and PLM, this level of assurance has proven sufficient. In our
+work we have not encountered a proof in our abstraction layer that could not be
+reproduced in the system of PLM.
 \<close>
 
 section\<open>Artifactual Theorems\<close>
