@@ -400,7 +400,7 @@ constructions or category theory as framework (TODO cite),  Benzm\"uller defends
 the use of classical higher-order logic (HOL) for pragmatic reasons:
 
   \<^item> For HOL there are sophisticated automation tools readily available that have been
-developed for several decades.
+developed for several decades like e.g. Isabelle/HOL.
   \<^item> Since HOL itself is very expressive, an embedding into HOL can often be achieved
     using simple techniques and can result in an elegant and concise representation of
     the target logic.
@@ -450,7 +450,8 @@ text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
 propositions is boolean-valued function acting on (or, equivalently, sets of) possible worlds.
-In an SSE we use the semantic domains as type for the formulas themselves, so we can introduce
+In an SSE we usually@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
+explicitly, as recently demonstrated in~\cite{PublicAnnouncementLogic}.\<close>} use the semantic domains as type for the object-level terms themselves, so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
 world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.@{footnote \<open>Note
@@ -565,11 +566,11 @@ rules of a target logic are semantically valid in the embedding, after which the
 are considered as ground truths: all subsequent reasoning in the abstraction layer
 is restricted to only rely on the derived axioms and rules and may no longer refer
 to the underlying semantics. Consequently, only proper theorems of the target logic
-are derivable in the abstraction layer.
+are derivable in the abstraction layer.@{footnote \<open>Note, however, that this relies
+on the additional assumption that meta-logical inferences based on the derived axioms and rules
+correspond to derivations in the target logic, as mentioned in the end of this section.\<close>}
 
-So while abstraction layers are conceptually rather simple,@{footnote \<open>Even though
-further care has to be taken to ensure that their construction is in fact faithful to the target
-system, as mentioned at the end of this section.\<close>} the interesting question is how
+So while abstraction layers are conceptually rather simple, the interesting question is how
 the automation capabilities of the meta-logic can be preserved and reliably restricted
 to respect the imposed restrictions.
 
@@ -636,9 +637,10 @@ that meta-logical reasoning about derivations in the target logic is faithfully 
 by the meta-logical inferences in Isabelle enabled by the constructed deduction rules.
 
 In particular, the deductive system of our target theory is implemented as
-rules in Isabelle's Pure logic. Consequently, we need to convince ourselves that resulting
-inferences in Pure are reproducible in the target system. For our embedding of AOT
-we demonstrate such an argument in section~\ref{PureVsAOT}.
+meta-rules in Isabelle's Pure logic. Consequently, we need to convince ourselves that resulting
+inferences in Pure are reproducible in the target system and, conversely, that
+derivations in our target system are exhaustively captured by the Pure rules of our abstraction
+layer. For our embedding of AOT we demonstrate such an argument in section~\ref{PureVsAOT}.
 \<close>
 
 section\<open>Isabelle's Native Abstraction Mechanisms\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
@@ -3932,6 +3934,9 @@ derivations in the sense of PLM. For the purpose of a seamless exchange of resul
 between our embedding and PLM, this level of assurance has proven sufficient. In our
 work we have not encountered a proof in our abstraction layer that could not be
 reproduced in the system of PLM.
+
+Conversely, the fact that we can derive PLM's axioms and deduction rules in the
+embedding shows that derivations of PLM can be reproduced in the embedding.
 \<close>
 
 section\<open>Artifactual Theorems\<close>
@@ -3956,9 +3961,8 @@ respectively whether our embedding allows deriving artifactual theorems when ign
 the abstraction layer and allowing to use the semantic properties of the embedding in proofs.
 
 As a matter of fact, comparing derivability in the abstraction layer of the embedding
-(respectively, equivalently, in the formal system of AOT itself) with
-validity in our underlying semantic structure has been the driving force in our
-collaboration with the original authors of AOT.
+(respectively in the formal system of PLM itself) with validity in our underlying
+semantic structure has been the driving force in our collaboration with the original authors of AOT.
 
 In particular, whenever a potential artifactual theorem was recognized, this resulted
 in an analysis of the discrepancy which regularly led to either a further abstraction
@@ -4182,7 +4186,7 @@ However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conve
 is @{emph \<open>not\<close>} a theorem of AOT:
 
 \begin{quote}
-@{term[display] \<open>print_as_theorem \<guillemotleft>[\<lambda>xy [\<lambda>z [F]zy]y] = [\<lambda>xy [\<lambda>z [F]yz]x]\<guillemotright>\<close>}
+@{term[display] \<open>print_as_theorem \<guillemotleft>[\<lambda>xy [\<lambda>z [F]zy]x] = [\<lambda>xy [\<lambda>z [F]xz]y]\<guillemotright>\<close>}
 \end{quote}
 
 The embedding constructs @{text \<open>\<lambda>\<close>}-abstraction and exemplification using the
