@@ -70,6 +70,7 @@ lemma AOT_sem_exists: \<open>[w \<Turnstile> \<exists>\<alpha> \<phi>{\<alpha>}]
   unfolding AOT_exists[unfolded AOT_model_equiv_def, THEN spec]
   by (simp add: AOT_sem_forall AOT_sem_not)
 
+text\<open>\linelabel{AOT_eq_spec}\<close>
 specification(AOT_eq)
   AOT_sem_eq: \<open>[w \<Turnstile> \<tau> = \<tau>'] = ([w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>')\<close>
   by (rule exI[where x=\<open>\<lambda> \<tau> \<tau>' . \<epsilon>\<^sub>\<o> w . [w \<Turnstile> \<tau>\<down>] \<and> [w \<Turnstile> \<tau>'\<down>] \<and> \<tau> = \<tau>'\<close>])
