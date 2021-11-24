@@ -570,8 +570,8 @@ are derivable in the abstraction layer.@{footnote \<open>Note, however, that thi
 on the additional assumption that meta-logical inferences based on the derived axioms and rules
 correspond to derivations in the target logic, as mentioned in the end of this section.\<close>}
 
-So while abstraction layers are conceptually rather simple, the interesting question is how
-the automation capabilities of the meta-logic can be preserved and reliably restricted
+So while abstraction layers are conceptually rather simple, an interesting technically
+question is how the automation capabilities of the meta-logic can be preserved and reliably restricted
 to respect the imposed restrictions.
 
 While Isabelle provides its own mechanisms for abstract reasoning like type @{command class}es, @{command locale}s and
