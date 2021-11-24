@@ -831,6 +831,15 @@ For example, it is possible to instantiate a type class for products of two gene
 (i.e. type variables) of specific sorts. We use this mechanism to inductively define
 properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{IndividualTermsAndClasses}).
 
+Ideally, it would be possible to implement the full axiom system and deduction rules
+of our target system using a system of type classes and locales (which would provide
+an abstraction layer that is enforced on the logical level) and then merely to validate
+the consistency of the construction by instantiating, resp. interpreting these
+type classes and locales using a concrete semantic construction. However, in a
+complex target system that involves polymorphic axioms and complex interdependencies
+between its types, this is not always feasible and we have to rely on abstraction
+layers as described in the last section.
+
 While a full discussion of the subtleties of type @{command class}es
 goes beyond the scope of this thesis, the short summary we provided above should
 be sufficient for understanding our use of type classes in chapter~\ref{SSEofAOT}.
