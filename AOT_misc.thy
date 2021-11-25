@@ -2,6 +2,267 @@ theory AOT_misc
   imports AOT_NaturalNumbers
 begin
 
+AOT_theorem PossiblyNumbersEmptyPropertyImpliesZero:
+  \<open>\<diamond>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> x = 0\<close>
+proof(rule "\<rightarrow>I")
+  AOT_have \<open>Rigid([\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+  proof (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2";
+         rule RN; safe intro!: GEN "\<rightarrow>I")
+    AOT_modally_strict {
+      fix x
+      AOT_assume \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]x\<close>
+      AOT_hence \<open>O!x & x \<noteq>\<^sub>E x\<close> by (rule "\<beta>\<rightarrow>C")
+      moreover AOT_have \<open>x =\<^sub>E x\<close> using calculation[THEN "&E"(1)] 
+        by (metis "ord=Eequiv:1" "vdash-properties:10")
+      ultimately AOT_have \<open>x =\<^sub>E x & \<not>x =\<^sub>E x\<close>
+        by (metis "con-dis-i-e:1" "con-dis-i-e:2:b" "intro-elim:3:a" "thm-neg=E")
+      AOT_thus \<open>\<box>[\<lambda>z O!z & z \<noteq>\<^sub>E z]x\<close> using "raa-cor:1" by blast
+    }
+  qed
+  AOT_hence \<open>\<box>\<forall>x (Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    by (safe intro!: "num-cont:2"[unvarify G, THEN "\<rightarrow>E"] "cqt:2")
+  AOT_hence \<open>\<forall>x \<box>(Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    using "BFs:2"[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<box>(Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> \<box>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+    using "\<forall>E"(2) by auto
+  moreover AOT_assume \<open>\<diamond>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+  ultimately AOT_have \<open>\<^bold>\<A>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "sc-eq-box-box:1"[THEN "\<equiv>E"(1), THEN "\<rightarrow>E", THEN "nec-imp-act"[THEN "\<rightarrow>E"]]
+    by blast
+  AOT_hence \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[\<lambda>z O!z & z \<noteq>\<^sub>E z]z])\<close>
+    by (safe intro!: "eq-num:1"[unvarify G, THEN "\<equiv>E"(1)] "cqt:2")
+  AOT_hence \<open>x = #[\<lambda>z O!z & z \<noteq>\<^sub>E z]\<close>
+    by (safe intro!: "eq-num:2"[unvarify G, THEN "\<equiv>E"(1)] "cqt:2")
+  AOT_thus \<open>x = 0\<close>
+    using "cqt:2"(1) "rule-id-df:2:b[zero]" "rule=E" "zero:1" by blast
+qed
+
+AOT_define Numbers' :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Numbers'''(_,_')\<close>)
+  \<open>Numbers'(x, G) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G)\<close>
+AOT_theorem Numbers'equiv: \<open>Numbers'(x,G) \<equiv> A!x & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E G)\<close>
+  by (AOT_subst_def Numbers')
+     (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2" dest: "&E")
+
+AOT_theorem Numbers'DistinctZeroes:
+  \<open>\<exists>x\<exists>y (\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y)\<close>
+proof -
+  AOT_obtain w\<^sub>1 where \<open>\<exists>w w\<^sub>1 \<noteq> w\<close>
+    using "two-worlds-exist:4" "PossibleWorld.\<exists>E"[rotated] by fast
+  then AOT_obtain w\<^sub>2 where distinct_worlds: \<open>w\<^sub>1 \<noteq> w\<^sub>2\<close>
+    using "PossibleWorld.\<exists>E"[rotated] by blast
+  AOT_obtain x where x_prop:
+    \<open>A!x & \<forall>F (x[F] \<equiv> w\<^sub>1 \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
+  moreover AOT_obtain y where y_prop:
+    \<open>A!y & \<forall>F (y[F] \<equiv> w\<^sub>2 \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    using "A-objects"[axiom_inst] "\<exists>E"[rotated] by fast
+  moreover {
+    fix x w
+    AOT_assume x_prop: \<open>A!x & \<forall>F (x[F] \<equiv> w \<Turnstile> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    AOT_have \<open>\<forall>F w \<Turnstile> (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    proof(safe intro!: GEN "conj-dist-w:4"[unvarify p q, OF "log-prop-prop:2",
+                              OF "log-prop-prop:2",THEN "\<equiv>E"(2)] "\<equiv>I" "\<rightarrow>I")
+      fix F
+      AOT_assume \<open>w \<Turnstile> x[F]\<close>
+      AOT_hence \<open>\<diamond>x[F]\<close>
+        using "fund:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2),
+                       OF "PossibleWorld.\<exists>I"] by blast
+      AOT_hence \<open>x[F]\<close>
+        by (metis "en-eq:3[1]" "intro-elim:3:a")
+      AOT_thus \<open>w \<Turnstile> (F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+        using x_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by blast
+    next
+      fix F
+      AOT_assume \<open>w \<Turnstile> (F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      AOT_hence \<open>x[F]\<close>
+        using x_prop[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
+      AOT_hence \<open>\<box>x[F]\<close>
+        using "pre-en-eq:1[1]"[THEN "\<rightarrow>E"] by blast
+      AOT_thus \<open>w \<Turnstile> x[F]\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)]
+              "PossibleWorld.\<forall>E" by fast
+    qed
+    AOT_hence \<open>w \<Turnstile> \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      using "conj-dist-w:5"[THEN "\<equiv>E"(2)] by fast
+    moreover {
+      AOT_have \<open>\<box>[\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down>\<close>
+        by (safe intro!: RN "cqt:2")
+      AOT_hence \<open>w \<Turnstile> [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down>\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1),
+                       THEN "PossibleWorld.\<forall>E"] by blast
+    }
+    moreover {
+      AOT_have \<open>\<box>A!x\<close>
+        using x_prop[THEN "&E"(1)] by (metis "oa-facts:2" "\<rightarrow>E")
+      AOT_hence \<open>w \<Turnstile> A!x\<close>
+        using "fund:2"[unvarify p, OF "log-prop-prop:2",
+                       THEN "\<equiv>E"(1), THEN "PossibleWorld.\<forall>E"] by blast
+    }
+    ultimately AOT_have \<open>w \<Turnstile> (A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> &
+                               \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2",
+              OF "log-prop-prop:2", THEN "\<equiv>E"(2), OF "&I"] by auto
+    AOT_hence \<open>\<exists>w w \<Turnstile> (A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> &
+                        \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "PossibleWorld.\<exists>I" by auto
+    AOT_hence \<open>\<diamond>(A!x & [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<down> & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]))\<close>
+      using "fund:1"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)] by blast
+    AOT_hence \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+      by (AOT_subst_def Numbers')
+  }
+  ultimately AOT_have \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+                  and \<open>\<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
+    by auto
+  moreover AOT_have \<open>x \<noteq> y\<close>
+  proof (rule "ab-obey:2"[THEN "\<rightarrow>E"])
+    AOT_have \<open>\<box>\<not>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+    proof (safe intro!: RN "raa-cor:2")
+      AOT_modally_strict {
+        AOT_assume \<open>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+        then AOT_obtain u where \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+          using "Ordinary.\<exists>E"[rotated] by blast
+        AOT_hence \<open>O!u & u \<noteq>\<^sub>E u\<close>
+          by (rule "\<beta>\<rightarrow>C")
+        AOT_hence \<open>\<not>(u =\<^sub>E u)\<close>
+          by (metis "con-dis-taut:2" "intro-elim:3:d" "modus-tollens:1"
+                    "raa-cor:3" "thm-neg=E")
+        AOT_hence \<open>u =\<^sub>E u & \<not>u =\<^sub>E u\<close>
+          by (metis "modus-tollens:1" "ord=Eequiv:1" "raa-cor:3" Ordinary.\<psi>)
+        AOT_thus \<open>p & \<not>p\<close> for p
+          by (metis "raa-cor:1")
+      }
+    qed
+    AOT_hence nec_not_ex: \<open>\<forall>w w \<Turnstile> \<not>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
+      using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+    AOT_have \<open>\<box>([\<lambda>y p]x \<equiv> p)\<close> for x p
+      by (safe intro!: RN "beta-C-meta"[THEN "\<rightarrow>E"] "cqt:2")
+    AOT_hence \<open>\<forall>w w \<Turnstile> ([\<lambda>y p]x \<equiv> p)\<close> for x p
+      using "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+    AOT_hence world_prop_beta: \<open>\<forall>w (w \<Turnstile> [\<lambda>y p]x \<equiv> w \<Turnstile> p)\<close> for x p
+      using "conj-dist-w:4"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)]
+            "PossibleWorld.\<forall>E" "PossibleWorld.\<forall>I" by meson
+
+    AOT_have \<open>\<exists>p (w\<^sub>1 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p)\<close>
+    proof(rule "raa-cor:1")
+      AOT_assume 0: \<open>\<not>\<exists>p (w\<^sub>1 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p)\<close>
+      AOT_have 1: \<open>w\<^sub>1 \<Turnstile> p \<rightarrow> w\<^sub>2 \<Turnstile> p\<close> for p
+      proof(safe intro!: GEN "\<rightarrow>I")
+        AOT_assume \<open>w\<^sub>1 \<Turnstile> p\<close>
+        AOT_thus \<open>w\<^sub>2 \<Turnstile> p\<close>
+          using 0 "con-dis-i-e:1" "\<exists>I"(2) "raa-cor:4" by fast
+      qed
+      moreover AOT_have \<open>w\<^sub>2 \<Turnstile> p \<rightarrow> w\<^sub>1 \<Turnstile> p\<close> for p
+      proof(safe intro!: GEN "\<rightarrow>I")
+        AOT_assume \<open>w\<^sub>2 \<Turnstile> p\<close>
+        AOT_hence \<open>\<not>w\<^sub>2 \<Turnstile> \<not>p\<close>
+          using "coherent:2" "intro-elim:3:a" by blast
+        AOT_hence \<open>\<not>w\<^sub>1 \<Turnstile> \<not>p\<close>
+          using 1["\<forall>I" p, THEN "\<forall>E"(1), OF "log-prop-prop:2"]
+          by (metis "modus-tollens:1")
+        AOT_thus \<open>w\<^sub>1 \<Turnstile> p\<close>
+          using "coherent:1" "intro-elim:3:b" "reductio-aa:1" by blast
+      qed
+      ultimately AOT_have \<open>w\<^sub>1 \<Turnstile> p \<equiv> w\<^sub>2 \<Turnstile> p\<close> for p
+        by (metis "intro-elim:2")
+      AOT_hence \<open>w\<^sub>1 = w\<^sub>2\<close>
+        using "sit-identity"[unconstrain s, THEN "\<rightarrow>E",
+            OF PossibleWorld.\<psi>[THEN "world:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)],
+            unconstrain s', THEN "\<rightarrow>E",
+            OF PossibleWorld.\<psi>[THEN "world:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(1)],
+            THEN "\<equiv>E"(2)] GEN by fast
+      AOT_thus \<open>w\<^sub>1 = w\<^sub>2 & \<not>w\<^sub>1 = w\<^sub>2\<close>
+        using  "=-infix" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:1" distinct_worlds by blast
+    qed
+    then AOT_obtain p where 0: \<open>w\<^sub>1 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_have \<open>y[\<lambda>y p]\<close>
+    proof (safe intro!: y_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)] "cqt:2")
+      AOT_show \<open>w\<^sub>2 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]\<close>
+      proof (safe intro!:  "cqt:2" "empty-approx:1"[unvarify F H, THEN RN,
+                  THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)],
+                  THEN "PossibleWorld.\<forall>E",
+                  THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2",
+                                       OF "log-prop-prop:2", THEN "\<equiv>E"(1)],
+                                       THEN "\<rightarrow>E"]
+                  "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2",
+                                  OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+        AOT_have \<open>\<not>w\<^sub>2 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+        proof (rule "raa-cor:2")
+          AOT_assume \<open>w\<^sub>2 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+          AOT_hence \<open>\<exists>x w\<^sub>2 \<Turnstile> (O!x & [\<lambda>y p]x)\<close>
+            by (metis "conj-dist-w:6" "intro-elim:3:a")
+          then AOT_obtain x where \<open>w\<^sub>2 \<Turnstile> (O!x & [\<lambda>y p]x)\<close>
+            using "\<exists>E"[rotated] by blast
+          AOT_hence \<open>w\<^sub>2 \<Turnstile> [\<lambda>y p]x\<close>
+            using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2",
+                    OF "log-prop-prop:2", THEN "\<equiv>E"(1), THEN "&E"(2)] by blast
+          AOT_hence \<open>w\<^sub>2 \<Turnstile> p\<close>
+            using world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(1)] by blast
+          AOT_thus \<open>w\<^sub>2 \<Turnstile> p & \<not>w\<^sub>2 \<Turnstile> p\<close>
+            using 0[THEN "&E"(2)] "&I" by blast
+        qed
+        AOT_thus \<open>w\<^sub>2 \<Turnstile> \<not>\<exists>u [\<lambda>y p]u\<close>
+          by (safe intro!: "coherent:1"[unvarify p, OF "log-prop-prop:2",
+                                        THEN "\<equiv>E"(2)])
+      next
+        AOT_show \<open>w\<^sub>2 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+          using nec_not_ex[THEN "PossibleWorld.\<forall>E"] by blast
+      qed
+    qed
+    moreover AOT_have \<open>\<not>x[\<lambda>y p]\<close>
+    proof(rule "raa-cor:2")
+      AOT_assume \<open>x[\<lambda>y p]\<close>
+      AOT_hence "w\<^sub>1 \<Turnstile> [\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+        using x_prop[THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(1)]
+              "prop-prop2:2" by blast
+      AOT_hence "\<not>w\<^sub>1 \<Turnstile> \<not>[\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z]"
+        using "coherent:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
+      moreover AOT_have "w\<^sub>1 \<Turnstile> \<not>([\<lambda>y p] \<approx>\<^sub>E [\<lambda>z O!z & z \<noteq>\<^sub>E z])"
+      proof (safe intro!: "cqt:2" "empty-approx:2"[unvarify F H, THEN RN,
+                    THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)],
+                    THEN "PossibleWorld.\<forall>E",
+                    THEN "conj-dist-w:2"[unvarify p q, OF "log-prop-prop:2",
+                        OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "\<rightarrow>E"]
+                    "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2",
+                                    OF "log-prop-prop:2", THEN "\<equiv>E"(2)] "&I")
+        fix u
+        AOT_have \<open>w\<^sub>1 \<Turnstile> O!u\<close>
+          using Ordinary.\<psi>[THEN RN,
+                  THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)],
+                  THEN "PossibleWorld.\<forall>E"] by simp
+        moreover AOT_have \<open>w\<^sub>1 \<Turnstile> [\<lambda>y p]u\<close>
+          by (safe intro!: world_prop_beta[THEN "PossibleWorld.\<forall>E", THEN "\<equiv>E"(2)]
+                           0[THEN "&E"(1)])
+        ultimately AOT_have \<open>w\<^sub>1 \<Turnstile> (O!u & [\<lambda>y p]u)\<close>
+          using "conj-dist-w:1"[unvarify p q, OF "log-prop-prop:2",
+                                OF "log-prop-prop:2", THEN "\<equiv>E"(2),
+                                OF "&I"] by blast
+        AOT_hence \<open>\<exists>x w\<^sub>1 \<Turnstile> (O!x & [\<lambda>y p]x)\<close>
+          by (rule "\<exists>I")
+        AOT_thus \<open>w\<^sub>1 \<Turnstile> \<exists>u [\<lambda>y p]u\<close>
+          by (metis "conj-dist-w:6" "intro-elim:3:b")
+      next
+        AOT_show \<open>w\<^sub>1 \<Turnstile> \<not>\<exists>v [\<lambda>z O!z & z \<noteq>\<^sub>E z]v\<close>
+          using "PossibleWorld.\<forall>E" nec_not_ex by fastforce
+      qed
+      ultimately AOT_show \<open>p & \<not>p\<close> for p
+        using "raa-cor:3" by blast
+    qed
+    ultimately AOT_have \<open>y[\<lambda>y p] & \<not>x[\<lambda>y p]\<close>
+      using "&I" by blast
+    AOT_hence \<open>\<exists>F (y[F] & \<not>x[F])\<close>
+      by (metis "existential:1" "prop-prop2:2")
+    AOT_thus \<open>\<exists>F (x[F] & \<not>y[F]) \<or> \<exists>F (y[F] & \<not>x[F])\<close>
+      by (rule "\<or>I")
+  qed
+  ultimately AOT_have \<open>\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) &
+                       \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y\<close>
+    using "&I" by blast
+  AOT_thus \<open>\<exists>x\<exists>y (\<diamond>Numbers'(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) &
+                  \<diamond>Numbers'(y,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) & x \<noteq> y)\<close>
+    using "\<exists>I"(2)[where \<beta>=x] "\<exists>I"(2)[where \<beta>=y] by auto
+qed
+
 AOT_define ExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>ExtensionOf'(_,_')\<close>)
   "exten-property:1": \<open>ExtensionOf(x,[G]) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> \<forall>z([F]z \<equiv> [G]z))\<close>
 
