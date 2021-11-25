@@ -54,6 +54,8 @@ referencedEntities = {
 	"AOT_ExtendedRelationComprehension.Comprehension_1",
 	"AOT_ExtendedRelationComprehension.Comprehension_2",
 	"AOT_ExtendedRelationComprehension.Comprehension_3",
+	"AOT_misc.PossiblyNumbersEmptyPropertyImpliesZero",
+	"AOT_misc.Numbers'DistinctZeroes",
 	"AOT_misc.OrdinaryExtensionOf",
 	"AOT_misc.BeingOrdinaryExtensionOfDenotes",
 	"AOT_misc.ConceptOfOrdinaryProperty",

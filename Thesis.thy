@@ -235,7 +235,7 @@ Our primary goals are to show that:
   \<^item> We can demonstrate the extent of our target theory and the practical feasibility
     of reproducing complex reasoning in it by reproducing and validating its analysis
     of natural numbers.
-  \<^item> In the process, we can provide valuable theoretical insights and analyze extensions and variations of the
+  \<^item> In the process, we can provide valuable theoretical insights into, and analyze extensions and variations of the
     construction of the natural numbers.
 
 TODO: Old bullet point thoughts:
