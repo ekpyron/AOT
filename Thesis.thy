@@ -144,18 +144,20 @@ representation in higher-order logic, this approach works well for any logical s
 has a semantics defined in terms of sets. The approach of shallow semantic embeddings is discussed in
 more detail in chapter~\ref{SSEs}.
 
-(TODO: citation is embedding in simple type theory, not Isabelle/HOL. Rethink.)
-In \cite{ModalLogics} Benzm\"uller and Paulson represented quantified modal logic using SSEs by means
-of embedding modal operators based on their Kripke semantics (TODO cite). This allowed for an
-extensive analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
-such as KB (TODO cite), followed by a range of studies of similar ontological arguments (TODO cite).
+For example, Benzm{\"u}ller et al. provide an extensive analysis of quantified modal logic using SSEs
+by means of embedding modal operators based on their Kripke semantics in
+\cite{ModalLogics, ModalLogicCube, HOMLAutomationAndApplications}. This allowed for an
+analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
+such as KB (see~\cite{GoedelGod}), followed by a range of studies of similar ontological
+arguments (see e.g.~\cite{LeibnizOntologicalArgument}).
+TODO: check citations.
 
 Another more recent example of the application of SSEs is the LogiKEy framework for
 ethical reasoning, normative theories and deontic logics (see~\cite{LogiKEy} and~\cite{LogiKEyData}).
 The goal of LogiKEy is to develop the means for the control and governance of intelligent
 autonomous systems. The framework is based on a set of SSEs of different denotic logics,
 combinations thereof, as well as ethico-legal domain theories in higher-order logic
-with an implementation in Isabelle/HOL. TODO: elaborate?
+with an implementation in Isabelle/HOL.
 
 The advantage of these studies using SSEs compared to the earlier use of first-order systems is that arguments
 can be represented in their native syntax and are thereby readable and maintainable, while the theorem
@@ -418,8 +420,7 @@ text\<open>
 
 An example of a non-classical logic that is used prominently in philosophical arguments is Quantified Higher-Order
 Modal Logic in various different axiomatizations. While there have been extensive studies of
-modal logics using SSEs in Isabelle/HOL (see: TODO: cite a good paper about QML in Isabelle/HOL
-maybe: \url{http://page.mi.fu-berlin.de/cbenzmueller/papers/C47.pdf} or similar), we restrict ourselves
+modal logics using SSEs in Isabelle/HOL (see section~\ref{PriorSSEs}), we restrict ourselves
 to the discussion of a simple embedding of S5 modal logic to further illustrate the general
 concept of SSEs.
 \<close>
@@ -586,7 +587,7 @@ refer to~\cite{Sledgehammer}.\<close>} it collects all theorems derived in the c
 together with all local assumptions, and processes the resulting set of theorems heuristically to find
 a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
 theorems and assumptions in a format that can be consumed by external theorem provers like
-E~\cite{EProver}, SPASS~\cite{SPASS} or verit~\cite{veriT, veriTIsabelle}, Z3~\cite{Z3, Z3Isabelle}, CVC4 or vampire (TODO: cite).
+E~\cite{EProver}, SPASS~\cite{SPASS}, verit~\cite{veriT, veriTIsabelle} or Z3~\cite{Z3, Z3Isabelle}.
 This may, for example, involve a translation from higher-order problems
 to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
 tries to reconstruct a short proof using Isabelle's native proving methods (which operate
@@ -653,7 +654,7 @@ abstraction between the concrete model construction and the derivation of the ax
 system of the target theory, which helps in exploring changes to the model structure without
 having to adjust the full derivation of the abstraction layer.
 
-For example, we extensively use @{command specification}s (TODO: cite).
+For example, we extensively use @{command specification}s (see~\S11.4 in~\cite{IsarRef}).
 A @{command specification} is used to assert statements about previously uninterpreted constants. The @{command specification} command opens a proof context
 that requires the user to show that there exists a concrete instantiation for the given constants,
 for which the desired statements hold. Internally it then uses Isabelle's Hilbert-Epsilon-operator
@@ -904,12 +905,12 @@ Isar makes up the @{emph \<open>outer syntax\<close>} of an Isabelle theory file
 specify theorems and structured proofs acting on Isabelle's system of terms and types, which are
 formulated in @{emph \<open>inner syntax\<close>}.
 @{emph \<open>Inner syntax\<close>} is highly customizable. In the examples in the previous sections we already
-made use of the ability to define new (bold) operators using @{emph \<open>mixfix\<close>} notation (TODO cite).
+made use of the ability to define new (bold) operators using @{emph \<open>mixfix\<close>} notation (see~\S8.2 in~\cite{IsarRef}).
 However, we only used the mechanism to provide symbols to be used inside the grammar tree of
 Isabelle/HOL's own term structure.
 In general Isabelle's inner syntax is described by a context-free priority grammar.
 It consists of a set of @{emph \<open>terminal symbols\<close>}, an extensible set of
-@{emph \<open>non-terminal symbols\<close>} and a set of @{emph \<open>productions\<close>} (TODO cite: isar-ref 8.4).
+@{emph \<open>non-terminal symbols\<close>} and a set of @{emph \<open>productions\<close>} (see~\S8.4 in~\cite{IsarRef}).
 For the purpose of embedding the syntax of a target theory during the construction of SSEs, it
 stands to reason to use the defined validity as root for the grammar subtree of the embedded
 language.
@@ -932,8 +933,8 @@ syntax valid_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> bool\<close> 
 text\<open>Furthermore, we need to specify how propositions can be produced from terminals in the grammar.
 We want to use simple identifiers to refer to proposition variables. To that end we introduce a
 @{emph \<open>copy-production\<close>} rule (a rule that is not tied to a constant). The terminal
-@{typ id_position} is used for identifiers with additional markup information used e.g. for
-pretty-printing terms (TODO: reference and cite PIDE markup).
+@{typ id_position} is used for identifiers with additional markup information (i.e. it contains
+an encoding of the source position of the identifier to be used in the context of Isabelle/PIDE; see~\cite{PIDE}).
 \<close>
 syntax "" :: \<open>id_position \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>_\<close>)
 
@@ -1022,7 +1023,8 @@ refer to the second-order fragment of AOT plainly as AOT or \emph{object theory}
 The second-order fragment is expressive enough for the analysis of a wide variety of objects occurring in Philosophy and Mathematics,
 including Basic Logical Objects like Truh Values and Extensions of Propositions (see~\ref{AOT:AOT_BasicLogicalObjects}, resp. PLM chapter~10);
 Platonic Forms (see PLM chapter~11); Situations, Worlds, Times, and Stories (see~\ref{AOT:AOT_PossibleWorlds}, resp. PLM chapter~12);
-Concepts (see PLM chapter 13) and Natural Numbers (see~\ref{AOT:AOT_NaturalNumbers}, resp. PLM chapter~13). TODO: note version of PLM.
+Concepts (see PLM chapter 13) and Natural Numbers (see~\ref{AOT:AOT_NaturalNumbers}, resp. PLM chapter~13).@{footnote \<open>The
+chapter numbering of PLM is relative to~\cite{PLM-Oct-13-2021}.\<close>}
 
 The applications of higher-order object theory and the challenges in representing it in Isabelle/HOL are
 briefly discussed in chapter~\ref{HigherOrderAOT}. To get an intuition for the level of expressiveness of
@@ -1236,7 +1238,7 @@ Furthermore, PLM allows for extending above language using two kinds of definiti
 by identity and definitions by equivalence. While the inferential role of these definitions will be
 discussed in more detail in section~\ref{InferentialRoleOfDefinitions}, for now we rely on an intuitive understanding of their meaning.
 PLM @{emph \<open>defines\<close>} multiple concepts that are commonly taken as primitive, such as logical existence
-and identity. These basic definitions can be found in (TODO: cite PLM section) and are
+and identity. These basic definitions can be found in section 7.2 of PLM~\cite{PLM-Oct-13-2021} and are
 implemented in our embedding in section~\ref{AOT:AOT_Definitions}.
 In particular, PLM defines the following:
 
@@ -1674,10 +1676,10 @@ all classical propositional tautologies are theorems of AOT.\<close>}
 with a fixed designated actual world for the actuality operator. In particular, AOT follows an S5 modal logic with actuality operator and
 Barcan formulas.
   \<^item> The free logic extends to all types, but all propositions provably denote.
-    Quantifiers range over denoting objects and the defined identity is an @{emph \<open>existing identity\<close>},
+    Quantifiers range over denoting objects and the defined identity constitutes an @{emph \<open>existing identity\<close>},
     i.e. to be identical two entities need to both denote @{emph \<open>and\<close>} denote the same thing.@{footnote \<open>Respectively,
-    denote and satisfy the axiom of the substitution of identicals. Note that our implementation has the property that
-    PLM's defined identity implies meta-logical identity. TODO: refine\<close>}
+    denote and satisfy the axiom of the substitution of identicals. Our implementation has the property that
+    PLM's defined identity implies meta-logical identity.\<close>}
 
 \<close>
 
@@ -1797,7 +1799,9 @@ subsection\<open>Modally-Strict and Modally-Fragile Theorems\<close>text\<open>\
 
 text\<open>
 PLM constructs two derivational systems, the first, written as @{text \<open>\<^bold>\<turnstile>\<close>}, is called modally-fragile,
-while the second, written as @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>}, is called modally-strict.
+while the second, written as @{text \<open>\<^bold>\<turnstile>\<^sub>\<box>\<close>}, is called modally-strict.@{footnote \<open>To state modally-strict
+and modally-fragile theorems in our embedding, we also use @{command AOT_theorem} and
+@{command AOT_act_theorem} respectively.\<close>}
 The main difference between the two is that the modally-fragile system is equipped with
 the modally-fragile axiom of actuality and its universal (though not its necessary)
 closures (as mentioned in section~\ref{AxiomSystem}):
@@ -1912,7 +1916,7 @@ This allowed constructing @{text \<open>\<lambda>\<close>}-expressions that were
 @{term[display] \<open>AOT_model_id_def (\<lambda>(). K') (\<lambda>(). \<guillemotleft>[\<lambda>x [\<lambda>y \<forall>p (p \<rightarrow> p)]\<^bold>\<iota>z (z = x & \<exists>F (z[F] & \<not>[F]z))]\<guillemotright>)\<close>}
 \end{quote}
 
-Since @{term \<open>\<guillemotleft>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<guillemotright>\<close>} is universally exemplified by all objects, it being
+Since @{term \<open>\<guillemotleft>[\<lambda>y \<forall>p (p \<rightarrow> p)]\<guillemotright>\<close>} is (necessarily) universally exemplified by all objects, it being
 exemplified be a definite description is equivalent to the matrix of the description
 being @{emph \<open>actually\<close>} satisfied by a unique object, i.e.:@{footnote \<open>We choose this
 opportunity to demonstrate that reasoning in our embedding is readable and intuitively
@@ -1943,9 +1947,9 @@ The left-hand side is equivalent to @{term \<open>\<guillemotleft>[K']x\<guillem
 
 The right-hand side can be simplified to @{term \<open>\<guillemotleft>\<^bold>\<A>\<exists>F (x[F] & \<not>[F]x)\<guillemotright>\<close>}, so 
 it is equivalent to @{term \<open>\<guillemotleft>\<^bold>\<A>[K]x\<guillemotright>\<close>}. Thereby, assuming @{term \<open>K'\<close>} denotes
-yields a modally-fragile proof of a contradiction, respectively a modally
-strict proof of an actual contradiction, following the argument given in the previous
-section. TODO: modal stuff.
+yields a modally-fragile proof of a contradiction following the argument given in the
+previous section.@{footnote \<open>The proof can also be strengthened to be modally-strict,
+see~\nameref{AOT:block-paradox2:1[strict]}.\<close>}
 
 An obvious solution to this issue would have been to extend the definition of encoding subformula
 to also consider matrices of descriptions and thereby disbarring @{term \<open>K'\<close>} as not
@@ -1956,7 +1960,8 @@ However, this had resulted in the loss of the ability to formulate interesting
 to preserve. Therefore, this solution was rejected in favour of extending
 AOT's free logic to relation terms as described in the next section.
 In the most recent formulation of AOT, it becomes a theorem that the paradoxical relation
-@{text \<open>K'\<close>} does not denote on pain of contradiction (see~\nameref{AOT:block-paradox2:1}).
+@{text \<open>K'\<close>} does not denote on pain of contradiction (see~\nameref{AOT:block-paradox2:1},
+resp.~\nameref{AOT:block-paradox2:1[strict]}).
 \<close>
 
 section\<open>Extending AOT's Free Logic to Relations\<close>text\<open>\label{MoveToFreeLogic}\<close>
@@ -2043,7 +2048,7 @@ individuals.\footnote{In a modal setting properties are even associated with mul
 objects for different semantic possible worlds or, equivalently, extensions of modal properties are conceived of as mapping
 objects to sets of possible worlds in which the property is exemplified by the object.} However, if abstract objects correspond
 to sets of properties and exemplification-extensions of properties themselves were to be sets of objects,
-one may wonder how this can be achieved without a violation of Cantor's Theorem (TODO: cite):
+one may wonder how this can be achieved without a violation of Cantor's Theorem:
 How can abstract objects be sets of properties and simultaneously (in the simplest case of non-modal
 and extensional properties) elements of properties?
 
