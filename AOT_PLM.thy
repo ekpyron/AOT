@@ -4633,6 +4633,126 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
     using "block-paradox:2" "&I" by blast
 qed
 
+text\<open>Note: Strengthens the above to a modally-strict theorem.
+           Not explicitly part of PLM.\<close>
+AOT_theorem "block-paradox2:1[strict]":
+  \<open>\<forall>x \<^bold>\<A>[G]x \<rightarrow> \<not>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down>\<close>
+proof(rule "\<rightarrow>I"; rule "raa-cor:2")
+  AOT_assume antecedant: \<open>\<forall>x \<^bold>\<A>[G]x\<close>
+  AOT_have Lemma: \<open>\<^bold>\<A>\<forall>x ([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x))\<close>
+  proof(safe intro!: GEN "Act-Basic:5"[THEN "\<equiv>E"(2)]
+                     "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(2)])
+    fix x
+    AOT_have A: \<open>\<^bold>\<A>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv>
+                 \<exists>!y \<^bold>\<A>(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+    proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+      AOT_assume \<open>\<^bold>\<A>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+      moreover AOT_have \<open>\<box>([G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x)) \<rightarrow>
+                                  \<box>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>)\<close>
+      proof(rule RN; rule "\<rightarrow>I")
+        AOT_modally_strict {
+          AOT_assume \<open>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+          AOT_hence \<open>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>\<close>
+            using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] by blast
+          AOT_thus \<open>\<box>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>\<close>
+            using "exist-nec"[THEN "\<rightarrow>E"] by blast
+        }
+      qed
+      ultimately AOT_have \<open>\<^bold>\<A>\<box>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>\<close>
+        using "act-cond"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "nec-imp-act"[THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>\<close>
+        using "Act-Sub:3" "B\<diamond>" "vdash-properties:10" by blast
+      AOT_thus \<open>\<exists>!y \<^bold>\<A>(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "actual-desc:1"[THEN "\<equiv>E"(1)] by blast
+    next
+      AOT_assume A: \<open>\<exists>!y \<^bold>\<A>(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+      AOT_obtain a where a_1: \<open>\<^bold>\<A>(a = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+                     and a_2: \<open>\<forall>z (\<^bold>\<A>(z = x & \<exists>H (x[H] & \<not>[H]x)) \<rightarrow> z = a)\<close>
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
+      AOT_have a_3: \<open>\<^bold>\<A>[G]a\<close>
+        using antecedant "\<forall>E" by blast
+      moreover AOT_have \<open>a = \<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "nec-hintikka-scheme"[THEN "\<equiv>E"(2), OF "&I"] a_1 a_2 by auto
+      ultimately AOT_show \<open>\<^bold>\<A>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "rule=E" by fast
+    qed
+    also AOT_have B: \<open>... \<equiv> \<^bold>\<A>\<exists>H (x[H] & \<not>[H]x)\<close>
+    proof (rule "\<equiv>I"; rule "\<rightarrow>I")
+      AOT_assume A: \<open>\<exists>!y \<^bold>\<A>(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+      AOT_obtain a where \<open>\<^bold>\<A>(a = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF A] "&E" "\<exists>E"[rotated] by blast
+      AOT_thus \<open>\<^bold>\<A>\<exists>H (x[H] & \<not>[H]x)\<close>
+        using "Act-Basic:2"[THEN "\<equiv>E"(1), THEN "&E"(2)] by blast
+    next
+      AOT_assume \<open>\<^bold>\<A>\<exists>H (x[H] & \<not>[H]x)\<close>
+      AOT_hence \<open>\<^bold>\<A>x = x & \<^bold>\<A>\<exists>H (x[H] & \<not>[H]x)\<close>
+        using "id-eq:1" "&I" "RA[2]" by blast
+      AOT_hence \<open>\<^bold>\<A>(x = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "act-conj-act:3" "Act-Basic:2" "\<equiv>E" by blast
+      moreover AOT_have \<open>\<forall>z (\<^bold>\<A>(z = x & \<exists>H (x[H] & \<not>[H]x)) \<rightarrow> z = x)\<close>
+      proof(safe intro!: GEN "\<rightarrow>I")
+        fix z
+        AOT_assume \<open>\<^bold>\<A>(z = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        AOT_hence \<open>\<^bold>\<A>(z = x)\<close>
+          using "Act-Basic:2"[THEN "\<equiv>E"(1), THEN "&E"(1)] by blast
+        AOT_thus \<open>z = x\<close>
+           by (metis "id-act:1" "intro-elim:3:b")
+      qed
+      ultimately AOT_show \<open>\<exists>!y \<^bold>\<A>(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+        using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "\<exists>I"(2) by fast
+    qed
+    finally AOT_show \<open>(\<^bold>\<A>[G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<^bold>\<A>\<exists>H (x[H] & \<not>[H]x))\<close>.
+  qed
+
+  AOT_assume A: \<open>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down>\<close>
+  AOT_hence \<open>\<^bold>\<A>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down>\<close>
+    using "exist-nec" "\<rightarrow>E" "nec-imp-act"[THEN "\<rightarrow>E"] by blast
+  AOT_hence \<open>\<^bold>\<A>([\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down> &
+                \<forall>x ([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x)))\<close>
+    using Lemma "Act-Basic:2"[THEN "\<equiv>E"(2)] "&I" by blast
+  moreover AOT_have \<open>\<^bold>\<A>([\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down> &
+                \<forall>x ([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x)))
+      \<rightarrow> \<^bold>\<A>\<exists>p (p & \<not>p)\<close>
+  proof (rule "logic-actual-nec:2"[axiom_inst, THEN "\<equiv>E"(1)];
+         rule "RA[2]"; rule "\<rightarrow>I")
+    AOT_modally_strict {
+      AOT_assume 0: \<open>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down> &
+                \<forall>x ([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x))\<close>
+      AOT_have \<open>\<exists>F \<forall>x ([F]x \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close>
+      proof(rule "\<exists>I"(1))
+        AOT_show \<open>\<forall>x ([\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]x \<equiv> \<exists>H (x[H] & \<not>[H]x))\<close>
+        proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I" "\<beta>\<leftarrow>C" dest!: "\<beta>\<rightarrow>C")
+          fix x
+          AOT_assume \<open>[G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+          AOT_thus \<open>\<exists>H (x[H] & \<not>[H]x)\<close>
+            using 0 "&E" "\<forall>E"(2) "\<equiv>E"(1) by blast
+        next
+          fix x
+          AOT_assume \<open>\<exists>H (x[H] & \<not>[H]x)\<close>
+          AOT_thus \<open>[G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
+            using 0 "&E" "\<forall>E"(2) "\<equiv>E"(2) by blast
+        qed(auto intro!: 0[THEN "&E"(1)] "cqt:2")
+      next
+        AOT_show \<open>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down>\<close>
+          using 0 "&E"(1) by blast
+      qed
+      AOT_thus \<open>\<exists>p (p & \<not>p)\<close>
+        using "block-paradox:2" "reductio-aa:1" by blast
+    }
+  qed
+  ultimately AOT_have \<open>\<^bold>\<A>\<exists>p (p & \<not>p)\<close>
+    using "\<rightarrow>E" by blast
+  AOT_hence \<open>\<exists>p \<^bold>\<A>(p & \<not>p)\<close>
+    by (metis "Act-Basic:10" "intro-elim:3:a")
+  then AOT_obtain p where \<open>\<^bold>\<A>(p & \<not>p)\<close>
+    using "\<exists>E"[rotated] by blast
+  moreover AOT_have \<open>\<not>\<^bold>\<A>(p & \<not>p)\<close>
+    using "non-contradiction"[THEN "RA[2]"]
+    by (meson "Act-Sub:1" "\<not>\<not>I" "intro-elim:3:d")
+  ultimately AOT_show \<open>p & \<not>p\<close> for p
+    by (metis "raa-cor:3")
+qed
+
 AOT_act_theorem "block-paradox2:2":
   \<open>\<exists>G \<not>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down>\<close>
 proof(rule "\<exists>I"(1))
