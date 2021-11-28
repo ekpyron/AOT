@@ -506,7 +506,8 @@ main tool for automation.\footnote{@{command sledgehammer} is discussed in more 
 
 So far we have constructed an embedding of propositional S5 modal logic using what is commonly
 known as \emph{Standard Translation} of modal logic (see~\cite{ModalLogicSemanticPerspective}). However it is straightforward
-to enrich this embedding with quantification. (TODO: cite paper by Benzmueller)
+to enrich this embedding with quantification.@{footnote \<open>See also the work by
+Benzm{\"u}ller et al. cited in section~\ref{PriorSSEs}.\<close>}
 \<close>
 
 definition forall :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> (binder \<open>\<^bold>\<forall>\<close> 110) where
@@ -519,7 +520,7 @@ polymorphic definitions relative to a type variable @{typ 'a}. This way the same
 can be used for propositions themselves, any desired type for individuals or even properties of
 any order.@{footnote \<open>Note that this construction implies a shared domains for objects
 across possible worlds. An additional meta-logical predicate for @{emph \<open>logical existence
-in a possible world\<close>} can be added to model varying domains. TODO: cite?\<close>}
+in a possible world\<close>} can be added to model varying domains.\<close>}
 
 As an example of theorems involving quantifiers and modal logic, we derive the Barcan formulas.
 @{command sledgehammer} can again automatically provide proofs.\<close>
@@ -2964,7 +2965,7 @@ results in significantly improved readability.
 Therefore we utilize Isabelle's low-level mechanisms to customize syntax by providing
 transformations on its AST and its term representation written in Standard ML.
 
-In particular, we use @{command parse_ast_translation}s and @{command parse_translation}s (TODO cite)
+In particular, we use @{command parse_ast_translation}s and @{command parse_translation}s (see~\S8.4 in~\cite{IsarRef})
 to split what Isabelle would natively regard as a single identifier. That way we are
 able to e.g. translate the term @{term \<open>print_as_theorem \<guillemotleft>[F]xy\<guillemotright>\<close>} to
 @{text \<open>AOT_exe F (x,y)\<close>}. The 2-ary exemplification formula is translated to
@@ -3012,8 +3013,8 @@ annotation of non-meta-variables using @{text \<open>\<langle>_\<rangle>\<close>
 exemplification @{text \<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>} and explicit tuples, plain HOL syntax quickly
 becomes unreadable for complex terms.
 
-For the purpose of implementing a full theory with an extensive body of theorems
-the improved readability outweighs the potential danger of complex
+For the purpose of implementing a full theory with an extensive body of theorems,
+we feel that the improved readability outweighs the potential danger of complex
 syntax transformations, especially given the ability to confirm the accuracy of
 the translation using less complex printing modes.
 \<close>
@@ -3054,7 +3055,7 @@ We also introduce auxiliary commands like @{command AOT_find_theorems} and
 @{command AOT_sledgehammer} to aid in constructing proofs.
 @{command AOT_find_theorems} works similar to the Isar
 command @{command find_theorems}, but automatically parses AOT syntax and generalizes
-concrete variables to schematic variables for pattern matching (TODO: explain, cite?).
+concrete variables to schematic variables for pattern matching.
 @{command AOT_sledgehammer} is a wrapper around @{command sledgehammer} that invokes
 @{command sledgehammer} while restricting its search for theorems, s.t. the model-specific
 theorems are ignored and only the theorems of the abstraction layers are allowed for proofs.
@@ -3258,11 +3259,11 @@ subsection\<open>The Rule of Substitution\<close>
 text\<open>
 Similar to the axiom above, there is also derived rules in PLM that are challenging
 to reproduce in the embedding. A prominent example is the Rule of Substitution.
-PLM formulates this rule as follows  (PLM item (159) TODO: cite properly):\footnote{PLM
+PLM~\cite{PLM-Oct-13-2021} formulates this rule in item (159) as follows:\footnote{PLM
 formulates the rule relative to modally-fragile derivations @{text \<open>\<turnstile>\<close>}, but further
 argues that it is equally valid for modally-strict derivations @{text \<open>\<turnstile>\<^sub>\<box>\<close>}. Furthermore,
 it also states a variant in which the precondition is weakened to @{text \<open>\<turnstile>\<^sub>\<box> \<phi> \<equiv> \<chi>\<close>},
-which allows to derive @{text \<open>\<turnstile>\<^sub>\<box> \<box>(\<phi> \<equiv> \<chi>)\<close>} by RN. TODO: references.}
+which allows to derive @{text \<open>\<turnstile>\<^sub>\<box> \<box>(\<phi> \<equiv> \<chi>)\<close>} by RN.}
 
 \begin{quote}
 \Squ{If @{text \<open>\<turnstile> \<box>(\<phi> \<equiv> \<chi>)\<close>}, then where @{text \<open>\<Gamma>\<close>} is any set of formulas and
@@ -3273,13 +3274,13 @@ and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}.}
 
 The notable restriction in this formulation is the proviso that 
 @{text \<open>\<psi>\<close>} is a @{emph \<open>subformula\<close>} of @{text \<phi>}. Subformulas are defined recursively
-in PLM item (6) (TODO: proper reference), but notably do not entail matrices of
+in PLM~\cite{PLM-Oct-13-2021} item (6), but notably do not entail matrices of
 descriptions or @{text \<open>\<lambda>\<close>}-expressions: E.g. the formula @{text \<phi>} is @{emph \<open>not\<close>} a
 subformula of @{term \<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>} or of @{term \<open>print_term \<guillemotleft>[\<lambda>y \<phi>{y}]x\<guillemotright>\<close>}.
 
 While the inductive base cases for proving the rule can easily be reproduced in the
 embedding (see~\nameref{AOT:rule-sub-lem:1:a}), combining the rule to a single statement
-in Isabelle is challenging. Therefore we instead provide a customly written proving
+in Isabelle is challenging. Therefore we instead provide customly written proving
 @{theory_text method}s that allow applying the rule as intended by PLM. This works
 by internally analyzing the structure of the involved formulas in order to choose the appropriate
 rule that allows to reduce the goal to a substitution in a less complex formulas. In that sense, the proving
@@ -3483,18 +3484,18 @@ text\<open>
 We already informally stated that the embedding collapses alphabetic variants. In this section
 we will define more precisely what this means and justify this collapse.
 
-Isabelle internally represents bound variables using de-Bruijin indices (TODO: cite). We will
+Isabelle internally represents bound variables using de-Bruijn indices (see~\cite{DeBruijnIndices}). We will
 showcase this mechanism in detail below. As a consequence, terms that are alphabetic variants
 are meta-logically indistinguishable. To justify representing AOT's bound variables directly
 using bound variables in Isabelle, we need to show that both (1) AOT's notion of alphabetic
-variants is equivalent to Isabelle's use of de-Bruijin indices and (2) any rule of AOT is still valid
+variants is equivalent to Isabelle's use of de-Bruijn indices and (2) any rule of AOT is still valid
 if any assumption or the conclusion are replaced by an alphabetic variant (as a generalization of PLM's
 existing @{emph \<open>Rule of Alphabetic Variants\<close>}).\footnote{This includes theorems and axioms by
 thinking of them as rules with an empty set of assumptions.}
 
 \<close>
 
-subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijin Indices\<close>text\<open>\label{alphabetic-variants-de-bruijin}\<close>
+subsubsection\<open>AOT's Alphabetic Variants Correspond to Isabelle's de-Bruijn Indices\<close>text\<open>\label{alphabetic-variants-de-bruijin}\<close>
 
 text\<open>
 Internally, Isabelle represents binding notation by function application and abstraction.
@@ -3502,20 +3503,20 @@ E.g. if we let Isabelle print the internal ML representation of the term @{term 
 we arrive at the following:@{footnote \<open>Note that we are not merely talking about a representation in
 the meta-logic HOL, but about the internal ML representation of HOL terms.
 Technically, we have setup an @{emph \<open>antiquotation\<close>} that
-allows us to print a term together its internal representation. TODO: cite isar-ref?\<close>}
+allows us to print a term together with its internal representation.\<close>}
 
 @{ML_print_term \<open>\<guillemotleft>\<forall>p (p \<rightarrow> p)\<guillemotright>\<close>}
 
 While a complete discussion of the ML representation of terms goes beyond the scope of
 this thesis, it suffices to have a rough understanding of the involved syntax.
 Relevant atomic terms are typed constants, @{text \<open>Const ([identifier], [type])\<close>},
-bound variables @{text \<open>Bound [de-Bruijin index]\<close>} and free variables @{text \<open>Free ([identifier], [type])\<close>}.
+bound variables @{text \<open>Bound [de-Bruijn index]\<close>} and free variables @{text \<open>Free ([identifier], [type])\<close>}.
 @{text \<open>$\<close>} is a binary operator that signifies function application between terms.
 @{text \<open>Abs ([name], [type], [term])\<close>} is the abstraction of @{text \<open>[term]\<close>} over a
 bound variable of type @{text \<open>[type]\<close>}. Note that while the internal representation retains
 the name of the bound variable @{text p}, it has no logical meaning and is merely used
 e.g. for term printing, while, logically, occurrences of the
-bound variables are referred to by @{text \<open>Bound\<close>} with a de-Bruijin index. An index of zero
+bound variables are referred to by @{text \<open>Bound\<close>} with a de-Bruijn index. An index of zero
 refers to the innermost abstraction the bound variable is contained in. An index of one
 refers to the next outer abstraction, e.g.
 
@@ -3525,9 +3526,9 @@ Note that in the inner abstraction @{text \<open>Bound 0\<close>} refers to @{te
 refers to @{term p}.
 
 Our claim is that two terms or formulas of AOT are alphabetic variants, if and only if their
-representation using de-Bruijin indices is the same.
+representation using de-Bruijn indices is the same.
 
-PLM defines alphabetic variants as follows (TODO: cite): It refers to two occurrences of a
+PLM defines alphabetic variants as follows (see PLM~\cite{PLM-Oct-13-2021} item (16)): It refers to two occurrences of a
 variable as @{emph \<open>linked\<close>}, if both are free or they are bound by the same occurrence of a
 variable-binding operator. PLM further introduces @{emph \<open>BV-notation\<close>} for formulas and terms:@{footnote \<open>In
 the following we will restrict our discussion to formulas, but the argument applies analogously to terms
@@ -3545,11 +3546,11 @@ just in case for some @{text n}:
 
 
 By definition each group of @{emph \<open>linked\<close>} variable occurrences in AOT corresponds to exactly
-one abstraction in Isabelle's internal representation and all de-Bruijin indexed @{text Bound} terms
+one abstraction in Isabelle's internal representation and all de-Bruijn indexed @{text Bound} terms
 that refer to this abstraction. Since changing the variable name of a linking group will not affect the
-de-Bruijin indices, the de-Bruijin representation of two alphabetic variants is therefore the same.
-Conversely, changing any index in the de-Bruijin representation translates to breaking a linking
-group as defined in PLM, thereby terms with different de-Bruijin representation are not alphabetic
+de-Bruijn indices, the de-Bruijn representation of two alphabetic variants is therefore the same.
+Conversely, changing any index in the de-Bruijn representation translates to breaking a linking
+group as defined in PLM, thereby terms with different de-Bruijn representation are not alphabetic
 variants.
 
 Since thereby the formulas and terms that are collapsed in Isabelle's internal
@@ -3561,9 +3562,9 @@ derivation.
 subsubsection\<open>Equivalence of Alphabetic Variants in AOT\<close>
 
 text\<open>
-Conveniently, PLM itself derives the following @{emph \<open>Rule of Alphabetic Variants\<close>} (TODO: cite):@{footnote \<open>Note
+Conveniently, PLM itself derives the following @{emph \<open>Rule of Alphabetic Variants\<close>} (see PLM~\cite{PLM-Oct-13-2021} item (114)):@{footnote \<open>Note
 that while PLM states meta-rules using @{text \<open>\<turnstile>\<close>}, unless otherwise noted by convention they apply to both @{text \<open>\<turnstile>\<close>} and
-@{text \<open>\<turnstile>\<^sub>\<box>\<close>}. We adopt this convention for this section.\<close>}
+@{text \<open>\<turnstile>\<^sub>\<box>\<close>}. See remark (67) in PLM~\cite{PLM-Oct-13-2021}. We adopt this convention in the following sections.\<close>}
 
 \begin{quote}
 \Squ{@{text \<open>\<Gamma> \<turnstile> \<phi>\<close>} if and only if @{text \<open>\<Gamma> \<turnstile> \<phi>'\<close>}, where @{text \<open>\<phi>'\<close>} is any alphabetic variant
@@ -3599,17 +3600,17 @@ meta-variable. This is due to the fact that binders are implemented in the embed
 operators that act on functions. Similarly, the substitution of variables in meta-variables
 is implemented using function application.
 
-For example, PLM formulates the first quantifier axiom as follows:
+For example, PLM formulates the first quantifier axiom as follows (see PLM~\cite{PLM-Oct-13-2021} item (39.1)):
 
 \begin{quote}
 \Squ{$\forall \alpha\,\varphi\;\rightarrow\;(\tau\downarrow\,\rightarrow\,\varphi^{\tau}_{\alpha})$,
 provided @{text \<tau>} is substitutable for @{text \<alpha>} in @{text \<phi>}}
 \end{quote}
 
-Here $\varphi^{\tau}_{\alpha}$ is defined in PLM item (14) (TODO: cite) as recursively replacing all occurrences
+Here $\varphi^{\tau}_{\alpha}$ is defined in PLM~\cite{PLM-Oct-13-2021} item (14) as recursively replacing all occurrences
 of @{text \<open>\<alpha>\<close>} in @{text \<open>\<phi>\<close>} that are not bound @{emph \<open>within @{text \<phi>} itself\<close>} with @{text \<tau>}.
 
-The precise definition of @{emph \<open>being substitutable\<close>} can be found in PLM item (15) (TODO: cite).
+The precise definition of @{emph \<open>being substitutable\<close>} can be found in PLM~\cite{PLM-Oct-13-2021} item (15).
 In particular, it states the following summary:
 
 \begin{quote}
@@ -3647,7 +3648,7 @@ The substitution of @{term \<tau>} for @{term \<alpha>} in @{term \<phi>} is rep
 function application of @{term \<phi>} to @{term \<tau>}.
 
 As mentioned in section~\ref{alphabetic-variants-de-bruijin}, internally Isabelle
-represents bound variables using de-Bruijin indices that uniquely associate any
+represents bound variables using de-Bruijn indices that uniquely associate any
 bound variable with its binder, independently of the name of the variable. @{text \<open>\<beta>\<close>}-reduction of 
 the function application of an abstraction to a term merely replaces the bound variables
 referring to the outermost abstracted variable. Thereby, substitutability is implicit
@@ -3725,13 +3726,13 @@ We start by stating and proving the trivial case as a meta-rule in AOT's system:
 TODO: fix subscripts and superscripts.
 
 \begin{quote}
-\Squ{If @{text \<open>\<turnstile> \<phi>\<close>}, then @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.}
+\Squ{If @{text \<open>\<turnstile> \<phi>\<close>}, then \<^latex>\<open>$\vdash \varphi^\beta_\alpha$\<close> where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.}
 \end{quote}
 
 Assume @{text \<open>\<turnstile> \<phi>\<close>}. Since the derivation of @{text \<phi>} does not need any premises,
 it follows by the rule of universal generalization (GEN) (TODO: cite) that @{text \<open>\<turnstile> \<forall>\<alpha> \<phi>\<close>}. Since by assumption
 @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} we can immediately conclude by @{text \<open>\<forall>\<close>}Elimination (TODO: cite)
-that @{text \<open>\<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>}.
+that \<^latex>\<open>$\vdash \varphi^\beta_\alpha$\<close>.
 
 However, we want to generalize this rule further to a version that allows for premises and does
 not require the proviso that @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.
@@ -3739,21 +3740,22 @@ not require the proviso that @{text \<beta>} is substitutable for @{text \<alpha
 To that end the next step is to generalize above rule to include premises:
 
 \begin{quote}
-\Squ{If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} where (1) @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
-(2) in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} @{text \<beta>} is sustitutable for @{text \<alpha>} in @{text \<psi>} and (3) @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} is
-the set of all @{text \<open>\<psi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.}
+\Squ{If @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then \<^latex>\<open>$\Gamma^\beta_\alpha \vdash \varphi^\beta_\alpha$\<close> where (1) @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} and
+(2) @{text \<beta>} is sustitutable for @{text \<alpha>} in all @{text \<open>\<psi> \<in> \<Gamma>\<close>} and (3) \<^latex>\<open>$\Gamma^\beta_\alpha$\<close> is
+the set of all \<^latex>\<open>$\psi^\beta_\alpha$\<close> for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.}
 \end{quote}
 
 One way to show this is by first eliminating all premises in @{text \<Gamma>} using the deduction theorem (TODO: cite),
 applying GEN to the resulting theorem and instantiating the introduced quantifier to @{text \<beta>}. The resulting
-theorem will yield @{text \<open>\<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} from @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>} by successive applications of modus ponens.
+theorem will yield \<^latex>\<open>$\varphi^\beta_\alpha$\<close> from \<^latex>\<open>$\Gamma^\beta_\alpha$\<close> by successive applications of modus ponens.
 
 In particular, let @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n\<close>} be the list of premises in @{text \<open>\<Gamma>\<close>}, s.t.
 @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n \<turnstile> \<phi>\<close>}. By the deduction theorem it follows that @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^bsub>n-1\<^esub> \<turnstile> \<psi>\<^sub>n \<rightarrow> \<phi>\<close>}.
 Continuing to apply the deduction theorem, we end up with @{text \<open>\<turnstile> \<psi>\<^sub>1 \<rightarrow> (\<psi>\<^sub>2 \<rightarrow> (\<dots> \<rightarrow> (\<psi>\<^sub>n \<rightarrow> \<phi>)\<dots>)\<close>}.
 By assumption @{text \<beta>} is substitutable for @{text \<alpha>} in this theorem, hence be the rule above we
-can conclude that: @{text \<open>\<turnstile> \<psi>\<^sub>1\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> (\<psi>\<^sub>2\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> (\<dots> \<rightarrow> (\<psi>\<^sub>n\<^sup>\<beta>\<^sub>\<alpha> \<rightarrow> \<phi>\<^sup>\<beta>\<^sub>\<alpha>)\<dots>)\<close>}.
-Since all @{text \<open>\<psi>\<^sub>i\<^sup>\<beta>\<^sub>\<alpha>\<close>} are in @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha>\<close>}, it follows that @{text \<open>\<Gamma>\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>\<^sup>\<beta>\<^sub>\<alpha>\<close>} by @{text n}
+can conclude that: \<^latex>\<open>$\vdash {\psi_1}^\beta_\alpha \rightarrow ({\psi_2}^\beta_\alpha \rightarrow (\dots \rightarrow (\vdash {\psi_n}^\beta_\alpha \rightarrow \varphi^\beta_\alpha)\dots)$\<close>
+
+Since all \<^latex>\<open>${\psi_i}^\beta_\alpha$\<close> are in \<^latex>\<open>$\Gamma^\beta_\alpha$\<close>, it follows that \<^latex>\<open>$\Gamma^\beta_\alpha \vdash \varphi^\beta_\alpha$\<close> by @{text n}
 applications of modus ponens.
 
 What remains is the proviso that @{text \<beta>} be substitutable for @{text \<alpha>} in @{text \<phi>} and
@@ -3763,8 +3765,8 @@ with a fresh variable @{text \<gamma>} that does not occur in @{text \<phi>} or 
 
 In the last section we have seen that if @{text \<open>\<Gamma> \<turnstile> \<phi>\<close>}, then @{text \<open>\<Gamma>' \<turnstile> \<phi>'\<close>}. Since 
 @{text \<beta>} is trivially substitutable for @{text \<alpha>} in @{text \<open>\<phi>'\<close>} and in all @{text \<open>\<psi> \<in> \<Gamma>'\<close>},
-it follows by the previous rule in this section that @{text \<open>\<Gamma>'\<^sup>\<beta>\<^sub>\<alpha> \<turnstile> \<phi>'\<^sup>\<beta>\<^sub>\<alpha>\<close>}. Since Isabelle
-collapses alphabetic variants by eliminating concrete variable names with de-Bruijin indices,
+it follows by the previous rule in this section that \<^latex>\<open>${\Gamma'}^\beta_\alpha \vdash {\varphi'}^\beta_\alpha$\<close>. Since Isabelle
+collapses alphabetic variants by eliminating concrete variable names with de-Bruijn indices,
 this suffices as justification for the schematic generalization of free variables in theorems
 and rules in the embedding.
 
