@@ -3721,17 +3721,15 @@ of the rule of @{text \<open>\<forall>\<close>}Elimination for variables. Howeve
 principle, some care has to be taken and we have to additionally rely on the collapse of
 alphabetic variants.
 
-We start by stating and proving the trivial case as a meta-rule in AOT's system:
-
-TODO: fix subscripts and superscripts.
+We start by stating and proving the trivial case as a rule in AOT's system:
 
 \begin{quote}
 \Squ{If @{text \<open>\<turnstile> \<phi>\<close>}, then \<^latex>\<open>$\vdash \varphi^\beta_\alpha$\<close> where @{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>}.}
 \end{quote}
 
 Assume @{text \<open>\<turnstile> \<phi>\<close>}. Since the derivation of @{text \<phi>} does not need any premises,
-it follows by the rule of universal generalization (GEN) (TODO: cite) that @{text \<open>\<turnstile> \<forall>\<alpha> \<phi>\<close>}. Since by assumption
-@{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} we can immediately conclude by @{text \<open>\<forall>\<close>}Elimination (TODO: cite)
+it follows by the rule of universal generalization (GEN) (see section~\ref{MetaRules}) that @{text \<open>\<turnstile> \<forall>\<alpha> \<phi>\<close>}. Since by assumption
+@{text \<beta>} is substitutable for @{text \<alpha>} in @{text \<phi>} we can immediately conclude by @{text \<open>\<forall>\<close>}Elimination (see~\nameref{AOT:rule-ui:3})
 that \<^latex>\<open>$\vdash \varphi^\beta_\alpha$\<close>.
 
 However, we want to generalize this rule further to a version that allows for premises and does
@@ -3745,15 +3743,15 @@ To that end the next step is to generalize above rule to include premises:
 the set of all \<^latex>\<open>$\psi^\beta_\alpha$\<close> for @{text \<open>\<psi> \<in> \<Gamma>\<close>}.}
 \end{quote}
 
-One way to show this is by first eliminating all premises in @{text \<Gamma>} using the deduction theorem (TODO: cite),
-applying GEN to the resulting theorem and instantiating the introduced quantifier to @{text \<beta>}. The resulting
-theorem will yield \<^latex>\<open>$\varphi^\beta_\alpha$\<close> from \<^latex>\<open>$\Gamma^\beta_\alpha$\<close> by successive applications of modus ponens.
+One way to show this is by first eliminating all premises in @{text \<Gamma>} using the deduction theorem (see section~\ref{MetaRules})
+and then referring to the simpler rule above. The resulting theorem will yield \<^latex>\<open>$\varphi^\beta_\alpha$\<close>
+from \<^latex>\<open>$\Gamma^\beta_\alpha$\<close> by successive applications of modus ponens.
 
 In particular, let @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n\<close>} be the list of premises in @{text \<open>\<Gamma>\<close>}, s.t.
 @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^sub>n \<turnstile> \<phi>\<close>}. By the deduction theorem it follows that @{text \<open>\<psi>\<^sub>1, \<dots>, \<psi>\<^bsub>n-1\<^esub> \<turnstile> \<psi>\<^sub>n \<rightarrow> \<phi>\<close>}.
 Continuing to apply the deduction theorem, we end up with @{text \<open>\<turnstile> \<psi>\<^sub>1 \<rightarrow> (\<psi>\<^sub>2 \<rightarrow> (\<dots> \<rightarrow> (\<psi>\<^sub>n \<rightarrow> \<phi>)\<dots>)\<close>}.
 By assumption @{text \<beta>} is substitutable for @{text \<alpha>} in this theorem, hence be the rule above we
-can conclude that: \<^latex>\<open>$\vdash {\psi_1}^\beta_\alpha \rightarrow ({\psi_2}^\beta_\alpha \rightarrow (\dots \rightarrow (\vdash {\psi_n}^\beta_\alpha \rightarrow \varphi^\beta_\alpha)\dots)$\<close>
+can conclude that: \<^latex>\<open>$\vdash {\psi_1}^\beta_\alpha \rightarrow ({\psi_2}^\beta_\alpha \rightarrow (\dots \rightarrow ({\psi_n}^\beta_\alpha \rightarrow \varphi^\beta_\alpha)\dots)$\<close>
 
 Since all \<^latex>\<open>${\psi_i}^\beta_\alpha$\<close> are in \<^latex>\<open>$\Gamma^\beta_\alpha$\<close>, it follows that \<^latex>\<open>$\Gamma^\beta_\alpha \vdash \varphi^\beta_\alpha$\<close> by @{text n}
 applications of modus ponens.
@@ -3805,7 +3803,7 @@ to the derivational system of AOT.
 
 subsection\<open>Trivial Accessibility Relation for the Modal Logic\<close>text\<open>\label{TrivialAccessibilityRelation}\<close>
 
-text\<open>As already hinted at in section (TODO cite), choosing a trivial accessibility relation (respectively, equivalently,
+text\<open>As already hinted at in section~\ref{SimpleS5}, choosing a trivial accessibility relation (respectively, equivalently,
 no accessibility relation at all) is a natural choice for modelling the modal logic of AOT.
 In fact, it can be shown that if AOT's actuality operator is modelled using a fixed actual world,
 any accessibility relation used for modelling necessity has to be trivial.
@@ -3967,9 +3965,8 @@ derivation rules of AOT itself.
 We have discussed in section~\ref{MetaTheorems} that for technical reasons the
 embedding collapses certain classes of statements (e.g. alphabetic variants), but that
 this merely extends to statements that are interderivable in AOT itself. As a result
-we can assume that every statement that is derivable in the abstraction layer of
-our embedding also has a derivation in AOT as defined in PLM (TODO: cite), i.e.
-the abstraction layer of our embedding does not contain artifactual theorems. TODO: careful here.
+we can assume that well-formed statement of AOT that are provable in the abstraction layer of
+our embedding also have a derivation in AOT.
 
 Nonetheless, it is still a valid question whether the underlying semantics and model structure
 used in the construction of this abstraction layer allows for deriving artifactual theorems,
@@ -3995,8 +3992,8 @@ mentioned in~\ref{AxiomSystem}, the formulation of which was based on a similar
 principle that was discovered in the analysis of the semantic properties of the embedding
 at the time.
 
-This process is ongoing and in the remainder of this section we will discuss the remaining
-known examples of such artifactual theorems and the current state of their discussion.
+This process is ongoing and in the remainder of this section we will discuss some
+examples of remaining artifactual theorems and the current state of their discussion.
 \<close>
 
 subsection\<open>Identity of Projections to Indistinguishable Objects\<close>text\<open>\label{ArtifactAczel}\<close>
@@ -4088,7 +4085,7 @@ to these abstract objects are identical (see~\nameref{AOT:aclassical:1} and~\nam
 @{thm[display] "aclassical:2"[THEN "\<forall>E"(2), print_as_theorem, of R]}
 \end{quote}
 
-However, the semantics of the embedding make the following stronger statements true:
+However, the construction used for the embedding makes the following stronger statements true:
 
 \begin{quote}
 @{thm[display] Artifactual1[print_as_theorem, of a b R]}
@@ -4098,15 +4095,15 @@ However, the semantics of the embedding make the following stronger statements t
 This is an artifact of modelling relations as proposition-valued functions acting
 on urelements. Since being indistinguishable, @{term \<open>print_term \<guillemotleft>\<forall>F ([F]a \<equiv> [F]b)\<guillemotright>\<close>},
 semantically implies that @{term a} and @{term b} share the same urelement, the
-relation projections are forced to collapse.
+projections are forced to collapse.
 
 However, we already mentioned in section~\ref{cqt:2-impl} that it is currently being
 considered to extend the base cases of denoting @{text \<open>\<lambda>\<close>}-expressions. This extension
 has particular merit in deriving theorems in higher-order object theory. In the second-order
-fragment this would in particular mean that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
+fragment it would be a consequence of this change that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
 @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<guillemotright>\<close>}.
 
-Under this assumption, however, the currently artifactual theorems above would become
+Under this assumption, however, the currently artifactual theorems above become
 proper theorems of AOT, respectively theorems of the abstraction layer of the embedding:
 \<close>
 
@@ -4146,12 +4143,10 @@ becomes derivable:
 Semantically, this theorem states that whenever two objects share an urelement,
 then exemplifying any property results in the same proposition for both of them,
 which further consolidates the derivational system of AOT with the representation
-of relations as proposition-valued functions.
+of relations as proposition-valued functions acting on urelements.
 
-While at the time of writing the mentioned theorems remain artifactual, they
-are likely to become proper theorems of AOT after the next refinement of the second
-quantifier axiom (i.e. the base cases of axiomatically denoting terms) described in
-section~\ref{cqt:2-impl}.
+So while the theorems above are currently artifactual, they are likely to become proper
+theorems of the next upcoming version of PLM.
 \<close>
 
 subsection\<open>Generalizations of @{text \<open>\<^bold>\<eta>\<close>}-Conversion\<close>
@@ -4186,7 +4181,7 @@ qed
 
 text\<open>
 AOT involves two axiomatic, respectively definitional claims about identity between
-relation terms (besides the identity of alphabetic variants), in particular @{text \<open>\<eta>\<close>}-conversion:
+@{text n}-ary (@{text \<open>n \<ge> 2\<close>}) relation terms (besides the identity of alphabetic variants), in particular @{text \<open>\<eta>\<close>}-conversion:
 
 \begin{quote}
 @{thm[display] "lambda-predicates:3"[axiom_inst, print_as_theorem, of F]}
@@ -4207,23 +4202,40 @@ is @{emph \<open>not\<close>} a theorem of AOT:
 
 The embedding constructs @{text \<open>\<lambda>\<close>}-abstraction and exemplification using the
 @{command specification} command by postulating that @{text \<open>\<lambda>\<close>}-abstraction and exemplification
-have to exhibit certain properties (e.g. @{text \<open>\<beta>\<close>}-conversion) and by then providing
+have to exhibit certain properties (e.g. @{text \<open>\<beta>\<close>}- and @{text \<open>\<eta>\<close>}-conversion) and by then providing
 a concrete witness that satisfies these properties.
 
-The postulated properties of the @{command specification} are still slightly stronger
-than the axioms of AOT they ultimately validate (validating the axioms of AOT for arbitrary
-@{text n}-ary relations in the embedding, at least in the current construction, requires
-slightly stronger properties for @{text \<open>\<lambda>\<close>}-abstraction and exemplification than
-implied by AOT's axiom for each fixed arity).
+However, the postulated properties given in the specification go beyond the axioms of
+AOT they ultimately validate. Validating the axioms of AOT for arbitrary
+@{text n}-ary relations in the embedding while maintaining the definition of @{text n}-ary relation identity
+requires, at least in the current construction of the embedding, additional properties
+for @{text \<open>\<lambda>\<close>}-abstraction and exemplification.@{footnote \<open>In particular, the property
+named @{text AOT_sem_exe_denoting} in~\nameref{AOT:AOT_exe_lambda_spec} is solely
+used for validating @{text n}-ary relation identity.\<close>}
 
-While the artifactual theorem above is validated by the provided witness, it
-is currently unknown whether the properties postulated in the @{command specification}
+While the artifactual theorem above is validated by the provided witness for our specification, it
+is currently unknown whether the properties postulated in the specification
 are sufficient to derive it as artifactual theorem. Neither can @{command nitpick}
 provide a counterexample for the theorem, nor can @{command sledgehammer} construct
 a proof from the specification, so further manual inspection of the situation is
 required.
 
-TODO: refine.
+Interestingly, in general, AOT refrains from presuming the identity of its intensional
+entities, even under conditions that would usually be assumed to imply equality.
+@{text \<open>\<eta>\<close>}-conversion is a notable exception to this principle. However, there are
+also arguments for @{emph \<open>rejecting\<close>} @{text \<open>\<eta>\<close>}-conversion in an hyperintensional
+context that is meant to accurately represent human thought and language, see e.g.~\cite{ProperTreatmentOfPredication}.
+
+So independently of the potential artifactual theorem discussed above, it is
+an interesting philosophical question whether @{text \<open>\<eta>\<close>}-conversion should be
+presumed by axiom at all. Similarly, there are open questions about the definition
+of identity of @{text n}-place relations in AOT and a potential alternative definition using
+@{text n}-ary encoding as discussed in PLM~\cite{PLM-Oct-13-2021} item (37).
+
+We expect that a future more extensive analysis of this issue will,
+similarly to previous artifactual theorems, result in further theoretical insights,
+ultimately followed by either an enhancement of the formulation of AOT or a refined embedding, in
+which e.g. the above is provable not be theorem.
 \<close>
   
 section\<open>Discussion\<close>
