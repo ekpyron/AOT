@@ -263,6 +263,37 @@ proof -
     using "\<exists>I"(2)[where \<beta>=x] "\<exists>I"(2)[where \<beta>=y] by auto
 qed
 
+AOT_theorem restricted_identity:
+  \<open>x =\<^sub>\<R> y \<equiv> (InDomainOf(x,\<R>) & InDomainOf(y,\<R>) & x = y)\<close>
+  by (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I"
+             dest: "id-R-thm:2"[THEN "\<rightarrow>E"] "&E"
+                   "id-R-thm:3"[THEN "\<rightarrow>E"]
+                   "id-R-thm:4"[THEN "\<rightarrow>E", OF "\<or>I"(1), THEN "\<equiv>E"(2)])
+
+AOT_theorem induction': \<open>\<forall>F ([F]0 & \<forall>n([F]n \<rightarrow> [F]n\<^bold>') \<rightarrow> \<forall>n [F]n)\<close>
+proof(rule GEN; rule "\<rightarrow>I")
+  fix F n
+  AOT_assume A: \<open>[F]0 & \<forall>n([F]n \<rightarrow> [F]n\<^bold>')\<close>
+  AOT_have \<open>\<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
+  proof(safe intro!: "Number.GEN" "\<rightarrow>I")
+    fix n m
+    AOT_assume \<open>[\<P>]nm\<close>
+    moreover AOT_have \<open>[\<P>]n n\<^bold>'\<close>
+      using "suc-thm".
+    ultimately AOT_have m_eq_suc_n: \<open>m = n\<^bold>'\<close>
+      using "pred-func:1"[unvarify z, OF "def-suc[den2]", THEN "\<rightarrow>E", OF "&I"]
+      by blast
+    AOT_assume \<open>[F]n\<close>
+    AOT_hence \<open>[F]n\<^bold>'\<close>
+      using A[THEN "&E"(2), THEN "Number.\<forall>E", THEN "\<rightarrow>E"] by blast
+    AOT_thus \<open>[F]m\<close>
+      using m_eq_suc_n[symmetric] "rule=E" by fast
+  qed
+  AOT_thus \<open>\<forall>n[F]n\<close>
+    using induction[THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF "&I", OF A[THEN "&E"(1)]]
+    by simp
+qed
+
 AOT_define ExtensionOf :: \<open>\<tau> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>ExtensionOf'(_,_')\<close>)
   "exten-property:1": \<open>ExtensionOf(x,[G]) \<equiv>\<^sub>d\<^sub>f A!x & G\<down> & \<forall>F(x[F] \<equiv> \<forall>z([F]z \<equiv> [G]z))\<close>
 

@@ -5329,7 +5329,7 @@ proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^s
   qed
 qed
 
-(* TODO: note the use of a bold ' *)
+(* Note the use of a bold '. *)
 AOT_define Successor :: \<open>\<tau> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>_\<^bold>''\<close> [100] 100)
   "def-suc": \<open>n\<^bold>' =\<^sub>d\<^sub>f \<^bold>\<iota>m([\<P>]nm)\<close>
 
