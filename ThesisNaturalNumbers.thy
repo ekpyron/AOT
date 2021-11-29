@@ -49,7 +49,8 @@ detail in the following sections, while reproducing the construction Nodelman an
 section\<open>General Idea of the Construction\<close>
 
 text\<open>
-The strategy for constructing natural numbers in AOT follows the idea of Frege's Theorem. (TODO: cite.)
+The strategy for constructing natural numbers in AOT follows the idea of Frege's Theorem (see~\cite{sep-frege-theorem} TODO:
+check link).
 Frege showed that the Peano axioms can be derived from @{emph \<open>Hume's Principle\<close>} using Second-Order
 Logic. Hume's Principle states that the number of @{term F}s is equal to the number of @{term G}s if and
 only if @{term F} and @{term G} are @{emph \<open>equinumerous\<close>}. Two relations are @{emph \<open>equinumerous\<close>},
