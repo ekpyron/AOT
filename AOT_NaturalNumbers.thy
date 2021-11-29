@@ -4953,909 +4953,262 @@ text\<open>Unfortunately, since the axiom requires the type @{typ \<omega>}
      we can still be assured that above axiom is consistent.\<close>
 lemma \<open>True\<close> nitpick[satisfy, user_axioms, card nat=1, expect = potential] ..
 
-(* TODO: clean up a lot of noise in this proof *)
 AOT_axiom "modal-axiom":
   \<open>\<exists>x([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-proof(rule AOT_model_axiomI)
-  define urrel_act_\<omega>ext :: \<open>urrel \<Rightarrow> \<omega> set\<close> where
-    \<open>urrel_act_\<omega>ext \<equiv> \<lambda> r . {x :: \<omega> . AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<omega>\<upsilon> x))}\<close>
-  define urrel_card_n :: \<open>urrel \<Rightarrow> nat \<Rightarrow> bool\<close> where
-    \<open>urrel_card_n \<equiv> \<lambda> r n . finite (urrel_act_\<omega>ext r) \<and>
-                             Finite_Set.card (urrel_act_\<omega>ext r) = n\<close>
-  define model_nat :: \<open><\<kappa>>\<close> where
-    \<open>model_nat \<equiv> Abs_rel (fix_special (\<lambda> \<kappa> . \<epsilon>\<^sub>\<o> w . case \<kappa> of \<alpha>\<kappa> a \<Rightarrow> \<forall>r .
-      r\<in>a \<longrightarrow> finite (urrel_act_\<omega>ext r) | _ \<Rightarrow> False))\<close>
-
-  have urrel_card_unique: \<open>urrel_card_n r n \<Longrightarrow> urrel_card_n r m \<Longrightarrow> m = n\<close>
-    for r m n
-    unfolding urrel_card_n_def
-    by blast
-
-  have \<open>\<exists> choice :: nat \<Rightarrow> \<omega> . inj choice\<close>
-    using \<omega>_nat surj_imp_inj_inv by blast
-  then obtain choice :: \<open>nat \<Rightarrow> \<omega>\<close> where inj_choice: \<open>inj choice\<close>
-    by blast
-  have rel_card_ex: \<open>\<forall>n. \<exists>r . urrel_card_n r n\<close>
-  proof
-    fix n
-    let ?rel = \<open>Abs_urrel (\<lambda>u. \<epsilon>\<^sub>\<o> w . case u of (\<omega>\<upsilon> x) \<Rightarrow> x \<in> choice ` {0<..n}
-                                                   | _ \<Rightarrow> False)\<close>
-    show \<open>\<exists>r . urrel_card_n r n\<close>
-    proof (rule exI)
-      show \<open>urrel_card_n ?rel n\<close>
-        unfolding urrel_card_n_def
-        unfolding urrel_act_\<omega>ext_def
-        apply (subst (1 2) Abs_urrel_inverse)
-         apply (simp add: AOT_model_proposition_choice_simp)
-        apply (simp add: AOT_model_proposition_choice_simp)
-        by (metis inj_choice card_greaterThanAtMost card_image diff_zero
-                  inj_def inj_onI)
-    qed
-  qed
-  have eq_same_card: \<open>urrel_card_n r n \<Longrightarrow> urrel_card_n s n\<close>
-    if \<open>urrel_to_\<omega>rel r = urrel_to_\<omega>rel s\<close> for r s n
-  proof -
-    have \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<omega>\<upsilon> x)) =
-          AOT_model_valid_in w\<^sub>0 (Rep_urrel s (\<omega>\<upsilon> x))\<close> for x
-      using that by (metis urrel_to_\<omega>rel_def)
-    hence urrel_act_\<omega>ext_eq: \<open>urrel_act_\<omega>ext r = urrel_act_\<omega>ext s\<close>
-      unfolding urrel_act_\<omega>ext_def
-      by auto
-    assume \<open>urrel_card_n r n\<close>
-    thus \<open>urrel_card_n s n\<close>
-      unfolding urrel_card_n_def using urrel_act_\<omega>ext_eq by metis
-  qed
-  have 0: \<open>\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-    if eq: \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
-    and counts: \<open>\<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-    for a b
-  proof -
-    have eq: \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' b\<close> using eq \<alpha>\<sigma>_\<alpha>\<sigma>' by blast
-    show \<open>\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-    proof(rule allI; rule)
-    {
-      fix r
-      assume \<open>r \<in> b\<close>
-      hence \<open>\<exists>s. s \<in> a \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel r\<close>
-        by (metis \<alpha>\<sigma>_eq_ord_exts_ex eq)
-      then obtain s where s_prop: \<open>s \<in> a \<and> urrel_to_\<omega>rel s = urrel_to_\<omega>rel r\<close>
-        by blast
-      thus \<open>finite (urrel_act_\<omega>ext r)\<close>
-        using counts eq_same_card urrel_card_n_def by blast
+proof(rule AOT_model_axiomI) AOT_modally_strict {
+  text\<open>The actual extension on the ordinary objects of a property is the
+       set of ordinary urelements that exemplifies the property in the
+       designated actual world.\<close>
+  define act_\<omega>ext :: \<open><\<kappa>> \<Rightarrow> \<omega> set\<close> where
+    \<open>act_\<omega>ext \<equiv> \<lambda> \<Pi> . {x :: \<omega> . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]}\<close>
+  text\<open>Encoding a property with infinite actual extension on the ordinary objects
+       denotes a property by extended relation comprehension.\<close>
+  AOT_have enc_finite_act_\<omega>ext_den:
+    \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>x \<exists>F(\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]\<down>\<close>
+  proof(safe intro!: Comprehension_1[THEN "\<rightarrow>E"] RN GEN "\<rightarrow>I")
+    AOT_modally_strict {
+      fix F G
+      AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
+      AOT_hence \<open>\<^bold>\<A>G \<equiv>\<^sub>E F\<close>
+        using "nec-imp-act"[THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<^bold>\<A>(G\<down> & F\<down> & \<forall>u([G]u \<equiv> [F]u))\<close>
+        by (AOT_subst_def (reverse) eqE)
+      hence \<open>[w\<^sub>0 \<Turnstile> [G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>] = [w\<^sub>0 \<Turnstile> [F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> for x
+        by (auto dest!: "\<forall>E"(1) "\<rightarrow>E"
+                 simp: AOT_model_denotes_\<kappa>_def AOT_sem_denotes AOT_sem_conj
+                       AOT_model_\<omega>\<kappa>_ordinary AOT_sem_act AOT_sem_equiv)
+      AOT_thus \<open>\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var F))\<guillemotright> \<equiv>
+                \<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var G))\<guillemotright>\<close>
+        by (simp add: AOT_sem_not AOT_sem_equiv act_\<omega>ext_def
+                      AOT_model_proposition_choice_simp)
     }
   qed
-  qed
-  have 0: \<open>(\<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)) =
-           (\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r))\<close>
-    if \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
-    for a b
-    using 0[OF that] 0[OF that[symmetric]]
-    
-    by blast
-  hence 0: \<open>(\<epsilon>\<^sub>\<o> w. \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)) =
-            (\<epsilon>\<^sub>\<o> w. \<exists>n. \<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r))\<close>
-    if \<open>\<alpha>\<sigma> a = \<alpha>\<sigma> b\<close>
-    for a b
-    apply (subst 0[OF that])
-    by metis
-  let ?urrel_act_\<omega>ext = \<open>\<lambda>x. (\<epsilon>\<^sub>\<o> w.
-      case x of \<alpha>\<kappa> a \<Rightarrow> \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)
-      | _ \<Rightarrow> False)\<close>
-  have 1: \<open>AOT_model_term_equiv x y \<Longrightarrow> ?urrel_act_\<omega>ext x = ?urrel_act_\<omega>ext y\<close>
-    for x y
-    apply (induct x; induct y)
-            apply (auto simp: AOT_model_term_equiv_\<kappa>_def)
-    by (metis (mono_tags, lifting) \<alpha>\<sigma>_\<alpha>\<sigma>' \<alpha>\<sigma>_eq_ord_exts_ex eq_same_card
-                                   urrel_card_n_def)
-  have model_nat_den: \<open>AOT_model_denotes model_nat\<close>
-    unfolding model_nat_def
-    apply (rule AOT_model_denotes_Abs_rel_fix_specialI)
-    using "1" apply force
-    by (metis (no_types, lifting) AOT_model_denotes_\<kappa>_def \<kappa>.distinct_disc(5)
-              AOT_model_proposition_choice_simp \<kappa>.case_eq_if)
-  have model_nat_beta1:
-    \<open>[v \<Turnstile> [\<guillemotleft>model_nat\<guillemotright>]\<kappa>] \<Longrightarrow> \<kappa> = \<alpha>\<kappa> a \<Longrightarrow> \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-    for v a \<kappa>
-    apply (simp add: AOT_sem_exe_denoting[simplified AOT_sem_denotes,
-                                          OF model_nat_den])
-    unfolding model_nat_def
-    apply (subst (asm) Abs_rel_inverse)
-     apply simp
-    apply (subst (asm) fix_special_denoting)
-     apply (simp add: AOT_model_denotes_\<kappa>_def)
-    by (simp add: AOT_model_proposition_choice_simp)
-  have model_nat_beta2:
-    \<open>\<kappa> = \<alpha>\<kappa> a \<Longrightarrow> \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r) \<Longrightarrow> [v \<Turnstile> [\<guillemotleft>model_nat\<guillemotright>]\<kappa>]\<close>
-    for v a \<kappa>
-    apply (simp add: AOT_sem_exe_denoting[simplified AOT_sem_denotes,
-                                          OF model_nat_den])
-    unfolding model_nat_def
-    apply (subst Abs_rel_inverse)
-     apply simp
-    apply (subst fix_special_denoting)
-     apply (simp add: AOT_model_denotes_\<kappa>_def)
-    by (simp add: AOT_model_proposition_choice_simp)
-  AOT_have 0: \<open>\<not>\<exists>u [\<lambda>x x \<noteq>\<^sub>E x]u\<close>
-  proof(rule "raa-cor:2")
-    AOT_assume \<open>\<exists>u [\<lambda>x x \<noteq>\<^sub>E x]u\<close>
-    then AOT_obtain u where \<open>[\<lambda>x x \<noteq>\<^sub>E x]u\<close>
-      using "Ordinary.\<exists>E"[rotated] "&E" by blast
-    AOT_hence \<open>u \<noteq>\<^sub>E u\<close>
-      by (metis "\<beta>\<rightarrow>C"(1))
-    moreover AOT_have \<open>u =\<^sub>E u\<close>
-      using Ordinary.\<psi>
-      using "ord=Eequiv:1" "\<rightarrow>E" by blast
-    ultimately AOT_show \<open>p & \<not>p\<close> for p
-      by (smt (verit) AOT_sem_equiv AOT_sem_not "thm-neg=E")
-  qed
-  AOT_have \<open>Numbers(0, [\<lambda>x x \<noteq>\<^sub>E x])\<close>
-    apply (rule "0F:1"[unvarify F, THEN "\<equiv>E"(1)])
-     apply "cqt:2[lambda]"
-    using 0 by blast
-  AOT_hence \<open>A!0\<close>
-    using numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-  then obtain zero where zero_def: \<open>\<alpha>\<kappa> zero = \<guillemotleft>0\<guillemotright>\<close>               
-    using AOT_sem_exe_denoting[OF "oa-exist:2"] AOT_sem_abstract
-    by (metis "\<beta>\<rightarrow>C"(1) AOT_concrete_sem AOT_model_\<omega>_concrete_in_some_world
-              AOT_model_concrete_\<kappa>.simps(1) AOT_model_denotes_\<kappa>_def
-              AOT_sem_denotes AOT_sem_dia AOT_sem_not \<kappa>.exhaust_disc
-              is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def "zero:2" AOT_sem_concrete)
-  {
-    fix r
-    have \<open>AOT_model_denotes (urrel_to_rel r)\<close>
-      by (meson AOT_model_term_equiv_rel_def Quotient_rel_rep urrel_quotient)
-    AOT_hence r_rel_den: \<open>\<^bold>\<turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<down>\<close>
-      by (simp add: AOT_sem_denotes)
-    assume \<open>r \<in> zero\<close>
-    AOT_hence \<open>\<^bold>\<turnstile> 0[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
-      unfolding AOT_enc_\<kappa>_meta
-      by (metis (full_types, lifting)
-            AOT_model_enc_\<kappa>_def AOT_model_term_equiv_rel_def AOT_sem_denotes "zero:2"
-            Quotient3_def \<kappa>.simps(11) local.zero_def urrel_quotient3)
-    AOT_hence r_notex: \<open>\<^bold>\<turnstile> \<not>\<exists>u [\<guillemotleft>urrel_to_rel r\<guillemotright>]u\<close>
-      using "zero=:2"[unvarify F, THEN "\<equiv>E"(1), OF r_rel_den] by blast
-    {
-      fix u
-      assume \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<omega>\<upsilon> u))\<close>
-      AOT_hence 0: \<open>\<^bold>\<turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<close>
-        by (metis AOT_sem_exe_denoting Abs_rel_inverse \<kappa>\<upsilon>.simps(1)
-                  iso_tuple_UNIV_I r_rel_den urrel_to_rel_def) 
-      AOT_have 1: \<open>\<^bold>\<turnstile> [\<lambda>x \<diamond>[E!]x]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<close>
-        by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2"
-                   simp: AOT_model_denotes_\<kappa>_def AOT_sem_denotes
-                         AOT_sem_concrete AOT_sem_dia AOT_concrete_sem
-                         AOT_model_\<omega>_concrete_in_some_world)
-      AOT_hence \<open>\<^bold>\<turnstile> \<exists>u [\<guillemotleft>urrel_to_rel r\<guillemotright>]u\<close>
-        apply (safe intro!: "\<exists>I"(1)[where \<tau>=\<open>\<omega>\<kappa> u\<close>] "&I")
-          apply (simp add: AOT_sem_exe_denoting[OF "oa-exist:1"]
-                           AOT_sem_ordinary AOT_sem_concrete 1)
-        using "0" apply blast
-        by (simp add: AOT_sem_exe)
-      hence \<open>False\<close>
-        using r_notex by (metis AOT_sem_not)
+  text\<open>By coexistence, encoding only properties with finite actual extension
+       on the ordinary objects denotes.\<close>
+  AOT_have \<open>[\<lambda>x \<forall>F(x[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E"]; safe intro!: "&I" RN GEN)
+    AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<exists>F(\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]x]\<down>\<close>
+      by "cqt:2"
+  next
+    AOT_modally_strict {
+      fix x
+      AOT_show \<open>\<not>[\<lambda>x \<exists>F (\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]x \<equiv>
+                \<forall>F(x[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close>
+        by (AOT_subst \<open>[\<lambda>x \<exists>F (\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]x\<close>
+                          \<open>\<exists>F (\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])\<close>;
+            (rule "beta-C-meta"[THEN "\<rightarrow>E"])?)
+           (auto simp: enc_finite_act_\<omega>ext_den AOT_sem_equiv AOT_sem_not
+                       AOT_sem_forall AOT_sem_imp AOT_sem_conj AOT_sem_exists)
     }
-    hence \<open>\<not>AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<omega>\<upsilon> u))\<close> for u
-      by metis
-    hence \<open>urrel_card_n r 0\<close>
-      unfolding urrel_card_n_def urrel_act_\<omega>ext_def
-      by (metis card.empty ex_in_conv finite.emptyI mem_Collect_eq)
-  }
-  moreover {
-    fix r
-    assume \<open>urrel_card_n r 0\<close>
-    hence r_notex: \<open>\<not>AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<omega>\<upsilon> u))\<close> for u
-      unfolding urrel_card_n_def urrel_act_\<omega>ext_def
-      by force
-    {
-      AOT_assume \<open>\<^bold>\<turnstile> \<exists>u [\<guillemotleft>urrel_to_rel r\<guillemotright>]u\<close>
-      then AOT_obtain x where Ox: \<open>\<^bold>\<turnstile> O!x\<close>
-                      and x_prop: \<open>\<^bold>\<turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]x\<close>
-        using "\<exists>E"[rotated] "&E" by blast
-      AOT_have posEx: \<open>\<diamond>E!x\<close>
-        using Ox
-        by (metis "\<beta>\<rightarrow>C"(1) AOT_sem_dia AOT_sem_ordinary)
-      then obtain u where u_def: \<open>AOT_term_of_var x = \<omega>\<kappa> u\<close>
-        by (metis AOT_concrete_sem AOT_model_concrete_\<kappa>.simps(2)
-                  AOT_model_denotes_\<kappa>_def AOT_sem_concrete AOT_sem_denotes
-                  AOT_sem_dia \<kappa>.exhaust_disc is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def
-                  "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-      have \<open>False\<close>
-        using x_prop r_notex unfolding u_def
-        by (metis AOT_sem_exe Abs_rel_inverse \<kappa>\<upsilon>.simps(1)
-                  iso_tuple_UNIV_I urrel_to_rel_def)
-    }
-    AOT_hence \<open>\<^bold>\<turnstile> \<not>\<exists>u [\<guillemotleft>urrel_to_rel r\<guillemotright>]u\<close>
-      by (metis "reductio-aa:1")
-    AOT_hence \<open>\<^bold>\<turnstile> 0[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
-      apply (rule "zero=:2"[unvarify F, THEN "\<equiv>E"(2), rotated])
-      by (metis AOT_model_term_equiv_rel_def AOT_sem_denotes
-                Quotient3_rel_rep urrel_quotient3)
-    hence \<open>r \<in> zero\<close>
-      unfolding zero_def[symmetric] AOT_enc_\<kappa>_meta
-      by (metis (no_types, lifting) AOT_model_enc_\<kappa>_def Quotient3_abs_rep
-                                    \<kappa>.simps(11) urrel_quotient3)
-  }
-  ultimately have \<open>r \<in> zero \<longleftrightarrow> urrel_card_n r 0\<close> for r by blast
-  hence Rep_rel_model_nat_0: \<open>AOT_model_valid_in w (Rep_rel model_nat \<guillemotleft>0\<guillemotright>)\<close> for w
-    unfolding model_nat_def
-    apply (subst Abs_rel_inverse[simplified])
-    apply (subst fix_special_denoting)
-    using AOT_sem_denotes "zero:2" apply blast
-    apply (simp add: AOT_model_proposition_choice_simp)
-    apply (subst zero_def[symmetric])
-    apply simp
-    using urrel_card_n_def by blast
-
-  have AOT_sem_ex1: \<open>[v \<Turnstile> \<exists>!x \<phi>{x}] = (\<exists>!\<kappa> . [v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<phi>{\<kappa>}])\<close> for v \<phi>
-  proof
-    assume \<open>[v \<Turnstile> \<exists>!x \<phi>{x}]\<close>
-    hence \<open>[v \<Turnstile> \<exists>x (\<phi>{x} & \<forall>y (\<phi>{y} \<rightarrow> y = x))]\<close>
-      using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-    then obtain \<kappa> where \<kappa>_den: \<open>[v \<Turnstile> \<kappa>\<down>]\<close>
-                   and \<kappa>_prop: \<open>[v \<Turnstile> \<phi>{\<kappa>} & \<forall>y (\<phi>{y} \<rightarrow> y = \<kappa>)]\<close>
-      by (meson AOT_sem_exists)
-    show \<open>\<exists>!\<kappa>. [v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<phi>{\<kappa>}]\<close>
-    proof
-      show \<open>[v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<phi>{\<kappa>}]\<close>
-        using \<kappa>_den \<kappa>_prop by (auto simp: AOT_sem_conj)
-    next
-      fix \<kappa>'
-      assume \<open>[v \<Turnstile> \<kappa>'\<down>] \<and> [v \<Turnstile> \<phi>{\<kappa>'}]\<close>
-      thus \<open>\<kappa>' = \<kappa>\<close>
-        using \<kappa>_prop
-        by (auto simp: AOT_sem_conj AOT_sem_imp AOT_sem_eq AOT_sem_forall)
+  qed
+  text\<open>We show by induction that any property encoded by a natural number
+       has a finite actual extension on the ordinary objects.\<close>
+  AOT_hence \<open>[\<lambda>x \<forall>F(x[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)]n\<close> for n
+  proof(rule induction[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "Number.\<forall>E"];
+        safe intro!: "&I" "Number.GEN" "\<beta>\<leftarrow>C" "zero:2" "\<rightarrow>I" "cqt:2"
+             dest!: "\<beta>\<rightarrow>C")
+    AOT_show \<open>\<forall>F(0[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close>
+    proof(safe intro!: GEN "\<rightarrow>I")
+      fix F
+      AOT_assume \<open>0[F]\<close>
+      AOT_actually {
+        AOT_hence \<open>\<not>\<exists>u [F]u\<close>
+          using "zero=:2" "intro-elim:3:a" AOT_sem_enc_nec by blast
+        AOT_hence \<open>\<forall>x \<not>(O!x & [F]x)\<close>
+          using "cqt-further:4" "vdash-properties:10" by blast
+        hence \<open>\<not>([w\<^sub>0 \<Turnstile> [F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>])\<close> for x
+          by (auto dest!: "\<forall>E"(1)[where \<tau>=\<open>\<omega>\<kappa> x\<close>]
+                    simp: AOT_sem_not AOT_sem_conj AOT_model_\<omega>\<kappa>_ordinary
+                          "russell-axiom[exe,1].\<psi>_denotes_asm")
+      }
+      AOT_thus \<open>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var F))\<guillemotright>\<close>
+        by (auto simp: AOT_model_proposition_choice_simp act_\<omega>ext_def)
     qed
   next
-    assume \<open>\<exists>!\<kappa>. [v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<phi>{\<kappa>}]\<close>
-    hence \<open>\<exists>\<tau>. [v \<Turnstile> \<tau>\<down>] \<and> [v \<Turnstile> \<phi>{\<tau>}] \<and>
-               (\<forall>\<tau>'. [v \<Turnstile> \<tau>'\<down>] \<longrightarrow> [v \<Turnstile> \<phi>{\<tau>'}] \<longrightarrow> [v \<Turnstile> \<tau>\<down>] \<and> \<tau>' = \<tau>)\<close>
-      by auto
-    hence \<open>[v \<Turnstile> \<exists>x (\<phi>{x} & \<forall>y (\<phi>{y} \<rightarrow> y = x))]\<close>
-      by (auto simp: AOT_sem_exists AOT_sem_conj AOT_sem_forall
-                     AOT_sem_imp AOT_sem_eq)
-    thus \<open>[v \<Turnstile> \<exists>!x \<phi>{x}]\<close>
-      using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
-  qed
-
-  AOT_actually {
-    fix \<Pi> \<Pi>' n
-    AOT_assume 0: \<open>\<Pi> \<approx>\<^sub>E \<Pi>'\<close>
-    AOT_hence \<open>\<exists>R R |: \<Pi> \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E \<Pi>'\<close>
-      using "equi:3"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-    then AOT_obtain R where \<open>R |: \<Pi> \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E \<Pi>'\<close>
-      using "\<exists>E"[rotated] by blast
-    AOT_find_theorems \<open>R |: \<Pi> \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E \<Pi>'\<close>
-    AOT_hence \<Pi>_den: \<open>\<Pi>\<down>\<close> and \<Pi>'_den: \<open>\<Pi>'\<down>\<close> and
-        \<Pi>_prop: \<open>\<forall>u ([\<Pi>]u \<rightarrow> \<exists>!v ([\<Pi>']v & [R]uv))\<close> and
-        \<Pi>'_prop: \<open>\<forall>v ([\<Pi>']v \<rightarrow> \<exists>!u ([\<Pi>]u & [R]uv))\<close>
-      using "equi:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast+
-    have Rep_rel_\<Pi>_simp:
-      \<open>Rep_rel \<Pi> (\<omega>\<kappa> a) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, best) AOT_model_term_equiv_rel_def AOT_sem_denotes
-            Quotient3_def \<Pi>_den \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3
-            urrel_to_rel_def Abs_rel_inverse)
-    have Rep_rel_\<Pi>'_simp:
-      \<open>Rep_rel \<Pi>' (\<omega>\<kappa> a) = Rep_urrel (rel_to_urrel \<Pi>') (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, best) AOT_model_term_equiv_rel_def AOT_sem_denotes
-            Quotient3_def \<Pi>'_den \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3
-            urrel_to_rel_def Abs_rel_inverse)
-    fix p :: \<open>\<omega> \<Rightarrow> \<omega>\<close>
-    define b1 :: \<open>\<omega> \<Rightarrow> \<omega>\<close> where
-      \<open>b1 \<equiv> \<lambda> u . THE v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-    define b2 :: \<open>\<omega> \<Rightarrow> \<omega>\<close> where
-      \<open>b2 \<equiv> \<lambda> v . THE u . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-
-    have b1_prop:
-      \<open>[w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> (b1 x)\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<guillemotleft>\<omega>\<kappa> (b1 x)\<guillemotright>]\<close>
-      if \<open>[w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> for x 
-      unfolding b1_def
-    proof (rule theI')
-      AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-        by (simp add: AOT_model_\<omega>\<kappa>_ordinary)
-      moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<down>\<close>
-        using AOT_sem_exe calculation by blast
-      moreover have av_prop: \<open>[w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> using that by simp
-      moreover AOT_have \<open>\<exists>!v ([\<Pi>']v & [R]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>v)\<close>
-        using calculation \<Pi>_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
-      ultimately show ex1u: \<open>\<exists>!v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-        apply (auto simp: AOT_sem_ex1 AOT_sem_conj)
-        using AOT_model_ordinary_\<omega>\<kappa> apply blast
-        by (meson AOT_model_\<omega>\<kappa>_ordinary AOT_sem_exe \<kappa>.inject(1))
-    qed
-    have b2_prop: \<open>[w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> (b2 x)\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> (b2 x)\<guillemotright>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close>
-      if \<open>[w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> for x 
-      unfolding b2_def
-    proof (rule theI')
-      AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-        by (simp add: AOT_model_\<omega>\<kappa>_ordinary)
-      moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<down>\<close>
-        using AOT_sem_exe calculation by blast
-      moreover have av_prop: \<open>[w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close>
-        using that by simp
-      moreover AOT_have \<open>\<exists>!u ([\<Pi>]u & [R]u\<guillemotleft>\<omega>\<kappa> x\<guillemotright>)\<close>
-        using calculation \<Pi>'_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
-      ultimately show ex1u: \<open>\<exists>!u . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close>
-        apply (auto simp: AOT_sem_ex1 AOT_sem_conj)
-        using AOT_model_ordinary_\<omega>\<kappa> apply blast
-        by (meson AOT_model_\<omega>\<kappa>_ordinary AOT_sem_exe \<kappa>.inject(1))
-    qed
-    have  \<open>bij_betw b1 (urrel_act_\<omega>ext (rel_to_urrel \<Pi>))
-                       (urrel_act_\<omega>ext (rel_to_urrel \<Pi>'))\<close>
-    proof (rule bij_betw_byWitness[where f'=b2])
-      {
-        fix a
-        assume \<open>a \<in> urrel_act_\<omega>ext (rel_to_urrel \<Pi>)\<close>
-        AOT_hence \<Pi>a: \<open>[\<Pi>]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<close>
-          unfolding urrel_act_\<omega>ext_def AOT_sem_exe_denoting[OF \<Pi>_den]
-          by (simp add: Rep_rel_\<Pi>_simp)
-        moreover AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<close>
-          using AOT_model_\<omega>\<kappa>_ordinary by force
-        moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<down>\<close>
-          using AOT_sem_exe calculation(1) by blast
-        ultimately AOT_have \<open>\<exists>!v ([\<Pi>']v & [R]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>v)\<close>
-          using \<Pi>_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
-        hence \<open>\<exists>!x . [w\<^sub>0 \<Turnstile> O!x] \<and> [w\<^sub>0 \<Turnstile> [\<Pi>']x] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>x]\<close>
-          (is \<open>\<exists>!v . ?v v\<close>)
-          apply (auto simp: AOT_sem_ex1 AOT_sem_conj)
-           apply (metis AOT_model.AOT_term_of_var_cases AOT_sem_denotes)
-          by (meson AOT_var.AOT_term_of_var_inject
-                    "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-        then obtain v where v_prop: \<open>?v v \<and> (\<forall> w . ?v w \<longrightarrow> w = v)\<close>
-          by metis
-        then obtain v' where v_def: \<open>AOT_term_of_var v = \<omega>\<kappa> v'\<close>
-          by (metis AOT_model_ordinary_\<omega>\<kappa>) 
-        have ex1v: \<open>\<exists>!v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-          using v_prop unfolding v_def
-          by (metis AOT_model.AOT_term_of_var_cases AOT_model_\<omega>\<kappa>_ordinary
-                    AOT_sem_denotes \<kappa>.inject(1)
-                    "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-        then obtain v where v_def:
-          \<open>v = (THE v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>])\<close>
-          by blast
-        AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> v\<guillemotright>\<close>
-          by (simp add: AOT_model_\<omega>\<kappa>_ordinary)
-        moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>\<down>\<close>
-          using AOT_sem_exe calculation by blast
-        moreover have av_prop: \<open>[w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-          unfolding v_def
-          apply (rule theI')
-          by (simp add: ex1v)
-        moreover AOT_have \<open>\<exists>!u ([\<Pi>]u & [R]u\<guillemotleft>\<omega>\<kappa> v\<guillemotright>)\<close>
-          using calculation \<Pi>'_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
-          by blast
-        ultimately have ex1u: \<open>\<exists>!u . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-          apply (auto simp: AOT_sem_ex1 AOT_sem_conj \<Pi>a)
-          using \<Pi>a apply blast
-          by (meson AOT_model_\<omega>\<kappa>_ordinary \<kappa>.inject(1)
-                    "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-        have \<open>b2 (b1 a) = a\<close>
-          using b1_def b2_def b1_prop b2_prop
-          by (metis \<Pi>a av_prop ex1u ex1v)
-      }
-      thus \<open>\<forall>a\<in>urrel_act_\<omega>ext (rel_to_urrel \<Pi>). b2 (b1 a) = a\<close>
-        by auto
-    next
-      {
-        fix a
-        assume \<open>a \<in> urrel_act_\<omega>ext (rel_to_urrel \<Pi>')\<close>
-        AOT_hence \<Pi>'a: \<open>[\<Pi>']\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<close>
-          unfolding urrel_act_\<omega>ext_def AOT_sem_exe_denoting[OF \<Pi>'_den]
-          by (simp add: Rep_rel_\<Pi>'_simp)
-        moreover AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<close>
-          using AOT_model_\<omega>\<kappa>_ordinary by force
-        moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> a\<guillemotright>\<down>\<close>
-          using AOT_sem_exe calculation(1) by blast
-        ultimately AOT_have \<open>\<exists>!u ([\<Pi>]u & [R]u\<guillemotleft>\<omega>\<kappa> a\<guillemotright>)\<close>
-          using \<Pi>'_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
-        hence \<open>\<exists>!x . [w\<^sub>0 \<Turnstile> O!x] \<and> [w\<^sub>0 \<Turnstile> [\<Pi>]x] \<and> [w\<^sub>0 \<Turnstile> [R]x\<guillemotleft>\<omega>\<kappa> a\<guillemotright>]\<close>
-          (is \<open>\<exists>!u . ?u u\<close>)
-          apply (auto simp: AOT_sem_ex1 AOT_sem_conj)
-           apply (metis AOT_model.AOT_term_of_var_cases AOT_sem_denotes)
-          by (meson AOT_var.AOT_term_of_var_inject
-                    "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-        then obtain u where u_prop: \<open>?u u \<and> (\<forall> w . ?u w \<longrightarrow> w = u)\<close>
-          by metis
-        then obtain u' where u_def: \<open>AOT_term_of_var u = \<omega>\<kappa> u'\<close>
-          by (metis AOT_model_ordinary_\<omega>\<kappa>) 
-        have ex1u: \<open>\<exists>!u . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> a\<guillemotright>]\<close>
-          using u_prop unfolding u_def
-          by (metis AOT_model.AOT_term_of_var_cases AOT_model_\<omega>\<kappa>_ordinary
-                    AOT_model_denotes_\<kappa>_def \<kappa>.disc(7) \<kappa>.inject(1))
-        then obtain u where u_def:
-          \<open>u = (THE u . [w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> a\<guillemotright>])\<close>
-          by blast
-        AOT_have \<open>O!\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<close>
-          by (simp add: AOT_model_\<omega>\<kappa>_ordinary)
-        moreover AOT_have \<open>\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<down>\<close>
-          using AOT_sem_exe calculation by blast
-        moreover have ua_prop: \<open>[w\<^sub>0 \<Turnstile> [\<Pi>]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> a\<guillemotright>]\<close>
-          unfolding u_def
-          apply (rule theI')
-          by (simp add: ex1u)
-        moreover AOT_have \<open>\<exists>!v ([\<Pi>']v & [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>v)\<close>
-          using calculation \<Pi>_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"]
-          by blast
-        ultimately have ex1v: \<open>\<exists>!v . [w\<^sub>0 \<Turnstile> [\<Pi>']\<guillemotleft>\<omega>\<kappa> v\<guillemotright>] \<and> [w\<^sub>0 \<Turnstile> [R]\<guillemotleft>\<omega>\<kappa> u\<guillemotright>\<guillemotleft>\<omega>\<kappa> v\<guillemotright>]\<close>
-          apply (auto simp: AOT_sem_ex1 AOT_sem_conj \<Pi>'a)
-          using \<Pi>'a apply blast
-          by (meson AOT_model_\<omega>\<kappa>_ordinary \<kappa>.inject(1)
-                    "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
-        have \<open>b1 (b2 a) = a\<close>
-          using b1_def b2_def b1_prop b2_prop
-          by (metis \<Pi>'a ex1u ex1v ua_prop)
-      }
-      thus \<open>\<forall>a'\<in>urrel_act_\<omega>ext (rel_to_urrel \<Pi>'). b1 (b2 a') = a'\<close>
-        by blast
-    next
-      {
-        fix x
-        assume \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> x))\<close>
-        hence \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel (rel_to_urrel \<Pi>') (\<omega>\<upsilon> (b1 x)))\<close>
-          by (metis AOT_sem_exe AOT_sem_exe_denoting Rep_rel_\<Pi>'_simp
-                    Rep_rel_\<Pi>_simp \<Pi>_den b1_prop)
-      }
-      thus \<open>b1 ` urrel_act_\<omega>ext (rel_to_urrel \<Pi>) \<subseteq> urrel_act_\<omega>ext (rel_to_urrel \<Pi>')\<close>
-        by (auto simp: urrel_act_\<omega>ext_def)
-    next
-      {
-        fix x
-        assume \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel (rel_to_urrel \<Pi>') (\<omega>\<upsilon> x))\<close>
-        hence \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> (b2 x)))\<close>
-          by (metis AOT_sem_exe AOT_sem_exe_denoting Rep_rel_\<Pi>'_simp
-                    Rep_rel_\<Pi>_simp \<Pi>'_den b2_prop)
-      }
-      thus \<open>b2 ` urrel_act_\<omega>ext (rel_to_urrel \<Pi>') \<subseteq> urrel_act_\<omega>ext (rel_to_urrel \<Pi>)\<close>
-        by (auto simp: urrel_act_\<omega>ext_def)
-    qed
-    moreover assume \<open>urrel_card_n (rel_to_urrel \<Pi>) n\<close>
-    ultimately have \<open>urrel_card_n (rel_to_urrel \<Pi>') n\<close>
-      unfolding urrel_card_n_def
-      by (metis bij_betw_finite bij_betw_same_card)
-  } note 0 = this
-  AOT_actually {
-    fix \<Pi> \<Pi>'
-    AOT_assume A: \<open>\<Pi> \<approx>\<^sub>E \<Pi>'\<close>
-    AOT_hence B: \<open>\<Pi>' \<approx>\<^sub>E \<Pi>\<close>
-      using "eq-part:2[terms]"[THEN "\<rightarrow>E"] by presburger
-    have \<open>urrel_card_n (rel_to_urrel \<Pi>) = urrel_card_n (rel_to_urrel \<Pi>')\<close>
-      using 0[OF A] 0[OF B] by blast
-  } note equinum_card_eq = this
-
-  AOT_actually {
-    fix x
-    AOT_assume Nx: \<open>[\<nat>]x\<close>
-    AOT_have 0: \<open>[\<guillemotleft>model_nat\<guillemotright>]0\<close>
-      by (simp add: AOT_sem_exe_denoting[simplified AOT_sem_denotes,
-                                         OF model_nat_den]
-                    Rep_rel_model_nat_0)
-    AOT_hence model_nat_den: \<open>[\<guillemotleft>model_nat\<guillemotright>]\<down>\<close>
-      using AOT_sem_exe by blast
-    AOT_have \<open>[\<guillemotleft>model_nat\<guillemotright>]x\<close>
-    proof(rule induction[THEN "\<forall>E"(1), OF model_nat_den, THEN "\<rightarrow>E", OF "&I",
-                         THEN "\<forall>E"(2), THEN "\<rightarrow>E"];
-          safe intro!: 0 Nx GEN "\<rightarrow>I")
-      fix x y
-      AOT_assume \<open>[\<P>]xy\<close>
-      AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
-        using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
-      then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
-        using "\<exists>E"[rotated] by blast
-      then AOT_obtain z where u_prop:
-        \<open>O!z & ([F]z & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>z))\<close>
-        using "\<exists>E"[rotated] "&E" by blast
-      AOT_hence Ou: \<open>O!z\<close> and \<open>A!x\<close> and \<open>A!y\<close>
-        using numbers[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(1), THEN "&E"(1)] "&E"
-        by blast+
-      then obtain a b where x_def: \<open>AOT_term_of_var x = \<alpha>\<kappa> a\<close>
-                        and y_def: \<open>AOT_term_of_var y = \<alpha>\<kappa> b\<close>
-        by (metis AOT_model_abstract_\<alpha>\<kappa>)
-      obtain u' where u_def: \<open>AOT_term_of_var z = \<omega>\<kappa> u'\<close>
-        using AOT_model_ordinary_\<omega>\<kappa> Ou by presburger
-      AOT_obtain G where G_def: \<open>G = [F]\<^sup>-\<^sup>z\<close>
-        by (metis "instantiation" AOT_sem_eq "F-u[den]" "existential:1")
-      AOT_have \<open>Numbers(x, G)\<close>
-        using u_prop "&E"
-        by (metis AOT_sem_eq G_def)
-      AOT_find_theorems \<open>Numbers(y,F)\<close>
-      AOT_have x_enc_cond: \<open>x[G] \<equiv> [\<lambda>z \<^bold>\<A>[G]z] \<approx>\<^sub>E [F]\<^sup>-\<^sup>z\<close> for G
-        using u_prop[THEN "&E"(2), THEN "&E"(2), THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"],
-                     THEN "&E"(2), THEN "\<forall>E"(2)].
-      AOT_hence x_enc_cond': \<open>x[H] \<equiv> [\<lambda>z \<^bold>\<A>[H]z] \<approx>\<^sub>E G\<close> for H
-        by (metis AOT_sem_eq G_def)
-      moreover AOT_have \<open>[\<lambda>z \<^bold>\<A>[G]z] \<approx>\<^sub>E G\<close>
-        apply (rule "apE-eqE:1"[unvarify F, THEN "\<rightarrow>E"])
-         apply "cqt:2[lambda]"
-        apply (rule eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-        apply (auto simp: AOT_sem_conj AOT_sem_forall AOT_sem_equiv AOT_sem_imp)
-          apply "cqt:2[lambda]"
-        apply (simp add: AOT_sem_vars_denote)
-        apply (meson AOT_sem_act "\<beta>\<rightarrow>C"(1))
-        using AOT_sem_act AOT_sem_lambda_beta eq_den_1 "eq-part-act:2"
-        by blast
-      ultimately AOT_have xG: \<open>x[G]\<close> by (metis AOT_sem_equiv)
-      AOT_have y_enc_cond: \<open>y[G] \<equiv> [\<lambda>z \<^bold>\<A>[G]z] \<approx>\<^sub>E F\<close> for G
-        using u_prop[THEN "&E"(2), THEN "&E"(1), THEN "&E"(2),
-                     THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2), THEN "\<forall>E"(2)].
-      AOT_find_theorems \<open>Numbers(x,F)\<close>
-      AOT_assume 0: \<open>[\<guillemotleft>model_nat\<guillemotright>]x\<close>
-      have \<open>\<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-        using model_nat_beta1[OF 0, OF x_def] by blast
-      moreover have \<open>rel_to_urrel (AOT_term_of_var G) \<in> a\<close>
-        using xG unfolding x_def
-        by (simp add: AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def)
-      ultimately have G_finite:
-        \<open>finite (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G)))\<close>
-        by metis
-      have Rep_rel_G_simp:
-        \<open>Rep_rel (AOT_term_of_var G) (\<omega>\<kappa> a) =
-         Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> a)\<close> for a
-        by (smt (verit, del_insts) AOT_model.AOT_term_of_var
-              Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-              urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
-      have Rep_rel_F_simp:
-        \<open>Rep_rel (AOT_term_of_var F) (\<omega>\<kappa> a) =
-         Rep_urrel (rel_to_urrel (AOT_term_of_var F)) (\<omega>\<upsilon> a)\<close> for a
-        by (smt (verit, del_insts) AOT_model.AOT_term_of_var
-              Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-              urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
-
-      AOT_have \<open>[F]z' \<rightarrow> ([G]z' \<or> z = z')\<close> for z'
-        apply (rule "rule=E"[rotated, OF G_def[symmetric]])
-        apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "F-u", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
-         apply "cqt:2[lambda]"
-      proof(rule "\<rightarrow>I")
-        AOT_assume Fv: \<open>[F]z'\<close>
-        {
-          AOT_assume \<open>\<not>(z =\<^sub>E z')\<close>
-          AOT_hence \<open>[\<lambda>z' [F]z' & z' \<noteq>\<^sub>E z]z' \<or> z = z'\<close>
-            by (safe intro!: "\<or>I"(1) "\<beta>\<leftarrow>C"(1) "cqt:2" "&I" Fv)
-               (metis AOT_sem_eq AOT_sem_equiv AOT_sem_not "=E-simple:2"
-                      "thm-neg=E" "\<rightarrow>E")
-        }
-        moreover {
-          AOT_assume \<open>z =\<^sub>E z'\<close>
-          AOT_hence \<open>z = z'\<close>
-            by (metis "=E-simple:2" "\<rightarrow>E")
-          AOT_hence \<open>[\<lambda>z' [F]z' & z' \<noteq>\<^sub>E z]z' \<or> z = z'\<close>
-            by (rule "\<or>I"(2))
-        }
-        ultimately AOT_show \<open>[\<lambda>z' [F]z' & z' \<noteq>\<^sub>E z]z' \<or> z = z'\<close>
-          using "\<or>I"(2) "raa-cor:1" by blast
-      qed
-      hence \<open>AOT_model_valid_in w\<^sub>0
-                (Rep_urrel (rel_to_urrel (AOT_term_of_var F)) (\<omega>\<upsilon> x)) \<Longrightarrow>
-             AOT_model_valid_in w\<^sub>0
-                (Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> x)) \<or> x = u'\<close>
-        for x
-        apply (auto simp: Rep_rel_G_simp Rep_rel_F_simp AOT_sem_imp
-                          AOT_sem_eq AOT_sem_disj
-                          AOT_sem_exe_denoting[OF "cqt:2[const_var]"[axiom_inst]])
-        by (metis AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def
-                  Rep_rel_F_simp Rep_rel_G_simp \<kappa>.disc(7) \<kappa>.inject(1) u_def)
-      hence \<open>e \<in> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var F)) \<Longrightarrow>
-             e \<in> insert u' (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G)))\<close>
-        for e
-        unfolding urrel_act_\<omega>ext_def
-        by auto
-      hence \<open>urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var F)) \<subseteq>
-             insert u' (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G)))\<close>
-        by (metis subset_eq)
-      hence F_finite: \<open>finite (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var F)))\<close>
-        unfolding urrel_act_\<omega>ext_def
-        by (metis G_finite  finite_insert finite_subset urrel_act_\<omega>ext_def)
-      have \<open>\<forall>r. r \<in> b \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-      proof(rule allI; rule)
-        fix r
-        assume \<open>r \<in> b\<close>
-          AOT_hence 0: \<open>y[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
-            unfolding y_def
-            unfolding AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def
-            by (metis AOT_model.AOT_term_of_var AOT_model_term_equiv_rel_def
-                      \<kappa>.simps(11) urrel_quotient3 y_def Quotient3_def)
-          AOT_hence \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<approx>\<^sub>E F\<close>
-            apply (rule y_enc_cond[unvarify G, THEN "\<equiv>E"(1), rotated])
-            using "0" AOT_sem_enc_denotes by auto
-          moreover AOT_have \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<equiv>\<^sub>E \<guillemotleft>urrel_to_rel r\<guillemotright>\<close>
-            apply (rule eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-            apply (auto simp: AOT_sem_conj AOT_sem_forall AOT_sem_imp AOT_sem_equiv)
-               apply "cqt:2[lambda]"
-            apply (meson "0" AOT_sem_enc_denotes)
-            apply (meson AOT_sem_act "\<beta>\<rightarrow>C"(1))
-            using AOT_sem_act AOT_sem_lambda_beta calculation eq_den_1 by blast
-          ultimately AOT_have \<open>\<guillemotleft>urrel_to_rel r\<guillemotright> \<approx>\<^sub>E F\<close>
-            using "apE-eqE:2"[unvarify F G H]
-            apply (auto simp: AOT_sem_conj AOT_sem_imp)
-            by (meson "0" AOT_enc_\<kappa>_meta AOT_sem_denotes eq_den_2
-                      "eq-part:2[terms]" "\<rightarrow>E")
-          hence \<open>urrel_card_n (rel_to_urrel (urrel_to_rel r)) =
-                 urrel_card_n (rel_to_urrel (AOT_term_of_var F))\<close>
-            using equinum_card_eq by blast
-          thus \<open>finite (urrel_act_\<omega>ext r)\<close>
-            by (metis F_finite Quotient3_def urrel_card_n_def urrel_quotient3)
-      qed
-      AOT_thus \<open>[\<guillemotleft>model_nat\<guillemotright>]y\<close>
-        using model_nat_beta2[OF y_def]
-        by blast
-    qed
-  } note 0 = this
-
-  AOT_actually {
-    fix x G
-    AOT_assume Nm: \<open>[\<nat>]x\<close>
-    AOT_hence \<open>[\<guillemotleft>model_nat\<guillemotright>]x\<close> using 0 by blast
-    hence 0: \<open>AOT_term_of_var x = \<alpha>\<kappa> a \<Longrightarrow> \<forall>r. r \<in> a \<longrightarrow> finite (urrel_act_\<omega>ext r)\<close>
-      for a using model_nat_beta1 by blast
-    AOT_have \<open>NaturalCardinal(x)\<close>
-      using Nm "nat-card" "vdash-properties:10" by blast
-    moreover AOT_assume \<open>x = #G\<close>
-    ultimately AOT_have mG: \<open>x[G]\<close>
-      using "card-en"[THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by blast
-    AOT_hence \<open>A!x\<close>
-      using "\<exists>I"(2) "encoders-are-abstract" "\<rightarrow>E" by blast
-    then obtain a where m_def: \<open>AOT_term_of_var x = \<alpha>\<kappa> a\<close>
-      by (metis AOT_model_abstract_\<alpha>\<kappa>)
-    moreover have \<open>rel_to_urrel (AOT_term_of_var G) \<in> a\<close>
-      using mG unfolding m_def
-      by (simp add: AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def)
-    ultimately have \<open>finite (urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G)))\<close>
-      by (metis "0")
-    moreover have \<open>\<not>finite (UNIV::\<omega> set)\<close>
-      by (metis \<omega>_nat finite_imageI infinite_UNIV_nat)
-    ultimately have \<open>\<exists> x . x \<notin> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G))\<close>
-      by (metis ex_new_if_finite)
-    then obtain x where x_prop:
-      \<open>x \<notin> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G))\<close>
-      by blast
-    have Rep_rel_G_simp:
-      \<open>Rep_rel (AOT_term_of_var G) (\<omega>\<kappa> a) =
-       Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> a)\<close> for a
-      by (smt (verit, del_insts) AOT_model.AOT_term_of_var
-            Abs_rel_inverse Quotient3_def \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I
-            urrel_quotient3 urrel_to_rel_def AOT_model_term_equiv_rel_def)
-    AOT_have notGx: \<open>\<not>[G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-    proof (rule "raa-cor:2")
-      AOT_assume \<open>[G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-      hence \<open>AOT_model_valid_in w\<^sub>0
-          (Rep_urrel (rel_to_urrel (AOT_term_of_var G)) (\<omega>\<upsilon> x))\<close>
-         by (metis AOT_sem_exe Rep_rel_G_simp) 
-      moreover AOT_have \<open>G\<down>\<close> by (rule "cqt:2[const_var]"[axiom_inst])
-      hence \<open>x \<in> urrel_act_\<omega>ext (rel_to_urrel (AOT_term_of_var G))\<close>
-        by (metis calculation mem_Collect_eq urrel_act_\<omega>ext_def)
-      hence False using x_prop by blast
-      AOT_thus \<open>p & \<not>p\<close> for p by blast
-    qed
- 
-    AOT_have \<open>\<exists>v\<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-    proof (safe intro!: "\<exists>I"(1)[where \<tau>=\<open>\<omega>\<kappa> x\<close>] "&I" GEN "\<rightarrow>I")
-      AOT_show \<open>[O!]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-        by (simp add: AOT_model_\<omega>\<kappa>_ordinary)
-    next
-      fix z
-      AOT_assume \<open>O!z\<close>
-      AOT_assume Gu: \<open>[G]z\<close>
-      AOT_have \<open>\<not>(z =\<^sub>E \<guillemotleft>\<omega>\<kappa> x\<guillemotright>)\<close>
-      proof(rule "raa-cor:2")
-        AOT_assume \<open>z =\<^sub>E \<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-        AOT_hence \<open>z = \<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-          by (metis AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def
-                    AOT_sem_not \<kappa>.disc(7) "=E-simple:2" "modus-tollens:1")
-        AOT_hence \<open>\<not>[G]z\<close> using notGx "rule=E" id_sym by fast
-        AOT_thus \<open>[G]z & \<not>[G]z\<close> using Gu "&I" by blast
-      qed
-      AOT_thus \<open>z \<noteq>\<^sub>E \<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
-        by (metis AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def
-                  AOT_sem_equiv \<kappa>.disc(7) "thm-neg=E") 
-    next
-      AOT_show \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<down>\<close>
-        by (simp add: AOT_model_denotes_\<kappa>_def AOT_sem_denotes)
-    qed
-  } note 0 = this
-
-  AOT_modally_strict {
-    fix x G
-    AOT_assume \<open>[\<nat>]x\<close>
-    AOT_hence ActNm: \<open>\<^bold>\<A>[\<nat>]x\<close>
-      by (metis "mod-col-num:1" "nec-imp-act" "\<rightarrow>E")
-    AOT_assume \<open>x = #G\<close>
-    AOT_hence \<open>\<^bold>\<A>x = #G\<close>
-      by (metis AOT_sem_eq "RA[2]" "id-eq:1")
-    AOT_hence 0: \<open>\<^bold>\<A>\<exists>v\<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-      using AOT_sem_act ActNm 0 by blast
-    AOT_hence \<open>\<exists>y \<^bold>\<A>(O!y & \<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-      by (smt (z3) "instantiation" AOT_sem_act "existential:2[const_var]")
-    then AOT_obtain y where \<open>\<^bold>\<A>(O!y & \<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-      using "\<exists>E"[rotated] by blast
-    AOT_hence \<open>\<^bold>\<A>O!y\<close> and 1: \<open>\<^bold>\<A>\<forall>u ([G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-      using "Act-Basic:2" "&E" "\<equiv>E"(1) by blast+
-    AOT_hence Oy: \<open>O!y\<close>
-      by (metis "\<equiv>E"(2) "oa-facts:7")
-    AOT_have 2: \<open>\<forall>u\<^bold>\<A>([G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-      using 1 "Ordinary.res-var-bound-reas[3]" "\<rightarrow>E" by fastforce
-    {
-      fix b
-      AOT_assume \<open>O!b\<close>
-      AOT_hence \<open>\<^bold>\<A>([G]b \<rightarrow> b \<noteq>\<^sub>E y)\<close>
-        using 2[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
-      AOT_hence \<open>\<^bold>\<A>[G]b \<rightarrow> \<^bold>\<A>b \<noteq>\<^sub>E y\<close>
-        by (metis "act-cond" "\<rightarrow>E")
-      moreover AOT_assume \<open>\<^bold>\<A>[G]b\<close>
-      ultimately AOT_have \<open>\<^bold>\<A>b \<noteq>\<^sub>E y\<close>
-        using "\<rightarrow>E" by blast
-      AOT_hence \<open>b \<noteq>\<^sub>E y\<close>
-        by (metis "id-act2:2" "\<equiv>E"(2))
-    }
-    AOT_hence \<open>O!b \<rightarrow> (\<^bold>\<A>[G]b \<rightarrow> b \<noteq>\<^sub>E y)\<close> for b
-      using "\<rightarrow>I" by auto
-    AOT_hence \<open>\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-      by (rule GEN)
-    AOT_hence \<open>O!y & \<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-      using Oy "&I" by blast
-    AOT_hence \<open>\<exists>v\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-      by (rule "\<exists>I")
-  } note 0 = this (* uses semantics *)
-
-  AOT_modally_strict {
     fix n m
     AOT_assume \<open>[\<P>]nm\<close>
     AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(m,F) & Numbers(n,[F]\<^sup>-\<^sup>u))\<close>
-      using "\<equiv>E"(1) "pred-thm:3" by blast
-    then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(m,F) & Numbers(n,[F]\<^sup>-\<^sup>u))\<close>
+      using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
+    then AOT_obtain G where \<open>\<exists>u ([G]u & Numbers(m,G) & Numbers(n,[G]\<^sup>-\<^sup>u))\<close>
       using "\<exists>E"[rotated] by blast
-    then AOT_obtain u where u_prop: \<open>[F]u & Numbers(m,F) & Numbers(n,[F]\<^sup>-\<^sup>u)\<close>
-      using "Ordinary.\<exists>E"[rotated] "&E" by meson
-    AOT_assume \<open>\<forall>G ([\<nat>]n & [\<lambda>x x = #G]n \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))\<close>
-    AOT_have \<open>\<forall>G ([\<nat>]m & [\<lambda>x x = #G]m \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))\<close>
-    proof(safe intro!: GEN "\<rightarrow>I")
-      fix G
-      AOT_assume 1: \<open>[\<nat>]m & [\<lambda>x x = #G]m\<close>
-      AOT_hence \<open>[\<lambda>x x = #G]m\<close>
-        using "&E" by blast
-      AOT_hence \<open>m = #G\<close>
-        by (rule "\<beta>\<rightarrow>C"(1))
-      AOT_hence \<open>\<exists>v\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-        using 0[OF 1[THEN "&E"(1)]] by blast
-      then AOT_obtain y where Oy: \<open>O!y\<close>
-        and y_prop: \<open>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-        using "\<exists>E"[rotated] "&E" by blast
-      AOT_have \<open>[\<lambda>z \<diamond>E!z]y\<close>
-        apply (rule AOT_ordinary[THEN "=\<^sub>d\<^sub>fE"(2)])
-         apply "cqt:2[lambda]"
-        by (fact Oy)
-      AOT_hence \<open>\<diamond>E!y\<close>
-        by (rule "\<beta>\<rightarrow>C"(1))
-      moreover {
-        AOT_have \<open>\<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close> for u
-        proof -
-          AOT_have 0: \<open>\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y\<close>
-            using y_prop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] Ordinary.\<psi> by blast
-          AOT_show \<open>\<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-            apply (rule "sc-eq-box-box:6"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
-             apply (simp add: RN "qml-act:1"[axiom_inst])
-            using 0
-            by (metis "\<rightarrow>I" "id-nec4:1" "\<equiv>E"(1) "\<rightarrow>E")
-        qed
-        AOT_hence \<open>\<forall>u \<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-          by (rule Ordinary.GEN)
-        AOT_hence \<open>\<box>\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)\<close>
-          using "Ordinary.res-var-bound-reas[BF]" "\<rightarrow>E" by fast
-      }
-      ultimately AOT_have \<open>\<diamond>(\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y) & E!y)\<close>
-        using "KBasic:16" "&I" "\<rightarrow>E" by blast
-      AOT_hence \<open>\<diamond>(E!y & \<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-        using "RE\<diamond>" "\<equiv>E"(1) "Commutativity of &" by blast
-      AOT_hence \<open>\<exists>y\<diamond>([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-        by (rule "\<exists>I")
-      AOT_thus \<open>\<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-        using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
-    qed
-  } note 1 = this
+    then AOT_obtain u where 0: \<open>[G]u & Numbers(m,G) & Numbers(n,[G]\<^sup>-\<^sup>u)\<close>
+      using "Ordinary.\<exists>E"[rotated] by meson
 
-  AOT_modally_strict {
-    AOT_have 0: \<open>[\<lambda>x \<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow>
-                         \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))]\<down>\<close>
-      by "cqt:2[lambda]"
-    AOT_obtain F where F_def:
-      \<open>F = [\<lambda>x \<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))]\<close>
-      by (metis (no_types, lifting) "0" "instantiation" "rule=I:1"
-                                    "existential:1" id_sym) 
-    AOT_have F_ind: \<open>\<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
-    proof(safe intro!: Number.GEN "\<rightarrow>I")
-      fix n m
-      AOT_assume Pnm: \<open>[\<P>]nm\<close>
-      AOT_assume \<open>[F]n\<close>
-      AOT_hence \<open>[\<lambda>x \<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow>
-                         \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))]n\<close>
-        using "rule=E"[rotated, OF F_def] by fast
-      AOT_hence \<open>\<forall>G ([\<nat>]n & [\<lambda>x x = #G]n \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))\<close>
-        by (rule "\<beta>\<rightarrow>C"(1))
-      AOT_hence \<open>\<forall>G ([\<nat>]m & [\<lambda>x x = #G]m \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))\<close>
-        using 1[OF Pnm] by blast
-      AOT_hence \<open>[\<lambda>x \<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow>
-                         \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))]m\<close>
-        by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2")
-      AOT_thus \<open>[F]m\<close>
-        using "rule=E"[rotated, OF F_def[symmetric]] by fast
-    qed
-    {
-      fix x
-      AOT_have F0: \<open>[F]0\<close>
-      proof (rule "rule=E"[rotated, OF F_def[symmetric]];
-             safe intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" "zero:2" "&I" "0-n" GEN "\<rightarrow>I")
-        fix G
-        AOT_assume \<open>[\<nat>]0 & [\<lambda>x x = #G]0\<close>
-        AOT_hence \<open>[\<lambda>x x = #G]0\<close> using "&E" by blast
-        AOT_hence \<open>0 = #G\<close>
-          by (rule "\<beta>\<rightarrow>C"(1))
-        AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[G]z])\<close>
-          using "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)] by blast
-        AOT_hence act_G_unex: \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[G]z]u\<close>
-          by (rule "0F:1"[unvarify F, THEN "\<equiv>E"(2), rotated]) "cqt:2"
-        fix v
-        AOT_have \<open>[\<lambda>z \<diamond>E!z]v\<close>
-          using Ordinary.\<psi>
-          by (rule AOT_ordinary[THEN "=\<^sub>d\<^sub>fE"(2), rotated]) "cqt:2"
-        AOT_hence \<open>\<diamond>E!v\<close>
-          by (rule "\<beta>\<rightarrow>C"(1))
-        moreover {
-          AOT_have \<open>\<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close> for u
-          proof(rule "raa-cor:1")
-              AOT_assume \<open>\<not>\<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-              AOT_hence \<open>\<diamond>\<not>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-                by (metis "KBasic:11" "\<equiv>E"(1))
-              AOT_hence \<open>\<diamond>(\<^bold>\<A>[G]u & \<not>(u \<noteq>\<^sub>E v))\<close>
-                by (metis "RE\<diamond>" "\<equiv>E"(1) "oth-class-taut:1:b")
-              AOT_hence \<open>\<diamond>\<^bold>\<A>[G]u & \<diamond>\<not>(u \<noteq>\<^sub>E v)\<close>
-                by (metis "KBasic2:3" "\<rightarrow>E")
-              AOT_hence \<open>\<diamond>\<^bold>\<A>[G]u\<close>
-                using "&E" by blast
-              AOT_hence \<open>\<^bold>\<A>[G]u\<close>
-                using "Act-Sub:4" "\<equiv>E"(2) by blast
-              AOT_hence \<open>[\<lambda>z \<^bold>\<A>[G]z]u\<close>
-                by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2")
-              AOT_hence \<open>\<exists>u [\<lambda>z \<^bold>\<A>[G]z]u\<close>
-                by (rule "Ordinary.\<exists>I")
-              AOT_thus \<open>\<exists>u [\<lambda>z \<^bold>\<A>[G]z]u & \<not>\<exists>u [\<lambda>z \<^bold>\<A>[G]z]u\<close>
-                using act_G_unex "&I" by blast
-          qed
-          AOT_hence \<open>\<forall>u \<box>(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-            by (rule Ordinary.GEN)
-          AOT_hence \<open>\<box>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
-            using "Ordinary.res-var-bound-reas[BF]" "\<rightarrow>E" by fast
+    AOT_assume n_prop: \<open>\<forall>F(n[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close>
+    AOT_show \<open>\<forall>F(m[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close>
+    proof(safe intro!: GEN "\<rightarrow>I")
+      fix F
+      AOT_assume \<open>m[F]\<close>
+      AOT_hence 1: \<open>[\<lambda>x \<^bold>\<A>[F]x] \<approx>\<^sub>E G\<close>
+        using 0[THEN "&E"(1), THEN "&E"(2), THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"],
+                THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by auto
+      AOT_show \<open>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var F))\<guillemotright>\<close>
+      proof(rule "raa-cor:1")
+        AOT_assume \<open>\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var F))\<guillemotright>\<close>
+        hence inf: \<open>infinite (act_\<omega>ext (AOT_term_of_var F))\<close>
+          by (auto simp: AOT_sem_not AOT_model_proposition_choice_simp)
+        then AOT_obtain v where act_F_v: \<open>\<^bold>\<A>[F]v\<close>
+          unfolding AOT_sem_act act_\<omega>ext_def
+          by (metis AOT_term_of_var_cases AOT_model_\<omega>\<kappa>_ordinary
+                    AOT_model_denotes_\<kappa>_def Ordinary.Rep_cases \<kappa>.disc(7)
+                    mem_Collect_eq not_finite_existsD)
+        AOT_hence \<open>[\<lambda>x \<^bold>\<A>[F]x]v\<close>
+          by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2")
+        AOT_hence \<open>[\<lambda>x \<^bold>\<A>[F]x]\<^sup>-\<^sup>v \<approx>\<^sub>E [G]\<^sup>-\<^sup>u\<close>
+          by (safe intro!: eqP'[unvarify F, THEN "\<rightarrow>E"] "&I" "cqt:2" 1
+                           0[THEN "&E"(1), THEN "&E"(1)])
+        moreover AOT_have \<open>[\<lambda>x \<^bold>\<A>[F]x]\<^sup>-\<^sup>v \<approx>\<^sub>E [\<lambda>x \<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]x]\<close>
+        proof(safe intro!: "apE-eqE:1"[unvarify F G, THEN "\<rightarrow>E"] "cqt:2"
+                           "F-u[den]"[unvarify F] eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I"
+                           Ordinary.GEN)
+          fix u
+          AOT_have \<open>[\<lambda>x [\<lambda>x \<^bold>\<A>[F]x]x & x \<noteq>\<^sub>E v]u \<equiv> [\<lambda>x \<^bold>\<A>[F]x]u & u \<noteq>\<^sub>E v\<close>
+            by (safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "cqt:2")
+          also AOT_have \<open>[\<lambda>x \<^bold>\<A>[F]x]u & u \<noteq>\<^sub>E v \<equiv> \<^bold>\<A>[F]u & u \<noteq>\<^sub>E v\<close>
+            by (AOT_subst \<open>[\<lambda>x \<^bold>\<A>[F]x]u\<close> \<open>\<^bold>\<A>[F]u\<close>)
+               (safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "cqt:2"
+                             "oth-class-taut:3:a")
+          also AOT_have \<open>\<^bold>\<A>[F]u & u \<noteq>\<^sub>E v \<equiv> \<^bold>\<A>([F]u & u \<noteq>\<^sub>E v)\<close>
+            using "id-act2:2" AOT_sem_conj AOT_sem_equiv AOT_sem_act by auto
+          also AOT_have \<open>\<^bold>\<A>([F]u & u \<noteq>\<^sub>E v) \<equiv> \<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]u\<close>
+            by (AOT_subst \<open>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]u\<close> \<open>[F]u & u \<noteq>\<^sub>E v\<close>)
+               (safe intro!: "beta-C-meta"[THEN "\<rightarrow>E"] "cqt:2"
+                             "oth-class-taut:3:a")
+          also AOT_have \<open>\<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]u \<equiv> [\<lambda>x \<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]x]u\<close>
+            by (safe intro!: "beta-C-meta"[THEN "\<rightarrow>E", symmetric] "cqt:2")
+          finally AOT_show \<open>[[\<lambda>x \<^bold>\<A>[F]x]\<^sup>-\<^sup>v]u \<equiv> [\<lambda>x \<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]x]u\<close>
+            by (auto intro!: "cqt:2"
+                     intro: "rule-id-df:2:b"[OF "F-u", where \<tau>\<^sub>1\<tau>\<^sub>n=\<open>(_,_)\<close>, simplified])
+        qed
+        ultimately AOT_have \<open>[\<lambda>x \<^bold>\<A>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]x] \<approx>\<^sub>E [G]\<^sup>-\<^sup>u\<close>
+          using "eq-part:2[terms]" "eq-part:3[terms]" "\<rightarrow>E" by blast
+        AOT_hence \<open>n[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<close>
+          by (safe intro!: 0[THEN "&E"(2), THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"],
+                THEN "&E"(2), THEN "\<forall>E"(1), THEN "\<equiv>E"(2)] "cqt:2")
+        hence finite: \<open>finite (act_\<omega>ext \<guillemotleft>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<guillemotright>)\<close>
+          by (safe intro!: n_prop[THEN "\<forall>E"(1), THEN "\<rightarrow>E",
+                                  simplified AOT_model_proposition_choice_simp]
+                           "cqt:2")
+        obtain y where y_def: \<open>\<omega>\<kappa> y = AOT_term_of_var (Ordinary.Rep v)\<close>
+          by (metis AOT_model_ordinary_\<omega>\<kappa> Ordinary.restricted_var_condition)
+        AOT_actually {
+          fix x
+          AOT_assume \<open>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
+          AOT_hence \<open>[F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
+            by (auto dest!: "\<beta>\<rightarrow>C" "&E"(1))
         }
-        ultimately AOT_have \<open>\<diamond>(\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v) & E!v)\<close>
-          using "KBasic:16" "&I" "\<rightarrow>E" by fast
-        AOT_hence \<open>\<diamond>(E!v & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v))\<close>
-          using "RE\<diamond>" "\<equiv>E"(4) "Commutativity of &" "raa-cor:3" by blast
-        AOT_hence \<open>\<exists>y \<diamond>(E!y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-          by (rule "\<exists>I")
-        AOT_thus \<open>\<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-          using "CBF\<diamond>" "vdash-properties:10" by fast
+        moreover AOT_actually {
+          AOT_have \<open>[F]\<guillemotleft>\<omega>\<kappa> y\<guillemotright>\<close>
+            unfolding y_def using act_F_v AOT_sem_act by blast
+        }
+        moreover AOT_actually {
+          fix x
+          assume noteq: \<open>x \<noteq> y\<close>
+          AOT_assume \<open>[F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
+          moreover AOT_have \<omega>\<kappa>_x_den: \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<down>\<close>
+            using AOT_sem_exe calculation by blast
+          moreover {
+            AOT_have \<open>\<not>(\<guillemotleft>\<omega>\<kappa> x\<guillemotright> =\<^sub>E v)\<close>
+            proof(rule "raa-cor:2")
+              AOT_assume \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright> =\<^sub>E v\<close>
+              AOT_hence \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright> = v\<close>
+                using "=E-simple:2"[unvarify x, THEN "\<rightarrow>E", OF \<omega>\<kappa>_x_den]
+                by blast
+              hence \<open>\<omega>\<kappa> x = \<omega>\<kappa> y\<close>
+                unfolding y_def AOT_sem_eq
+                by meson
+              hence \<open>x = y\<close>
+                by blast
+              AOT_thus \<open>p & \<not>p\<close> for p using noteq by blast
+            qed
+            AOT_hence \<open>\<guillemotleft>\<omega>\<kappa> x\<guillemotright> \<noteq>\<^sub>E v\<close>
+              by (safe intro!: "thm-neg=E"[unvarify x, THEN "\<equiv>E"(2)] \<omega>\<kappa>_x_den)
+          }
+          ultimately AOT_have \<open>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
+            by (auto intro!: "\<beta>\<leftarrow>C" "cqt:2" "&I")
+        }
+        ultimately have \<open>(insert y (act_\<omega>ext \<guillemotleft>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<guillemotright>)) =
+                         (act_\<omega>ext (AOT_term_of_var F))\<close>
+          unfolding act_\<omega>ext_def
+          by auto
+        hence \<open>finite (act_\<omega>ext (AOT_term_of_var F))\<close>
+          using finite finite.insertI by metis
+        AOT_thus \<open>p & \<not>p\<close> for p
+          using inf by blast
       qed
-      AOT_have \<open>\<forall>n [F]n\<close>
-        using induction[THEN "\<forall>E"(2)[where \<beta>=F], THEN "\<rightarrow>E", OF "&I",
-                        OF F0, OF F_ind].
-    } note 0 = this
-    AOT_show \<open>\<exists>x([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-    proof(rule "\<rightarrow>I")
-      AOT_assume \<open>\<exists>x([\<nat>]x & x = #G)\<close>
-      then AOT_obtain x where x_prop: \<open>[\<nat>]x & x = #G\<close>
-        using "\<exists>E"[rotated] by blast
-      AOT_hence \<open>[F]x\<close>
-        using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] "&E" by blast
-      AOT_hence \<open>[\<lambda>x \<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))]x\<close>
-        by (rule "rule=E"[rotated, OF F_def])
-      AOT_hence \<open>\<forall>G ([\<nat>]x & [\<lambda>x x = #G]x \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y)))\<close>
-        by (rule "\<beta>\<rightarrow>C"(1))
-      AOT_hence \<open>[\<nat>]x & [\<lambda>x x = #G]x \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-        using "\<forall>E" by blast
-      moreover AOT_have \<open>[\<lambda>x x = #G]x\<close>
-        by (auto intro!: "\<beta>\<leftarrow>C"(1) being_number_of_den x_prop[THEN "&E"(2)]
-                  intro: "cqt:2")
-      ultimately AOT_show \<open>\<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-        using x_prop[THEN "&E"(1)] "&I" "\<rightarrow>E" by blast
     qed
-  }
-qed
+  qed
+  AOT_hence nat_enc_finite: \<open>\<forall>F(n[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close> for n
+    using "\<beta>\<rightarrow>C"(1) by blast
+
+  AOT_show \<open>\<exists>x ([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y (E!y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
+  proof(safe intro!: "\<rightarrow>I")
+    AOT_assume \<open>\<exists>x ([\<nat>]x & x = #G)\<close>
+    then AOT_obtain n where \<open>n = #G\<close>
+      using "Number.\<exists>E"[rotated] by meson
+    AOT_hence \<open>Numbers(n,[\<lambda>x \<^bold>\<A>[G]x])\<close>
+      using "eq-num:3" "rule=E" id_sym by fast
+    AOT_hence \<open>n[G]\<close>
+      by (auto intro!: numbers[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2),
+                               THEN "\<forall>E"(2), THEN "\<equiv>E"(2)]
+                       "eq-part:1"[unvarify F] "cqt:2")
+    AOT_hence \<open>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext (AOT_term_of_var G))\<guillemotright>\<close>
+      using nat_enc_finite[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
+    hence finite: \<open>finite (act_\<omega>ext (AOT_term_of_var G))\<close>
+      by (auto simp: AOT_model_proposition_choice_simp)
+    AOT_have \<open>\<exists>u \<not>\<^bold>\<A>[G]u\<close>
+    proof(rule "raa-cor:1")
+      AOT_assume \<open>\<not>\<exists>u \<not>\<^bold>\<A>[G]u\<close>
+      AOT_hence \<open>\<forall>x \<not>(O!x & \<not>\<^bold>\<A>[G]x)\<close>
+        by (metis "cqt-further:4" "vdash-properties:10")
+      AOT_hence \<open>\<^bold>\<A>[G]x\<close> if \<open>O!x\<close> for x
+        using "\<forall>E"(2) AOT_sem_conj AOT_sem_not that by blast
+      hence \<open>[w\<^sub>0 \<Turnstile> [G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> for x
+        by (metis AOT_term_of_var_cases AOT_model_\<omega>\<kappa>_ordinary
+                  AOT_model_denotes_\<kappa>_def AOT_sem_act \<kappa>.disc(7)) 
+      hence \<open>(act_\<omega>ext (AOT_term_of_var G)) = UNIV\<close>
+        unfolding act_\<omega>ext_def by auto
+      moreover have \<open>infinite (UNIV::\<omega> set)\<close>
+        by (metis \<omega>_nat finite_imageI infinite_UNIV_char_0)
+      ultimately have \<open>infinite (act_\<omega>ext (AOT_term_of_var G))\<close>
+        by simp
+      AOT_thus \<open>p & \<not>p\<close> for p using finite by blast
+    qed
+    then AOT_obtain x where x_prop: \<open>O!x & \<not>\<^bold>\<A>[G]x\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<diamond>E!x\<close>
+      by (metis "betaC:1:a" "con-dis-i-e:2:a" AOT_sem_ordinary)
+    moreover AOT_have \<open>\<box>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x)\<close>
+    proof(safe intro!: RN GEN "\<rightarrow>I")
+      AOT_modally_strict {
+        fix y
+        AOT_assume \<open>O!y\<close>
+        AOT_assume 0: \<open>\<^bold>\<A>[G]y\<close>
+        AOT_show \<open>y \<noteq>\<^sub>E x\<close>
+        proof (safe intro!: "thm-neg=E"[THEN "\<equiv>E"(2)] "raa-cor:2")
+          AOT_assume \<open>y =\<^sub>E x\<close>
+          AOT_hence \<open>y = x\<close>
+            by (metis "=E-simple:2" "vdash-properties:10")
+          hence \<open>y = x\<close>
+            by (simp add: AOT_sem_eq AOT_term_of_var_inject)
+          AOT_hence \<open>\<not>\<^bold>\<A>[G]y\<close>
+            using x_prop "&E" AOT_sem_not AOT_sem_act by metis
+          AOT_thus \<open>\<^bold>\<A>[G]y & \<not>\<^bold>\<A>[G]y\<close>
+            using 0 "&I" by blast
+        qed
+      }
+    qed
+    ultimately AOT_have \<open>\<diamond>(\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x) & E!x)\<close>
+      using "KBasic:16"[THEN "\<rightarrow>E", OF "&I"] by blast
+    AOT_hence \<open>\<diamond>(E!x & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x))\<close>
+      by (AOT_subst \<open>E!x & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x)\<close> \<open>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x) & E!x\<close>)
+         (auto simp: "oth-class-taut:2:a")
+    AOT_hence \<open>\<exists>y \<diamond>(E!y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
+      using "\<exists>I" by fast
+    AOT_thus \<open>\<diamond>\<exists>y (E!y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
+      using "CBF\<diamond>"[THEN "\<rightarrow>E"] by fast
+  qed
+} qed
 
 AOT_theorem "modal-lemma":
   \<open>\<diamond>\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v) \<rightarrow> \<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
