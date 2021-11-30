@@ -7,6 +7,44 @@ section\<open>Extended Relation Comprehension\<close>
 text\<open>This theory depends choosing extended models.\<close>
 interpretation AOT_ExtendedModel by (standard; auto)
 
+text\<open>Auxiliary lemma: negations of denoting relations denote.\<close>
+AOT_theorem negation_denotes: \<open>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> [\<lambda>x \<not>\<phi>{x}]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
+  AOT_show \<open>[\<lambda>x \<not>\<phi>{x}]\<down>\<close>
+  proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<phi>{x}]x]\<down>\<close> by "cqt:2"
+  next
+    AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down>\<close>
+      using 0 "exist-nec"[THEN "\<rightarrow>E"] by blast
+    moreover AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<box>\<forall>x (\<not>[\<lambda>x \<phi>{x}]x \<equiv> \<not>\<phi>{x})\<close>
+      by(rule RM; safe intro!: GEN "\<equiv>I" "\<rightarrow>I" "\<beta>\<rightarrow>C"(2) "\<beta>\<leftarrow>C"(2) "cqt:2")
+    ultimately AOT_show \<open>\<box>\<forall>x (\<not>[\<lambda>x \<phi>{x}]x \<equiv> \<not>\<phi>{x})\<close>
+      using "\<rightarrow>E" by blast
+  qed
+qed
+
+text\<open>Auxiliary lemma: conjunctions of denoting relations denote.\<close>
+AOT_theorem conjunction_denotes: \<open>[\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down> \<rightarrow> [\<lambda>x \<phi>{x} & \<psi>{x}]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>\<close>
+  AOT_show \<open>[\<lambda>x \<phi>{x} & \<psi>{x}]\<down>\<close>
+  proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x [\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x]\<down>\<close> by "cqt:2"
+  next
+    AOT_have \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>)\<close>
+      using 0 "exist-nec"[THEN "\<rightarrow>E"] "&E"
+            "KBasic:3" "df-simplify:2" "intro-elim:3:b" by blast
+    moreover AOT_have
+      \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>) \<rightarrow> \<box>\<forall>x ([\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x \<equiv> \<phi>{x} & \<psi>{x})\<close>
+      by(rule RM; auto intro!: GEN "\<equiv>I" "\<rightarrow>I" "cqt:2" "&I"
+                        intro: "\<beta>\<leftarrow>C"
+                         dest: "&E" "\<beta>\<rightarrow>C")
+    ultimately AOT_show \<open>\<box>\<forall>x ([\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x \<equiv> \<phi>{x} & \<psi>{x})\<close>
+      using "\<rightarrow>E" by blast
+  qed
+qed
+
 AOT_register_rigid_restricted_type
   Ordinary: \<open>O!\<kappa>\<close>
 proof
@@ -407,32 +445,29 @@ text\<open>Reformulate the existence claims in terms of their negations.\<close>
 
 AOT_theorem denotes_ex: \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]\<down>\<close>
 proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-  AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x]\<down>\<close>
-    by "cqt:2"
+  AOT_show \<open>[\<lambda>x \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]\<down>\<close>
+    using denotes_all_neg[THEN negation_denotes[THEN "\<rightarrow>E"]].
 next
-  AOT_have \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close> for x
-    by (AOT_subst  \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> for: G)
+  AOT_show \<open>\<box>\<forall>x (\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
+    by (AOT_subst  \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> for: G x)
        (auto simp: "conventions:1" "rule-eq-df:1"
              intro: "oth-class-taut:4:b"[THEN "\<equiv>E"(2)]
-                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"])
-  AOT_thus \<open>\<box>\<forall>x (\<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
-    by (AOT_subst \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x\<close> \<open>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> for: x)
-       (auto intro!: "beta-C-meta"[THEN "\<rightarrow>E"] denotes_all_neg RN GEN)
+                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"]
+             intro!: RN GEN)
 qed
+
 
 AOT_theorem denotes_ex_neg: \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G])]\<down>\<close>
 proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-  AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]x]\<down>\<close>
-    by "cqt:2"
+  AOT_show \<open>[\<lambda>x \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]\<down>\<close>
+    using denotes_all[THEN negation_denotes[THEN "\<rightarrow>E"]].
 next
-  AOT_have \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G])\<close> for x
-    by (AOT_subst (reverse) \<open>\<box>G \<equiv>\<^sub>E F & \<not>x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])\<close> for: G)
+  AOT_show \<open>\<box>\<forall>x (\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G]))\<close>
+    by (AOT_subst (reverse) \<open>\<box>G \<equiv>\<^sub>E F & \<not>x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])\<close> for: G x)
        (auto simp: "oth-class-taut:1:b"
              intro: "oth-class-taut:4:b"[THEN "\<equiv>E"(2)]
-                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"])
-  AOT_thus \<open>\<box>\<forall>x (\<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]x \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G]))\<close>
-    by (AOT_subst \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]x\<close> \<open>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])\<close> for: x)
-       (auto intro!: "beta-C-meta"[THEN "\<rightarrow>E"] denotes_all RN GEN)
+                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"]
+             intro!: RN GEN)
 qed
 
 text\<open>Derive comprehension principles.\<close>
@@ -553,91 +588,70 @@ proof(rule "\<rightarrow>I")
     by (safe intro!: "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
+text\<open>Derived variants of the comprehension principles above.\<close>
+
+AOT_theorem Comprehension_1':
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_hence 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}))\<close>
+    by (AOT_subst (reverse) \<open>\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}\<close> \<open>\<phi>{F} \<equiv> \<phi>{G}\<close> for: F G)
+       (auto simp: "oth-class-taut:4:b")
+  AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>\<exists>F(\<not>\<phi>{F} & x[F])]\<down>\<close>
+      using Comprehension_1[THEN "\<rightarrow>E", OF 0, THEN negation_denotes[THEN "\<rightarrow>E"]].
+  next
+    AOT_show \<open>\<box>\<forall>x (\<not>\<exists>F (\<not>\<phi>{F} & x[F]) \<equiv> \<forall>F (x[F] \<rightarrow> \<phi>{F}))\<close>
+      by (AOT_subst (reverse) \<open>\<not>\<phi>{F} & x[F]\<close> \<open>\<not>(x[F] \<rightarrow> \<phi>{F})\<close> for: F x)
+         (auto simp: "oth-class-taut:1:b"[THEN "intro-elim:3:e",
+                                          OF "oth-class-taut:2:a"]
+             intro: "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:a",
+                                     symmetric]
+             intro!: RN GEN)
+  qed
+qed
+
+AOT_theorem Comprehension_2':
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_show \<open>[\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>\<exists>F(\<phi>{F} & \<not>x[F])]\<down>\<close>
+      using Comprehension_2[THEN "\<rightarrow>E", OF 0, THEN negation_denotes[THEN "\<rightarrow>E"]].
+  next
+    AOT_show \<open>\<box>\<forall>x (\<not>\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> x[F]))\<close>
+      by (AOT_subst (reverse) \<open>\<phi>{F} & \<not>x[F]\<close> \<open>\<not>(\<phi>{F} \<rightarrow> x[F])\<close> for: F x)
+         (auto simp: "oth-class-taut:1:b"
+             intro: "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:a",
+                                     symmetric]
+             intro!: RN GEN)
+  qed
+qed
+
 text\<open>Derive a combined comprehension principles.\<close>
 
 AOT_theorem Comprehension_3:
   \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
 proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-  AOT_hence \<open>\<box>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-    using "S5Basic:5"[THEN "\<rightarrow>E"] by blast
-  moreover AOT_have \<open>\<box>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> \<box>\<forall>x
-                     (\<not>[\<lambda>x \<exists>F (\<not>\<phi>{F} & x[F])]x & \<not>[\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]x \<equiv>
-                      \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-  proof(rule RM; safe intro!: "\<rightarrow>I" GEN "\<equiv>I" "&I" "\<beta>\<rightarrow>C"(2))
-    AOT_modally_strict {
-      AOT_assume 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-      AOT_hence 1: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}))\<close>
-        by (AOT_subst (reverse) \<open>\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}\<close> \<open>\<phi>{F} \<equiv> \<phi>{G}\<close> for: F G)
-           (auto simp add: "oth-class-taut:4:b")
-      fix x
-      {
-        fix F
-        AOT_assume \<open>\<not>[\<lambda>x \<exists>F (\<not>\<phi>{F} & x[F])]x & \<not>[\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]x\<close>
-        AOT_hence 2: \<open>\<not>\<exists>F (\<not>\<phi>{F} & x[F])\<close> and 3: \<open>\<not>\<exists>F (\<phi>{F} & \<not>x[F])\<close>
-          by (auto dest: "&E"
-                   dest!: "\<beta>\<leftarrow>C"(2)[OF Comprehension_1[THEN "\<rightarrow>E", OF 1],
-                                    OF "cqt:2[const_var]"[axiom_inst]]
-                          "\<beta>\<leftarrow>C"(2)[OF Comprehension_2[THEN "\<rightarrow>E", OF 0],
-                                    OF "cqt:2[const_var]"[axiom_inst]])
-        {
-          AOT_assume xF: \<open>x[F]\<close>
-          AOT_show \<open>\<phi>{F}\<close>
-          proof(rule "raa-cor:1")
-            AOT_assume \<open>\<not>\<phi>{F}\<close>
-            AOT_hence \<open>\<not>\<phi>{F} & x[F]\<close> using xF "&I" by blast
-            AOT_thus \<open>\<exists>F (\<not>\<phi>{F} & x[F]) & \<not>\<exists>F(\<not>\<phi>{F} & x[F])\<close>
-              by (auto intro!: "&I" 2 intro: "\<exists>I")
-          qed
-        }
-        {
-          AOT_assume \<phi>F: \<open>\<phi>{F}\<close>
-          AOT_show \<open>x[F]\<close>
-          proof(rule "raa-cor:1")
-            AOT_assume \<open>\<not>x[F]\<close>
-            AOT_hence \<open>\<phi>{F} & \<not>x[F]\<close> using \<phi>F "&I" by blast
-            AOT_thus \<open>\<exists>F (\<phi>{F} & \<not>x[F]) & \<not>\<exists>F(\<phi>{F} & \<not>x[F])\<close>
-              by (auto intro!: "&I" 3 intro: "\<exists>I")
-          qed
-        }
-      }
-      {
-        AOT_assume 0: \<open>\<forall>F(x[F] \<equiv> \<phi>{F})\<close>
-        AOT_show \<open>\<not>\<exists>F (\<not>\<phi>{F} & x[F])\<close>
-        proof(rule "raa-cor:2")
-          AOT_assume \<open>\<exists>F (\<not>\<phi>{F} & x[F])\<close>
-          then AOT_obtain F where \<open>\<not>\<phi>{F} & x[F]\<close>
-            using "\<exists>E"[rotated] by blast
-          AOT_hence \<open>\<phi>{F} & \<not>\<phi>{F}\<close>
-            using 0[THEN "\<forall>E"(2)] "&E" "\<equiv>E"(1) "&I" by blast
-          AOT_thus \<open>p & \<not>p\<close> for p using "reductio-aa:1" "&E" by blast
-        qed
-        AOT_show \<open>\<not>\<exists>F (\<phi>{F} & \<not>x[F])\<close>
-        proof(rule "raa-cor:2")
-          AOT_assume \<open>\<exists>F (\<phi>{F} & \<not>x[F])\<close>
-          then AOT_obtain F where \<open>\<phi>{F} & \<not>x[F]\<close>
-            using "\<exists>E"[rotated] by blast
-          AOT_hence \<open>x[F] & \<not>x[F]\<close>
-            using 0[THEN "\<forall>E"(2)] "&E" "\<equiv>E"(2) "&I" by blast
-          AOT_thus \<open>p & \<not>p\<close> for p using "reductio-aa:1" "&E" by blast
-        qed
-      }
-    }
+  AOT_assume 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F}) & \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+      by (safe intro!: conjunction_denotes[THEN "\<rightarrow>E", OF "&I"]
+                       Comprehension_1'[THEN "\<rightarrow>E"]
+                       Comprehension_2'[THEN "\<rightarrow>E"] 0)
+  next
+    AOT_show \<open>\<box>\<forall>x (\<forall>F (x[F] \<rightarrow> \<phi>{F}) & \<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
+      by (auto intro!: RN GEN "\<equiv>I" "\<rightarrow>I" "&I" dest: "&E" "\<forall>E"(2) "\<rightarrow>E" "\<equiv>E"(1,2))
   qed
-  ultimately AOT_have \<open>\<box>\<forall>x (\<not>[\<lambda>x \<exists>F (\<not>\<phi>{F} & x[F])]x & \<not>[\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]x \<equiv>
-                            \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-    using "\<rightarrow>E" by blast
-  AOT_thus \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
-  proof (safe_step intro!: "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-    AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<exists>F (\<not>\<phi>{F} & x[F])]x & \<not>[\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]x]\<down>\<close>
-      by "cqt:2"
-  qed(auto)
 qed
 
 notepad
 begin
-text\<open>Verify that the axioms are equivalent to @{text \<open>denotes_ex\<close>}
-     and @{text \<open>denotes_ex_neg\<close>}.\<close>
+text\<open>Verify that the original axioms are equivalent to @{thm denotes_ex}
+     and @{thm denotes_ex_neg}.\<close>
 AOT_modally_strict {
   fix x y H
   AOT_have \<open>A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
