@@ -347,6 +347,8 @@ next
   qed
 qed
 
+text\<open>Fragments of PLM's theory of Concepts.\<close>
+
 AOT_define FimpG :: \<open>\<Pi> \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (infixl \<open>\<Rightarrow>\<close> 50)
   "F-imp-G": \<open>[G] \<Rightarrow> [F] \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<box>\<forall>x ([G]x \<rightarrow> [F]x)\<close>
 
@@ -360,24 +362,51 @@ proof
     AOT_have \<open>\<exists>x A!x\<close>
       using "o-objects-exist:2" "qml:2"[axiom_inst] "\<rightarrow>E" by blast
     AOT_thus \<open>\<exists>x C!x\<close>
-      using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"] "rule=E" id_sym by fast
+      using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"] "rule=E" id_sym
+      by fast
   }
 next
   AOT_modally_strict {
     AOT_show \<open>C!\<kappa> \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
-      using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] "\<rightarrow>I" by blast
+      using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] "\<rightarrow>I"
+      by blast
   }
 next
   AOT_modally_strict {
     AOT_have \<open>\<box>(A!x \<rightarrow> \<box>A!x)\<close> for x
       by (simp add: "oa-facts:2" RN)
     AOT_thus \<open>\<box>(C!x \<rightarrow> \<box>C!x)\<close> for x
-      using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"] "rule=E" id_sym by fast
+      using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"] "rule=E" id_sym
+      by fast
   }
 qed
 
 AOT_register_variable_names
-  Concept: c
+  Concept: c d e
+
+AOT_theorem "concept-comp:1": \<open>\<exists>x(C!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
+    using concepts[THEN "rule-id-df:1[zero]", OF "oa-exist:2", symmetric]
+          "A-objects"[axiom_inst]
+          "rule=E" by fast
+
+AOT_theorem "concept-comp:2": \<open>\<exists>!x(C!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
+    using concepts[THEN "rule-id-df:1[zero]", OF "oa-exist:2", symmetric]
+          "A-objects!"
+          "rule=E" by fast
+
+AOT_theorem "concept-comp:3": \<open>\<^bold>\<iota>x(C!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<down>\<close>
+  using "concept-comp:2" "A-Exists:2"[THEN "\<equiv>E"(2)] "RA[2]" by blast
+
+AOT_theorem "concept-comp:4":
+  \<open>\<^bold>\<iota>x(C!x & \<forall>F(x[F] \<equiv> \<phi>{F})) = \<^bold>\<iota>x(A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
+    using "=I"(1)[OF "concept-comp:3"]
+          "rule=E"[rotated]
+          concepts[THEN "rule-id-df:1[zero]", OF "oa-exist:2"]
+          by fast
+
+AOT_define conceptInclusion :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<preceq>\<close> 100)
+  "con:1": \<open>c \<preceq> d \<equiv>\<^sub>d\<^sub>f \<forall>F(c[F] \<rightarrow> d[F])\<close>
+
 
 AOT_define conceptOf :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>ConceptOf'(_,_')\<close>)
   "concept-of-G": \<open>ConceptOf(c,G) \<equiv>\<^sub>d\<^sub>f G\<down> & \<forall>F (c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
@@ -389,7 +418,8 @@ proof(rule "\<rightarrow>I")
     using "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
   AOT_hence \<open>\<box>\<box>\<forall>x([H]x \<rightarrow> O!x)\<close>
     using "S5Basic:6"[THEN "\<equiv>E"(1)] by blast
-  moreover AOT_have \<open>\<box>\<box>\<forall>x([H]x \<rightarrow> O!x) \<rightarrow> \<box>\<forall>F\<forall>G(\<box>(G \<equiv>\<^sub>E F) \<rightarrow> ([H] \<Rightarrow> [F] \<equiv> [H] \<Rightarrow> [G]))\<close>
+  moreover AOT_have \<open>\<box>\<box>\<forall>x([H]x \<rightarrow> O!x) \<rightarrow>
+                     \<box>\<forall>F\<forall>G(\<box>(G \<equiv>\<^sub>E F) \<rightarrow> ([H] \<Rightarrow> [F] \<equiv> [H] \<Rightarrow> [G]))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN "\<equiv>I")
     AOT_modally_strict {
       fix F G
@@ -414,7 +444,7 @@ proof(rule "\<rightarrow>I")
         }
         ultimately AOT_have \<open>\<box>\<forall>x([H]x \<rightarrow> [G]x)\<close>
           using "RN[prem]"[where
-              \<Gamma>="{\<guillemotleft>\<forall>x([H]x \<rightarrow> O!x)\<guillemotright>, \<guillemotleft>\<forall>u([G]u \<equiv> [F]u)\<guillemotright>,\<guillemotleft>\<forall>x([H]x \<rightarrow> [F]x)\<guillemotright>}"]
+              \<Gamma>="{\<guillemotleft>\<forall>x([H]x \<rightarrow> O!x)\<guillemotright>, \<guillemotleft>\<forall>u([G]u \<equiv> [F]u)\<guillemotright>, \<guillemotleft>\<forall>x([H]x \<rightarrow> [F]x)\<guillemotright>}"]
           using 0 1 by fast
         AOT_thus \<open>[H] \<Rightarrow> [G]\<close>
           by (AOT_subst_def "F-imp-G")
@@ -435,7 +465,7 @@ proof(rule "\<rightarrow>I")
         }
         ultimately AOT_have \<open>\<box>\<forall>x([H]x \<rightarrow> [F]x)\<close>
           using "RN[prem]"[where
-              \<Gamma>="{\<guillemotleft>\<forall>x([H]x \<rightarrow> O!x)\<guillemotright>, \<guillemotleft>\<forall>u([G]u \<equiv> [F]u)\<guillemotright>,\<guillemotleft>\<forall>x([H]x \<rightarrow> [G]x)\<guillemotright>}"]
+              \<Gamma>="{\<guillemotleft>\<forall>x([H]x \<rightarrow> O!x)\<guillemotright>, \<guillemotleft>\<forall>u([G]u \<equiv> [F]u)\<guillemotright>, \<guillemotleft>\<forall>x([H]x \<rightarrow> [G]x)\<guillemotright>}"]
           using 0 1 by fast
         AOT_thus \<open>[H] \<Rightarrow> [F]\<close>
           by (AOT_subst_def "F-imp-G")
@@ -475,6 +505,232 @@ proof(rule "\<rightarrow>I")
       AOT_show \<open>\<box>[\<lambda>x \<forall>F(x[F] \<equiv> ([H] \<Rightarrow> [F]))]\<down>\<close>
         using "exist-nec"[THEN "\<rightarrow>E"] 0 by blast
     qed
+  qed
+qed
+
+AOT_theorem "con-exists:1": \<open>\<exists>c ConceptOf(c,G)\<close>
+proof -
+  AOT_obtain c where \<open>\<forall>F (c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+    using "concept-comp:1" "Concept.\<exists>E"[rotated] by meson
+  AOT_hence \<open>ConceptOf(c,G)\<close>
+    by (auto intro!: "concept-of-G"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Concept.\<psi>)
+  thus ?thesis by (rule "Concept.\<exists>I")
+qed
+
+AOT_theorem "con-exists:2": \<open>\<exists>!c ConceptOf(c,G)\<close>
+proof -
+  AOT_have \<open>\<exists>!c \<forall>F (c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+    using "concept-comp:2" by simp
+  moreover {
+    AOT_modally_strict {
+      fix x
+      AOT_assume \<open>\<forall>F (x[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+      moreover AOT_have \<open>[G] \<Rightarrow> [G]\<close>
+        by (safe intro!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" RN GEN "\<rightarrow>I")
+      ultimately AOT_have \<open>x[G]\<close>
+        using "\<forall>E"(2) "\<equiv>E" by blast
+      AOT_hence \<open>A!x\<close>
+        using "encoders-are-abstract"[THEN "\<rightarrow>E", OF "\<exists>I"(2)] by simp
+      AOT_hence \<open>C!x\<close>
+        using concepts[THEN "rule-id-df:1[zero]", OF "oa-exist:2", symmetric]
+              "rule=E"[rotated]
+        by fast
+    }
+  }
+  ultimately show ?thesis
+    by (AOT_subst \<open>ConceptOf(c,G)\<close> \<open>\<forall>F (c[F] \<equiv> [G] \<Rightarrow> [F])\<close> for: c;
+           AOT_subst_def "concept-of-G")
+       (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2" Concept.\<psi> dest: "&E")
+qed
+
+AOT_theorem "con-exists:3": \<open>\<^bold>\<iota>c ConceptOf(c,G)\<down>\<close>
+  by (safe intro!: "A-Exists:2"[THEN "\<equiv>E"(2)] "con-exists:2"[THEN "RA[2]"])
+
+
+AOT_define theConceptOfG :: \<open>\<tau> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>\<^bold>c\<^sub>_\<close>)
+  "concept-G": \<open>\<^bold>c\<^sub>G =\<^sub>d\<^sub>f \<^bold>\<iota>c ConceptOf(c, G)\<close>
+
+AOT_theorem "concept-G[den]": \<open>\<^bold>c\<^sub>G\<down>\<close>
+  by (auto intro!: "rule-id-df:1"[OF "concept-G"]
+                   "t=t-proper:1"[THEN "\<rightarrow>E"]
+                   "con-exists:3")
+
+
+AOT_theorem "concept-G[concept]": \<open>C!\<^bold>c\<^sub>G\<close>
+proof -
+  AOT_have \<open>\<^bold>\<A>(C!\<^bold>c\<^sub>G & ConceptOf(\<^bold>c\<^sub>G, G))\<close>
+    by (auto intro!: "actual-desc:2"[unvarify x, THEN "\<rightarrow>E"]
+                     "rule-id-df:1"[OF "concept-G"]
+                     "concept-G[den]"
+                     "con-exists:3")
+  AOT_hence \<open>\<^bold>\<A>C!\<^bold>c\<^sub>G\<close>
+    by (metis "Act-Basic:2" "con-dis-i-e:2:a" "intro-elim:3:a")
+  AOT_hence \<open>\<^bold>\<A>A!\<^bold>c\<^sub>G\<close>
+    using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"]
+          "rule=E" by fast
+  AOT_hence \<open>A!\<^bold>c\<^sub>G\<close>
+    using "oa-facts:8"[unvarify x, THEN "\<equiv>E"(2)] "concept-G[den]" by blast
+  thus ?thesis
+    using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2", symmetric]
+          "rule=E" by fast
+qed
+
+AOT_theorem "conG-strict": \<open>\<^bold>c\<^sub>G = \<^bold>\<iota>c \<forall>F(c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+proof (rule "id-eq:3"[unvarify \<alpha> \<beta> \<gamma>, THEN "\<rightarrow>E"])
+  AOT_have \<open>\<box>\<forall>x (C!x & ConceptOf(x,G) \<equiv> C!x & \<forall>F (x[F] \<equiv> [G] \<Rightarrow> [F]))\<close>
+    by (auto intro!: "concept-of-G"[THEN "\<equiv>\<^sub>d\<^sub>fI"] RN GEN "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2"
+               dest: "&E";
+        auto dest: "\<forall>E"(2) "\<equiv>E"(1,2) dest!: "&E"(2) "concept-of-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
+  AOT_thus \<open>\<^bold>c\<^sub>G = \<^bold>\<iota>c ConceptOf(c, G) & \<^bold>\<iota>c ConceptOf(c, G) = \<^bold>\<iota>c \<forall>F(c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+    by (auto intro!: "&I" "rule-id-df:1"[OF "concept-G"] "con-exists:3"
+                      "equiv-desc-eq:3"[THEN "\<rightarrow>E"])
+qed(auto simp: "concept-G[den]" "con-exists:3" "concept-comp:3")
+
+
+AOT_theorem "conG-lemma:1": \<open>\<forall>F(\<^bold>c\<^sub>G[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+  fix F
+  AOT_have \<open>\<^bold>\<A>\<forall>F(\<^bold>c\<^sub>G[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+    using "actual-desc:4"[THEN "\<rightarrow>E", OF "concept-comp:3",
+                          THEN "Act-Basic:2"[THEN "\<equiv>E"(1)],
+                          THEN "&E"(2)]
+          "conG-strict"[symmetric] "rule=E" by fast
+  AOT_hence \<open>\<^bold>\<A>(\<^bold>c\<^sub>G[F] \<equiv> [G] \<Rightarrow> [F])\<close>
+    using "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(1)] "\<forall>E"(2)
+    by blast
+  AOT_hence 0: \<open>\<^bold>\<A>\<^bold>c\<^sub>G[F] \<equiv> \<^bold>\<A>[G] \<Rightarrow> [F]\<close>
+    using "Act-Basic:5"[THEN "\<equiv>E"(1)] by blast
+  {
+    AOT_assume \<open>\<^bold>c\<^sub>G[F]\<close>
+    AOT_hence \<open>\<^bold>\<A>\<^bold>c\<^sub>G[F]\<close>
+      by(safe intro!: "en-eq:10[1]"[unvarify x\<^sub>1, THEN "\<equiv>E"(2)]
+                      "concept-G[den]")
+    AOT_hence \<open>\<^bold>\<A>[G] \<Rightarrow> [F]\<close>
+      using 0[THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<^bold>\<A>(F\<down> & G\<down> & \<box>\<forall>x([G]x \<rightarrow> [F]x))\<close>
+      by (AOT_subst_def (reverse) "F-imp-G")
+    AOT_hence \<open>\<^bold>\<A>\<box>\<forall>x([G]x \<rightarrow> [F]x)\<close>
+      using "Act-Basic:2"[THEN "\<equiv>E"(1)] "&E" by blast
+    AOT_hence \<open>\<box>\<forall>x([G]x \<rightarrow> [F]x)\<close>
+      using "qml-act:2"[axiom_inst, THEN "\<equiv>E"(2)] by simp
+    AOT_thus \<open>[G] \<Rightarrow> [F]\<close>
+      by (AOT_subst_def "F-imp-G"; auto intro!: "&I" "cqt:2")
+  }
+  {
+    AOT_assume \<open>[G] \<Rightarrow> [F]\<close>
+    AOT_hence \<open>\<box>\<forall>x([G]x \<rightarrow> [F]x)\<close>
+      by (safe dest!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2))
+    AOT_hence \<open>\<^bold>\<A>\<box>\<forall>x([G]x \<rightarrow> [F]x)\<close>
+      using "qml-act:2"[axiom_inst, THEN "\<equiv>E"(1)] by simp
+    AOT_hence \<open>\<^bold>\<A>(F\<down> & G\<down> & \<box>\<forall>x([G]x \<rightarrow> [F]x))\<close>
+      by (auto intro!: "Act-Basic:2"[THEN "\<equiv>E"(2)] "&I" "cqt:2"
+               intro: "RA[2]")
+    AOT_hence \<open>\<^bold>\<A>([G] \<Rightarrow> [F])\<close>
+      by (AOT_subst_def "F-imp-G")
+    AOT_hence \<open>\<^bold>\<A>\<^bold>c\<^sub>G[F]\<close>
+      using 0[THEN "\<equiv>E"(2)] by blast
+    AOT_thus \<open>\<^bold>c\<^sub>G[F]\<close>
+      by(safe intro!: "en-eq:10[1]"[unvarify x\<^sub>1, THEN "\<equiv>E"(1)]
+                      "concept-G[den]")
+  }
+qed
+
+AOT_theorem conH_enc_ord:
+  \<open>([H] \<Rightarrow> O!) \<rightarrow> \<box>\<forall>F \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<^bold>c\<^sub>H[F] \<equiv> \<^bold>c\<^sub>H[G]))\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[H] \<Rightarrow> O!\<close>
+  AOT_have 0: \<open>\<box>([H] \<Rightarrow> O!)\<close>
+    apply (AOT_subst_def "F-imp-G")
+    using 0[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF "F-imp-G"]]
+    by (auto intro!: "KBasic:3"[THEN "\<equiv>E"(2)] "&I" "exist-nec"[THEN "\<rightarrow>E"]
+               dest: "&E" 4[THEN "\<rightarrow>E"])
+  moreover AOT_have \<open>\<box>([H] \<Rightarrow> O!) \<rightarrow> \<box>\<forall>F \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<^bold>c\<^sub>H[F] \<equiv> \<^bold>c\<^sub>H[G]))\<close>
+  proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
+    AOT_modally_strict {
+      fix F G
+      AOT_assume \<open>[H] \<Rightarrow> O!\<close>
+      AOT_hence 0: \<open>\<box>\<forall>x ([H]x \<rightarrow> O!x)\<close>
+        by (safe dest!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2))
+      AOT_assume 1: \<open>\<box>G \<equiv>\<^sub>E F\<close>
+      AOT_assume \<open>\<^bold>c\<^sub>H[F]\<close>
+      AOT_hence \<open>[H] \<Rightarrow> [F]\<close>
+        using "conG-lemma:1"[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by simp
+      AOT_hence 2: \<open>\<box>\<forall>x ([H]x \<rightarrow> [F]x)\<close>
+        by (safe dest!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2))
+      AOT_modally_strict {
+        AOT_assume 0: \<open>\<forall>x ([H]x \<rightarrow> O!x)\<close>
+        AOT_assume 1: \<open>\<forall>x ([H]x \<rightarrow> [F]x)\<close>
+        AOT_assume 2: \<open>G \<equiv>\<^sub>E F\<close>
+        AOT_have \<open>\<forall>x ([H]x \<rightarrow> [G]x)\<close>
+        proof(safe intro!: GEN "\<rightarrow>I")
+          fix x
+          AOT_assume \<open>[H]x\<close>
+          AOT_hence \<open>O!x\<close> and \<open>[F]x\<close>
+            using 0 1 "\<forall>E"(2) "\<rightarrow>E" by blast+
+          AOT_thus \<open>[G]x\<close>
+            using 2[THEN eqE[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
+                  "\<forall>E"(2) "\<rightarrow>E" "\<equiv>E"(2) calculation by blast
+        qed
+      }
+      AOT_hence \<open>\<box>\<forall>x ([H]x \<rightarrow> [G]x)\<close>
+        using "RN[prem]"[where \<Gamma>=\<open>{\<guillemotleft>\<forall>x ([H]x \<rightarrow> O!x)\<guillemotright>,
+                               \<guillemotleft>\<forall>x ([H]x \<rightarrow> [F]x)\<guillemotright>,
+                               \<guillemotleft>G \<equiv>\<^sub>E F\<guillemotright>}\<close>, simplified] 0 1 2 by fast
+      AOT_hence \<open>[H] \<Rightarrow> [G]\<close>
+        by (safe intro!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2")
+      AOT_hence \<open>\<^bold>c\<^sub>H[G]\<close>
+        using "conG-lemma:1"[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by simp
+    } note 0 = this
+    AOT_modally_strict {
+      fix F G
+      AOT_assume \<open>[H] \<Rightarrow> O!\<close>
+      moreover AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
+      moreover AOT_have \<open>\<box>F \<equiv>\<^sub>E G\<close>
+        by (AOT_subst \<open>F \<equiv>\<^sub>E G\<close> \<open>G \<equiv>\<^sub>E F\<close>)
+            (auto intro!: calculation(2)
+                          eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"]
+                          "\<equiv>I" "\<rightarrow>I" "&I" "cqt:2" Ordinary.GEN
+                  dest!: eqE[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2)
+                  dest: "\<equiv>E"(1,2) "Ordinary.\<forall>E")
+      ultimately AOT_show \<open>(\<^bold>c\<^sub>H[F] \<equiv> \<^bold>c\<^sub>H[G])\<close>
+        using 0 "\<equiv>I" "\<rightarrow>I" by auto
+    }
+  qed
+  ultimately AOT_show \<open>\<box>\<forall>F \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<^bold>c\<^sub>H[F] \<equiv> \<^bold>c\<^sub>H[G]))\<close>
+    using "\<rightarrow>E" by blast
+qed
+
+AOT_theorem concept_inclusion_denotes_1:
+  \<open>([H] \<Rightarrow> O!) \<rightarrow> [\<lambda>x \<^bold>c\<^sub>H \<preceq> x]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[H] \<Rightarrow> O!\<close>
+  AOT_show \<open>[\<lambda>x \<^bold>c\<^sub>H \<preceq> x]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x C!x & \<forall>F(\<^bold>c\<^sub>H[F] \<rightarrow> x[F])]\<down>\<close>
+      by (safe intro!: conjunction_denotes[THEN "\<rightarrow>E", OF "&I"]
+                       Comprehension_2'[THEN "\<rightarrow>E"]
+                       conH_enc_ord[THEN "\<rightarrow>E", OF 0]) "cqt:2"
+  next
+    AOT_show \<open>\<box>\<forall>x (C!x & \<forall>F (\<^bold>c\<^sub>H[F] \<rightarrow> x[F]) \<equiv> \<^bold>c\<^sub>H \<preceq> x)\<close>
+      by (safe intro!: RN GEN; AOT_subst_def "con:1")
+         (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" "concept-G[concept]" dest: "&E")
+  qed
+qed
+
+AOT_theorem concept_inclusion_denotes_2:
+  \<open>([H] \<Rightarrow> O!) \<rightarrow> [\<lambda>x x \<preceq> \<^bold>c\<^sub>H]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[H] \<Rightarrow> O!\<close>
+  AOT_show \<open>[\<lambda>x x \<preceq> \<^bold>c\<^sub>H]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x C!x & \<forall>F(x[F] \<rightarrow> \<^bold>c\<^sub>H[F])]\<down>\<close>
+      by (safe intro!: conjunction_denotes[THEN "\<rightarrow>E", OF "&I"]
+                       Comprehension_1'[THEN "\<rightarrow>E"]
+                       conH_enc_ord[THEN "\<rightarrow>E", OF 0]) "cqt:2"
+  next
+    AOT_show \<open>\<box>\<forall>x (C!x & \<forall>F (x[F] \<rightarrow> \<^bold>c\<^sub>H[F]) \<equiv> x \<preceq> \<^bold>c\<^sub>H)\<close>
+      by (safe intro!: RN GEN; AOT_subst_def "con:1")
+         (auto intro!: "\<equiv>I" "\<rightarrow>I" "&I" "concept-G[concept]" dest: "&E")
   qed
 qed
 
