@@ -1591,7 +1591,7 @@ between properties (see~\nameref{AOT:F-imp-G}):
 \end{quote}
 
 Now our comprehension principles make it derivable that @{emph \<open>being a concept of @{term H}\<close>}
-is a property, just in case @{term H} necessarily implies @{emph \<open>being ordinary\<close>} (see~\nameref{AOT:AOT_misc.ConceptOfOrdinaryProperty}):
+is a property, if @{term H} necessarily implies @{emph \<open>being ordinary\<close>} (see~\nameref{AOT:AOT_misc.ConceptOfOrdinaryProperty}):
 
 \begin{quote}
 @{thm ConceptOfOrdinaryProperty[print_as_theorem, of H]}
