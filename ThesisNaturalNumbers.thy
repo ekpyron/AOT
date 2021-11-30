@@ -1433,7 +1433,9 @@ We call @{term \<phi>} a @{emph \<open>condition on extensions on ordinary objec
 @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<guillemotright>\<close>}.
 Then the comprehension principles state that for any condition @{term \<phi>} on extensions on ordinary objects,
 both @{emph \<open>encoding a property that satisfies @{term \<phi>}\<close>} and
-@{emph \<open>not encoding a property that satisfies @{term \<phi>}\<close>} denote properties.
+@{emph \<open>not encoding a property that satisfies @{term \<phi>}\<close>} denote properties.@{footnote \<open>See
+also~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_1'} and~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_2'} for derived
+variants of these principles.\<close>}
 
 In combination these two principles yield the following (see~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_3}):@{footnote \<open>However, note that above
 principles are stronger, i.e. they are @{emph \<open>not\<close>} derivable from the combined principle.\<close>}
@@ -1570,7 +1572,6 @@ one doesn't (assuming mathematicians aren't tables).\<close>}
 \<close>
 
 subsubsection\<open>Relation to Leibnizian Concepts and Platonic Forms\<close>
- 
 text\<open>
 Despite the concessions above, our comprehension principles align well with the analysis of other
 philosophical objects in AOT.
@@ -1596,11 +1597,27 @@ is a property, just in case @{term H} necessarily implies @{emph \<open>being or
 @{thm ConceptOfOrdinaryProperty[print_as_theorem, of H]}
 \end{quote}
 
+So concepts of properties that do not involve abstract objects can always be distinguished
+from other abstract objects.
+
 Reusing the example above, the concept of @{emph \<open>being an ordinary table\<close>}
 @{emph \<open>does\<close>} encode @{emph \<open>being an ordinary table or being abstract\<close>},
 since the former necessarily implies the latter. In fact it encodes all
 properties that are necessarily equivalent on the ordinary objects to @{emph \<open>being an ordinary table\<close>},
 since all those properties are necessarily implied by @{emph \<open>being an ordinary table\<close>}.
+
+Further examples of theorems that can be derived from our comprehension principles are (see~\nameref{AOT:AOT_misc.concept_inclusion_denotes_1}
+and~\nameref{AOT:AOT_misc.concept_inclusion_denotes_2}):
+
+\begin{quote}
+@{thm[display] concept_inclusion_denotes_1[print_as_theorem, of H]}
+@{thm[display] concept_inclusion_denotes_2[print_as_theorem, of H]}
+\end{quote}
+
+I.e. both @{emph \<open>including\<close>} and @{emph \<open>being included by\<close>} the concept of a
+property @{term H} denote, given that @{term H} necessarily implies being ordinary.@{footnote \<open>The definitions
+of @{term \<open>\<guillemotleft>\<^bold>c\<^sub>G\<guillemotright>\<close>} (see~\nameref{AOT:concept-G}) and @{text \<open>\<preceq>\<close>} (see~\nameref{AOT:con:1}) can be found in appendix~\ref{AOT:AOT_misc}, which implements fragments
+of the theory of concepts given in PLM chapter~13.\<close>}
 
 Thick platonic forms are defined similarly to Leibnizian concepts of properties (see~\nameref{AOT:tform-of}):
 
@@ -1622,7 +1639,7 @@ topic for future research.
 
 However, given the prospect of a move from abstracting patterns among @{emph \<open>ordinary\<close>} objects
 to abstracting patterns among @{emph \<open>discernible\<close>} objects instead,
-the more interesting question may be whether similar general comprehension principles
+an even more interesting question may be whether similar general comprehension principles
 can be formulated for distinguishing objects that encode different patterns among @{emph \<open>discernible\<close>} objects.
 We will discuss this further in section~\ref{NewNumberTheory}.
 \<close>
@@ -1847,7 +1864,7 @@ will be safe to assert the existence of relations among abstract objects that en
 patterns among discernible objects,@{footnote \<open>For example, any axiom that implies
 that certain abstract objects become discernible can be consistently modelled, as long as 
 it discerns at most countably many abstract objects.\<close>} it is unclear if we will be able to arrive at
-general comprehension principles that can be formulated in the system itself.
+general comprehension principles that can be formulated in the theorem itself.
 
 In general, the price of being able to eliminate the modal axiom
 described in section~\ref{ModalAxiom} using the new construction will be that
@@ -2044,6 +2061,7 @@ section\<open>Bounded Models\<close>
 
 text\<open>
 
+\cite{Logicism}
 (TODO: cite logicism) constructs minimal extensional models for the simplified version
 of higher-order AOT it uses for its argumentation. This construction defines the
 @{emph \<open>height\<close>} of a type @{text t}, written @{text \<open>h(t)\<close>}, and

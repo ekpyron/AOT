@@ -54,6 +54,8 @@ referencedEntities = {
 	"AOT_ExtendedRelationComprehension.denotes_ex_neg",
 	"AOT_ExtendedRelationComprehension.Comprehension_1",
 	"AOT_ExtendedRelationComprehension.Comprehension_2",
+	"AOT_ExtendedRelationComprehension.Comprehension_1'",
+	"AOT_ExtendedRelationComprehension.Comprehension_2'",
 	"AOT_ExtendedRelationComprehension.Comprehension_3",
 	"AOT_misc.PossiblyNumbersEmptyPropertyImpliesZero",
 	"AOT_misc.Numbers'DistinctZeroes",
@@ -62,6 +64,8 @@ referencedEntities = {
 	"AOT_misc.OrdinaryExtensionOf",
 	"AOT_misc.BeingOrdinaryExtensionOfDenotes",
 	"AOT_misc.ConceptOfOrdinaryProperty",
+	"AOT_misc.concept_inclusion_denotes_1",
+	"AOT_misc.concept_inclusion_denotes_2",
 	"AOT_misc.FormOfOrdinaryProperty"
 }
 
@@ -146,6 +150,7 @@ unicode_map = {
 	'\u2261': "equiv",
 	'\u2264': "leq",
 	'\u2265': "geq",
+	'\u227c': "preccurlyeq",
 	'\u22c3': "bigcup",
 	'\u2286': "subseteq",
 	'\u222A': "cup",
