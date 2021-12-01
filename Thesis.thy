@@ -100,8 +100,8 @@ I am quite willing to believe that everything in deductive logic can be done by 
 from Russell to Simon dated 2 November, 1956; preserved in~\cite{Simon1996}, page 208.}}
 
 Since then there has been significant progress both in the development of automated theorem provers
-in general and in the application of computational methods to foundational logical theories in particular. Some
-of the more recent developments in this area are outlined in the following sections.
+in general and in the application of computational methods to metaphysical questions and foundational
+logical theories in particular. Some of the more recent developments in this area are outlined in the following sections.
 \<close>
 
 subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
@@ -197,10 +197,10 @@ AOT was significantly reworked and improved. The result triggered an extensive d
 about the foundations of AOT which culminated in the extension of the free logic of AOT to relations,
 while previously it was restricted to individual terms only.
 This evolution of AOT was accompanied by a continuous further development of its
-embedding in Isabelle/HOL. This mutually beneficial mode of work was already described in~\cite{CrossFertilization}
+embedding in Isabelle/HOL. This mutually beneficial mode of work was described in~\cite{CrossFertilization}
 and resulted in a now stabilized and improved formulation of AOT and a
 matching embedding of its second-order fragment. The details of this process and its results are
-the main subject of this thesis. 
+the main subject of this thesis.
 
 \<close>
 
@@ -210,13 +210,13 @@ text\<open>
 In the following, we first provide a more detailed description of Shallow Semantic Embeddings (chapter~\ref{SSEs}) and
 a brief introduction to Abstract Object Theory (chapter~\ref{AOT}).
 Based on that, chapter~\ref{SSEofAOT} describes
-the constructed embedding of the second-order fragment of Abstract Object Theory in Isabelle/HOL.
+the constructed embedding of the second-order fragment of AOT (as presented in PLM~\cite{PLM-Oct-13-2021}) in Isabelle/HOL.
 
-In the process we highlight the contributions of the embedding to the theory of abstract objects on the one hand and
+In the process we highlight the contributions of the embedding to AOT on the one hand and
 the techniques developed for its implementation on the other hand.
 
-In chapter~\ref{NaturalNumbers} we present our results on the derivation of Natural Numbers and
-Mathematical Induction and discuss an extension of AOT with a more general comprehension
+In chapter~\ref{NaturalNumbers} we present our results on PLM's derivation of natural numbers 
+and discuss an extension of AOT with a more general comprehension
 principle for relations among abstract objects. We also discuss some interesting
 variations of the construction that may be adopted by PLM in the future.
 
@@ -239,36 +239,21 @@ Our primary goals are to show that:
     of natural numbers.
   \<^item> In the process, we can provide valuable theoretical insights into, and analyze extensions and variations of the
     construction of the natural numbers.
-
-TODO: Old bullet point thoughts:
-  \<^item> General method for analyzing philosophical arguments and theories: SSEs.
-  \<^item> AOT as challenging target, but feasible to implement to the benefit of the theory
-    and the method.
-  \<^item> Reproduction of the full deductive system of the theory in readable and usable
-    form.
-  \<^item> Demonstration of the extent of the target theory and the practical feasibility
-    to reason in the target system in Natural Number theory.
-  \<^item> Extensions and Progress in the target theory due to our work.
-In particular, our goals are to show that:
-  \<^item> SSEs can not only be used for case studies and the analysis of isolated arguments,
-    but also for implementing the axioms and deductive system even of expressive
-    logical theories.
-  \<^item> AOT, as a foundational metaphysical theory that is based on substantially
-    different logical foundations than the meta-logic HOL, is probably the most
-    ambitious target of the SSE approach to date. Nevertheless, we can show that...
 \<close>
 
 section\<open>Verified Document Generation and Conventions\<close>text\<open>\label{Conventions}\<close>
 
 text\<open>
 This thesis is generated using Isabelle's document preparation system (see~\cite{IsabelleSystemManual}).
-In particular, all statements cited in the thesis are renderings of verified theorems
+In particular, all formal statements cited in the thesis are renderings of verified theorems
 in the embedding, unless specifically stated otherwise and marked with vertical bars
 at the page margins.@{footnote \<open>With the exception of chapter~\ref{HigherOrderAOT} which
 is not written relative to an embedding in Isabelle and omits the marking at the page margins.\<close>}
 
-The appendix contains a rendering of the raw theory files of the embedding including all proofs. While
-Isabelle allows producing latex code for raw theories directly,@{footnote \<open>This mechanism is used
+The appendix contains a rendering of the raw theory files of the embedding including all proofs. The implementation
+currently consists of around 25.000 lines of Isabelle code.@{footnote \<open>Around 20.000 lines are reasoning in the abstraction layer, i.e.
+reasoning in the logic of the target theory, while the remaining code builds up the required model structure and semantics as well as
+the syntax representation of AOT.\<close>} While Isabelle allows producing latex code for raw theories directly,@{footnote \<open>This mechanism is used
 for raw theory content that is inlined in the main thesis, but not for the appendix.\<close>} semantic information
 (e.g. color-coding of free vs. bound variables) is lost in the process, which reduces the
 readability. For that reason, we devised a custom theory presentation
@@ -281,6 +266,7 @@ corresponding item number can be found in parentheses at the right page margin. 
 we will sometimes refer to item numbers in PLM directly, we will usually refer to
 the implementation in the appendix by section and line number and rely on the statement
 in the appendix being annotated with the item number of the corresponding statement in PLM.
+In particular, the thesis is written relative to the version of PLM dated October 13, 2021 (see~\cite{PLM-Oct-13-2021}).
 
 While a certain degree of familiarity with the reasoning environment of Isabelle/HOL might be helpful,
 the fact that reasoning in Isabelle/HOL is designed to be natural and intelligible should allow
@@ -321,15 +307,15 @@ end
 (*>*)
 
 text\<open>
-The deep embedding consists of a (usually recursive) algebraic datatype that captures the syntax of
-the language to be embedded. This syntax is then given a semantics by means of an evaluation function
+The deep embedding consists of a (usually recursive) algebraic datatype that captures the syntactic elements of
+the language to be embedded. This representation of the syntax is then given a semantics by means of an evaluation function
 that traverses this algebraic datatype.@{footnote \<open>In the setting of logical theories this evaluation
 function would usually depend on interpretations and assignment functions of a model. However, in our
 simple example this is not necessary, since the simple language of expression neither involves constants nor variables (respectively since
 literals have trivial interpretations).\<close>}
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
-by its semantics. In our example, the semantic domain of expressions is the integers. On this domain,
-the operations are then @{emph \<open>defined\<close>} directly by means of their semantics:
+in their semantic domain. In our example, the semantic domain of expressions is the integers. On this domain,
+operations are then @{emph \<open>defined\<close>} directly by means of their semantics:
 \<close>
 
 (*<*)
@@ -379,7 +365,7 @@ semantic evaluation.
 
 While there are several advantages and disadvantages of using shallow vs. deep embeddings for
 Domain-Specific languages, we forgo a detailed discussion of them here and
-focus on the application of similar modes of embeddings to logical reasoning in the next sections.
+focus on shallow embeddings of logical theories in the next sections.
 \<close>
 
 section\<open>SSEs as Universal Reasoning Tools\<close>
@@ -451,11 +437,11 @@ text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
 propositions is boolean-valued function acting on (or, equivalently, sets of) possible worlds.
-In an SSE we usually use the semantic domains as types for the object-level terms themselves,@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
+In an SSE we use the semantic domains as types for the object-level terms themselves,@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
 explicitly, as recently demonstrated in~\cite{PublicAnnouncementLogic}.\<close>} so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
-world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.@{footnote \<open>Note
+world, yielding @{term True}, if the proposition is satisfied at that world or @{term False} otherwise.@{footnote \<open>Note
 that this choice of a representation of propositions commits us to a modal logic, in which
 necessary equivalence implies identity. We will later discuss how we can construct a hyperintensional logic instead.\<close>}
 \<close>
@@ -465,8 +451,8 @@ type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
 text\<open>
 A proposition is @{emph \<open>valid\<close>} in case it is satisfied in all worlds.@{footnote \<open>The specification
 in parentheses after the type of the defined constant, @{typ \<open>\<o> \<Rightarrow> bool\<close>}, is @{emph \<open>mixfix notation\<close>} used to introduce
-the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid} with the specified precedence. The ability to
-introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.\<close>}
+the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid} with the specified precedence. The means to
+introduce custom syntax in Isabelle/HOL are discussed in more detail in section~\ref{SSESyntax}.\<close>}
 \<close>
 
 definition valid :: \<open>\<o> \<Rightarrow> bool\<close> (\<open>\<Turnstile> _\<close> 100) where
@@ -564,7 +550,7 @@ text\<open>The concept of enriching traditional SSEs with abstraction layers was
 in \cite{MScThesis}. The goal is to be able to use the automated reasoning tools provided
 by a system like Isabelle/HOL not merely to analyze semantic validity of statements in the
 embedded theory, but to reliably determine the derivability of a statement from the deductive
-system of the theory itself, while still retaining ensured soundness.
+system of the theory itself.
 
 An abstraction layer is simply constructed by proving that the axioms and deduction
 rules of a target logic are semantically valid in the embedding, after which they
@@ -586,34 +572,34 @@ as described in more detail in the following section.
 
 As mentioned in the last section, the main tool for automated reasoning in Isabelle/HOL in question is @{command sledgehammer} (see~\cite{Sledgehammer}).
 @{command sledgehammer} can be invoked during any proof and will try to automatically find a proof for
-the current proof goal. To that end, simply speaking,@{footnote \<open>For the full and precise details of the process
-refer to~\cite{Sledgehammer}.\<close>} it collects all theorems derived in the current @{command theory} context
-together with all local assumptions, and processes the resulting set of theorems heuristically to find
-a subset of relevant theorems. It then encodes the problem of deriving the current goal from the chosen
-theorems and assumptions in a format that can be consumed by external theorem provers like
-E~\cite{EProver}, SPASS~\cite{SPASS}, verit~\cite{veriT, veriTIsabelle} or Z3~\cite{Z3, Z3Isabelle}.
+the current proof goal. To that end, simply speaking,@{footnote \<open>For a precise description of the full details of the process
+refer to~\cite{Sledgehammer}.\<close>} it collects all theorems and definitions derived in the current @{command theory} context
+together with all local assumptions (collectively referred to as @{emph \<open>facts\<close>}) and processes the resulting set of facts heuristically to find
+a subset of relevant facts. It then encodes the problem of deriving the current goal from the chosen
+facts in a format that can be consumed by external theorem provers like
+E~\cite{EProver}, SPASS~\cite{SPASS}, verit~\cite{veriT} or Z3~\cite{Z3}.
 This may, for example, involve a translation from higher-order problems
 to first-order problems. If one of the invoked provers can prove the current goal, @{command sledgehammer}
 tries to reconstruct a short proof using Isabelle's native proving methods (which operate
-directly on Isabelle's trusted reasoning core.) that can be directly inserted to prove the current goal.@{footnote \<open>Furthermore,
+directly on Isabelle's trusted reasoning core) that can be directly inserted to prove the current goal.@{footnote \<open>Furthermore,
 for provers like veriT and Z3, @{emph \<open>proof reconstruction\<close>} using the @{method smt} tactic is available, i.e. they provide
 proofs that can (sometimes) be directly replayed relative to Isabelle's trusted reasoning core. See~\cite{veriTIsabelle} and~\cite{Z3Isabelle}.\<close>}
 
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
-the initial selection of theorems from the theory context.
+the initial selection of facts from the theory context.
 We do not want @{command sledgehammer} to use the equational theorems that unfold our semantic definitions,
 but instead derive the goals from only the axioms and specific derivational rules that correspond
 to the rules of the deductive system of the embedded theory.
-@{command sledgehammer} allows us to provide some guidance in its choice of theorems. It is possible
-to (1) indicate that a certain set of theorems is likely to be helpful in the proof (using @{text \<open>add:\<close>}),
-(2) prevent it from using certain theorems (either using @{text \<open>del:\<close>} or by marking the theorems with
-the special attribute @{attribute no_atp}) or (3) to provide it with a specific set of theorems to use
-directly without taking any other theorems into account.
+@{command sledgehammer} allows us to provide some guidance in its choice. It is possible
+to (1) indicate that a certain set of facts is likely to be helpful in the proof (using @{text \<open>add:\<close>}),
+(2) prevent it from using certain facts (either using @{text \<open>del:\<close>} or by marking facts with
+the special attribute @{attribute no_atp}) or (3) to provide it with a specific set of facts to use
+directly without taking any other facts into account.
 
 Conceptually, option (3) is the best fit for the purpose of abstraction layers and was used in
 \cite{MScThesis}. However, @{command sledgehammer} will no longer employ its heuristics and machine
-learning algorithms to filter the provided theorems to find relevant theorems, but will directly use
-the provided set of theorems. Consequently, the proving power and therefore the usefulness of
+learning algorithms to filter the provided facts for relevance, but will directly use
+the provided set. Consequently, the proving power and therefore the usefulness of
 @{command sledgehammer} is significantly diminished, especially for larger theories.
 
 In our current implementation, we therefore use option (2) instead. However, this comes with
@@ -622,7 +608,7 @@ easily be collected and marked, other more advanced constructions in Isabelle li
 or @{command lift_definition}s (see~\cite{LiftingTransfer}) introduce several theorems implicitly. While
 it is still possible to collect these theorems manually, the process is cumbersome and error-prone.
 
-On the other hand, it is not possible to simply exclude @{emph \<open>all\<close>} theorems that were defined
+On the other hand, it is not possible to simply exclude @{emph \<open>all\<close>} theorems that were derived
 up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
 - among others - the construction of classical higher-order logic from Isabelle's more basic @{theory Pure}
 logic. This includes theorems @{command sledgehammer} relies on and disbarring them will leave it
@@ -637,7 +623,7 @@ proof state to it.@{footnote \<open>Alternatively, we allow configuring @{comman
 only use the restricted set of theorems.\<close>} With this method we can achieve significantly better proof
 automation than~\cite{MScThesis}.
 
-It is important to note that Abstraction Layers still rely on the implicit assumption
+It is important to note that abstraction layers still rely on the implicit assumption
 that meta-logical reasoning about derivations in the target logic is faithfully represented
 by the meta-logical inferences in Isabelle enabled by the constructed deduction rules.
 
@@ -678,8 +664,11 @@ implies extensionality:
 typedef \<o>\<^sub>1 = \<open>UNIV::bool set\<close>.. \<comment> \<open>Introduce an abstract type of propositions @{typ \<o>\<^sub>1} with the universal set
 of booleans (i.e. @{term \<open>{True, False}\<close>}) as representation set.\<close>
 definition valid_\<o>\<^sub>1 :: \<open>\<o>\<^sub>1 \<Rightarrow> bool\<close> where
-  \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.\<close>
+  \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.@{footnote \<open>For any @{command typedef}, Isabelle intoduces
+     constants prefixed with @{text Abs_} and @{text Rep_}, mapping the representation type to the
+     defined abstract type and vice-versa.\<close>}\<close>
 
+text \<open>We introduce an uninterpreted constant for conjunctions with infix syntax.\<close>
 consts \<o>\<^sub>1_conj :: \<open>\<o>\<^sub>1 \<Rightarrow> \<o>\<^sub>1 \<Rightarrow> \<o>\<^sub>1\<close> (infixl \<open>\<^bold>\<and>\<close> 100)
 
 specification (\<o>\<^sub>1_conj) \<comment> \<open>We specify our conjunction by introduction and elimination rules.\<close>
@@ -687,9 +676,7 @@ specification (\<o>\<^sub>1_conj) \<comment> \<open>We specify our conjunction b
   \<o>\<^sub>1_conjE2: \<open>valid_\<o>\<^sub>1 (p \<^bold>\<and> q) \<Longrightarrow> valid_\<o>\<^sub>1 q\<close>
   \<o>\<^sub>1_conjI: \<open>valid_\<o>\<^sub>1 p \<Longrightarrow> valid_\<o>\<^sub>1 q \<Longrightarrow> valid_\<o>\<^sub>1 (p \<^bold>\<and> q)\<close>
 text\<open>We need to prove that there is a term satisfying the above specification. The natural choice is
-     the lifted conjunction on the booleans.@{footnote \<open>For any @{command typedef}, Isabelle intoduces
-     constants prefixed with @{text Abs_} and @{text Rep_}, mapping the representation type to the
-     defined abstract type and vice-versa.\<close>}\<close>
+     the lifted conjunction on the booleans.\<close>
   by (rule exI[where x=\<open>\<lambda> p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q)\<close>])
      (auto simp: Abs_\<o>\<^sub>1_inverse valid_\<o>\<^sub>1_def)
 
@@ -707,13 +694,14 @@ that our conjunction has to be identical to the witness we provided:
 \<close>
 
 lemma \<open>(\<^bold>\<and>) = (\<lambda>p q . Abs_\<o>\<^sub>1 (Rep_\<o>\<^sub>1 p \<and> Rep_\<o>\<^sub>1 q))\<close>
-  by ((rule ext)+; smt (verit, ccfv_threshold) Rep_\<o>\<^sub>1_inverse \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 \<o>\<^sub>1_conjI valid_\<o>\<^sub>1_def)
+  by (metis Abs_\<o>\<^sub>1_inject Abs_\<o>\<^sub>1_inverse UNIV_I \<o>\<^sub>1_conjE1 \<o>\<^sub>1_conjE2 \<o>\<^sub>1_conjI
+            type_copy_obj_one_point_absE type_definition_\<o>\<^sub>1 valid_\<o>\<^sub>1_def)
 (*<*)
 no_notation \<o>\<^sub>1_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 (*>*)
 
 text\<open>
-So in order to avoid this issue, we cannot simply rely on the @{command specification} command, but
+In order to avoid this issue, we cannot simply rely on the @{command specification} command, but
 also have to take care that the @{emph \<open>types\<close>} of the specified constants can actually deliver the desired degree
 of intensionality. In our example, we can introduce an abstract @{emph \<open>intensional type\<close>} for propositons
 that merely has a boolean @{emph \<open>extension\<close>}. First we introduce an abstract type:
@@ -722,7 +710,7 @@ that merely has a boolean @{emph \<open>extension\<close>}. First we introduce a
 typedecl \<o>\<^sub>2 \<comment> \<open>Introduce an abstract type for propositions.\<close>
 
 text\<open>
-Thus far, a model of our HOL satisfying our theory may choose any non-empty set as
+Thus far, a model of HOL satisfying our theory may choose any non-empty set as
 representation set for objects of type @{typ \<o>\<^sub>2}. To arrive at a meaningful type
 of propositions, we axiomatically introduce a surjective extension function mapping
 the abstract propositions to their boolean extension. The surjectivity of the extension function
@@ -799,15 +787,15 @@ no_notation \<o>\<^sub>2_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 
 text\<open>While the above describes a general mechanism that (given a careful choice
 of types) can be used to force Isabelle to rely on a specific set of specified properties
-for constants while simultaneously retaining assured soundness@{footnote \<open>The specification part is
+for constants while simultaneously retaining assured soundness,@{footnote \<open>The specification part is
 guaranteed to be sound, since we provided an explicit witness in the process; the
 consistency of the axiom assuring the surjectivity of the extension function is confirmed
-by @{command nitpick}.\<close>}, the mechanism has limitations.
+by @{command nitpick}.\<close>} the mechanism has limitations.
 
 For instance, @{command specification}s are limited in their capability to specify
 polymorphic constants. While it is both possible to provide a shared specification
 for all types of a polymorphic constant, as well as to provide separate specifications for 
-concrete type instantiations of a polymorphic constant, doing both at the same time
+concrete distinct type instantiations of a polymorphic constant, doing both at the same time
 is in general not possible.
 
 Isabelle provides further abstraction mechanisms, e.g. type @{command class}es and
@@ -871,7 +859,9 @@ aid in making these lifted models concrete.
 
 Technically, a shallow embedding defines a substructure in the models of HOL, which
 yields a model of the embedded logic under the defined validity. (TODO: check.)
-
+\<close>
+(*<*)
+text\<open>
 TODO: Elaborate? Original notes:
 
 Propose a simplified general model of Isabelle/HOL with domains for types, interpretations
@@ -889,6 +879,7 @@ cover all interpretations and assignment functions of any S5 model.
 
 Note that the part of the S5 models that remains explicit in the embedding is solely possible worlds.
 \<close>
+(*>*)
 
 section\<open>Reproducing the Syntax of the Target Theory\<close>text\<open>\label{SSESyntax}\<close>
 
@@ -911,7 +902,8 @@ formulated in @{emph \<open>inner syntax\<close>}.
 @{emph \<open>Inner syntax\<close>} is highly customizable. In the examples in the previous sections we already
 made use of the ability to define new (bold) operators using @{emph \<open>mixfix\<close>} notation (see~\S8.2 in~\cite{IsarRef}).
 However, we only used the mechanism to provide symbols to be used inside the grammar tree of
-Isabelle/HOL's own term structure.
+Isabelle/HOL's own term structure.@{footnote \<open>Thereby we cannot use symbols that are already used for HOL for our target
+logic.\<close>}
 In general Isabelle's inner syntax is described by a context-free priority grammar.
 It consists of a set of @{emph \<open>terminal symbols\<close>}, an extensible set of
 @{emph \<open>non-terminal symbols\<close>} and a set of @{emph \<open>productions\<close>} (see~\S8.4 in~\cite{IsarRef}).
@@ -924,7 +916,7 @@ Reusing the example of the simple modal logic in section~\ref{SimpleS5}, this ca
 
 type_synonym \<o>\<^sub>3 = \<open>w \<Rightarrow> bool\<close>
 
-text\<open>This time we do not use mixfix notation to directly introduce syntax for the validity context.\<close>
+text\<open>This time we do not use mixfix notation to directly introduce syntax for the validity constant.\<close>
 definition valid_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> bool\<close> where \<open>valid_\<o>\<^sub>3 p \<equiv> \<forall> w . p w\<close>
 
 text\<open>Instead, we introduce a @{command nonterminal} as grammar root for the syntax of the embedded language.
@@ -959,8 +951,8 @@ definition disj_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3 \
 definition box_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>box_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<forall>v . p v\<close>
 definition dia_\<o>\<^sub>3 :: \<open>\<o>\<^sub>3 \<Rightarrow> \<o>\<^sub>3\<close> where \<open>dia_\<o>\<^sub>3 p \<equiv> \<lambda>w . \<exists>v . p v\<close>
 
-text\<open>And then define syntax for them in our grammar subtree. We can reuse the same symbols
-used in the syntax of HOL, since they will only be used for parsing the sublanguage, i.e.
+text\<open>And then define syntax for them in our grammar subtree. The syntax definitions
+are only used for parsing terms of the syntactic type @{typ prop\<o>\<^sub>3}, i.e.
 terms in the grammar tree spanned by the marker @{text \<Turnstile>} introduced above.\<close>
 
 syntax not_\<o>\<^sub>3 :: \<open>prop\<o>\<^sub>3 \<Rightarrow> prop\<o>\<^sub>3\<close> (\<open>\<not>_\<close> [40] 40)
@@ -1006,6 +998,10 @@ semantic possible worlds are not part of the syntax of the target theory and man
 them can become a distraction. Therefore, we not only define custom inner syntax
 for the language of AOT, but also extend Isabelle's outer syntax by custom commands
 that hide this complexity (see section~\ref{AOTOuterSyntax}).
+
+In the following chapter we describe our target theory AOT in terms of our defined
+syntax, while the construction of the syntax representation itself is discussed
+in section~\ref{AOTSyntax}.
 \<close>
 
 chapter\<open>Abstract Object Theory\<close>text\<open>\label{AOT}\<close>
@@ -2952,8 +2948,8 @@ section\<open>Syntax of the Target Theory\<close>text\<open>\label{AOTSyntax}\<c
 text\<open>
 We already discussed the possibility of extending Isabelle's inner syntax in general
 in section~\ref{SSESyntax}. Following the method described in that section, we introduce
-@{type AOT_prop} as syntactic root type for propositions in AOT and define a custom grammar
-for AOT on top of it. However, Isabelle's high-level mechanisms for defining
+@{type AOT_prop} as syntactic root type for propositions in AOT (see~\ref{AOT:AOT_commands}) and define a custom grammar
+for AOT on top of it (see~\ref{AOT:AOT_syntax}). However, Isabelle's high-level mechanisms for defining
 custom syntax have certain limitations that make an accurate representation of
 AOT's syntax challenging.
 
@@ -2966,19 +2962,19 @@ concession, we found that reproducing the compact form of atomic formulas used i
 results in significantly improved readability.
 
 Therefore we utilize Isabelle's low-level mechanisms to customize syntax by providing
-transformations on its AST and its term representation written in Standard ML.
+transformations on its abstract syntax tree and its term representation written in Standard ML.
 
 In particular, we use @{command parse_ast_translation}s and @{command parse_translation}s (see~\S8.4 in~\cite{IsarRef})
 to split what Isabelle would natively regard as a single identifier. That way we are
 able to e.g. translate the term @{term \<open>print_as_theorem \<guillemotleft>[F]xy\<guillemotright>\<close>} to
-@{text \<open>AOT_exe F (x,y)\<close>}. The 2-ary exemplification formula is translated to
+@{text \<open>AOT_exe F (x,y)\<close>}.\footnote{We omitted an additional @{const AOT_term_of_var} decorations
+on @{text x}, @{text y} and @{text F} for improved readbility. @{const AOT_term_of_var} is mentioned
+below and described in section~\ref{cqt:2-impl}.} The 2-ary exemplification formula is translated to
 an application of the constant @{const AOT_exe} to the relation term and a tuple of
 individuals. Similarly, @{term \<open>print_as_theorem \<guillemotleft>xy[F]\<guillemotright>\<close>} is translated to
-@{text \<open>AOT_enc (x,y) F\<close>}.\footnote{We omitted an additional @{const AOT_term_of_var} decorations
-on @{text x}, @{text y} and @{text F} for improved readbility. @{const AOT_term_of_var} is mentioned
-below and described in section~\ref{cqt:2-impl}.} The involved constants are introduced in~\ref{AOT:AOT_syntax}
-as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which will only
-later be enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).
+@{text \<open>AOT_enc (x,y) F\<close>}. The involved constants are introduced in~\ref{AOT:AOT_syntax}
+as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which are only
+later enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).
 
 Furthermore, PLM associates the symbols used for its terms with their types, as described in
 section~\ref{AOTLanguage}. While it is possible to rely on Isabelle's type inference,
@@ -2998,15 +2994,19 @@ A danger in the extensive use of complex custom syntax is silent errors in the s
 translations that could result in an expression to be parsed contrary to their intended
 meaning. To alleviate this danger we define multiple @{emph \<open>printing modes\<close>}. The
 embedding can be configured to print terms in an approximation of AOT's syntax, e.g.:
-
+\begin{quote}
 @{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
-
+\end{quote}
 using @{emph \<open>meta-syntax\<close>}, an enriched version of HOL's syntax without complex transformations, e.g.:
 \<close>(*<*) unbundle AOT_no_syntax context AOT_meta_syntax begin (*>*)text\<open>
+\begin{quote}
 @{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
+\end{quote}
 
 or as plain HOL terms without any syntactic sugar, e.g.:\<close>(*<*) end (*>*)text\<open>
+\begin{quote}
 @{term[display] \<open>\<guillemotleft>[\<Pi>]\<kappa>y \<rightarrow> (p \<or> \<phi>)\<guillemotright>\<close>}
+\end{quote}
 \<close>
 (*<*) unbundle AOT_syntax (*>*)
 text\<open>
@@ -3017,7 +3017,7 @@ exemplification @{text \<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>} and e
 becomes unreadable for complex terms.
 
 For the purpose of implementing a full theory with an extensive body of theorems,
-we feel that the improved readability outweighs the potential danger of complex
+we contend that the improved readability outweighs the potential danger of complex
 syntax transformations, especially given the ability to confirm the accuracy of
 the translation using less complex printing modes.
 \<close>
@@ -3030,39 +3030,96 @@ While the syntax transformations described in the last section go a long way in
 allowing the intuitive statement of propositions of AOT, @{emph \<open>reasoning\<close>}
 in the target logic entails additional challenges.
 
-In particular, reasoning in the embedding involves keeping track of the semantic
+For example, reasoning in the embedding involves keeping track of the semantic
 possible world in which statements are valid. To avoid this cognitive overhead,
 we implement a copy of Isabelle's Isar language in Standard ML that automatically
 handles semantic possible worlds and allows theorem statements and proofs to be
-transferred directly from and to PLM without the need of explicitly mention semantic possible
-worlds. The list of commands can be found in~\ref{AOT:AOT_commands}, while the actual
-ML implementation is available at (TODO: cite github repository).
+transferred directly from and to PLM without the need of explicitly mentioning semantic possible
+worlds.
 
-Apart from tracking semantic possible worlds, the introduced commands also automatically
-parse formulas relative to the @{type AOT_prop} grammar root mentioned in the last
-section.
+While modally-strict theorems of PLM are valid in all semantic possible worlds,
+conceptually its proofs work relative to an arbitrary but fixed world.
+For proving a necessary fact during a proof, e.g. @{term \<open>\<guillemotleft>\<box>\<phi>\<guillemotright>\<close>}, PLM often reasons by
+providing a @{emph \<open>modally-strict\<close>} sub-proof of @{term \<phi>} and appealing to the rule RN.
+In our embedding we reproduce this by introducing an outer syntax command @{command "AOT_modally_strict {"} that
+opens a block of reasoning relative to a fresh possible world. For example:
+\<close>
 
+AOT_theorem \<open>\<box>(\<not>\<phi> & \<not>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<box>(\<not>\<phi> & \<not>\<psi>)\<close>
+  \<comment> \<open>Start a modally-strict sub-proof.\<close>
+  AOT_modally_strict {
+    AOT_assume \<open>\<not>\<phi> & \<not>\<psi>\<close>
+    AOT_hence \<open>\<phi> \<equiv> \<psi>\<close>
+      by (metis "&E" "\<rightarrow>I" "\<equiv>I" "reductio-aa:1")
+  }
+  \<comment> \<open>Conclude the necessitation of the result by RN.\<close>
+  AOT_hence \<open>\<box>((\<not>\<phi> & \<not>\<psi>) \<rightarrow> (\<phi> \<equiv> \<psi>))\<close>
+    by (metis "\<rightarrow>I" RN)
+  AOT_thus \<open>\<box>(\<phi> \<equiv> \<psi>)\<close> using 0 "qml:1"[axiom_inst] "\<rightarrow>E" by blast
+qed
+
+
+text\<open>
+This corresponds to the following proof using Isabelle's native outer syntax:
+\<close>
+
+\<comment> \<open>We formulate the statement relative to a fixed, but arbitrary world @{term v}.\<close>
+theorem \<open>[v \<Turnstile> \<box>(\<not>\<phi> & \<not>\<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)]\<close>
+proof(rule "\<rightarrow>I")
+  assume 0: \<open>[v \<Turnstile> \<box>(\<not>\<phi> & \<not>\<psi>)]\<close>
+  {
+    fix w \<comment> \<open>We choose a fresh possible world for our sub-proof.\<close>
+    assume \<open>[w \<Turnstile> \<not>\<phi> & \<not>\<psi>]\<close>
+    hence \<open>[w \<Turnstile> (\<phi> \<equiv> \<psi>)]\<close>
+      by (metis "&E" "\<rightarrow>I" "\<equiv>I" "reductio-aa:1")
+  }
+  hence \<open>[v \<Turnstile> \<box>((\<not>\<phi> & \<not>\<psi>) \<rightarrow> (\<phi> \<equiv> \<psi>))]\<close>
+    by (metis "\<rightarrow>I" RN)
+  thus \<open>[v \<Turnstile> \<box>(\<phi> \<equiv> \<psi>)]\<close> using 0 "qml:1"[axiom_inst] "\<rightarrow>E" by blast
+qed
+
+text\<open>
 Additionally, we introduce the command @{command AOT_define}, which allows to directly
 state definitions of PLM (see~\ref{InferentialRoleOfDefinitions}). Internally, this involves
 introducing a new constant for the defined entity and setting up the syntax for parsing and printing according to the
-specified @{emph \<open>syntactic\<close>} type of the defined entity (while the logical type of
-the constant is deduced). This new constant is then automatically specified to
+specified @{emph \<open>syntactic\<close>} type (while the logical type of the constant is deduced). This new constant is then automatically specified to
 fulfill the given definition using a mechanism similar to the @{command specification}
 command, while the entailed existence proof is constructed automatically.\footnote{The existence
-proofs are generally trivial: the definiens itself can be chosen as witness. However, while the use
-of @{command specification}s requires to provide a witness that fulfills the required properties (here: which
-validates the definition), it does not assert identity to the witness (here: definitions by equivalence
-will preserve hyperintensionality, i.e. definiens and definiendum will be equivalent, but not necessarily identical).}
+proofs are generally trivial: the definiens itself can be chosen as witness.}
+
+The convenience of this mechanism becomes apparent at a simple example:
+\<close>
+
+AOT_define xor1 :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (infixl \<open>XOR1\<close> 10)
+  xor1_spec: \<open>\<phi> XOR1 \<psi> \<equiv>\<^sub>d\<^sub>f (\<phi> \<or> \<psi>) & \<not>(\<phi> & \<psi>)\<close>
+
+text\<open>
+This is (roughly)@{footnote \<open>@{command AOT_define} additionally supports our printing modes
+and performs internal book-keeping needed for example for the substitution methods to recognize
+the new definition.\<close>} the same as:
+\<close>
+consts xor2 :: \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close>
+syntax xor2 :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (infixl \<open>XOR2\<close> 10)
+specification(xor2)
+  xor2_spec: \<open>AOT_model_equiv_def \<guillemotleft>\<phi> XOR2 \<psi>\<guillemotright> \<guillemotleft>(\<phi> \<or> \<psi>) & \<not>(\<phi> & \<psi>)\<guillemotright>\<close>
+  by (auto intro!: exI[where x=\<open>\<lambda> \<phi> \<psi> . \<epsilon>\<^sub>\<o> w . [w \<Turnstile> (\<phi> \<or> \<psi>) & \<not>(\<phi> & \<psi>)]\<close>]
+           simp: AOT_model_equiv_def AOT_model_proposition_choice_simp)
+
+text\<open>
 
 We also introduce auxiliary commands like @{command AOT_find_theorems} and 
 @{command AOT_sledgehammer} to aid in constructing proofs.
 @{command AOT_find_theorems} works similar to the Isar
 command @{command find_theorems}, but automatically parses AOT syntax and generalizes
 concrete variables to schematic variables for pattern matching.
-@{command AOT_sledgehammer} is a wrapper around @{command sledgehammer} that invokes
+@{command AOT_sledgehammer} is a wrapper that invokes
 @{command sledgehammer} while restricting its search for theorems, s.t. the model-specific
 theorems are ignored and only the theorems of the abstraction layers are allowed for proofs.
 
+The list of commands can be found in~\ref{AOT:AOT_commands}, while the actual
+ML implementation is available at (TODO: cite github repository).
 \<close>
 
 section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
