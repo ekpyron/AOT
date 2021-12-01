@@ -21,6 +21,7 @@ referencedEntities = {
 	"AOT_model.<alpha><sigma>'",
 	"AOT_model.<alpha><sigma>_pigeonhole",
 	"AOT_model.<kappa>",
+	"AOT_model.AOT_model_enc_<kappa>",
 	"AOT_model.AOT_Term",
 	"AOT_model.AOT_IndividualTerm",
 	"AOT_model.rel",
