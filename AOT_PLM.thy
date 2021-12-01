@@ -2636,7 +2636,7 @@ proof -
     by (metis "Hypothetical Syllogism")
 qed
 
-AOT_theorem "KBasic:6": \<open>\<box>(\<phi>\<equiv> \<psi>) \<rightarrow> (\<box>\<phi> \<equiv> \<box>\<psi>)\<close>
+AOT_theorem "KBasic:6": \<open>\<box>(\<phi> \<equiv> \<psi>) \<rightarrow> (\<box>\<phi> \<equiv> \<box>\<psi>)\<close>
   using "KBasic:4" "KBasic:5" "deduction-theorem" "\<equiv>E"(1) "\<rightarrow>E" by blast
 AOT_theorem "KBasic:7": \<open>((\<box>\<phi> & \<box>\<psi>) \<or> (\<box>\<not>\<phi> & \<box>\<not>\<psi>)) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>)\<close>
 proof (rule "\<rightarrow>I"; drule "\<or>E"(1); (rule "\<rightarrow>I")?)

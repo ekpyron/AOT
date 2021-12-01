@@ -658,22 +658,6 @@ val _ =
 
 end
 
-
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>thm_name\<close> "print theorems"
-    (Parse.thms1 >> (fn thms => Toplevel.keep (fn state => let
-val ctxt = Toplevel.context_of state
-val thms = Attrib.eval_thms ctxt thms
-val trms = map Thm.full_prop_of thms
-val result = maps (fn trm => let
-val result = Find_Theorems.find_theorems ctxt NONE NONE true
-  [(true, Find_Theorems.Pattern trm)] |> snd
-val _ = (map (Pretty.writeln o Find_Theorems.pretty_thm ctxt) result)
-in result end) trms
-val strs = map (Long_Name.base_name o Facts.ref_name o fst) result
-val _ = Pretty.writeln (Pretty.enum "" "" "" (map Pretty.str strs))
-in () end)));
-
 structure AOT_no_atp = Named_Thms(
   val name = @{binding "AOT_no_atp"}
   val description = "AOT Theorem Blacklist"
