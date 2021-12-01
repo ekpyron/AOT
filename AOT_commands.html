@@ -87,32 +87,31 @@ pre .linenumber span {
 <a name="L20" href="#L20"><span class="linenumber">20</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_thus"</span> <span class="main">::</span> prf_asm_goal <span class="main">%</span> <span class="quoted">"proof"</span>
 <a name="L21" href="#L21"><span class="linenumber">21</span></a>
 <a name="L22" href="#L22"><span class="linenumber">22</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_find_theorems"</span> <span class="main">::</span> diag
-<a name="L23" href="#L23"><span class="linenumber">23</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"thm_name"</span> <span class="main">::</span> diag
-<a name="L24" href="#L24"><span class="linenumber">24</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer"</span> <span class="main">::</span> diag
-<a name="L25" href="#L25"><span class="linenumber">25</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer_only"</span> <span class="main">::</span> diag
-<a name="L26" href="#L26"><span class="linenumber">26</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_syntax_print_translations"</span> <span class="main">::</span> thy_decl
-<a name="L27" href="#L27"><span class="linenumber">27</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_no_syntax_print_translations"</span> <span class="main">::</span> thy_decl
-<a name="L28" href="#L28"><span class="linenumber">28</span></a><span class="keyword2"><span class="keyword">begin</span></span>
-<a name="L29" href="#L29"><span class="linenumber">29</span></a><span class="comment1">(*&gt;*)</span>
-<a name="L30" href="#L30"><span class="linenumber">30</span></a>
-<a name="L31" href="#L31"><span class="linenumber">31</span></a><span class="keyword1"><span class="command">section</span></span><span class="quoted"><span class="plain_text">‹Outer Syntax Commands›</span></span>
-<a name="L32" href="#L32"><span class="linenumber">32</span></a>
-<a name="L33" href="#L33"><span class="linenumber">33</span></a><span class="keyword1"><span class="command">nonterminal</span></span> AOT_prop
-<a name="L34" href="#L34"><span class="linenumber">34</span></a><span class="keyword1"><span class="command">nonterminal</span></span> φ
-<a name="L35" href="#L35"><span class="linenumber">35</span></a><span class="keyword1"><span class="command">nonterminal</span></span> φ'
-<a name="L36" href="#L36"><span class="linenumber">36</span></a><span class="keyword1"><span class="command">nonterminal</span></span> τ
-<a name="L37" href="#L37"><span class="linenumber">37</span></a><span class="keyword1"><span class="command">nonterminal</span></span> τ'
-<a name="L38" href="#L38"><span class="linenumber">38</span></a><span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_axiom"</span>
-<a name="L39" href="#L39"><span class="linenumber">39</span></a><span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_act_axiom"</span>
-<a name="L40" href="#L40"><span class="linenumber">40</span></a><span class="keyword1"><span class="command">ML_file</span></span> AOT_keys.ML
-<a name="L41" href="#L41"><span class="linenumber">41</span></a><span class="keyword1"><span class="command">ML_file</span></span> AOT_commands.ML
-<a name="L42" href="#L42"><span class="linenumber">42</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Theorems.setup</span>›</span>
-<a name="L43" href="#L43"><span class="linenumber">43</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Definitions.setup</span>›</span>
-<a name="L44" href="#L44"><span class="linenumber">44</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_no_atp.setup</span>›</span>
-<a name="L45" href="#L45"><span class="linenumber">45</span></a>
-<a name="L46" href="#L46"><span class="linenumber">46</span></a><span class="comment1">(*&lt;*)</span>
-<a name="L47" href="#L47"><span class="linenumber">47</span></a><span class="keyword2"><span class="keyword">end</span></span>
-<a name="L48" href="#L48"><span class="linenumber">48</span></a><span class="comment1">(*&gt;*)</span></pre>
+<a name="L23" href="#L23"><span class="linenumber">23</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer"</span> <span class="main">::</span> diag
+<a name="L24" href="#L24"><span class="linenumber">24</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_sledgehammer_only"</span> <span class="main">::</span> diag
+<a name="L25" href="#L25"><span class="linenumber">25</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_syntax_print_translations"</span> <span class="main">::</span> thy_decl
+<a name="L26" href="#L26"><span class="linenumber">26</span></a>       <span class="keyword2"><span class="keyword">and</span></span> <span class="quoted">"AOT_no_syntax_print_translations"</span> <span class="main">::</span> thy_decl
+<a name="L27" href="#L27"><span class="linenumber">27</span></a><span class="keyword2"><span class="keyword">begin</span></span>
+<a name="L28" href="#L28"><span class="linenumber">28</span></a><span class="comment1">(*&gt;*)</span>
+<a name="L29" href="#L29"><span class="linenumber">29</span></a>
+<a name="L30" href="#L30"><span class="linenumber">30</span></a><span class="keyword1"><span class="command">section</span></span><span class="quoted"><span class="plain_text">‹Outer Syntax Commands›</span></span>
+<a name="L31" href="#L31"><span class="linenumber">31</span></a>
+<a name="L32" href="#L32"><span class="linenumber">32</span></a><span class="keyword1"><span class="command">nonterminal</span></span> AOT_prop
+<a name="L33" href="#L33"><span class="linenumber">33</span></a><span class="keyword1"><span class="command">nonterminal</span></span> φ
+<a name="L34" href="#L34"><span class="linenumber">34</span></a><span class="keyword1"><span class="command">nonterminal</span></span> φ'
+<a name="L35" href="#L35"><span class="linenumber">35</span></a><span class="keyword1"><span class="command">nonterminal</span></span> τ
+<a name="L36" href="#L36"><span class="linenumber">36</span></a><span class="keyword1"><span class="command">nonterminal</span></span> τ'
+<a name="L37" href="#L37"><span class="linenumber">37</span></a><span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_axiom"</span>
+<a name="L38" href="#L38"><span class="linenumber">38</span></a><span class="keyword1"><span class="command">nonterminal</span></span> <span class="quoted">"AOT_act_axiom"</span>
+<a name="L39" href="#L39"><span class="linenumber">39</span></a><span class="keyword1"><span class="command">ML_file</span></span> AOT_keys.ML
+<a name="L40" href="#L40"><span class="linenumber">40</span></a><span class="keyword1"><span class="command">ML_file</span></span> AOT_commands.ML
+<a name="L41" href="#L41"><span class="linenumber">41</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Theorems.setup</span>›</span>
+<a name="L42" href="#L42"><span class="linenumber">42</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_Definitions.setup</span>›</span>
+<a name="L43" href="#L43"><span class="linenumber">43</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">AOT_no_atp.setup</span>›</span>
+<a name="L44" href="#L44"><span class="linenumber">44</span></a>
+<a name="L45" href="#L45"><span class="linenumber">45</span></a><span class="comment1">(*&lt;*)</span>
+<a name="L46" href="#L46"><span class="linenumber">46</span></a><span class="keyword2"><span class="keyword">end</span></span>
+<a name="L47" href="#L47"><span class="linenumber">47</span></a><span class="comment1">(*&gt;*)</span></pre>
 </body>
 
 </html>
