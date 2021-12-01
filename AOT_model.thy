@@ -110,19 +110,20 @@ proof(rule ccontr)
   have union_univ: \<open>(\<Union>x \<in> range(inv \<alpha>\<sigma>) . {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}) = UNIV\<close>
     by auto (meson f_inv_into_f range_eqI)
 
-  text\<open>We prove by case distinction: there is either finitely many or
-       infinitely many special urelements.\<close>
+  text\<open>We refute by case distinction: there is either finitely many or
+       infinitely many special urelements and in both cases we can derive
+       a contradiction from the assumption above.\<close>
   {
     text\<open>Finite case.\<close>
     assume finite_\<sigma>_set: \<open>finite (UNIV::\<sigma> set)\<close>
     hence finite_collapsed: \<open>finite {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y}\<close> for x
       using A card_of_ordLeq_infinite by blast
     hence 0: \<open>\<forall>x . card {y . \<alpha>\<sigma> x = \<alpha>\<sigma> y} \<le> card (UNIV::\<sigma> set)\<close>
-      by (metis A \<open>finite UNIV\<close> card_of_ordLeq inj_on_iff_card_le)
+      by (metis A finite_\<sigma>_set card_of_ordLeq inj_on_iff_card_le)
     have 1: \<open>card (range (inv \<alpha>\<sigma>)) \<le> card (UNIV::\<sigma> set)\<close>
-      using \<open>finite UNIV\<close> card_image_le by blast
+      using finite_\<sigma>_set card_image_le by blast
     hence 2: \<open>finite (range (inv \<alpha>\<sigma>))\<close>
-      using \<open>finite UNIV\<close> by blast
+      using finite_\<sigma>_set by blast
 
     define n where \<open>n = card (UNIV::urrel set set)\<close>
     define m where \<open>m = card (UNIV::\<sigma> set)\<close>
@@ -188,13 +189,8 @@ proof(rule ccontr)
   moreover {
     text\<open>Infinite case.\<close>
     assume \<open>infinite (UNIV::\<sigma> set)\<close>
-    hence \<open>natLeq <=o |UNIV::\<sigma> set|\<close>
-      by (meson card_of_UNIV card_of_ordLeq_infinite finite_prod
-                infinite_iff_natLeq_ordLeq)
-    hence \<open>cinfinite |UNIV::\<sigma> set|\<close>
-      using cinfinite_mono natLeq_cinfinite by blast
     hence Cinf\<sigma>: \<open>Cinfinite |UNIV::\<sigma> set|\<close>
-      using Cnotzero_UNIV by blast
+      by (simp add: cinfinite_def)
     have 1: \<open>|range (inv \<alpha>\<sigma>)| \<le>o |UNIV::\<sigma> set|\<close>
       by auto
     have 2: \<open>\<forall>i\<in>range (inv \<alpha>\<sigma>). |{y . \<alpha>\<sigma> i = \<alpha>\<sigma> y}| \<le>o |UNIV::\<sigma> set|\<close>
