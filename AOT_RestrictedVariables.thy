@@ -52,8 +52,10 @@ val _ =
 \<close>
 
 locale AOT_rigid_restriction_condition = AOT_restriction_condition +
-  assumes rigid_condition[AOT]: \<open>[v \<Turnstile> \<box>(\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>})]\<close>
+  assumes rigid[AOT]: \<open>[v \<Turnstile> \<forall>\<alpha>(\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>})]\<close>
 begin
+lemma rigid_condition[AOT]: \<open>[v \<Turnstile> \<box>(\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>})]\<close>
+  using rigid[THEN "\<forall>E"(2)] RN by simp
 lemma type_set_nonempty[AOT_no_atp, no_atp]: \<open>\<exists>x . x \<in> { \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}\<close>
   by (metis "instantiation" mem_Collect_eq "res-var:2")
 end

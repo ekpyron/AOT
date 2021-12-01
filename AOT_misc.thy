@@ -373,9 +373,9 @@ next
   }
 next
   AOT_modally_strict {
-    AOT_have \<open>\<box>(A!x \<rightarrow> \<box>A!x)\<close> for x
-      by (simp add: "oa-facts:2" RN)
-    AOT_thus \<open>\<box>(C!x \<rightarrow> \<box>C!x)\<close> for x
+    AOT_have \<open>\<forall>x(A!x \<rightarrow> \<box>A!x)\<close>
+      by (simp add: "oa-facts:2" GEN)
+    AOT_thus \<open>\<forall>x(C!x \<rightarrow> \<box>C!x)\<close>
       using "rule-id-df:1[zero]"[OF concepts, OF "oa-exist:2"] "rule=E" id_sym
       by fast
   }

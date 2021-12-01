@@ -147,10 +147,9 @@ next
   }
 next
   AOT_modally_strict {
-    fix \<alpha>
-    AOT_show \<open>\<box>(Situation(\<alpha>) \<rightarrow> \<box>Situation(\<alpha>))\<close>
+    AOT_show \<open>\<forall>\<alpha>(Situation(\<alpha>) \<rightarrow> \<box>Situation(\<alpha>))\<close>
       using "possit-sit:1"[THEN "conventions:3"[THEN "\<equiv>\<^sub>d\<^sub>fE"],
-                           THEN "&E"(1), THEN RN] by blast
+                           THEN "&E"(1)] GEN by fast
   }
 qed
 
@@ -1476,8 +1475,8 @@ next
   }
 next
   AOT_modally_strict {
-    AOT_show \<open>\<box>(PossibleWorld(\<alpha>) \<rightarrow> \<box>PossibleWorld(\<alpha>))\<close> for \<alpha>
-      by (meson RN "deduction-theorem" "\<equiv>E"(1) "rigid-pw:1") 
+    AOT_show \<open>\<forall>\<alpha>(PossibleWorld(\<alpha>) \<rightarrow> \<box>PossibleWorld(\<alpha>))\<close>
+      by (meson GEN "\<rightarrow>I" "\<equiv>E"(1) "rigid-pw:1")
   }
 qed
 AOT_register_variable_names

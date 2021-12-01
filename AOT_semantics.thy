@@ -86,14 +86,16 @@ proof -
   have \<open>\<exists>x::'a . \<not>AOT_model_denotes x\<close>
     using AOT_model_nondenoting_ex
     by blast
-  text\<open>Note that we may choose a distinct non-denoting object for each matrix.\<close>
+  text\<open>Note that we may choose a distinct non-denoting object for each matrix.
+       We do this explicitly merely to convince ourselves that our specification
+       can still be satisfied.\<close>
   then obtain nondenoting :: \<open>('a \<Rightarrow> \<o>) \<Rightarrow> 'a\<close> where
     nondenoting: \<open>\<forall> \<phi> . \<not>AOT_model_denotes (nondenoting \<phi>)\<close>
     by fast
-  obtain desc where desc_def:
+  define desc where
     \<open>desc = (\<lambda> \<phi> . if (\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])
                    then (THE \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])
-                   else nondenoting \<phi>)\<close> by blast
+                   else nondenoting \<phi>)\<close>
   {
     fix \<phi> :: \<open>'a \<Rightarrow> \<o>\<close>
     assume ex1: \<open>\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}]\<close>
@@ -146,12 +148,12 @@ proof -
     by (rule exI[where x=\<open>Abs_rel (\<lambda> x . \<epsilon>\<^sub>\<o> w. True)\<close>])
        (meson AOT_model_denotes_rel.abs_eq AOT_model_nondenoting_ex
               AOT_model_proposition_choice_simp)
-  obtain exe :: \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close> where
-    exe_def: \<open>exe \<equiv> \<lambda> \<Pi> \<kappa>s . if AOT_model_denotes \<Pi>
-                              then Rep_rel \<Pi> \<kappa>s
-                              else (\<epsilon>\<^sub>\<o> w . False)\<close> by blast
-  obtain lambda :: \<open>('a\<Rightarrow>\<o>) \<Rightarrow> <'a>\<close> where
-    lambda_def: \<open>lambda \<equiv> \<lambda> \<phi> . if AOT_model_denotes (Abs_rel \<phi>)
+  define exe :: \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close> where
+    \<open>exe \<equiv> \<lambda> \<Pi> \<kappa>s . if AOT_model_denotes \<Pi>
+                     then Rep_rel \<Pi> \<kappa>s
+                     else (\<epsilon>\<^sub>\<o> w . False)\<close>
+  define lambda :: \<open>('a\<Rightarrow>\<o>) \<Rightarrow> <'a>\<close> where
+    \<open>lambda \<equiv> \<lambda> \<phi> . if AOT_model_denotes (Abs_rel \<phi>)
       then (Abs_rel \<phi>)
       else
         if (\<forall> \<kappa> \<kappa>' w . (AOT_model_denotes \<kappa> \<and> AOT_model_term_equiv \<kappa> \<kappa>') \<longrightarrow>
@@ -161,7 +163,7 @@ proof -
                                       then \<phi> (SOME y . AOT_model_term_equiv x y)
                                       else  (\<epsilon>\<^sub>\<o> w . False)))
         else 
-          Abs_rel \<phi>\<close> by blast
+          Abs_rel \<phi>\<close>
   have fix_special_denoting_simp[simp]:
     \<open>fix_special (\<lambda>x. if AOT_model_denotes x then \<phi> x else \<psi> x) \<kappa> = \<phi> \<kappa>\<close>
     if \<open>AOT_model_denotes \<kappa>\<close>
