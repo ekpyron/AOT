@@ -59,8 +59,8 @@ next
   }
 next
   AOT_modally_strict {
-    AOT_show \<open>\<box>(O!\<alpha> \<rightarrow> \<box>O!\<alpha>)\<close> for \<alpha>
-      by (simp add: RN "oa-facts:1")
+    AOT_show \<open>\<forall>\<alpha>(O!\<alpha> \<rightarrow> \<box>O!\<alpha>)\<close>
+      by (simp add: GEN "oa-facts:1")
   }
 qed
 

@@ -3358,11 +3358,11 @@ next
       AOT_thus \<open>\<Pi>\<down>\<close>
         using "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
     qed
-  } note 1 = this
+  }
+next
   AOT_modally_strict {
-    AOT_show \<open>\<box>(Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>) \<rightarrow> \<box>Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>))\<close> for \<Pi>
-      using "df-1-1:4"[THEN "\<forall>E"(1), OF 1[THEN "\<rightarrow>E"], THEN "\<rightarrow>E"] "\<rightarrow>I" RN
-      by blast
+    AOT_show \<open>\<forall>F(Rigid\<^sub>1\<^sub>-\<^sub>1(F) \<rightarrow> \<box>Rigid\<^sub>1\<^sub>-\<^sub>1(F))\<close>
+      by (safe intro!: GEN "df-1-1:4"[THEN "\<forall>E"(2)])
   }
 qed
 AOT_register_variable_names
@@ -4704,8 +4704,8 @@ next
   }
 next
   AOT_modally_strict {
-    AOT_show \<open>\<box>([\<nat>]x \<rightarrow> \<box>[\<nat>]x)\<close> for x
-      by (simp add: RN "mod-col-num:1")
+    AOT_show \<open>\<forall>x([\<nat>]x \<rightarrow> \<box>[\<nat>]x)\<close>
+      by (simp add: GEN "mod-col-num:1")
   }
 qed
 AOT_register_variable_names
