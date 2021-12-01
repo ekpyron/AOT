@@ -2815,7 +2815,7 @@ This is possible due to the fact that the set of abstract objects is significant
 larger than the set of special urelements. In particular, under any arbitary
 mapping from abstract objects to special urelements, there has to be at least
 one abstract object @{term a} that shares the same urelement more
-other abstract objects as there are special urelements (proof by an pigeonhole-style argument,
+other abstract objects as there are special urelements (proof by a pigeonhole-style argument,
 see~\nameref{AOT:AOT_model.<alpha><sigma>_pigeonhole}).
 Therefore, any mapping @{term \<alpha>\<sigma>'} that is not surjective, can be extended to a surjective
 mapping by further differentiating the abstract objects that share their urelements with @{term a}.
