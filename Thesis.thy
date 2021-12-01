@@ -2743,12 +2743,10 @@ ordinary objects and special urelements determine the exemplification behaviour 
 abstract objects. The additional null-urelements are introduced to be able to
 distinguish between non-denoting individual terms (see below).
 
-For simple models, a plain primitive type for the special urelements suffices. However,
-to model our proposed extended relation comprehension, we use a richer type
-for special urelements and model them as sets of triples of two copies
-of sets of exemplification extensions on ordinary urelements and one
-very special urelement (type @{typ \<sigma>'}).
-This is discussed in more detail in section~\ref{pred}.
+For simple models, the types of ordinary, special and null urelements can all remain
+unintepreted abstract types.@{footnote \<open>I.e. a model of HOL may choose domains of any size
+for each kind of urelements. In chapter~\ref{NaturalNumbers} we will discuss a more specific construction
+that is required to validate the additional axioms needed for the construction of natural numbers.\<close>}
 
 Hyperintensional relations are modelled as proposition-valued functions.
 In particular, the embedding introduces the type @{typ urrel} (see~\nameref{AOT:AOT_model.urrel})
@@ -2803,7 +2801,9 @@ as Kripke-extension. Consequently, the number of relations in minimal models of 
 
 As a last ingredient of our Aczel model structure, we require a mapping @{text \<alpha>\<sigma>}
 from sets of urrelations (which will be used to represent abstract objects) to
-special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>}).
+special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>}). As in the basic Aczel
+model construction this mapping will determine the exemplification behavior of abstract
+objects.
 
 For urrelations to become a proper quotient of proposition-valued functions acting
 on individual @{emph \<open>terms\<close>}, as described below, we require this mapping to be
@@ -2814,8 +2814,9 @@ special urelements can be extended to a surjective mapping
 This is possible due to the fact that the set of abstract objects is significantly
 larger than the set of special urelements. In particular, under any arbitary
 mapping from abstract objects to special urelements, there has to be at least
-one abstract object @{term a} that shares the same urelement with at least as many
-other abstract objects as there are special urelements (see~\nameref{AOT:AOT_model.<alpha><sigma>_pigeonhole}).
+one abstract object @{term a} that shares the same urelement more
+other abstract objects as there are special urelements (proof by an pigeonhole-style argument,
+see~\nameref{AOT:AOT_model.<alpha><sigma>_pigeonhole}).
 Therefore, any mapping @{term \<alpha>\<sigma>'} that is not surjective, can be extended to a surjective
 mapping by further differentiating the abstract objects that share their urelements with @{term a}.
 
@@ -2925,15 +2926,16 @@ This is crucial for validating the comprehension principle of abstract objects, 
 were modelled as sets of urrelations.
 
 Given the fact that properties correspond to urrelations and abstract objects are
-modelled as sets of urrelations, unary encoding can simply be modelled (see~\nameref{AOT:AOT_model.AOT_model_enc_<kappa>}) in such a way
-that @{term \<open>\<kappa>[\<Pi>]\<close>} is:
+modelled as sets of urrelations, unary encoding can simply be modelled (see~\nameref{AOT:AOT_model_enc_<kappa>}) in such a way
+that @{term \<open>\<guillemotleft>\<kappa>[\<Pi>]\<guillemotright>\<close>} is:
   \<^item> a necessarily true proposition, if @{term \<kappa>} denotes an abstract object @{term x}
     and @{term \<Pi>} denotes a proposition @{term F} that corresponds to an urrelation
     @{term r}, s.t. @{term \<open>r \<in> x\<close>}.
   \<^item> a necessarily false proposition otherwise.
 
-Before we describe how we derive an abstract semantics of AOT from this model
-construction in section~\ref{Semantics}, we briefly discuss how we extend Isabelle's
+Since the abstract semantics we derive on top of this model construction in
+section~\ref{Semantics} is formulated using our implementation of AOT's syntax,
+in the following two section we will briefly discuss how we extend Isabelle's
 inner syntax by an approximation of the syntax used in PLM and how we extend
 Isabelle's outer syntax by custom commands used for structured reasoning in
 the embedding.
