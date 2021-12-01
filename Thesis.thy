@@ -85,8 +85,8 @@ the argument that the construction does not require any inherently mathematical 
 section\<open>Prior Work\<close>
 
 text\<open>
-The development of automated theorem provers has always been tied to the analysis of foundational formal
-systems. Already in the middle of the last century, Betrand Russell was quick to recognize the potential
+The analysis of foundational formal systems using automated theorem provers is as old
+as automated theorem provers themselves: Already in the middle of the last century, Betrand Russell was quick to recognize the potential
 of computational methods, when confronted with the \emph{Logic Theorist}\footnote{A system developed by
 Allen Newell and Herbert Simon at Carnegie Mellon and programmed by J. C. Shaw using the vacuum tubes of
 the JOHNNIAC computer at the Institute for Advanced Study; see~\cite{sep-computational-philosophy}.}, commonly regarded as the first
@@ -100,7 +100,7 @@ I am quite willing to believe that everything in deductive logic can be done by 
 from Russell to Simon dated 2 November, 1956; preserved in~\cite{Simon1996}, page 208.}}
 
 Since then there has been significant progress both in the development of automated theorem provers
-in general and in the application of computational methods to logical theories in particular. Some
+in general and in the application of computational methods to foundational logical theories in particular. Some
 of the more recent developments in this area are outlined in the following sections.
 \<close>
 
@@ -387,7 +387,7 @@ section\<open>SSEs as Universal Reasoning Tools\<close>
 text\<open>
 
 In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using @{emph \<open>Shallow Semantic Embeddings\<close>} (SSEs)
-in classical higher-order logics as a means for universal reasoning.
+in classical higher-order logics (HOL) as a means for universal reasoning.
 
 He notes that while already Leibniz envisioned a @{emph \<open>characteristica universalis\<close>}, a most
 universal formal language in which all knowledge (and all arguments) about the world
@@ -399,7 +399,7 @@ in which a multitude of logic formalisms can be @{emph \<open>embedded\<close>}.
 
 While there are multiple such unifying approaches, for example using algebratic
 constructions or category theory as framework (TODO cite),  Benzm\"uller defends
-the use of classical higher-order logic (HOL) for pragmatic reasons:
+the use of SSEs in HOL for pragmatic reasons:
 
   \<^item> For HOL there are sophisticated automation tools readily available that have been
 developed for several decades like e.g. Isabelle/HOL.
@@ -412,7 +412,7 @@ developed for several decades like e.g. Isabelle/HOL.
 
 While we already mentioned a variety of results that were achieved using this general
 method (see section~\ref{PriorSSEs}), in the following we will demonstrate the
-process of building an SSE at a simple example.
+process of building an SSE with a simple example.
 \<close>
 
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>
@@ -451,8 +451,8 @@ text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
 propositions is boolean-valued function acting on (or, equivalently, sets of) possible worlds.
-In an SSE we usually@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
-explicitly, as recently demonstrated in~\cite{PublicAnnouncementLogic}.\<close>} use the semantic domains as type for the object-level terms themselves, so we can introduce
+In an SSE we usually use the semantic domains as types for the object-level terms themselves,@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
+explicitly, as recently demonstrated in~\cite{PublicAnnouncementLogic}.\<close>} so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
 to booleans (type @{typ bool}). This way the proposition can, as a function, be applied to a possible
 world, yielding @{term True}, if the proposition is true at that world or @{term False} otherwise.@{footnote \<open>Note
@@ -465,7 +465,7 @@ type_synonym \<o> = \<open>w \<Rightarrow> bool\<close>
 text\<open>
 A proposition is @{emph \<open>valid\<close>} in case it is satisfied in all worlds.@{footnote \<open>The specification
 in parentheses after the type of the defined constant, @{typ \<open>\<o> \<Rightarrow> bool\<close>}, is @{emph \<open>mixfix notation\<close>} used to introduce
-the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid} with a specified precedence. The ability to
+the symbol @{text \<Turnstile>} as syntax for the introduced constant @{text valid} with the specified precedence. The ability to
 introduce custom syntax in Isabelle/HOL is discussed in more detail in section~\ref{SSESyntax}.\<close>}
 \<close>
 
@@ -501,7 +501,7 @@ lemma T: \<open>\<Turnstile> \<^bold>\<box>p \<^bold>\<rightarrow> p\<close>
 lemma 5: \<open>\<Turnstile> \<^bold>\<diamond>p \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<diamond>p\<close>
   by (auto simp: box_def dia_def imp_def valid_def)
 
-text\<open>The proofs of both axioms are automatically found by @{command sledgehammer}, Isabelle/HOL's
+text\<open>The proofs of the axioms are automatically found by @{command sledgehammer}, Isabelle/HOL's
 main tool for automation.\footnote{@{command sledgehammer} is discussed in more detail in the following section.}
 
 So far we have constructed an embedding of propositional S5 modal logic using what is commonly
@@ -543,7 +543,10 @@ axioms governing implications or quantifiers in the embedded logic.\<close>}
 Depending on the application, it can be enough to be able to tell if a theorem is semantically
 valid or if a statement semantically follows from a set of assumptions. However, for the purpose
 of implementing a full logical theory including its own deductive system, semantic validity is
-not the primary concern, but rather derivability from the formal system.
+not the primary concern, but rather derivability from the formal system.@{footnote \<open>Even if
+the semantics used for constructing the embedding is provably complete, i.e. semantic validity
+implies derivability, we still want to know which axioms and rules can be used to construct
+a concrete derivation.\<close>}
 
 Fortunately, it is possible to restrict Isabelle's automated reasoning tools like
 @{command sledgehammer}, s.t. they may not unfold semantic definitions. If this is done
@@ -597,7 +600,7 @@ for provers like veriT and Z3, @{emph \<open>proof reconstruction\<close>} using
 proofs that can (sometimes) be directly replayed relative to Isabelle's trusted reasoning core. See~\cite{veriTIsabelle} and~\cite{Z3Isabelle}.\<close>}
 
 The relevant part of the process to consider for the purpose of constructing an abstraction layer is
-the initial selection of theorems from the @{command theory} context.
+the initial selection of theorems from the theory context.
 We do not want @{command sledgehammer} to use the equational theorems that unfold our semantic definitions,
 but instead derive the goals from only the axioms and specific derivational rules that correspond
 to the rules of the deductive system of the embedded theory.
@@ -846,7 +849,7 @@ While a full discussion of the subtleties of type @{command class}es
 goes beyond the scope of this thesis, the short summary we provided above should
 be sufficient for understanding our use of type classes in chapter~\ref{SSEofAOT}.
 Furthermore, it is important to note that while we use type classes to formulate
-theorems generically for several types, logically the type classes can be eliminated
+theorems generically for several types, logically, the type classes can be eliminated
 for each concrete instantiation of such a theorem with fully specified concrete types.
 \<close>
 
@@ -3938,11 +3941,11 @@ Such substitutions are justified, since it is a property of our embedding that
 PLM's identity corresponds to meta-logical equality on denoting terms
 on the one hand (see~\nameref{AOT:AOT_eq_spec}) and the fact that distinct
 non-denoting terms in our embedding are @{emph \<open>not\<close>} meta-logically identical on the
-other hand (recall the fact that e.g. non-denoting definite descriptions can be assigned distinct @{emph \<open>null\<close>}-urelements).
+other hand (e.g. recall the fact that non-denoting definite descriptions can be assigned distinct @{emph \<open>null\<close>}-urelements).
 Furthermore we argued in section~\ref{alphabetic-variants} that the meta-logical equality
 of alphabetic variants is consistent with reasoning in PLM.
 
-While we do not claim that this analysis is exhaustive, it nevertheless provides
+While we do not claim that this analysis is exhaustive,@{footnote \<open>TODO elaborate?\<close>} it nevertheless provides
 strong evidence that reasoning in our abstraction layer in fact corresponds to
 derivations in the sense of PLM. For the purpose of a seamless exchange of results
 between our embedding and PLM, this level of assurance has proven sufficient. In our
