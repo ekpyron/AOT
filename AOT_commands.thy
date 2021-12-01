@@ -20,7 +20,6 @@ theory AOT_commands
        and "AOT_thus" :: prf_asm_goal % "proof"
 
        and "AOT_find_theorems" :: diag
-       and "thm_name" :: diag
        and "AOT_sledgehammer" :: diag
        and "AOT_sledgehammer_only" :: diag
        and "AOT_syntax_print_translations" :: thy_decl
