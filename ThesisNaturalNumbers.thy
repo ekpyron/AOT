@@ -833,10 +833,10 @@ preceded by Zero (and since @{term F} also holds for Zero by assumption this wou
 
 In principle, this is how mathematical induction will be derived.
 However, it is inconvenient that the induction step in this formulation ranges over the full domain
-of all objects. When arguing about an induction step, it is counter-intuitive to consider if and
-in what way natural numbers may or may not be related to arbitrary objects.
-By instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [\<R>]\<^sup>+zx]\<guillemotright>\<close>}, the above can be
-generalized to the following principle, which PLM states as @{emph \<open>Generalized Induction\<close>}
+of all objects. Instead, it should be sufficient to consider all natural numbers.
+
+By instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [\<R>]\<^sup>+zx]\<guillemotright>\<close>}, we arrive at the following
+theorem, which PLM refers to as @{emph \<open>Generalized Induction\<close>}
 (see~\nameref{AOT:pre-ind}):@{footnote \<open>Note that (1) @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zy\<guillemotright>\<close>} for any @{term y}
 implies @{term \<open>\<guillemotleft>[\<R>]\<^sup>+zz\<guillemotright>\<close>}, yielding @{term \<open>\<guillemotleft>[\<lambda>x [F]x & [\<R>]\<^sup>+zx]z\<guillemotright>\<close>} in all cases in which the consequent
 of the strengthened theorem does not trivially hold (i.e. if @{term \<open>\<guillemotleft>\<not>\<exists>y [\<R>]\<^sup>+zy\<guillemotright>\<close>}) and (2) that the consequent of
@@ -850,8 +850,11 @@ arrive at the strengthened theorem.\<close>}
 @{thm[display] "pre-ind"[of _ F z \<R>, print_as_theorem]}
 \end{quote}
 
-We will show below that instantiating this generalized principle of induction to the predecessor relation
-we are about to define, yields classical mathematical induction (relative to the upcoming definition of natural numbers).
+In this formulation, the induction step merely ranges over objects to which @{term z} bears
+the weak ancestral relation of @{text \<open>\<R>\<close>}. Thinking of @{text \<open>\<R>\<close>} as the predecessor relation
+and @{term z} as the number zero, this will be exactly the natural numbers. I.e. instantiating this
+generalized principle of induction to the predecessor relation and the number Zero,
+yields classical mathematical induction (relative to the upcoming definition of natural numbers).
 \<close>
 
 section\<open>The Predecessor Relation\<close>
@@ -884,16 +887,16 @@ Zalta argue in favour of a predecessor relation due to the fact that in contrast
 the argument order of the predecessor relation matches the numerical order of objects in the relation.
 Apart from that, the notions are interchangeable, i.e. @{text \<open>Succeeds(y,x)\<close>} is exactly @{term \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close>}.\<close>}
 The idea can be clarified by considering how the first natural numbers are related w.r.t. this relation:
-\<^item> The number Zero numbers properties that are not (actually) exemplified by any ordinary object. Hence there
+\<^item> The number Zero numbers properties that are not exemplified by any ordinary object. Hence there
   cannot be a property @{term F} that is exemplified by an object @{term u}, s.t. Zero numbers @{term F},
   which means that Zero is not preceded by any object.
-\<^item> The number One numbers properties that are (actually) exemplified by a single ordinary object.@{footnote \<open>While
+\<^item> The number One numbers properties that are exemplified by a single ordinary object.@{footnote \<open>While
   we have not formally introduced any number other than Zero, we consider this intuitive understanding helpful
   in clarifying the idea of the predecessor relation. The number One will formally be introduced later in this chapter.\<close>}
   Hence any property @{term F} numbered by One is exemplified
   by some ordinary object @{term \<open>u\<close>}. Furthermore, @{term \<open>\<guillemotleft>[F]\<^sup>-\<^sup>u\<guillemotright>\<close>}, i.e. being an object exemplifying @{term F} other than @{term u},
   is not exemplified by any ordinary object. Hence Zero is the unique predecessor of One.
-\<^item> The number Two numbers properties that are (actually) exemplified by two distinct ordinary objects.
+\<^item> The number Two numbers properties that are exemplified by two distinct ordinary objects.
   Being an object that exemplifies any of these properties other than any particular object the given
   property exemplifies, is a property exemplified by only one ordinary object, hence numbered by One, i.e.
   One preceeds Two, etc.
@@ -993,9 +996,7 @@ object, s.t. Zero bears the weak ancestral of the predecessor relation to it (se
 @{thm[display] "nnumber:1"}
 \end{quote}
 
-Since by construction the weak ancestral of any rigid one-to-one relation denotes a proper relation,
-it follows that @{term \<open>\<guillemotleft>\<nat>\<guillemotright>\<close>} denotes a property, i.e. @{thm "nnumber:2"[print_as_theorem]} (see~\nameref{AOT:nnumber:2}), and consequently by
-@{text \<open>\<beta>\<close>}-conversion that (see~\nameref{AOT:nnumber:3}):
+Since being a natural number trivially denotes, it follows by @{text \<beta>}-conversion that (see~\nameref{AOT:nnumber:3}):
 
 \begin{quote}
 @{thm[display] "nnumber:3"[of _ x, print_as_theorem]}
@@ -1012,7 +1013,7 @@ The first Dedekind-Peano postulate can now be derived (see~\nameref{AOT:0-n}):
 @{thm[display] "0-n"[print_as_theorem]}
 \end{quote}
 
-Interestingly, both in Frege's original work and in Zalta's initial reconstruction (see~\ref{zalta1999})
+Interestingly, both in Frege's original work and in Zalta's initial reconstruction (see~\cite{zalta1999})
 the weak ancestral was defined using general identity and consequently @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} is a simple
 consequence of the fact that zero is self-identical. However, due to the construction via rigid one-to-one relations
 this theorem requires a non-trivial proof: @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} by definition is just the case if either
@@ -1177,9 +1178,6 @@ qed
 (*>*)
 
 text\<open>
-We note a few more interesting properties of natural numbers and the predecessor relation that can
-be derived from the construction thus far.
-
 Successors of natural numbers are (transitively) natural numbers (see~\nameref{AOT:suc-num:1}):
 
 \begin{quote}
@@ -1606,6 +1604,11 @@ since the former necessarily implies the latter. In fact it encodes all
 properties that are necessarily equivalent on the ordinary objects to @{emph \<open>being an ordinary table\<close>},
 since all those properties are necessarily implied by @{emph \<open>being an ordinary table\<close>}.
 
+Consequently, concepts of properties that necessarily imply being ordinary and possibly differ on
+some ordinary object become provably distinguishable.
+In particular, it becomes a @{emph \<open>theorem\<close>} that the concept of @{emph \<open>being an ordinary table\<close>} is discernible
+from the concept of @{emph \<open>being a mathematician\<close>} (assuming that these properties are not necessarily exemplified by the same objects).
+
 Further examples of theorems that can be derived from our comprehension principles are (see~\nameref{AOT:AOT_misc.concept_inclusion_denotes_1}
 and~\nameref{AOT:AOT_misc.concept_inclusion_denotes_2}):
 
@@ -1729,7 +1732,7 @@ justified as a purely logical axiom or not. It is interesting to note that the a
 require @{emph \<open>actual completed infinity\<close>}, but merely @{emph \<open>potential infinity\<close>}, which is
 philosophically less controversial (TODO: cite).
 While we do not presume to judge whether this fact and the justifications provided by Zalta and
-Nodelman in (TODO: cite PLM) is sufficient to consider this axiom purely logical, we certainly
+Nodelman in PLM item (799) is sufficient to consider this axiom purely logical, we certainly
 agree that it captures a natural and intuitive conception of @{emph \<open>counting\<close>}.
 
 Interestingly, however, it may be possible to eliminate the axiom altogether and
@@ -1855,8 +1858,8 @@ axiom.
 As mentioned in section~\ref{JustificationExtendedComprehension}, is is an interesting question
 whether similar general comprehension principles can be formulated for distinguishing objects
 that encode different patterns among @{emph \<open>discernible\<close>} objects, as we could suggest
-for patterns among @{emph \<open>ordinary\<close>} objects. However, since
-there are abstract objects among the @{emph \<open>discernible\<close>} objects, there is an
+for patterns among @{emph \<open>ordinary\<close>} objects. However, since discerning abstract object
+based on patterns among discernible objects yields new discernible objects, there is an
 increased danger of general comprehension principles for encoding patterns among
 discernible objects to become self-referential and thereby inconsistent. So while we
 expect to be able to formulate meta-theorems about the conditions under which it
@@ -1956,7 +1959,7 @@ Our description is based on an at the time of writing unpublished draft of a cha
 of PLM. However, the full type-theoretic version of AOT is also already discussed in
 (TODO cite) and a simplified version serves as the basis of the upcoming
 paper @{emph \<open>A Defense of Logicism\<close>} jointly authored by Hannes Leitgeb, Uri Nodelman and
-Edward Zalta (TODO: cite preprint).
+Edward Zalta (see~\cite{Logicism}).
 
 We already hinted at AOT's system of types in section~\ref{AOTLanguage}.
 Formally, it involves the following types:
@@ -2002,7 +2005,7 @@ section\<open>Applications to Theoretical Mathematics\<close>
 
 text\<open>
 The analysis of Theoretical Mathematics in higher-order object theory was described
-in (TODO: cite) and a simplified version is used in (TODO: cite logicism paper).
+in (TODO: cite) and a simplified version is used in~\cite{Logicism}.
 
 While a full-discussion of the involved subtleties again goes beyond the scope of this
 thesis, we illustrate the general idea at the example of the representation of
@@ -2022,7 +2025,7 @@ One of the cornerstones of the analysis is the @{emph \<open>Importation Princip
   predicate of @{text T} to @{text T}.
 \end{quote}
 
-So taking @{term S} as the ZF's property of @{emph \<open>being a set\<close>}, it is a theorem of
+So taking @{term S} as ZF's property of @{emph \<open>being a set\<close>}, it is a theorem of
 ZF that:
 
 \begin{quote}
@@ -2053,7 +2056,7 @@ theory-indexed @{text \<lambda>}-expressions are abstract.\<close>}
 \end{quote}
 
 While a detailed account of the construction and its implications is the topic of
-the upcoming paper TODO: cite logicism, we will discuss the general issue of embedding
+the upcoming paper~\cite{Logicism}, we will discuss the general issue of embedding
 higher-order AOT in Isabelle/HOL in the next section.
 \<close>
 
@@ -2061,8 +2064,7 @@ section\<open>Bounded Models\<close>
 
 text\<open>
 
-\cite{Logicism}
-(TODO: cite logicism) constructs minimal extensional models for the simplified version
+\cite{Logicism} constructs minimal extensional models for the simplified version
 of higher-order AOT it uses for its argumentation. This construction defines the
 @{emph \<open>height\<close>} of a type @{text t}, written @{text \<open>h(t)\<close>}, and
 the @{emph \<open>width\<close>} of a type @{text t}, written @{text \<open>w(t)\<close>} as:
@@ -2086,8 +2088,8 @@ relations like properties of properties or properties of propositions.@{footnote
 subtle changes in the precise formulation of the definitions and the axiom system.\<close>}
 
 While we expect it to be feasible to construct a representation in Isabelle/HOL
-that allows for an arbitrary parameter as cut-off in height, we expect the details
-of such a construction to be non-trivial due to the non-uniform nature of the
+that allows for an arbitrary parameter as cut-off in height (and potentially width, though it may be possible
+to keep width unbounded), we expect the details of such a construction to be non-trivial due to the non-uniform nature of the
 representation sets of types. We leave the construction of such an embedding to future
 research.
 \<close>
@@ -2097,8 +2099,8 @@ section\<open>Abstract Objects in Unbounded Models\<close>
 text\<open>
 While, arguably, a construction of models for higher-order object theory with a fixed, but arbitrary
 cutoff may be sufficient for all intents and purposes, the issue of constructing unbounded
-models (resp. an unrestricted embedding of higher-order AOT in HOL) is nevertheless interesting
-for several reasons: theoretically, it may provide insights into the relative strength of higher-order AOT
+models (resp. an unrestricted embedding of higher-order AOT in HOL) is nevertheless interesting:
+Theoretically, it may provide insights into the relative strength of higher-order AOT
 compared to HOL. Technically, unbounded models have the advantage of being uniform in all types,
 which is beneficial for a generic implementation.
 
@@ -2218,7 +2220,7 @@ In the process, we could demonstrate that:
   \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
     construct proofs that accurately correspond to derivations in the target system.
     This way we effectively arrive at a dedicated automated theorem proving environment for
-    our target system, while retaining a verifiably sound meta-logical backend.
+    our target system, while retaining a verifiably consistent meta-logical backend.
   \<^item> The target theory AOT itself can verifiably live up to its claim to be able to
     provide a philosophically grounded construction and analysis of natural mathematics.
     In particular, we can confirm that AOT can serve as a sound basis for a variant of
