@@ -30,7 +30,7 @@ foreseeable future.\<close>} and arrived at the following results:
   \<^item> We could suggest several amendments to the construction and discover and fix several
     minor errors and inconsistencies in the presentation.
 
-In particular, we can derive the Dedekind-Peano Postulates about Natural Numbers as follows: (TODO: improve formulations and cite)
+In particular, we can derive the Dedekind-Peano postulates about Natural Numbers as follows: (TODO: improve formulations and cite)
     \<^enum> Zero is a Natural Number.
     \<^enum> No Natural Number has Zero as its Successor.
     \<^enum> If a Natural Number @{text k} succeeds the numbers @{text n} and @{text m}, then @{text \<open>n = m\<close>}.
