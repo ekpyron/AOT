@@ -6,7 +6,7 @@ begin
 
 
 chapter\<open>Introduction\<close>
-
+(*
 section\<open>Motivation (Version 1)\<close>
 text\<open>
 \blockquote{
@@ -19,8 +19,8 @@ and Logic and Other Essays, London, Longmans, Green, and Co., 1918, pp. 74-96  P
 
 Where does infinity come from? Michael Resnick Keith Devlin
 \<close>
-
-section\<open>Motivation (Version 2)\<close>
+*)
+section\<open>Motivation\<close>
 text\<open>
 Automated reasoning environments are already a vital part of the modern analysis
 of mathematics and their importance can only be expected
