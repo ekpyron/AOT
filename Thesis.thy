@@ -3300,11 +3300,11 @@ axiom system of AOT and (3) our specification is weak enough and our types are g
 enough to preserve hyperintensionality and avoid most artifactual theorems.
 \<close>
 
-section\<open>Specifications and the Hilbert-Epsilon Operator\<close>text\<open>\label{HilbertEpsilon}\<close>
+section\<open>Specifications and the Hilbert-Epsilon-Operator\<close>text\<open>\label{HilbertEpsilon}\<close>
 
 text\<open>
 As mentioned in section~\ref{Specifications}, the @{command specification} command internally uses Isabelle's
-native Hilbert-Epsilon operator @{term \<open>SOME x . \<phi> x\<close>}. This operator is axiomatized
+native Hilbert-Epsilon-operator @{term \<open>SOME x . \<phi> x\<close>}. This operator is axiomatized
 in the meta-logic using the single following principle:
 
 \begin{quote}
@@ -3312,7 +3312,7 @@ in the meta-logic using the single following principle:
 \end{quote}
 
 In particular, this implies that the operator behaves like the classical
-Hilbert-Epsilon operator, i.e. it holds that @{lemma \<open>(\<exists> x . \<phi> x) \<longleftrightarrow> \<phi> (SOME x. \<phi> x)\<close> by (meson someI_ex)}.
+Hilbert-Epsilon-operator, i.e. it holds that @{lemma \<open>(\<exists> x . \<phi> x) \<longleftrightarrow> \<phi> (SOME x. \<phi> x)\<close> by (meson someI_ex)}.
 Consequently, whenever there is a witness for @{term \<phi>}, then whatever is true for @{emph \<open>everything\<close>} that
 satisfies @{term \<phi>} is true for @{term \<open>SOME x. \<phi> x\<close>}:
 
@@ -3348,22 +3348,15 @@ lemma \<open>(p \<^bold>\<and>' q) = (q \<^bold>\<and>' p)\<close>
   unfolding \<o>\<^sub>2_conj'_def by metis
 
 text\<open>
-In~\cite{HilbertEpsilon},@{footnote \<open>This paper is now abandoned in favour of our mechanism.\<close>}
-Zalta developed the idea of a special kind of Hilbert-Epsilon operator that
-does not obey a principle of extensionality for defining an intensional semantics for
-@{text \<open>\<lambda>\<close>}-terms. However, such an operator is not easy to represent in practice, since e.g. in HOL - 
-as seen above - extensionality is not an additional axiom for the Hilbert-Epsilon operator, but
-a consequence of the meta-logical substitution of identicals.
-Fortunately, there is a simpler solution that can still rely on the classical Epsilon operator.
-In particular, we do not define the @{emph \<open>value\<close>} of the conjunction function using the
-Epsilon operator, but instead the conjunction function itself, i.e.:
+However, we can avoid this issue, if we do not define the @{emph \<open>value\<close>} of the conjunction
+function for specific arguments using the Epsilon-operator, but instead the conjunction function itself, i.e.:
 \<close>
 
 definition \<o>\<^sub>2_conj'' (infixl \<open>\<^bold>\<and>''''\<close> 100) where
   \<open>(\<^bold>\<and>'') \<equiv> SOME conj . \<forall> \<phi> \<psi> . valid_\<o>\<^sub>2 (conj \<phi> \<psi>) = (valid_\<o>\<^sub>2 \<phi> \<and> valid_\<o>\<^sub>2 \<psi>)\<close>
 
 text\<open>
-This way, the extensionality of the Hilbert-Epsilon operator reduces to the fact that
+This way, the extensionality of the Hilbert-Epsilon-operator reduces to the fact that
 our conjunction has any property that is true for @{emph \<open>all possible\<close>} functions
 that behave as conjunction under validity. In other words, any choice
 for a concrete conjunction is admissible, including intensional ones, as long as
