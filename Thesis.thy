@@ -3267,7 +3267,7 @@ and the joint specification of exemplification and @{text \<lambda>}-abstraction
 
 Notably, we specify necessity (see~\nameref{AOT:AOT_box_spec}) using validity in all semantic possible
 worlds and actuality (see~\nameref{AOT:AOT_act_spec}) using validity in a designated actual world @{term w\<^sub>0} (see also~\ref{TrivialAccessibilityRelation}).
-Furthermore, we specify AOT's identity as existing identity of meta-logical terms (see~\nameref{AOT_eq_spec}), while
+Furthermore, we specify AOT's identity as existing identity of meta-logical terms (see~\nameref{AOT:AOT_eq_spec}), while
 we derive that this corresponds to AOT's definition of identity at each type in~\nameref{AOT:identity:1}.
 
 The main purpose of this intermediate layer is to keep the derivation of the abstraction
@@ -3507,7 +3507,7 @@ Similarly to @{const AOT_instance_of_cqt_2} we add introduction rules for
     exemplification formula; see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_arg_self}).
   \<^item> Constant functions (that do not depend on their argument) fall under @{const AOT_instance_of_cqt_2}
     (this is the case in which the @{text \<open>\<lambda>\<close>}-bound variables do @{emph \<open>not\<close>} occur
-    in a primary individual term of an exemplification formula; see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_arg_var}).
+    in a primary individual term of an exemplification formula; see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_arg_const}).
   \<^item> Definite descriptions fall under @{const AOT_instance_of_cqt_2_exe_arg} just in case their
     matrix falls under @{const AOT_instance_of_cqt_2}, i.e. a description may occur in
     a primary term of an exemplification formula, if its matrix does not contain the
