@@ -660,7 +660,8 @@ For example, we extensively use @{command specification}s (see~\S11.4 in~\cite{I
 A @{command specification} is used to assert statements about previously uninterpreted constants. The @{command specification} command opens a proof context
 that requires the user to show that there exists a concrete instantiation for the given constants,
 for which the desired statements hold. Internally it then uses Isabelle's Hilbert-Epsilon-operator
-@{term \<open>SOME x. \<phi> x\<close>} to augment the given constants with a concrete definition. As a consequence,
+@{term \<open>SOME x. \<phi> x\<close>} to augment the given constants with a concrete definition. We will discuss
+this mechanism in more detail in section~\ref{HilbertEpsilon}. As a consequence,
 a model of the meta-logic may choose any denotation for the given constants that satisfies the
 specification, while the existence of such a denotation is guaranteed by the provided witness. However,
 depending on the use case of this mechanism, care has to be taken to ensure that there actually
@@ -726,8 +727,14 @@ Thus far, a model of HOL satisfying our theory may choose any non-empty set as
 representation set for objects of type @{typ \<o>\<^sub>2}. To arrive at a meaningful type
 of propositions, we axiomatically introduce a surjective extension function mapping
 the abstract propositions to their boolean extension. The surjectivity of the extension function
-excludes degenerate models in which either all proposition would be true or
-all propositions would be false.\<close>
+excludes degenerate models in which there is only one proposition.@{footnote \<open>Note, that we can also construct
+an equivalent type without a meta-logical axiom: we can (1) introduce an uninterpreted constant
+that defines a subset of the product (or, alternatively, sum) of an additional uninterpreted type of intensions and the type of
+extensions (@{typ bool} in the example), (2) specify that this subset is both non-empty and large enough to allow
+for a surjective function to the extensions (the universal set of such products will be a witness for this specification) and
+(3) use this subset as representation set for our intensional type. The existence of a surjective extension function will become
+derivable from the specification. However, we found that the model-finding tool @{command nitpick}
+works better with the equivalent axiomatic introduction of an extension function on an abstract type.\<close>}\<close>
 
 axiomatization \<o>\<^sub>2_ext :: \<open>\<o>\<^sub>2 \<Rightarrow> bool\<close> where
   \<o>\<^sub>2_ext_surj: \<open>surj \<o>\<^sub>2_ext\<close>
@@ -2574,18 +2581,29 @@ rely on Isabelle's semantics for constants and variables instead.
 subsection\<open>Aczel Models\<close>text\<open>\label{AczelModels}\<close>
 
 text\<open>
-TODO: watch figure placement.
 
-The general structure of our models is based on Aczel models (TODO: cite).
+The general structure of our models is based on Aczel models (see~\cite{zalta1999}).
 Aczel models are extensional models that validate both
 the Comprehension Principle of Abstract Objects\footnote{The last axiom in section~\ref{AxiomSystem},
 resp. \nameref{AOT:A-objects} in the embedding: @{thm "A-objects"[axiom_inst, print_as_theorem, of \<phi>]}}
 and classical relation comprehension in the absence of encoding formulas.
 
-Figure~\ref{fig:aczel-model} illustrates the basic idea of Aczel models.
+Aczel models involve a domain of @{emph \<open>urelements\<close>} @{text U} that is split
+into @{emph \<open>ordinary urelements\<close>} @{text C} and @{emph \<open>special urelements\<close>} @{term S}.
+In the extensional, non-modal setting, the power set of the set of urelements suffices
+for representing properties. Abstract objects in turn are modelled using the power set
+of properties.
+
+Furthermore, the models involve a (non-injective) mapping from abstract objects to
+special urelements. The special urelement @{text \<open>||x||\<close>} to which an abstract object
+@{text x} is mapped determines which properties the abstract object @{text x} @{emph \<open>exemplifies\<close>}.
+
+The domain of individuals @{text D} is defined as the union of abstract objects and
+ordinary urelements (resp. ordinary objects).
+
 
 \tikzset{font=\fontsize{8pt}{10pt}\selectfont}
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 
@@ -2626,19 +2644,6 @@ Figure~\ref{fig:aczel-model} illustrates the basic idea of Aczel models.
 \end{tikzpicture}
 \caption{Extensional, non-modal Aczel model of AOT.}\label{fig:aczel-model}
 \end{figure}
-
-Aczel models involve a domain of @{emph \<open>urelements\<close>} @{text U} that is split
-into @{emph \<open>ordinary urelements\<close>} @{text C} and @{emph \<open>special urelements\<close>} @{term S}.
-In the extensional, non-modal setting, the power set of the set of urelements suffices
-for representing properties. Abstract objects in turn are modelled using the power set
-of properties.
-
-Furthermore, the models involve a (non-injective) mapping from abstract objects to
-special urelements. The special urelement @{text \<open>||x||\<close>} to which an abstract object
-@{text x} is mapped determines which properties the abstract object @{text x} @{emph \<open>exemplifies\<close>}.
-
-The domain of individuals @{text D} is defined as the union of abstract objects and
-ordinary urelements (resp. ordinary objects).
 
 Any individual @{text \<open>x \<in> D\<close>} can be associated with an urelement @{text \<open>|x| \<in> U\<close>}:
 
@@ -2682,12 +2687,11 @@ several issues that remain unaddressed, including:
   \<^item> Relation comprehension for formulas in the absence of encoding formulas
     does not immediately cover all the base cases of axiomatically denoting relation
     terms as mentioned in section~\ref{AxiomSystem}.
-  \<^item> Aczel models are prone to several classes of artifactual theorems, e.g.
-    @{text[display] \<open>\<forall>x([F]x = [G]x) \<rightarrow> F = G\<close>}
+  \<^item> Aczel models do not cover @{text n}-ary relations for @{text \<open>n \<ge> 2\<close>}.
 
 Therefore, while the models used for our embedding inherit the idea of urelements
-and a mapping from abstract objects to special urelements, we significantly extend
-the general model structure. As a first step, we describe the implementation of
+and a mapping from abstract objects to special urelements, we extend
+the general model structure for our embedding. As a first step, we describe the implementation of
 AOT's hyperintensionality.
 \<close>
 
@@ -2695,7 +2699,7 @@ subsection\<open>Hyperintensional Propositions\<close>text\<open>\label{Hyperint
 
 text\<open>
 The hyperintensionality of AOT is modelled at the level of propositions.
-The construction follows the general principle outlined in section~\ref{NativeAbstractionMechanisms}.
+The construction follows the general method outlined in section~\ref{NativeAbstractionMechanisms}.
 
 A primitive type @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>})
 is used to represent hyperintensional propositions and is associated with modal extensions
@@ -2714,15 +2718,17 @@ This way, our type of propositions @{typ \<o>} is assured to contain a propositi
 each Kripke-extension, but does not require the collapse of necessarily
 equivalent propositions:
 
-  \<^item> For any given Kripke-extension @{term \<phi>}, the inverse of @{term AOT_model_d\<o>}
-    yields a proposition of type @{term \<o>} that is valid in exactly those worlds
-    for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).\footnote{This
-    fact relies on the surjectivity of @{const AOT_model_d\<o>}.}
-  \<^item> However, the construction allows for the type @{typ \<o>} to contain more propositions
-    than there are Kripke-extensions. I.e there may be two distinct
-    objects @{term p} and @{term q} of type @{typ \<o>} that are necessarily equivalent,
-    i.e. they are valid in the same semantic possible worlds. This can be confirmed by
-    @{command nitpick}:
+For any given Kripke-extension @{term \<phi>}, the inverse of @{term AOT_model_d\<o>}
+yields a proposition of type @{term \<o>} that is valid in exactly those worlds
+for which @{term \<phi>} evaluates to @{term True} (see~\nameref{AOT:AOT_model.AOT_model_proposition_choice}).\footnote{This
+fact relies on the surjectivity of @{const AOT_model_d\<o>}. The embedding introduces the notation @{text \<open>\<epsilon>\<^sub>\<o> w . \<phi> w\<close>}
+for the proposition given by the @{term \<open>inv AOT_model_d\<o> \<phi>\<close>}.}
+
+However, the construction allows for the type @{typ \<o>} to contain more propositions
+than there are Kripke-extensions. I.e there may be two distinct
+objects @{term p} and @{term q} of type @{typ \<o>} that are necessarily equivalent,
+i.e. they are valid in the same semantic possible worlds. This can be confirmed by
+@{command nitpick}:
 \<close>
 
 lemma \<open>\<forall> v . [v \<Turnstile> p] \<longleftrightarrow> [v \<Turnstile> q]\<close> and \<open>p \<noteq> q\<close>
@@ -2745,11 +2751,12 @@ In this case @{command nitpick} chooses a model in which the type @{typ \<o>} is
 isomorphic to the type of Kripke-extensions @{typ \<open>w \<Rightarrow> bool\<close>}, i.e. there are
 just as many objects of type @{typ \<o>} as there are Kripke-extensions.
 
-So just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
+Just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
 propositions.
 
 On top of this hyperintensional type of propositions, the logical connectives can be
-defined by @{command specification} as explained in section~\ref{NativeAbstractionMechanisms}.
+defined by @{command specification} as outlined in section~\ref{NativeAbstractionMechanisms}.
+We will discuss specifications in more detail below in section~\ref{HilbertEpsilon}.
 
 Notably, previous versions of our embedding (in particular the construction in~\cite{MScThesis}),
 modelled hyperintensionality more explicitly by using an additional primitive type @{text s} of
@@ -2803,7 +2810,7 @@ The additional null-urelements serve to avoid two kinds of artifactual theorems:
     in particular they are both necessarily false, it does not (in general) presuppose that @{term p} is
     @{emph \<open>identical\<close>} to @{term \<open>q\<close>}.@{footnote \<open>An example of an exception is the case in which the matrices
     are alphabetic variants of each other or can be transformed into each other by substituting identical subterms,
-    in which case @{term \<phi>} and @{term \<psi>} are also meta-logically identical.\<close>} In the model this is achieved by allowing
+    in which case @{term \<phi>} and @{term \<psi>} are also meta-logically identical.\<close>} In the embedding this is achieved by allowing
     descriptions (with distinct matrices) to be mapped to distinct null-urelements to which the urrelation
     corresponding to @{term F} can assign distinct (albeit necessarily false)
     propositions.\footnote{Note that this is not a mere technicality, but it may be desirable
@@ -2834,7 +2841,7 @@ minimal models of AOT. In minimal models, propositions are extensional, i.e. the
 in one-to-one correspondence to Kripke-extensions: for every boolean valued functions
 on possible worlds there is exactly one proposition.
 While urrelations have to assign propositions to null-urelements,
-by constructions, urrelations are required to evaluate to necessarily false propositions on null-urelements.
+by construction, urrelations are required to evaluate to necessarily false propositions on null-urelements.
 Hence, there is only one choice for doing so, namely the single proposition with the constant-false function
 as Kripke-extension. Consequently, the number of relations in minimal models of AOT is unaffected. 
 
@@ -2871,7 +2878,7 @@ Based on the now introduced types of urelements @{typ \<upsilon>} and urrelation
 we can represent the terms of AOT.
 \<close>
 
-subsection\<open>Individual Terms and Type Classes for Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
+subsection\<open>Individual Terms and Properties\<close>
 
 text\<open>
 As a first step in representing the terms of AOT, we introduce a type of individual
@@ -2882,9 +2889,41 @@ and null-objects of type @{typ null} (shared with null-urelements) that will
 serve to model non-denoting definite descriptions. We can lift the surjective
 mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a surjective mapping
 from individual terms to urelements @{text \<kappa>\<upsilon>} of type @{typ \<open>\<kappa> \<Rightarrow> \<upsilon>\<close>} (see~\nameref{AOT:AOT_model.<kappa><upsilon>}),
-s.t. for any urelement we can find an individual term that is mapped to that urelement.
+s.t. for any urelement we can find an individual term that is mapped to that urelement (see~\nameref{AOT:AOT_model.<kappa><upsilon>_surj}).
 
-Furthermore, we introduce a system of @{emph \<open>type classes\<close>} that abstract over
+While our embedding abstracts unary individuals and tuples of individuals to a type class and generically
+defines relations as functions acting on types of this class, as described in the following sections, we
+first illustrate the resulting construction for the unary case.
+
+Property terms (of type @{typ \<open><\<kappa>>\<close>}) are represented by proposition-valued functions acting
+on individuals (type @{typ \<open>\<kappa> \<Rightarrow> \<o>\<close>}). A property term @{emph \<open>denotes\<close>}, if its representing function
+@{term \<phi>} satisfies the following conditions:
+
+  \<^item> @{term \<open>\<phi> \<kappa> = \<phi> \<kappa>'\<close>}, whenever @{term \<open>\<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>'\<close>}
+  \<^item> @{term \<open>[v \<Turnstile> \<phi>{\<kappa>}]\<close>} implies that @{term \<kappa>} is not a null object.
+
+Consequently, since @{term \<kappa>\<upsilon>} is surjective and urrelations have the property to be necessarily
+unexemplified on null-urelements, denoting property terms are in one-to-one correspondence
+with urrelations (see~\nameref{AOT:AOT_model.rel_to_urrel}).
+This is crucial for validating the comprehension principle of abstract objects, since abstract objects
+are modelled as sets of urrelations.
+
+A property @{term \<Pi>} exemplifying an individual @{term \<kappa>} is a proposition @{term p}, such that:
+  \<^item> If @{term \<Pi>} denotes, then @{term \<open>p = Rep_rel \<Pi> \<kappa>\<close>}, i.e. the proposition resulting from
+    applying the function representing @{term \<Pi>} to @{term \<kappa>}. This proposition will, by construction,
+    be necessarily false, if @{term \<kappa>} does not denote.
+  \<^item> A necessarily false proposition otherwise.
+
+An individual term @{term \<kappa>} encoding a property @{term \<Pi>} is a proposition @{term p}, such that:
+  \<^item> @{term p} is necessarily true, if there is an abstract object @{term x}, s.t. @{term \<open>\<kappa> = \<alpha>\<kappa> x\<close>} and
+    the urrelation corresponding to @{term \<Pi>} is contained in x.
+  \<^item> A necessarily false proposition otherwise.
+\<close>
+subsection\<open>Type Classes for Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
+
+text\<open>
+
+We introduce a system of @{emph \<open>type classes\<close>} that abstract over
 concrete types for two reasons (see section~\ref{NativeAbstractionMechanisms} for a
 brief discussion of type classes):
   \<^item> AOT involves axioms and theorems with (meta-)variables that may be instantiated
@@ -2911,15 +2950,19 @@ it is merely required that it is satisfied by at least one object. For type @{ty
 @{const AOT_model_denotes} is true for all objects that are not null-objects.
 We will define quantifiers relative to this type class and derive the quantifier axioms, which are
 independent of the concrete definition of the conditions under which an object of any
-concrete type denotes.
+concrete type denotes.@{footnote \<open>Similarly, we can define equality on the class @{class AOT_Term}
+and formulate the substitution of identicals relative to it. To validate AOT's definitions of identity
+we then show that meta-logical identity coincides with AOT's defined identity on denoting terms.\<close>}
 
 The generic type class for individual terms based on which we will define relation terms
 is @{class AOT_IndividualTerm} (see~\nameref{AOT:AOT_model.AOT_IndividualTerm}).
 The most important parameter of this type class is @{const AOT_model_term_equiv}, an
-equivalence relation which is satisfied for two objects\footnote{Note that an @{emph \<open>object\<close>} of a type
+equivalence relation which is satisfied for two objects,\footnote{Note that an @{emph \<open>object\<close>} of a type
 of class @{class AOT_IndividualTerm} may itself e.g. be a pair of two objects of type @{typ \<kappa>}, since
-the product of @{typ \<kappa>} with itself, i.e. type @{typ \<open>\<kappa>\<times>\<kappa>\<close>}, is also of class @{class AOT_IndividualTerm}.},
-if they have common urelements.
+the product of @{typ \<kappa>} with itself, i.e. type @{typ \<open>\<kappa>\<times>\<kappa>\<close>}, is also of class @{class AOT_IndividualTerm}.
+@{term AOT_model_term_equiv} for pairs is defined as @{term AOT_model_term_equiv} on both projections, i.e.
+tuples of individuals are @{term AOT_model_term_equiv}-equivalent if the @{term i}-th elements of each
+have the same urelement.} if they have common urelements.
 We furthermore introduce the notion of individual terms to be @{emph \<open>regular\<close>} and
 specify a transformation of proposition-valued functions acting on individual terms, s.t.
 after the transformation the behaviour of the function is solely determined by
@@ -2941,12 +2984,15 @@ way axioms about relations can be stated for all arities at the same time (since
 concrete type of individuals @{typ \<kappa>} as well as arbitrary iterated products of it, e.g.
 @{typ \<open>\<kappa>\<times>\<kappa>\<times>\<kappa>\<close>}, are all of class @{class AOT_\<kappa>s}).
 \<close>
-subsection\<open>Relation Terms as Proposition-Valued Functions on Individual Terms\<close>text\<open>\label{RelationsAsPropositionValuedFunctions}\<close>
+subsection\<open>Generic Relation Terms\<close>text\<open>\label{RelationsAsPropositionValuedFunctions}\<close>
 text\<open>
 We can now introduce a generic type of relation terms as the type of
 proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
 (see~\nameref{AOT:AOT_model.rel}).
-To instantiate the type class @{class AOT_Term} to this generic type of relation terms,
+The construction is a generalization of the explicit construction of properties described
+above that extends to relations of any arity and therefore involves additional subtleties.
+
+To instantiate the type class @{class AOT_Term} to our generic type of relation terms,
 we have to define the conditions under which a relation term denotes.
 
 A relation term denotes, if it is represented by a proposition-valued functions @{term \<phi>} on
@@ -2959,33 +3005,24 @@ individual terms, such that (see~\nameref{AOT:AOT_model_denotes_rel}):
     on @{term \<phi>}'s behaviour on regular terms). This will be important to validate the
     definition of @{text n}-ary relation identity and is discussed in section~\ref{nary}.
 
-Consequently, exemplification of denoting relation terms, can simply be modelled by the application
-of proposition-valued function representing the relation term to the given individual
-term (or tuple of individual terms), while exemplifying non-denoting relation terms yields
-a necessarily false proposition.@{footnote \<open>Note that our abstract semantics discussed in section~\ref{Semantics}
+Consequently, exemplification of denoting relation terms, can (similarly to the unary case)
+simply be modelled by the application of proposition-valued function representing the
+relation term to the given individual term (or tuple of individual terms),
+while exemplifying non-denoting relation terms yields a necessarily false
+proposition.@{footnote \<open>Note that our abstract semantics discussed in section~\ref{Semantics}
 will allow choosing different necessarily false propositions for exemplification formulas involving
 different non-denoting relations, resp. for exemplifying formulas involving the same non-denoting relation term
 and distinct individual terms.\<close>}
 
-Furthermore, we can derive that denoting relation terms among type @{typ \<kappa>} are in one-to-one
-correspondence with the urrelations of type @{typ urrel} we introduced earlier (see~\nameref{AOT:AOT_model.rel_to_urrel}).
-This is crucial for validating the comprehension principle of abstract objects, since abstract objects
-are modelled as sets of urrelations.
+The unary case of encoding was already described above, the n-ary case is constructed
+similary to @{term n}-ary relation identity, which is discussed in section~\ref{nary}.
 
-Given the fact that properties correspond to urrelations and abstract objects are
-modelled as sets of urrelations, unary encoding can simply be modelled (see~\nameref{AOT:AOT_model_enc_<kappa>}) in such a way
-that @{term \<open>\<guillemotleft>\<kappa>[\<Pi>]\<guillemotright>\<close>} is:
-  \<^item> a necessarily true proposition, if @{term \<kappa>} denotes an abstract object @{term x}
-    and @{term \<Pi>} denotes a proposition @{term F} that corresponds to an urrelation
-    @{term r}, s.t. @{term \<open>r \<in> x\<close>}.
-  \<^item> a necessarily false proposition otherwise.
-
-Since the abstract semantics we derive on top of this model construction in
-section~\ref{Semantics} is formulated using our implementation of AOT's syntax,
-in the following two sections we will briefly discuss how we extend Isabelle's
-inner syntax by an approximation of the syntax used in PLM and how we extend
-Isabelle's outer syntax by custom commands used for structured reasoning in
-the embedding.
+We now have constructed all the primitives we need for constructing an abstract
+semantics of AOT in section~\ref{Semantics}. However, this semantics is formulated
+using our implementation of AOT's syntax, so in the following two sections we will first
+briefly discuss how we extend Isabelle's inner syntax by an approximation of the syntax
+used in PLM and how we extend Isabelle's outer syntax by custom commands used for
+structured reasoning in the embedding.
 \<close>
 
 (*<*)
@@ -3241,6 +3278,87 @@ witnesses, (2) our specification is sufficiently strong to validate the
 axiom system of AOT and (3) our specification is weak enough and our types are general
 enough to preserve hyperintensionality and avoid artifactual theorems.
 TODO: rethink stating this.
+\<close>
+
+section\<open>Specifications and the Hilbert-Epsilon Operator\<close>text\<open>\label{HilbertEpsilon}\<close>
+
+text\<open>
+As mentioned in section~\ref{NativeAbstractionMechanisms}, the @{command specification} command internally uses Isabelle's
+native Hilbert-Epsilon operator @{term \<open>SOME x . \<phi> x\<close>}. This operator is axiomatized
+in the meta-logic using the single following principle:
+
+\begin{quote}
+@{thm[display] someI[where P=\<open>\<lambda>x . \<phi> x\<close>]}
+\end{quote}
+
+In particular, this implies that the operator behaves like the classical
+Hilbert-Epsilon operator, i.e. it holds that @{lemma \<open>(\<exists> x . \<phi> x) \<longleftrightarrow> \<phi> (SOME x. \<phi> x)\<close> by (meson someI_ex)}.
+Consequently, whenever there is a witness for @{term \<phi>}, then whatever is true for @{emph \<open>everything\<close>} that
+satisfied @{term \<phi>} is true for @{term \<open>SOME x. \<phi> x\<close>}:
+
+\begin{quote}
+@{thm[display] someI2_ex[where P=\<open>\<lambda> x . \<phi> x\<close> and Q = \<open>\<lambda>x . \<psi> x\<close>]}
+\end{quote}
+
+However, it is noteworthy that this operator obeys the following principle of extensionality:
+
+\begin{quote}
+@{lemma[display] \<open>(\<forall>x . \<phi> x = \<psi> x) \<longrightarrow> (SOME x . \<phi> x) = (SOME x . \<psi> x)\<close> by auto}
+\end{quote}
+
+This is due to the fact, that in the meta-logic, extensional equivalence implies
+identity, i.e. the antecedent implies @{term \<open>\<phi> = \<psi>\<close>} and the consequent follows
+by substitution of identicals.
+
+Therefore, we @{emph \<open>cannot\<close>} e.g. define an intensional conjunction as follows (we reuse
+the type @{typ \<o>\<^sub>2} and its defined validity from section~\ref{NativeAbstractionMechanisms}):@{footnote \<open>Note
+that in @{emph \<open>mixfix\<close>} notation a single quote @{text \<open>'\<close>} is used as escape character for distinguishing
+placeholders @{text \<open>_\<close>} from underscores @{text \<open>'_\<close>}. A syntactic single quote is therefore given as
+@{text \<open>''\<close>}.\<close>}
+\<close>
+definition \<o>\<^sub>2_conj' (infixl \<open>\<^bold>\<and>''\<close> 100) where
+  \<open>\<phi> \<^bold>\<and>' \<psi> \<equiv> SOME \<chi> . valid_\<o>\<^sub>2 \<chi> \<longleftrightarrow> (valid_\<o>\<^sub>2 \<phi> \<and> valid_\<o>\<^sub>2 \<psi>)\<close>
+
+text\<open>
+Since it holds that @{lemma \<open>(valid_\<o>\<^sub>2 \<chi> \<longleftrightarrow> (valid_\<o>\<^sub>2 \<phi> \<and> valid_\<o>\<^sub>2 \<psi>)) \<longleftrightarrow> (valid_\<o>\<^sub>2 \<chi> \<longleftrightarrow> (valid_\<o>\<^sub>2 \<psi> \<and> valid_\<o>\<^sub>2 \<phi>))\<close> by auto},
+commutativity of @{term \<open>(\<^bold>\<and>')\<close>} is immediately derivable:
+\<close>
+
+lemma \<open>(p \<^bold>\<and>' q) = (q \<^bold>\<and>' p)\<close>
+  unfolding \<o>\<^sub>2_conj'_def by metis
+
+text\<open>
+In~\cite{HilbertEpsilon},@{footnote \<open>This paper is now abandoned in favour of our mechanism.\<close>}
+Zalta developed the idea of a special kind of Hilbert-Epsilon operator that
+does not obey a principle of extensionality for defining an intensional semantics for
+@{text \<open>\<lambda>\<close>}-terms. However, such an operator is not easy to represent in practice, since e.g. in HOL - 
+as seen above - extensionality is not an additional axiom for the Hilbert-Epsilon operator, but
+a consequence of the meta-logical substitution of identicals.
+Fortunately, there is a simpler solution that can still rely on the classical Epsilon operator.
+In particular, we do not define the @{emph \<open>value\<close>} of the conjunction function using the
+Epsilon operator, but instead the conjunction function itself, i.e.:
+\<close>
+
+definition \<o>\<^sub>2_conj'' (infixl \<open>\<^bold>\<and>''''\<close> 100) where
+  \<open>(\<^bold>\<and>'') \<equiv> SOME conj . \<forall> \<phi> \<psi> . valid_\<o>\<^sub>2 (conj \<phi> \<psi>) = (valid_\<o>\<^sub>2 \<phi> \<and> valid_\<o>\<^sub>2 \<psi>)\<close>
+
+text\<open>
+This way, the extensionality of the Hilbert-Epsilon operator reduces to the fact that
+our conjunction has any property that is true for @{emph \<open>all possible\<close>} conjunctions
+that behave as conjunction under validity. In other words, any choice
+for a concrete conjunction is admissible, including intensional ones, as long as
+it has our required extensional property under validity.@{footnote \<open>Note, however,
+that we still need to make sure that the involved @{emph \<open>types\<close>} are sufficiently
+intensional as discussed in section~\ref{NativeAbstractionMechanisms}.\<close>}
+
+This is exactly how the @{command specification} command works: the specification
+statements are transformed to closed terms by universal generalization and combined
+via conjunction and the result is used as the matrix of the Hilbert-Epsilon
+operator. Given the provided witness, the desired properties of the Hilbert-Epsilon
+term become derivable. A joint specification of multiple constants works similarly:
+E.g. a joint specification of two constants is done by construction
+a @{emph \<open>pair\<close>} of constants, such that the elements of the pair satisfy the
+joint specification.
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>

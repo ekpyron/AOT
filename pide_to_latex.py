@@ -27,6 +27,7 @@ referencedEntities = {
 	"AOT_model.rel",
 	"AOT_model.rel_to_urrel",
 	"AOT_model.<kappa><upsilon>",
+	"AOT_model.<kappa><upsilon>_surj",
 	"AOT_model.AOT_var",
 	"AOT_syntax.AOT_denotes",
 	"AOT_semantics.AOT_sem_imp",
