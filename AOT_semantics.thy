@@ -45,6 +45,7 @@ specification(AOT_box)
   by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<forall> w . [w \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
+text\<open>\linelabel{AOT_act_spec}\<close>
 specification(AOT_act)
   AOT_sem_act: \<open>[w \<Turnstile> \<^bold>\<A>\<phi>] = [w\<^sub>0 \<Turnstile> \<phi>]\<close>
   by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . [w\<^sub>0 \<Turnstile> \<phi>]\<close>])
