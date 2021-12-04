@@ -39,6 +39,7 @@ specification(AOT_not)
   by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<not>[w \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
+text\<open>\linelabel{AOT_box_spec}\<close>
 specification(AOT_box)
   AOT_sem_box: \<open>[w \<Turnstile> \<box>\<phi>] = (\<forall> w . [w \<Turnstile> \<phi>])\<close>
   by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . \<forall> w . [w \<Turnstile> \<phi>]\<close>])
@@ -1393,6 +1394,11 @@ lemma AOT_instance_of_cqt_2_intros_exe_arg_self[AOT_instance_of_cqt_2_intro]:
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
             AOT_sem_lambda_denotes
   by (auto simp: AOT_model_term_equiv_part_equivp equivp_reflp AOT_sem_denotes)
+lemma AOT_instance_of_cqt_2_intros_exe_arg_const[AOT_instance_of_cqt_2_intro]:
+     \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda>x. \<kappa>)\<close>
+  unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
+  by (auto simp: AOT_model_term_equiv_part_equivp equivp_reflp
+                 AOT_sem_denotes AOT_sem_lambda_denotes)
 lemma AOT_instance_of_cqt_2_intros_exe_arg_fst[AOT_instance_of_cqt_2_intro]:
    \<open>AOT_instance_of_cqt_2_exe_arg fst\<close>
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
@@ -1401,11 +1407,6 @@ lemma AOT_instance_of_cqt_2_intros_exe_arg_snd[AOT_instance_of_cqt_2_intro]:
    \<open>AOT_instance_of_cqt_2_exe_arg snd\<close>
   unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
   by (simp add: AOT_model_term_equiv_prod_def AOT_sem_denotes AOT_sem_lambda_denotes)
-lemma AOT_instance_of_cqt_2_intros_exe_arg_var[AOT_instance_of_cqt_2_intro]:
-     \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda>x. \<kappa>)\<close>
-  unfolding AOT_instance_of_cqt_2_exe_arg_def AOT_instance_of_cqt_2_def
-  by (auto simp: AOT_model_term_equiv_part_equivp equivp_reflp
-                 AOT_sem_denotes AOT_sem_lambda_denotes)
 lemma AOT_instance_of_cqt_2_intros_exe_arg_Pair[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2_exe_arg \<phi>\<close> and \<open>AOT_instance_of_cqt_2_exe_arg \<psi>\<close>
   shows \<open>AOT_instance_of_cqt_2_exe_arg (\<lambda>\<tau>. Pair (\<phi> \<tau>) (\<psi> \<tau>))\<close>
@@ -1432,7 +1433,7 @@ proof -
       by auto
     moreover have \<open>AOT_model_term_equiv x x\<close> for x :: \<open>'a::AOT_\<kappa>\<close>
       by (metis AOT_instance_of_cqt_2_exe_arg_def
-                AOT_instance_of_cqt_2_intros_exe_arg_var
+                AOT_instance_of_cqt_2_intros_exe_arg_const
                 AOT_model_A_objects AOT_model_term_equiv_denotes
                 AOT_model_term_equiv_eps(1))
     ultimately have \<open>AOT_model_term_equiv \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>})\<guillemotright> \<guillemotleft>\<^bold>\<iota>z(\<Phi>{z,\<kappa>'})\<guillemotright>\<close>
