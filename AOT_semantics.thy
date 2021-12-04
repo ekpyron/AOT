@@ -926,7 +926,7 @@ next
         unfolding AOT_enc_\<kappa>_meta
         unfolding AOT_model_enc_\<kappa>_def
         apply (simp add: AOT_model_denotes_\<kappa>_def)
-        by (metis (mono_tags) AOT_model_term_equiv_rel_def Quotient_def urrel_quotient)
+        by (metis (mono_tags) AOT_rel_equiv_def Quotient_def urrel_quotient)
       hence \<open>[v \<Turnstile> \<kappa>'[\<guillemotleft>urrel_to_rel r\<guillemotright>]]\<close>
         using AOT_enc_\<kappa>_meta 0 by (metis AOT_sem_enc_denotes)
       hence \<open>r \<in> y\<close>
@@ -944,7 +944,7 @@ next
         unfolding AOT_enc_\<kappa>_meta
         unfolding AOT_model_enc_\<kappa>_def
         apply (simp add: AOT_model_denotes_\<kappa>_def)
-        by (metis (mono_tags) AOT_model_term_equiv_rel_def Quotient_def urrel_quotient)
+        by (metis (mono_tags) AOT_rel_equiv_def Quotient_def urrel_quotient)
       hence \<open>[v \<Turnstile> \<kappa>[\<guillemotleft>urrel_to_rel r\<guillemotright>]]\<close>
         using AOT_enc_\<kappa>_meta 0 by (metis AOT_sem_enc_denotes)
       hence \<open>r \<in> x\<close>

@@ -377,10 +377,7 @@ proof -
     (ordexts, ordexts', undefined)\<close>
   define \<alpha>\<sigma>_wit :: \<open>urrel set \<Rightarrow> \<sigma>\<close> where
     \<open>\<alpha>\<sigma>_wit \<equiv> \<lambda> urrels . Abs_\<sigma> (?\<alpha>\<sigma>_wit urrels)\<close>
-  have 1: \<open>\<forall>urrel. urrel_to_\<omega>rel urrel = y \<longrightarrow> urrel \<in> x \<Longrightarrow>
-           \<exists>urrel\<in>x. urrel_to_\<omega>rel urrel = y\<close> for y x
-    by (meson Quotient3_abs_rep urrel_\<omega>rel_quot)
-  moreover {
+  {
     fix a b :: \<open>urrel set\<close> and r s
     assume \<open>\<alpha>\<sigma>_wit a = \<alpha>\<sigma>_wit b\<close>
     hence 0: \<open>{ordext. \<forall>urrel. urrel_to_\<omega>rel urrel = ordext \<longrightarrow> urrel \<in> a} =
@@ -612,9 +609,6 @@ lift_definition AOT_model_denotes_rel :: \<open><'a> \<Rightarrow> bool\<close> 
   \<open>\<lambda> \<phi> . (\<forall> x y . AOT_model_term_equiv x y \<longrightarrow> \<phi> x = \<phi> y) \<and>
          (\<forall> w x . AOT_model_valid_in w (\<phi> x) \<longrightarrow> AOT_model_denotes x) \<and>
          (\<forall> x . \<not>AOT_model_regular x \<longrightarrow> \<phi> x = AOT_model_irregular \<phi> x)\<close> .
-definition AOT_model_term_equiv_rel :: \<open><'a> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
-  \<open>AOT_model_term_equiv_rel \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and>
-                                      f = g\<close>
 instance proof
   have \<open>AOT_model_irregular (fix_special \<phi>) x = AOT_model_irregular \<phi> x\<close>
     for \<phi> and x :: 'a
@@ -701,7 +695,10 @@ definition rel_to_urrel :: \<open><\<kappa>> \<Rightarrow> urrel\<close> where
 definition urrel_to_rel :: \<open>urrel \<Rightarrow> <\<kappa>>\<close> where
   \<open>urrel_to_rel \<equiv> \<lambda> \<phi> . Abs_rel (\<lambda> x . Rep_urrel \<phi> (\<kappa>\<upsilon> x))\<close>
 
-lemma urrel_quotient3: \<open>Quotient3 AOT_model_term_equiv_rel rel_to_urrel urrel_to_rel\<close>
+definition AOT_rel_equiv :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
+  \<open>AOT_rel_equiv \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and> f = g\<close>
+
+lemma urrel_quotient3: \<open>Quotient3 AOT_rel_equiv rel_to_urrel urrel_to_rel\<close>
 proof (rule Quotient3I)
   have \<open>(\<lambda>u. Rep_urrel a (\<kappa>\<upsilon> (SOME x. \<kappa>\<upsilon> x = u))) = (\<lambda>u. Rep_urrel a u)\<close> for a
     by (rule ext) (metis (mono_tags, lifting) \<kappa>\<upsilon>_surj surj_f_inv_f verit_sko_ex')
@@ -709,8 +706,8 @@ proof (rule Quotient3I)
     by (simp add: Abs_rel_inverse rel_to_urrel_def urrel_to_rel_def
                   Rep_urrel_inverse)
 next
-  show \<open>AOT_model_term_equiv_rel (urrel_to_rel a) (urrel_to_rel a)\<close> for a
-    unfolding AOT_model_term_equiv_rel_def urrel_to_rel_def
+  show \<open>AOT_rel_equiv (urrel_to_rel a) (urrel_to_rel a)\<close> for a
+    unfolding AOT_rel_equiv_def urrel_to_rel_def
     by transfer (simp add: AOT_model_regular_\<kappa>_def AOT_model_denotes_\<kappa>_def
                            AOT_model_term_equiv_\<kappa>_def urrel_null_false)
 next
@@ -743,16 +740,15 @@ next
       by (metis (mono_tags, lifting) A B AOT_model_term_equiv_\<kappa>_def someI_ex)
     hence \<open>r = s\<close> by auto
   } 
-  thus \<open>AOT_model_term_equiv_rel r s =
-        (AOT_model_term_equiv_rel r r \<and> AOT_model_term_equiv_rel s s \<and>
-         rel_to_urrel r = rel_to_urrel s)\<close> for r s
-    unfolding AOT_model_term_equiv_rel_def rel_to_urrel_def
+  thus \<open>AOT_rel_equiv r s = (AOT_rel_equiv r r \<and> AOT_rel_equiv s s \<and>
+                             rel_to_urrel r = rel_to_urrel s)\<close> for r s
+    unfolding AOT_rel_equiv_def rel_to_urrel_def
     by transfer auto
 qed
 
 lemma urrel_quotient:
-  \<open>Quotient AOT_model_term_equiv_rel rel_to_urrel urrel_to_rel
-            (\<lambda>x y. AOT_model_term_equiv_rel x x \<and> rel_to_urrel x = y)\<close>
+  \<open>Quotient AOT_rel_equiv rel_to_urrel urrel_to_rel
+            (\<lambda>x y. AOT_rel_equiv x x \<and> rel_to_urrel x = y)\<close>
   using Quotient3_to_Quotient[OF urrel_quotient3] by auto
 
 
@@ -838,7 +834,7 @@ lemma AOT_meta_A_objects_\<kappa>:
             (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close> for \<phi>
   apply (rule exI[where x=\<open>\<alpha>\<kappa> {f . \<phi> (urrel_to_rel f)}\<close>])
   apply (simp add: AOT_model_enc_\<kappa>_def AOT_model_denotes_\<kappa>_def)
-  by (metis (no_types, lifting) AOT_model_term_equiv_rel_def urrel_quotient
+  by (metis (no_types, lifting) AOT_rel_equiv_def urrel_quotient
                                 Quotient_rep_abs_fold_unmap)
 
 instance proof
@@ -890,7 +886,7 @@ next
                                    AOT_model_valid_in w (Rep_rel \<Pi>' \<kappa>')\<close> for \<Pi>' w
   hence \<open>AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>)) =
          AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>'))\<close> for r
-    by (metis AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_rel_rep
+    by (metis AOT_rel_equiv_def Abs_rel_inverse Quotient3_rel_rep
               iso_tuple_UNIV_I urrel_quotient3 urrel_to_rel_def)
   hence \<open>let r = (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . u = \<kappa>\<upsilon> \<kappa>)) in
          AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>)) =
@@ -927,7 +923,7 @@ next
   hence \<open>(\<And>v x. AOT_model_valid_in v (Rep_urrel r (\<omega>\<upsilon> x)) =
                  AOT_model_valid_in v (Rep_rel \<Pi> (\<omega>\<kappa> x))) \<Longrightarrow> r \<in> a\<close> for r
     unfolding a_def[symmetric] AOT_model_enc_\<kappa>_def apply simp
-    by (smt (verit, best) AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_def
+    by (smt (verit, best) AOT_rel_equiv_def Abs_rel_inverse Quotient3_def
             \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3 urrel_to_rel_def)
   hence \<open>(\<And>v x. AOT_model_valid_in v (Rep_urrel r' (\<omega>\<upsilon> x)) =
                  AOT_model_valid_in v (Rep_urrel r (\<omega>\<upsilon> x))) \<Longrightarrow> r' \<in> a\<close> for r'
@@ -946,7 +942,7 @@ next
     by presburger
   hence \<open>AOT_model_valid_in v (Rep_urrel (rel_to_urrel \<Pi>') (\<omega>\<upsilon> x)) =
          AOT_model_valid_in v (Rep_urrel r (\<omega>\<upsilon> x))\<close> for v x
-    by (smt (verit, best) AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_def
+    by (smt (verit, best) AOT_rel_equiv_def Abs_rel_inverse Quotient3_def
           \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I r_prop urrel_quotient3 urrel_to_rel_def \<Pi>'_den)
   hence \<open>urrel_to_\<omega>rel (rel_to_urrel \<Pi>') = urrel_to_\<omega>rel r\<close>
     by (metis (full_types) AOT_urrel_\<omega>equiv_def Quotient3_def urrel_\<omega>rel_quot)
@@ -970,7 +966,7 @@ next
                                    AOT_model_valid_in w (Rep_rel \<Pi>' \<kappa>')\<close> for \<Pi>' w
   hence \<open>AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>)) =
          AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>'))\<close> for r
-    by (metis AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_rel_rep
+    by (metis AOT_rel_equiv_def Abs_rel_inverse Quotient3_rel_rep
               iso_tuple_UNIV_I urrel_quotient3 urrel_to_rel_def)
   hence \<open>let r = (Abs_urrel (\<lambda> u . \<epsilon>\<^sub>\<o> w . u = \<kappa>\<upsilon> \<kappa>)) in
          AOT_model_valid_in w (Rep_urrel r (\<kappa>\<upsilon> \<kappa>)) =
@@ -1012,7 +1008,7 @@ next
     by (simp add: AOT_model_\<omega>_concrete_in_some_world \<Pi>'_prop)
   hence 0: \<open>AOT_urrel_\<omega>equiv (rel_to_urrel \<Pi>') (rel_to_urrel \<Pi>)\<close>
     unfolding AOT_urrel_\<omega>equiv_def
-    by (smt (verit) AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_def
+    by (smt (verit) AOT_rel_equiv_def Abs_rel_inverse Quotient3_def
                     \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I urrel_quotient3 urrel_to_rel_def
                     \<Pi>_den \<Pi>'_den)
   have \<open>rel_to_urrel \<Pi>' \<in> a\<close>
@@ -1026,7 +1022,7 @@ next
     by blast
   then obtain \<Pi>'' where
     \<Pi>''_prop: \<open>rel_to_urrel \<Pi>'' = s\<close> and \<Pi>''_den: \<open>AOT_model_denotes \<Pi>''\<close>
-    by (metis AOT_model_term_equiv_rel_def Quotient3_def urrel_quotient3)
+    by (metis AOT_rel_equiv_def Quotient3_def urrel_quotient3)
   moreover have \<open>AOT_model_enc \<kappa>' \<Pi>''\<close>
     by (metis AOT_model_enc_\<kappa>_def \<Pi>''_den \<Pi>''_prop \<kappa>.simps(11) b_def s_prop)
   moreover have \<open>AOT_model_valid_in v (Rep_rel \<Pi>'' x) =
@@ -1039,7 +1035,7 @@ next
     show \<open>AOT_model_valid_in v (Rep_rel \<Pi>'' x) =
           AOT_model_valid_in v (Rep_rel \<Pi> x)\<close>
       unfolding x_def
-      by (smt (verit, best) AOT_model_term_equiv_rel_def Abs_rel_inverse Quotient3_def
+      by (smt (verit, best) AOT_rel_equiv_def Abs_rel_inverse Quotient3_def
             \<Pi>''_den \<Pi>''_prop \<Pi>_den \<kappa>\<upsilon>.simps(1) iso_tuple_UNIV_I s_prop
             urrel_quotient3 urrel_to_\<omega>rel_def urrel_to_rel_def)
   qed
