@@ -765,4 +765,43 @@ proof(rule "\<rightarrow>I")
   qed
 qed
 
+AOT_theorem equal_E_rigid_one_to_one: \<open>Rigid\<^sub>1\<^sub>-\<^sub>1((=\<^sub>E))\<close>
+proof (safe intro!: "df-1-1:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"]
+                    GEN "\<rightarrow>I" "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "=E[denotes]")
+  fix x y z
+  AOT_assume \<open>x =\<^sub>E z & y =\<^sub>E z\<close>
+  AOT_thus \<open>x = y\<close>
+    by (metis "rule=E" "&E"(1) "Conjunction Simplification"(2)
+              "=E-simple:2" id_sym "\<rightarrow>E")
+next
+  AOT_have \<open>\<forall>x\<forall>y \<box>(x =\<^sub>E y \<rightarrow> \<box>x =\<^sub>E y)\<close>
+  proof(rule GEN; rule GEN)
+    AOT_show \<open>\<box>(x =\<^sub>E y \<rightarrow> \<box>x =\<^sub>E y)\<close> for x y
+      by (meson RN "deduction-theorem" "id-nec3:1" "\<equiv>E"(1))
+  qed
+  AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<box>([(=\<^sub>E)]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[(=\<^sub>E)]x\<^sub>1...x\<^sub>n)\<close>
+    by (rule tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_thus \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([(=\<^sub>E)]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[(=\<^sub>E)]x\<^sub>1...x\<^sub>n)\<close>
+    using BF[THEN "\<rightarrow>E"] by fast
+qed
+
+AOT_theorem equal_E_domain: \<open>InDomainOf(x,(=\<^sub>E)) \<equiv> O!x\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>InDomainOf(x,(=\<^sub>E))\<close>
+  AOT_hence \<open>\<exists>y x =\<^sub>E y\<close>
+    by (metis "\<equiv>\<^sub>d\<^sub>fE" "df-1-1:5")
+  then AOT_obtain y where \<open>x =\<^sub>E y\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_thus \<open>O!x\<close>
+    using "=E-simple:1"[THEN "\<equiv>E"(1)] "&E" by blast
+next
+  AOT_assume \<open>O!x\<close>
+  AOT_hence \<open>x =\<^sub>E x\<close>   
+    by (metis "ord=Eequiv:1"[THEN "\<rightarrow>E"])
+  AOT_hence \<open>\<exists>y x =\<^sub>E y\<close>
+    using "\<exists>I"(2) by fast
+  AOT_thus \<open>InDomainOf(x,(=\<^sub>E))\<close>
+    by (metis "\<equiv>\<^sub>d\<^sub>fI" "df-1-1:5")
+qed
+
 end
