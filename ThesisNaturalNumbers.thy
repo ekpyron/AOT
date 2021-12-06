@@ -754,6 +754,9 @@ reflexive on the domain of @{term \<R>} (see~\nameref{AOT:id-R-thm:5}):
       "id-R-thm:6"[of _ \<R> x y, print_as_theorem]
       "id-R-thm:7"[of _ \<R> x y z, print_as_theorem]}
 \end{quote}
+
+A simple example of a rigid one-to-one-relation is the identity on the ordinary objects @{term \<open>\<guillemotleft>(=\<^sub>E)\<guillemotright>\<close>}, the domain of
+which is the ordinary objects (see~\nameref{AOT:AOT_misc.equal_E_rigid_one_to_one} and~\nameref{AOT:AOT_misc.equal_E_domain}).
 \<close>
 
 subsection \<open>The Weak Ancestral of a Relation\<close>

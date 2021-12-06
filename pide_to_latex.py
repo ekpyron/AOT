@@ -72,7 +72,9 @@ referencedEntities = {
 	"AOT_misc.ConceptOfOrdinaryProperty",
 	"AOT_misc.concept_inclusion_denotes_1",
 	"AOT_misc.concept_inclusion_denotes_2",
-	"AOT_misc.FormOfOrdinaryProperty"
+	"AOT_misc.FormOfOrdinaryProperty",
+	"AOT_misc.equal_E_rigid_one_to_one",
+	"AOT_misc.equal_E_domain"
 }
 
 with open("./keys.list") as f:
