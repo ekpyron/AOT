@@ -573,7 +573,7 @@ are derivable in the abstraction layer.@{footnote \<open>Note, however, that thi
 on the additional assumption that meta-logical inferences based on the derived axioms and rules
 correspond to derivations in the target logic, as mentioned in the end of this section.\<close>}
 
-So while abstraction layers are conceptually rather simple, an interesting technically
+So while abstraction layers are conceptually rather simple, an interesting technical
 question is how the automation capabilities of the meta-logic can be preserved and reliably restricted
 to respect the imposed restrictions.
 
@@ -675,7 +675,7 @@ are non-trivial choices beyond the provided witness.
 To illustrate this issue, we showcase the construction of a hyperintensional conjunction in which
 @{term \<open>p \<and> q\<close>} implies both @{term p} and @{term q} and vice-versa, but it does not hold
 that @{term \<open>(p \<and> q) = (q \<and> p)\<close>}.
-We first show a construction that will fail due to the choice of representation type that
+We first show a construction that will fail due to the choice of a representation type that
 implies extensionality:
 \<close>
 
@@ -930,7 +930,7 @@ formulated in @{emph \<open>inner syntax\<close>}.
 @{emph \<open>Inner syntax\<close>} is highly customizable. In the examples in the previous sections we already
 made use of the ability to define new (bold) operators using @{emph \<open>mixfix\<close>} notation (see~\S8.2 in~\cite{IsarRef}).
 However, we only used the mechanism to provide symbols to be used inside the grammar tree of
-Isabelle/HOL's own term structure.@{footnote \<open>Thereby we cannot use symbols that are already used for HOL for our target
+Isabelle/HOL's own term structure.@{footnote \<open>Thereby we cannot use symbols that are already used in HOL for our target
 logic.\<close>}
 In general Isabelle's inner syntax is described by a context-free priority grammar.
 It consists of a set of @{emph \<open>terminal symbols\<close>}, an extensible set of
@@ -1220,7 +1220,7 @@ that may range over all variable names or all terms at a given type. By conventi
 meta-variables with Greek letters (with additional numbered subscripts as needed) as follows:
 
 
-  \<^item> Meta-variables ranging over individual variables: @{text \<nu>}
+  \<^item> Meta-variables ranging over individual variables: @{text \<open>\<nu>, \<mu>\<close>}
   \<^item> Meta-variables ranging over individual terms: @{text \<kappa>}
   \<^item> Meta-variables ranging over @{text n}-place relation terms: @{text \<open>\<Pi>\<^sup>n\<close>}
   \<^item> Meta-variables ranging over formulas (i.e. zero-place relation terms): @{text \<open>\<phi>, \<psi>, \<dots>\<close>}
@@ -1247,10 +1247,10 @@ Furthermore, AOT introduces the following primitive formula- and term-forming op
   \<^item> @{term \<open>\<guillemotleft>\<^bold>\<A>\<phi>\<guillemotright>\<close>}, the @{emph \<open>actuality\<close>} operator
   \<^item> @{term \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>\<close>}, the @{emph \<open>conditional\<close>} operator
   \<^item> @{term \<open>AOT_TERM[(\<forall>\<alpha> \<phi>{\<alpha>})]\<close>}, the @{emph \<open>universal quantifier\<close>}@{footnote \<open>As mentioned in the previous section,
-  PLM, by default, allows any free variables to occur in instances of a schematic meta-variable, unless specified otherwise.
-  For technical reasons, we choose the opposite convention, i.e. while a schematic meta-variable may still contain
+  PLM, by default, allows any free variables to occur in instances of a meta-variable, unless specified otherwise.
+  For technical reasons, we choose the opposite convention, i.e. while a meta-variable may still contain
   any occurrence of variables that would remain @{emph \<open>free\<close>}, any @{emph \<open>bound\<close>} variables that may
-  occur in an instance of the schematic meta-variable have to be explicitly listed in curly brackets. See~\ref{substitutability} for
+  occur in an instance of the meta-variable have to be explicitly listed in curly brackets. See~\ref{substitutability} for
   a more detailed discussion. Also note that while the meta-logical @{text \<open>\<forall>\<close>}-quantifier in HOL has wide scope, the
   universal quantifier of AOT has narrow scope and quantifying over complex formulas generally requires parentheses.\<close>}
   \<^item> @{term \<open>AOT_TERM[\<^bold>\<iota>x \<phi>{x}]\<close>}, the @{emph \<open>definite description\<close>} operator\footnote{Note that similarly to the universal
@@ -1388,8 +1388,8 @@ For a simple intuition, note that all @{text \<open>\<lambda>\<close>}-expressio
 in the matrix is an exemplification formula, denote, while special care has to be taken
 in the presence of encoding formulas.@{footnote \<open>Note that this includes "implicit" encoding
 formulas that merely occur in the definiens of a defined constant used in the matrix. Those
-are also counted as encoding formula subterms of the matrix.\<close>} The axiom will discussed
-in more detail in the remainder of this chapter.
+are also counted as encoding formula subterms of the matrix.\<close>} The axiom will be discussed
+in more detail later in this chapter.
 
 The next axiom states that identical objects can be substituted in formulas. Note that the used identity
 is not primitive, but was @{emph \<open>defined\<close>} in the last section (see~\nameref{AOT:l-identity}).@{footnote \<open>PLM formulates
@@ -1462,7 +1462,7 @@ A consistent axiomatization of complex relation terms in AOT requires some care.
 follow the classical principles of @{text \<alpha>}-, @{text \<beta>}- and @{text \<eta>}-conversion, they have to be
 suitably restricted to denoting terms, since not all @{text \<open>\<lambda>\<close>}-expressions are guaranteed to denote.
 Also note that the embedding generally collapses alphabetic variants (see~\ref{alphabetic-variants}),
-so while a version @{text \<alpha>}-conversion can be stated, it effectively reduces to the statement that denoting
+so while a version of @{text \<alpha>}-conversion can be stated, it effectively reduces to the statement that denoting
 @{text \<lambda>}-expressions are self-identical in our implementation.
 @{text \<alpha>}-, @{text \<beta>}- and @{text \<eta>}-conversion are formulated as follows (see~\nameref{AOT:lambda-predicates:1}):
 
@@ -1623,7 +1623,7 @@ The rule of generalization GEN (see~\nameref{AOT:rule-gen}):
 @{text \<open>for arbitrary\<close>} is implemented using a meta-logical all quantifier.
 This means that @{term \<phi>} has to hold for an arbitrary choice of @{text \<alpha>} and
 therefore independently of any local assumptions about any concrete @{text \<alpha>}.
-This goes along with PLM's restriction to allow the application of GEN, if
+This goes along with PLM's restriction to only allow the application of GEN, if
 @{text \<alpha>} not to occur free in any assumption.
 \<close>
 
@@ -1881,6 +1881,7 @@ closures (as mentioned in section~\ref{AxiomSystem}):
 @{thm[display] "logic-actual"[act_axiom_inst, of \<phi>]}
 \end{quote}
 
+On the other hand, every modally-strict axiom is also part of the modally-fragile system.
 As indicated by this axiom, semantically, the modally-fragile system is concerned with
 all actual truths, whereas the modally-strict system is used to reason about truths that
 are necessary.@{footnote \<open>Consequently, in our models modally-fragile axioms and theorems
@@ -2034,7 +2035,7 @@ Similarly to situations, it can be shown that being a possible world is a rigid 
 the use of @{text w} as a restricted variable ranging over possible worlds.
 
 Now it can be derived that possible worlds are @{emph \<open>possible\<close>} (i.e. @{emph \<open>possibly actual\<close>}), @{emph \<open>consistent\<close>} and @{emph \<open>maximal\<close>}
-situations and furthermore that any abstract object that is a possible and maximal situation is a possible world:
+situations and, furthermore, that any abstract object that is a possible and maximal situation is a possible world:
 
   \<^item> @{thm[display] "actual"[of x]}
     A situation is actual, if it only makes true propositions true (see~\nameref{AOT:actual}).
@@ -2294,7 +2295,7 @@ individuals.\footnote{In a modal setting properties are even associated with mul
 objects for different semantic possible worlds or, equivalently, extensions of modal properties are conceived of as mapping
 objects to sets of possible worlds in which the property is exemplified by the object.} However, if abstract objects correspond
 to sets of properties and exemplification-extensions of properties themselves correspond to sets of objects,
-one may wonder how this can be achieved without a violation of Cantor's Theorem:
+one may wonder how this can be achieved consistently:
 How can abstract objects be sets of properties and simultaneously (in the simplest case of non-modal
 and extensional properties) elements of properties?
 
@@ -2559,7 +2560,7 @@ text\<open>
 TODO:
   \<^item> Section about hyperintensionality?
 
-Before we proceed to discuss AOT's analysis of natural numbers in chapter~{NaturalNumbers},
+Before we proceed to discuss AOT's analysis of natural numbers in chapter~\ref{NaturalNumbers},
 we describe the technical details of the implementation of AOT in our embedding
 in the next chapter.
 \<close>
@@ -2697,7 +2698,7 @@ several issues that remain unaddressed, including:
   \<^item> Relation comprehension for formulas in the absence of encoding formulas
     does not immediately cover all the base cases of axiomatically denoting relation
     terms as mentioned in section~\ref{AxiomSystem}.
-  \<^item> Aczel models do not cover @{text n}-ary relations for @{text \<open>n \<ge> 2\<close>}.@{emph \<open>While in an extensional
+  \<^item> Aczel models do not cover @{text n}-ary relations for @{text \<open>n \<ge> 2\<close>}.@{footnote \<open>While in an extensional
     setting they can be interpreted as sets of tuples of urelements, validating AOT's definition
     of relation identity in a hyperintensional context requires further care.\<close>}
 
@@ -3368,10 +3369,7 @@ This is exactly how the @{command specification} command works: the specificatio
 statements are transformed to closed terms by universal generalization and combined
 via conjunction and the result is used as the matrix of the Hilbert-Epsilon-operator.
 Given the provided witness, the desired properties of the Hilbert-Epsilon
-term become derivable. A joint specification of multiple constants works similarly:
-E.g. a joint specification of two constants is done by construction
-a @{emph \<open>pair\<close>} of constants, such that the elements of the pair satisfy the
-joint specification.
+term become derivable.
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>
@@ -3416,7 +3414,7 @@ to state one case for constants @{emph \<open>and\<close>} variables (see~\namer
   @{thm[display] "cqt:2[const_var]"[axiom_inst, of _ \<alpha>, print_as_theorem]}
 \end{quote}
 
-@{term \<alpha>} ranges all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
+@{term \<alpha>} ranges over all expressions of type @{typ \<open>'a AOT_var\<close>} (see~\nameref{AOT:AOT_model.AOT_var}).
 For each base type @{typ 'a} of class @{class AOT_Term}, the embedding defines this type @{typ \<open>'a AOT_var\<close>} as all
 members of type @{typ 'a} that denote (see~\nameref{AOT:AOT_model.AOT_Term} and the discussion
 in section~\ref{IndividualTermsAndClasses}). Any constant or variable name is internally decorated with the constant
@@ -4531,7 +4529,7 @@ of identity of @{text n}-place relations in AOT and a potential alternative defi
 We expect that a future more extensive analysis of this issue will,
 similarly to previous artifactual theorems, result in further theoretical insights,
 ultimately followed by either an enhancement of the formulation of AOT or a refined embedding, in
-which e.g. the above is provable not be theorem.
+which e.g. the above is provably not be theorem.
 
 
 Given our discussion of the general system of AOT in the previous chapter and its implementation in our

@@ -329,7 +329,7 @@ to number a property as follows (see~\nameref{AOT:numbers}):
 An abstract object @{term x} numbers a property @{term G}, if it encodes exactly those properties,
 such that @{emph \<open>actually exemplifying\<close>} them is equinumerous to @{term G}.
 An alternative choice would be to forgo the actuality operator and merely require that @{term x}
-encodes exactly those properties that are equinumerous to @{term F} itself.@{footnote \<open>In fact,
+encodes exactly those properties that are themselves equinumerous to @{term G}.@{footnote \<open>In fact,
 earlier versions of the construction used this definition (see e.g.~\cite{zalta1999}).\<close>}
  However, we noted in the last section that equinumerosity is (in general) not modally rigid, so
 such a definition would have the undesirable consequence that numbering properties would depend on modal context and
@@ -714,7 +714,7 @@ A rigid one-to-one relation is a relation that is one-to-one and rigid (see~\nam
 \end{quote}
 
 Since being a rigid one-to-one relation is a rigid restriction condition, we can introduce 
-restricted variables that range over them.@{footnote \<open>Recall the discussion of restricted variables in section~\ref{RestrictedVariables}.\<close>}
+well-behaved restricted variables that range over them.@{footnote \<open>Recall the discussion of restricted variables in section~\ref{RestrictedVariables}.\<close>}
 
 In the following we will use @{term \<R>} as a restricted variable ranging over rigid one-to-one relations.@{footnote \<open>Note
 that PLM uses $\underline{R}$. However, in our framework choosing @{term \<R>} is simpler for technical reasons.\<close>}
@@ -1294,6 +1294,14 @@ Hence, since @{term \<open>print_term \<guillemotleft>n = #G\<guillemotright>\<c
 the object that numbers @{term \<open>\<guillemotleft>[\<lambda>x \<^bold>\<A>[G]x \<or> x =\<^sub>E v]\<guillemotright>\<close>} can be used as witness for a successor of @{text n}.
 
 Uniqueness follows from the fact that the predecessor relation is functional.
+
+Hence it is possible to define @{emph \<open>the\<close>} successor @{term \<open>\<guillemotleft>n\<^bold>'\<guillemotright>\<close>} of a natural number as
+@{emph \<open>the\<close>} natural number that is preceded by m:
+\begin{quote}
+@{thm[display] "def-suc"[rename_abs _ _ x]}
+\end{quote}
+
+Numerals can be defined as iterative successors, e.g. @{thm "numerals:1"}.
 
 While PLM continues to derive further theorems of Number Theory, defines mathematical
 functions and operations, including recursively defined functions such as addition, and proceeds to
@@ -2016,8 +2024,8 @@ object that encodes only propositional properties.@{footnote \<open>Recall the d
 section~\ref{PossibleWorldTheory}.\<close>} So we can reuse the notation @{text \<open>T \<Turnstile> p\<close>} as
 the proposition @{text p} is true in theory @{text T}.
 
-One of the cornerstones of the analysis is the @{emph \<open>Importation Principle\<close>}, stated in
-(cite logicism) as follows:
+One of the cornerstones of the analysis is the @{emph \<open>Importation Principle\<close>},
+stated in~\cite{Logicism} as follows:
 
 \begin{quote}
   When @{text \<phi>} is a closed theorem of @{text T}, then @{text \<open>T \<Turnstile> \<phi>\<^sup>*\<close>} shall be
@@ -2046,7 +2054,7 @@ Furthermore, the involved indexed terms of ZF are in turn abstract objects in AO
 \end{quote}
 
 Exemplifying properties in ZF can be translated to encoding claims in AOT. E.g.
-in ZF, @{text \<open>\<emptyset>\<close>} exemplifies the property @{text \<open>[\<lambda>x \<not>\<exists>y([S\<^sub>Z\<^sub>F]y & y \<in>\<^sub>Z\<^sub>F x)]\<close>}. This
+in ZF, @{text \<open>\<emptyset>\<close>} exemplifies the property @{text \<open>[\<lambda>x \<not>\<exists>y([S]y & y \<in> x)]\<close>}. This
 property can be captured as an @{emph \<open>abstract property\<close>} in AOT that is @{emph \<open>encoded\<close>}
 by @{text \<open>\<emptyset>\<^sub>Z\<^sub>F\<close>}:@{footnote \<open>While @{text \<lambda>}-expressions in higher-order AOT are ordinary,
 theory-indexed @{text \<lambda>}-expressions are abstract.\<close>}
