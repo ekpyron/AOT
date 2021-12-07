@@ -1854,7 +1854,9 @@ infinite (i.e. either finite or in bijiection to the natural numbers), and requi
 domain of special urelements to be countably infinite.@{footnote \<open>In a more general
 construction, it would be sufficient to require there being countably infinitely many
 special urelements that serve as proxies for discernible objects, while allowing an
-arbitrary number of special urelements for indiscernible objects.\<close>}
+arbitrary number of special urelements for indiscernible objects. Interestingly, without
+the restriction that the size of the set of discernible objects is at most countably infinite,
+the model construction would depend on the generalized continuum hypothesis.\<close>}
 From this restriction it can be derived that the class of cardinal numbers that measure
 the size of sets of discernible objects is itself a countable set.@{footnote \<open>There is
 one cardinal number for finite sets of @{text n} discernibles and an additional cardinal for countably
@@ -1862,7 +1864,9 @@ infinite sets of discernibles.\<close>} Since abstract objects that number prope
 will be in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
 another variant mentioned below they will be in one-to-one correspondence with the cardinals of
 sets of arbitrary urelements.\<close>} they can thus injectively be mapped into the special
-urelements, making them discernible. Hence this validates the theorem that
+urelements, making them discernible.@{footnote \<open>Starting from a larger than countable set of discernible
+urelements would require a similar bound on the cardinality of the set of cardinals measuring sets of
+discernible objects. Such a bound could for example be provided by the generalized continuum hypothesis.\<close>} Hence this validates the theorem that
 @{emph \<open>numbering a property\<close>} denotes and consequently yields models for the predecessor
 axiom.
 
@@ -1886,7 +1890,7 @@ the predecessor axiom will become stronger and may have to rely
 on independent means of justification.
 
 Another similar variant of the construction, for which we have already constructed
-full models (TODO cite), does not restrict the domain of objects that can be counted at all, but
+full models (see~\cite{EmbeddingClasses}), does not restrict the domain of objects that can be counted at all, but
 instead of counting distinct objects rather counts equivalence classes of objects that
 are indistinguishable.@{footnote \<open>I.e. indistinguishable objects belong to the same equivalence class and
 objects belonging to different equivalence classes are distinguishable.\<close>} This involves weakening the unique existence used
@@ -2210,7 +2214,7 @@ chapter\<open>Conclusion\<close>
 text\<open>
 We presented an implementation of a foundational metaphysical theory
 in an automated reasoning environment by leveraging and extending the concept of
-shallow semantic embeddings in classical higher-order logic.
+\emph{shallow semantic embeddings} (SSEs) in classical higher-order logic.
 
 In the process, we could demonstrate that:
   \<^item> The SSE approach is scalable and can not only be used for analyzing isolated arguments,
@@ -2232,7 +2236,7 @@ In the process, we could demonstrate that:
     construct proofs that accurately correspond to derivations in the target system.
     This way we effectively arrive at a dedicated automated theorem proving environment for
     our target system, while retaining a verifiably consistent meta-logical backend.
-  \<^item> The target theory AOT itself can verifiably live up to its claim to be able to
+  \<^item> The target theory \emph{Abstract Object Theory} (AOT) itself can verifiably live up to its claim to be able to
     provide a philosophically grounded construction and analysis of natural mathematics.
     In particular, we can confirm that AOT can serve as a sound basis for a variant of
     Frege's construction of natural numbers. Furthermore, we could significantly contribute

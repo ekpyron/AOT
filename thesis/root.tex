@@ -22,6 +22,9 @@
 
 \usepackage{biblatex}
 
+\newboolean{druck}
+\setboolean{druck}{false}
+
 \AtEveryBibitem{%
   \iffieldundef{doi}{}{\clearfield{url}\clearfield{urldate}\clearfield{eprint}}%
 }
@@ -282,8 +285,31 @@
 \newcommand{\pidesymbigcup}{$\bigcup$}
 \newcommand{\pidesymsum}{$\sum$}
 
-
-
+\ifthenelse{\boolean{druck}}{
+\definecolor{pidekeyword1}{HTML}{000000}
+\definecolor{pidekeyword2}{HTML}{000000}
+\definecolor{pidekeyword3}{HTML}{000000}
+\definecolor{pidetext}{HTML}{000000}
+\definecolor{pidefree}{HTML}{000000}
+\definecolor{pidevar}{HTML}{000000}
+\definecolor{pidetfree}{HTML}{000000}
+\definecolor{pideskolem}{HTML}{000000}
+\definecolor{pidebound}{HTML}{000000}
+\definecolor{pidecomment1}{HTML}{000000}
+\definecolor{pidecomment2}{HTML}{000000}
+\definecolor{pidecomment3}{HTML}{000000}
+\definecolor{pideinnerquoted}{HTML}{000000}
+\definecolor{pideantiquote}{HTML}{000000}
+\definecolor{pidequasikeyword}{HTML}{000000}
+\definecolor{pideimproper}{HTML}{000000}
+\definecolor{pideantiquoted}{HTML}{000000}
+\definecolor{pidedynamic}{HTML}{000000}
+\definecolor{piderawtext}{HTML}{000000}
+\definecolor{pideinnernumeral}{HTML}{000000}
+\definecolor{pideclassparameter}{HTML}{000000}
+\definecolor{pideliteral}{HTML}{000000}
+\definecolor{pideoperator}{HTML}{000000}
+}{
 \definecolor{pidekeyword1}{HTML}{006699}
 \definecolor{pidekeyword2}{HTML}{009966}
 \definecolor{pidekeyword3}{HTML}{0066FF}
@@ -307,6 +333,7 @@
 \definecolor{pideclassparameter}{HTML}{D2691E}
 \definecolor{pideliteral}{HTML}{006699}
 \definecolor{pideoperator}{HTML}{323232}
+}
 
 \newenvironment{pidekeyword}{\bfseries}{}
 \newenvironment{pidekeyword1}{\color{pidekeyword1}\bfseries}{}
@@ -380,7 +407,7 @@
 \vspace{1cm}
 
 \begin{center}
-    \includegraphics[width=0.6\textwidth]{logo}
+    %\includegraphics[width=0.6\textwidth]{logo}
     \vspace{1cm}
 
 
@@ -423,9 +450,10 @@ SSEs are a means for universal logical reasoning that works by translating a tar
 
 In particular, we can verify Uri Nodelman's and Edward Zalta's reconstruction of Frege's theorem and confirm that the Peano-Dedekind postulates for natural numbers are derivable in AOT. Furthermore, we can suggest and discuss generalizations and variants of the construction and can thereby provide theoretical insights into, and contribute to the philosophical justification of, the construction.
 
-In the process, we can demonstrate that our method allows for a nearly transparent exchange of results between traditional pen-and-paper based reasoning and the computerized implementation, which in turn can retain the automation mechanisms available for Isabelle/HOL.
+In the process, we can demonstrate that our method allows for a nearly transparent exchange of results between traditional pen-and-paper-based reasoning and the computerized implementation, which in turn can retain the automation mechanisms available for Isabelle/HOL.
 
-During our work, we could significantly contribute to the evolution of our target theory itself, while simultaneously solving technical challenges of using an SSE to implement a theory that is based on significantly different logical foundations compared to the meta-logic HOL.
+During our work, we could significantly contribute to the evolution of our target theory itself, while simultaneously solving the technical challenge of using an SSE to implement a theory that is based on
+logical foundations that significantly differ from the meta-logic HOL.
 
 In general, our results demonstrate the fruitfulness of the practice of Computational Metaphysics, i.e. the application of computational methods to metaphysical theories.
 \end{abstract}
@@ -481,6 +509,24 @@ In general, our results demonstrate the fruitfulness of the practice of Computat
 
 \cleardoublepage
 
+\pagestyle{plain}
+
+\section*{Zusammenfassung der Ergebnisse}
+
+Wir pr\"asentieren die Implementierung einer metaphysischen Grundlagentheorie in einem automatischen Theorembeweiser mit Hilfe einer Erweiterung des Konzepts von \emph{shallow semantic embeddings} (SSEs) in klassischer Logik h\"oherer Stufe. Insbesondere k\"onnen wir folgende Punkte schlussfolgern:
+
+\begin{itemize}
+\item SSEs sind skalierbar und k\"onnen nicht nur für die Analyse einzelner Argumente verwendet werden, sondern k\"onnen auch auf komplette metaphysische Theorien angewendet werden, und deren Axiome und Deduktionssysteme pr\"azise darstellen.
+\item Eine solche Implementierung ist kein rein technisches Unterfangen, sondern kann zu einem fruchtvollen Austausch f\"uhren, der in unserem Fall einerseits zu signifikanten Verbesserungen der analysierten Theorie gef\"uhrt hat und andererseits neues Licht auf die technischen Möglichkeiten und Einschränkungen von SSEs werfen konnte.
+\item Es ist nicht nur möglich, die Logik eines komplexen Zielsystems technisch zu reproduzieren, sondern auch eine nahezu transparente Darstellung von Syntax und Beweisf\"uhrung im Zielsystem zu erreichen, was einen effizienten und einfachen Austausch von Ergebnissen zwischen traditioneller Beweisf\"uhrung von Hand und der computerbasierten Implementierung ermöglicht.
+\item Die Automatisierungsverfahren von Isabelle/HOL bleiben dabei erhalten und können dazu verwendet werden, Beweise im Zielsystem zu konstruieren, die den Deduktionsregeln des Zielsystems folgen. Dadurch erreichen wir effektiv einen dedizierten Theorembeweiser für unser Zielsystem auf der Grundlage einer verifizierbar konsistenten metalogischen Konstruktion.
+\item Unser Zielsystem \emph{Abstract Object Theory} (AOT) selbst wird verifizierbar seinem Anspruch gerecht, eine philosphisch fundierte Konstruktion und Analyse der nat\"urlichen Zahlen bieten zu k\"onnen. Insbesondere k\"onnen wir bestätigen, dass Frege's Konstruktion der nat\"urlichen Zahlen in AOT konsistent reproduziert werden kann. Dar\"uber hinaus konnten wir signifikant zur Weiterentwicklung der Konstruktion beitragen und k\"onnen zusätzliche Erkenntnisse \"uber die ben\"otigten Axiome beisteuern.
+\end{itemize}
+
+Interessanterweise stützen unsere Ergebnisse einerseits die Verwendung von klassischer Logik h\"oherer Stufe als universale Metalogik, nachdem wir demonstrieren konnten, dass mit Hilfe der SSE Methode selbst herausfordernde logische Fundamentaltheorien präzise einbettbar sind, während wir andererseits die Position unseres Zielsystems AOT als metaphysische Fundamentaltheorie st\"arken, nachdem wir best\"atigen k\"onnen, dass es eine philosphisch fundierte Konstruktion mathematischer Objekte erlaubt. In diesem Zusammenhang bilden die Implementierung und Analyse des vollen typentheoretischen Systems h\"oherer Ordnung von AOT mit Hilfe der SSE Methode, sowie die Analyse der relativen St\"arke dieses Systems im Vergleich zu HOL und ZF faszinierende Themen f\"ur zuk\"unftige Forschungsarbeit.
+
+\cleardoublepage
+
 \chapter*{Selbstst\"andigkeitserkl\"arung}
 \selectlanguage{ngerman}
 
@@ -510,9 +556,16 @@ Diese Arbeit wurde in gleicher oder \"ahnlicher Form noch bei keiner
 anderen Universit\"at als Pr\"ufungsleistung eingereicht und ist auch
 noch nicht ver\"offentlicht.
 
+\ifthenelse{\boolean{druck}}{
 \vspace{50pt}
 \noindent\hfill\rule{7cm}{.4pt}\par
    \hfill Daniel Kirchner
+}{
+\vspace{40pt}
+\hspace*{\fill}\makebox[4.5cm][l]{\includegraphics[width=4cm]{unterschrift}}\par
+\noindent\hfill\rule{5cm}{.4pt}\par
+   \hfill Daniel Kirchner
+}
 
 
 \end{document}

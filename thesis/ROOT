@@ -21,6 +21,6 @@ session "Thesis" in ".." = "HOL-Cardinals" +
   document_files (in "thesis")
     "root.tex"
     "theories.tex"
-    "logo.pdf"
+    "unterschrift.pdf"
     "pdfsetup.sty"
     "root.bib"

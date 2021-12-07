@@ -188,7 +188,7 @@ Initial results of our own research were reported in~\cite{MScThesis}, in which 
 version of the technique of SSEs to AOT. For AOT no extensive prior analysis of canonical models was available, in contrast to, for example,
 the extensive analysis of Kripke models for higher-order modal logic that served as theoretical
 basis for the previous work using SSEs mentioned above. While the so-called Aczel models of object theory
-(see~\cite{zalta1983abstract,zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
+(see~\cite{zalta1999}) provide an important building block for constructing models of AOT in HOL, no full
 set-theoretic model of object theory had been constructed. In \cite{MScThesis} we extended the
 existing Aczel models to a richer model structure that was capable of approximating the validity
 of statements of the at the time most recent formulation of the second-order fragment of AOT in Principia Logico-Metaphysica.@{footnote \<open>The
