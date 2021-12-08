@@ -4608,7 +4608,51 @@ We expect that a future more extensive analysis of this issue will,
 similarly to previous artifactual theorems, result in further theoretical insights,
 ultimately followed by either an enhancement of the formulation of AOT or a refined embedding, in
 which e.g. the above might provably not be a theorem.
+\<close>
 
+section\<open>Discussion\<close>
+
+text\<open>
+We have described an implementation of AOT in classical higher-order logic by means of an SSE that
+can accurately reproduce AOT's reasoning in an abstraction layer. While our semantic representation
+is not provably free of artifactual theorems, this can be explained due to the fact that AOT does
+not itself presuppose a strong and exhaustive @{emph \<open>intended semantics\<close>}, relative to which a completeness result
+could be achieved. On the contrary, the authors of AOT explicitly try to avoid for the axioms and deductive
+system of AOT to be @{emph \<open>driven by semantics\<close>}, but rather aspire to devise a philosophically
+justifiable formal system that stands independently of a set-theoretic semantics and in which
+notions like truth values and possible worlds can then be analysed as objects of the system itself:
+
+\blockquote{It is important to remember that the formal semantics simply provides
+a set-theoretic framework in which models of the metaphysical
+theory may be constructed. The models serve the heuristic purpose of
+helping us to visualize or picture the theory in a rigorous way. It is
+extremely important not to confuse the models of the theory with the
+world itself. \textelp{} So the goal of our enterprise is not to build a model, but rather to
+construct a formal theory that correctly mirrors the structure the world
+may have and, as a result, correctly reflects the entailments among the
+data.@{footnote \<open>Edward Zalta in~\cite{zalta1988intensional} section 2.4.\<close>}
+}
+
+Nevertheless, our semantic analysis could significantly contribute especially to the
+theoretical understanding of relation terms in AOT (and in particular the conditions under which
+they can be asserted to denote), which, after rigorous philosophical consideration,
+had a profound impact on the axiom system.
+
+While there are open questions e.g. concerning the identity of @{term n}-ary relation terms,
+we anticipate these questions to be the subject of future debate that will, similar to past examples of similar
+discussions, result in both theoretical insights and an improved implementation.
+
+A potential future refinement of the embedding may (1) instead of representing relations as
+proposition-valued functions define an intensional type of unary relations that is merely equipped with a
+surjective extension function and (2) represent @{text n}-ary relations (@{text \<open>n \<ge> 2\<close>}) directly as a suitably
+restricted subset of the set of tuples of @{text n}
+projection functions, each of which assigning @{text \<open>n-1\<close>} tuples of individuals an unary relation.@{footnote \<open>This
+construction would immediately validate the definition of @{text n}-ary relation identity while avoiding
+artifactual theorems without the need for additional null-urelements and a definition of @{emph \<open>regular\<close>} tuples
+of individual terms. However, such an implementation would increase the complexity of a generic implementation
+of @{text n}-ary relations using type classes, which is a pragmatic reason for attempting to further
+refine the implementation based on proposition-valued functions pending the results of a future
+discussion of @{text n}-ary relation identity and @{text \<open>\<eta>\<close>}-conversion.\<close>}
 
 Given our discussion of the general system of AOT in the previous chapter and its implementation in our
 embedding in this chapter, we are now suitably equipped to discuss our implementation
