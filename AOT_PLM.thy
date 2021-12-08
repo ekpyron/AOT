@@ -4378,29 +4378,29 @@ AOT_theorem "relations:2":
   using "relations:1" assms by blast
 
 AOT_theorem "block-paradox:1": \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
-proof(rule RAA(2))
-  let ?\<phi>="\<lambda> \<tau>. \<guillemotleft>\<exists>G (\<tau>[G] & \<not>[G]\<tau>)\<guillemotright>"
-  AOT_assume A: \<open>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<down>\<close>
-  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]))\<close>
+proof(rule "raa-cor:2")
+  let ?K="\<guillemotleft>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<guillemotright>"
+  AOT_assume A: \<open>\<guillemotleft>?K\<guillemotright>\<down>\<close>
+  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> F = \<guillemotleft>?K\<guillemotright>))\<close>
     using "A-objects"[axiom_inst] by fast
-  then AOT_obtain a where \<xi>: \<open>A!a & \<forall>F (a[F] \<equiv> F = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>])\<close>
+  then AOT_obtain a where \<xi>: \<open>A!a & \<forall>F (a[F] \<equiv> F = \<guillemotleft>?K\<guillemotright>)\<close>
     using "\<exists>E"[rotated] by blast
-  AOT_show \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
+  AOT_show \<open>p & \<not>p\<close> for p
   proof (rule "\<or>E"(1)[OF "exc-mid"]; rule "\<rightarrow>I")
-    AOT_assume B: \<open>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    AOT_assume B: \<open>[\<guillemotleft>?K\<guillemotright>]a\<close>
     AOT_hence \<open>\<exists>G (a[G] & \<not>[G]a)\<close>
       using "\<beta>\<rightarrow>C" A by blast
     then AOT_obtain P where \<open>a[P] & \<not>[P]a\<close>
       using "\<exists>E"[rotated] by blast
-    moreover AOT_have \<open>P = [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close>
+    moreover AOT_have \<open>P = [\<guillemotleft>?K\<guillemotright>]\<close>
       using \<xi>[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(1)]
             calculation[THEN "&E"(1)] by blast
-    ultimately AOT_have \<open>\<not>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    ultimately AOT_have \<open>\<not>[\<guillemotleft>?K\<guillemotright>]a\<close>
       using "rule=E" "&E"(2) by fast
-    AOT_thus \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
+    AOT_thus \<open>p & \<not>p\<close>
       using B RAA by blast
   next
-    AOT_assume B: \<open>\<not>[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    AOT_assume B: \<open>\<not>[\<guillemotleft>?K\<guillemotright>]a\<close>
     AOT_hence \<open>\<not>\<exists>G (a[G] & \<not>[G]a)\<close>
       using "\<beta>\<leftarrow>C" "cqt:2[const_var]"[of a, axiom_inst] A by blast
     AOT_hence C: \<open>\<forall>G \<not>(a[G] & \<not>[G]a)\<close>
@@ -4408,15 +4408,15 @@ proof(rule RAA(2))
     AOT_have \<open>\<forall>G (a[G] \<rightarrow> [G]a)\<close>
       by (AOT_subst \<open>a[G] \<rightarrow> [G]a\<close> \<open>\<not>(a[G] & \<not>[G]a)\<close> for: G)
          (auto simp: "oth-class-taut:1:a" C)
-    AOT_hence \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>] \<rightarrow> [\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]a\<close>
+    AOT_hence \<open>a[\<guillemotleft>?K\<guillemotright>] \<rightarrow> [\<guillemotleft>?K\<guillemotright>]a\<close>
       using "\<forall>E" A by blast
-    moreover AOT_have \<open>a[\<lambda>x \<guillemotleft>?\<phi> x\<guillemotright>]\<close>
+    moreover AOT_have \<open>a[\<guillemotleft>?K\<guillemotright>]\<close>
       using \<xi>[THEN "&E"(2), THEN "\<forall>E"(1), OF A, THEN "\<equiv>E"(2)]
       using "=I"(1)[OF A] by blast
-    ultimately AOT_show \<open>\<not>[\<lambda>x \<exists>G (x[G] & \<not>[G]x)]\<down>\<close>
+    ultimately AOT_show \<open>p & \<not>p\<close>
       using B "\<rightarrow>E" RAA by blast
   qed
-qed(simp)
+qed
 
 AOT_theorem "block-paradox:2": \<open>\<not>\<exists>F \<forall>x([F]x \<equiv> \<exists>G(x[G] & \<not>[G]x))\<close>
 proof(rule RAA(2))
