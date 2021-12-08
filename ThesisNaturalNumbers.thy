@@ -2241,7 +2241,7 @@ In the process, we could demonstrate that:
     In particular, we can confirm that AOT can serve as a sound basis for a variant of
     Frege's construction of natural numbers. Furthermore, we could significantly contribute
     to the evolution of this construction and provide further insights into the nature
-    of its required axioms.
+    of its required axioms, and into variants of the construction.
 
 Curiously, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
