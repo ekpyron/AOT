@@ -83,7 +83,7 @@ for the reuse of the automation infrastructure available for Isabelle/HOL.
 While our method can potentially be applied to a multitude of logical systems, AOT
 is a particularly well-suited target. On the one hand, it aims to be a foundational metaphysical system
 that can serve as the basis for mathematics and thereby stands in the tradition of Russell and
-Whitehead's Principia Mathematica~\cite{PrincipiaMathematica}, while in fact extending its scope to e.g. linguistics and
+Whitehead's Principia Mathematica, while in fact extending its scope to e.g. linguistics and
 the sciences in general (see~\cite{ObjectivesOfObjectTheory}). On the other hand, it is based on logical foundations that significantly differ
 from classical functional higher-order type-theory and were even argued to be incompatible (see~\cite{rtt}).
 Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
