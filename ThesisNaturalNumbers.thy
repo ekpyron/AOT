@@ -14,7 +14,7 @@ consists of ordinary, pretheoretic claims about mathematical objects
 and arises directly as abstraction of exemplification patterns rather
 than being based on the axioms of some mathematical theory (see item (304) in PLM~\cite{PLM-Oct-13-2021}).
 
-Following this idea, the claim of PLM's Chapter 14 is that natural numbers 
+Following this idea, the claim of PLM's chapter 14 is that natural numbers 
 can be naturally defined within object theory and the laws they abide by up to and including
 Second-Order Peano Arithmetic can be derived without having to appeal to any intrinsically mathematical
 axioms or notions.
@@ -30,11 +30,11 @@ foreseeable future.\<close>} and arrived at the following results:
   \<^item> We could suggest several amendments to the construction and discover and fix several
     minor errors and inconsistencies in the presentation.
 
-In particular, we can derive the Dedekind-Peano postulates about Natural Numbers as follows: (TODO: improve formulations and cite)
-    \<^enum> Zero is a Natural Number.
-    \<^enum> No Natural Number has Zero as its Successor.
-    \<^enum> If a Natural Number @{text k} succeeds the numbers @{text n} and @{text m}, then @{text \<open>n = m\<close>}.
-    \<^enum> Every Natural Number has a Successor.
+In particular, we can derive the Dedekind-Peano postulates about Natural Numbers as follows:
+    \<^enum> Zero is a natural number.
+    \<^enum> No natural number has Zero as its successor.
+    \<^enum> If a natural number @{text k} succeeds the numbers @{text n} and @{text m}, then @{text \<open>n = m\<close>}.
+    \<^enum> Every natural number has a Successor.
     \<^enum> Mathematical Induction:
       If (1) Zero exemplifies a property @{text F} and (2) for any number @{text n},
       it follows from the fact that @{text n} exemplifies @{text F} that the successor
@@ -186,8 +186,7 @@ need to be among objects that can be counted. While abstract objects in general 
 ordinary objects can always naturally be counted.
 Hence Nodelman and Zalta introduce the notion of one-to-one correspondences @{emph \<open>among the ordinary
 objects\<close>}. To that end, they introduce the restricted variables @{term u}, @{term v}, @{term r}, @{term s}
-that range over only the ordinary objects.@{footnote \<open>Recall the discussion about reproducing
-restricted variables in the embedding in section~\ref{RestrictedVariables}.\<close>} Using these restricted variables, a one-to-one
+that range over only the ordinary objects.@{footnote \<open>Recall the discussion of restricted variables in section~\ref{RestrictedVariables}.\<close>} Using these restricted variables, a one-to-one
 correspondence@{text \<open>\<^sub>E\<close>} among the ordinary objects can be defined in the same way as a full one-to-one
 correspondence (see~\nameref{AOT:equi:2}):
 
@@ -381,8 +380,8 @@ qed
 
 text\<open>
   Given the fact that we defined numbers by means of the properties they number, which in turn is - informally
-speaking - based on how many objects those properties exemplify, a natural definition of the number zero arises.
-The number zero is the object that numbers the empty property, to be more precise the number of
+speaking - based on how many objects those properties exemplify, a natural definition of the number Zero arises.
+The number Zero is the object that numbers the empty property, to be more precise the number of
 @{emph \<open>being a non-self-identical ordinary object\<close>} (see~\nameref{AOT:zero:1}).@{footnote \<open>To be precise being a
 non-self-identical@{text \<open>\<^sub>E\<close>} object (see section~\ref{IdentitySubE}).
 This distincation is non-trivial: While @{thm ord_eq_e_eq[of _ x, print_as_theorem]} is a theorem,
@@ -392,22 +391,22 @@ not even asserted @{emph \<open>a priori\<close>} that the latter even denotes a
 @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are not the same object
 @{emph \<open>a priori\<close>}, even though it is a theorem that they are identical. But this theorem
 has to appeal to the fact that both properties are equinumerous and to Hume's Theorem.
-Further examples of terms denoting the number zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
+Further examples of terms denoting the number Zero are @{term \<open>\<guillemotleft>#[\<lambda>x x \<noteq> x]\<guillemotright>\<close>} and
 @{term \<open>\<guillemotleft>#[\<lambda>x \<exists>p (p & \<not>p)]\<guillemotright>\<close>}.\<close>}
 
 \begin{quote}
 @{thm[display] "zero:1"}
 \end{quote}
 
-Note that while the above definition introduces the number zero as (abstract) object, we have not
-defined the notion of a @{emph \<open>Natural Number\<close>} yet, nor shown that the number zero indeed @{emph \<open>is\<close>} a
+Note that while the above definition introduces the number Zero as (abstract) object, we have not
+defined the notion of a @{emph \<open>Natural Number\<close>} yet, nor shown that the number Zero indeed @{emph \<open>is\<close>} a
 natural number. The definition of @{emph \<open>Natural Number\<close>} will rely on introducing a @{emph \<open>predecessor\<close>}
 relation and, intuitively speaking, defining that an abstract object is a natural number, if there is
-a series of objects starting at zero, ending at the given abstract object, s.t. two consecutive objects
+a series of objects starting at Zero, ending at the given abstract object, s.t. two consecutive objects
 in that series bear the predecessor relation to each other. While we will describe this construction
 in detail in the following sections, we can already define the strictly more general@{footnote \<open>It is
 a theorem that @{term \<open>\<guillemotleft>#O!\<guillemotright>\<close>} is a natural cardinal that is infinite and not a natural number (see~\nameref{AOT:inf-card-exist:2}).\<close>} notion of a
-@{emph \<open>Natural Cardinal\<close>} and it will immediately follow that zero is a natural cardinal.
+@{emph \<open>Natural Cardinal\<close>} and it will immediately follow that Zero is a natural cardinal.
 An object @{term x} is a natural cardinal, just in case that there is a property @{term G},
 s.t. @{term x} is the number of @{term G}s (see~\nameref{AOT:card}):
 
@@ -415,7 +414,7 @@ s.t. @{term x} is the number of @{term G}s (see~\nameref{AOT:card}):
 @{thm[display] card[of x]}
 \end{quote}
 
-By the definition of the number zero, it becomes immediately apparent that zero is a natural cardinal (see~\nameref{AOT:zero-card}):@{footnote \<open>However,
+By the definition of the number Zero, it becomes immediately apparent that Zero is a natural cardinal (see~\nameref{AOT:zero-card}):@{footnote \<open>However,
 note that the proof has to appeal to the fact that @{thm "num-def:2"[print_as_theorem, of G]} (see~\nameref{AOT:num-def:2}) as well as the
 fact that @{lemma \<open>print_as_theorem \<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<down>\<guillemotright>\<close> by (auto simp: print_as_theorem_def intro!: "cqt:2")} by axiom.\<close>}
 
@@ -444,7 +443,7 @@ In particular, using the number Zero as example, this means the following (see~\
 If and only if a property @{term F} is not @{emph \<open>actually\<close>} exemplified by any ordinary object,
 the number of that property is Zero. This may seem counter-intuitive at first: the stated theorem
 is modally-strict and thereby a @{emph \<open>necessary\<close>} fact. So in any possible world, even in worlds
-in which @{term F} could be exemplified, the number of @{term F} is still zero, if
+in which @{term F} could be exemplified, the number of @{term F} is still Zero, if
 @{term F} is not @{emph \<open>actually\<close>} exemplified. However, this is merely due to the fact that
 definite descriptions are rigid and themselves refer to objects in the actual world.
 
@@ -457,7 +456,7 @@ exemplified by any ordinary object (see~\nameref{AOT:0F:1}):
 \end{quote}
 
 I.e. Zero numbers empty properties in all possible worlds. A different take on this is the
-fact that any object that @{emph \<open>possibly\<close>} numbers a necessarily empty property is the number zero (see~\nameref{AOT:AOT_misc.PossiblyNumbersEmptyPropertyImpliesZero}):
+fact that any object that @{emph \<open>possibly\<close>} numbers a necessarily empty property is the number Zero (see~\nameref{AOT:AOT_misc.PossiblyNumbersEmptyPropertyImpliesZero}):
 \begin{quote}
 @{thm[display] PossiblyNumbersEmptyPropertyImpliesZero[of _ x, print_as_theorem]}
 \end{quote}
@@ -502,10 +501,10 @@ continuous sequence of natural numbers. Since our goal is to @{emph \<open>defin
 this traditional notion of a series is not an option.
 Instead we construct @{emph \<open>ancestral relations\<close>}. In particular the @{emph \<open>strong ancestral\<close>} of
 a relation will match the concept of the transitive closure of the relation.
-Natural numbers will be defined as the objects to which the number zero bears the
+Natural numbers will be defined as the objects to which the number Zero bears the
 @{emph \<open>weak ancestral\<close>} (i.e. the transitive and reflexive@{footnote \<open>We will see that reflexivity
-will have to be restricted to a specific domain.\<close>} closure) of the predecessor relation, i.e. the number zero itself or any
-object that is transitively preceded by zero.
+will have to be restricted to a specific domain.\<close>} closure) of the predecessor relation, i.e. the number Zero itself or any
+object that is transitively preceded by Zero.
 
 The first step in this process is to define being a @{emph \<open>hereditary\<close>} property with respect to
 a relation, which will lead to a definition of the @{emph \<open>strong ancestral\<close>} of a relation.
@@ -827,7 +826,7 @@ text\<open>
 I.e. if an object @{term z} exemplifies @{term F} and @{term F} is inherited via @{term R}, then
 any object that is transitively @{term R}-related to @{term z} exemplifies @{term F}.
 
-Pretend for a moment that @{term R} was a well-defined predecessor relation and @{term z} the number zero.
+Pretend for a moment that @{term R} was a well-defined predecessor relation and @{term z} the number Zero.
 Then this theorem would imply that if (1) @{term F} holds for Zero and
 (2) for any @{term x} and @{term y}, s.t. @{term x} precedes @{term y}, if @{term x} exemplifies
 @{term F}, then @{term y} exemplifies @{term F}, then @{term F} holds for all numbers transitively
@@ -855,7 +854,7 @@ arrive at the strengthened theorem.\<close>}
 
 In this formulation, the induction step merely ranges over objects to which @{term z} bears
 the weak ancestral relation of @{text \<open>\<R>\<close>}. Thinking of @{text \<open>\<R>\<close>} as the predecessor relation
-and @{term z} as the number zero, this will be exactly the natural numbers. I.e. instantiating this
+and @{term z} as the number Zero, this will be exactly the natural numbers. I.e. instantiating this
 generalized principle of induction to the predecessor relation and the number Zero,
 yields classical mathematical induction (relative to the upcoming definition of natural numbers).
 \<close>
@@ -909,7 +908,7 @@ The idea can be clarified by considering how the first natural numbers are relat
 subsection\<open>Assuring that the Predecessor Relation Denotes\<close>text\<open>\label{pred-denotes}\<close>
 
 text\<open>
-It is important to realize that the @{text \<open>\<lambda>\<close>}-expression used in above definition does not
+It is important to realize that the @{text \<open>\<lambda>\<close>}-expression used in the definition above does not
 trivially denote a relation in AOT.
 @{emph \<open>Numbering a property\<close>} is an encoding claim: an object numbers a property @{term G}, just in case
 it encodes all properties, s.t. actually exemplifying it is equinumerous to @{term G}.
@@ -920,8 +919,8 @@ In fact it is easy to see that the minimal model of AOT does not validate this a
 model contains one ordinary urelement (resp. one ordinary object) and one special urelement.
 Since special urelements determine the exemplification extensions of abstract objects, there being
 only one special urelement implies that all abstract objects exemplify the same properties and relations.
-This implies in particular that either all objects are preceded by zero or no object is, i.e.
-@{term \<open>\<guillemotleft>[\<P>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that zero is
+This implies in particular that either all objects are preceded by Zero (including Zero itself) or no object is, i.e.
+@{term \<open>\<guillemotleft>[\<P>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that Zero is
 not preceded by any object.@{footnote \<open>Both @{thm "no-pred-0:1"[print_as_theorem]} and @{thm "prec-facts:1"[print_as_theorem]} are formally 
 derived in~\nameref{AOT:no-pred-0:1}, resp.~\nameref{AOT:prec-facts:1}.\<close>} Hence in this model it would have to hold that @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}.
 However, since the minimal model still contains one ordinary object, the number One can be constructed
@@ -1018,7 +1017,7 @@ The first Dedekind-Peano postulate can now be derived (see~\nameref{AOT:0-n}):
 
 Interestingly, both in Frege's original work and in Zalta's initial reconstruction (see~\cite{zalta1999})
 the weak ancestral was defined using general identity and consequently @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} is a simple
-consequence of the fact that zero is self-identical. However, due to the construction via rigid one-to-one relations
+consequence of the fact that Zero is self-identical. However, due to the construction via rigid one-to-one relations
 this theorem requires a non-trivial proof: @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} by definition is just the case if either
 @{term \<open>\<guillemotleft>[\<P>]\<^sup>*0 0\<guillemotright>\<close>} (which was already refuted above) or @{term \<open>\<guillemotleft>0 =\<^sub>\<P> 0\<guillemotright>\<close>}.
 
@@ -1062,7 +1061,7 @@ section\<open>Zero Has No Predecessor\<close>
 text\<open>
 We have already mentioned the fact that @{thm "no-pred-0:1"[print_as_theorem]} above, but we can
 now restate this theorem @{emph \<open>a fortiori\<close>} for variables restricted to natural numbers, which
-constitutes the second Dedkind-Peano postulate (as mentioned earlier this formulation is equivalent to
+constitutes the second Dedekind-Peano postulate (as mentioned earlier this formulation is equivalent to
 the assertion that Zero is not the successor of any natural number; see~\nameref{AOT:0-pred}):
 
 \begin{quote}
@@ -1095,7 +1094,7 @@ Futhermore, we can now derive Mathematical Induction (see~\nameref{AOT:induction
 @{thm induction[print_as_theorem]}
 \end{quote}
 
-If a property (1) is exemplified by the number zero and (2) it being exemplified by a
+If a property (1) is exemplified by the number Zero and (2) it being exemplified by a
 natural number implies it being exemplified by its successor, then
 all natural numbers exemplify that property.@{footnote \<open>Note that, strictly speaking, our natural language formulation
 rather corresponds to the derived theorem @{thm induction'[print_as_theorem]} (see~\nameref{AOT:AOT_misc.induction'}),
@@ -1359,8 +1358,8 @@ those properties on the @{emph \<open>ordinary\<close>} objects.
 In our models, two abstract objects are exemplification-distinguishable, if they are mapped to distinct
 @{emph \<open>special urelements\<close>}. If we wanted to be able to distinguish between abstract objects
 in general based on the exemplification patterns of the properties they encode, this would mean that
-there had to be a distinct @{emph \<open>special urelements\<close>} for any set of such patterns. Exemplification patterns
-are functions from @{emph \<open>urelements\<close>} (including special urelements) to modal
+there had to be a distinct @{emph \<open>special urelements\<close>} for any such patterns. Exemplification is
+a functions from @{emph \<open>urelements\<close>} (including special urelements) to modal
 truth conditions (i.e. functions from semantic possible worlds to booleans).
 
 Therefore, if we wanted to assign distinct special urelements based on @{emph \<open>general\<close>} exemplification
@@ -1377,7 +1376,8 @@ In our general models we choose an @{emph \<open>abstract\<close>} type @{typ \<
 we allow any non-empty domain for @{typ \<sigma>} in models of the meta-logic without restriction.\<close>}
 In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} the
 type @{typ \<sigma>} using the set of objects of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
-as representation set.
+as representation set.@{footnote \<open>A subset of the set of such triples @{term \<open>(a,b,s)\<close>}, in which @{term \<open>a = b\<close>}
+implies @{term \<open>s = s\<^sub>0\<close>} for some fixed @{term \<open>s\<^sub>0\<close>} would suffice.\<close>}
 
 Recall that the type @{typ \<omega>} is the type of ordinary urelements and @{typ w} is the type of
 semantic possible worlds. @{typ \<sigma>'} is an additional abstract type of @{emph \<open>very special urelements\<close>}
@@ -1438,8 +1438,8 @@ denote (see~\nameref{AOT:AOT_ExtendedRelationComprehension.Comprehension_1},~\na
 @{thm[display] Comprehension_1[of _ \<phi>, print_as_theorem] Comprehension_2[of _ \<phi>, print_as_theorem]}
 \end{quote}
 
-We call @{term \<phi>} a @{emph \<open>condition on extensions on ordinary objects\<close>}, just in case that
-@{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<guillemotright>\<close>}.
+We call @{term \<phi>} a @{emph \<open>condition on extensions on ordinary objects\<close>}, just in case it satisfies the antecedent, i.e.
+just in case that @{term \<open>print_as_theorem \<guillemotleft>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<guillemotright>\<close>}.
 Then the comprehension principles state that for any condition @{term \<phi>} on extensions on ordinary objects,
 both @{emph \<open>encoding a property that satisfies @{term \<phi>}\<close>} and
 @{emph \<open>not encoding a property that satisfies @{term \<phi>}\<close>} denote properties.@{footnote \<open>See
@@ -1729,7 +1729,7 @@ not @{emph \<open>actually\<close>}, but merely @{emph \<open>possibly\<close>} 
 While deriving the axiom from this change in the model is still non-trivial, we can prove (notably,
 our proof relies on the extended relation comprehension principles we introduced for modelling the
 predecessor relation as well as AOT's defined mathematical induction), that @{emph \<open>being a natural number\<close>} in the models
-corresponds to encoding only properties that are actually exemplified by only finitely many
+implies encoding only properties that are actually exemplified by only finitely many
 ordinary objects. Thereby, whenever a natural number numbers a property, it is only actually
 exemplified by a finite number of ordinary objects and since we have required infinitely many
 ordinary objects in our model, we can produce a witness to the claim of the axiom (modulo
@@ -1858,8 +1858,8 @@ arbitrary number of special urelements for indiscernible objects. Interestingly,
 the restriction that the size of the set of discernible objects is at most countably infinite,
 the model construction would depend on the generalized continuum hypothesis.\<close>}
 From this restriction it can be derived that the class of cardinal numbers that measure
-the size of sets of discernible objects is itself a countable set.@{footnote \<open>There is
-one cardinal number for finite sets of @{text n} discernibles and an additional cardinal for countably
+the size of sets of discernible objects is itself a countable set.@{footnote \<open>For every @{text n}, there is
+one cardinal number for finite sets of @{text n} discernibles, and additionally there is one cardinal for countably
 infinite sets of discernibles.\<close>} Since abstract objects that number properties
 will be in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
 another variant mentioned below they will be in one-to-one correspondence with the cardinals of
@@ -2020,7 +2020,7 @@ section\<open>Applications to Theoretical Mathematics\<close>
 
 text\<open>
 The analysis of Theoretical Mathematics in higher-order object theory was described
-in (TODO: cite) and a simplified version is used in~\cite{Logicism}.
+in (TODO: cite) and a variant is discussed in~\cite{Logicism}.
 
 While a full-discussion of the involved subtleties again goes beyond the scope of this
 thesis, we illustrate the general idea at the example of the representation of
@@ -2072,7 +2072,7 @@ theory-indexed @{text \<lambda>}-expressions are abstract.\<close>}
 
 While a detailed account of the construction and its implications is the topic of
 the upcoming paper~\cite{Logicism}, we will discuss the general issue of embedding
-higher-order AOT in Isabelle/HOL in the next section.
+higher-order AOT in Isabelle/HOL in the next sections.
 \<close>
 
 section\<open>Bounded Models\<close>
@@ -2205,7 +2205,7 @@ on par with or even exceed the expressive power of this choice of a meta-logic. 
 out to be the case, it may be possible to construct a representation based on a stronger
 extension of Isabelle/HOL, for example HOLZF or one of its variants (TODO: cite), which
 axiomatizes the ZFC universe itself as a type in HOL. The feasibility of such an embedding
-as well as results about the relative strength of higher-order object theory, are
+as well as the question of the relative strength of higher-order object theory compared to HOL, are
 interesting questions for future research.
 \<close>
 

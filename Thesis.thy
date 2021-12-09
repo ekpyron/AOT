@@ -68,7 +68,7 @@ grounded in set theory or traditional functional higher-order type theory.
 text\<open>
 The following represents an attempt at overcoming this issue. We utilize the concept of a
 @{emph \<open>shallow semantic embedding\<close>} (SSE) with abstraction layers to transfer the merits of
-the sophisticated interactive and automated reasoning system Isabelle/HOL to a fundamentally
+the reasoning environment of Isabelle/HOL to a fundamentally
 different foundational system, namely to Abstract Object Theory (AOT).
 
 While it is not a requirement for our proposed general method, we demonstrate that
@@ -88,9 +88,9 @@ the sciences in general (see~\cite{ObjectivesOfObjectTheory}). On the other hand
 from classical functional higher-order type-theory and were even argued to be incompatible (see~\cite{rtt}).
 Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
 models and semantics for such a system can be beneficial and vital for its soundness (see~\ref{NewParadox}).
-During our continued work we could contribute to the evolution of AOT and
-simultaneously arrived at a faithful representation of its model structure, semantics and
-deductive system in Isabelle/HOL that can utilize the existing automated reasoning infrastructure.\footnote{Note,
+During our continued work, we could contribute to the evolution of AOT and
+simultaneously arrived at a model structure and semantics that allows to faithfully
+reproduce its deductive system in Isabelle/HOL while retaining the existing infrastructure for automated reasoning.\footnote{Note,
 however, that our embedding currently only extends to the second-order fragment of AOT.
 We briefly discuss the challenges of representing full higher-order object theory in chapter~\ref{HigherOrderAOT}.}
 
@@ -201,6 +201,11 @@ in general and in the application of computational methods to metaphysical quest
 logical theories in particular. Some of the more recent developments in this area are outlined in the following sections.
 \<close>
 *)
+text\<open>
+Since the times of Russell and the Logic Theorist, there has been significant progress both in the development of automated theorem provers
+in general and in the application of computational methods to metaphysical questions and foundational
+logical theories in particular. Some of the more recent developments in this area are outlined in the following sections.
+\<close>
 subsection\<open>Prior Computational Analysis of Abstract Object Theory\<close>
 
 text\<open>
@@ -212,7 +217,7 @@ verify the proofs of the theorems in AOT's analysis of situations and possible w
 that was left as an exercise.
 Other work with Prover9 that does not target AOT includes the simplification of the reconstruction
 of Anselm's ontological argument (in \cite{OppenheimerZalta2011}, Oppenheimer and Zalta show that
-only one of the three premises they used in \cite{OppenheimerZalta1991} (TODO: check citation and doi) is sufficient) or the
+only one of the three premises they used in \cite{OppenheimerZalta1991} is sufficient) or the
 reconstruction of theorems in Spinoza's @{emph \<open>Ethics\<close>} in \cite{SpinozaProver9}.
 
 However, there are inherent limitations to the approach of analyzing higher-order theories like AOT
@@ -247,7 +252,6 @@ by means of embedding modal operators based on their Kripke semantics in
 analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
 such as KB (see~\cite{GoedelGod}), followed by a range of studies of similar ontological
 arguments (see e.g.~\cite{LeibnizOntologicalArgument}).
-TODO: check citations.
 
 Another more recent example of the application of SSEs is the LogiKEy framework for
 ethical reasoning, normative theories and deontic logics (see~\cite{LogiKEy} and~\cite{LogiKEyData}).
@@ -496,7 +500,7 @@ developed for several decades like e.g. Isabelle/HOL.
 
 While we already mentioned a variety of results that were achieved using this general
 method (see section~\ref{PriorSSEs}), in the following we will demonstrate the
-process of building an SSE with a simple example.
+process of building such an SSE at a simple example.
 \<close>
 
 section\<open>SSE of Quantified Higher-Order Modal Logic\<close>text\<open>\label{SimpleS5}\<close>
@@ -738,7 +742,7 @@ text\<open>
 While abstraction layers provide a means to insulate reasoning in our embedding from artifactual theorems (i.e. theorems
 that are merely semantically valid but not derivable in the target theory), we additionally
 use Isabelle's native abstraction mechanisms. This serves to establish an additional intermediate
-abstraction between the concrete model construction and the derivation of the axiom and derivational
+abstraction between the concrete model construction and the derivation of the axioms and deductive
 system of the target theory, which helps in exploring changes to the model structure without
 having to adjust the full derivation of the abstraction layer.
 \<close>
@@ -918,8 +922,8 @@ Technically, a @{command locale} (see~\S5.7~in~\cite{IsarRef}) is a functor that
 to a list of declarations. In practice, this can be used to reason
 relative to abstract parameters that validate a set of assumptions and then @{command interpret}
 the @{command locale} by proving the assumptions for a concrete instantiation of its
-parameters. As a result of this interpretation of the locale, all declarations of and
-in particular all theorems proven in the locale will be instantiated to the given parameters
+parameters. As a result of this interpretation of the locale, all declarations of, and
+in particular all theorems proven in, the locale will be instantiated to the given parameters
 and added to the theory context. Similarly to @{command specification}s, a limitation
 of @{command locale}s is that they cannot involve polymorphic assumptions, which prevents
 us from formulating the full system of AOT abstractly as a single locale.
@@ -934,7 +938,7 @@ may depend on additional types that can be restricted to certain type classes, r
 sorts.\<close>} by proving that the assumptions are satisfied for a concrete definition of
 the locale parameters at that type. 
 
-For example, it is possible to instantiate a type class for products of two generic types
+For example, it is possible to instantiate a type class to products of two generic types
 (i.e. type variables) of specific sorts. We use this mechanism to inductively define
 properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{IndividualTermsAndClasses}).
 
@@ -1244,7 +1248,7 @@ forms, possible worlds, natural numbers, logically-defined sets, etc.
 Another crucial aspect of the theory is its hyperintensionality:
 Relation identity is defined in terms of encoding rather than
 in terms of exemplification. Two properties @{term F} and @{term G} are stipulated to be identical if they are
-necessarily @{emph \<open>encoded\<close>} by the same abstract objects (@{thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}).\footnote{Traditionally,
+necessarily @{emph \<open>encoded\<close>} by the same abstract objects (\mbox{@{thm "identity:2"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "cqt:2[const_var]"[axiom_inst], OF "cqt:2[const_var]"[axiom_inst], of _ F G, print_as_theorem]}}).\footnote{Traditionally,
 one might expect properties to be identical, if they are necessarily @{emph \<open>exemplified\<close>} by the same objects instead.}
 The theory does not impose any restrictions on the properties encoded by a particular abstract
 object. For example, the fact that an abstract object encodes the
@@ -1736,8 +1740,9 @@ the embedding as follows (see~\nameref{AOT:df-rules-formulas[1]}):
 \end{quote}
 
 In other words, a definition-by-equivalence of the form @{text \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close>} introduces the closures of
-@{text \<open>\<phi> \<rightarrow> \<psi>\<close>} and @{text \<open>\<psi> \<rightarrow> \<phi>\<close>} as necessary axioms.@{footnote \<open>Therefore the rule in the appendix
-has to be derived from the semantics.\<close>}
+@{text \<open>\<phi> \<rightarrow> \<psi>\<close>} and @{text \<open>\<psi> \<rightarrow> \<phi>\<close>} as necessary axioms.@{footnote \<open>Therefore, the rule has axiomatic
+character and also has to be derived from the semantics in the appendix. The same is true for the
+rule of definition by identity below.\<close>}
 
 The principle that a definition-by-equivalence in fact implies definiens and definiendum to
 be equivalent becomes a derived rule (see~\nameref{AOT:rule-eq-df:1}):
@@ -1782,7 +1787,7 @@ subsubsection\<open>Definitions by Identity\<close>
 
 text\<open>
 A subtlety in definitions by identity is the question of when a defined term denotes.
-This is made explicit in the formulation of the Rule of Definition by Identity (see~\nameref{AOT:df-rules-terms[1]}):
+This is made explicit in the formulation of the @{emph \<open>Rule of Definition by Identity\<close>} (see~\nameref{AOT:df-rules-terms[1]}):
 
 \begin{quote}
 @{thm[display] "df-rules-terms[1]"[axiom_inst, print_as_rule, of \<tau> \<sigma> _ \<tau>\<^sub>1\<tau>\<^sub>n]}
@@ -2093,7 +2098,7 @@ A property @{term F} is propositional, just in case that there is a proposition 
 
 Being a situation is a @{emph \<open>rigid restriction condition\<close>},@{footnote \<open>Note that by
 @{emph \<open>being a situation\<close>} we refer to the @{emph \<open>formula\<close>} @{emph \<open>Situation(x)\<close>} in this case. The term
-@{term \<open>\<guillemotleft>[\<lambda>x Situation(x)]\<guillemotright>\<close>} is not guaranteed to denote. Similarly for @{emph \<open>being a possible world\<close>} below.\<close>} so as explained in
+\mbox{@{term \<open>\<guillemotleft>[\<lambda>x Situation(x)]\<guillemotright>\<close>}} is not guaranteed to denote. Similarly for @{emph \<open>being a possible world\<close>} below.\<close>} so as explained in
 section~\ref{RestrictedVariables}, we can use @{text s} as a restricted variable that ranges
 over situations. A situation makes a proposition true, written @{term \<open>print_as_theorem \<guillemotleft>s \<Turnstile> p\<guillemotright>\<close>}, just
 in case it encodes @{term \<open>\<guillemotleft>[\<lambda>y p]\<guillemotright>\<close>}:\footnote{Note that the double turnstile symbol @{text \<open>\<Turnstile>\<close>} used here
@@ -2146,7 +2151,8 @@ A proposition is possible, just in case @{emph \<open>some\<close>} possible wor
 and necessary, just in case @{emph \<open>every\<close>} possible world makes it true.
 
 Furthermore, it can be shown that the basic connectives and quantifiers are well-behaved
-with respect to being true in a possible world, i.e. (see~\nameref{AOT:conj-dist-w:1} and following):
+with respect to being true in a possible world, i.e. (see~\nameref{AOT:conj-dist-w:1} and following):@{footnote \<open>Notably,
+the proofs of the last two theorems were contributed to AOT on the basis of proofs in our embedding.\<close>}
 
   \<^item> @{thm[display] "conj-dist-w:1"[print_as_theorem, of w p q]}
   \<^item> @{thm[display] "conj-dist-w:2"[print_as_theorem, of w p q]}
@@ -2176,7 +2182,7 @@ AOT_register_variable_names
   Relation: K
 (*>*)
 text\<open>
-Naive formulation of AOT, in which all @{text \<open>\<lambda>\<close>}-expression are assumed to
+Naive formulations of AOT, in which all @{text \<open>\<lambda>\<close>}-expression are assumed to
 denote relations, are subject to the Clark-Boolos Paradox.@{footnote \<open>The paradox was
 discovered by Romane Clark in a formalization of Meinong's theories by William Rapaport who
 reported it in~\cite{Rapaport}, p. 225. Independently, George Boolos constructs the same
@@ -2186,7 +2192,7 @@ Frege's foundations of arithmetic.\<close>}
 In particular consider the @{text \<open>\<lambda>\<close>}-expression @{term \<open>\<guillemotleft>[\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}, i.e.
 @{emph \<open>being an object, s.t. there is a property it encodes, but does not exemplify\<close>}.
 The assumption that this property denotes leads to paradox (see~\nameref{AOT:block-paradox:1}):
-Assuming that the @{text \<open>\<lambda>\<close>}-expression denotes, call if @{term K}, s.t. 
+Assuming that the @{text \<open>\<lambda>\<close>}-expression denotes, call it @{term K}, s.t. 
 @{term \<open>\<guillemotleft>K = [\<lambda>x \<exists>F (x[F] & \<not>[F]x)]\<guillemotright>\<close>}.
 By the comprehension principle of abstract objects, there is an abstract object @{term a}
 that encodes exactly @{term K} and no other properties.
@@ -2208,7 +2214,7 @@ formulation of these provisos made it possible to reintroduce the paradox as des
 in the next section.
 
 In the current formulation of PLM, the paradoxical @{text \<open>\<lambda>\<close>}-expression is well-formed, but
-does not fall under the second quantifier axiom that stipulates base cases of denoting terms (see~\ref{AxiomSystem}):
+does not fall under the axiom that stipulates base cases of denoting terms (see~\ref{AxiomSystem}):
 The initial @{text \<open>\<lambda>\<close>} binds a variable that occurs in an encoding formula subterm.
 
 Given that the assumption that the @{text \<open>\<lambda>\<close>}-expression denotes leads to contradiction,
@@ -2341,7 +2347,7 @@ with propositional matrix) generally denote, but instead excluded @{text \<open>
 contain definite descriptions from the base cases of axiomatically denoting terms.
 
 The coexistence axiom allowed to safely derive that certain @{text \<open>\<lambda>\<close>}-expressions involving
-definite descriptions may still denote: Whenever it is possible to eliminate a description
+definite descriptions may still denote: Whenever it was possible to eliminate a description
 from the matrix of a @{text \<open>\<lambda>\<close>}-expression using a description-free propositional formula
 that is necessarily equivalent on all objects, it was safe to derive that the @{text \<open>\<lambda>\<close>}-expression denotes. 
 
@@ -2645,7 +2651,7 @@ in the next chapter.
 
 chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<close>
 
-section\<open>Model\<close>
+section\<open>Model Construction\<close>
 
 text\<open>
 While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
@@ -3176,9 +3182,10 @@ able to e.g. translate the term @{term \<open>print_as_theorem \<guillemotleft>[
 @{text \<open>AOT_exe \<Pi> (\<kappa>,\<kappa>')\<close>}. The 2-ary exemplification formula is translated to
 an application of the constant @{const AOT_exe} to the relation term and a tuple of
 individual terms. Similarly, @{term \<open>print_as_theorem \<guillemotleft>\<kappa>\<kappa>'[\<Pi>]\<guillemotright>\<close>} is translated to
-@{text \<open>AOT_enc (\<kappa>,\<kappa>') \<Pi>\<close>}. The involved constants are introduced in~\ref{AOT:AOT_syntax}
+@{text \<open>AOT_enc (\<kappa>,\<kappa>') \<Pi>\<close>}. Involved constants are introduced in~\ref{AOT:AOT_syntax}
 as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which are only
-later enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).
+later enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).@{footnote \<open>Encoding, @{const AOT_enc},
+is a parameter of a type class; see~\nameref{AOT:AOT_semantics.AOT_Enc}.\<close>}
 
 Furthermore, PLM associates the symbols used for its terms with their types, as described in
 section~\ref{AOTLanguage}. While it is possible to rely on Isabelle's type inference,
@@ -3192,7 +3199,10 @@ both for unary terms and tuples. We then allow registering symbols as variables 
 metavariables of the given category with @{command AOT_register_variable_names} and
 @{command AOT_register_metavariable_names}. The extensible design allows for reproducing
 AOT's concept of @{emph \<open>restricted variables\<close>} (see~\ref{RestrictedVariables}) by further
-associating a term category with a restriction condition (see~\ref{AOT:AOT_RestrictedVariables}).
+associating a term category with a restriction condition (see~\ref{AOT:AOT_RestrictedVariables}).@{footnote \<open>The restriction
+condition will be added when parsing quantifiers using restricted variables. For rigidly restricted variables a sub-type is
+introduced that is restricted to all terms that satisfy the restriction condition, allowing to add the restriction condition as
+axiom for objects of this restricted type.\<close>}
 
 A danger in the extensive use of complex custom syntax is silent errors in the syntactic
 translations that could result in an expression to be parsed contrary to their intended
@@ -3231,7 +3241,7 @@ section\<open>Extending Isabelle's Outer Syntax\<close>text\<open>\label{AOTOute
 text\<open>
 
 While the syntax transformations described in the last section go a long way in
-allowing the intuitive statement of propositions of AOT, @{emph \<open>reasoning\<close>}
+allowing the intuitive statement of terms and formulas of AOT, @{emph \<open>reasoning\<close>}
 in the target logic entails additional challenges.
 
 For example, reasoning in the embedding involves keeping track of the semantic
@@ -3332,7 +3342,7 @@ In~\ref{AOT:AOT_semantics}, we derive an abstract semantics for the primitive (a
 some of the basic defined) language elements of AOT. This layer of abstraction is still allowed
 to refer to the details of the model construction, but attempts to only derive just the
 properties of the models that are required to easily derive the axiom system and fundamental
-metarules of AOT later.
+meta-rules of AOT later.
 
 The defined semantics heavily relies on Isabelle's @{command specification} command to
 abstract specific model choices to more general semantic properties.
@@ -3436,8 +3446,7 @@ definition \<o>\<^sub>2_conj'' (infixl \<open>\<^bold>\<and>''''\<close> 100) wh
   \<open>(\<^bold>\<and>'') \<equiv> SOME conj . \<forall> \<phi> \<psi> . valid_\<o>\<^sub>2 (conj \<phi> \<psi>) = (valid_\<o>\<^sub>2 \<phi> \<and> valid_\<o>\<^sub>2 \<psi>)\<close>
 
 text\<open>
-This way, the extensionality of the Hilbert-Epsilon-operator reduces to the fact that
-our conjunction has any property that is true for @{emph \<open>all possible\<close>} functions
+This way, our conjunction has any property that is true for @{emph \<open>all possible\<close>} functions
 that behave as conjunction under validity. In other words, any choice
 for a concrete conjunction is admissible, including intensional ones, as long as
 it has our required extensional property under validity.@{footnote \<open>Note, however,
@@ -3449,12 +3458,31 @@ statements are transformed to closed terms by universal generalization and combi
 via conjunction and the result is used as the matrix of the Hilbert-Epsilon-operator.
 Given the provided witness, the desired properties of the Hilbert-Epsilon
 term become derivable.
+
+Note that the extensionality of the Hilbert-Epsilon operator still implies that any
+other operator defined using a meta-logically equivalent condition is identical, i.e.:
+\<close>
+
+definition \<o>\<^sub>2_conj''' (infixl \<open>\<^bold>\<and>''''''\<close> 100) where
+  \<open>(\<^bold>\<and>''') \<equiv> SOME conj . \<forall> \<phi> \<psi> . (valid_\<o>\<^sub>2 \<psi> \<and> valid_\<o>\<^sub>2 \<phi>) = valid_\<o>\<^sub>2 (conj \<phi> \<psi>)\<close>
+
+lemma \<open>(\<^bold>\<and>'') = (\<^bold>\<and>''')\<close>
+  by (auto intro!: Eps_cong simp: \<o>\<^sub>2_conj'''_def \<o>\<^sub>2_conj''_def)
+
+text\<open>
+To avoid this issue completely, we would need to introduce an additional dependency
+on a meta-logical parameter that is allowed to vary across otherwise meta-logically
+equivalent definitions.@{footnote \<open>Note that @{command nitpick} has specific support for the @{command specification} command:
+it ignores the underlying definition using the Hilbert-Epsilon operator, and instead solely considers the given specification, see~\cite{Nitpick}.
+In that sense, the underlying definition of a @{command specification} is commonly treated
+as part of an inaccessible implementational detail of an abstraction layer,
+even in the meta-logic HOL itself.\<close>}
 \<close>
 
 section\<open>Axiom System and Deductive System\<close>
 text\<open>
 The axiom system as derived in the embedding was already described in
-section~\ref{AxiomSystem} and the fundamental metarules were mentioned in
+section~\ref{AxiomSystem} and the fundamental meta-rules were mentioned in
 section~\ref{DeductiveSystem}. By construction, most of them can be derived from the
 abstract semantics using simple, automatically generated proofs.
 
@@ -3838,7 +3866,7 @@ is introduced (see~\nameref{AOT:AOT_PLM.unvarify}), which takes the variable to 
 generalized as argument and automatically performs the required transformation on
 the theorem. Similarly, the attribute @{attribute unconstrain} (see~\nameref{AOT:AOT_RestrictedVariables.unconstrain})
 can be used to transform a theorem formulated with restricted variables to a theorem
-involving unconstrained variables with the assumption that they satisfy the restriction
+involving unconstrained variables with the added precondition that they satisfy the restriction
 condition of the restricted variable.
 \<close>
 
@@ -4299,7 +4327,7 @@ arbitrary terms of a given type in place of its meta-variables.
 
 The @{emph \<open>@{text \<open>\<Longrightarrow>\<close>}-intro\<close>} and @{emph \<open>@{text \<open>\<Longrightarrow>\<close>}-elim\<close>} rules correspond
 to the deduction theorem (PLM item (75)), which states that if @{text \<open>\<Gamma>, \<phi> \<turnstile> \<psi>\<close>},
-then @{text \<open>\<Gamma> \<turnstile> (\<phi> \<rightarrow> \<psi>)\<close>} and the metarule stated in PLM item (63.5) stating
+then @{text \<open>\<Gamma> \<turnstile> (\<phi> \<rightarrow> \<psi>)\<close>} and the meta-rule stated in PLM item (63.5) stating
 that if @{text \<open>\<Gamma>\<^sub>1 \<turnstile> \<phi>\<close>} and @{text \<open>\<Gamma>\<^sub>2 \<turnstile> (\<phi> \<rightarrow> \<psi>)\<close>}, then @{text \<open>\<Gamma>\<^sub>1,\<Gamma>\<^sub>2 \<turnstile> \<psi>\<close>}.
 
 Furthermore, Pure is equipped with a primitive equality that allows for
@@ -4326,16 +4354,16 @@ embedding shows that derivations of PLM can be reproduced in the embedding.
 section\<open>Artifactual Theorems\<close>
 
 text\<open>Artifactual Theorems are theorems that are valid in a concrete model, respectively
-valid with respect to a concrete defined semantics, but which are not derivable from
+valid with respect to a concretely defined semantics, but which are not derivable from
 a formal system itself.
 
 The abstraction layer we define in our embedding aims to disallow deriving artifactual
-theorems by restricting proofs to solely rely on the implementation of the axiom system and
-derivation rules of AOT itself.
+theorems by restricting proofs to solely rely on the implementation of the axioms and
+deduction rules of AOT itself.
 We have discussed in section~\ref{MetaTheorems} that for technical reasons the
 embedding collapses certain classes of statements (e.g. alphabetic variants), but that
 this merely extends to statements that are interderivable in AOT itself. As a result
-we can reasonably assume that well-formed statement of AOT that are provable in the abstraction layer of
+we can reasonably assume that well-formed statements of AOT that are provable in the abstraction layer of
 our embedding also have a derivation in AOT.
 
 Nonetheless, it is still a valid question whether the underlying semantics and model structure
@@ -4343,22 +4371,22 @@ used in the construction of this abstraction layer allows for deriving artifactu
 respectively whether our embedding allows deriving artifactual theorems when ignoring
 the abstraction layer and allowing to use the semantic properties of the embedding in proofs.
 
-As a matter of fact, comparing derivability in the abstraction layer of the embedding
-(respectively in the formal system of PLM itself) with validity in our underlying
+As a matter of fact, comparing derivability in the abstraction layer of the embedding,
+respectively in the formal system of PLM itself, with validity in our underlying
 semantic structure has been the driving force in our collaboration with the authors of AOT.
 
 In particular, whenever a potential artifactual theorem was recognized, this resulted
 in an analysis of the discrepancy which regularly led to either a further abstraction
-of the semantics used in the embedding to eliminate the theorem or to an extension of AOTs
+of the semantics used in the embedding to eliminate the theorem or to an extension of AOT's
 axiom system itself, in case it turned out that (1) the discrepancy could be resolved by
 a natural extension of AOT's axiom system, (2) this extension had merit in that it allowed
 for deriving new interesting theorems in AOT or that it simplified existing derivations
 and (3) the extension was philosophically justifiable.
 
 An example of a statement that is now a theorem of AOT, but originated as an artifactual
-theorem of the embedding is the necessary and sufficient conditions for relations to denote
+theorem of the embedding, is the necessary and sufficient conditions for relations to denote
 discussed in section~\ref{KirchnersTheorem}. An earlier example is the coexistence axiom
-mentioned in~\ref{AxiomSystem}, the formulation of which was based on a similar
+discussed in~\ref{MoveToFreeLogic}, the formulation of which was based on a similar
 principle that was discovered in the analysis of the semantic properties of the embedding
 at the time.
 
@@ -4470,43 +4498,16 @@ projections are forced to collapse.
 However, we already mentioned in section~\ref{cqt:2-impl} that it is currently being
 considered to extend the base cases of denoting @{text \<open>\<lambda>\<close>}-expressions. This extension
 has particular merit in deriving theorems in higher-order object theory. In the second-order
-fragment it would be a consequence of this change that the following @{text \<open>\<lambda>\<close>}-expression denotes by axiom:
+fragment it would be a consequence of this change that the following @{text \<open>\<lambda>\<close>}-expressions denotes by axiom:
 \begin{quote}
 @{term[display] \<open>print_as_theorem \<guillemotleft>[\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<guillemotright>\<close>}
 \end{quote}
 
 Under this assumption, however, the currently artifactual theorems above become
-proper theorems of AOT, respectively theorems of the abstraction layer of the embedding:
-\<close>
-
-AOT_theorem
-  assumes \<open>\<forall>y [\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<close>
-  shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
-  {
-    fix c
-    AOT_have \<open>[\<lambda>x (c[\<lambda>z [R]zx])]\<down>\<close>
-      using assms[THEN "\<forall>E"(2)].
-    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(c[\<lambda>z [R]zx] \<equiv> c[\<lambda>z [R]zy]))\<close>
-      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"] \<comment> \<open>see~\nameref{AOT:kirchner-thm-cor:1}\<close>
-      by blast
-    AOT_have \<open>\<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
-      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
-  }
-  AOT_hence \<open>\<forall>c \<box>(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
-    by (rule GEN)
-  AOT_hence \<open>\<box>\<forall>c(c[\<lambda>z [R]za] \<equiv> c[\<lambda>z [R]zb])\<close>
-    by (rule BF[THEN "\<rightarrow>E"]) \<comment> \<open>see~\nameref{AOT:BFs:1}\<close>
-  AOT_thus \<open>[\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
-    by (AOT_subst_def "identity:2") \<comment> \<open>see~\nameref{AOT:identity:2}\<close>
-       (auto intro!: "&I" "cqt:2")
-qed
-
-text\<open>
-By an analogous proof that replaces @{term \<open>\<guillemotleft>[\<lambda>z [R]za]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>z [R]zb]\<guillemotright>\<close>}
-by @{term \<open>\<guillemotleft>[\<lambda>z [G]a]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>z [G]b]\<guillemotright>\<close>} respectively, even the following
-becomes derivable:
+proper theorems of AOT, respectively theorems of the abstraction layer of the embedding (see~\nameref{AOT:AOT_misc.shared_urelement_projection_identity} for a proof).
+By an analogous proof (see~\nameref{AOT:AOT_misc.shared_urelement_exemplification_identity}),
+even the following becomes derivable (since the extended axiom will also assert that 
+@{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x (y[\<lambda>z [G]x])]\<down>\<guillemotright>\<close>}):
 
 \begin{quote}
 @{thm[display] Artifactual3[print_as_theorem, of a b]}
@@ -4519,6 +4520,67 @@ of relations as proposition-valued functions acting on urelements.
 
 So while the theorems above are currently artifactual, they are likely to become proper
 theorems of the next upcoming version of PLM.
+\<close>
+
+subsection\<open>Proposition Identity and Identity of Propositional Relations\<close>
+(*<*)
+AOT_theorem prop_eq_two_place: \<open>[\<lambda>xy p] = [\<lambda>xy q] \<equiv> p = q\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>[\<lambda>xy p] = [\<lambda>xy q]\<close>
+  hence \<open>\<guillemotleft>[\<lambda>xy p]\<guillemotright> = \<guillemotleft>[\<lambda>xy q]\<guillemotright>\<close>
+    using AOT_sem_eq by blast
+  hence \<open>AOT_lambda (\<lambda>x :: \<kappa>\<times>\<kappa>. AOT_term_of_var p) = AOT_lambda (\<lambda>x. AOT_term_of_var q)\<close>
+    by (simp add: cond_case_prod_eta)
+  hence \<open>AOT_term_of_var p = AOT_term_of_var q\<close>
+    using AOT_sem_lambda_eq_prop_eq
+    by blast
+  hence \<open>p = q\<close>
+    by (metis AOT_var.AOT_term_of_var_inverse)
+  AOT_thus \<open>p = q\<close>
+    by (simp add: AOT_sem_eq AOT_sem_denotes AOT_model_denotes_\<o>_def)
+next
+  AOT_assume \<open>p = q\<close>
+  moreover AOT_have \<open>[\<lambda>xy p] = [\<lambda>xy p]\<close>
+    by (safe intro!: "rule=I:2[lambda]" "cqt:2")
+  ultimately AOT_show \<open>[\<lambda>xy p] = [\<lambda>xy q]\<close>
+    using "rule=E" by fast
+qed
+(*>*)
+text\<open>
+
+AOT's definition of proposition identity reduces proposition identity to the identity
+of unary propositional relations (see~\nameref{AOT:identity:4}):
+
+\begin{quote}
+@{thm[display] "identity:4"[of p q]}
+\end{quote}
+
+However, due to the fact that our semantic specification of exemplification and
+@{text \<lambda>}-abstraction (see~\nameref{AOT:AOT_exe_lambda_spec}) is polymorphic and
+simultaneously specifies relations of all arities, it involves the following more
+general assertion:
+
+\begin{quote}
+@{thm[display] AOT_sem_lambda_eq_prop_eq[of \<phi> \<psi>]}
+\end{quote}
+
+It is a consequence of this more general semantic principle that, for example, the following becomes an
+artifactual theorem:
+
+\begin{quote}
+@{thm[display] prop_eq_two_place[print_as_theorem, of p q]}
+\end{quote}
+
+Even though relations are modelled as proposition-valued functions in the embedding,
+technically, it is possible to allow the @{text \<lambda>}-expressions in question to map
+to propositions that are merely necessarily equivalent to @{term p}, resp. @{term q},
+but not identical to them. However, since the definition of proposition identity still
+needs to be validated, this would require splitting the specification
+of exemplification and @{text \<lambda>}-expressions into separate cases for relations
+on unary individual terms and tuples of individiual terms (e.g. using
+an additional system of type classes). However, the details of such a modified construction
+also depend on more general open questions regarding @{term n}-ary relation identity and
+generalized @{text \<eta>}-conversion, which we will discuss in the next section.
 \<close>
 
 subsection\<open>Generalizations of @{text \<open>\<^bold>\<eta>\<close>}-Conversion\<close>
@@ -4549,6 +4611,9 @@ proof (subst AOT_sem_lambda_denoting)
     by (simp add: "0" AOT_sem_exe_denoting Abs_rel_inverse)
 qed
 *)
+  thm "identity:3[2]"[of \<open>\<guillemotleft>[\<lambda>xy [F]xya]\<guillemotright>\<close> \<open>\<guillemotleft>[\<lambda>xy [G]xya]\<guillemotright>\<close>]
+      "identity:3[2]"[of \<open>\<guillemotleft>[\<lambda>xy [F]xay]\<guillemotright>\<close> \<open>\<guillemotleft>[\<lambda>xy [G]xay]\<guillemotright>\<close>]
+      "identity:3[2]"[of \<open>\<guillemotleft>[\<lambda>xy [F]axy]\<guillemotright>\<close> \<open>\<guillemotleft>[\<lambda>xy [G]axy]\<guillemotright>\<close>]
 (*>*)
 
 text\<open>
@@ -4565,7 +4630,7 @@ As well as @{text \<open>n\<close>}-ary relation identity, e.g. for @{text \<ope
 @{thm[display] "identity:3[2]"[of \<Pi> \<Pi>']}
 \end{quote}
 
-However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conversion, i.e. the following
+However, AOT does not presuppose generalized @{text \<open>\<eta>\<close>}-conversion, e.g. the following
 is @{emph \<open>not\<close>} a theorem of AOT:
 
 \begin{quote}
@@ -4602,25 +4667,32 @@ So independently of the potential artifactual theorem discussed above, it is
 an interesting philosophical question whether @{text \<open>\<eta>\<close>}-conversion should be
 presumed by axiom at all. Similarly, there are open questions about the definition
 of identity of @{text n}-place relations in AOT and a potential alternative definition using
-@{text n}-ary encoding as discussed in PLM~\cite{PLM-Oct-13-2021} item (37).
+@{text n}-ary encoding as discussed in PLM~\cite{PLM-Oct-13-2021} item (37). Curiously,
+the current definition of @{text n}-ary relation identity in the absence of generalized
+@{text \<eta>}-conversion reduces the identity of ternary relations to the identity of
+all their projections to unary relations, however, the identity of all their projections to
+two-place relations does not imply the identity of direct projections to unary
+relations (without generalized @{text \<eta>}-conversion) and therefore does not imply
+the identity of the ternary relations.
 
 We expect that a future more extensive analysis of this issue will,
 similarly to previous artifactual theorems, result in further theoretical insights,
 ultimately followed by either an enhancement of the formulation of AOT or a refined embedding, in
-which e.g. the above might provably not be a theorem.
+which e.g. the above might provably not be a theorem (even outside the abstraction layer).
 \<close>
 
 section\<open>Discussion\<close>
 
 text\<open>
-We have described an implementation of AOT in classical higher-order logic by means of an SSE that
-can accurately reproduce AOT's reasoning in an abstraction layer. While our semantic representation
-is not provably free of artifactual theorems, this can be explained due to the fact that AOT does
+We have described an implementation of the second-order fragment of AOT in classical
+higher-order logic by means of an SSE that can accurately reproduce AOT's reasoning
+in an abstraction layer. While our semantic backend
+is not provably free of artifactual theorems, this can partly be explained due to the fact that AOT does
 not itself presuppose a strong and exhaustive @{emph \<open>intended semantics\<close>}, relative to which a completeness result
-could be achieved. On the contrary, the authors of AOT explicitly try to avoid for the axioms and deductive
+is intended and could be achieved. On the contrary, the authors of AOT explicitly try to avoid for the axioms and deductive
 system of AOT to be @{emph \<open>driven by semantics\<close>}, but rather aspire to devise a philosophically
 justifiable formal system that stands independently of a set-theoretic semantics and in which
-notions like truth values and possible worlds can then be analysed as objects of the system itself:
+notions like truth values and possible worlds can instead be analysed as objects of the system itself:
 
 \blockquote{It is important to remember that the formal semantics simply provides
 a set-theoretic framework in which models of the metaphysical
@@ -4640,8 +4712,10 @@ had a profound impact on the axiom system.
 
 While there are open questions e.g. concerning the identity of @{term n}-ary relation terms,
 we anticipate these questions to be the subject of future debate that will, similar to past examples of similar
-discussions, result in both theoretical insights and an improved implementation.
-
+discussions, result in both theoretical insights and an improved implementation. 
+\<close>
+(*
+text\<open>
 A potential future refinement of the embedding may (1) instead of representing relations as
 proposition-valued functions define an intensional type of unary relations that is merely equipped with a
 surjective extension function and (2) represent @{text n}-ary relations (@{text \<open>n \<ge> 2\<close>}) directly as a suitably
@@ -4653,7 +4727,9 @@ of individual terms. However, such an implementation would increase the complexi
 of @{text n}-ary relations using type classes, which is a pragmatic reason for attempting to further
 refine the implementation based on proposition-valued functions pending the results of a future
 discussion of @{text n}-ary relation identity and @{text \<open>\<eta>\<close>}-conversion.\<close>}
-
+\<close>
+*)
+text\<open>
 Given our discussion of the general system of AOT in the previous chapter and its implementation in our
 embedding in this chapter, we are now suitably equipped to discuss our implementation
 of PLM's construction of natural numbers, including the extended model construction
