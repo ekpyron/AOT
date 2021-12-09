@@ -804,4 +804,68 @@ next
     by (metis "\<equiv>\<^sub>d\<^sub>fI" "df-1-1:5")
 qed
 
+AOT_theorem shared_urelement_projection_identity:
+  assumes \<open>\<forall>y [\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<close>
+  shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> [\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix z
+    AOT_have \<open>[\<lambda>x (z[\<lambda>z [R]zx])]\<down>\<close>
+      using assms[THEN "\<forall>E"(2)].
+    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(z[\<lambda>z [R]zx] \<equiv> z[\<lambda>z [R]zy]))\<close>
+      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"]
+      by blast
+    AOT_have \<open>\<box>(z[\<lambda>z [R]za] \<equiv> z[\<lambda>z [R]zb])\<close>
+      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+  }
+  AOT_hence \<open>\<forall>z \<box>(z[\<lambda>z [R]za] \<equiv> z[\<lambda>z [R]zb])\<close>
+    by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>z(z[\<lambda>z [R]za] \<equiv> z[\<lambda>z [R]zb])\<close>
+    by (rule BF[THEN "\<rightarrow>E"])
+  AOT_thus \<open>[\<lambda>z [R]za] = [\<lambda>z [R]zb]\<close>
+    by (AOT_subst_def "identity:2")
+       (auto intro!: "&I" "cqt:2")
+qed
+
+AOT_theorem shared_urelement_exemplification_identity:
+  assumes \<open>\<forall>y [\<lambda>x (y[\<lambda>z [G]x])]\<down>\<close>
+  shows \<open>\<forall>F([F]a \<equiv> [F]b) \<rightarrow> ([G]a) = ([G]b)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>F([F]a \<equiv> [F]b)\<close>
+  {
+    fix z
+    AOT_have \<open>[\<lambda>x (z[\<lambda>z [G]x])]\<down>\<close>
+      using assms[THEN "\<forall>E"(2)].
+    AOT_hence 1: \<open>\<forall>x \<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(z[\<lambda>z [G]x] \<equiv> z[\<lambda>z [G]y]))\<close>
+      using "kirchner-thm-cor:1"[THEN "\<rightarrow>E"]
+      by blast
+    AOT_have \<open>\<box>(z[\<lambda>z [G]a] \<equiv> z[\<lambda>z [G]b])\<close>
+      using 1[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF 0] by blast
+  }
+  AOT_hence \<open>\<forall>z \<box>(z[\<lambda>z [G]a] \<equiv> z[\<lambda>z [G]b])\<close>
+    by (rule GEN)
+  AOT_hence \<open>\<box>\<forall>z(z[\<lambda>z [G]a] \<equiv> z[\<lambda>z [G]b])\<close>
+    by (rule BF[THEN "\<rightarrow>E"])
+  AOT_hence \<open>[\<lambda>z [G]a] = [\<lambda>z [G]b]\<close>
+    by (AOT_subst_def "identity:2")
+       (auto intro!: "&I" "cqt:2")
+  AOT_thus \<open>([G]a) = ([G]b)\<close>
+    by (safe intro!: "identity:4"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "log-prop-prop:2")
+qed
+
+text\<open>The assumptions of the theorems above are derivable, if the additional
+     introduction rules for the upcoming extension of @{thm "cqt:2[lambda]"}
+     are explicitly allowed (while they are currently not part of the
+     abstraction layer).\<close>
+notepad
+begin
+  AOT_modally_strict {
+    AOT_have \<open>\<forall>R\<forall>y [\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<close>
+      by (safe intro!: GEN "cqt:2" AOT_instance_of_cqt_2_intro_next)
+    AOT_have \<open>\<forall>G\<forall>y [\<lambda>x (y[\<lambda>z [G]x])]\<down>\<close>
+      by (safe intro!: GEN "cqt:2" AOT_instance_of_cqt_2_intro_next)
+  }
+end
+
 end
