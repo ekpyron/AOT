@@ -2641,13 +2641,6 @@ least countably many ordinary objects\footnote{At least in the current construct
 A potential future version of the construction mentioned in section~\ref{NewNumberTheory}
 may instead require at least countably many @{emph \<open>special urelements\<close>}, but not
 ordinary objects.} and thereby uncountably many properties and abstract objects.
-\<close>
-
-subsection\<open>TODO\<close>
-
-text\<open>
-TODO:
-  \<^item> Section about hyperintensionality?
 
 Before we proceed to discuss AOT's analysis of natural numbers in chapter~\ref{NaturalNumbers},
 we describe the technical details of the implementation of AOT in our embedding
@@ -2789,26 +2782,59 @@ several issues that remain unaddressed, including:
 
 Therefore, while the models used for our embedding inherit the idea of urelements
 and a mapping from abstract objects to special urelements, we extend
-the general model structure for our embedding. As a first step, we describe the implementation of
-AOT's hyperintensionality.
+the general model structure for our embedding.
 \<close>
 
 subsection\<open>Types of the Embedding\<close>
 
 text\<open>
-The terms of AOT are represented in our embedding using the following types:@{footnote \<open>Note
-that types and objects have separate namespaces in Isabelle.\<close>}
+The terms of AOT are represented in our embedding using the following types in the meta-logic:@{footnote \<open>Note
+that types and objects have separate namespaces in Isabelle. Also recall the brief introduction to type classes
+in section~\ref{ClassesAndLocales}.\<close>}
 
   \<^item> Type @{typ \<o>} for formulas, resp. propositions.
   \<^item> Type @{typ \<kappa>} for individual terms.
   \<^item> Type @{typ \<open><'a>\<close>} for relation terms. Here @{typ 'a} is a type variable that is
-    restricted to a type class @{class AOT_\<kappa>s} that is instantiated for @{typ \<kappa>} (yielding unary
-    relations, resp. properties, as @{typ \<open><\<kappa>>\<close>}) and arbitrary tuples of type @{typ \<kappa>},@{footnote \<open>Technically,
+    restricted to types of class @{class AOT_\<kappa>s}, which is instantiated for @{typ \<kappa>} (yielding unary
+    relations, resp. properties, as @{typ \<open><\<kappa>>\<close>}) and arbitrary tuples of type @{typ \<kappa>}
+    (i.e. @{typ \<open><\<kappa>\<times>\<kappa>>\<close>} is used to represent two-place-relations, etc.).@{footnote \<open>Technically,
 @{class AOT_\<kappa>s} is instantiated for products of a type of class @{class AOT_\<kappa>} and a type of @{class AOT_\<kappa>s}, while
 @{class AOT_\<kappa>} abstracts the properties of type @{typ \<kappa>} (and is only instantiated for @{typ \<kappa>}).\<close>}
-    (i.e. @{typ \<open><\<kappa>\<times>\<kappa>>\<close>} is used to represent two-place-relations, etc.).
-  \<^item> Type @{typ \<open>'a AOT_var\<close>} for the variables of type @{typ 'a}, where @{typ 'a} ranges
-    over types of class @{class AOT_Term}, which is instantiated for all types above.
+
+In the following, we will briefly explain how each of these types is constructed.@{footnote \<open>This
+will involve introducing additional types, in particular for urelements, that will not
+be used for representing terms of AOT directly, but merely to construct the types above.\<close>}
+The language elements of AOT (i.e. atomic formulas, logical connectives, quantifiers, complex
+individual and relation terms) can then be represented by introducing
+constants that act on objects of these types. We will introduce a custom sub-grammar in the inner syntax
+of Isabelle/HOL that approximates AOT's syntax and translates to terms involving these constants
+(as outlined in section~\ref{SSESyntax}). We will then formulate specifications for the constants
+that will allow us to derive the axiom system and deduction rules of AOT. The construction of the types
+will ensure that there are suitable witnesses for these specifications.
+
+The type class @{class AOT_Term} (see~\nameref{AOT:AOT_model.AOT_Term}) is used as
+a common type class that is instantiated for each of the types above. It involves
+a single parameter @{term AOT_model_denotes} of type @{typ \<open>'a \<Rightarrow> bool\<close>}, that determines
+the meta-logical conditions under which a term of type @{typ 'a} denotes. We will explain
+how @{term AOT_model_denotes} is instantiated for each type below.
+
+The additional type @{typ \<open>'a AOT_var\<close>} is defined for each type @{typ 'a} of class @{class AOT_Term}
+using the objects of type @{typ 'a}, for which @{term AOT_model_denotes} is @{term True}, as representation set (see~\nameref{AOT:AOT_model.AOT_var}).@{footnote \<open>Since
+the representation set of a type in Isabelle/HOL cannot be empty, the type class @{class AOT_Term}
+involves the assumption that there is an object for which @{term AOT_model_denotes} is @{term True},
+which has to be proven for each instantiation of the type class and thereby can be assumed for
+each type of class @{class AOT_Term}.\<close>}
+This type is used to represent the variables of each of the types above, e.g.
+@{typ \<open>\<kappa> AOT_var\<close>} will be the type of individual variables.  Thereby,
+variables range exactly over the denoting objects at each type. To be used
+in place of terms, a variable of type @{typ \<open>'a AOT_var\<close>} is mapped to its representation type @{typ 'a}
+using the constant @{term AOT_term_of_var}, which is just a renamed version of the usually
+@{text \<open>Rep\<close>}-prefixed constant that is  automatically introduced for each @{command typedef}
+and maps objects of a defined type to objects of its representation set, as already mentioned
+in section~\ref{Specifications}.
+\<close>
+(*<*)
+text\<open>
     The type class @{class AOT_Term} (see~\nameref{AOT:AOT_model.AOT_Term}) involves
     a single parameter @{term AOT_model_denotes} of type @{typ \<open>'a \<Rightarrow> bool\<close>}, that determines
     the conditions under which a term of type @{typ 'a} denotes.
@@ -2839,6 +2865,7 @@ ranges over types of class @{class AOT_\<kappa>s}:
   \<^item> @{const AOT_lambda} of type @{typ \<open>('a \<Rightarrow> \<o>) \<Rightarrow> <'a>\<close>} represents @{text \<open>\<lambda>\<close>}-abstraction.
   \<^item> @{const AOT_enc} of type @{typ \<open>'a \<Rightarrow> <'a> \<Rightarrow> \<o>\<close>} represents encoding.
 \<close>
+(*>*)
 
 subsection\<open>Hyperintensional Propositions\<close>text\<open>\label{HyperintensionalPropositions}\<close>
 
@@ -2846,16 +2873,16 @@ text\<open>
 The hyperintensionality of AOT is modelled at the level of propositions.
 The construction follows the general method outlined in section~\ref{Specifications}.
 
-A primitive type @{typ \<o>} (see~\nameref{AOT:AOT_model.<o>})
-is used to represent hyperintensional propositions and is associated with modal extensions
+The type @{typ \<o>} is introduced as a primitive type (see~\nameref{AOT:AOT_model.<o>}).
+It is used to represent hyperintensional propositions and is associated with modal extensions
 following Kripke semantics: a primitive type @{typ w} for semantic possible
 worlds is introduced (see~\nameref{AOT:AOT_model.w}) and it is axiomatized that
 there be a surjective mapping @{term AOT_model_d\<o>} from propositions of type @{typ \<o>}
 to Kripke-extensions, i.e. boolean valued functions on possible worlds (type @{typ \<open>w\<Rightarrow>bool\<close>};
 see~\nameref{AOT:AOT_model.AOT_model_d<o>}).
 
-We define for a proposition @{term p} of type @{typ \<o>} to be valid in a given semantic possible
-world @{term v} (written @{term \<open>AOT_model_valid_in v p\<close>})\footnote{Note that this use of the double turnstile symbol
+We define for a proposition @{term \<phi>} of type @{typ \<o>} to be valid in a given semantic possible
+world @{term v} (written @{term \<open>AOT_model_valid_in v \<phi>\<close>})\footnote{Note that this use of the double turnstile symbol
 @{text \<open>\<Turnstile>\<close>} is defined within the meta-logic HOL and distinct from the use in AOT's possible world theory described in section~\ref{PossibleWorldTheory}.}, just in case @{term AOT_model_d\<o>} maps @{term p}
 to a Kripke-extension that evaluates to @{term True} for @{term v} (see~\nameref{AOT:AOT_model.AOT_model_valid_in}).
 
@@ -2900,9 +2927,13 @@ just as many objects of type @{typ \<o>} as there are Kripke-extensions.
 Just as AOT itself, the model construction does not presuppose the degree of hyperintensionality of
 propositions.
 
-On top of this hyperintensional type of propositions, the logical connectives can be
+To instantiate the type class @{class AOT_Term} for type @{typ \<o>}, we need to define
+the conditions under which propositions denote. Since in AOT all formulas denote,
+@{term AOT_model_denotes} is @{term True} for all objects of type @{typ \<o>}.
+Consequently the type @{typ \<open>\<o> AOT_var\<close>} is isomorphic to the type @{typ \<o>}.
+
+On top of this hyperintensional type of propositions, the logical connectives will later be
 defined by @{command specification} as outlined in section~\ref{Specifications}.
-We will discuss specifications in more detail below in section~\ref{HilbertEpsilon}.
 
 Notably, previous versions of our embedding (in particular the construction in~\cite{MScThesis}),
 modelled hyperintensionality more explicitly by using an additional primitive type @{text s} of
@@ -2914,15 +2945,14 @@ was left unspecified in non-actual states. While such an explicit construction
 using intensional states can still serve as a concrete model for our abstract type 
 @{typ \<o>}, the fact that AOT does not presuppose any additional structure on non-actual
 states allowed us to replace the explicit construction by the described more general abstraction.
-
-As a next step we construct a variant of Aczel models relative to the introduced type of
-propositions while preserving the constructed hyperintensionality for relations and accounting
-for AOT's free logic.
 \<close>
 
 subsection\<open>Extended Aczel Model Structure\<close>text\<open>\label{ExtendedAczelModelStructure}\<close>
 
 text\<open>
+Our representation is based on Aczel models, so the construction of the types
+of individuals and relations relies on urelements.
+
 The embedding introduces a type of urelements @{typ \<upsilon>} (see~\nameref{AOT:AOT_model.<upsilon>})
 that is comprised of three separate kinds of urelements:
 
@@ -2945,7 +2975,8 @@ In particular, the embedding introduces the type @{typ urrel} (see~\nameref{AOT:
 that is represented by the set of all functions from urelements to propositions (type
 @{typ \<open>\<upsilon> \<Rightarrow> \<o>\<close>}), which map null-urelements to necessarily false propositions.@{footnote \<open>Note
 that our construction allows for multiple distinct propositions that are necessarily false.\<close>}
-This type of @{emph \<open>urrelations\<close>} will correspond to denoting property terms.
+This type of @{emph \<open>urrelations\<close>} will be in one-to-one correspondence with the denoting property terms, i.e.
+denoting objects of type @{typ \<open><\<kappa>>\<close>}, respectively variables of type @{typ \<open><\<kappa>> AOT_var\<close>}.
 
 The additional null-urelements serve to avoid two kinds of artifactual theorems:
   \<^item> Let @{term p} be the proposition denoted by the term \<^term>\<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<phi>{x}\<guillemotright>\<close>
@@ -3023,53 +3054,73 @@ To validate extended relation comprehension we can then augment @{term \<alpha>\
 suitable @{command specification}. The precise construction of @{term \<alpha>\<sigma>'} needed for
 extended relation comprehension is discussed in more detail in section~\ref{pred}.
 
-Based on the now introduced types of urelements @{typ \<upsilon>} and urrelations @{typ urrel}
-we can represent the terms of AOT.
+Additionally, we introduce the constant @{const AOT_model_concrete\<omega>} (see~\nameref{AOT:AOT_model.AOT_model_concrete<omega>})
+and specify it in such a way, that (1) for every object @{term x} (of type @{typ \<omega>}) there is a possible world @{term w} (of type @{typ w}), s.t.
+@{term \<open>AOT_model_concrete\<omega> x w\<close>} and (2) there is an object @{term x} and a possible world @{term w}, s.t.
+@{term \<open>AOT_model_concrete\<omega> x w \<and> \<not>AOT_model_concrete\<omega> x w\<^sub>0\<close>} (where @{term w\<^sub>0} is the designated actual world).
+This constant will be used to construct AOT's relation of being concrete. The specified properties ensure that
+objects of type @{typ \<omega>} will be possibly concrete, i.e. ordinary, and that there possibly is an object that is concrete, but not actually
+concrete, which is asserted by AOT as an axiom. A function that is true
+for an object @{term x} (of type @{typ \<omega>}) and a semantic possible world @{term w} (of type @{typ w}),
+just in case @{term w} is not the actual world @{term w\<^sub>0}, can serve as witness for the specification.@{footnote \<open>Note that we have to assert
+the existence of a non-actual world using a meta-logical axiom, see~\nameref{AOT:AOT_model.AOT_model_nonactual_world}.
+Also note that this construction does not imply that in our embedding no objects will be actually concrete and
+all ordinary objects will be concrete in all non-actual worlds. While our witness has this property, a model
+of HOL may choose any denotation for @{const AOT_model_concrete\<omega>} that has the specified properties.\<close>}
+
+Based on the type of urelements @{typ \<upsilon>} and the type of urrelations @{typ urrel}
+we can construct the type @{typ \<kappa>} of individual terms.
 \<close>
 
 subsection\<open>Individual Terms and Properties\<close>
 
 text\<open>
-As a first step in representing the terms of AOT, we introduce a type of individual
-terms @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}).
-The type @{typ \<kappa>} consists of ordinary objects of type @{typ \<omega>} (shared with ordinary
+The type @{typ \<kappa>} (see~\nameref{AOT:AOT_model.<kappa>}) consists of ordinary objects of type @{typ \<omega>} (shared with ordinary
 urelements), abstract objects modelled as sets of urelements (type @{typ \<open>urrel set\<close>})
 and null-objects of type @{typ null} (shared with null-urelements) that will
 serve to model non-denoting definite descriptions. We can lift the surjective
-mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a surjective mapping
-from individual terms to urelements @{text \<kappa>\<upsilon>} of type \mbox{@{typ \<open>\<kappa> \<Rightarrow> \<upsilon>\<close>}} (see~\nameref{AOT:AOT_model.<kappa><upsilon>}),
+mapping from abstract objects to special urelements @{text \<alpha>\<sigma>} to a surjective mapping @{text \<kappa>\<upsilon>}
+from individual terms to urelements (i.e. type \mbox{@{typ \<open>\<kappa> \<Rightarrow> \<upsilon>\<close>}}) (see~\nameref{AOT:AOT_model.<kappa><upsilon>}),
 s.t. for any urelement we can find an individual term that is mapped to that urelement (see~\nameref{AOT:AOT_model.<kappa><upsilon>_surj}).
 
-While our embedding abstracts unary individuals and tuples of individuals to a type class and generically
-defines relations as functions acting on types of this class, as described in the following sections, we
-first illustrate the resulting construction for the unary case.
+To instantiate the type class @{class AOT_Term} for type @{typ \<kappa>}, we define
+@{term AOT_model_denotes} to be @{term True} for exactly those objects of type @{typ \<kappa>} that
+are not null-objects.
+
+Relation terms will be defined relative to types of a type class that
+abstracts individuals and tuples of individuals. We will explain this generic construction
+below. However, it may be helpful to first consider the case of properties (i.e.
+type @{typ \<open><\<kappa>>\<close>}) specifically, even though in the embedding this case will only occur
+as a special case of the generic construction.
 
 Property terms (of type @{typ \<open><\<kappa>>\<close>}) are represented by proposition-valued functions acting
 on individuals (type @{typ \<open>\<kappa> \<Rightarrow> \<o>\<close>}). A property term @{emph \<open>denotes\<close>}, if its representing function
 @{term \<phi>} satisfies the following conditions:
 
-  \<^item> @{term \<open>\<phi> \<kappa> = \<phi> \<kappa>'\<close>}, whenever @{term \<open>\<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>'\<close>}
-  \<^item> @{term \<open>[v \<Turnstile> \<phi>{\<kappa>}]\<close>} implies that @{term \<kappa>} is not a null object.
+  \<^item> @{term \<open>\<phi> \<kappa> = \<phi> \<kappa>'\<close>}, whenever @{term \<open>\<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>'\<close>}, i.e. @{term \<phi>} evaluates to the
+    same propositions for objects that have the same urelements.
+  \<^item> @{term \<phi>} evaluates to necessarily false propositions for objects of type @{typ \<kappa>} that do not denote.
 
 Consequently, since @{term \<kappa>\<upsilon>} is surjective and urrelations have the property to be necessarily
 unexemplified on null-urelements, denoting property terms are in one-to-one correspondence
 with urrelations (see~\nameref{AOT:AOT_model.rel_to_urrel}).
-This is crucial for validating the comprehension principle of abstract objects, since abstract objects
-are modelled as sets of urrelations.
+This is crucial for constructing encoding and validating the comprehension principle of
+abstract objects, since abstract objects are modelled as sets of urrelations.
 
-A property @{term \<Pi>} exemplifying an individual @{term \<kappa>} is a proposition @{term p}, such that:
+We can now now construct a function that can later serve as witness for our specification of exemplification.
+For a property term @{term \<Pi>} and an individual term @{term \<kappa>}, we can now choose a proposition @{term p}, such that:
   \<^item> If @{term \<Pi>} denotes, then @{term \<open>p = Rep_rel \<Pi> \<kappa>\<close>}, i.e. the proposition resulting from
     applying the function representing @{term \<Pi>} to @{term \<kappa>}. This proposition will, by construction,
     be necessarily false, if @{term \<kappa>} does not denote.
   \<^item> @{term p} is a necessarily false proposition otherwise.
 
-An individual term @{term \<kappa>} encoding a property @{term \<Pi>} is a proposition @{term p}, such that:
-  \<^item> @{term p} is necessarily true, if there is an abstract object @{term x}, s.t. @{term \<open>\<kappa> = \<alpha>\<kappa> x\<close>} and
-    the urrelation corresponding to @{term \<Pi>} is contained in x.
-  \<^item> @{term p} is a necessarily false proposition otherwise.
+Furthermore, the construction allows to define the meta-logical truth conditions of encoding as follows:
+@{term \<kappa>} encodes @{term \<Pi>} just in case that (1) @{term \<Pi>} denotes, (2) @{term \<kappa>} is represented by an abstract object @{term x} and
+(3) the urrelation corresponding to @{term \<Pi>} is contained in @{term x}.
 \<close>
-subsection\<open>Type Classes for Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
+subsection\<open>Type Classes for Individual Terms\<close>text\<open>\label{IndividualTermsAndClasses}\<close>
 
+(*<*)
 text\<open>
 
 We introduce a system of @{emph \<open>type classes\<close>} that abstract over
@@ -3102,32 +3153,44 @@ independent of the concrete definition of the conditions under which an object o
 concrete type denotes.@{footnote \<open>Similarly, we can define equality on the class @{class AOT_Term}
 and formulate the substitution of identicals relative to it. To validate AOT's definitions of identity
 we then show that meta-logical identity coincides with AOT's defined identity on denoting terms.\<close>}
+\<close>
+(*>*)
+text\<open>
+The type class @{class AOT_\<kappa>s} is a combination of three more specific type classes:
 
-The generic type class for individual terms based on which we will define relation terms
-is @{class AOT_IndividualTerm} (see~\nameref{AOT:AOT_model.AOT_IndividualTerm}).
-The most important parameter of this type class is @{const AOT_model_term_equiv}, an
-equivalence relation which is satisfied for two objects,\footnote{Note that an @{emph \<open>object\<close>} of a type
+@{class AOT_IndividualTerm} (see~\nameref{AOT:AOT_model.AOT_IndividualTerm}),
+@{class AOT_RelationProjection} (see~\nameref{AOT:AOT_semantics.AOT_RelationProjection})
+and @{class AOT_Enc} (see~\nameref{AOT:AOT_semantics.AOT_Enc}).
+The latter two formulate conditions on relations among objects of their type variable. Therefore,
+they can only be formulated after a type of relations is introduced. The type of relations itself will
+be defined relative to the class @{class AOT_IndividualTerm}.
+
+The most important parameter of this class is @{const AOT_model_term_equiv}, an
+equivalence relation which is satisfied for two objects, if they have common urelements.@{footnote \<open>Note that an @{emph \<open>object\<close>} of a type
 of class @{class AOT_IndividualTerm} may itself e.g. be a pair of two objects of type @{typ \<kappa>}, since
 the product of @{typ \<kappa>} with itself, i.e. type @{typ \<open>\<kappa>\<times>\<kappa>\<close>}, is also of class @{class AOT_IndividualTerm}.
-@{term AOT_model_term_equiv} for pairs is defined as @{term AOT_model_term_equiv} on both projections, i.e.
-tuples of individuals are @{term AOT_model_term_equiv}-equivalent if the @{term i}-th elements of each
-have the same urelement.} if they have common urelements.
+@{const AOT_model_term_equiv} for pairs is defined as the conjunction of @{const AOT_model_term_equiv} on both projections. Consequently,
+two tuples @{text \<open>(\<kappa>\<^sub>1,...\<kappa>\<^sub>n)\<close>} and @{text \<open>(\<kappa>\<^sub>1',...\<kappa>\<^sub>n')\<close>} of objects of type @{typ \<kappa>} are @{term AOT_model_term_equiv}-equivalent if
+for all @{text \<open>1 \<le> i \<le> n\<close>}, @{term \<kappa>\<^sub>i} has the same urelement as @{term \<kappa>\<^sub>i'}.\<close>}
 We furthermore introduce the notion of individual terms to be @{emph \<open>regular\<close>} and
 specify a transformation of proposition-valued functions acting on individual terms, s.t.
 after the transformation the behaviour of the function is solely determined by
-its values on regular terms. We will discuss this in more detail in the context of
-@{text n}-ary relation identity (see~\ref{nary}). An unary individual term is always
+its values on regular terms. This will be relevant for the definition of
+@{text n}-ary relation identity (see~\ref{nary}). An unary individual term (i.e. an object of type @{typ \<kappa>}) is always
 regular, while a tuple will only be regular, if at most one of its elements does not
 denote.
 
-We successively define more refined type classes on top of the basic class
-@{class AOT_IndividualTerm}, e.g. we define an abstract notion of @{text n}-ary encoding
-using the type classes @{class AOT_UnaryEnc} and @{class AOT_Enc} (see~\nameref{AOT:AOT_semantics.AOT_UnaryEnc} and~\nameref{AOT:AOT_semantics.AOT_Enc}).
+In the next section, we will introduce relations as proposition-valued functions acting on objects of
+sort @{class AOT_IndividualTerm}. The class @{class AOT_RelationProjection} involves the
+projections of properties that will be relevant for defining @{text n}-ary relation identity.
+The class @{class AOT_Enc} defines an abstract notion of encoding.
+Encoding for type @{typ \<kappa>} will be specified as explained in the last section, while for tuples
+it will be constructed in such a way that the axiom of @{text n}-ary encoding will become derivable.
+Together, the three type clases form the class @{class AOT_\<kappa>s}.
 
-We end up at the most refined class @{class AOT_\<kappa>s} with the unary case abstracted as
-class @{class AOT_\<kappa>} (see~\nameref{AOT:AOT_semantics.AOT_<kappa>s}). When formulating the
-axiom system, individuals in ellipses notation will be allowed to have any type of class @{class AOT_\<kappa>s},
-and relations will be assumed to act among any type of class @{class AOT_\<kappa>s}.@{footnote \<open>Unless a statement
+In the formulation of the axiom system, individuals in ellipses notation will be allowed to
+have any type of class @{class AOT_\<kappa>s},
+and relations will be assumed to act on any type of class @{class AOT_\<kappa>s}.@{footnote \<open>Unless a statement
 involves explicit exemplification or encoding formulas that imply restrictions on the type, e.g. a particular arity.\<close>} This
 way axioms about relations can be stated for all arities at the same time (since the
 concrete type of individuals @{typ \<kappa>} as well as arbitrary iterated products of it, e.g.
@@ -3135,40 +3198,38 @@ concrete type of individuals @{typ \<kappa>} as well as arbitrary iterated produ
 \<close>
 subsection\<open>Generic Relation Terms\<close>text\<open>\label{RelationsAsPropositionValuedFunctions}\<close>
 text\<open>
-We can now introduce a generic type of relation terms as the type of
+The generic type of relation terms is defined as the type of
 proposition-valued functions acting on a type of class @{class AOT_IndividualTerm}
 (see~\nameref{AOT:AOT_model.rel}).
-The construction is a generalization of the explicit construction of properties described
-above that extends to relations of any arity and therefore involves additional subtleties.
 
 To instantiate the type class @{class AOT_Term} to our generic type of relation terms,
 we have to define the conditions under which a relation term denotes.
 
 A relation term denotes, if it is represented by a proposition-valued functions @{term \<phi>} on
 individual terms, such that (see~\nameref{AOT:AOT_model_denotes_rel}):
-  \<^item> @{term \<phi>} agrees on equivalent terms, i.e. it evaluates to the same proposition for
+  \<^item> @{term \<phi>} agrees on @{const AOT_model_term_equiv}-equivalent terms, i.e. it evaluates to the same proposition for
     individual terms that share the same urelements.
   \<^item> For non-denoting individual terms, @{term \<phi>} evaluates to necessarily false propositions.
   \<^item> @{term \<phi>} is well-behaved on irregular terms (i.e. on irregular terms it evaluates
     to the proposition given by @{term \<open>AOT_model_irregular \<phi>\<close>}, which solely depends
     on @{term \<phi>}'s behaviour on regular terms). This will be important to validate the
     definition of @{text n}-ary relation identity and is discussed in section~\ref{nary}.
+    Note that since unary individual terms, i.e. objects of type @{typ \<kappa>}, are always
+    regular, this restriction does not apply to properties of type @{typ \<open><\<kappa>>\<close>}.
 
 Consequently, exemplification of denoting relation terms, can (similarly to the unary case)
-simply be modelled by the application of proposition-valued function representing the
-relation term to the given individual term (or tuple of individual terms),
+simply be modelled by the application of the proposition-valued function representing the
+relation term to the given individual term (which may be a tuple of terms of type @{typ \<kappa>}),
 while exemplifying non-denoting relation terms yields a necessarily false
-proposition.@{footnote \<open>Note that our abstract semantics discussed in section~\ref{Semantics}
-will allow choosing different necessarily false propositions for exemplification formulas involving
-different non-denoting relations, resp. for exemplifying formulas involving the same non-denoting relation term
-and distinct individual terms.\<close>}
+proposition.@{footnote \<open>By @{emph \<open>can be modelled\<close>} here we mean that we can construct a witness
+for the semantic specification of exemplification.\<close>}
 
-The unary case of encoding was already described above, the n-ary case is constructed
-similary to @{term n}-ary relation identity, which is discussed in section~\ref{nary}.
+Generic encoding was already described in the last section.
 
-We now have constructed all the primitives we need for constructing an abstract
-semantics of AOT in section~\ref{Semantics}. However, this semantics is formulated
-using our implementation of AOT's syntax, so in the following two sections we will first
+We now have constructed all the required types and prepared the required witnesses
+for constructing an abstract semantics of AOT using specifications in section~\ref{Semantics}.
+However, this semantics is formulated using our implementation of AOT's syntax,
+so in the following two sections we will first
 briefly discuss how we extend Isabelle's inner syntax by an approximation of the syntax
 used in PLM and how we extend Isabelle's outer syntax by custom commands used for
 structured reasoning in the embedding.
@@ -3232,8 +3293,8 @@ an application of the constant @{const AOT_exe} to the relation term and a tuple
 individual terms. Similarly, @{term \<open>print_as_theorem \<guillemotleft>\<kappa>\<kappa>'[\<Pi>]\<guillemotright>\<close>} is translated to
 @{text \<open>AOT_enc (\<kappa>,\<kappa>') \<Pi>\<close>}. Involved constants are introduced in~\ref{AOT:AOT_syntax}
 as uninterpreted constants (see~\nameref{AOT:AOT_syntax.AOT_denotes}), which are only
-later enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).@{footnote \<open>Encoding, @{const AOT_enc},
-is a parameter of a type class; see~\nameref{AOT:AOT_semantics.AOT_Enc}.\<close>}
+later enriched with semantic structure using @{command specification}s (see~\ref{AOT:AOT_semantics} and section~\ref{Semantics}).@{footnote \<open>The type
+construction discussed in the previous section allows us to construct witnesses for these specifications.\<close>}
 
 Furthermore, PLM associates the symbols used for its terms with their types, as described in
 section~\ref{AOTLanguage}. While it is possible to rely on Isabelle's type inference,
@@ -3386,14 +3447,15 @@ ML implementation is available at (TODO: cite github repository).
 
 section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
 text\<open>
-In~\ref{AOT:AOT_semantics}, we derive an abstract semantics for the primitive (and
-some of the basic defined) language elements of AOT. This layer of abstraction is still allowed
-to refer to the details of the model construction, but attempts to only derive just the
-properties of the models that are required to easily derive the axiom system and fundamental
-meta-rules of AOT later.
+In~\ref{AOT:AOT_semantics}, we construct an abstract semantics for the primitive (and
+some of the basic defined) language elements of AOT. The goal of this layer of abstraction is to
+only specify just the properties of the models that are required to derive the axiom system and
+rules of AOT later.
 
 The defined semantics heavily relies on Isabelle's @{command specification} command to
 abstract specific model choices to more general semantic properties.
+The model construction merely enables us to construct witnesses
+for the specifications.
 
 As a simple example, we specify implications by requiring that @{term \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi>\<guillemotright>\<close>}
 is true in a semantic possible world @{term w}, just in case @{term \<phi>} being true in
@@ -3408,7 +3470,7 @@ Furthermore, we specify AOT's identity as existing identity of meta-logical term
 we derive that this corresponds to AOT's definition of identity at each type in~\nameref{AOT:identity:1}.@{footnote \<open>Logical
 existence @{term \<open>\<guillemotleft>\<tau>\<down>\<guillemotright>\<close>} is handled similarly.\<close>}
 
-The main purpose of this intermediate layer is to keep the derivation of the abstraction
+One goal of this intermediate layer of abstraction is to keep the derivation of the abstraction
 layer that contains the axioms and the deductive system of AOT impervious to minor changes
 in the model construction.
 
@@ -3421,7 +3483,7 @@ artifactual theorems that would merely be true for our provided witness, but are
 from the required properties.
 
 For example, in the witness proof of the specification of exemplification and @{text \<lambda>}-abstraction (see~\nameref{AOT:AOT_exe_lambda_spec}), we define
-exemplification as a function @{term exe} (type @{typ \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>} with @{typ 'a} of sort @{class AOT_IndividualTerm})
+exemplification, as indicated in the previous sections, as a function @{term exe} (type @{typ \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>} with @{typ 'a} of sort @{class AOT_IndividualTerm})
 taking a relation term @{term \<Pi>} and individual terms @{term \<kappa>s} to a proposition @{term p}, s.t. if @{term \<Pi>} denotes,
 @{term p} is given by applying the function representing @{term \<Pi>} to the individual terms @{term \<kappa>s}, and if @{term \<Pi>}
 does not denote, @{term p} is a specific necessarily false proposition. This choice of a witness implies that
