@@ -2192,7 +2192,7 @@ In particular, no finite application of power set operations is enough to
 construct @{text \<open>A\<^sub>0\<close>} from the (illustrative) limit set @{text \<open>A\<^sub>\<omega>\<close>}, which in turn would be the power set
 of @{text \<open>O\<^sub>\<omega>\<close>}, i.e. of a set at least as large as the natural numbers.
 
-While this informal argument will not hold up to scrutiny, it is safe to say that the
+While this informal argument may not hold up to scrutiny, it is safe to say that the
 set of abstract objects in an unbounded model of higher-order object theory will
 be huge. We wouldn't be surprised if a future more rigorous analysis were to
 conclude that the set of abstract individuals in non-trivial models of higher
@@ -2203,7 +2203,7 @@ Consequently, a verifiably sound implementation relative to the unextended backg
 of Isabelle/HOL may be challenging, since the expressive power of higher-order AOT may be
 on par with or even exceed the expressive power of this choice of a meta-logic. However, even if this turns
 out to be the case, it may be possible to construct a representation based on a stronger
-extension of Isabelle/HOL, for example HOLZF or one of its variants (TODO: cite), which
+extension of Isabelle/HOL, for example HOLZF~\cite{HOLZF}, which
 axiomatizes the ZFC universe itself as a type in HOL. The feasibility of such an embedding
 as well as the question of the relative strength of higher-order object theory compared to HOL, are
 interesting questions for future research.

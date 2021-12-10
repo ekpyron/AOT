@@ -412,7 +412,7 @@ text\<open>
 The deep embedding consists of a (usually recursive) algebraic datatype that captures the syntactic elements of
 the language to be embedded. This representation of the syntax is then given a semantics by means of an evaluation function
 that traverses this algebraic datatype.@{footnote \<open>In the setting of logical theories this evaluation
-function would usually depend on interpretations and assignment functions of a model. However, in our
+function would usually depend on interpretations and assignment functions. However, in our
 simple example this is not necessary, since the simple language of expression neither involves constants nor variables (respectively since
 literals have trivial interpretations).\<close>}
 A shallow embedding on the other hand, represents the syntactic elements of a target language directly
@@ -714,7 +714,7 @@ On the other hand, it is not possible to simply exclude @{emph \<open>all\<close
 up to a certain point, since this includes the theorems of Isabelle's @{theory Main} theory, i.e.
 - among others - the construction of classical higher-order logic from Isabelle's more basic @{theory Pure}
 logic. This includes theorems @{command sledgehammer} relies on and disbarring them will leave it
-non-functional (conceptually, such theorems in question can be thought of as meta-theorems about
+non-functional (conceptually, such theorems can be thought of as meta-theorems about
 derivations in our context).
 
 The solution used in the current embedding of AOT is the use of 
@@ -730,17 +730,18 @@ that meta-logical reasoning about derivations in the target logic is faithfully 
 by the meta-logical inferences in Isabelle enabled by the constructed deduction rules.
 
 In particular, the deductive system of our target theory is implemented as
-meta-rules in Isabelle's Pure logic. Consequently, we need to convince ourselves that resulting
-inferences in Pure are reproducible in the target system and, conversely, that
-derivations in our target system are exhaustively captured by the Pure rules of our abstraction
-layer. For our embedding of AOT we demonstrate such an argument in section~\ref{PureVsAOT}.
+meta-rules in Isabelle's Pure logic, while the used automation mechanisms additionally
+rely on the logic of Isabelle/HOL. Consequently, we need to convince ourselves that resulting
+inferences are reproducible in the target system and, conversely, that
+derivations in our target system are exhaustively captured by the rules of our abstraction
+layer. For our embedding of AOT we sketch such an argument in section~\ref{PureVsAOT}.
 \<close>
 
 section\<open>Isabelle's Native Abstraction Mechanisms\<close>text\<open>\label{NativeAbstractionMechanisms}\<close>
 
 text\<open>
 While abstraction layers provide a means to insulate reasoning in our embedding from artifactual theorems (i.e. theorems
-that are merely semantically valid but not derivable in the target theory), we additionally
+that are merely semantically valid but not derivable in the target theory; see also~\ref{ArtifactualTheorems}), we additionally
 use Isabelle's native abstraction mechanisms. This serves to establish an additional intermediate
 abstraction between the concrete model construction and the derivation of the axioms and deductive
 system of the target theory, which helps in exploring changes to the model structure without
@@ -754,9 +755,7 @@ The @{command specification} command opens a proof context
 that requires the user to show that there exists a concrete instantiation for the given constants,
 for which the desired statements hold. Internally it then uses Isabelle's Hilbert-Epsilon-operator
 @{term \<open>SOME x. \<phi> x\<close>} to augment the given constants with a concrete definition. We will discuss
-the technical details of this mechanism in section~\ref{HilbertEpsilon}.@{footnote \<open>In particular,
-we will discuss that while Isabelle's Hilbert-Epsilon-operator obeys a principle of extensionality, this
-will not adversely affect our construction of hyperintensional entities.\<close>} As a consequence,
+the technical details of this mechanism in section~\ref{HilbertEpsilon}. As a consequence,
 a model of the meta-logic may choose any denotation for the given constants that satisfies the
 specification, while the existence of such a denotation is guaranteed by the provided witness. However,
 depending on the use case of this mechanism, care has to be taken to ensure that there actually
@@ -962,17 +961,23 @@ for each concrete instantiation of such a theorem with fully specified concrete 
 
 section\<open>Implicit Interpretation and Assignment Functions in SSEs\<close>text\<open>\label{SSE:MetaModel}\<close>
 
-text\<open>While in the following chapters we will say that we construct @{emph \<open>models\<close>} of the target
-logic AOT using our embedding, we do not (and do not have to) construct full models in the classical
-sense. In particular, we do not construct explicit interpretations and assignment functions.
+text\<open>
+Models of logical theories are usually formulated in terms of set-theory.
+In the following chapters, when we say that we construct @{emph \<open>models\<close>} of the target
+logic AOT using our embedding, we do not construct classical set-theoretic models, but our
+implementation forms a model of AOT in HOL.
 
-While a deep embedding would make the full models explicit, they remain partly implicit
-in shallow embeddings. The meta-logic Isabelle/HOL itself involves meta-logical constants and variables.
-In simple models of HOL, every type has a set as its domain and a statement is valid in HOL, if it holds for every
-interpretation of the constants of a type and every assignment of its variables.
+While a deep embedding would make interpretation and assignment functions explicit, they remain implicit
+in shallow embeddings. The meta-logic Isabelle/HOL itself involves constants and variables that
+are reused to represent the constants and variables of our target system.
+Consequently, we do not have to construct explicit interpretation and assignment functions,
+but can rely on HOL's semantics for constants and variables.
 
-A model of the embedded logic can be constructed by lifting a model of HOL through
-the defined semantics. The model-finding tool @{command nitpick}~\cite{Nitpick} can
+In simple models of HOL,@{footnote \<open>Ignoring complications due to e.g. polymorphism.\<close>} every type has a set as its domain and a statement is valid,
+if it holds for every interpretation of the constants of each type and every assignment of the variables at each type.
+
+A set-theoretic model of the embedded logic can be constructed by lifting a set-theoretic model of HOL through
+the semantic definitions of the SSE. The model-finding tool @{command nitpick}~\cite{Nitpick} can
 aid in making these lifted models concrete.
 
 Technically, a shallow embedding defines a substructure in the models of HOL, which
@@ -2663,38 +2668,14 @@ it employs a system of type classes to model relations of arbitrary arity as rel
 tuples of individuals.\footnote{However, for each fixed arity of relations
 the type classes can be logically eliminated.}
 
-Note that while we talk about @{emph \<open>modelling\<close>} AOT, we do not construct concrete
-models of AOT's logic in the classical sense.\footnote{See also
-the discussion in section~\ref{SSE:MetaModel}.} Instead, we @{emph \<open>implement\<close>} AOT in
-Isabelle/HOL using an SSE and any set-theoretic model of our meta-logic HOL that validates
-our construction can be lifted to a full set-theoretic model of AOT. This way, in particular, we
-can avoid defining concrete interpretation and assignment functions, since we can
-rely on Isabelle's semantics for constants and variables instead.
+Recall that, as mentioned in section~\ref{SSE:MetaModel}, we do not construct set-theoretic
+models of AOT, but instead construct models of AOT in HOL, while any set-theoretic model of
+HOL that validates our construction can be lifted to a set-theoretic model of AOT.
 \<close>
 
 subsection\<open>Aczel Models\<close>text\<open>\label{AczelModels}\<close>
 
 text\<open>
-
-The general structure of our models is based on Aczel models (see~\cite{zalta1999}).
-Aczel models are extensional models that validate both
-the comprehension principle for abstract objects\footnote{The last axiom in section~\ref{AxiomSystem},
-resp. \nameref{AOT:A-objects} in the embedding: @{thm "A-objects"[axiom_inst, print_as_theorem, of \<phi>]}}
-and classical relation comprehension in the absence of encoding formulas.
-
-Aczel models involve a domain of @{emph \<open>urelements\<close>} @{text U} that is split
-into @{emph \<open>ordinary urelements\<close>} @{text C} and @{emph \<open>special urelements\<close>} @{term S}.
-In the extensional, non-modal setting, the power set of the set of urelements suffices
-for representing properties. Abstract objects in turn are modelled using the power set
-of properties.
-
-Furthermore, the models involve a (non-injective) mapping from abstract objects to
-special urelements. The special urelement @{text \<open>||x||\<close>} to which an abstract object
-@{text x} is mapped determines which properties the abstract object @{text x} @{emph \<open>exemplifies\<close>}.
-
-The domain of individuals @{text D} is defined as the union of abstract objects and
-ordinary urelements (resp. ordinary objects).
-
 
 \tikzset{font=\fontsize{8pt}{10pt}\selectfont}
 \begin{figure}[H]
@@ -2738,6 +2719,26 @@ ordinary urelements (resp. ordinary objects).
 \end{tikzpicture}
 \caption{Extensional, non-modal Aczel model of AOT.}\label{fig:aczel-model}
 \end{figure}
+
+The general structure of our models is based on Aczel models (see~\cite{zalta1999}).
+Aczel models are extensional models that validate both
+the comprehension principle for abstract objects\footnote{The last axiom in section~\ref{AxiomSystem},
+resp. \nameref{AOT:A-objects} in the embedding: @{thm "A-objects"[axiom_inst, print_as_theorem, of \<phi>]}}
+and classical relation comprehension in the absence of encoding formulas.
+
+Aczel models involve a domain of @{emph \<open>urelements\<close>} @{text U} that is split
+into @{emph \<open>ordinary urelements\<close>} @{text C} and @{emph \<open>special urelements\<close>} @{term S}.
+In the extensional, non-modal setting, the power set of the set of urelements suffices
+for representing properties. Abstract objects in turn are modelled using the power set
+of properties.
+
+Furthermore, the models involve a (non-injective) mapping from abstract objects to
+special urelements. The special urelement @{text \<open>||x||\<close>} to which an abstract object
+@{text x} is mapped determines which properties the abstract object @{text x} @{emph \<open>exemplifies\<close>}.
+
+The domain of individuals @{text D} is defined as the union of abstract objects and
+ordinary urelements (resp. ordinary objects).
+
 
 Any individual @{text \<open>x \<in> D\<close>} can be associated with an urelement @{text \<open>|x| \<in> U\<close>}:
 
@@ -2790,6 +2791,53 @@ Therefore, while the models used for our embedding inherit the idea of urelement
 and a mapping from abstract objects to special urelements, we extend
 the general model structure for our embedding. As a first step, we describe the implementation of
 AOT's hyperintensionality.
+\<close>
+
+subsection\<open>Types of the Embedding\<close>
+
+text\<open>
+The terms of AOT are represented in our embedding using the following types:@{footnote \<open>Note
+that types and objects have separate namespaces in Isabelle.\<close>}
+
+  \<^item> Type @{typ \<o>} for formulas, resp. propositions.
+  \<^item> Type @{typ \<kappa>} for individual terms.
+  \<^item> Type @{typ \<open><'a>\<close>} for relation terms. Here @{typ 'a} is a type variable that is
+    restricted to a type class @{class AOT_\<kappa>s} that is instantiated for @{typ \<kappa>} (yielding unary
+    relations, resp. properties, as @{typ \<open><\<kappa>>\<close>}) and arbitrary tuples of type @{typ \<kappa>},@{footnote \<open>Technically,
+@{class AOT_\<kappa>s} is instantiated for products of a type of class @{class AOT_\<kappa>} and a type of @{class AOT_\<kappa>s}, while
+@{class AOT_\<kappa>} abstracts the properties of type @{typ \<kappa>} (and is only instantiated for @{typ \<kappa>}).\<close>}
+    (i.e. @{typ \<open><\<kappa>\<times>\<kappa>>\<close>} is used to represent two-place-relations, etc.).
+  \<^item> Type @{typ \<open>'a AOT_var\<close>} for the variables of type @{typ 'a}, where @{typ 'a} ranges
+    over types of class @{class AOT_Term}, which is instantiated for all types above.
+    The type class @{class AOT_Term} (see~\nameref{AOT:AOT_model.AOT_Term}) involves
+    a single parameter @{term AOT_model_denotes} of type @{typ \<open>'a \<Rightarrow> bool\<close>}, that determines
+    the conditions under which a term of type @{typ 'a} denotes.
+    The representation set of type @{typ \<open>'a AOT_var\<close>} is the set of all objects of type
+    @{typ 'a} that denote, i.e. for which @{term AOT_model_denotes} is @{term True}.@{footnote \<open>Since
+    the representation set of a type in Isabelle/HOL cannot be empty, the type class @{class AOT_Term}
+    involves the assumption that there is an object for which @{term AOT_model_denotes} is @{term True},
+    which has to be proven for each instantiation of the type class and thereby can be assumed for
+    each type of class @{class AOT_Term}.\<close>}
+
+Implication is represented as a constant @{const AOT_imp} of type @{typ \<open>\<o> \<Rightarrow> \<o> \<Rightarrow> \<o>\<close>},
+i.e. a function taking two formulas to a formula. Similarly,
+negation and the necessity and actuality operators are constants of type @{typ \<open>\<o> \<Rightarrow> \<o>\<close>}.
+are defined as functions taking of @{typ \<open>\<o> \<Rightarrow> \<o>\<close>}, i.e. taking formulas to formulas.
+
+The following constants depend on a type variable @{typ 'a} that
+ranges over types of class @{class AOT_Term}:
+
+  \<^item> @{const AOT_forall} of type @{typ \<open>('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close>} represents the all-quantifier.
+    It takes functions of type @{typ \<open>'a \<Rightarrow> \<o>\<close>} (i.e. functions mapping objects
+    of type @{typ 'a} to propositions) to propositions.
+  \<^item> @{const AOT_denotes} of type @{typ \<open>'a \<Rightarrow> \<o>\<close>} represents the downarrow operator.
+  \<^item> @{const AOT_eq} of type @{typ \<open>'a \<Rightarrow> 'a \<Rightarrow> \<o>\<close>} represents identity.
+
+Furthermore, the following constants depend on a type variable @{typ 'a} that
+ranges over types of class @{class AOT_\<kappa>s}:
+  \<^item> @{const AOT_exe} of type @{typ \<open><'a> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>} represents exemplification.
+  \<^item> @{const AOT_lambda} of type @{typ \<open>('a \<Rightarrow> \<o>) \<Rightarrow> <'a>\<close>} represents @{text \<open>\<lambda>\<close>}-abstraction.
+  \<^item> @{const AOT_enc} of type @{typ \<open>'a \<Rightarrow> <'a> \<Rightarrow> \<o>\<close>} represents encoding.
 \<close>
 
 subsection\<open>Hyperintensional Propositions\<close>text\<open>\label{HyperintensionalPropositions}\<close>
@@ -4268,14 +4316,16 @@ subsection\<open>Primitive Inferences of Isabelle/Pure and Derivations of AOT\<c
 
 text\<open>
 As mentioned in section~\ref{SSEsWithAbstractionLayers}, being able to trust
-the abstraction layer constructed for AOT relies on verifying that the primitive
-inferences of Isabelle's Pure logic correspond to valid reasoning in the system of PLM,
+the abstraction layer constructed for AOT relies on verifying that
+inferences in the meta-logic correspond to valid reasoning in the system of PLM,
 given that the set of available theorems and rules is suitably restricted.
 
+We implement the rules of AOT as rules in Isabelle's Pure logic.
 The primitive inferences of Pure are described in section 2.3 of~\cite{IsabelleImplementation}.@{footnote \<open>In
 particular figure~\ref{fig:prim-rules} is presented as figure 2.2 in section 2.3.1 of~\cite{IsabelleImplementation}.\<close>}
 In this section we will in particular argue that the rules in figure~\ref{fig:prim-rules},
-when applied in our abstraction layer, will correspond to valid reasoning in AOT.
+when applied in our abstraction layer, will correspond to valid reasoning in AOT.@{footnote \<open>As noted below,
+an exhaustive analysis would also need to consider the richer logic of Isabelle/HOL.\<close>}
 
   \begin{figure}[H]
   \begin{center}
@@ -4340,36 +4390,85 @@ other hand (e.g. recall the fact that non-denoting definite descriptions can be 
 Furthermore we argued in section~\ref{alphabetic-variants} that the meta-logical equality
 of alphabetic variants is consistent with reasoning in PLM.
 
-While we do not claim that this analysis is exhaustive, it nevertheless provides
-strong evidence that reasoning in our abstraction layer is in fact reproducible as
+While we do not claim that this analysis is exhaustive,@{footnote \<open>While the rules of our
+target theory are implemented in the format of rules of Isabelle/Pure, the automated proving methods we use (e.g.
+@{method metis}, @{method meson} and @{method blast}) work relative to the richer logic of
+Isabelle/HOL (see chapter~2 of ~\cite{IsabelleLogics}) and for a full account the
+relevant axioms and inferences of Isabelle/HOL would need to be considered as well.\<close>}
+it nevertheless provides strong evidence for the assumption that reasoning in our abstraction layer is in fact reproducible as
 derivations in the sense of PLM. For the purpose of a seamless exchange of results
 between our embedding and PLM, this level of assurance has proven sufficient. In our
 work we have not encountered a proof in our abstraction layer that could not be
 reproduced in the system of PLM.
 
-Conversely, the fact that we can derive PLM's axioms and deduction rules in the
+Conversely, the fact that we can derive PLM's axioms and rules in the
 embedding shows that derivations of PLM can be reproduced in the embedding.
+
+An interesting project for future research may be to implement AOT directly as an object logic
+of Isabelle/Pure. However, instead of being able to rely on the soundness of
+Isabelle/HOL as semantic backend, this would require a direct axiomatization of AOT in Pure,
+which means that we would loose the ability to easily judge the consistency of our representation
+of AOT and of extensions of its axiom system, which is one of the prime objectives of
+our current project.
 \<close>
 
-section\<open>Artifactual Theorems\<close>
+section\<open>Artifactual Theorems\<close>text\<open>\label{ArtifactualTheorems}\<close>
 
-text\<open>Artifactual Theorems are theorems that are valid in a concrete model, respectively
+text\<open>
+In general, artifactual theorems can be defined as follows:
+
+Let $T$ be the target theory and $T' $ be the theory in which we are
+building a model @{text \<open>\<M>\<close>} of $T$ (so that @{text \<open>\<M>\<close>} is expressible in $T' $).
+Then an artifactual theorem $\phi$ of $T$ relative to $T$ and @{text \<open>\<M>\<close>}
+is a formula expressible in the language of $T$ that is derivable
+in $T' $ from @{text \<open>\<M>\<close>} but which is not derivable in $T$ itself.  For
+example, if $T$ is second-order logic with identity (2OL=) and $T' $
+is ZF+U (Zermelo-Fraenkel set theory with Urelements) and the model
+$M$ in ZF+U represents the predicates of $T$ as sets of Urelements
+in ZF+U, then the claim:
+
+$\phi$ =  $\forall x(Fx \equiv Gx) \to F=G$
+
+becomes derivable in ZF+U from @{text \<open>\<M>\<close>}, even though it is not a theorem of 2OL=.
+(Indeed, in this case, $\phi$ is thus interpreted in @{text \<open>\<M>\<close>} as an
+instance of the axiom of Extensionality of ZF+U.) This particular
+$\phi$ is therefore an artifactual theorem of 2OL= relative to ZF+U 
+and the model @{text \<open>\<M>\<close>} of predicates as sets.  
+
+The abstraction layer we define in our embedding aims to disallow
+artifactual theorems by limiting theoremhood to what can be
+derived from the representation of the axioms and rules of $T$
+in @{text \<open>\<M>\<close>}; thus, appeals to the axioms and rules of $T' $ are not
+allowed in the derivations of theorems of $T$.
+\<close>
+(*
+text\<open>
+Artifactual Theorems are theorems that are valid in a concrete model, respectively
 valid with respect to a concretely defined semantics, but which are not derivable from
 a formal system itself.
+\<close>
 
+text\<open>
 The abstraction layer we define in our embedding aims to disallow deriving artifactual
 theorems by restricting proofs to solely rely on the implementation of the axioms and
 deduction rules of AOT itself.
+
+\<close>
+*)
+
+text\<open>
 We have discussed in section~\ref{MetaTheorems} that for technical reasons the
 embedding collapses certain classes of statements (e.g. alphabetic variants), but that
 this merely extends to statements that are interderivable in AOT itself. As a result
 we can reasonably assume that well-formed statements of AOT that are provable in the abstraction layer of
-our embedding also have a derivation in AOT.
+our embedding also have a derivation in AOT, i.e. only theorems that are derivable from the formal system
+$T$ itself are derivable from @{text \<open>\<M>\<close>} using the representation of the axioms and rules of $T$.
 
-Nonetheless, it is still a valid question whether the underlying semantics and model structure
-used in the construction of this abstraction layer allows for deriving artifactual theorems,
-respectively whether our embedding allows deriving artifactual theorems when ignoring
-the abstraction layer and allowing to use the semantic properties of the embedding in proofs.
+Ideally, the construction of @{text \<open>\<M>\<close>} is general enough, s.t. even using the full system
+of axioms and rules of $T'$, no theorem is derivable from $M$ that does not have
+a derivation in the formal system of $T$ itself. Or in other words, ideally, there are
+no artifactual theorems and the abstraction layer becomes unnecessary. However, 
+in the case of our embedding, there are still counterexamples.
 
 As a matter of fact, comparing derivability in the abstraction layer of the embedding,
 respectively in the formal system of PLM itself, with validity in our underlying
@@ -4646,7 +4745,7 @@ However, the postulated properties given in the specification go beyond the axio
 AOT they ultimately validate. Validating the axioms of AOT for arbitrary
 @{text n}-ary relations in the embedding while maintaining the definition of @{text n}-ary relation identity
 requires, at least in the current construction of the embedding, additional properties
-for @{text \<open>\<lambda>\<close>}-abstraction and exemplification.@{footnote \<open>In particular, the property
+for @{text \<open>\<lambda>\<close>}-abstraction and exemplification.@{footnote \<open>For example, the property
 named @{text AOT_sem_exe_denoting} in~\nameref{AOT:AOT_exe_lambda_spec} is solely
 used for validating @{text n}-ary relation identity.\<close>}
 
@@ -4687,10 +4786,10 @@ text\<open>
 We have described an implementation of the second-order fragment of AOT in classical
 higher-order logic by means of an SSE that can accurately reproduce AOT's reasoning
 in an abstraction layer. While our semantic backend
-is not provably free of artifactual theorems, this can partly be explained due to the fact that AOT does
+is not provably free of artifactual theorems, this can be explained due to the fact that AOT does
 not itself presuppose a strong and exhaustive @{emph \<open>intended semantics\<close>}, relative to which a completeness result
-is intended and could be achieved. On the contrary, the authors of AOT explicitly try to avoid for the axioms and deductive
-system of AOT to be @{emph \<open>driven by semantics\<close>}, but rather aspire to devise a philosophically
+is intended and could be achieved. On the contrary, the authors of AOT explicitly try to avoid letting the axioms and deductive
+system of AOT be @{emph \<open>driven by semantics\<close>}, but rather aspire to devise a philosophically
 justifiable formal system that stands independently of a set-theoretic semantics and in which
 notions like truth values and possible worlds can instead be analysed as objects of the system itself:
 
@@ -4706,15 +4805,16 @@ data.@{footnote \<open>Edward Zalta in~\cite{zalta1988intensional} section 2.4.\
 }
 
 Nevertheless, our semantic analysis could significantly contribute especially to the
-theoretical understanding of relation terms in AOT (and in particular the conditions under which
-they can be asserted to denote), which, after rigorous philosophical consideration,
-had a profound impact on the axiom system.
+theoretical understanding of the conditions, in AOT, under which relations exist.
+These existence questions require rigorous philosophical consideration and can
+have a profound impact on the axiom system (recall e.g.~\ref{MoveToFreeLogic}).
 
 While there are open questions e.g. concerning the identity of @{term n}-ary relation terms,
 we anticipate these questions to be the subject of future debate that will, similar to past examples of similar
 discussions, result in both theoretical insights and an improved implementation. 
 \<close>
 (*
+
 text\<open>
 A potential future refinement of the embedding may (1) instead of representing relations as
 proposition-valued functions define an intensional type of unary relations that is merely equipped with a
