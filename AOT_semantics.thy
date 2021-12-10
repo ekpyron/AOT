@@ -395,7 +395,7 @@ lemma AOT_sem_abstract_def_denotes: \<open>[w \<Turnstile> [\<lambda>x \<not>\<d
   by (auto simp: AOT_sem_dia AOT_concrete_sem AOT_model_concrete_equiv
                  AOT_sem_concrete AOT_sem_denotes AOT_sem_not)
 
-class AOT_Individual = 
+class AOT_RelationProjection = 
   fixes AOT_sem_proj_id :: \<open>'a::AOT_IndividualTerm \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close>
   assumes AOT_sem_proj_id_prop:
     \<open>[v \<Turnstile> \<Pi> = \<Pi>'] =
@@ -404,11 +404,11 @@ class AOT_Individual =
     \<open>[v \<Turnstile> \<tau>\<down>] \<Longrightarrow> [v \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]] \<Longrightarrow>
      [v \<Turnstile> \<guillemotleft>AOT_sem_proj_id \<tau> \<phi> \<phi>\<guillemotright>]\<close>
 
-class AOT_UnaryIndividual = AOT_Individual +
+class AOT_UnaryRelationProjection = AOT_RelationProjection +
   assumes AOT_sem_unary_proj_id:
     \<open>AOT_sem_proj_id \<kappa> \<phi> \<psi> = \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}] = [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<guillemotright>\<close>
 
-instantiation \<kappa> :: AOT_UnaryIndividual
+instantiation \<kappa> :: AOT_UnaryRelationProjection
 begin
 definition AOT_sem_proj_id_\<kappa> :: \<open>\<kappa> \<Rightarrow> (\<kappa> \<Rightarrow> \<o>) \<Rightarrow> (\<kappa> \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> where
   \<open>AOT_sem_proj_id_\<kappa> \<kappa> \<phi> \<psi> = \<guillemotleft>[\<lambda>z \<phi>{z}] = [\<lambda>z \<psi>{z}]\<guillemotright>\<close>
@@ -432,7 +432,8 @@ qed
 end
 
 instantiation prod ::
-  ("{AOT_UnaryIndividual, AOT_UnaryIndividualTerm}", AOT_Individual) AOT_Individual
+  ("{AOT_UnaryRelationProjection, AOT_UnaryIndividualTerm}", AOT_RelationProjection)
+  AOT_RelationProjection
 begin
 definition AOT_sem_proj_id_prod :: \<open>'a\<times>'b \<Rightarrow> ('a\<times>'b \<Rightarrow> \<o>) \<Rightarrow> ('a\<times>'b \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> where
   \<open>AOT_sem_proj_id_prod \<equiv> \<lambda> (x,y) \<phi> \<psi> . \<guillemotleft>[\<lambda>z \<guillemotleft>\<phi> (z,y)\<guillemotright>] = [\<lambda>z \<guillemotleft>\<psi> (z,y)\<guillemotright>] &
@@ -763,28 +764,25 @@ class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
            \<exists> \<Pi>' . [v \<Turnstile> \<Pi>'\<down>] \<and> [v \<Turnstile> \<kappa>'[\<Pi>']] \<and>
                   (\<forall> \<kappa>\<^sub>0 . [v \<Turnstile> [\<lambda>x \<diamond>[\<guillemotleft>AOT_sem_concrete\<guillemotright>]x]\<kappa>\<^sub>0] \<longrightarrow>
                           (\<forall> w . [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>0]))\<close>
+
+consts AOT_sem_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>\<close>
+specification(AOT_sem_enc_\<kappa>)
+  AOT_sem_enc_\<kappa>:
+  \<open>[v \<Turnstile> \<guillemotleft>AOT_sem_enc_\<kappa> \<kappa> \<Pi>\<guillemotright>] =
+   (AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close>
+  by (rule exI[where x=\<open>\<lambda> \<kappa> \<Pi> . \<epsilon>\<^sub>\<o> w . AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<Pi> \<and>
+                                       AOT_model_enc \<kappa> \<Pi>\<close>])
+     (simp add: AOT_model_proposition_choice_simp AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if)
 instantiation \<kappa> :: AOT_Enc
 begin
 definition AOT_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>\<close> where
-  \<open>AOT_enc_\<kappa> \<equiv> SOME \<phi> . \<forall> v \<kappa> \<Pi> . [v \<Turnstile> \<guillemotleft>\<phi> \<kappa> \<Pi>\<guillemotright>] =
-                                   (AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close>
+  \<open>AOT_enc_\<kappa> \<equiv> AOT_sem_enc_\<kappa>\<close>
 definition AOT_proj_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> (\<kappa> \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> where
   \<open>AOT_proj_enc_\<kappa> \<equiv> \<lambda> \<kappa> \<phi> . AOT_enc \<kappa> \<guillemotleft>[\<lambda>z \<guillemotleft>\<phi> z\<guillemotright>]\<guillemotright>\<close>
 lemma AOT_enc_\<kappa>_meta:
   \<open>[v \<Turnstile> \<kappa>[\<Pi>]] = (AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close>
   for \<kappa>::\<kappa>
-proof -
-  have AOT_enc_\<kappa>_ex:
-    \<open>\<exists> \<phi> . \<forall> v (\<kappa>::\<kappa>) \<Pi> . [v \<Turnstile> \<guillemotleft>\<phi> \<kappa> \<Pi>\<guillemotright>] =
-                           (AOT_model_denotes \<Pi> \<and> AOT_model_enc \<kappa> \<Pi>)\<close>
-    by (rule exI[where x=\<open>\<lambda> \<kappa> \<Pi> . \<epsilon>\<^sub>\<o> w . AOT_model_enc \<kappa> \<Pi>\<close>])
-       (simp add: AOT_model_proposition_choice_simp
-                  AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if)
-  show ?thesis
-    using someI_ex[OF AOT_enc_\<kappa>_ex] unfolding AOT_enc_\<kappa>_def
-    by (simp add: AOT_model_denotes_\<kappa>_def AOT_model_enc_\<kappa>_def
-                  \<kappa>.case_eq_if \<kappa>.distinct_disc(5))
-qed
+  using AOT_sem_enc_\<kappa> unfolding AOT_enc_\<kappa>_def by auto
 instance proof
   fix v and \<kappa> :: \<kappa> and \<Pi>
   show \<open>[v \<Turnstile> \<guillemotleft>AOT_enc \<kappa> \<Pi>\<guillemotright>] \<Longrightarrow> [v \<Turnstile> \<kappa>\<down>] \<and> [v \<Turnstile> \<Pi>\<down>]\<close>
@@ -1247,8 +1245,9 @@ lemma \<open>[v \<Turnstile> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<
 lemma AOT_sem_vars_denote: \<open>[v \<Turnstile> \<alpha>\<^sub>1...\<alpha>\<^sub>n\<down>]\<close>
   by induct simp
 
-class AOT_\<kappa>s = AOT_IndividualTerm + AOT_Individual + AOT_Enc
-class AOT_\<kappa> = AOT_\<kappa>s + AOT_UnaryIndividualTerm + AOT_UnaryIndividual + AOT_UnaryEnc
+class AOT_\<kappa>s = AOT_IndividualTerm + AOT_RelationProjection + AOT_Enc
+class AOT_\<kappa> = AOT_\<kappa>s + AOT_UnaryIndividualTerm +
+  AOT_UnaryRelationProjection + AOT_UnaryEnc
 
 instance \<kappa> :: AOT_\<kappa> by standard
 instance prod :: (AOT_\<kappa>, AOT_\<kappa>s) AOT_\<kappa>s by standard
