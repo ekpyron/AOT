@@ -49,7 +49,7 @@ consts AOT_denotes :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
        AOT_exe :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>
        AOT_lambda :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> <'a>\<close>
        AOT_lambda0 :: \<open>\<o> \<Rightarrow> \<o>\<close>
-       AOT_concrete :: \<open><\<kappa>>\<close>
+       AOT_concrete :: \<open><'a::AOT_UnaryIndividualTerm> AOT_var\<close>
 
 nonterminal \<kappa>\<^sub>s and \<Pi> and \<Pi>0 and \<alpha> and exe_arg and exe_args
         and lambda_args and desc and free_var and free_vars
@@ -179,7 +179,7 @@ translations
   "_AOT_act \<phi>" => "CONST AOT_act \<phi>"
   "_AOT_eq \<tau> \<tau>'" => "CONST AOT_eq \<tau> \<tau>'"
   "_AOT_lambda0 \<phi>" => "CONST AOT_lambda0 \<phi>"
-  "_AOT_concrete" => "CONST AOT_concrete"
+  "_AOT_concrete" => "CONST AOT_term_of_var (CONST AOT_concrete)"
   "_AOT_lambda \<alpha> \<phi>" => "CONST AOT_lambda (_abs \<alpha> \<phi>)"
   "_explicitRelation \<Pi>" => "\<Pi>"
 
@@ -634,6 +634,19 @@ print_translation\<open>AOT_syntax_print_translations [
   (\<^const_syntax>\<open>print_term\<close>, fn ctxt => fn [x] => 
     (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x))
 ]\<close>
+
+
+(* To enable meta syntax: *)
+(* interpretation AOT_meta_syntax. *)
+(* To disable meta syntax: *)
+interpretation AOT_no_meta_syntax.
+
+(* To enable AOT syntax (takes precedence over meta syntax;
+                         can be done locally using "including" or "include"): *)
+unbundle AOT_syntax
+(* To disable AOT syntax (restoring meta syntax or no syntax;
+                          can be done locally using "including" or "include"): *)
+(* unbundle AOT_no_syntax *)
 
 (*<*)
 end

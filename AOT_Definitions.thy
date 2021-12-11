@@ -2,11 +2,6 @@ theory AOT_Definitions
   imports AOT_semantics
 begin
 
-(* interpretation AOT_meta_syntax. *)
-(* interpretation AOT_no_meta_syntax. *)
-(* unbundle AOT_no_syntax *)
-unbundle AOT_syntax
-
 section\<open>Definitions of AOT\<close>
 
 AOT_theorem "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
@@ -27,6 +22,7 @@ declare "conventions:1"[AOT_defs] "conventions:2"[AOT_defs]
 notepad
 begin
   fix \<phi> \<psi> \<chi>
+  text\<open>\linelabel{precedence}\<close>
   have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close>
     by blast
   have "conventions3[2]": \<open>\<guillemotleft>\<phi> & \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
@@ -78,7 +74,7 @@ AOT_theorem "identity:1":
              ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ x y]
-  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj
+  by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj
                 AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq
                 AOT_sem_denotes)
 

@@ -5330,7 +5330,7 @@ proof -
   AOT_have \<open>\<forall>F (\<diamond>\<exists>x ([F]x & \<diamond>\<not>[F]x) \<equiv> \<diamond>\<exists>x (\<not>[F]x & \<diamond>[F]x))\<close>
     using "lem-cont-e:1" GEN by fast
   AOT_hence \<open>(\<diamond>\<exists>x (E!x & \<diamond>\<not>E!x) \<equiv> \<diamond>\<exists>x (\<not>E!x & \<diamond>E!x))\<close>
-    using "\<forall>E"(1) "cqt:2[concrete]"[axiom_inst] by blast
+    using "\<forall>E"(2) by blast
   thus ?thesis using "thm-cont-e:1" "\<equiv>E" by blast
 qed
 
@@ -5359,7 +5359,7 @@ proof -
   AOT_have \<open>\<forall>F (Contingent([F]) \<equiv> \<diamond>\<exists>x [F]x & \<diamond>\<exists>x \<not>[F]x)\<close>
     using "thm-cont-prop:2" GEN by fast
   AOT_hence \<open>Contingent([E!]) \<equiv> \<diamond>\<exists>x E!x & \<diamond>\<exists>x \<not>E!x\<close>
-    using "\<forall>E"(1) "cqt:2[concrete]"[axiom_inst] by blast
+    using "\<forall>E"(2) by blast
   thus ?thesis
     using "thm-cont-e:3" "thm-cont-e:4" "\<equiv>E"(2) "&I" by blast
 qed
@@ -5369,7 +5369,7 @@ proof -
   AOT_have \<open>\<forall>F (Contingent([\<guillemotleft>F::<\<kappa>>\<guillemotright>]) \<equiv> Contingent([F]\<^sup>-))\<close>
     using "thm-cont-prop:3" GEN by fast
   AOT_hence \<open>Contingent([E!]) \<equiv> Contingent([E!]\<^sup>-)\<close>
-    using "\<forall>E" "cqt:2[concrete]"[axiom_inst] by fast
+    using "\<forall>E"(2) by fast
   thus ?thesis using "thm-cont-e:5" "\<equiv>E" by blast
 qed
 
@@ -5379,15 +5379,13 @@ proof (rule "\<exists>I")+
   AOT_have \<open>\<forall>F [\<guillemotleft>F::<\<kappa>>\<guillemotright>] \<noteq> [F]\<^sup>-\<close>
     using "thm-relation-negation:5" GEN by fast
   AOT_hence \<open>[E!] \<noteq> [E!]\<^sup>-\<close>
-    using "\<forall>E" "cqt:2[concrete]"[axiom_inst] by fast
+    using "\<forall>E" by fast
   AOT_thus \<open>Contingent([E!]) & Contingent([E!]\<^sup>-) & [E!] \<noteq> [E!]\<^sup>-\<close>
     using "thm-cont-e:5" "thm-cont-e:6" "&I" by metis
 next
   AOT_show \<open>E!\<^sup>-\<down>\<close>
     by (fact AOT)
-next
-  AOT_show \<open>E!\<down>\<close> by (fact "cqt:2[concrete]"[axiom_inst])
-qed
+qed("cqt:2")
 
 AOT_theorem "property-facts:1":
   \<open>NonContingent([F]) \<rightarrow> \<not>\<exists>G (Contingent([G]) & G = F)\<close>
@@ -5487,7 +5485,7 @@ proof -
        apply "cqt:2[lambda]"
       apply (rule "\<forall>E"(1)[where \<phi>="\<lambda> \<Pi> . \<guillemotleft>\<Pi> \<noteq> [\<Pi>]\<^sup>-\<guillemotright>"])
        apply (rule GEN) apply (fact AOT)
-      by (fact "cqt:2[concrete]"[axiom_inst])
+      by "cqt:2"
   qed
 qed
 
@@ -6854,17 +6852,15 @@ proof -
   } note 0 = this
   show ?thesis
     apply(safe intro!: "&I"; rule 0)
-    using "cqt:2[concrete]"[axiom_inst] apply blast
+    apply "cqt:2"
     using "oa-exist:1" apply blast
     using "cont-nec-fact2:3" apply fast
     apply (rule "useful-tautologies:2"[THEN "\<rightarrow>E"])
     using "cont-nec-fact2:1" apply fast
     using "rel-neg-T:3" apply fast
     using "oa-exist:1" apply blast
-    using "cont-nec-fact1:1"[unvarify F,
-            THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
-            THEN "\<equiv>E"(1), rotated, OF "cont-nec-fact2:3",
-            OF "cqt:2[concrete]"[axiom_inst]] apply fast
+    using "cont-nec-fact1:1"[THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
+            THEN "\<equiv>E"(1), rotated, OF "cont-nec-fact2:3"] apply fast
     apply (rule "useful-tautologies:2"[THEN "\<rightarrow>E"])
     using "cont-nec-fact2:1" apply blast
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; "cqt:2[lambda]")
@@ -6900,17 +6896,15 @@ proof -
   } note 0 = this
   show ?thesis
     apply(safe intro!: "&I"; rule 0)
-    using "cqt:2[concrete]"[axiom_inst] apply blast
+    apply "cqt:2"
     using "oa-exist:2" apply blast
     using "cont-nec-fact2:3" apply fast
     apply (rule "useful-tautologies:2"[THEN "\<rightarrow>E"])
     using "cont-nec-fact2:2" apply fast
     using "rel-neg-T:3" apply fast
     using "oa-exist:2" apply blast
-    using "cont-nec-fact1:1"[unvarify F,
-            THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)], THEN "\<equiv>E"(1),
-            rotated, OF "cont-nec-fact2:3",
-            OF "cqt:2[concrete]"[axiom_inst]] apply fast
+    using "cont-nec-fact1:1"[THEN "oth-class-taut:4:b"[THEN "\<equiv>E"(1)],
+            THEN "\<equiv>E"(1), rotated, OF "cont-nec-fact2:3"] apply fast
     apply (rule "useful-tautologies:2"[THEN "\<rightarrow>E"])
     using "cont-nec-fact2:2" apply blast
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF L_def]; "cqt:2[lambda]")
@@ -7182,7 +7176,7 @@ proof -
     by (meson "&I" delta_concrete_b not_act_concrete_a
               not_act_concrete_b not_delta_concrete_a)
   then AOT_obtain F\<^sub>4 where \<open>\<not>\<^bold>\<A>[F\<^sub>4]b & \<^bold>\<Delta>[F\<^sub>4]b & \<not>\<^bold>\<A>[F\<^sub>4]a & \<not>\<^bold>\<Delta>[F\<^sub>4]a\<close>
-    using "cqt:2[concrete]"[axiom_inst] "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]]
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]]
     by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>4]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>4]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>4]a\<close> and \<open>\<not>\<^bold>\<Delta>[F\<^sub>4]a\<close>
     using "&E" by blast+
@@ -7195,7 +7189,7 @@ proof -
     by (safe intro!: "&I"; AOT_subst \<open>[\<lambda>y q\<^sub>0]b\<close> \<open>q\<^sub>0\<close> for: b)
        (auto simp: not_act_q_zero delta_q_zero  "beta-C-meta"[THEN "\<rightarrow>E", OF 1])
   ultimately AOT_obtain F\<^sub>5 where \<open>\<not>\<^bold>\<A>[F\<^sub>5]b & \<^bold>\<Delta>[F\<^sub>5]b & \<not>\<^bold>\<A>[F\<^sub>5]a & \<^bold>\<Delta>[F\<^sub>5]a\<close>
-    using "cqt:2[concrete]"[axiom_inst] "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]]
+    using "\<exists>I"(1)[rotated, THEN "\<exists>E"[rotated]]
     by fastforce
   AOT_hence \<open>\<not>\<^bold>\<A>[F\<^sub>5]b\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]b\<close> and \<open>\<not>\<^bold>\<A>[F\<^sub>5]a\<close> and \<open>\<^bold>\<Delta>[F\<^sub>5]a\<close>
     using "&E" by blast+
