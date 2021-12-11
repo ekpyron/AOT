@@ -200,8 +200,8 @@ pre .linenumber span {
 <a name="L133" href="#L133"><span class="linenumber">133</span></a><span class="keyword2"><span class="keyword">end</span></span>
 <a name="L134" href="#L134"><span class="linenumber">134</span></a>
 <a name="L135" href="#L135"><span class="linenumber">135</span></a>
-<a name="L136" href="#L136"><span class="linenumber">136</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹The following are artifacts of the internal implementation of n-ary relations
-<a name="L137" href="#L137"><span class="linenumber">137</span></a>     as relations on tuples.›</span></span>
+<a name="L136" href="#L136"><span class="linenumber">136</span></a><span class="keyword1"><span class="command">text</span></span><span class="quoted"><span class="plain_text">‹The following are purely technical pseudo-definitions required due to
+<a name="L137" href="#L137"><span class="linenumber">137</span></a>     our internal implementation of n-ary relations and ellipses using tuples.›</span></span>
 <a name="L138" href="#L138"><span class="linenumber">138</span></a><span class="keyword1"><span class="command">AOT_theorem</span></span> tuple_denotes<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="main">«</span><span class="main">(</span><span class="free">τ</span><span class="main">,</span><span class="free">τ'</span><span class="main">)</span><span class="main">»</span><span class="main">↓</span> <span class="keyword1">≡<span class="hidden">⇩</span><sub>d</sub><span class="hidden">⇩</span><sub>f</sub></span> <span class="free">τ</span><span class="main">↓</span> <span class="main">&amp;</span> <span class="free">τ'</span><span class="main">↓</span>›</span></span>
 <a name="L139" href="#L139"><span class="linenumber">139</span></a>  <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">simp</span> <span class="quasi_keyword">add</span><span class="main"><span class="main">:</span></span> AOT_model_denotes_prod_def AOT_model_equiv_def
 <a name="L140" href="#L140"><span class="linenumber">140</span></a>                AOT_sem_conj AOT_sem_denotes<span class="main">)</span>
@@ -217,16 +217,8 @@ pre .linenumber span {
 <a name="L150" href="#L150"><span class="linenumber">150</span></a><span class="keyword1"><span class="command">declare</span></span> tuple_denotes<span class="main">[</span><span class="operator">AOT_defs</span><span class="main">]</span> tuple_identity_1<span class="main">[</span><span class="operator">AOT_defs</span><span class="main">]</span> tuple_forall<span class="main">[</span><span class="operator">AOT_defs</span><span class="main">]</span>
 <a name="L151" href="#L151"><span class="linenumber">151</span></a>        tuple_exists<span class="main">[</span><span class="operator">AOT_defs</span><span class="main">]</span>
 <a name="L152" href="#L152"><span class="linenumber">152</span></a>
-<a name="L153" href="#L153"><span class="linenumber">153</span></a>
-<a name="L154" href="#L154"><span class="linenumber">154</span></a><span class="comment1">(* Collect all theorems that are not in Main and not declared [AOT]
-<a name="L155" href="#L155"><span class="linenumber">155</span></a>   and store them in a blacklist. *)</span>
-<a name="L156" href="#L156"><span class="linenumber">156</span></a><span class="keyword1"><span class="command">setup</span></span><span class="quoted">‹<span class="entity">setup_AOT_no_atp</span>›</span>
-<a name="L157" href="#L157"><span class="linenumber">157</span></a><span class="keyword1"><span class="command">bundle</span></span> AOT_no_atp <span class="keyword2"><span class="keyword">begin</span></span> <span class="keyword1"><span class="command">declare</span></span> <span class="dynamic"><span class="dynamic">AOT_no_atp</span></span><span class="main">[</span><span class="operator">no_atp</span><span class="main">]</span> <span class="keyword2"><span class="keyword">end</span></span>
-<a name="L158" href="#L158"><span class="linenumber">158</span></a><span class="comment1">(* Can be used as: "including AOT_no_atp sledgehammer" or
-<a name="L159" href="#L159"><span class="linenumber">159</span></a>   "sledgehammer(del: AOT_no_atp) *)</span>
-<a name="L160" href="#L160"><span class="linenumber">160</span></a>
-<a name="L161" href="#L161"><span class="linenumber">161</span></a><span class="keyword2"><span class="keyword">end</span></span>
-<a name="L162" href="#L162"><span class="linenumber">162</span></a></pre>
+<a name="L153" href="#L153"><span class="linenumber">153</span></a><span class="keyword2"><span class="keyword">end</span></span>
+<a name="L154" href="#L154"><span class="linenumber">154</span></a></pre>
 </body>
 
 </html>
