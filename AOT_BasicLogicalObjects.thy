@@ -5,8 +5,7 @@ begin
 (*>*)
 
 section\<open>Basic Logical Objects\<close>
-
-(* TODO: so far only the parts required for possible world theory *)
+(* Note: so far only the parts required for possible world theory are implemented *)
 
 AOT_define TruthValueOf :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>TruthValueOf'(_,_')\<close>)
   "tv-p": \<open>TruthValueOf(x,p) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
@@ -626,7 +625,4 @@ proof -
     using "1" "t=t-proper:1" "vdash-properties:10" apply blast
     by (fact 1)
 qed
-
-(*<*)
-end
-(*>*)
+(*<*)end(*>*)

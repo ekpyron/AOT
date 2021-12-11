@@ -149,11 +149,11 @@ specification(AOT_exe AOT_lambda)
   AOT_sem_lambda_eq_prop_eq: \<open>\<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>]\<guillemotright> = \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>]\<guillemotright> \<Longrightarrow> \<phi> = \<psi>\<close>
   \<comment> \<open>The following is solely required for validating n-ary relation identity
       and has the danger of implying artifactual theorems. Possibly avoidable
-      by moving to @{const AOT_exe} and @{const AOT_lambda} to type classes.\<close>
+      by moving @{const AOT_exe} and @{const AOT_lambda} to type classes.\<close>
   AOT_sem_exe_denoting: \<open>[w \<Turnstile> \<Pi>\<down>] \<Longrightarrow> AOT_exe \<Pi> \<kappa>s = Rep_rel \<Pi> \<kappa>s\<close>
   \<comment> \<open>The following is required for validating the base cases of denoting
-      relations (cqt.2). A version of this meta-logic identity in AOT will
-      become derivable in AOT in the future, so this will ultimately not
+      relations (cqt.2). A version of this meta-logical identity will
+      become derivable in future versions of AOT, so this will ultimately not
       result in artifactual theorems.\<close>
   AOT_sem_exe_equiv: \<open>AOT_model_term_equiv x y \<Longrightarrow> AOT_exe \<Pi> x = AOT_exe \<Pi> y\<close>
 proof -
@@ -330,11 +330,10 @@ specification(AOT_concrete)
                  AOT_model_proposition_choice_simp AOT_sem_exe Abs_rel_inverse
                  AOT_model_denotes_rel_def AOT_sem_denotes)
 
-
 lemma AOT_sem_equiv_defI:
   assumes \<open>\<And> v . [v \<Turnstile> \<phi>] \<Longrightarrow> [v \<Turnstile> \<psi>]\<close>
       and \<open>\<And> v . [v \<Turnstile> \<psi>] \<Longrightarrow> [v \<Turnstile> \<phi>]\<close>
-    shows "AOT_model_equiv_def \<phi> \<psi>"
+    shows \<open>AOT_model_equiv_def \<phi> \<psi>\<close>
   using AOT_model_equiv_def assms by blast
 
 lemma AOT_sem_id_defI:
@@ -403,6 +402,8 @@ lemma AOT_sem_abstract_def_denotes: \<open>[w \<Turnstile> [\<lambda>x \<not>\<d
   by (auto simp: AOT_sem_dia AOT_model_concrete_equiv
                  AOT_sem_concrete AOT_sem_denotes AOT_sem_not)
 
+text\<open>Relation identity is constructed using an auxiliary abstract projection
+     mechanism with suitable instantiations for @{typ \<kappa>} and products.\<close>
 class AOT_RelationProjection = 
   fixes AOT_sem_proj_id :: \<open>'a::AOT_IndividualTerm \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close>
   assumes AOT_sem_proj_id_prop:
@@ -447,6 +448,9 @@ definition AOT_sem_proj_id_prod :: \<open>'a\<times>'b \<Rightarrow> ('a\<times>
   \<open>AOT_sem_proj_id_prod \<equiv> \<lambda> (x,y) \<phi> \<psi> . \<guillemotleft>[\<lambda>z \<guillemotleft>\<phi> (z,y)\<guillemotright>] = [\<lambda>z \<guillemotleft>\<psi> (z,y)\<guillemotright>] &
     \<guillemotleft>AOT_sem_proj_id y (\<lambda> a . \<phi> (x,a)) (\<lambda> a . \<psi> (x,a))\<guillemotright>\<guillemotright>\<close>
 instance proof
+  text\<open>This is the main proof that allows to derive the definition of n-ary
+       relation identity. We need to show that our defined projection identity
+       implies relation identity for relations on pairs of individual terms.\<close>
   fix v and \<Pi> \<Pi>' :: \<open><'a\<times>'b>\<close>
   have AOT_meta_proj_denotes1: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (z, \<beta>)))\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close> and \<beta>
@@ -680,6 +684,7 @@ next
 qed
 end
 
+text\<open>Sanity-check to verify that n-ary relation identity follows.\<close>
 lemma \<open>[v \<Turnstile> \<Pi> = \<Pi>'] = [v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<forall>x\<forall>y([\<lambda>z [\<Pi>]z y] = [\<lambda>z [\<Pi>']z y] &
                                               [\<lambda>z [\<Pi>]x z] = [\<lambda>z [\<Pi>']x z])]\<close>
   for \<Pi> :: \<open><\<kappa>\<times>\<kappa>>\<close>
@@ -704,6 +709,8 @@ lemma \<open>[v \<Turnstile> \<Pi> = \<Pi>'] = [v \<Turnstile> \<Pi>\<down> & \<
                  AOT_sem_conj AOT_sem_denotes AOT_sem_forall AOT_sem_unary_proj_id
                  AOT_model_denotes_prod_def)
 
+text\<open>n-ary Encoding is constructed using a similar mechanism as n-ary relation
+     identity using an auxiliary notion of projection-encoding.\<close>
 class AOT_Enc =
   fixes AOT_enc :: \<open>'a \<Rightarrow> <'a::AOT_IndividualTerm> \<Rightarrow> \<o>\<close>
     and AOT_proj_enc :: \<open>'a \<Rightarrow> ('a \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close>
@@ -722,7 +729,6 @@ class AOT_Enc =
     \<open>\<exists> \<kappa>\<^sub>1\<kappa>\<^sub>n. [v \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and> (\<forall> \<Pi> . [v \<Turnstile> \<Pi>\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<Pi>\<guillemotright>]) \<and>
              (\<forall> \<phi> . [v \<Turnstile> [\<lambda>z\<^sub>1...z\<^sub>n \<phi>{z\<^sub>1...z\<^sub>n}]\<down>] \<longrightarrow> [v \<Turnstile> \<guillemotleft>AOT_proj_enc \<kappa>\<^sub>1\<kappa>\<^sub>n \<phi>\<guillemotright>])\<close>
 
-(* TODO: unfortunate that this is not in AOT_syntax *)
 AOT_syntax_print_translations
   "_AOT_enc (_AOT_individual_term \<kappa>) (_AOT_relation_term \<Pi>)" <= "CONST AOT_enc \<kappa> \<Pi>"
 
@@ -735,6 +741,8 @@ begin
 no_notation AOT_enc ("\<^bold>\<lbrace>_,_\<^bold>\<rbrace>")
 end
 
+text\<open>Unary encoding additionally has to satisfy the axioms of unary encoding and
+     the definition of property identity.\<close>
 class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
   assumes AOT_sem_enc_eq: \<open>[v \<Turnstile> \<Pi>\<down> & \<Pi>'\<down> & \<box>\<forall>\<nu> (\<nu>[\<Pi>] \<equiv> \<nu>[\<Pi>']) \<rightarrow> \<Pi> = \<Pi>']\<close>
       and AOT_sem_A_objects: \<open>[v \<Turnstile> \<exists>x (\<not>\<diamond>[E!]x & \<forall>F (x[F] \<equiv> \<phi>{F}))]\<close>
@@ -772,6 +780,7 @@ class AOT_UnaryEnc = AOT_UnaryIndividualTerm +
                   (\<forall> \<kappa>\<^sub>0 . [v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>\<^sub>0] \<longrightarrow>
                           (\<forall> w . [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>]\<kappa>\<^sub>0]))\<close>
 
+text\<open>We specify encoding to align with the model-construction of encoding.\<close>
 consts AOT_sem_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>\<close>
 specification(AOT_sem_enc_\<kappa>)
   AOT_sem_enc_\<kappa>:
@@ -780,6 +789,8 @@ specification(AOT_sem_enc_\<kappa>)
   by (rule exI[where x=\<open>\<lambda> \<kappa> \<Pi> . \<epsilon>\<^sub>\<o> w . AOT_model_denotes \<kappa> \<and> AOT_model_denotes \<Pi> \<and>
                                        AOT_model_enc \<kappa> \<Pi>\<close>])
      (simp add: AOT_model_proposition_choice_simp AOT_model_enc_\<kappa>_def \<kappa>.case_eq_if)
+
+text\<open>We show that @{typ \<kappa>} satisfies the generic properties of n-ary encoding.\<close>
 instantiation \<kappa> :: AOT_Enc
 begin
 definition AOT_enc_\<kappa> :: \<open>\<kappa> \<Rightarrow> <\<kappa>> \<Rightarrow> \<o>\<close> where
@@ -838,6 +849,7 @@ next
 qed
 end
 
+text\<open>We show that @{typ \<kappa>} satisfies the properties of unary encoding.\<close>
 instantiation \<kappa> :: AOT_UnaryEnc
 begin
 instance proof
@@ -1152,6 +1164,7 @@ next
 qed
 end
 
+text\<open>Define encoding for products using projection-encoding.\<close>
 instantiation prod :: (AOT_UnaryEnc, AOT_Enc) AOT_Enc
 begin
 definition AOT_proj_enc_prod :: \<open>'a\<times>'b \<Rightarrow> ('a\<times>'b \<Rightarrow> \<o>) \<Rightarrow> \<o>\<close> where
@@ -1238,11 +1251,11 @@ next
 qed
 end
 
+text\<open>Sanity-check to verify that n-ary encoding follows.\<close>
 lemma \<open>[v \<Turnstile> \<kappa>\<^sub>1\<kappa>\<^sub>2[\<Pi>]] = [v \<Turnstile> \<Pi>\<down> & \<kappa>\<^sub>1[\<lambda>\<nu> [\<Pi>]\<nu>\<kappa>\<^sub>2] & \<kappa>\<^sub>2[\<lambda>\<nu> [\<Pi>]\<kappa>\<^sub>1\<nu>]]\<close>
   for \<kappa>\<^sub>1 :: "'a::AOT_UnaryEnc" and \<kappa>\<^sub>2 :: "'b::AOT_UnaryEnc"
   by (simp add: AOT_sem_conj AOT_enc_prod_def AOT_proj_enc_prod_def
                 AOT_sem_unary_proj_enc)
-
 lemma \<open>[v \<Turnstile> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<Pi>]] =
        [v \<Turnstile> \<Pi>\<down> & \<kappa>\<^sub>1[\<lambda>\<nu> [\<Pi>]\<nu>\<kappa>\<^sub>2\<kappa>\<^sub>3] & \<kappa>\<^sub>2[\<lambda>\<nu> [\<Pi>]\<kappa>\<^sub>1\<nu>\<kappa>\<^sub>3] & \<kappa>\<^sub>3[\<lambda>\<nu> [\<Pi>]\<kappa>\<^sub>1\<kappa>\<^sub>2\<nu>]]\<close>
   for \<kappa>\<^sub>1 \<kappa>\<^sub>2 \<kappa>\<^sub>3 :: "'a::AOT_UnaryEnc"
@@ -1252,6 +1265,8 @@ lemma \<open>[v \<Turnstile> \<kappa>\<^sub>1\<kappa>\<^sub>2\<kappa>\<^sub>3[\<
 lemma AOT_sem_vars_denote: \<open>[v \<Turnstile> \<alpha>\<^sub>1...\<alpha>\<^sub>n\<down>]\<close>
   by induct simp
 
+text\<open>Combine the introduced type classes and register them as
+     type constraints for individual terms.\<close>
 class AOT_\<kappa>s = AOT_IndividualTerm + AOT_RelationProjection + AOT_Enc
 class AOT_\<kappa> = AOT_\<kappa>s + AOT_UnaryIndividualTerm +
   AOT_UnaryRelationProjection + AOT_UnaryEnc
@@ -1263,7 +1278,8 @@ AOT_register_type_constraints
   Individual: \<open>_::AOT_\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close> and
   Relation: \<open><_::AOT_\<kappa>s>\<close>
 
-
+text\<open>We define semantic predicates to capture the conditions of cqt.2 (i.e.
+     the base cases of denoting terms) on matrices of @{text \<lambda>}-expressions.\<close>
 definition AOT_instance_of_cqt_2 :: \<open>('a::AOT_\<kappa>s \<Rightarrow> \<o>) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2 \<equiv> \<lambda> \<phi> . \<forall> x y . AOT_model_denotes x \<and> AOT_model_denotes y \<and>
                                           AOT_model_term_equiv x y \<longrightarrow> \<phi> x = \<phi> y\<close>
@@ -1272,6 +1288,7 @@ definition AOT_instance_of_cqt_2_exe_arg :: \<open>('a::AOT_\<kappa>s \<Rightarr
       AOT_model_denotes x \<and> AOT_model_denotes y \<and> AOT_model_term_equiv x y \<longrightarrow>
       AOT_model_term_equiv (\<phi> x) (\<phi> y)\<close>
 
+text\<open>@{text \<lambda>}-expressions with a matrix that satisfies our predicate denote.\<close>
 lemma AOT_sem_cqt_2:
   assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
   shows \<open>[v \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>]\<close>
@@ -1281,6 +1298,8 @@ lemma AOT_sem_cqt_2:
 syntax AOT_instance_of_cqt_2 :: \<open>id_position \<Rightarrow> AOT_prop\<close>
   ("INSTANCE'_OF'_CQT'_2'(_')")
 
+text\<open>Prove introduction rules for the predicates that match the natural language
+     restrictions of the axiom.\<close>
 named_theorems AOT_instance_of_cqt_2_intro
 lemma AOT_instance_of_cqt_2_intros_const[AOT_instance_of_cqt_2_intro]:
   \<open>AOT_instance_of_cqt_2 (\<lambda>\<alpha>. \<phi>)\<close>
@@ -1442,16 +1461,9 @@ lemma AOT_instance_of_cqt_2_intro_prod[AOT_instance_of_cqt_2_intro]:
                 AOT_model_denotes_prod_def
                 AOT_model_term_equiv_prod_def)
 
-AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
-  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
-declare prod_denotesE[AOT del]
-AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
-  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
-declare prod_denotesI[AOT del]
-
 text\<open>The following are already derivable semantically, but not yet added
-     to @{text \<open>AOT_instance_of_cqt_2_intro\<close>}. They will be added with the
-     next planned extension of axiom @{text \<open>cqt:2\<close>}.\<close>
+     to @{attribute AOT_instance_of_cqt_2_intro}. They will be added with the
+     next planned extension of axiom cqt:2.\<close>
 named_theorems AOT_instance_of_cqt_2_intro_next
 definition AOT_instance_of_cqt_2_enc_arg :: \<open>('a::AOT_\<kappa>s \<Rightarrow> 'b::AOT_\<kappa>s) \<Rightarrow> bool\<close> where
   \<open>AOT_instance_of_cqt_2_enc_arg \<equiv> \<lambda> \<phi> . \<forall> x y z .
@@ -1512,6 +1524,8 @@ proof -
     unfolding AOT_instance_of_cqt_2_enc_rel_def by auto
 qed
 
+text\<open>Further restrict unary individual variables to type @{typ \<kappa>} (rather
+     than class @{class AOT_\<kappa>} only) and define being ordinary and being abstract.\<close>
 AOT_register_type_constraints
   Individual: \<open>\<kappa>\<close> \<open>_::AOT_\<kappa>s\<close>
 
@@ -1539,6 +1553,7 @@ parse_translation\<open>
   $ Const (\<^const_name>\<open>AOT_concrete\<close>, \<^typ>\<open><\<kappa>> AOT_var\<close>))]
 \<close>
 
+text\<open>Auxiliary lemmata.\<close>
 lemma AOT_sem_ordinary: "\<guillemotleft>O!\<guillemotright> = \<guillemotleft>[\<lambda>x \<diamond>E!x]\<guillemotright>"
   using AOT_ordinary[THEN AOT_sem_id_def0E1] AOT_sem_ordinary_def_denotes
   by (auto simp: AOT_sem_eq)
@@ -1570,7 +1585,209 @@ lemma AOT_model_\<omega>\<kappa>_ordinary: \<open>[v \<Turnstile> O!\<guillemotl
 lemma AOT_model_\<alpha>\<kappa>_ordinary: \<open>[v \<Turnstile> A!\<guillemotleft>\<alpha>\<kappa> x\<guillemotright>]\<close>
   by (metis AOT_model_denotes_\<kappa>_def AOT_model_ordinary_\<omega>\<kappa> AOT_sem_abstract
             AOT_sem_denotes AOT_sem_ind_eq AOT_sem_ordinary \<kappa>.disc(8) \<kappa>.distinct(1))
+AOT_theorem prod_denotesE: assumes \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close> shows \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesE[AOT del]
+AOT_theorem prod_denotesI: assumes \<open>\<kappa>\<^sub>1\<down> & \<kappa>\<^sub>2\<down>\<close> shows \<open>\<guillemotleft>(\<kappa>\<^sub>1,\<kappa>\<^sub>2)\<guillemotright>\<down>\<close>
+  using assms by (simp add: AOT_sem_denotes AOT_sem_conj AOT_model_denotes_prod_def)
+declare prod_denotesI[AOT del]
 
+
+text\<open>Prepare the derivation of the additional axioms that are validated by
+     our extended models.\<close>
+locale AOT_ExtendedModel =
+  assumes AOT_ExtendedModel: \<open>AOT_ExtendedModel\<close>
+begin
+lemma AOT_sem_indistinguishable_ord_enc_all:
+  assumes \<Pi>_den: \<open>[v \<Turnstile> \<Pi>\<down>]\<close>
+  assumes Ax: \<open>[v \<Turnstile> A!x]\<close>
+  assumes Ay: \<open>[v \<Turnstile> A!y]\<close>
+  assumes indist: \<open>[v \<Turnstile> \<forall>F \<box>([F]x \<equiv> [F]y)]\<close>
+  shows
+  \<open>[v \<Turnstile> \<forall>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])] =
+   [v \<Turnstile> \<forall>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])]\<close>
+proof -
+    have 0: \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[E!]x]x]\<close>
+      using Ax by (simp add: AOT_sem_abstract)
+    have 1: \<open>[v \<Turnstile> [\<lambda>x \<not>\<diamond>[E!]x]y]\<close>
+      using Ay by (simp add: AOT_sem_abstract)
+    {
+      assume \<open>[v \<Turnstile> \<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])]\<close>
+      hence 3: \<open>[v \<Turnstile> \<forall>G(\<forall>z([\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])]\<close>
+        by (simp add: AOT_sem_ordinary)
+      {
+        fix \<Pi>' :: \<open><\<kappa>>\<close>
+        assume 1: \<open>[v \<Turnstile> \<Pi>'\<down>]\<close>
+        assume 2: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)]\<close> for z
+        have \<open>[v \<Turnstile> x[\<Pi>']]\<close>
+          using 3
+          by (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+             (metis (no_types, lifting) 1 2 AOT_term_of_var_cases AOT_sem_box
+                                        AOT_sem_denotes AOT_sem_imp)
+      } note 3 = this
+      fix \<Pi>' :: \<open><\<kappa>>\<close>
+      assume \<Pi>_den: \<open>[v \<Turnstile> \<Pi>'\<down>]\<close>
+      assume 4: \<open>[v \<Turnstile> \<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))]\<close>
+      {
+        fix \<kappa>\<^sub>0
+        assume \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>\<^sub>0]\<close>
+        hence \<open>[v \<Turnstile> O!\<kappa>\<^sub>0]\<close>
+          using AOT_sem_ordinary by metis
+        moreover have \<open>[v \<Turnstile> \<kappa>\<^sub>0\<down>]\<close>
+          using calculation by (simp add: AOT_sem_exe)
+        ultimately have \<open>[v \<Turnstile> \<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)]\<close>
+          using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
+      } note 4 = this
+      have \<open>[v \<Turnstile> y[\<Pi>']]\<close>
+        apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
+        apply (fact 0)
+             apply (auto simp: 0 1 \<Pi>_den indist[simplified AOT_sem_forall
+                               AOT_sem_box AOT_sem_equiv])
+        apply (rule 3)
+         apply auto[1]
+        using 4
+        by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+    }
+    moreover {
+    {
+      assume \<open>[v \<Turnstile> \<forall>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])]\<close>
+      hence 3: \<open>[v \<Turnstile> \<forall>G(\<forall>z ([\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])]\<close>
+        by (simp add: AOT_sem_ordinary)
+      {
+        fix \<Pi>' :: \<open><\<kappa>>\<close>
+        assume 1: \<open>[v \<Turnstile> \<Pi>'\<down>]\<close>
+        assume 2: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)]\<close> for z
+        have \<open>[v \<Turnstile> y[\<Pi>']]\<close>
+          using 3
+          apply (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+          by (metis (no_types, lifting) 1 2 AOT_model.AOT_term_of_var_cases
+                                        AOT_sem_box AOT_sem_denotes AOT_sem_imp)
+      } note 3 = this
+      fix \<Pi>' :: \<open><\<kappa>>\<close>
+      assume \<Pi>_den: \<open>[v \<Turnstile> \<Pi>'\<down>]\<close>
+      assume 4: \<open>[v \<Turnstile> \<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))]\<close>
+      {
+        fix \<kappa>\<^sub>0
+        assume \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>\<^sub>0]\<close>
+        hence \<open>[v \<Turnstile> O!\<kappa>\<^sub>0]\<close>
+          using AOT_sem_ordinary by metis
+        moreover have \<open>[v \<Turnstile> \<kappa>\<^sub>0\<down>]\<close>
+          using calculation by (simp add: AOT_sem_exe)
+        ultimately have \<open>[v \<Turnstile> \<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)]\<close>
+          using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
+      } note 4 = this
+      have \<open>[v \<Turnstile> x[\<Pi>']]\<close>
+        apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
+              apply (fact 1)
+             apply (auto simp: 0 1 \<Pi>_den indist[simplified AOT_sem_forall
+                               AOT_sem_box AOT_sem_equiv])
+        apply (rule 3)
+         apply auto[1]
+        using 4
+        by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+    }
+  }
+  ultimately show \<open>[v \<Turnstile> \<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])] =
+        [v \<Turnstile> \<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> y[G])]\<close>
+    by (auto simp: AOT_sem_forall AOT_sem_imp)
+qed
+
+lemma AOT_sem_indistinguishable_ord_enc_ex:
+  assumes \<Pi>_den: \<open>[v \<Turnstile> \<Pi>\<down>]\<close>
+  assumes Ax: \<open>[v \<Turnstile> A!x]\<close>
+  assumes Ay: \<open>[v \<Turnstile> A!y]\<close>
+  assumes indist: \<open>[v \<Turnstile> \<forall>F \<box>([F]x \<equiv> [F]y)]\<close>
+  shows \<open>[v \<Turnstile> \<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G])] =
+         [v \<Turnstile> \<exists>G(\<forall>z(O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])]\<close>
+proof -
+  have Aux: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>] = ([v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>] \<and> [v \<Turnstile> \<kappa>\<down>])\<close> for v \<kappa>
+    using AOT_sem_exe by blast
+  AOT_modally_strict {
+    fix x y
+    AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
+    AOT_assume 2: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+    AOT_assume \<open>A!x\<close>
+    AOT_hence 0: \<open>[\<lambda>x \<not>\<diamond>[E!]x]x\<close>
+      by (simp add: AOT_sem_abstract)
+    AOT_assume \<open>A!y\<close>
+    AOT_hence 1: \<open>[\<lambda>x \<not>\<diamond>[E!]x]y\<close>
+      by (simp add: AOT_sem_abstract)
+    {
+      AOT_assume \<open>\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G])\<close>
+      then AOT_obtain \<Pi>'
+        where \<Pi>'_den: \<open>\<Pi>'\<down>\<close>
+          and \<Pi>'_indist: \<open>\<forall>z (O!z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close>
+          and x_enc_\<Pi>': \<open>x[\<Pi>']\<close>
+        by (meson AOT_sem_conj AOT_sem_exists)
+      {
+        fix \<kappa>\<^sub>0
+        AOT_assume \<open>[\<lambda>x \<diamond>[E!]x]\<kappa>\<^sub>0\<close>
+        AOT_hence \<open>\<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close>
+          using \<Pi>'_indist
+          by (auto simp: AOT_sem_exe AOT_sem_imp AOT_sem_exists AOT_sem_conj
+                         AOT_sem_ordinary AOT_sem_forall)
+      } note 3 = this
+      AOT_have \<open>\<forall>z ([\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z))\<close>
+        using \<Pi>'_indist by (simp add: AOT_sem_ordinary)
+      AOT_obtain \<Pi>'' where
+          \<Pi>''_den: \<open>\<Pi>''\<down>\<close> and
+          \<Pi>''_indist: \<open>[\<lambda>x \<diamond>[E!]x]\<kappa>\<^sub>0 \<rightarrow> \<box>([\<Pi>'']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)\<close> and
+          y_enc_\<Pi>'': \<open>y[\<Pi>'']\<close> for \<kappa>\<^sub>0
+        using AOT_sem_enc_indistinguishable_ex[OF AOT_ExtendedModel,
+                OF 0, OF 1, rotated, OF \<Pi>_den,
+                OF exI[where x=\<Pi>'], OF conjI, OF \<Pi>'_den, OF conjI,
+                OF x_enc_\<Pi>', OF allI, OF impI,
+                OF 3[simplified AOT_sem_box AOT_sem_equiv], simplified, OF
+                2[simplified AOT_sem_forall AOT_sem_equiv AOT_sem_box,
+                  THEN spec, THEN mp, THEN spec], simplified]
+        unfolding AOT_sem_imp AOT_sem_box AOT_sem_equiv by blast
+      {
+        AOT_have \<open>\<Pi>''\<down>\<close>
+            and \<open>\<forall>x ([\<lambda>x \<diamond>[E!]x]x \<rightarrow> \<box>([\<Pi>'']x \<equiv> [\<Pi>]x))\<close>
+            and \<open>y[\<Pi>'']\<close>
+          apply (simp add: \<Pi>''_den)
+          apply (simp add: AOT_sem_forall \<Pi>''_indist)
+          by (simp add: y_enc_\<Pi>'')
+      } note 2 = this
+      AOT_have \<open>\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])\<close>
+        apply (auto simp: AOT_sem_exists AOT_sem_ordinary
+            AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_equiv AOT_sem_conj)
+        using 2[simplified AOT_sem_box AOT_sem_equiv AOT_sem_imp AOT_sem_forall]
+        by blast
+    }
+  } note 0 = this
+  AOT_modally_strict {
+    {
+      fix x y
+      AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
+      moreover AOT_assume \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
+      moreover AOT_have \<open>\<forall>F \<box>([F]y \<equiv> [F]x)\<close>
+        using calculation(2)
+        by (auto simp: AOT_sem_forall AOT_sem_box AOT_sem_equiv)
+      moreover AOT_assume \<open>A!x\<close>
+      moreover AOT_assume \<open>A!y\<close>
+      ultimately AOT_have \<open>\<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G]) \<equiv>
+                           \<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])\<close>
+        using 0 by (auto simp: AOT_sem_equiv)
+    }
+    have 1: \<open>[v \<Turnstile> \<forall>F \<box>([F]y \<equiv> [F]x)]\<close>
+      using indist
+      by (auto simp: AOT_sem_forall AOT_sem_box AOT_sem_equiv)
+    thus \<open>[v \<Turnstile> \<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & x[G])] =
+        [v \<Turnstile> \<exists>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])]\<close>
+      using assms
+      by (auto simp: AOT_sem_imp AOT_sem_conj AOT_sem_equiv 0)
+  }
+qed
+end
+
+
+(* Collect all theorems that are not in Main and not declared [AOT]
+   and store them in a blacklist. *)
+setup\<open>setup_AOT_no_atp\<close>
+bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
+(* Can be used as: "including AOT_no_atp sledgehammer" or
+   "sledgehammer(del: AOT_no_atp) *)
 
 (*<*)
 end

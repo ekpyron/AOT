@@ -4,7 +4,7 @@ begin
 
 section\<open>Extended Relation Comprehension\<close>
 
-text\<open>This theory depends choosing extended models.\<close>
+text\<open>This theory depends on choosing extended models.\<close>
 interpretation AOT_ExtendedModel by (standard; auto)
 
 text\<open>Auxiliary lemma: negations of denoting relations denote.\<close>
@@ -248,7 +248,6 @@ proof -
           AOT_thus \<open>p & \<not>p\<close> for p
             using G_prop "&E" by (metis "raa-cor:3")
         qed
-    
         AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
         proof(rule "raa-cor:1")
           AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
@@ -455,7 +454,6 @@ next
                     "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"]
              intro!: RN GEN)
 qed
-
 
 AOT_theorem denotes_ex_neg: \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G])]\<down>\<close>
 proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
@@ -753,5 +751,4 @@ AOT_modally_strict {
   qed
 }
 end
-
 end

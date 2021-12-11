@@ -52,20 +52,20 @@ text\<open>Validating extended relation comprehension requires a large set of
 typedecl \<sigma>'
 typedef \<sigma> = \<open>UNIV::((\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>') set\<close> ..
 
-typedecl null \<comment> \<open>Null-Urelements representing non-denoting terms.\<close>
+typedecl null \<comment> \<open>Null-urelements representing non-denoting terms.\<close>
 
-datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> | is_null\<upsilon>: null\<upsilon> null \<comment> \<open>Type of Urelements\<close>
+datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> | is_null\<upsilon>: null\<upsilon> null \<comment> \<open>Type of urelements\<close>
 
-text\<open>Urrelations are proposition-valued functions on Urelements.
+text\<open>Urrelations are proposition-valued functions on urelements.
      Urrelations are required to evaluate to necessarily false propositions for
-     Null-Urelements (note that there may be several distinct necessarily false
+     null-urelements (note that there may be several distinct necessarily false
      propositions).\<close>
 typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<phi> (null\<upsilon> x)) }\<close>
   by (rule exI[where x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close>])
      (auto simp: AOT_model_proposition_choice_simp)
 
 text\<open>Abstract objects will be modelled as sets of urrelations and will
-     have to be mapped back surjectively into the set of special urelements.
+     have to be mapped surjectively into the set of special urelements.
      We show that any mapping from abstract objects to special urelements
      has to involve at least one large set of collapsed abstract objects.
      We will use this fact to extend arbitrary mappings from abstract objects
@@ -306,7 +306,7 @@ qed
 
 text\<open>For extended models that validate extended relation comprehension
      (and consequently the predecessor axiom), we specify which
-     abstract objects are distinguished by @{term \<alpha>\<sigma>'}.\<close>
+     abstract objects are distinguished by @{const \<alpha>\<sigma>'}.\<close>
 
 definition urrel_to_\<omega>rel :: \<open>urrel \<Rightarrow> (\<omega> \<Rightarrow> w \<Rightarrow> bool)\<close> where
   \<open>urrel_to_\<omega>rel \<equiv> \<lambda> r u w . AOT_model_valid_in w (Rep_urrel r (\<omega>\<upsilon> u))\<close>
@@ -420,10 +420,6 @@ qed
 
 text\<open>We enable the extended model version.\<close>
 abbreviation (input) AOT_ExtendedModel where \<open>AOT_ExtendedModel \<equiv> True\<close>
-(*
-abbreviation (input) AOT_ExtendedModel where \<open>AOT_ExtendedModel \<equiv> False\<close>
-*)
-
 
 text\<open>Individual terms are either ordinary objects, represented by ordinary urelements,
      abstract objects, modelled as sets of urrelations, or null objects, used to
@@ -441,7 +437,7 @@ lemma \<kappa>\<upsilon>_surj: \<open>surj \<kappa>\<upsilon>\<close>
   using \<alpha>\<sigma>_surj by (metis \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.exhaust surj_def)
 
 text\<open>By construction if the urelement of an individual term is exemplified by
-     an (ur-)relation, it cannot be a null-object.\<close>
+     an urrelation, it cannot be a null-object.\<close>
 lemma urrel_null_false:
   assumes \<open>AOT_model_valid_in w (Rep_urrel f (\<kappa>\<upsilon> x))\<close>
   shows \<open>\<not>is_null\<kappa> x\<close>
@@ -530,7 +526,7 @@ interpretation AOT_model_irregular_spec AOT_model_irregular AOT_model_regular
 
 text\<open>Our concrete type for individual terms satisfies the type class of
      individual terms.
-     Note that all unary individuals are regular. In general an individual term
+     Note that all unary individuals are regular. In general, an individual term
      may be a tuple and is regular, if at most one tuple element does not denote.\<close>
 instantiation \<kappa> :: AOT_IndividualTerm
 begin
@@ -578,16 +574,16 @@ qed
 end
 
 text\<open>We define relations among individuals as proposition valued functions.
-     @{emph \<open>Denoting\<close>} relations among single individuals will match the
+     @{emph \<open>Denoting\<close>} unary relations (among @{typ \<kappa>}) will match the
      urrelations introduced above.\<close>
 typedef 'a rel (\<open><_>\<close>) = \<open>UNIV::('a::AOT_IndividualTerm \<Rightarrow> \<o>) set\<close> ..
 setup_lifting type_definition_rel
 
-text\<open>We use the transformation specified above to "fix" the behaviour of
-     functions on irregular terms.\<close>
+text\<open>We will use the transformation specified above to "fix" the behaviour of
+     functions on irregular terms when defining @{text \<open>\<lambda>\<close>}-expressions.\<close>
 definition fix_irregular :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>)\<close> where
   \<open>fix_irregular \<equiv> \<lambda> \<phi> x . if AOT_model_regular x
-                          then \<phi> x else AOT_model_irregular \<phi> x\<close>
+                            then \<phi> x else AOT_model_irregular \<phi> x\<close>
 lemma fix_irregular_denoting:
   \<open>AOT_model_denotes x \<Longrightarrow> fix_irregular \<phi> x = \<phi> x\<close>
   by (meson AOT_model_irregular_nondenoting fix_irregular_def)
@@ -687,14 +683,12 @@ next
                   fix_irregular_denoting[OF assms(2)] assms equivp_reflp)
 qed
 
-
 text\<open>Denoting relations among terms of type @{typ \<kappa>} correspond to urrelations.\<close>
 
 definition rel_to_urrel :: \<open><\<kappa>> \<Rightarrow> urrel\<close> where
   \<open>rel_to_urrel \<equiv> \<lambda> \<Pi> . Abs_urrel (\<lambda> u . Rep_rel \<Pi> (SOME x . \<kappa>\<upsilon> x = u))\<close>
 definition urrel_to_rel :: \<open>urrel \<Rightarrow> <\<kappa>>\<close> where
   \<open>urrel_to_rel \<equiv> \<lambda> \<phi> . Abs_rel (\<lambda> x . Rep_urrel \<phi> (\<kappa>\<upsilon> x))\<close>
-
 definition AOT_rel_equiv :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
   \<open>AOT_rel_equiv \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and> f = g\<close>
 
@@ -750,7 +744,6 @@ lemma urrel_quotient:
   \<open>Quotient AOT_rel_equiv rel_to_urrel urrel_to_rel
             (\<lambda>x y. AOT_rel_equiv x x \<and> rel_to_urrel x = y)\<close>
   using Quotient3_to_Quotient[OF urrel_quotient3] by auto
-
 
 text\<open>Unary individual terms are always regular and equipped with encoding and
      concreteness. The specification of the type class anticipates the required
@@ -1227,17 +1220,7 @@ lemma AOT_meta_prod_equivI:
     unfolding AOT_model_term_equiv_prod_def
     by (simp add: AOT_model_term_equiv_part_equivp equivp_reflp)+
 
-text\<open>The unit type and the type of propositions are trivial instances of terms.\<close>
-
-instantiation unit :: AOT_Term
-begin
-definition AOT_model_denotes_unit :: \<open>unit \<Rightarrow> bool\<close> where
-  \<open>AOT_model_denotes_unit \<equiv> \<lambda>_. True\<close>
-instance proof
-  show \<open>\<exists>x::unit. AOT_model_denotes x\<close>
-    by (simp add: AOT_model_denotes_unit_def)
-qed
-end
+text\<open>The type of propositions are trivial instances of terms.\<close>
 
 instantiation \<o> :: AOT_Term
 begin
@@ -1293,8 +1276,17 @@ specification(AOT_model_id_def)
                                       then \<tau> \<alpha> = \<sigma> \<alpha>
                                       else \<not>AOT_model_denotes (\<tau> \<alpha>)"])
      blast
+text\<open>To reduce definitions by identity without free variables to definitions
+     by identity with free variables acting on the unit type, we give the unit type
+     a trivial instantiation to @{class AOT_Term}.\<close>
+instantiation unit :: AOT_Term
+begin
+definition AOT_model_denotes_unit :: \<open>unit \<Rightarrow> bool\<close> where
+  \<open>AOT_model_denotes_unit \<equiv> \<lambda>_. True\<close>
+instance proof qed(simp add: AOT_model_denotes_unit_def)
+end
 
-text\<open>Models for modally-strict and modally-fragile axioms as necessary,
+text\<open>Modally-strict and modally-fragile axioms are as necessary,
      resp. actually valid propositions.\<close>
 definition AOT_model_axiom where
   \<open>AOT_model_axiom \<equiv> \<lambda> \<phi> . \<forall> v . AOT_model_valid_in v \<phi>\<close>

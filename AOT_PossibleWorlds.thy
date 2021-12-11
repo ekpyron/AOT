@@ -1054,7 +1054,6 @@ proof(safe intro!: "\<rightarrow>I" cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" 
   qed
 qed
 
-(* TODO: PLM: recheck use of substitution with restricted variables *)
 AOT_theorem "cons-rigid:1": \<open>\<not>Consistent(s) \<equiv> \<box>\<not>Consistent(s)\<close>
 proof (rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>\<not>Consistent(s)\<close>

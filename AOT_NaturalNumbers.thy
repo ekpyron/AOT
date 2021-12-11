@@ -5141,6 +5141,8 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
   AOT_hence nat_enc_finite: \<open>\<forall>F(n[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close> for n
     using "\<beta>\<rightarrow>C"(1) by blast
 
+  text\<open>The main proof can now generate a witness, since we required
+       the domain of ordinary objects to be infinite.\<close>
   AOT_show \<open>\<exists>x ([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y (E!y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
   proof(safe intro!: "\<rightarrow>I")
     AOT_assume \<open>\<exists>x ([\<nat>]x & x = #G)\<close>
@@ -5160,7 +5162,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
     proof(rule "raa-cor:1")
       AOT_assume \<open>\<not>\<exists>u \<not>\<^bold>\<A>[G]u\<close>
       AOT_hence \<open>\<forall>x \<not>(O!x & \<not>\<^bold>\<A>[G]x)\<close>
-        by (metis "cqt-further:4" "vdash-properties:10")
+        by (metis "cqt-further:4" "\<rightarrow>E")
       AOT_hence \<open>\<^bold>\<A>[G]x\<close> if \<open>O!x\<close> for x
         using "\<forall>E"(2) AOT_sem_conj AOT_sem_not that by blast
       hence \<open>[w\<^sub>0 \<Turnstile> [G]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>]\<close> for x

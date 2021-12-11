@@ -133,8 +133,8 @@ no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
 
-text\<open>The following are artifacts of the internal implementation of n-ary relations
-     as relations on tuples.\<close>
+text\<open>The following are purely technical pseudo-definitions required due to
+     our internal implementation of n-ary relations and ellipses using tuples.\<close>
 AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
   by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def
                 AOT_sem_conj AOT_sem_denotes)
@@ -149,13 +149,5 @@ AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<
                  AOT_model_denotes_prod_def)
 declare tuple_denotes[AOT_defs] tuple_identity_1[AOT_defs] tuple_forall[AOT_defs]
         tuple_exists[AOT_defs]
-
-
-(* Collect all theorems that are not in Main and not declared [AOT]
-   and store them in a blacklist. *)
-setup\<open>setup_AOT_no_atp\<close>
-bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
-(* Can be used as: "including AOT_no_atp sledgehammer" or
-   "sledgehammer(del: AOT_no_atp) *)
 
 end
