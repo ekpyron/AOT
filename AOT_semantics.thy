@@ -41,6 +41,7 @@ specification(AOT_act)
   by (rule exI[where x=\<open>\<lambda> \<phi> . \<epsilon>\<^sub>\<o> w . [w\<^sub>0 \<Turnstile> \<phi>]\<close>])
      (simp add: AOT_model_proposition_choice_simp)
 
+text\<open>Derived semantics for basic defined connectives.\<close>
 lemma AOT_sem_conj: \<open>[w \<Turnstile> \<phi> & \<psi>] = ([w \<Turnstile> \<phi>] \<and> [w \<Turnstile> \<psi>])\<close>
   using AOT_conj AOT_model_equiv_def AOT_sem_imp AOT_sem_not by auto
 lemma AOT_sem_equiv: \<open>[w \<Turnstile> \<phi> \<equiv> \<psi>] = ([w \<Turnstile> \<phi>] = [w \<Turnstile> \<psi>])\<close>
@@ -69,8 +70,12 @@ specification(AOT_eq)
 
 text\<open>\linelabel{AOT_desc_spec}\<close>
 specification(AOT_desc)
+  \<comment> \<open>Descriptions denote, if there is a unique denoting object satisfying the
+      matrix in the actual world.\<close>
   AOT_sem_desc_denotes: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] = (\<exists>! \<kappa> . [w\<^sub>0 \<Turnstile> \<kappa>\<down>] \<and> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}])\<close>
+  \<comment> \<open>Denoting descriptions satisfy their matrix in the actual world.\<close>
   AOT_sem_desc_prop: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] \<Longrightarrow> [w\<^sub>0 \<Turnstile> \<phi>{\<^bold>\<iota>x(\<phi>{x})}]\<close>
+  \<comment> \<open>Uniqueness of denoting descriptions.\<close>
   AOT_sem_desc_unique: \<open>[w \<Turnstile> \<^bold>\<iota>x(\<phi>{x})\<down>] \<Longrightarrow> [w \<Turnstile> \<kappa>\<down>] \<Longrightarrow> [w\<^sub>0 \<Turnstile> \<phi>{\<kappa>}] \<Longrightarrow>
                         [w \<Turnstile> \<^bold>\<iota>x(\<phi>{x}) = \<kappa>]\<close>
 proof -
@@ -167,16 +172,16 @@ proof -
         if (\<forall> \<kappa> \<kappa>' w . (AOT_model_denotes \<kappa> \<and> AOT_model_term_equiv \<kappa> \<kappa>') \<longrightarrow>
                        [w \<Turnstile> \<guillemotleft>\<phi> \<kappa>\<guillemotright>] = [w \<Turnstile> \<guillemotleft>\<phi> \<kappa>'\<guillemotright>])
         then
-          Abs_rel (fix_special (\<lambda> x . if AOT_model_denotes x
-                                      then \<phi> (SOME y . AOT_model_term_equiv x y)
-                                      else  (\<epsilon>\<^sub>\<o> w . False)))
+          Abs_rel (fix_irregular (\<lambda> x . if AOT_model_denotes x
+                                        then \<phi> (SOME y . AOT_model_term_equiv x y)
+                                        else  (\<epsilon>\<^sub>\<o> w . False)))
         else 
           Abs_rel \<phi>\<close>
-  have fix_special_denoting_simp[simp]:
-    \<open>fix_special (\<lambda>x. if AOT_model_denotes x then \<phi> x else \<psi> x) \<kappa> = \<phi> \<kappa>\<close>
+  have fix_irregular_denoting_simp[simp]:
+    \<open>fix_irregular (\<lambda>x. if AOT_model_denotes x then \<phi> x else \<psi> x) \<kappa> = \<phi> \<kappa>\<close>
     if \<open>AOT_model_denotes \<kappa>\<close>
     for \<kappa> :: 'a and \<phi> \<psi>
-    by (simp add: that fix_special_denoting)
+    by (simp add: that fix_irregular_denoting)
   have denoting_eps_cong[cong]:
     \<open>[w \<Turnstile> \<guillemotleft>\<phi> (Eps (AOT_model_term_equiv \<kappa>))\<guillemotright>] = [w \<Turnstile> \<guillemotleft>\<phi> \<kappa>\<guillemotright>]\<close>
     if \<open>AOT_model_denotes \<kappa>\<close>
@@ -233,7 +238,7 @@ proof -
     hence \<open>AOT_model_denotes (lambda \<phi>)\<close>
       by (auto simp: lambda_def Abs_rel_inverse AOT_model_denotes_rel.abs_eq
                      AOT_model_irregular_equiv AOT_model_term_equiv_eps(3)
-                     AOT_model_term_equiv_regular fix_special_def AOT_sem_denotes
+                     AOT_model_term_equiv_regular fix_irregular_def AOT_sem_denotes
                      AOT_model_term_equiv_denotes AOT_model_proposition_choice_simp
                      AOT_model_irregular_false
                split: if_split_asm
@@ -249,7 +254,7 @@ proof -
     by (simp add: exe_def AOT_sem_denotes)
   moreover have \<open>lambda (\<lambda>x. p) = lambda (\<lambda>x. q) \<Longrightarrow> p = q\<close> for p q
     unfolding lambda_def
-    by (auto split: if_split_asm simp: Abs_rel_inject fix_special_def)
+    by (auto split: if_split_asm simp: Abs_rel_inject fix_irregular_def)
        (meson AOT_model_irregular_nondenoting AOT_model_denoting_ex)+
   moreover have \<open>AOT_model_term_equiv x y \<Longrightarrow> exe \<Pi> x = exe \<Pi> y\<close> for x y \<Pi>
     unfolding exe_def
@@ -320,7 +325,7 @@ specification(AOT_concrete)
   by (rule exI[where x=\<open>AOT_var_of_term (Abs_rel
                           (\<lambda> x . \<epsilon>\<^sub>\<o> w . AOT_model_concrete w x))\<close>];
       subst AOT_var_of_term_inverse)
-     (auto simp: AOT_model_no_special_nondenoting AOT_model_concrete_denotes
+     (auto simp: AOT_model_unary_regular AOT_model_concrete_denotes
                  AOT_model_concrete_equiv AOT_model_regular_\<kappa>_def
                  AOT_model_proposition_choice_simp AOT_sem_exe Abs_rel_inverse
                  AOT_model_denotes_rel_def AOT_sem_denotes)
@@ -449,7 +454,7 @@ instance proof
     apply (auto simp: Abs_rel_inverse AOT_meta_prod_equivI(2) AOT_sem_denotes
                       that intro!: AOT_sem_exe_equiv)
     apply (metis AOT_model_denotes_prod_def AOT_sem_exe case_prodD)
-    using AOT_model_no_special_nondenoting by blast
+    using AOT_model_unary_regular by blast
   {
     fix \<kappa> :: 'a and \<Pi> :: \<open><'a\<times>'b>\<close>
     assume \<Pi>_denotes: \<open>AOT_model_denotes \<Pi>\<close>
@@ -463,8 +468,8 @@ instance proof
                 AOT_sem_denotes case_prodD)
     moreover {
       fix x :: 'b
-      assume x_special: \<open>\<not>AOT_model_regular x\<close>
-      hence prod_special: \<open>\<not>AOT_model_regular (\<kappa>, x)\<close>
+      assume x_irregular: \<open>\<not>AOT_model_regular x\<close>
+      hence prod_irregular: \<open>\<not>AOT_model_regular (\<kappa>, x)\<close>
         by (metis (no_types, lifting) AOT_model_irregular_nondenoting
                                       AOT_model_regular_prod_def case_prodD)
       hence \<open>(\<not>AOT_model_denotes \<kappa> \<or> \<not>AOT_model_regular x) \<and>
@@ -473,10 +478,10 @@ instance proof
       hence x_nonden: \<open>\<not>AOT_model_regular x\<close>
         by (simp add: \<alpha>_denotes)
       have \<open>Rep_rel \<Pi> (\<kappa>, x) = AOT_model_irregular (Rep_rel \<Pi>) (\<kappa>, x)\<close>
-        using AOT_model_denotes_rel.rep_eq \<Pi>_denotes prod_special by blast
+        using AOT_model_denotes_rel.rep_eq \<Pi>_denotes prod_irregular by blast
       moreover have \<open>AOT_model_irregular (Rep_rel \<Pi>) (\<kappa>, x) =
                      AOT_model_irregular (\<lambda>z. Rep_rel \<Pi> (\<kappa>, z)) x\<close>
-        using \<Pi>_denotes x_special prod_special x_nonden
+        using \<Pi>_denotes x_irregular prod_irregular x_nonden
         using AOT_model_irregular_prod_generic
         apply (induct arbitrary: \<Pi> x rule: AOT_model_irregular_prod.induct)
         by (auto simp: \<alpha>_denotes AOT_model_irregular_nondenoting
@@ -504,9 +509,9 @@ instance proof
                 AOT_sem_denotes case_prodD)
     moreover {
       fix x :: 'a
-      assume x_special: \<open>\<not>AOT_model_regular x\<close>
+      assume \<open>\<not>AOT_model_regular x\<close>
       hence \<open>False\<close>
-        using AOT_model_no_special_nondenoting by blast
+        using AOT_model_unary_regular by blast
       hence
         \<open>AOT_exe \<Pi> (x,\<kappa>\<^sub>1'\<kappa>\<^sub>n') = AOT_model_irregular (\<lambda>z. AOT_exe \<Pi> (z,\<kappa>\<^sub>1'\<kappa>\<^sub>n')) x\<close>
         unfolding AOT_sem_exe_denoting[simplified AOT_sem_denotes, OF \<Pi>_denotes]
@@ -630,8 +635,7 @@ instance proof
       } note \<beta>denotes = this
       {
         fix \<alpha> :: 'a and \<beta> :: 'b
-        assume nospecial_\<alpha>\<beta>: \<open>AOT_model_regular (\<alpha>, \<beta>)\<close>
-        thm AOT_model_regular_prod_def
+        assume \<open>AOT_model_regular (\<alpha>, \<beta>)\<close>
         moreover {
           assume \<open>AOT_model_denotes \<alpha> \<and> AOT_model_regular \<beta>\<close>
           hence \<open>Rep_rel \<Pi> (\<alpha>,\<beta>) = Rep_rel \<Pi>' (\<alpha>,\<beta>)\<close>

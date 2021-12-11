@@ -585,18 +585,18 @@ setup_lifting type_definition_rel
 
 text\<open>We use the transformation specified above to "fix" the behaviour of
      functions on irregular terms.\<close>
-definition fix_special :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>)\<close> where
-  \<open>fix_special \<equiv> \<lambda> \<phi> x . if AOT_model_regular x
+definition fix_irregular :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>)\<close> where
+  \<open>fix_irregular \<equiv> \<lambda> \<phi> x . if AOT_model_regular x
                           then \<phi> x else AOT_model_irregular \<phi> x\<close>
-lemma fix_special_denoting:
-  \<open>AOT_model_denotes x \<Longrightarrow> fix_special \<phi> x = \<phi> x\<close>
-  by (meson AOT_model_irregular_nondenoting fix_special_def)
-lemma fix_special_non_special:
-  \<open>AOT_model_regular x \<Longrightarrow> fix_special \<phi> x = \<phi> x\<close>
-  by (meson AOT_model_irregular_nondenoting fix_special_def)
-lemma fix_special_special:
-  \<open>\<not>AOT_model_regular x \<Longrightarrow> fix_special \<phi> x = AOT_model_irregular \<phi> x\<close>
-  by (simp add: fix_special_def)
+lemma fix_irregular_denoting:
+  \<open>AOT_model_denotes x \<Longrightarrow> fix_irregular \<phi> x = \<phi> x\<close>
+  by (meson AOT_model_irregular_nondenoting fix_irregular_def)
+lemma fix_irregular_regular:
+  \<open>AOT_model_regular x \<Longrightarrow> fix_irregular \<phi> x = \<phi> x\<close>
+  by (meson AOT_model_irregular_nondenoting fix_irregular_def)
+lemma fix_irregular_irregular:
+  \<open>\<not>AOT_model_regular x \<Longrightarrow> fix_irregular \<phi> x = AOT_model_irregular \<phi> x\<close>
+  by (simp add: fix_irregular_def)
 
 text\<open>Relations among individual terms are (potentially non-denoting) terms.
      A relation denotes, if it agrees on all equivalent terms (i.e. terms sharing
@@ -610,12 +610,12 @@ lift_definition AOT_model_denotes_rel :: \<open><'a> \<Rightarrow> bool\<close> 
          (\<forall> w x . AOT_model_valid_in w (\<phi> x) \<longrightarrow> AOT_model_denotes x) \<and>
          (\<forall> x . \<not>AOT_model_regular x \<longrightarrow> \<phi> x = AOT_model_irregular \<phi> x)\<close> .
 instance proof
-  have \<open>AOT_model_irregular (fix_special \<phi>) x = AOT_model_irregular \<phi> x\<close>
+  have \<open>AOT_model_irregular (fix_irregular \<phi>) x = AOT_model_irregular \<phi> x\<close>
     for \<phi> and x :: 'a
-    by (rule AOT_model_irregular_eqI) (simp add: fix_special_def)
+    by (rule AOT_model_irregular_eqI) (simp add: fix_irregular_def)
   thus \<open>\<exists> x :: <'a> . AOT_model_denotes x\<close>
-    by (safe intro!: exI[where x=\<open>Abs_rel (fix_special (\<lambda>x. \<epsilon>\<^sub>\<o> w . False))\<close>])
-       (transfer; auto simp: AOT_model_proposition_choice_simp fix_special_def
+    by (safe intro!: exI[where x=\<open>Abs_rel (fix_irregular (\<lambda>x. \<epsilon>\<^sub>\<o> w . False))\<close>])
+       (transfer; auto simp: AOT_model_proposition_choice_simp fix_irregular_def
                              AOT_model_irregular_equiv AOT_model_term_equiv_regular
                              AOT_model_irregular_false)
 next
@@ -637,10 +637,10 @@ lemma AOT_model_term_equiv_eps:
   apply (metis AOT_model_term_equiv_part_equivp equivp_def someI_ex)
   by (metis AOT_model_term_equiv_part_equivp equivp_def)
 
-lemma AOT_model_denotes_Abs_rel_fix_specialI:
+lemma AOT_model_denotes_Abs_rel_fix_irregularI:
   assumes \<open>\<And> x y . AOT_model_term_equiv x y \<Longrightarrow> \<phi> x = \<phi> y\<close>
       and \<open>\<And> w x . AOT_model_valid_in w (\<phi> x) \<Longrightarrow> AOT_model_denotes x\<close>
-    shows \<open>AOT_model_denotes (Abs_rel (fix_special \<phi>))\<close>
+    shows \<open>AOT_model_denotes (Abs_rel (fix_irregular \<phi>))\<close>
 proof -
   have \<open>AOT_model_irregular \<phi> x = AOT_model_irregular
           (\<lambda>x. if AOT_model_regular x then \<phi> x else AOT_model_irregular \<phi> x) x\<close>
@@ -650,7 +650,7 @@ proof -
   thus ?thesis
   unfolding AOT_model_denotes_rel.rep_eq
   using assms by (auto simp: AOT_model_irregular_false Abs_rel_inverse
-                             AOT_model_irregular_equiv fix_special_def
+                             AOT_model_irregular_equiv fix_irregular_def
                              AOT_model_term_equiv_regular)
 qed
 
@@ -672,19 +672,19 @@ next
               equivp_def)
   assume \<open>\<forall> \<Pi> w . AOT_model_denotes \<Pi> \<longrightarrow> AOT_model_valid_in w (Rep_rel \<Pi> x) =
                                            AOT_model_valid_in w (Rep_rel \<Pi> y)\<close>
-  moreover have \<open>AOT_model_denotes (Abs_rel (fix_special
+  moreover have \<open>AOT_model_denotes (Abs_rel (fix_irregular
     (\<lambda> x . \<epsilon>\<^sub>\<o> w . AOT_model_denotes x \<and> AOT_model_term_equiv x y)))\<close>
     (is "AOT_model_denotes ?r")
-    by (rule AOT_model_denotes_Abs_rel_fix_specialI)
-       (auto simp: 0 AOT_model_denotes_rel.rep_eq Abs_rel_inverse fix_special_def
+    by (rule AOT_model_denotes_Abs_rel_fix_irregularI)
+       (auto simp: 0 AOT_model_denotes_rel.rep_eq Abs_rel_inverse fix_irregular_def
                    AOT_model_proposition_choice_simp AOT_model_irregular_false)
   ultimately have \<open>AOT_model_valid_in w (Rep_rel ?r x) =
                    AOT_model_valid_in w (Rep_rel ?r y)\<close> for w
     by blast
   thus \<open>AOT_model_term_equiv x y\<close>
     by (simp add: Abs_rel_inverse AOT_model_proposition_choice_simp
-                  fix_special_denoting[OF assms(1)] AOT_model_term_equiv_part_equivp
-                  fix_special_denoting[OF assms(2)] assms equivp_reflp)
+                  fix_irregular_denoting[OF assms(1)] AOT_model_term_equiv_part_equivp
+                  fix_irregular_denoting[OF assms(2)] assms equivp_reflp)
 qed
 
 
@@ -758,7 +758,7 @@ text\<open>Unary individual terms are always regular and equipped with encoding 
 class AOT_UnaryIndividualTerm =
   fixes AOT_model_enc :: \<open>'a \<Rightarrow> <'a::AOT_IndividualTerm> \<Rightarrow> bool\<close>
     and AOT_model_concrete :: \<open>w \<Rightarrow> 'a \<Rightarrow> bool\<close>
-  assumes AOT_model_no_special_nondenoting:
+  assumes AOT_model_unary_regular:
       \<open>AOT_model_regular x\<close> \<comment> \<open>All unary individual terms are regular.\<close>
       and AOT_model_enc_relid:
         \<open>AOT_model_denotes F \<Longrightarrow>
