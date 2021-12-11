@@ -362,7 +362,8 @@ fun isDefinedConst ctxt name = let
   val defined = case cons of
     SOME cons =>
       Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons
-      orelse cons = @{const AOT_concrete}
+      orelse (case cons of Const (name,_) => name = \<^const_name>\<open>AOT_concrete\<close>
+                                      | _ => false)
     | _ => false
   in defined end
 in
