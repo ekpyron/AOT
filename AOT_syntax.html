@@ -116,7 +116,7 @@ pre .linenumber span {
 <a name="L49" href="#L49"><span class="linenumber">49</span></a>       AOT_exe <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">&lt;</span><span class="tfree">'a</span><span class="main">::</span>AOT_IndividualTerm<span class="main">&gt;</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> 𝗈›</span></span>
 <a name="L50" href="#L50"><span class="linenumber">50</span></a>       AOT_lambda <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="tfree">'a</span><span class="main">::</span>AOT_IndividualTerm <span class="main">⇒</span> 𝗈<span class="main">)</span> <span class="main">⇒</span> <span class="main">&lt;</span><span class="tfree">'a</span><span class="main">&gt;</span>›</span></span>
 <a name="L51" href="#L51"><span class="linenumber">51</span></a>       AOT_lambda0 <span class="main">::</span> <span class="quoted"><span class="quoted">‹𝗈 <span class="main">⇒</span> 𝗈›</span></span>
-<a name="L52" href="#L52"><span class="linenumber">52</span></a>       AOT_concrete <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">&lt;</span>κ<span class="main">&gt;</span>›</span></span>
+<a name="L52" href="#L52"><span class="linenumber">52</span></a>       AOT_concrete <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">&lt;</span><span class="tfree">'a</span><span class="main">::</span>AOT_UnaryIndividualTerm<span class="main">&gt;</span> AOT_var›</span></span>
 <a name="L53" href="#L53"><span class="linenumber">53</span></a>
 <a name="L54" href="#L54"><span class="linenumber">54</span></a><span class="keyword1"><span class="command">nonterminal</span></span> κ<span class="hidden">⇩</span><sub>s</sub> <span class="keyword2"><span class="keyword">and</span></span> Π <span class="keyword2"><span class="keyword">and</span></span> Π0 <span class="keyword2"><span class="keyword">and</span></span> α <span class="keyword2"><span class="keyword">and</span></span> exe_arg <span class="keyword2"><span class="keyword">and</span></span> exe_args
 <a name="L55" href="#L55"><span class="linenumber">55</span></a>        <span class="keyword2"><span class="keyword">and</span></span> lambda_args <span class="keyword2"><span class="keyword">and</span></span> desc <span class="keyword2"><span class="keyword">and</span></span> free_var <span class="keyword2"><span class="keyword">and</span></span> free_vars
@@ -246,7 +246,7 @@ pre .linenumber span {
 <a name="L179" href="#L179"><span class="linenumber">179</span></a>  <span class="quoted">"_AOT_act <span class="free">φ</span>"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_act <span class="free">φ</span>"</span>
 <a name="L180" href="#L180"><span class="linenumber">180</span></a>  <span class="quoted">"_AOT_eq <span class="free">τ</span> <span class="free">τ'</span>"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_eq <span class="free">τ</span> <span class="free">τ'</span>"</span>
 <a name="L181" href="#L181"><span class="linenumber">181</span></a>  <span class="quoted">"_AOT_lambda0 <span class="free">φ</span>"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_lambda0 <span class="free">φ</span>"</span>
-<a name="L182" href="#L182"><span class="linenumber">182</span></a>  <span class="quoted">"_AOT_concrete"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_concrete"</span>
+<a name="L182" href="#L182"><span class="linenumber">182</span></a>  <span class="quoted">"_AOT_concrete"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_term_of_var <span class="main">(</span><span class="keyword1">CONST</span> AOT_concrete<span class="main">)</span>"</span>
 <a name="L183" href="#L183"><span class="linenumber">183</span></a>  <span class="quoted">"_AOT_lambda <span class="free">α</span> <span class="free">φ</span>"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="keyword1">CONST</span> AOT_lambda <span class="main">(</span>_abs <span class="free">α</span> <span class="free">φ</span><span class="main">)</span>"</span>
 <a name="L184" href="#L184"><span class="linenumber">184</span></a>  <span class="quoted">"_explicitRelation <span class="free">Π</span>"</span> <span class="main">=&gt;</span> <span class="quoted">"<span class="free">Π</span>"</span>
 <a name="L185" href="#L185"><span class="linenumber">185</span></a>
@@ -702,10 +702,23 @@ pre .linenumber span {
 <a name="L635" href="#L635"><span class="linenumber">635</span></a>    <span class="main">(</span>Const <span class="main">(</span><span class="antiquoted"><span class="operator"><span class="hidden">\&lt;^</span><span class="control">syntax_const</span><span class="hidden">&gt;</span></span>‹_AOT_process_frees›</span><span class="main">,</span> dummyT<span class="main">)</span> $ <span class="entity">x</span><span class="main">)</span><span class="main">)</span>
 <a name="L636" href="#L636"><span class="linenumber">636</span></a><span class="main">]</span>›</span>
 <a name="L637" href="#L637"><span class="linenumber">637</span></a>
-<a name="L638" href="#L638"><span class="linenumber">638</span></a><span class="comment1">(*&lt;*)</span>
-<a name="L639" href="#L639"><span class="linenumber">639</span></a><span class="keyword2"><span class="keyword">end</span></span>
-<a name="L640" href="#L640"><span class="linenumber">640</span></a><span class="comment1">(*&gt;*)</span>
-<a name="L641" href="#L641"><span class="linenumber">641</span></a></pre>
+<a name="L638" href="#L638"><span class="linenumber">638</span></a>
+<a name="L639" href="#L639"><span class="linenumber">639</span></a><span class="comment1">(* To enable meta syntax: *)</span>
+<a name="L640" href="#L640"><span class="linenumber">640</span></a><span class="comment1">(* interpretation AOT_meta_syntax. *)</span>
+<a name="L641" href="#L641"><span class="linenumber">641</span></a><span class="comment1">(* To disable meta syntax: *)</span>
+<a name="L642" href="#L642"><span class="linenumber">642</span></a><span class="keyword1"><span class="command">interpretation</span></span> AOT_no_meta_syntax<span class="keyword1"><span class="command">.</span></span>
+<a name="L643" href="#L643"><span class="linenumber">643</span></a>
+<a name="L644" href="#L644"><span class="linenumber">644</span></a><span class="comment1">(* To enable AOT syntax (takes precedence over meta syntax;
+<a name="L645" href="#L645"><span class="linenumber">645</span></a>                         can be done locally using "including" or "include"): *)</span>
+<a name="L646" href="#L646"><span class="linenumber">646</span></a><span class="keyword1"><span class="command">unbundle</span></span> AOT_syntax
+<a name="L647" href="#L647"><span class="linenumber">647</span></a><span class="comment1">(* To disable AOT syntax (restoring meta syntax or no syntax;
+<a name="L648" href="#L648"><span class="linenumber">648</span></a>                          can be done locally using "including" or "include"): *)</span>
+<a name="L649" href="#L649"><span class="linenumber">649</span></a><span class="comment1">(* unbundle AOT_no_syntax *)</span>
+<a name="L650" href="#L650"><span class="linenumber">650</span></a>
+<a name="L651" href="#L651"><span class="linenumber">651</span></a><span class="comment1">(*&lt;*)</span>
+<a name="L652" href="#L652"><span class="linenumber">652</span></a><span class="keyword2"><span class="keyword">end</span></span>
+<a name="L653" href="#L653"><span class="linenumber">653</span></a><span class="comment1">(*&gt;*)</span>
+<a name="L654" href="#L654"><span class="linenumber">654</span></a></pre>
 </body>
 
 </html>
