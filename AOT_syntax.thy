@@ -277,8 +277,7 @@ parse_ast_translation\<open>
   (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, fn ctx => fn [a,b,c] =>
       Ast.mk_appl (Ast.Constant \<^const_name>\<open>AOT_forall\<close>) [
         Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]
-      ]
-  ) (* TODO: restricted variables in ellipse quantification *)
+      ])
 ]
 \<close>
 
@@ -346,7 +345,7 @@ AOT_syntax_print_translations
     \<^const_syntax>\<open>AOT_lambda\<close>
     \<^syntax_const>\<open>_AOT_lambda\<close>
     (\<^syntax_const>\<open>_AOT_lambda_arg_ellipse\<close>, false)
-    \<^const_name>\<open>undefined\<close>, (* TODO: constrained variables *)
+    \<^const_name>\<open>undefined\<close>,
   AOT_binder_trans
     @{theory}
     @{binding "AOT_lambda_binder"}
@@ -411,9 +410,6 @@ print_translation\<open>AOT_syntax_print_translations [
 syntax "_AOT_DDDOT" :: "\<phi>" ("...")
 syntax "_AOT_DDDOT" :: "\<phi>" ("\<dots>")
 parse_translation\<open>[(\<^syntax_const>\<open>_AOT_DDDOT\<close>, parseDDOT)]\<close>
-
-(* TODO: experimental printing mode: *)
-
 
 print_translation\<open>AOT_syntax_print_translations
 [(\<^const_syntax>\<open>Pure.all\<close>, fn ctxt => fn [Abs (_, _,
@@ -577,7 +573,6 @@ in restr end
 print_translation\<open>
 AOT_syntax_print_translations
 [
-(* TODO: restricted variables *)
   (\<^const_syntax>\<open>AOT_model_equiv_def\<close>, fn ctxt => fn [x,y] =>
     Const (\<^syntax_const>\<open>_AOT_equiv_def\<close>, dummyT) $
     (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x) $

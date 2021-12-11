@@ -257,7 +257,6 @@ AOT_theorem "contraposition:2":
   shows \<open>\<psi> \<rightarrow> \<not>\<phi>\<close>
   using "\<rightarrow>I" MT(2) assms by blast
 
-(* Note: this is actually a mixture of the two variants given in PLM. *)
 AOT_theorem "reductio-aa:1":
   assumes \<open>\<not>\<phi> \<^bold>\<turnstile> \<not>\<psi>\<close> and \<open>\<not>\<phi> \<^bold>\<turnstile> \<psi>\<close>
   shows \<open>\<phi>\<close>
@@ -665,7 +664,7 @@ AOT_theorem universal:
   using GEN assms .
 lemmas "\<forall>I" = universal
 
-(* Generalized mechanism for "\<forall>I" followed by \<forall>E *)
+(* Generalized mechanism for \<forall>I followed by \<forall>E *)
 ML\<open>
 fun get_instantiated_allI ctxt varname thm = let
 val trm = Thm.concl_of thm
@@ -673,7 +672,6 @@ val trm =
   case trm of (@{const Trueprop} $ (@{const AOT_model_valid_in} $ _ $ x)) => x
   | _ => raise Term.TERM ("Expected simple theorem.", [trm])
 fun extractVars (Const (\<^const_name>\<open>AOT_term_of_var\<close>, _) $ Var v) =
-    (* TODO: better handling of indices *)
     (if fst (fst v) = fst varname then [Var v] else [])
   | extractVars (t1 $ t2) = extractVars t1 @ extractVars t2
   | extractVars (Abs (_, _, t)) = extractVars t
@@ -1110,12 +1108,12 @@ proof -
   AOT_thus \<open>[\<lambda> \<phi>] \<equiv> \<phi>\<close> using "propositions-lemma:1" "rule=E" by blast
 qed
 
-(* propositions-lemma:3 through propositions-lemma:5 do not apply *)
+text\<open>propositions-lemma:3 through propositions-lemma:5 hold implicitly\<close>
 
 AOT_theorem "propositions-lemma:6": \<open>(\<phi> \<equiv> \<psi>) \<equiv> ([\<lambda> \<phi>] \<equiv> [\<lambda> \<psi>])\<close>
   by (metis "\<equiv>E"(1) "\<equiv>E"(5) "Associativity of \<equiv>" "propositions-lemma:2")
 
-(* dr-alphabetic-rules does not apply *)
+text\<open>dr-alphabetic-rules holds implicitly\<close>
 
 AOT_theorem "oa-exist:1": \<open>O!\<down>\<close>
 proof -
@@ -1840,12 +1838,12 @@ AOT_theorem "RA[2]":
 AOT_theorem "RA[3]":
   assumes \<open>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<phi>\<close>
   shows \<open>\<^bold>\<A>\<Gamma> \<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<phi>\<close>
-  text\<open>This appears to only be derivable from the semantics,
+  text\<open>This rule is only derivable from the semantics,
        but apparently no proof actually relies on it.
        If this turns out to be required, it is valid to derive it from the
        semantics just like RN, but we refrain from doing so, unless necessary.\<close>
   (*  using assms by (meson AOT_sem_act imageI) *)
-  oops
+  oops \<comment> \<open>discard the rule\<close>
 
 AOT_act_theorem "ANeg:1": \<open>\<not>\<^bold>\<A>\<phi> \<equiv> \<not>\<phi>\<close>
   by (simp add: "RA[1]" "contraposition:1[1]" "deduction-theorem"
@@ -3363,7 +3361,6 @@ AOT_theorem "S5Basic:9": \<open>\<box>(\<phi> \<or> \<box>\<psi>) \<equiv> (\<bo
             "con-dis-taut:7" "intro-elim:1" "Commutativity of \<or>")
 
 AOT_theorem "S5Basic:10": \<open>\<box>(\<phi> \<or> \<diamond>\<psi>) \<equiv> (\<box>\<phi> \<or> \<diamond>\<psi>)\<close>
-(* Note: nicely this proof is entirely sledgehammer generated *)
 proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>\<box>(\<phi> \<or> \<diamond>\<psi>)\<close>
   AOT_hence \<open>\<box>\<phi> \<or> \<diamond>\<diamond>\<psi>\<close>
@@ -4247,7 +4244,7 @@ AOT_theorem "beta-C-cor:2":
   apply (rule "\<rightarrow>I"; rule "\<forall>I")
   using "beta-C-meta"[THEN "\<rightarrow>E"] by fast
 
-(* TODO: syntax *)
+(* TODO: add better syntax parsing for INSTANCE_OF_CQT_2 *)
 theorem "beta-C-cor:3":
   assumes \<open>\<And>\<nu>\<^sub>1\<nu>\<^sub>n. AOT_instance_of_cqt_2 (\<phi> (AOT_term_of_var \<nu>\<^sub>1\<nu>\<^sub>n))\<close>
   shows \<open>[v \<Turnstile> \<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n ([\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n, \<mu>\<^sub>1...\<mu>\<^sub>n}]\<nu>\<^sub>1...\<nu>\<^sub>n \<equiv>
@@ -4321,13 +4318,6 @@ method "\<eta>C" for \<Pi> :: \<open><'a::{AOT_Term_id_2,AOT_\<kappa>s}>\<close>
   (match conclusion in "[v \<Turnstile> \<tau>{\<Pi>} = \<tau>'{\<Pi>}]" for v \<tau> \<tau>' \<Rightarrow> \<open>
    rule "rule=E"[rotated 1, OF "eta-conversion-lemma1:2"
     [THEN "\<rightarrow>E", of v "\<guillemotleft>[\<Pi>]\<guillemotright>", symmetric]]\<close>)
-(*
-AOT_theorem \<open>[\<lambda>y [\<lambda>z [P]z]y \<rightarrow> [\<lambda>u [S]u]y] = [\<lambda>y [P]y \<rightarrow> [S]y]\<close>
-  apply ("\<eta>C" "\<guillemotleft>[P]\<guillemotright>") defer
-   apply ("\<eta>C" "\<guillemotleft>[S]\<guillemotright>") defer
-  oops
-*)
-(* TODO: proper representation of eta_conversion_lemma2 *)
 
 AOT_theorem "sub-des-lam:1":
   \<open>[\<lambda>z\<^sub>1...z\<^sub>n  \<chi>{z\<^sub>1...z\<^sub>n, \<^bold>\<iota>x \<phi>{x}}]\<down> & \<^bold>\<iota>x \<phi>{x} = \<^bold>\<iota>x \<psi>{x} \<rightarrow>
@@ -4895,7 +4885,6 @@ AOT_theorem "rel-neg-T:3": \<open>[\<Pi>]\<^sup>-\<down>\<close>
 AOT_theorem "rel-neg-T:3[zero]": \<open>(\<phi>)\<^sup>-\<down>\<close>
   using "log-prop-prop:2" by blast
 
-(* Note: PLM states the zero place case twice *)
 AOT_theorem "thm-relation-negation:1": \<open>[F]\<^sup>-x\<^sub>1...x\<^sub>n \<equiv> \<not>[F]x\<^sub>1...x\<^sub>n\<close>
 proof -
   AOT_have \<open>[F]\<^sup>-x\<^sub>1...x\<^sub>n \<equiv> [\<lambda>x\<^sub>1...x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
@@ -7606,7 +7595,7 @@ translations
 print_translation\<open>
 AOT_syntax_print_translations
 [(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [
-  Const ("\<^const>AOT_PLM.eq_E", _),
+  Const (\<^const_name>\<open>eq_E\<close>, _),
   Const (\<^const_syntax>\<open>Pair\<close>, _) $ lhs $ rhs
 ] => Const (\<^syntax_const>\<open>_AOT_eq_E_infix\<close>, dummyT) $ lhs $ rhs)]\<close>
 
@@ -7669,7 +7658,7 @@ translations
 print_translation\<open>
 AOT_syntax_print_translations
 [(\<^const_syntax>\<open>AOT_exe\<close>, fn ctxt => fn [
-  Const (\<^const_syntax>\<open>relation_negation\<close>, _) $ Const ("\<^const>AOT_PLM.eq_E", _),
+  Const (\<^const_syntax>\<open>relation_negation\<close>, _) $ Const (\<^const_name>\<open>eq_E\<close>, _),
   Const (\<^const_syntax>\<open>Pair\<close>, _) $ lhs $ rhs
 ] => Const (\<^syntax_const>\<open>_AOT_non_eq_E_infix\<close>, dummyT) $ lhs $ rhs)]\<close>
 AOT_theorem "thm-neg=E": \<open>x \<noteq>\<^sub>E y \<equiv> \<not>(x =\<^sub>E y)\<close>
