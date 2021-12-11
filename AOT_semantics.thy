@@ -119,9 +119,7 @@ qed
 
 text\<open>\linelabel{AOT_exe_lambda_spec}\<close>
 specification(AOT_exe AOT_lambda)
-  \<comment> \<open>Generally relate the modal truth conditions of exemplification formulas
-      on denoting terms to the representation type. This basically enables
-      relation comprehension.\<close>
+  \<comment> \<open>Truth conditions of exemplification formulas.\<close>
   AOT_sem_exe: \<open>[w \<Turnstile> [\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = ([w \<Turnstile> \<Pi>\<down>] \<and> [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and>
                                      [w \<Turnstile> \<guillemotleft>Rep_rel \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>])\<close>
   \<comment> \<open>\<eta>-conversion for denoting terms; equivalent to AOT's axiom\<close>
