@@ -43,8 +43,8 @@ from Russell to Simon dated 2 November, 1956; preserved in~\cite{Simon1996}, pag
 However, building up a sound reasoning environment from scratch is a
 non-trivial task. Consequently, today there is only a limited number of trusted systems that can offer sophisticated
 interactive and automated reasoning tools like Coq~\cite{coq}, HOL-Light~\cite{HOLLight} or Isabelle/HOL~\cite{Isabelle}.
-Furthermore, most of these systems have at least parts of their logical foundation in common,
-for example they are all based on some variation of functional type theory. This may lead to a bias
+Furthermore, most of these systems have at least parts of their logical foundation in common.
+For example, they are all based on some variation of functional type theory. This may lead to a bias
 in the computational analysis of foundational theories towards
 systems that use a similar logical foundation.
 \<close>
@@ -77,7 +77,7 @@ that allows for an almost entirely transparent transfer of reasoning in our targ
 abstracts the syntactic and inferential differences between Isabelle/HOL and AOT, while still
 internally using the verified core logic of Isabelle/HOL as semantic backend. This means we
 effectively construct a dedicated theorem proving environment for AOT that (1) is immediately guaranteed
-to be sound, (2) can be used to explore the safety of axiomatic extensions to the system and (3) allows
+to be sound, (2) can be used to explore the safety of axiomatic extensions of the system and (3) allows
 for the reuse of the automation infrastructure available for Isabelle/HOL.
 
 While our method can potentially be applied to a multitude of logical systems, AOT
@@ -87,7 +87,7 @@ Whitehead's Principia Mathematica, while in fact extending its scope to e.g. lin
 the sciences in general (see~\cite{ObjectivesOfObjectTheory}). On the other hand, it is based on logical foundations that significantly differ
 from classical functional higher-order type-theory and were even argued to be incompatible (see~\cite{rtt}).
 Initial results of our research (see \cite{MScThesis}) demonstrated how our method for formally analyzing
-models and semantics for such a system can be beneficial and vital for its soundness (see~\ref{NewParadox}).
+models and semantics of such a system can be beneficial and vital for its soundness (see~\ref{NewParadox}).
 During our continued work, we could contribute to the evolution of AOT and
 simultaneously arrived at a model structure and semantics that allows to faithfully
 reproduce its deductive system in Isabelle/HOL while retaining the existing infrastructure for automated reasoning.\footnote{Note,
@@ -247,7 +247,7 @@ has a semantics defined in terms of sets. The approach of shallow semantic embed
 more detail in chapter~\ref{SSEs}.
 
 For example, Benzm{\"u}ller et al. provide an extensive analysis of quantified modal logic using SSEs
-by means of embedding modal operators based on their Kripke semantics in
+by means of embedding modal operators based on their Kripke semantics
 \cite{ModalLogics, ModalLogicCube, HOMLAutomationAndApplications}. This allowed for an
 analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
 such as KB (see~\cite{GoedelGod}), followed by a range of studies of similar ontological
@@ -302,7 +302,7 @@ embedding in Isabelle/HOL. This mutually beneficial mode of work was described i
 and resulted in a now stabilized and improved formulation of AOT and a
 matching embedding of its second-order fragment. The details of this process and its results are
 the main subject of this thesis.
-
+\newpage
 \<close>
 
 section\<open>Contributions and Structure of the Thesis\<close>text\<open>\label{Structure}\<close>
@@ -332,7 +332,7 @@ Our primary goals are to show that:
     the ambition to be a foundational framework and is based on significantly different
     logical foundations compared to our meta-logic HOL.
   \<^item> We can reproduce the full deductive system of AOT in readable and usable form while
-    maintaining Isabelle's automation mechanisms. Thereby, we can effectively
+    preserving Isabelle's automation mechanisms. Thereby, we can effectively
     construct a dedicated automated theorem proving environment for AOT.
   \<^item> Using our method we could significantly contribute to our target theory.
   \<^item> We can demonstrate the extent of our target theory and the practical feasibility
@@ -340,6 +340,7 @@ Our primary goals are to show that:
     of natural numbers.
   \<^item> In the process, we can provide valuable theoretical insights into, and analyze extensions and variations of, the
     construction of the natural numbers.
+\newpage
 \<close>
 
 section\<open>Verified Document Generation and Conventions\<close>text\<open>\label{Conventions}\<close>
@@ -538,7 +539,7 @@ typedecl w
 text\<open>
 A Kripke model further involves a relation between possible worlds and modal formulas that is
 usually read as a formula @{emph \<open>being satisfied at\<close>} a possible world. So the semantic domain of
-propositions is boolean-valued function acting on (or, equivalently, sets of) possible worlds.
+propositions is the boolean-valued functions acting on (or, equivalently, the sets of) possible worlds.
 In an SSE we use the semantic domains as types for the object-level terms themselves,@{footnote \<open>Note that it is also possible to model restrictions on the evaluation domains
 explicitly, as recently demonstrated in~\cite{PublicAnnouncementLogic}.\<close>} so we can introduce
 a type @{text \<o>} of propositions as synonym of the type of functions mapping possible worlds (of type @{typ w})
@@ -632,9 +633,9 @@ Depending on the application, it can be enough to be able to tell if a theorem i
 valid or if a statement semantically follows from a set of assumptions. However, for the purpose
 of implementing a full logical theory including its own deductive system, semantic validity is
 not the primary concern, but rather derivability from the formal system.@{footnote \<open>Even if
-the semantics used for constructing the embedding is provably complete, i.e. semantic validity
-implies derivability, we still want to know which axioms and rules can be used to construct
-a concrete derivation.\<close>}
+the target theory is provably complete with respect to the semantics used for constructing
+the embedding, i.e. semantic validity implies derivability, we still want to know which
+axioms and rules can be used to construct a concrete derivation.\<close>}
 
 Fortunately, it is possible to restrict Isabelle's automated reasoning tools like
 @{command sledgehammer}, s.t. they may not unfold semantic definitions. If this is done
@@ -913,6 +914,7 @@ for all types of a polymorphic constant, as well as to provide separate specific
 concrete distinct type instantiations of a polymorphic constant, doing both at the same time
 is in general not possible.
 \<close>
+
 subsection\<open>Type Classes and Locales\<close>text\<open>\label{ClassesAndLocales}\<close>
 text\<open>
 Isabelle provides further abstraction mechanisms, e.g. type @{command class}es and
@@ -923,8 +925,7 @@ relative to abstract parameters that validate a set of assumptions and then @{co
 the @{command locale} by proving the assumptions for a concrete instantiation of its
 parameters. As a result of this interpretation of the locale, all declarations of, and
 in particular all theorems proven in, the locale will be instantiated to the given parameters
-and added to the theory context. Similarly to @{command specification}s, a limitation
-of @{command locale}s is that they cannot involve polymorphic assumptions, which prevents
+and added to the theory context. A limitation of @{command locale}s is that they cannot involve polymorphic assumptions, which prevents
 us from formulating the full system of AOT abstractly as a single locale.
 
 Type @{command class}es (see~\S5.8~in~\cite{IsarRef}) are technically @{command locale}s that depend on @{emph \<open>exactly one\<close>}
@@ -939,7 +940,7 @@ the locale parameters at that type.
 
 For example, it is possible to instantiate a type class to products of two generic types
 (i.e. type variables) of specific sorts. We use this mechanism to inductively define
-properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{IndividualTermsAndClasses}).
+properties of @{term n}-ary relations of AOT as relations among arbitrary tuples (see section~\ref{ModelConstruction}).
 
 Ideally, it would be possible to implement the full axiom system and deduction rules
 of our target system using a system of type classes and locales (which would provide
@@ -1112,7 +1113,7 @@ our defined possiblity operator. The other logical connectives are the ones of t
 
 While the mechanism described above is sufficient for introducing an accurate representation
 of the syntax of most target theories that are compatible with the lexical syntax of
-Isabelle/Pure,@{footnote \<open>Note that @{emph \<open>Abstract Object Theory\<close>} does not fall into this category
+Isabelle/Pure,@{footnote \<open>Note that AOT does not fall into this category
 and requires additional and more complex means to arrive at a good approximation of its syntax as
 described in section~\ref{AOTSyntax}.\<close>} @{emph \<open>reasoning\<close>} in the logic of the target theory
 entails additional challenges. For example, reasoning using Kripke-semantics usually
@@ -1277,7 +1278,8 @@ and @{emph \<open>being a set of all those sets that aren't members of
 are necessarily equivalent (both necessarily fail to be exemplified).
 
 In the following sections, we provide a brief overview of the language, the axiom system and
-the deductive system of PLM. For a full account and detailed discussion refer to~\cite{PLM-Oct-13-2021},
+the deductive system of PLM as implemented in our embedding.
+For a the full original formulation of the system and a detailed discussion refer to~\cite{PLM-Oct-13-2021},
 respectively~\cite{PLM-current}.@{footnote \<open>At the time of writing both citations refer
 to the same version of PLM, but in the future \cite{PLM-current} will refer to the
 most recent formulation of PLM, while \cite{PLM-Oct-13-2021} will contain the archived
@@ -2649,7 +2651,7 @@ in the next chapter.
 
 chapter\<open>SSE of AOT in Isabelle/HOL\<close>text\<open>\label{SSEofAOT}\<close>
 
-section\<open>Model Construction\<close>
+section\<open>Model Construction\<close>text\<open>\label{ModelConstruction}\<close>
 
 text\<open>
 While the precise model construction of the embedding can be found in~\ref{AOT:AOT_model},
@@ -2657,7 +2659,7 @@ this section provides a high-level description of this construction.
 The general idea is based on Aczel models of AOT, which are extended
 to accommodate for AOT's hyperintensional modal logic on the one hand and its
 free logic for individual and relation terms on the other hand. Furthermore,
-it employs a system of type classes to model relations of arbitrary arity as relations among
+we use a system of type classes to construct relations of arbitrary arity as relations among
 tuples of individuals.\footnote{However, for each fixed arity of relations
 the type classes can be logically eliminated.}
 
@@ -2828,10 +2830,12 @@ This type is used to represent the variables of each of the types above, e.g.
 @{typ \<open>\<kappa> AOT_var\<close>} will be the type of individual variables.  Thereby,
 variables range exactly over the denoting objects at each type. To be used
 in place of terms, a variable of type @{typ \<open>'a AOT_var\<close>} is mapped to its representation type @{typ 'a}
-using the constant @{term AOT_term_of_var}, which is just a renamed version of the usually
-@{text \<open>Rep\<close>}-prefixed constant that is  automatically introduced for each @{command typedef}
-and maps objects of a defined type to objects of its representation set, as already mentioned
-in section~\ref{Specifications}.
+using the constant @{term AOT_term_of_var}.@{footnote \<open>Each @{command typedef} that defines
+a type using a representation set automatically introduces morphisms, usually
+prefixed with @{text \<open>Rep_\<close>} and @{text \<open>Abs_\<close>}, that map objects of the defined type
+to objects of its representation set and vice-versa. In this case we chose the
+custom names @{term AOT_term_of_var} and @{term AOT_var_of_term} instead of
+@{text \<open>Rep_AOT_var\<close>} and @{text \<open>Abs_AOT_var\<close>}.\<close>}
 \<close>
 (*<*)
 text\<open>
