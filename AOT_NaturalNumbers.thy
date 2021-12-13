@@ -3906,25 +3906,25 @@ AOT_theorem pred_coex:
   \<open>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<down> \<equiv> \<forall>F ([\<lambda>x Numbers(x,F)]\<down>)\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   fix F
-  let ?\<P> = \<open>\<guillemotleft>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<guillemotright>\<close>
-  AOT_assume \<open>[\<guillemotleft>?\<P>\<guillemotright>]\<down>\<close>
-  AOT_hence \<open>\<box>[\<guillemotleft>?\<P>\<guillemotright>]\<down>\<close>
+  let ?P = \<open>\<guillemotleft>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<guillemotright>\<close>
+  AOT_assume \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
+  AOT_hence \<open>\<box>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
     using "exist-nec" "\<rightarrow>E" by blast
   moreover AOT_have
-    \<open>\<box>[\<guillemotleft>?\<P>\<guillemotright>]\<down> \<rightarrow> \<box>(\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (Numbers(x,F) \<equiv> Numbers(y,F))))\<close>
+    \<open>\<box>[\<guillemotleft>?P\<guillemotright>]\<down> \<rightarrow> \<box>(\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (Numbers(x,F) \<equiv> Numbers(y,F))))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
     AOT_modally_strict {
       fix x y
-      AOT_assume pred_den: \<open>[\<guillemotleft>?\<P>\<guillemotright>]\<down>\<close>
+      AOT_assume pred_den: \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
       AOT_hence pred_equiv:
-        \<open>[\<guillemotleft>?\<P>\<guillemotright>]xy \<equiv> \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close> for x y
+        \<open>[\<guillemotleft>?P\<guillemotright>]xy \<equiv> \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close> for x y
         by (safe intro!: "beta-C-meta"[unvarify \<nu>\<^sub>1\<nu>\<^sub>n, where \<tau>=\<open>(_,_)\<close>, THEN "\<rightarrow>E",
                                        rotated, OF pred_den, simplified]
                          tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2")
       text\<open>We show as a subproof that any natural cardinal that is not zero
            has a predecessor.\<close>
       AOT_have CardinalPredecessor:
-        \<open>\<exists>y [\<guillemotleft>?\<P>\<guillemotright>]yx\<close> if card_x: \<open>NaturalCardinal(x)\<close> and x_nonzero: \<open>x \<noteq> 0\<close> for x
+        \<open>\<exists>y [\<guillemotleft>?P\<guillemotright>]yx\<close> if card_x: \<open>NaturalCardinal(x)\<close> and x_nonzero: \<open>x \<noteq> 0\<close> for x
       proof -
         AOT_have \<open>\<exists>G x = #G\<close>
           using card[THEN "\<equiv>\<^sub>d\<^sub>fE", OF card_x].
@@ -3955,24 +3955,24 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           using "num-tran:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] numxG' by blast
       
         {
-          AOT_assume \<open>\<not>\<exists>y(y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx)\<close>
-          AOT_hence \<open>\<forall>y \<not>(y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx)\<close>
+          AOT_assume \<open>\<not>\<exists>y(y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx)\<close>
+          AOT_hence \<open>\<forall>y \<not>(y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx)\<close>
             using "cqt-further:4" "\<rightarrow>E" by blast
-          AOT_hence \<open>\<not>(y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx)\<close> for y
+          AOT_hence \<open>\<not>(y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx)\<close> for y
             using "\<forall>E"(2) by blast
-          AOT_hence 0: \<open>\<not>y \<noteq> x \<or> \<not>[\<guillemotleft>?\<P>\<guillemotright>]yx\<close> for y
+          AOT_hence 0: \<open>\<not>y \<noteq> x \<or> \<not>[\<guillemotleft>?P\<guillemotright>]yx\<close> for y
             using "\<not>\<not>E" "intro-elim:3:c" "oth-class-taut:5:a" by blast
           {
             fix y
-            AOT_assume \<open>[\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+            AOT_assume \<open>[\<guillemotleft>?P\<guillemotright>]yx\<close>
             AOT_hence \<open>\<not>y \<noteq> x\<close>
               using 0 "\<not>\<not>I" "con-dis-i-e:4:c" by blast
             AOT_hence \<open>y = x\<close>
               using "=-infix" "\<equiv>\<^sub>d\<^sub>fI" "raa-cor:4" by blast
           } note Pxy_imp_eq = this
-          AOT_have \<open>[\<guillemotleft>?\<P>\<guillemotright>]xx\<close>
+          AOT_have \<open>[\<guillemotleft>?P\<guillemotright>]xx\<close>
           proof(rule "raa-cor:1")
-            AOT_assume notPxx: \<open>\<not>[\<guillemotleft>?\<P>\<guillemotright>]xx\<close>
+            AOT_assume notPxx: \<open>\<not>[\<guillemotleft>?P\<guillemotright>]xx\<close>
             AOT_hence \<open>\<not>\<exists>F\<exists>u([F]u & Numbers(x,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
               using pred_equiv "intro-elim:3:c" by blast
             AOT_hence \<open>\<forall>F \<not>\<exists>u([F]u & Numbers(x,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
@@ -4007,7 +4007,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
                 by (rule "Ordinary.\<exists>I")
               AOT_hence \<open>\<exists>G\<exists>u ([G]u & Numbers(x,G) & Numbers(y,[G]\<^sup>-\<^sup>u))\<close>
                 by (rule "\<exists>I")
-              AOT_hence \<open>[\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+              AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>]yx\<close>
                 using pred_equiv[THEN "\<equiv>E"(2)] by blast
               AOT_hence \<open>y = x\<close> using Pxy_imp_eq by blast
               AOT_hence \<open>Numbers(x,[G]\<^sup>-\<^sup>u)\<close>
@@ -4028,23 +4028,23 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
             ultimately AOT_show \<open>p & \<not>p\<close> for p using "reductio-aa:1" by blast
           qed
         }
-        AOT_hence \<open>[\<guillemotleft>?\<P>\<guillemotright>]xx \<or> \<exists>y (y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx)\<close>
+        AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>]xx \<or> \<exists>y (y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx)\<close>
           using "con-dis-i-e:3:a" "con-dis-i-e:3:b" "raa-cor:1" by blast
         moreover {
-          AOT_assume \<open>[\<guillemotleft>?\<P>\<guillemotright>]xx\<close>
-          AOT_hence \<open>\<exists>y [\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+          AOT_assume \<open>[\<guillemotleft>?P\<guillemotright>]xx\<close>
+          AOT_hence \<open>\<exists>y [\<guillemotleft>?P\<guillemotright>]yx\<close>
             by (rule "\<exists>I")
         }
         moreover {
-          AOT_assume \<open>\<exists>y (y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx)\<close>
-          then AOT_obtain y where \<open>y \<noteq> x & [\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+          AOT_assume \<open>\<exists>y (y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx)\<close>
+          then AOT_obtain y where \<open>y \<noteq> x & [\<guillemotleft>?P\<guillemotright>]yx\<close>
             using "\<exists>E"[rotated] by blast
-          AOT_hence \<open>[\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+          AOT_hence \<open>[\<guillemotleft>?P\<guillemotright>]yx\<close>
             using "&E" by blast
-          AOT_hence \<open>\<exists>y [\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+          AOT_hence \<open>\<exists>y [\<guillemotleft>?P\<guillemotright>]yx\<close>
             by (rule "\<exists>I")
         }
-        ultimately AOT_show \<open>\<exists>y [\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+        ultimately AOT_show \<open>\<exists>y [\<guillemotleft>?P\<guillemotright>]yx\<close>
           using "\<or>E"(1) "\<rightarrow>I" by blast
       qed
 
@@ -4060,15 +4060,15 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
         AOT_assume \<open>\<not>(x = 0)\<close>
         AOT_hence \<open>x \<noteq> 0\<close>
           by (metis "=-infix" "\<equiv>\<^sub>d\<^sub>fI")
-        AOT_hence \<open>\<exists>y [\<guillemotleft>?\<P>\<guillemotright>]yx\<close>
+        AOT_hence \<open>\<exists>y [\<guillemotleft>?P\<guillemotright>]yx\<close>
           using CardinalPredecessor 0 by blast
-        then AOT_obtain z where Pxz: \<open>[\<guillemotleft>?\<P>\<guillemotright>]zx\<close>
+        then AOT_obtain z where Pxz: \<open>[\<guillemotleft>?P\<guillemotright>]zx\<close>
           using "\<exists>E"[rotated] by blast
-        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?\<P>\<guillemotright>]zy]x\<close>
+        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?P\<guillemotright>]zy]x\<close>
           by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2")
-        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?\<P>\<guillemotright>]zy]y\<close>
+        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?P\<guillemotright>]zy]y\<close>
           by (safe intro!: indist[THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "cqt:2")
-        AOT_hence Pyz: \<open>[\<guillemotleft>?\<P>\<guillemotright>]zy\<close>
+        AOT_hence Pyz: \<open>[\<guillemotleft>?P\<guillemotright>]zy\<close>
           using "\<beta>\<rightarrow>C"(1) by blast
         AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(z,[F]\<^sup>-\<^sup>u))\<close>
           using Pyz pred_equiv[THEN "\<equiv>E"(1)] by blast
@@ -4126,15 +4126,15 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           by (rule "Ordinary.\<exists>I")
         AOT_hence \<open>\<exists>F\<exists>u([F]u & Numbers(z,[F]) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
           by (rule "\<exists>I"; "cqt:2")
-        AOT_hence Px1: \<open>[\<guillemotleft>?\<P>\<guillemotright>]xz\<close>
+        AOT_hence Px1: \<open>[\<guillemotleft>?P\<guillemotright>]xz\<close>
           using "beta-C-cor:2"[THEN "\<rightarrow>E", OF pred_den,
                   THEN tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "\<forall>E"(2),
                   THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by simp
-        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?\<P>\<guillemotright>]yz]x\<close>
+        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?P\<guillemotright>]yz]x\<close>
           by (safe intro!: "\<beta>\<leftarrow>C" "cqt:2")
-        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?\<P>\<guillemotright>]yz]y\<close>
+        AOT_hence \<open>[\<lambda>y [\<guillemotleft>?P\<guillemotright>]yz]y\<close>
           by (safe intro!: indist[THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] "cqt:2")
-        AOT_hence Py1: \<open>[\<guillemotleft>?\<P>\<guillemotright>]yz\<close>
+        AOT_hence Py1: \<open>[\<guillemotleft>?P\<guillemotright>]yz\<close>
           using "\<beta>\<rightarrow>C" by blast
         AOT_hence \<open>\<exists>F\<exists>u([F]u & Numbers(z,[F]) & Numbers(y,[F]\<^sup>-\<^sup>u))\<close>
           using "\<beta>\<rightarrow>C" by fast
@@ -4165,7 +4165,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
     text\<open>The only thing left is to generalize this result to a biconditional.\<close>
     AOT_modally_strict {
       fix x y
-      AOT_assume \<open>[\<guillemotleft>?\<P>\<guillemotright>]\<down>\<close>
+      AOT_assume \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
       moreover AOT_assume \<open>\<forall>F([F]x \<equiv> [F]y)\<close>
       moreover AOT_have \<open>\<forall>F([F]y \<equiv> [F]x)\<close>
         by (metis "cqt-basic:11" "intro-elim:3:a" calculation(2))
@@ -4284,23 +4284,23 @@ text\<open>The two theorems above allow us to derive
 AOT_theorem pred: \<open>[\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<down>\<close>
   using pred_coex numbers_prop_den["\<forall>I" G] "\<equiv>E" by blast
 
-AOT_define Predecessor :: \<open>\<Pi>\<close> (\<open>\<P>\<close>)
+AOT_define Predecessor :: \<open>\<Pi>\<close> (\<open>\<bbbP>\<close>)
   "pred-thm:1":
-  \<open>\<P> =\<^sub>d\<^sub>f [\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<close>
+  \<open>\<bbbP> =\<^sub>d\<^sub>f [\<lambda>xy \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))]\<close>
 
-AOT_theorem "pred-thm:2": \<open>\<P>\<down>\<close>
+AOT_theorem "pred-thm:2": \<open>\<bbbP>\<down>\<close>
   using pred "pred-thm:1" "rule-id-df:2:b[zero]" by blast
 
 AOT_theorem "pred-thm:3":
-  \<open>[\<P>]xy \<equiv> \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
+  \<open>[\<bbbP>]xy \<equiv> \<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     by (auto intro!: "beta-C-meta"[unvarify \<nu>\<^sub>1\<nu>\<^sub>n, where \<tau>=\<open>(_,_)\<close>, THEN "\<rightarrow>E",
                                    rotated, OF pred, simplified]
                      tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" pred
              intro: "=\<^sub>d\<^sub>fI"(2)[OF "pred-thm:1"])
 
-AOT_theorem "pred-1-1:1": \<open>[\<P>]xy \<rightarrow> \<box>[\<P>]xy\<close>
+AOT_theorem "pred-1-1:1": \<open>[\<bbbP>]xy \<rightarrow> \<box>[\<bbbP>]xy\<close>
 proof(rule "\<rightarrow>I")
-  AOT_assume \<open>[\<P>]xy\<close>
+  AOT_assume \<open>[\<bbbP>]xy\<close>
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using "\<equiv>E"(1) "pred-thm:3" by fast
   then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
@@ -4413,28 +4413,28 @@ proof(rule "\<rightarrow>I")
     by (rule "\<exists>I")
   AOT_hence 0: \<open>\<box>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using Buridan "vdash-properties:10" by fast
-  AOT_show \<open>\<box>[\<P>]xy\<close>
-    by (AOT_subst \<open>[\<P>]xy\<close> \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>;
+  AOT_show \<open>\<box>[\<bbbP>]xy\<close>
+    by (AOT_subst \<open>[\<bbbP>]xy\<close> \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>;
         simp add: "pred-thm:3" 0)
 qed
 
-AOT_theorem "pred-1-1:2": \<open>Rigid(\<P>)\<close>
+AOT_theorem "pred-1-1:2": \<open>Rigid(\<bbbP>)\<close>
   by (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "pred-thm:2" "&I"
                    RN tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fI"];
       safe intro!: GEN "pred-1-1:1")
 
-AOT_theorem "pred-1-1:3": \<open>1-1(\<P>)\<close>
+AOT_theorem "pred-1-1:3": \<open>1-1(\<bbbP>)\<close>
 proof (safe intro!: "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "pred-thm:2" "&I" GEN "\<rightarrow>I";
        frule "&E"(1); drule "&E"(2))
   fix x y z
-  AOT_assume \<open>[\<P>]xz\<close>
+  AOT_assume \<open>[\<bbbP>]xz\<close>
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(z,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
   then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(z,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using "\<exists>E"[rotated] by blast
   then AOT_obtain u where u_prop: \<open>[F]u & Numbers(z,F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<close>
     using "Ordinary.\<exists>E"[rotated] by meson
-  AOT_assume \<open>[\<P>]yz\<close>
+  AOT_assume \<open>[\<bbbP>]yz\<close>
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(z,F) & Numbers(y,[F]\<^sup>-\<^sup>u))\<close>
     using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
   then AOT_obtain G where \<open>\<exists>u ([G]u & Numbers(z,G) & Numbers(y,[G]\<^sup>-\<^sup>u))\<close>
@@ -4462,43 +4462,43 @@ proof (safe intro!: "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "pred-thm:2" "&
   qed
 qed
 
-AOT_theorem "pred-1-1:4": \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<P>)\<close>
+AOT_theorem "pred-1-1:4": \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<bbbP>)\<close>
   by (meson "\<equiv>\<^sub>d\<^sub>fI" "&I" "df-1-1:2" "pred-1-1:2" "pred-1-1:3")
 
 AOT_theorem "assume-anc:1":
-  \<open>[\<P>]\<^sup>* = [\<lambda>xy \<forall>F((\<forall>z([\<P>]xz \<rightarrow> [F]z) & Hereditary(F,\<P>)) \<rightarrow> [F]y)]\<close>
+  \<open>[\<bbbP>]\<^sup>* = [\<lambda>xy \<forall>F((\<forall>z([\<bbbP>]xz \<rightarrow> [F]z) & Hereditary(F,\<bbbP>)) \<rightarrow> [F]y)]\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "ances-df"])
    apply "cqt:2[lambda]"
   apply (rule "=I"(1))
   by "cqt:2[lambda]"
 
-AOT_theorem "assume-anc:2": \<open>\<P>\<^sup>*\<down>\<close>
+AOT_theorem "assume-anc:2": \<open>\<bbbP>\<^sup>*\<down>\<close>
   using "t=t-proper:1" "assume-anc:1" "vdash-properties:10" by blast
 
 AOT_theorem "assume-anc:3":
-  \<open>[\<P>\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([\<P>]xz \<rightarrow> [F]z) & \<forall>x'\<forall>y'([\<P>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y'))) \<rightarrow> [F]y)\<close>
+  \<open>[\<bbbP>\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([\<bbbP>]xz \<rightarrow> [F]z) & \<forall>x'\<forall>y'([\<bbbP>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y'))) \<rightarrow> [F]y)\<close>
 proof -
   AOT_have prod_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<guillemotleft>(AOT_term_of_var x\<^sub>1,AOT_term_of_var x\<^sub>2)\<guillemotright>\<down>\<close>
     for x\<^sub>1 x\<^sub>2 :: \<open>\<kappa> AOT_var\<close>
     by (simp add: "&I" "ex:1:a" prod_denotesI "rule-ui:3")
-  AOT_have den: \<open>[\<lambda>xy \<forall>F((\<forall>z([\<P>]xz \<rightarrow> [F]z) & Hereditary(F,\<P>)) \<rightarrow> [F]y)]\<down>\<close>
+  AOT_have den: \<open>[\<lambda>xy \<forall>F((\<forall>z([\<bbbP>]xz \<rightarrow> [F]z) & Hereditary(F,\<bbbP>)) \<rightarrow> [F]y)]\<down>\<close>
     by "cqt:2[lambda]"
-  AOT_have 1: \<open>[\<P>\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([\<P>]xz \<rightarrow> [F]z) & Hereditary(F,\<P>)) \<rightarrow> [F]y)\<close>
+  AOT_have 1: \<open>[\<bbbP>\<^sup>*]xy \<equiv> \<forall>F((\<forall>z([\<bbbP>]xz \<rightarrow> [F]z) & Hereditary(F,\<bbbP>)) \<rightarrow> [F]y)\<close>
     apply (rule "rule=E"[rotated, OF "assume-anc:1"[symmetric]])
     by (rule "beta-C-meta"[unvarify \<nu>\<^sub>1\<nu>\<^sub>n, OF prod_den, THEN "\<rightarrow>E",
                            simplified, OF den, simplified])
   show ?thesis
-    apply (AOT_subst (reverse) \<open>\<forall>x'\<forall>y' ([\<P>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y'))\<close>
-                               \<open>Hereditary(F,\<P>)\<close> for: F :: \<open><\<kappa>>\<close>)
+    apply (AOT_subst (reverse) \<open>\<forall>x'\<forall>y' ([\<bbbP>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y'))\<close>
+                               \<open>Hereditary(F,\<bbbP>)\<close> for: F :: \<open><\<kappa>>\<close>)
     using "hered:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I", OF "pred-thm:2",
                     OF "cqt:2[const_var]"[axiom_inst]] apply blast
     by (fact 1)
 qed
 
-AOT_theorem "no-pred-0:1": \<open>\<not>\<exists>x [\<P>]x 0\<close>
+AOT_theorem "no-pred-0:1": \<open>\<not>\<exists>x [\<bbbP>]x 0\<close>
 proof(rule "raa-cor:2")
-  AOT_assume \<open>\<exists>x [\<P>]x 0\<close>
-  then AOT_obtain a where \<open>[\<P>]a 0\<close>
+  AOT_assume \<open>\<exists>x [\<bbbP>]x 0\<close>
+  then AOT_obtain a where \<open>[\<bbbP>]a 0\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(0, F) & Numbers(a, [F]\<^sup>-\<^sup>u))\<close>
     using "pred-thm:3"[unvarify y, OF "zero:2", THEN "\<equiv>E"(1)] by blast
@@ -4516,40 +4516,40 @@ proof(rule "raa-cor:2")
     by (metis "raa-cor:3")
 qed
 
-AOT_theorem "no-pred-0:2": \<open>\<not>\<exists>x [\<P>\<^sup>*]x 0\<close>
+AOT_theorem "no-pred-0:2": \<open>\<not>\<exists>x [\<bbbP>\<^sup>*]x 0\<close>
 proof(rule "raa-cor:2")
-  AOT_assume \<open>\<exists>x [\<P>\<^sup>*]x 0\<close>
-  then AOT_obtain a where \<open>[\<P>\<^sup>*]a 0\<close>
+  AOT_assume \<open>\<exists>x [\<bbbP>\<^sup>*]x 0\<close>
+  then AOT_obtain a where \<open>[\<bbbP>\<^sup>*]a 0\<close>
     using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<exists>z [\<P>]z 0\<close>
+  AOT_hence \<open>\<exists>z [\<bbbP>]z 0\<close>
     using "anc-her:5"[unvarify R y, OF "zero:2",
                       OF "pred-thm:2", THEN "\<rightarrow>E"] by auto
-  AOT_thus \<open>\<exists>z [\<P>]z 0 & \<not>\<exists>z [\<P>]z 0\<close>
+  AOT_thus \<open>\<exists>z [\<bbbP>]z 0 & \<not>\<exists>z [\<bbbP>]z 0\<close>
     by (metis "no-pred-0:1" "raa-cor:3")
 qed
 
-AOT_theorem "no-pred-0:3": \<open>\<not>[\<P>\<^sup>*]0 0\<close>
+AOT_theorem "no-pred-0:3": \<open>\<not>[\<bbbP>\<^sup>*]0 0\<close>
   by (metis "existential:1" "no-pred-0:2" "reductio-aa:1" "zero:2")
 
-AOT_theorem "assume1:1": \<open>(=\<^sub>\<P>) = [\<lambda>xy \<exists>z ([\<P>]xz & [\<P>]yz)]\<close>
+AOT_theorem "assume1:1": \<open>(=\<^sub>\<bbbP>) = [\<lambda>xy \<exists>z ([\<bbbP>]xz & [\<bbbP>]yz)]\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "id-d-R"])
    apply "cqt:2[lambda]"
   apply (rule "=I"(1))
   by "cqt:2[lambda]"
 
-AOT_theorem "assume1:2": \<open>x =\<^sub>\<P> y \<equiv> \<exists>z ([\<P>]xz & [\<P>]yz)\<close>
+AOT_theorem "assume1:2": \<open>x =\<^sub>\<bbbP> y \<equiv> \<exists>z ([\<bbbP>]xz & [\<bbbP>]yz)\<close>
 proof (rule "rule=E"[rotated, OF "assume1:1"[symmetric]])
   AOT_have prod_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<guillemotleft>(AOT_term_of_var x\<^sub>1,AOT_term_of_var x\<^sub>2)\<guillemotright>\<down>\<close>
     for x\<^sub>1 x\<^sub>2 :: \<open>\<kappa> AOT_var\<close>
     by (simp add: "&I" "ex:1:a" prod_denotesI "rule-ui:3")
-  AOT_have 1: \<open>[\<lambda>xy \<exists>z ([\<P>]xz & [\<P>]yz)]\<down>\<close>
+  AOT_have 1: \<open>[\<lambda>xy \<exists>z ([\<bbbP>]xz & [\<bbbP>]yz)]\<down>\<close>
     by "cqt:2"
-  AOT_show \<open>[\<lambda>xy \<exists>z ([\<P>]xz & [\<P>]yz)]xy \<equiv> \<exists>z ([\<P>]xz & [\<P>]yz)\<close>
+  AOT_show \<open>[\<lambda>xy \<exists>z ([\<bbbP>]xz & [\<bbbP>]yz)]xy \<equiv> \<exists>z ([\<bbbP>]xz & [\<bbbP>]yz)\<close>
     using "beta-C-meta"[THEN "\<rightarrow>E", OF 1, unvarify \<nu>\<^sub>1\<nu>\<^sub>n,
                         OF prod_den, simplified] by blast
 qed
 
-AOT_theorem "assume1:3": \<open>[\<P>]\<^sup>+ = [\<lambda>xy [\<P>]\<^sup>*xy \<or> x =\<^sub>\<P> y]\<close>
+AOT_theorem "assume1:3": \<open>[\<bbbP>]\<^sup>+ = [\<lambda>xy [\<bbbP>]\<^sup>*xy \<or> x =\<^sub>\<bbbP> y]\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "w-ances-df"])
    apply (simp add: "w-ances-df[den1]")
   apply (rule "rule=E"[rotated, OF "assume1:1"[symmetric]])
@@ -4558,12 +4558,12 @@ AOT_theorem "assume1:3": \<open>[\<P>]\<^sup>+ = [\<lambda>xy [\<P>]\<^sup>*xy \
   apply (rule "=I"(1))
   by "cqt:2[lambda]"
 
-AOT_theorem "assume1:4": \<open>[\<P>]\<^sup>+\<down>\<close>
+AOT_theorem "assume1:4": \<open>[\<bbbP>]\<^sup>+\<down>\<close>
   using "w-ances-df[den2]".
 
-AOT_theorem "assume1:5": \<open>[\<P>]\<^sup>+xy \<equiv> [\<P>]\<^sup>*xy \<or> x =\<^sub>\<P> y\<close>
+AOT_theorem "assume1:5": \<open>[\<bbbP>]\<^sup>+xy \<equiv> [\<bbbP>]\<^sup>*xy \<or> x =\<^sub>\<bbbP> y\<close>
 proof -
-  AOT_have 0: \<open>[\<lambda>xy [\<P>]\<^sup>*xy \<or> x =\<^sub>\<P> y]\<down>\<close> by "cqt:2"
+  AOT_have 0: \<open>[\<lambda>xy [\<bbbP>]\<^sup>*xy \<or> x =\<^sub>\<bbbP> y]\<down>\<close> by "cqt:2"
   AOT_have prod_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<guillemotleft>(AOT_term_of_var x\<^sub>1, AOT_term_of_var x\<^sub>2)\<guillemotright>\<down>\<close>
     for x\<^sub>1 x\<^sub>2 :: \<open>\<kappa> AOT_var\<close>
     by (simp add: "&I" "ex:1:a" prod_denotesI "rule-ui:3")
@@ -4574,12 +4574,12 @@ proof -
 qed
 
 AOT_define NaturalNumber :: \<open>\<tau>\<close> (\<open>\<nat>\<close>)
-  "nnumber:1": \<open>\<nat> =\<^sub>d\<^sub>f [\<lambda>x [\<P>]\<^sup>+0x]\<close>
+  "nnumber:1": \<open>\<nat> =\<^sub>d\<^sub>f [\<lambda>x [\<bbbP>]\<^sup>+0x]\<close>
 
 AOT_theorem "nnumber:2": \<open>\<nat>\<down>\<close>
   by (rule "=\<^sub>d\<^sub>fI"(2)[OF "nnumber:1"]; "cqt:2[lambda]")
 
-AOT_theorem "nnumber:3": \<open>[\<nat>]x \<equiv> [\<P>]\<^sup>+0x\<close>
+AOT_theorem "nnumber:3": \<open>[\<nat>]x \<equiv> [\<bbbP>]\<^sup>+0x\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "nnumber:1"])
    apply "cqt:2[lambda]"
   apply (rule "beta-C-meta"[THEN "\<rightarrow>E"])
@@ -4593,7 +4593,7 @@ proof (safe intro!: "nnumber:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
   AOT_have den: \<open>[\<lambda>x O!x & x =\<^sub>E u]\<down>\<close> by "cqt:2[lambda]"
   AOT_obtain a where a_prop: \<open>Numbers(a, [\<lambda>x O!x & x =\<^sub>E u])\<close>
     using "num:1"[unvarify G, OF den] "\<exists>E"[rotated] by blast
-  AOT_have \<open>[\<P>]0a\<close>
+  AOT_have \<open>[\<bbbP>]0a\<close>
   proof (safe intro!: "pred-thm:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
                       "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x O!x & x =\<^sub>E u]\<guillemotright>\<close>]
                       "Ordinary.\<exists>I"[where \<beta>=u] "&I" den
@@ -4624,7 +4624,7 @@ proof (safe intro!: "nnumber:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
         by (metis "raa-cor:1")
     qed
   qed
-  AOT_thus \<open>\<exists>z ([\<P>]0z & [\<P>]0z)\<close>
+  AOT_thus \<open>\<exists>z ([\<bbbP>]0z & [\<bbbP>]0z)\<close>
     by (safe intro!: "&I" "\<exists>I"(2)[where \<beta>=a])
 qed
 
@@ -4633,30 +4633,30 @@ proof(rule "\<rightarrow>I")
   AOT_have nec0N: \<open>[\<lambda>x \<box>[\<nat>]x]0\<close>
     by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" simp: "zero:2" RN "0-n")
   AOT_have 1: \<open>[\<lambda>x \<box>[\<nat>]x]0 &
-    \<forall>x\<forall>y ([[\<P>]\<^sup>+]0x & [[\<P>]\<^sup>+]0y \<rightarrow> ([\<P>]xy \<rightarrow> ([\<lambda>x \<box>[\<nat>]x]x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]y))) \<rightarrow>
-    \<forall>x ([[\<P>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
+    \<forall>x\<forall>y ([[\<bbbP>]\<^sup>+]0x & [[\<bbbP>]\<^sup>+]0y \<rightarrow> ([\<bbbP>]xy \<rightarrow> ([\<lambda>x \<box>[\<nat>]x]x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]y))) \<rightarrow>
+    \<forall>x ([[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
     by (auto intro!: "cqt:2"
               intro: "pre-ind"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2",
                                THEN "\<rightarrow>E", OF "pred-1-1:4", unvarify z, OF "zero:2",
                                unvarify F])
-  AOT_have \<open>\<forall>x ([[\<P>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
+  AOT_have \<open>\<forall>x ([[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
   proof (rule 1[THEN "\<rightarrow>E"]; safe intro!: "&I" GEN "\<rightarrow>I" nec0N;
          frule "&E"(1); drule "&E"(2))
     fix x y
-    AOT_assume \<open>[\<P>]xy\<close>
-    AOT_hence 0: \<open>\<box>[\<P>]xy\<close>
+    AOT_assume \<open>[\<bbbP>]xy\<close>
+    AOT_hence 0: \<open>\<box>[\<bbbP>]xy\<close>
       by (metis "pred-1-1:1" "\<rightarrow>E")
     AOT_assume \<open>[\<lambda>x \<box>[\<nat>]x]x\<close>
     AOT_hence \<open>\<box>[\<nat>]x\<close>
       by (rule "\<beta>\<rightarrow>C"(1))
-    AOT_hence \<open>\<box>([\<P>]xy & [\<nat>]x)\<close>
+    AOT_hence \<open>\<box>([\<bbbP>]xy & [\<nat>]x)\<close>
       by (metis "0" "KBasic:3" Adjunction "\<equiv>E"(2) "\<rightarrow>E")
-    moreover AOT_have \<open>\<box>([\<P>]xy & [\<nat>]x) \<rightarrow> \<box>[\<nat>]y\<close>
+    moreover AOT_have \<open>\<box>([\<bbbP>]xy & [\<nat>]x) \<rightarrow> \<box>[\<nat>]y\<close>
     proof (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
       AOT_modally_strict {
-        AOT_assume 0: \<open>[\<P>]xy\<close>
+        AOT_assume 0: \<open>[\<bbbP>]xy\<close>
         AOT_assume \<open>[\<nat>]x\<close>
-        AOT_hence 1: \<open>[[\<P>]\<^sup>+]0x\<close>
+        AOT_hence 1: \<open>[[\<bbbP>]\<^sup>+]0x\<close>
           by (metis "\<equiv>E"(1) "nnumber:3")
         AOT_show \<open>[\<nat>]y\<close>
           apply (rule "nnumber:3"[THEN "\<equiv>E"(2)])
@@ -4675,10 +4675,10 @@ proof(rule "\<rightarrow>I")
     AOT_thus \<open>[\<lambda>x \<box>[\<nat>]x]y\<close>
       by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2")
   qed
-  AOT_hence 0: \<open>[[\<P>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x\<close>
+  AOT_hence 0: \<open>[[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x\<close>
     using "\<forall>E"(2) by blast
   AOT_assume \<open>[\<nat>]x\<close>
-  AOT_hence \<open>[[\<P>]\<^sup>+]0x\<close>
+  AOT_hence \<open>[[\<bbbP>]\<^sup>+]0x\<close>
     by (metis "\<equiv>E"(1) "nnumber:3")
   AOT_hence \<open>[\<lambda>x \<box>[\<nat>]x]x\<close>
     using 0[THEN "\<rightarrow>E"] by blast
@@ -4711,22 +4711,22 @@ qed
 AOT_register_variable_names
   Number: m n k i j
 
-AOT_theorem "0-pred": \<open>\<not>\<exists>n [\<P>]n 0\<close>
+AOT_theorem "0-pred": \<open>\<not>\<exists>n [\<bbbP>]n 0\<close>
 proof (rule "raa-cor:2")
-  AOT_assume \<open>\<exists>n [\<P>]n 0\<close>
-  then AOT_obtain n where \<open>[\<P>]n 0\<close>
+  AOT_assume \<open>\<exists>n [\<bbbP>]n 0\<close>
+  then AOT_obtain n where \<open>[\<bbbP>]n 0\<close>
     using "Number.\<exists>E"[rotated] by meson
-  AOT_hence \<open>\<exists>x [\<P>]x 0\<close>
+  AOT_hence \<open>\<exists>x [\<bbbP>]x 0\<close>
     using "&E" "\<exists>I" by fast
-  AOT_thus \<open>\<exists>x [\<P>]x 0 & \<not>\<exists>x [\<P>]x 0\<close>
+  AOT_thus \<open>\<exists>x [\<bbbP>]x 0 & \<not>\<exists>x [\<bbbP>]x 0\<close>
     using "no-pred-0:1" "&I" by auto
 qed
 
 AOT_theorem "no-same-succ":
-  \<open>\<forall>n\<forall>m\<forall>k([\<P>]nk & [\<P>]mk \<rightarrow> n = m)\<close>
+  \<open>\<forall>n\<forall>m\<forall>k([\<bbbP>]nk & [\<bbbP>]mk \<rightarrow> n = m)\<close>
 proof(safe intro!: Number.GEN "\<rightarrow>I")
   fix n m k
-  AOT_assume \<open>[\<P>]nk & [\<P>]mk\<close>
+  AOT_assume \<open>[\<bbbP>]nk & [\<bbbP>]mk\<close>
   AOT_thus \<open>n = m\<close>
     by (safe intro!: "cqt:2[const_var]"[axiom_inst] "df-1-1:3"[
           unvarify R, OF "pred-thm:2",
@@ -4736,24 +4736,24 @@ proof(safe intro!: Number.GEN "\<rightarrow>I")
 qed
 
 AOT_theorem induction:
-  \<open>\<forall>F([F]0 & \<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m)) \<rightarrow> \<forall>n[F]n)\<close>
+  \<open>\<forall>F([F]0 & \<forall>n\<forall>m([\<bbbP>]nm \<rightarrow> ([F]n \<rightarrow> [F]m)) \<rightarrow> \<forall>n[F]n)\<close>
 proof (safe intro!: GEN[where 'a=\<open><\<kappa>>\<close>] Number.GEN "&I" "\<rightarrow>I";
        frule "&E"(1); drule "&E"(2))
   fix F n
   AOT_assume F0: \<open>[F]0\<close>
-  AOT_assume 0: \<open>\<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
+  AOT_assume 0: \<open>\<forall>n\<forall>m([\<bbbP>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
   {
     fix x y
-    AOT_assume \<open>[[\<P>]\<^sup>+]0x & [[\<P>]\<^sup>+]0y\<close>
+    AOT_assume \<open>[[\<bbbP>]\<^sup>+]0x & [[\<bbbP>]\<^sup>+]0y\<close>
     AOT_hence \<open>[\<nat>]x\<close> and \<open>[\<nat>]y\<close>
       using "&E" "\<equiv>E"(2) "nnumber:3" by blast+
-    moreover AOT_assume \<open>[\<P>]xy\<close>
+    moreover AOT_assume \<open>[\<bbbP>]xy\<close>
     moreover AOT_assume \<open>[F]x\<close>
     ultimately AOT_have \<open>[F]y\<close>
       using 0[THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<rightarrow>E",
               THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by blast
   } note 1 = this
-  AOT_have 0: \<open>[[\<P>]\<^sup>+]0n\<close>
+  AOT_have 0: \<open>[[\<bbbP>]\<^sup>+]0n\<close>
     by (metis "\<equiv>E"(1) "nnumber:3" Number.\<psi>)
   AOT_show \<open>[F]n\<close>
     apply (rule "pre-ind"[unconstrain \<R>, unvarify \<beta>, THEN "\<rightarrow>E", OF "pred-thm:2",
@@ -4763,54 +4763,54 @@ proof (safe intro!: GEN[where 'a=\<open><\<kappa>>\<close>] Number.GEN "&I" "\<r
     using 1 by blast
 qed
 
-AOT_theorem "suc-num:1": \<open>[\<P>]nx \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "suc-num:1": \<open>[\<bbbP>]nx \<rightarrow> [\<nat>]x\<close>
 proof(rule "\<rightarrow>I")
-  AOT_have \<open>[[\<P>]\<^sup>+]0 n\<close>
+  AOT_have \<open>[[\<bbbP>]\<^sup>+]0 n\<close>
     by (meson Number.\<psi> "\<equiv>E"(1) "nnumber:3")
-  moreover AOT_assume \<open>[\<P>]nx\<close>
-  ultimately AOT_have \<open>[[\<P>]\<^sup>*]0 x\<close>
+  moreover AOT_assume \<open>[\<bbbP>]nx\<close>
+  ultimately AOT_have \<open>[[\<bbbP>]\<^sup>*]0 x\<close>
     using "w-ances-her:3"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2", THEN "\<rightarrow>E",
                           OF "pred-1-1:4", unvarify x, OF "zero:2",
                           THEN "\<rightarrow>E", OF "&I"]
     by blast
-  AOT_hence \<open>[[\<P>]\<^sup>+]0 x\<close> 
+  AOT_hence \<open>[[\<bbbP>]\<^sup>+]0 x\<close> 
     using "assume1:5"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2), OF "\<or>I"(1)]
     by blast
   AOT_thus \<open>[\<nat>]x\<close>
     by (metis "\<equiv>E"(2) "nnumber:3")
 qed
 
-AOT_theorem "suc-num:2": \<open>[[\<P>]\<^sup>*]nx \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "suc-num:2": \<open>[[\<bbbP>]\<^sup>*]nx \<rightarrow> [\<nat>]x\<close>
 proof(rule "\<rightarrow>I")
-  AOT_have \<open>[[\<P>]\<^sup>+]0 n\<close>
+  AOT_have \<open>[[\<bbbP>]\<^sup>+]0 n\<close>
     using Number.\<psi> "\<equiv>E"(1) "nnumber:3" by blast
-  AOT_assume \<open>[[\<P>]\<^sup>*]n x\<close>
-  AOT_hence \<open>\<forall>F (\<forall>z ([\<P>]nz \<rightarrow> [F]z) & \<forall>x'\<forall>y' ([\<P>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y')) \<rightarrow> [F]x)\<close>
+  AOT_assume \<open>[[\<bbbP>]\<^sup>*]n x\<close>
+  AOT_hence \<open>\<forall>F (\<forall>z ([\<bbbP>]nz \<rightarrow> [F]z) & \<forall>x'\<forall>y' ([\<bbbP>]x'y' \<rightarrow> ([F]x' \<rightarrow> [F]y')) \<rightarrow> [F]x)\<close>
     using "assume-anc:3"[THEN "\<equiv>E"(1)] by blast
-  AOT_hence \<theta>: \<open>\<forall>z ([\<P>]nz \<rightarrow> [\<nat>]z) & \<forall>x'\<forall>y' ([\<P>]x'y' \<rightarrow> ([\<nat>]x' \<rightarrow> [\<nat>]y')) \<rightarrow> [\<nat>]x\<close>
+  AOT_hence \<theta>: \<open>\<forall>z ([\<bbbP>]nz \<rightarrow> [\<nat>]z) & \<forall>x'\<forall>y' ([\<bbbP>]x'y' \<rightarrow> ([\<nat>]x' \<rightarrow> [\<nat>]y')) \<rightarrow> [\<nat>]x\<close>
     using "\<forall>E"(1) "nnumber:2" by blast
   AOT_show \<open>[\<nat>]x\<close>
   proof (safe intro!: \<theta>[THEN "\<rightarrow>E"] GEN "\<rightarrow>I" "&I")
-    AOT_show \<open>[\<nat>]z\<close> if \<open>[\<P>]nz\<close> for z
+    AOT_show \<open>[\<nat>]z\<close> if \<open>[\<bbbP>]nz\<close> for z
       using Number.\<psi> "suc-num:1" that "\<rightarrow>E" by blast
   next
-    AOT_show \<open>[\<nat>]y\<close> if \<open>[\<P>]xy\<close> and \<open>[\<nat>]x\<close> for x y
+    AOT_show \<open>[\<nat>]y\<close> if \<open>[\<bbbP>]xy\<close> and \<open>[\<nat>]x\<close> for x y
       using "suc-num:1"[unconstrain n, THEN "\<rightarrow>E"] that "\<rightarrow>E" by blast
   qed
 qed
 
-AOT_theorem "suc-num:3": \<open>[\<P>]\<^sup>+nx \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "suc-num:3": \<open>[\<bbbP>]\<^sup>+nx \<rightarrow> [\<nat>]x\<close>
 proof (rule "\<rightarrow>I")
-  AOT_assume \<open>[\<P>]\<^sup>+nx\<close>
-  AOT_hence \<open>[\<P>]\<^sup>*nx \<or> n =\<^sub>\<P> x\<close>
+  AOT_assume \<open>[\<bbbP>]\<^sup>+nx\<close>
+  AOT_hence \<open>[\<bbbP>]\<^sup>*nx \<or> n =\<^sub>\<bbbP> x\<close>
     by (metis "assume1:5" "\<equiv>E"(1))
   moreover {
-    AOT_assume \<open>[\<P>]\<^sup>*nx\<close>
+    AOT_assume \<open>[\<bbbP>]\<^sup>*nx\<close>
     AOT_hence \<open>[\<nat>]x\<close>
       by (metis "suc-num:2" "\<rightarrow>E")
   }
   moreover {
-    AOT_assume \<open>n =\<^sub>\<P> x\<close>
+    AOT_assume \<open>n =\<^sub>\<bbbP> x\<close>
     AOT_hence \<open>n = x\<close>
       using "id-R-thm:3"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2",
                          THEN "\<rightarrow>E", OF "pred-1-1:4", THEN "\<rightarrow>E"] by blast
@@ -4821,36 +4821,36 @@ proof (rule "\<rightarrow>I")
     by (metis "\<or>E"(3) "reductio-aa:1")
 qed
 
-AOT_theorem "pred-num": \<open>[\<P>]xn \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "pred-num": \<open>[\<bbbP>]xn \<rightarrow> [\<nat>]x\<close>
 proof (rule "\<rightarrow>I")
-  AOT_assume 0: \<open>[\<P>]xn\<close>
-  AOT_have \<open>[[\<P>]\<^sup>+]0 n\<close>
+  AOT_assume 0: \<open>[\<bbbP>]xn\<close>
+  AOT_have \<open>[[\<bbbP>]\<^sup>+]0 n\<close>
     using Number.\<psi> "\<equiv>E"(1) "nnumber:3" by blast
-  AOT_hence \<open>[[\<P>]\<^sup>*]0 n \<or> 0 =\<^sub>\<P> n\<close>
+  AOT_hence \<open>[[\<bbbP>]\<^sup>*]0 n \<or> 0 =\<^sub>\<bbbP> n\<close>
     using "assume1:5"[unvarify x, OF "zero:2"] by (metis "\<equiv>E"(1))
   moreover {
-    AOT_assume \<open>0 =\<^sub>\<P> n\<close>
-    AOT_hence \<open>\<exists>z ([\<P>]0z & [\<P>]nz)\<close>
+    AOT_assume \<open>0 =\<^sub>\<bbbP> n\<close>
+    AOT_hence \<open>\<exists>z ([\<bbbP>]0z & [\<bbbP>]nz)\<close>
       using "assume1:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)] by blast
-    then AOT_obtain a where \<open>[\<P>]0a & [\<P>]na\<close> using "\<exists>E"[rotated] by blast
+    then AOT_obtain a where \<open>[\<bbbP>]0a & [\<bbbP>]na\<close> using "\<exists>E"[rotated] by blast
     AOT_hence \<open>0 = n\<close>
       using "pred-1-1:3"[THEN "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2),
                          THEN "\<forall>E"(1), OF "zero:2", THEN "\<forall>E"(2),
                          THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
-    AOT_hence \<open>[\<P>]x 0\<close>
+    AOT_hence \<open>[\<bbbP>]x 0\<close>
       using 0 "rule=E" id_sym by fast
-    AOT_hence \<open>\<exists>x [\<P>]x 0\<close>
+    AOT_hence \<open>\<exists>x [\<bbbP>]x 0\<close>
       by (rule "\<exists>I")
-    AOT_hence \<open>\<exists>x [\<P>]x 0 & \<not>\<exists>x [\<P>]x 0\<close>
+    AOT_hence \<open>\<exists>x [\<bbbP>]x 0 & \<not>\<exists>x [\<bbbP>]x 0\<close>
       by (metis "no-pred-0:1" "raa-cor:3")
   }
-  ultimately AOT_have \<open>[[\<P>]\<^sup>*]0n\<close>
+  ultimately AOT_have \<open>[[\<bbbP>]\<^sup>*]0n\<close>
     by (metis "\<or>E"(3) "raa-cor:1")
-  AOT_hence \<open>\<exists>z ([[\<P>]\<^sup>+]0z & [\<P>]zn)\<close>
+  AOT_hence \<open>\<exists>z ([[\<bbbP>]\<^sup>+]0z & [\<bbbP>]zn)\<close>
     using "w-ances-her:7"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2",
                           THEN "\<rightarrow>E", OF "pred-1-1:4", unvarify x,
                           OF "zero:2", THEN "\<rightarrow>E"] by blast
-  then AOT_obtain b where b_prop: \<open>[[\<P>]\<^sup>+]0b & [\<P>]bn\<close>
+  then AOT_obtain b where b_prop: \<open>[[\<bbbP>]\<^sup>+]0b & [\<bbbP>]bn\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>[\<nat>]b\<close>
     by (metis "&E"(1) "\<equiv>E"(2) "nnumber:3")
@@ -4865,13 +4865,13 @@ qed
 AOT_theorem "nat-card": \<open>[\<nat>]x \<rightarrow> NaturalCardinal(x)\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>[\<nat>]x\<close>
-  AOT_hence \<open>[[\<P>]\<^sup>+]0x\<close>
+  AOT_hence \<open>[[\<bbbP>]\<^sup>+]0x\<close>
     by (metis "\<equiv>E"(1) "nnumber:3")
-  AOT_hence \<open>[[\<P>]\<^sup>*]0x \<or> 0 =\<^sub>\<P> x\<close>
+  AOT_hence \<open>[[\<bbbP>]\<^sup>*]0x \<or> 0 =\<^sub>\<bbbP> x\<close>
     using "assume1:5"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)] by blast
   moreover {
-    AOT_assume \<open>[[\<P>]\<^sup>*]0x\<close>
-    then AOT_obtain a where \<open>[\<P>]ax\<close>
+    AOT_assume \<open>[[\<bbbP>]\<^sup>*]0x\<close>
+    then AOT_obtain a where \<open>[\<bbbP>]ax\<close>
       using "anc-her:5"[unvarify R x, OF "zero:2", OF "pred-thm:2", THEN "\<rightarrow>E"]
             "\<exists>E"[rotated] by blast
     AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(x,F) & Numbers(a,[F]\<^sup>-\<^sup>u))\<close>
@@ -4884,7 +4884,7 @@ proof(rule "\<rightarrow>I")
       using "eq-num:6"[THEN "\<rightarrow>E"] "&E" by blast
   }
   moreover {
-    AOT_assume \<open>0 =\<^sub>\<P> x\<close>
+    AOT_assume \<open>0 =\<^sub>\<bbbP> x\<close>
     AOT_hence \<open>0 = x\<close>
       using "id-R-thm:3"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2",
                          THEN "\<rightarrow>E", OF "pred-1-1:4", unvarify x,
@@ -4896,9 +4896,9 @@ proof(rule "\<rightarrow>I")
     by (metis "\<or>E"(2) "raa-cor:1")
 qed
 
-AOT_theorem "pred-func:1": \<open>[\<P>]xy & [\<P>]xz \<rightarrow> y = z\<close>
+AOT_theorem "pred-func:1": \<open>[\<bbbP>]xy & [\<bbbP>]xz \<rightarrow> y = z\<close>
 proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
-  AOT_assume \<open>[\<P>]xy\<close>
+  AOT_assume \<open>[\<bbbP>]xy\<close>
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
   then AOT_obtain F where \<open>\<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
@@ -4907,7 +4907,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
             Oa: \<open>O!a\<close>
     and a_prop: \<open>[F]a & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>a)\<close>
     using "\<exists>E"[rotated] "&E" by blast
-  AOT_assume \<open>[\<P>]xz\<close>
+  AOT_assume \<open>[\<bbbP>]xz\<close>
   AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(z,F) & Numbers(x,[F]\<^sup>-\<^sup>u))\<close>
     using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
   then AOT_obtain G where \<open>\<exists>u ([G]u & Numbers(z,G) & Numbers(x,[G]\<^sup>-\<^sup>u))\<close>
@@ -4931,7 +4931,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     by blast
 qed
 
-AOT_theorem "pred-func:2": \<open>[\<P>]nm & [\<P>]nk \<rightarrow> m = k\<close>
+AOT_theorem "pred-func:2": \<open>[\<bbbP>]nm & [\<bbbP>]nk \<rightarrow> m = k\<close>
   using "pred-func:1".
 
 AOT_theorem being_number_of_den: \<open>[\<lambda>x x = #G]\<down>\<close>
@@ -5026,7 +5026,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
     qed
   next
     fix n m
-    AOT_assume \<open>[\<P>]nm\<close>
+    AOT_assume \<open>[\<bbbP>]nm\<close>
     AOT_hence \<open>\<exists>F\<exists>u ([F]u & Numbers(m,F) & Numbers(n,[F]\<^sup>-\<^sup>u))\<close>
       using "pred-thm:3"[THEN "\<equiv>E"(1)] by blast
     then AOT_obtain G where \<open>\<exists>u ([G]u & Numbers(m,G) & Numbers(n,[G]\<^sup>-\<^sup>u))\<close>
@@ -5246,7 +5246,7 @@ proof(safe intro!: "\<rightarrow>I" Ordinary.GEN)
     by (metis "id-nec4:2" "\<equiv>E"(1)) 
 qed
 
-AOT_theorem "th-succ": \<open>\<forall>n\<exists>!m [\<P>]nm\<close>
+AOT_theorem "th-succ": \<open>\<forall>n\<exists>!m [\<bbbP>]nm\<close>
 proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   fix n
   AOT_have \<open>NaturalCardinal(n)\<close>
@@ -5273,7 +5273,7 @@ proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^s
     by "cqt:2"
   AOT_obtain b where b_prop: \<open>Numbers(b, [\<lambda>x \<^bold>\<A>[G]x \<or> x =\<^sub>E y])\<close>
     using "num:1"[unvarify G, OF 1] "\<exists>E"[rotated] by blast
-  AOT_have Pnb: \<open>[\<P>]nb\<close>
+  AOT_have Pnb: \<open>[\<bbbP>]nb\<close>
   proof(safe intro!: "pred-thm:3"[THEN "\<equiv>E"(2)]
                      "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x \<^bold>\<A>[G]x \<or> x =\<^sub>E y]\<guillemotright>\<close>]
                      1 "\<exists>I"(2)[where \<beta>=y] "&I" Oy b_prop)
@@ -5319,12 +5319,12 @@ proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^s
                        THEN "\<rightarrow>E", OF equinum, THEN "\<equiv>E"(2),
                        OF "eq-num:2"[THEN "\<equiv>E"(2), OF n_num_G]].
   qed
-  AOT_show \<open>\<exists>\<alpha> ([\<nat>]\<alpha> & [\<P>]n\<alpha> & \<forall>\<beta> ([\<nat>]\<beta> & [\<P>]n\<beta> \<rightarrow> \<beta> = \<alpha>))\<close>
+  AOT_show \<open>\<exists>\<alpha> ([\<nat>]\<alpha> & [\<bbbP>]n\<alpha> & \<forall>\<beta> ([\<nat>]\<beta> & [\<bbbP>]n\<beta> \<rightarrow> \<beta> = \<alpha>))\<close>
   proof(safe intro!: "\<exists>I"(2)[where \<beta>=b] "&I" Pnb "\<rightarrow>I" GEN)
     AOT_show \<open>[\<nat>]b\<close> using "suc-num:1"[THEN "\<rightarrow>E", OF Pnb].
   next
     fix y
-    AOT_assume 0: \<open>[\<nat>]y & [\<P>]ny\<close>
+    AOT_assume 0: \<open>[\<nat>]y & [\<bbbP>]ny\<close>
     AOT_show \<open>y = b\<close>
       apply (rule "pred-func:1"[THEN "\<rightarrow>E"])
       using 0[THEN "&E"(2)] Pnb "&I" by blast
@@ -5333,10 +5333,10 @@ qed
 
 (* Note the use of a bold '. *)
 AOT_define Successor :: \<open>\<tau> \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>_\<^bold>''\<close> [100] 100)
-  "def-suc": \<open>n\<^bold>' =\<^sub>d\<^sub>f \<^bold>\<iota>m([\<P>]nm)\<close>
+  "def-suc": \<open>n\<^bold>' =\<^sub>d\<^sub>f \<^bold>\<iota>m([\<bbbP>]nm)\<close>
 
 text\<open>Note: not explicitly in PLM\<close>
-AOT_theorem "def-suc[den1]": \<open>\<^bold>\<iota>m([\<P>]nm)\<down>\<close>
+AOT_theorem "def-suc[den1]": \<open>\<^bold>\<iota>m([\<bbbP>]nm)\<down>\<close>
   using "A-Exists:2" "RA[2]" "\<equiv>E"(2) "th-succ"[THEN "Number.\<forall>E"] by blast
 text\<open>Note: not explicitly in PLM\<close>
 AOT_theorem "def-suc[den2]": shows \<open>n\<^bold>'\<down>\<close>
@@ -5344,7 +5344,7 @@ AOT_theorem "def-suc[den2]": shows \<open>n\<^bold>'\<down>\<close>
      (auto simp: "def-suc[den1]")
 
 (* TODO: not in PLM *)
-AOT_theorem suc_eq_desc: \<open>n\<^bold>' = \<^bold>\<iota>m([\<P>]nm)\<close>
+AOT_theorem suc_eq_desc: \<open>n\<^bold>' = \<^bold>\<iota>m([\<bbbP>]nm)\<close>
   by (rule "def-suc"[THEN "=\<^sub>d\<^sub>fI"(1)])
      (auto simp: "def-suc[den1]" "rule=I:1")
 
@@ -5358,18 +5358,18 @@ qed
 
 AOT_theorem "ind-gnd": \<open>m = 0 \<or> \<exists>n(m = n\<^bold>')\<close>
 proof -
-  AOT_have \<open>[[\<P>]\<^sup>+]0m\<close>
+  AOT_have \<open>[[\<bbbP>]\<^sup>+]0m\<close>
     using Number.\<psi> "\<equiv>E"(1) "nnumber:3" by blast
-  AOT_hence \<open>[[\<P>]\<^sup>*]0m \<or> 0 =\<^sub>\<P> m\<close>
+  AOT_hence \<open>[[\<bbbP>]\<^sup>*]0m \<or> 0 =\<^sub>\<bbbP> m\<close>
     using "assume1:5"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)] by blast
   moreover {
-    AOT_assume \<open>[[\<P>]\<^sup>*]0m\<close>
-    AOT_hence \<open>\<exists>z ([[\<P>]\<^sup>+]0z & [\<P>]zm)\<close>
+    AOT_assume \<open>[[\<bbbP>]\<^sup>*]0m\<close>
+    AOT_hence \<open>\<exists>z ([[\<bbbP>]\<^sup>+]0z & [\<bbbP>]zm)\<close>
       using "w-ances-her:7"[unconstrain \<R>, unvarify \<beta> x, OF "zero:2",
                             OF "pred-thm:2", THEN "\<rightarrow>E", OF "pred-1-1:4",
                             THEN "\<rightarrow>E"]
       by blast
-    then AOT_obtain z where \<theta>: \<open>[[\<P>]\<^sup>+]0z\<close> and \<xi>: \<open>[\<P>]zm\<close>
+    then AOT_obtain z where \<theta>: \<open>[[\<bbbP>]\<^sup>+]0z\<close> and \<xi>: \<open>[\<bbbP>]zm\<close>
       using "&E" "\<exists>E"[rotated] by blast
     AOT_have Nz: \<open>[\<nat>]z\<close>
       using \<theta> "\<equiv>E"(2) "nnumber:3" by blast
@@ -5381,14 +5381,14 @@ proof -
       AOT_show \<open>\<^bold>\<A>[\<nat>]m\<close> using Number.\<psi>
         by (meson "mod-col-num:1" "nec-imp-act" "\<rightarrow>E")
     next
-      AOT_show \<open>\<^bold>\<A>[\<P>]zm\<close> using \<xi>
+      AOT_show \<open>\<^bold>\<A>[\<bbbP>]zm\<close> using \<xi>
         by (meson "nec-imp-act" "pred-1-1:1" "\<rightarrow>E")
     next
       fix y
-      AOT_assume \<open>\<^bold>\<A>([\<nat>]y & [\<P>]zy)\<close>
-      AOT_hence \<open>\<^bold>\<A>[\<nat>]y\<close> and \<open>\<^bold>\<A>[\<P>]zy\<close>
+      AOT_assume \<open>\<^bold>\<A>([\<nat>]y & [\<bbbP>]zy)\<close>
+      AOT_hence \<open>\<^bold>\<A>[\<nat>]y\<close> and \<open>\<^bold>\<A>[\<bbbP>]zy\<close>
         using "Act-Basic:2" "&E" "\<equiv>E"(1) by blast+
-      AOT_hence 0: \<open>[\<P>]zy\<close>
+      AOT_hence 0: \<open>[\<bbbP>]zy\<close>
         by (metis RN "\<equiv>E"(1) "pred-1-1:1" "sc-eq-fur:2" "\<rightarrow>E")
       AOT_thus \<open>y = m\<close>
         using "pred-func:1"[THEN "\<rightarrow>E", OF "&I"] \<xi> by metis
@@ -5401,7 +5401,7 @@ proof -
       by (rule "\<or>I")
   }
   moreover {
-    AOT_assume \<open>0 =\<^sub>\<P> m\<close>
+    AOT_assume \<open>0 =\<^sub>\<bbbP> m\<close>
     AOT_hence \<open>0 = m\<close>
       using "id-R-thm:3"[unconstrain \<R>, unvarify \<beta> x, OF "zero:2", OF "pred-thm:2",
                          THEN "\<rightarrow>E", OF "pred-1-1:4", THEN "\<rightarrow>E"]
@@ -5412,20 +5412,20 @@ proof -
     by (metis "\<or>E"(2) "raa-cor:1")
 qed
 
-AOT_theorem "suc-thm": \<open>[\<P>]n n\<^bold>'\<close>
+AOT_theorem "suc-thm": \<open>[\<bbbP>]n n\<^bold>'\<close>
 proof -
   AOT_obtain x where m_is_n: \<open>x = n\<^bold>'\<close>
     using "free-thms:1"[THEN "\<equiv>E"(1), OF "def-suc[den2]"]
     using "\<exists>E" by metis
-  AOT_have \<open>\<^bold>\<A>([\<nat>]n\<^bold>' & [\<P>]n n\<^bold>')\<close>
+  AOT_have \<open>\<^bold>\<A>([\<nat>]n\<^bold>' & [\<bbbP>]n n\<^bold>')\<close>
     apply (rule "rule=E"[rotated, OF suc_eq_desc[symmetric]])
     apply (rule "actual-desc:4"[THEN "\<rightarrow>E"])
     by (simp add:  "def-suc[den1]")
-  AOT_hence \<open>\<^bold>\<A>[\<nat>]n\<^bold>'\<close> and \<open>\<^bold>\<A>[\<P>]n n\<^bold>'\<close>
+  AOT_hence \<open>\<^bold>\<A>[\<nat>]n\<^bold>'\<close> and \<open>\<^bold>\<A>[\<bbbP>]n n\<^bold>'\<close>
     using "Act-Basic:2" "\<equiv>E"(1) "&E" by blast+
-  AOT_hence \<open>\<^bold>\<A>[\<P>]nx\<close>
+  AOT_hence \<open>\<^bold>\<A>[\<bbbP>]nx\<close>
     using m_is_n[symmetric] "rule=E" by fast+
-  AOT_hence \<open>[\<P>]nx\<close>
+  AOT_hence \<open>[\<bbbP>]nx\<close>
     by (metis RN "\<equiv>E"(1) "pred-1-1:1" "sc-eq-fur:2" "\<rightarrow>E")
   thus ?thesis
     using m_is_n "rule=E" by fast
@@ -5434,7 +5434,7 @@ qed
 AOT_define Numeral1 :: \<open>\<kappa>\<^sub>s\<close> ("1")
   "numerals:1": \<open>1 =\<^sub>d\<^sub>f 0\<^bold>'\<close>
 
-AOT_theorem "prec-facts:1": \<open>[\<P>]0 1\<close>
+AOT_theorem "prec-facts:1": \<open>[\<bbbP>]0 1\<close>
   by (auto intro: "numerals:1"[THEN "rule-id-df:2:b[zero]",
                                OF "def-suc[den2]"[unconstrain n, unvarify \<beta>,
                                                   OF "zero:2", THEN "\<rightarrow>E", OF "0-n"]]
