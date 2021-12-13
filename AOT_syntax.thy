@@ -202,7 +202,7 @@ AOT_syntax_print_translations
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (_abs x \<phi>)"
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (\<lambda>x. \<phi>)"
   "_AOT_lambda0 \<phi>" <= "CONST AOT_lambda0 \<phi>"
-  "_AOT_concrete" <= "CONST AOT_concrete"
+  "_AOT_concrete" <= "CONST AOT_term_of_var (CONST AOT_concrete)"
 
 translations
   "_AOT_appl \<phi> (_AOT_args a b)" => "_AOT_appl (\<phi> a) b"

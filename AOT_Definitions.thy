@@ -30,7 +30,7 @@ begin
     by blast+
   have "conventions3[3]": \<open>\<guillemotleft>\<phi> \<or> \<psi> & \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) & \<chi>\<guillemotright>\<close>
                    and \<open>\<guillemotleft>\<phi> & \<psi> \<or> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<or> \<chi>\<guillemotright>\<close>
-     by blast+
+     by blast+ \<comment> \<open>Note that PLM instead generally uses parenthesis in these cases.\<close>
 end
 
 
