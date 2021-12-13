@@ -868,8 +868,7 @@ text\<open>
 While the definition of the predecessor relation is rather straightforward, the interesting question
 will be whether it actually denotes a relation, which we will discuss in detail in section~\ref{pred-denotes}. For the moment
 assume that the @{text \<open>\<lambda>\<close>}-expression in the definiens of the following definition
-denotes (see~\nameref{AOT:pred-thm:1}):\footnote{Note that PLM uses the symbol $\mathbb{P}$ for
-the predecessor relation instead.}
+denotes (see~\nameref{AOT:pred-thm:1}):
 
 \begin{quote}
 @{thm[display] "pred-thm:1"}
@@ -888,7 +887,7 @@ and @{term x} numbers being an @{term F} other than @{term u}  (via the definiti
 This is a variant of Frege's definition of the successor relation.@{footnote \<open>Nodelman and
 Zalta argue in favour of a predecessor relation due to the fact that in contrast to a successor relation,
 the argument order of the predecessor relation matches the numerical order of objects in the relation.
-Apart from that, the notions are interchangeable, i.e. @{text \<open>Succeeds(y,x)\<close>} is exactly @{term \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close>}.\<close>}
+Apart from that, the notions are interchangeable, i.e. @{text \<open>Succeeds(y,x)\<close>} is exactly @{term \<open>\<guillemotleft>[\<bbbP>]xy\<guillemotright>\<close>}.\<close>}
 The idea can be clarified by considering how the first natural numbers are related w.r.t. this relation:
 \<^item> The number Zero numbers properties that are not exemplified by any ordinary object. Hence there
   cannot be a property @{term F} that is exemplified by an object @{term u}, s.t. Zero numbers @{term F},
@@ -921,11 +920,11 @@ model contains one ordinary urelement (resp. one ordinary object) and one specia
 Since special urelements determine the exemplification extensions of abstract objects, there being
 only one special urelement implies that all abstract objects exemplify the same properties and relations.
 This implies in particular that either all objects are preceded by Zero (including Zero itself) or no object is, i.e.
-@{term \<open>\<guillemotleft>[\<P>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that Zero is
+@{term \<open>\<guillemotleft>[\<bbbP>]0 0\<guillemotright>\<close>} or @{term \<open>\<guillemotleft>\<not>\<exists>x [\<bbbP>]0 x\<guillemotright>\<close>}. However, we have already (informally) argued above that Zero is
 not preceded by any object.@{footnote \<open>Both @{thm "no-pred-0:1"[print_as_theorem]} and @{thm "prec-facts:1"[print_as_theorem]} are formally 
-derived in~\nameref{AOT:no-pred-0:1}, resp.~\nameref{AOT:prec-facts:1}.\<close>} Hence in this model it would have to hold that @{term \<open>\<guillemotleft>\<not>\<exists>x [\<P>]0 x\<guillemotright>\<close>}.
+derived in~\nameref{AOT:no-pred-0:1}, resp.~\nameref{AOT:prec-facts:1}.\<close>} Hence in this model it would have to hold that @{term \<open>\<guillemotleft>\<not>\<exists>x [\<bbbP>]0 x\<guillemotright>\<close>}.
 However, since the minimal model still contains one ordinary object, the number One can be constructed
-and (again as argued above) is preceded by Zero, i.e. @{term \<open>\<guillemotleft>[\<P>]0 1\<guillemotright>\<close>}, which yields a contradiction.
+and (again as argued above) is preceded by Zero, i.e. @{term \<open>\<guillemotleft>[\<bbbP>]0 1\<guillemotright>\<close>}, which yields a contradiction.
 
 Nodelman and Zalta assert that the predecessor relation denotes by axiom and emphasize that the relation
 is not inherently mathematical and no mathematical primitives are needed to assert, as an axiom, that
@@ -960,23 +959,23 @@ It can be derived that the predecessor relation is modally rigid: @{thm "pred-1-
 respectively @{thm "pred-1-1:1"[of _ x y,print_as_theorem]}.
 While the full proofs can be found in~\nameref{AOT:pred-1-1:1}, it is noteworthy that it again requires
 to argue with @{emph \<open>rigidifying\<close>} relations: by the theorem governing the predecessor relation given above,
-@{term \<open>\<guillemotleft>[\<P>]xy\<guillemotright>\<close>} implies that there exists a relation @{term F} and an ordinary object @{term u}, s.t.
+@{term \<open>\<guillemotleft>[\<bbbP>]xy\<guillemotright>\<close>} implies that there exists a relation @{term F} and an ordinary object @{term u}, s.t.
 @{term \<open>\<guillemotleft>[F]u & Numbers(y, F) & Numbers(x,[F]\<^sup>-\<^sup>u)\<guillemotright>\<close>}. However, none of the conjuncts are guaranteed to
 be necessary. But we may refer to the fact that for any relation @{term F} there exists a relation @{term G}
 that @{emph \<open>rigidifies\<close>} @{term F} and this relation @{term G} can serve as witness for the claim that
-@{term \<open>\<guillemotleft>\<box>[\<P>]xy\<guillemotright>\<close>}.
+@{term \<open>\<guillemotleft>\<box>[\<bbbP>]xy\<guillemotright>\<close>}.
 
 Furthermore, it is a consequence of a modally-strict variant of Hume's principle that the predecessor
 relation is one-to-one (see~\nameref{AOT:pred-1-1:3}): @{thm "pred-1-1:3"[print_as_theorem]}.
 
 Consequently, the Predecessor Relation is a rigid one-to-one relation and we can instantiate
-the definition of the @{emph \<open>strong\<close>} ancestral to @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>} (see~\nameref{AOT:assume-anc:1}):
+the definition of the @{emph \<open>strong\<close>} ancestral to @{term \<open>\<guillemotleft>\<bbbP>\<guillemotright>\<close>} (see~\nameref{AOT:assume-anc:1}):
 
 \begin{quote}
 @{thm[display] "assume-anc:1"[print_as_theorem]}
 \end{quote}
 
-Furthermore, being @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}-identical as well as the @{emph \<open>weak\<close>} ancestral of @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>} are also well-defined (see~\nameref{AOT:assume1:2}):
+Furthermore, being @{term \<open>\<guillemotleft>\<bbbP>\<guillemotright>\<close>}-identical as well as the @{emph \<open>weak\<close>} ancestral of @{term \<open>\<guillemotleft>\<bbbP>\<guillemotright>\<close>} are also well-defined (see~\nameref{AOT:assume1:2}):
 
 \begin{quote}
 @{thm[display] "assume1:2"[of _ x y, print_as_theorem] "assume1:3"[print_as_theorem]}
@@ -1017,18 +1016,18 @@ The first Dedekind-Peano postulate can now be derived (see~\nameref{AOT:0-n}):
 \end{quote}
 
 Interestingly, both in Frege's original work and in Zalta's initial reconstruction (see~\cite{zalta1999})
-the weak ancestral was defined using general identity and consequently @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} is a simple
+the weak ancestral was defined using general identity and consequently @{term \<open>\<guillemotleft>[\<bbbP>]\<^sup>+0 0\<guillemotright>\<close>} is a simple
 consequence of the fact that Zero is self-identical. However, due to the construction via rigid one-to-one relations
-this theorem requires a non-trivial proof: @{term \<open>\<guillemotleft>[\<P>]\<^sup>+0 0\<guillemotright>\<close>} by definition is just the case if either
-@{term \<open>\<guillemotleft>[\<P>]\<^sup>*0 0\<guillemotright>\<close>} (which was already refuted above) or @{term \<open>\<guillemotleft>0 =\<^sub>\<P> 0\<guillemotright>\<close>}.
+this theorem requires a non-trivial proof: @{term \<open>\<guillemotleft>[\<bbbP>]\<^sup>+0 0\<guillemotright>\<close>} by definition is just the case if either
+@{term \<open>\<guillemotleft>[\<bbbP>]\<^sup>*0 0\<guillemotright>\<close>} (which was already refuted above) or @{term \<open>\<guillemotleft>0 =\<^sub>\<bbbP> 0\<guillemotright>\<close>}.
 
-However, @{term \<open>\<guillemotleft>0 =\<^sub>\<P> 0\<guillemotright>\<close>} is not a simple consequence of the fact that @{term \<open>\<guillemotleft>0 = 0\<guillemotright>\<close>}, but additionally
-requires that @{term \<open>\<guillemotleft>InDomainOf(0,\<P>)\<guillemotright>\<close>}, respectively that @{term \<open>\<guillemotleft>\<exists>y [\<P>]0 y\<guillemotright>\<close>}, i.e. the proof
+However, @{term \<open>\<guillemotleft>0 =\<^sub>\<bbbP> 0\<guillemotright>\<close>} is not a simple consequence of the fact that @{term \<open>\<guillemotleft>0 = 0\<guillemotright>\<close>}, but additionally
+requires that @{term \<open>\<guillemotleft>InDomainOf(0,\<bbbP>)\<guillemotright>\<close>}, respectively that @{term \<open>\<guillemotleft>\<exists>y [\<bbbP>]0 y\<guillemotright>\<close>}, i.e. the proof
 effectively requires to construct the number One as witness.@{footnote \<open>The number One can for example
 be introduced as the number of any relation exemplified by exactly one ordinary object.
 Since it is a theorem (see~\nameref{AOT:o-objects-exist:1}) that there is an ordinary object @{thm "o-objects-exist:1"[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], print_as_theorem]},
 we can choose @{term a} to be a witness to this existential claim and choose @{term \<open>\<guillemotleft>#[\<lambda>x O!x & x =\<^sub>E a]\<guillemotright>\<close>} as a witness
-to @{term \<open>\<guillemotleft>\<exists>y [\<P>]0 y\<guillemotright>\<close>}..\<close>}
+to @{term \<open>\<guillemotleft>\<exists>y [\<bbbP>]0 y\<guillemotright>\<close>}..\<close>}
 
 Preliminary working versions of the chapter of PLM left this non-trivial proof
 as an exercise referring to it being a trivial consequence of the self-identity of the number Zero.
@@ -1044,7 +1043,7 @@ section\<open>Being a Natural Number is Rigid\<close>
 text\<open>
 
 From the generalized principle of induction when instantiating @{term F} to @{term \<open>\<guillemotleft>[\<lambda>x \<box>[\<nat>]x]\<guillemotright>\<close>}
-and @{term \<R>} to @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}, it follows that @{thm "mod-col-num:1"[of _ x, print_as_theorem]}
+and @{term \<R>} to @{term \<open>\<guillemotleft>\<bbbP>\<guillemotright>\<close>}, it follows that @{thm "mod-col-num:1"[of _ x, print_as_theorem]}
 and consequently that @{thm "mod-col-num:2"[print_as_theorem]} (see~\nameref{AOT:mod-col-num:1},~\nameref{AOT:mod-col-num:2}).
 
 Since furthermore Zero is a witness to the existence of natural numbers and it is easy to prove
@@ -1074,7 +1073,7 @@ section\<open>No Two Natural Numbers have the Same Successor\<close>
 
 text\<open>
 The third Dedekind-Peano postulate is a general property of any one-to-one relation, but can
-be stated explicitly using restricted variables for natural numbers (on which @{term \<open>\<guillemotleft>\<P>\<guillemotright>\<close>}-identity
+be stated explicitly using restricted variables for natural numbers (on which @{term \<open>\<guillemotleft>\<bbbP>\<guillemotright>\<close>}-identity
 matches general identity) as follows (see~\nameref{AOT:no-same-succ}):
 
 \begin{quote}
@@ -1121,55 +1120,55 @@ after stating a few more derived properties of the predecessor relation and natu
 section\<open>Properties of the Predecessor Relation and Natural Numbers\<close>
 
 (*<*)
-AOT_theorem "pred-num[ext1]": \<open>[\<P>]\<^sup>*xn \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "pred-num[ext1]": \<open>[\<bbbP>]\<^sup>*xn \<rightarrow> [\<nat>]x\<close>
 proof (rule "\<rightarrow>I")
-  AOT_have \<open>[\<lambda>y \<forall>x ([\<P>]\<^sup>*x y \<rightarrow> [\<nat>]x)]n\<close>
+  AOT_have \<open>[\<lambda>y \<forall>x ([\<bbbP>]\<^sup>*x y \<rightarrow> [\<nat>]x)]n\<close>
   proof (safe intro!: "pre-ind"[unconstrain \<R>, unvarify F z \<beta>, OF "pred-thm:2", OF "zero:2", THEN "\<rightarrow>E", THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
                       "pred-1-1:4" "Number.\<psi>"[THEN "nnumber:3"[THEN "\<equiv>E"(1)]]; safe intro!: "&I" "\<rightarrow>I" GEN "\<beta>\<leftarrow>C" "cqt:2" "zero:2")
     fix x
-    AOT_assume \<open>[\<P>\<^sup>*]x 0\<close>
+    AOT_assume \<open>[\<bbbP>\<^sup>*]x 0\<close>
     AOT_thus \<open>[\<nat>]x\<close> using "existential:2[const_var]" "no-pred-0:2" "raa-cor:4" by fast
   next
     fix \<alpha> y x
-    AOT_assume \<open>[\<P>]\<^sup>+0\<alpha> & [\<P>]\<^sup>+0y\<close>
+    AOT_assume \<open>[\<bbbP>]\<^sup>+0\<alpha> & [\<bbbP>]\<^sup>+0y\<close>
     AOT_hence N\<alpha>: \<open>[\<nat>]\<alpha>\<close> using "con-dis-i-e:2:a" "intro-elim:3:b" "nnumber:3" by blast
-    AOT_assume \<open>[\<lambda>y \<forall>x ([\<P>\<^sup>*]xy \<rightarrow> [\<nat>]x)]\<alpha>\<close>
-    AOT_hence \<open>\<forall>x ([\<P>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
-    AOT_hence 0: \<open>[\<P>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x\<close> using "\<forall>E"(2) by blast
-    AOT_assume \<open>[\<P>]\<alpha>y\<close>
-    moreover AOT_assume \<open>[\<P>\<^sup>*]xy\<close>
-    ultimately AOT_have \<open>[\<P>]\<^sup>+x \<alpha>\<close>
+    AOT_assume \<open>[\<lambda>y \<forall>x ([\<bbbP>\<^sup>*]xy \<rightarrow> [\<nat>]x)]\<alpha>\<close>
+    AOT_hence \<open>\<forall>x ([\<bbbP>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
+    AOT_hence 0: \<open>[\<bbbP>\<^sup>*]x\<alpha> \<rightarrow> [\<nat>]x\<close> using "\<forall>E"(2) by blast
+    AOT_assume \<open>[\<bbbP>]\<alpha>y\<close>
+    moreover AOT_assume \<open>[\<bbbP>\<^sup>*]xy\<close>
+    ultimately AOT_have \<open>[\<bbbP>]\<^sup>+x \<alpha>\<close>
       using "1-1-R:1"[unconstrain \<R>, unvarify \<beta>, THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4", THEN "\<rightarrow>E", OF "&I"] by blast
-    AOT_hence \<open>[\<P>]\<^sup>*x \<alpha> \<or> x =\<^sub>\<P> \<alpha>\<close>
+    AOT_hence \<open>[\<bbbP>]\<^sup>*x \<alpha> \<or> x =\<^sub>\<bbbP> \<alpha>\<close>
       by (metis "assume1:5" "intro-elim:3:a")
     moreover {
-      AOT_assume \<open>x =\<^sub>\<P> \<alpha>\<close>
-      AOT_hence \<open>\<exists>z ([\<P>]xz & [\<P>]\<alpha>z)\<close> using "assume1:2"[THEN "\<equiv>E"(1)] by blast
-      then AOT_obtain z where \<open>[\<P>]xz & [\<P>]\<alpha>z\<close> using "\<exists>E"[rotated] by blast
+      AOT_assume \<open>x =\<^sub>\<bbbP> \<alpha>\<close>
+      AOT_hence \<open>\<exists>z ([\<bbbP>]xz & [\<bbbP>]\<alpha>z)\<close> using "assume1:2"[THEN "\<equiv>E"(1)] by blast
+      then AOT_obtain z where \<open>[\<bbbP>]xz & [\<bbbP>]\<alpha>z\<close> using "\<exists>E"[rotated] by blast
       AOT_hence \<open>x = \<alpha>\<close>
         using "pred-1-1:3"[THEN "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)] "\<forall>E"(2) "\<rightarrow>E" by blast
       AOT_hence \<open>[\<nat>]x\<close> using N\<alpha> "rule=E" id_sym by blast
     }
     moreover {
-      AOT_assume \<open>[\<P>]\<^sup>*x \<alpha>\<close>
+      AOT_assume \<open>[\<bbbP>]\<^sup>*x \<alpha>\<close>
       AOT_hence \<open>[\<nat>]x\<close> using 0 "\<rightarrow>E" by blast
     }
     ultimately AOT_show \<open>[\<nat>]x\<close> by (metis "con-dis-i-e:4:c" "raa-cor:1")
   qed
-  AOT_hence \<open>\<forall>x ([\<P>]\<^sup>*x n \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
-  moreover AOT_assume \<open>[\<P>]\<^sup>*xn\<close>
+  AOT_hence \<open>\<forall>x ([\<bbbP>]\<^sup>*x n \<rightarrow> [\<nat>]x)\<close> using "\<beta>\<rightarrow>C" by blast
+  moreover AOT_assume \<open>[\<bbbP>]\<^sup>*xn\<close>
   ultimately AOT_show \<open>[\<nat>]x\<close> using "\<forall>E"(2) "\<rightarrow>E" by blast
 qed
-AOT_theorem "pred-num[ext2]": \<open>[\<P>]\<^sup>+xn \<rightarrow> [\<nat>]x\<close>
+AOT_theorem "pred-num[ext2]": \<open>[\<bbbP>]\<^sup>+xn \<rightarrow> [\<nat>]x\<close>
 proof (rule "\<rightarrow>I")
-  AOT_assume \<open>[\<P>]\<^sup>+xn\<close>
-  AOT_hence \<open>[\<P>]\<^sup>*xn \<or> x =\<^sub>\<P> n\<close> by (metis "assume1:5" "intro-elim:3:a")
+  AOT_assume \<open>[\<bbbP>]\<^sup>+xn\<close>
+  AOT_hence \<open>[\<bbbP>]\<^sup>*xn \<or> x =\<^sub>\<bbbP> n\<close> by (metis "assume1:5" "intro-elim:3:a")
   moreover {
-    AOT_assume \<open>[\<P>]\<^sup>*xn\<close>
+    AOT_assume \<open>[\<bbbP>]\<^sup>*xn\<close>
     AOT_hence \<open>[\<nat>]x\<close> using "pred-num[ext1]"[THEN "\<rightarrow>E"] by blast
   }
   moreover {
-    AOT_assume \<open>x =\<^sub>\<P> n\<close>
+    AOT_assume \<open>x =\<^sub>\<bbbP> n\<close>
     AOT_hence \<open>x = n\<close>
       using "id-R-thm:3"[unconstrain \<R>, unvarify \<beta>, THEN "\<rightarrow>E", OF "pred-thm:2", OF "pred-1-1:4", THEN "\<rightarrow>E"]
       by blast
@@ -1847,7 +1846,7 @@ implies their identity). This allows for abandoning the modal axiom for
 possible richness of ordinary objects and instead to more closely follow Frege's
 construction, in which the successor of a number @{text n} is defined as the number
 of the property @{emph \<open>being smaller-or-equal to @{text n}\<close>}, i.e. @{text \<open>n\<^bold>' = #[\<lambda>m m \<le> n]\<close>},
-yielding @{term \<open>\<guillemotleft>[\<P>]n n\<^bold>'\<guillemotright>\<close>}.
+yielding @{term \<open>\<guillemotleft>[\<bbbP>]n n\<^bold>'\<guillemotright>\<close>}.
 
 At the time of writing, we have prototypes for models of this new derivation available.
 In these models we restrict the domain of ordinary urelements to be at most countably
@@ -2153,41 +2152,41 @@ models.
 Thinking in terms of Aczel models, let @{text \<open>O\<^sub>t\<close>} be the set of ordinary objects at
 type @{text t} and @{text \<open>S\<^sub>t\<close>} the set of special urelements of type @{text t}.
 Now the set of relations among objects of type @{text t}, i.e. @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle>\<close>} will
-be at least as large as the power set @{text \<open>\<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}. For simplicity, we consider
-minimal, extensional Aczel models, in which we have @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle> = \<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}.
+be at least as large as the power set @{text \<open>\<bbbP>(O\<^sub>t \<union> S\<^sub>t)\<close>}. For simplicity, we consider
+minimal, extensional Aczel models, in which we have @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle> = \<bbbP>(O\<^sub>t \<union> S\<^sub>t)\<close>}.
 
 If we restrict ourselves to unary relations and write @{text 0} for the type of ordinary individuals @{text i},
 @{text 1} for the type of relations among individuals @{text \<open>\<langle>i\<rangle>\<close>} and so on, i.e. in general
 we choose @{text \<open>n+1\<close>} for unary relations among the type we identified with @{text n}, we get
 the following:
 
-@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S\<^sub>0)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S\<^sub>1)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S\<^sub>2)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>1 = \<bbbP>(O\<^sub>0 \<union> S\<^sub>0)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<bbbP>(O\<^sub>1 \<union> S\<^sub>1)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<bbbP>(O\<^sub>2 \<union> S\<^sub>2)\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}
 
 Now if we, solely for the purpose of arriving at a crude size estimate,
 further assume @{text \<open>O\<^sub>0\<close>} is empty and @{text \<open>S\<^sub>i = S\<^sub>0 = S\<close>}, we get:
 
 @{text \<open>O\<^sub>0 = \<emptyset>\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S) = \<P>(S)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S) = \<P>(\<P>(S) \<union> S) \<supseteq> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S) = \<P>(\<P>(\<P>(S) \<union> S) \<union> S) \<supseteq> \<P>(\<P>(\<P>(S))) \<union> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>1 = \<bbbP>(O\<^sub>0 \<union> S) = \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<bbbP>(O\<^sub>1 \<union> S) = \<bbbP>(\<bbbP>(S) \<union> S) \<supseteq> \<bbbP>(\<bbbP>(S)) \<union> \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<bbbP>(O\<^sub>2 \<union> S) = \<bbbP>(\<bbbP>(\<bbbP>(S) \<union> S) \<union> S) \<supseteq> \<bbbP>(\<bbbP>(\<bbbP>(S))) \<union> \<bbbP>(\<bbbP>(S)) \<union> \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}
 
 Now if we assume that @{text S} has only one element and identify it with
-@{text \<open>\<P>(\<emptyset>)\<close>}, and (informally for the purpose of illustrating) consider the limit @{text \<open>O\<^sub>\<omega>\<close>}
+@{text \<open>\<bbbP>(\<emptyset>)\<close>}, and (informally for the purpose of illustrating) consider the limit @{text \<open>O\<^sub>\<omega>\<close>}
 of relations at countably infinite height, we arrive at a model of
 the natural numbers, i.e. @{text \<open>|O\<^sub>\<omega>| \<ge> |\<nat>|\<close>}.
 
 The set of abstract objects at type @{text \<open>m - 1\<close>} is the power set of ordinary and
-abstract objects of type @{text m}, i.e. @{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}. So we get:
+abstract objects of type @{text m}, i.e. @{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<bbbP>(O\<^sub>m \<union> A\<^sub>m)\<close>}. So we get:
 
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>2 = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> A\<^sub>m\<^sub>-\<^sub>1) = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m))\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>3 = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> A\<^sub>m\<^sub>-\<^sub>2) = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m)))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<bbbP>(O\<^sub>m \<union> A\<^sub>m)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>2 = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> A\<^sub>m\<^sub>-\<^sub>1) = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<bbbP>(O\<^sub>m \<union> A\<^sub>m))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>3 = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>2 \<union> A\<^sub>m\<^sub>-\<^sub>2) = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>2 \<union> \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<bbbP>(O\<^sub>m \<union> A\<^sub>m)))\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>0 = \<P>(O\<^sub>1 \<union> \<P>(O\<^sub>2 \<union> \<P>(O\<^sub>3 \<union> \<P>(\<dots> \<union> A\<^sub>m)\<dots>)))\<close>}
+@{text \<open>A\<^sub>0 = \<bbbP>(O\<^sub>1 \<union> \<bbbP>(O\<^sub>2 \<union> \<bbbP>(O\<^sub>3 \<union> \<bbbP>(\<dots> \<union> A\<^sub>m)\<dots>)))\<close>}
 
 In particular, no finite application of power set operations is enough to
 construct @{text \<open>A\<^sub>0\<close>} from the (illustrative) limit set @{text \<open>A\<^sub>\<omega>\<close>}, which in turn would be the power set

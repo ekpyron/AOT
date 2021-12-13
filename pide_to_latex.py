@@ -190,6 +190,7 @@ unicode_map = {
 	'\u27F6': "longrightarrow",
 	'\u21D4': "Leftrightarrow",
 	'\u03C6': "varphi",
+	'\u2119': "mathbbP"
 }
 
 labelPattern = re.compile(r'\u2039\\label{([^}]*)}\u203A', re.UNICODE)
