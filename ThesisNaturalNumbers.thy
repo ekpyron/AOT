@@ -12,9 +12,11 @@ While AOT can represent mathematical theories themselves as @{emph \<open>abstra
 from the notion of @{emph \<open>Natural Mathematics\<close>}. @{emph \<open>Natural Mathematics\<close>}
 consists of ordinary, pretheoretic claims about mathematical objects
 and arises directly as abstraction of exemplification patterns rather
-than being based on the axioms of some mathematical theory (see item (304) in PLM~\cite{PLM-Oct-13-2021}).
+than being based on the axioms of some mathematical theory (see item (304) in PLM@{footnote \<open>As
+in the previous chapters, we refer to at the time of writing most recent version of PLM, dated
+October 13 2021, which will continue to be available at~\cite{PLM-Oct-13-2021}.\<close>}).
 
-Following this idea, the claim of PLM's chapter 14 is that natural numbers 
+Following this idea, Uri Nodelman's and Edward Zalta's claim in PLM chapter 14 is that natural numbers 
 can be naturally defined within object theory and the laws they abide by up to and including
 Second-Order Peano Arithmetic can be derived without having to appeal to any intrinsically mathematical
 axioms or notions.
@@ -49,8 +51,7 @@ detail in the following sections, while reproducing the construction Nodelman an
 section\<open>General Idea of the Construction\<close>
 
 text\<open>
-The strategy for constructing natural numbers in AOT follows the idea of Frege's Theorem (see~\cite{sep-frege-theorem} TODO:
-check link).
+The strategy for constructing natural numbers in AOT follows the idea of Frege's Theorem (see~\cite{sep-frege-theorem}).
 Frege showed that the Peano axioms can be derived from @{emph \<open>Hume's Principle\<close>} using Second-Order
 Logic. Hume's Principle states that the number of @{term F}s is equal to the number of @{term G}s if and
 only if @{term F} and @{term G} are @{emph \<open>equinumerous\<close>}. Two relations are @{emph \<open>equinumerous\<close>},
@@ -928,7 +929,7 @@ and (again as argued above) is preceded by Zero, i.e. @{term \<open>\<guillemotl
 
 Nodelman and Zalta assert that the predecessor relation denotes by axiom and emphasize that the relation
 is not inherently mathematical and no mathematical primitives are needed to assert, as an axiom, that
-it denotes (see PLM~\cite{PLM-Oct-13-2021} item (782)). In particular, they argue that expressions of the form
+it denotes (see PLM item (782)). In particular, they argue that expressions of the form
 @{term \<open>\<guillemotleft>Numbers(y,F)\<guillemotright>\<close>}, while seemingly mathematical in nature, can be eliminated, since they are @{emph \<open>defined\<close>}
 in terms of primitives of AOT. Furthermore, they argue that the relation merely asserts the
 existence of an ordering relation on abstract objects and ordering relations can, in general, be expressed in
@@ -938,7 +939,7 @@ However, even if one concedes that the axiom is not inherently mathematical, it 
 that it is rather @{emph \<open>ad-hoc\<close>}: rather than asserting a general principle according to which
 encoding claims can be abstracted to relations, it singles out a specific relation and this
 relation is, after all, used to @{emph \<open>define\<close>} a concept that is very much mathematical in nature.
-Furthermore, the axiom is not trivially consistent: as we have already shown minimal models of the
+Furthermore, the axiom is not trivially consistent: as we have seen, minimal models of the
 base system of AOT do not validate it.
 
 Using our embedding we can, however, contribute to this situation in two ways:
@@ -1236,7 +1237,7 @@ Traditionally, a system is no longer considered to be @{emph \<open>purely logic
 of more than one object.@{footnote \<open>E.g. PLM cites Boolos~\cite{BoolosFrege}:
 \blockquote{In logic, we ban the empty domain as a concession to technical convenience but draw the line there: We
 firmly believe that the existence of even two objects, let alone infinitely many, cannot be guaranteed by
-logic alone.}\<close>} While Nodelman and Zalta agree with this principle, they argue (see PLM~\cite{PLM-Oct-13-2021} item (799)) that
+logic alone.}\<close>} While Nodelman and Zalta agree with this principle, they argue (see PLM item (799)) that
 it only extends to @{emph \<open>concrete\<close>} objects.
 While above axiom does imply that the domain of @{emph \<open>ordinary\<close>} objects (recall that @{emph \<open>being ordinary\<close>}
 is defined as @{emph \<open>being @{emph \<open>possibly\<close>} concrete\<close>}) is at least countably infinite, it does not imply
@@ -1245,7 +1246,7 @@ Nodelman and Zalta further argue that on the one hand it is in fact common for l
 of more than one @{emph \<open>abstract\<close>} object, for example that there are two distinct truth values, the
 True and the False,@{footnote \<open>In particular, they refer to Frege's logic.\<close>} and that on the other hand logicians traditionally
 work under the assumption that @{emph \<open>the domain of objects @{emph \<open>might\<close>} be of any size\<close>}, which
-they take as a modal claim: while logic may not presuppose that the domain of concrete object
+they take as a modal claim: while logic may not presuppose that the domain of concrete objects
 has any particular size, it allows for the @{emph \<open>possiblity\<close>} of the domain being of any size, i.e.
 it is valid for a logic to presuppose that there @{emph \<open>may possibly\<close>} be more than one object, as
 long as that does not imply that there is @{emph \<open>actually\<close>} more than one (concrete) object.
@@ -1297,13 +1298,13 @@ the object that numbers @{term \<open>\<guillemotleft>[\<lambda>x \<^bold>\<A>[G
 
 Uniqueness follows from the fact that the predecessor relation is functional.
 
-Hence it is possible to define @{emph \<open>the\<close>} successor @{term \<open>\<guillemotleft>n\<^bold>'\<guillemotright>\<close>} of a natural number as
+Hence, it is possible to define @{emph \<open>the\<close>} successor @{term \<open>\<guillemotleft>n\<^bold>'\<guillemotright>\<close>} of a natural number @{term n} as
 @{emph \<open>the\<close>} natural number that is preceded by m:
 \begin{quote}
 @{thm[display] "def-suc"[rename_abs _ _ x]}
 \end{quote}
 
-Numerals can be defined as iterative successors, e.g. @{thm "numerals:1"}.
+Numerals can be defined as iterated successors, e.g. @{thm "numerals:1"}.
 
 While PLM continues to derive further theorems of Number Theory, defines mathematical
 functions and operations, including recursively defined functions such as addition, and proceeds to
@@ -1358,7 +1359,7 @@ those properties on the @{emph \<open>ordinary\<close>} objects.
 In our models, two abstract objects are exemplification-distinguishable, if they are mapped to distinct
 @{emph \<open>special urelements\<close>}. If we wanted to be able to distinguish between abstract objects
 in general based on the exemplification patterns of the properties they encode, this would mean that
-there had to be a distinct @{emph \<open>special urelements\<close>} for any such patterns. Exemplification is
+there had to be a distinct @{emph \<open>special urelements\<close>} for any such pattern. Exemplification of a property is
 a functions from @{emph \<open>urelements\<close>} (including special urelements) to modal
 truth conditions (i.e. functions from semantic possible worlds to booleans).
 
@@ -1943,14 +1944,14 @@ Methodologically, we can conclude that:
 
 \<close>
 
-chapter\<open>Higher-Order Type-Theoretic Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
+chapter\<open>Type-Theoretic Higher-Order\\ Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
 text\<open>
 While the second-order fragment of AOT is expressive enough for a variety of
 applications, including applications in @{emph \<open>natural mathematics\<close>}, as demonstrated
 in the last chapter at the example of the analysis of natural numbers, the theory can
 be generalized to a full type-theoretic higher-order version. A notable application of
-this generalized version of AOT is its analysis of @{emph \<open>theoretical mathematics\<close>}.
+this generalized version of AOT is the analysis of @{emph \<open>theoretical mathematics\<close>}.
 
 While natural mathematics involves the construction of mathematical objects directly
 by abstracting exemplification patterns and their properties are derived from the
@@ -2204,7 +2205,7 @@ of Isabelle/HOL may be challenging, since the expressive power of higher-order A
 on par with or even exceed the expressive power of this choice of a meta-logic. However, even if this turns
 out to be the case, it may be possible to construct a representation based on a stronger
 extension of Isabelle/HOL, for example HOLZF~\cite{HOLZF}, which
-axiomatizes the ZFC universe itself as a type in HOL. The feasibility of such an embedding
+axiomatizes the ZF universe itself as a type in HOL. The feasibility of such an embedding
 as well as the question of the relative strength of higher-order object theory compared to HOL, are
 interesting questions for future research.
 \<close>
@@ -2245,8 +2246,8 @@ In the process, we could demonstrate that:
 
 Curiously, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
-to accurately represent even challenging foundational logical theories, while also
-strengthening the position of our target theory AOT as foundational system in confirming
+to accurately represent even challenging foundational logical theories, while our results also
+strengthen the position of our target theory AOT as foundational system in confirming
 its ability to provide a philosophically grounded construction of mathematical objects.
 In this context, an attempt of an implementation of the full type-theoretic higher-order
 version of AOT using the SSE approach, as well as the formal analysis of its relative

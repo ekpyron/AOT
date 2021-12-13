@@ -439,19 +439,19 @@ Dr. Edward Zalta
 
 \begin{abstract}
 We utilize and extend the method of \emph{shallow semantic embeddings} (SSEs) in classical higher-order logic (HOL) to construct a custom theorem proving environment
-for Edward Zalta's \emph{abstract objects theory} (AOT) on the basis of Isabelle/HOL.
+for \emph{abstract objects theory} (AOT) on the basis of Isabelle/HOL.
 
 SSEs are a means for universal logical reasoning by translating a target logic to HOL using a representation of its semantics.
-AOT is a foundational metaphysical theory that explains the objects presupposed by the sciences as \emph{abstract objects} that reify property patterns. In particular, AOT aspires to provide a philosphically grounded basis for the construction and analysis of the objects of mathematics.
+AOT is a foundational metaphysical theory, developed by Edward Zalta, that explains the objects presupposed by the sciences as \emph{abstract objects} that reify property patterns. In particular, AOT aspires to provide a philosphically grounded basis for the construction and analysis of the objects of mathematics.
 
-We can support this claim by verifying Uri Nodelman's and Edward Zalta's reconstruction of Frege's theorem and can confirm that the Peano-Dedekind postulates for natural numbers are derivable in AOT. Furthermore, we can suggest and discuss generalizations and variants of the construction and can thereby provide theoretical insights into, and contribute to the philosophical justification of, the construction.
+We can support this claim by verifying Uri Nodelman's and Edward Zalta's reconstruction of Frege's theorem: we can confirm that the Peano-Dedekind postulates for natural numbers are consistently derivable in AOT using Frege's method. Furthermore, we can suggest and discuss generalizations and variants of the construction and can thereby provide theoretical insights into, and contribute to the philosophical justification of, the construction.
 
 In the process, we can demonstrate that our method allows for a nearly transparent exchange of results between traditional pen-and-paper-based reasoning and the computerized implementation, which in turn can retain the automation mechanisms available for Isabelle/HOL.
 
 During our work, we could significantly contribute to the evolution of our target theory itself, while simultaneously solving the technical challenge of using an SSE to implement a theory that is based on
 logical foundations that significantly differ from the meta-logic HOL.
 
-In general, our results demonstrate the fruitfulness of the practice of Computational Metaphysics, i.e. the application of computational methods to metaphysical theories.
+In general, our results demonstrate the fruitfulness of the practice of Computational Metaphysics, i.e. the application of computational methods to metaphysical questions and theories.
 \end{abstract}
 
 \cleardoublepage
@@ -509,17 +509,17 @@ In general, our results demonstrate the fruitfulness of the practice of Computat
 
 \section*{Zusammenfassung der Ergebnisse}
 
-Wir pr\"asentieren die Implementierung einer metaphysischen Grundlagentheorie in einem automatischen Theorembeweiser mit Hilfe einer Erweiterung des Konzepts von \emph{shallow semantic embeddings} (SSEs) in klassischer Logik h\"oherer Stufe. Insbesondere k\"onnen wir folgende Punkte schlussfolgern:
+Wir pr\"asentieren die Implementierung einer metaphysischen Grundlagentheorie in einem automatischen Theorembeweiser mit Hilfe einer Erweiterung des Prinzips von \emph{shallow semantic embeddings} (SSEs) in klassischer Logik h\"oherer Stufe. Insbesondere kommen wir zu folgenden Ergebnissen:
 
 \begin{itemize}
 \item SSEs sind skalierbar und k\"onnen nicht nur für die Analyse einzelner Argumente verwendet werden, sondern k\"onnen auch auf komplette metaphysische Theorien angewendet werden, und deren Axiome und Deduktionssysteme pr\"azise darstellen.
-\item Eine solche Implementierung ist kein rein technisches Unterfangen, sondern kann zu einem fruchtvollen Austausch f\"uhren, der in unserem Fall einerseits zu signifikanten Verbesserungen der analysierten Theorie gef\"uhrt hat und andererseits neues Licht auf die technischen Möglichkeiten und Einschränkungen von SSEs werfen konnte.
+\item Eine solche Implementierung ist kein rein technisches Unterfangen, sondern kann zu einem fruchtbaren Austausch f\"uhren, der in unserem Fall einerseits zu signifikanten Verbesserungen der analysierten Theorie gef\"uhrt hat und andererseits neues Licht auf die technischen Möglichkeiten und Einschränkungen von SSEs werfen konnte.
 \item Es ist nicht nur möglich, die Logik eines komplexen Zielsystems technisch zu reproduzieren, sondern auch eine nahezu transparente Darstellung von Syntax und Beweisf\"uhrung im Zielsystem zu erreichen, was einen effizienten und einfachen Austausch von Ergebnissen zwischen traditioneller Beweisf\"uhrung von Hand und der computerbasierten Implementierung ermöglicht.
-\item Die Automatisierungsverfahren von Isabelle/HOL bleiben dabei erhalten und können dazu verwendet werden, Beweise im Zielsystem zu konstruieren, die den Deduktionsregeln des Zielsystems folgen. Dadurch erreichen wir effektiv einen dedizierten Theorembeweiser für unser Zielsystem auf der Grundlage einer verifizierbar konsistenten metalogischen Konstruktion.
-\item Unser Zielsystem \emph{Abstract Object Theory} (AOT) selbst wird verifizierbar seinem Anspruch gerecht, eine philosphisch fundierte Konstruktion und Analyse der nat\"urlichen Zahlen bieten zu k\"onnen. Insbesondere k\"onnen wir bestätigen, dass Frege's Konstruktion der nat\"urlichen Zahlen in AOT konsistent reproduziert werden kann. Dar\"uber hinaus konnten wir signifikant zur Weiterentwicklung der Konstruktion beitragen und k\"onnen zusätzliche Erkenntnisse \"uber die ben\"otigten Axiome und \"uber m\"ogliche Varianten der Konstruktion beisteuern.
+\item Die Automatisierungsverfahren von Isabelle/HOL bleiben dabei erhalten und können dazu verwendet werden, Beweise im Zielsystem zu konstruieren, die allein den Deduktionsregeln des Zielsystems folgen. Dadurch erreichen wir effektiv einen dedizierten Theorembeweiser für unser Zielsystem auf der Grundlage einer verifizierbar konsistenten metalogischen Konstruktion.
+\item Unser Zielsystem \emph{Abstract Object Theory} (AOT) selbst kann seinem Anspruch gerecht werden, eine philosphisch fundierte Konstruktion und Analyse der nat\"urlichen Zahlen bieten zu k\"onnen. Insbesondere k\"onnen wir bestätigen, dass Frege's Konstruktion der nat\"urlichen Zahlen in AOT konsistent reproduziert werden kann. Dar\"uber hinaus konnten wir signifikant zur Weiterentwicklung der Konstruktion beitragen und k\"onnen zusätzliche Erkenntnisse \"uber die ben\"otigten Axiome und \"uber m\"ogliche Varianten der Konstruktion beisteuern.
 \end{itemize}
 
-Interessanterweise stützen unsere Ergebnisse einerseits die Verwendung von klassischer Logik h\"oherer Stufe als universale Metalogik, nachdem wir demonstrieren konnten, dass mit Hilfe der SSE Methode selbst herausfordernde logische Fundamentaltheorien präzise einbettbar sind, während wir andererseits die Position unseres Zielsystems AOT als metaphysische Fundamentaltheorie st\"arken, nachdem wir best\"atigen k\"onnen, dass es eine philosphisch fundierte Konstruktion mathematischer Objekte erlaubt. In diesem Zusammenhang bilden die Implementierung und Analyse des vollen typentheoretischen Systems h\"oherer Ordnung von AOT mit Hilfe der SSE Methode, sowie die Analyse der relativen St\"arke dieses Systems im Vergleich zu HOL und ZF faszinierende Themen f\"ur zuk\"unftige Forschungsarbeit.
+Interessanterweise stützen unsere Ergebnisse einerseits die Verwendung von klassischer Logik h\"oherer Stufe als universale Metalogik, nachdem wir demonstrieren konnten, dass mit Hilfe der SSE Methode selbst herausfordernde logische Fundamentaltheorien präzise einbettbar sind, während wir andererseits die Position unseres Zielsystems AOT als metaphysische Fundamentaltheorie st\"arken, nachdem wir best\"atigen k\"onnen, dass es eine philosphisch fundierte Konstruktion mathematischer Objekte erlaubt. In diesem Zusammenhang bilden die Implementierung und Analyse des vollen typen-theoretischen Systems h\"oherer Ordnung von AOT mit Hilfe der SSE Methode, sowie die Analyse der relativen St\"arke dieses Systems im Vergleich zu HOL und ZF faszinierende Themen f\"ur zuk\"unftige Forschungsarbeit.
 
 \cleardoublepage
 
