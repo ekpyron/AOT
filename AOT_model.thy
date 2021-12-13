@@ -233,6 +233,7 @@ text\<open>We introduce a mapping from abstract objects (i.e. sets of urrelation
      comprehension.\<close>
 consts \<alpha>\<sigma>' :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
 consts \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
+
 specification(\<alpha>\<sigma>)
   \<alpha>\<sigma>_surj: \<open>surj \<alpha>\<sigma>\<close>
   \<alpha>\<sigma>_\<alpha>\<sigma>': \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> \<alpha>\<sigma>' x = \<alpha>\<sigma>' y\<close>
@@ -247,8 +248,10 @@ proof -
       by presburger
     moreover obtain a where \<open>f a = \<alpha>\<sigma>' x\<close> and \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' x\<close>
       by (smt (verit, best) calculation UNIV_I image_iff mem_Collect_eq)
-    ultimately show ?thesis
-      by (auto intro!: exI[where x=\<open>Fun.swap x a f\<close>])
+    ultimately have \<open>(f (a := f x, x := f a)) ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV \<and>
+                      (f (a := f x, x := f a)) x = \<alpha>\<sigma>' x\<close>
+      by (auto simp: image_def)
+    thus ?thesis by blast
   qed
   then obtain f where fimage: \<open>f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
                   and fx: \<open>f x = \<alpha>\<sigma>' x\<close>

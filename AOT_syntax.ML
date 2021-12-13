@@ -390,8 +390,8 @@ val AOT_print_individual_term = (fn ctxt =>
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))
 val AOT_print_relation_term = (fn ctxt =>
-    (fn [trm as Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
-                          Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
+    (fn [Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
+                   Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
         Ast.Constant \<^syntax_const>\<open>_AOT_concrete\<close>
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
       Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
@@ -415,8 +415,8 @@ val AOT_print_relation_term = (fn ctxt =>
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))
 val AOT_print_generic_term = (fn ctxt =>
-    (fn [trm as Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
-                          Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
+    (fn [Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
+                   Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
         Ast.Constant \<^syntax_const>\<open>_AOT_concrete\<close>
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
 (*        Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm] *)
