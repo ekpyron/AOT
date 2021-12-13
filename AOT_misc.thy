@@ -274,11 +274,11 @@ AOT_theorem induction': \<open>\<forall>F ([F]0 & \<forall>n([F]n \<rightarrow> 
 proof(rule GEN; rule "\<rightarrow>I")
   fix F n
   AOT_assume A: \<open>[F]0 & \<forall>n([F]n \<rightarrow> [F]n\<^bold>')\<close>
-  AOT_have \<open>\<forall>n\<forall>m([\<P>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
+  AOT_have \<open>\<forall>n\<forall>m([\<bbbP>]nm \<rightarrow> ([F]n \<rightarrow> [F]m))\<close>
   proof(safe intro!: "Number.GEN" "\<rightarrow>I")
     fix n m
-    AOT_assume \<open>[\<P>]nm\<close>
-    moreover AOT_have \<open>[\<P>]n n\<^bold>'\<close>
+    AOT_assume \<open>[\<bbbP>]nm\<close>
+    moreover AOT_have \<open>[\<bbbP>]n n\<^bold>'\<close>
       using "suc-thm".
     ultimately AOT_have m_eq_suc_n: \<open>m = n\<^bold>'\<close>
       using "pred-func:1"[unvarify z, OF "def-suc[den2]", THEN "\<rightarrow>E", OF "&I"]
