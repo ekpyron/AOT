@@ -32,6 +32,9 @@ val thread = Isabelle_Thread.fork(name = "Generate Presentation") {
 	val resources = Resources.empty
 	val elements = Presentation.elements1
 
+	val info = deps.sessions_structure(session)
+    val hierarchy = deps.sessions_structure.build_hierarchy(session)
+
 	progress.interrupt_handler {
 		val res = Build.build(options,
 			selection = selection,
@@ -46,7 +49,7 @@ val thread = Isabelle_Thread.fork(name = "Generate Presentation") {
 			for (name <- base.session_theories) {
 				Console.println("Theory", name)
 				val pw = new PrintWriter(new File("pide_markup/" + name + ".xml"))
-				for (command <- Build_Job.read_theory(db_context, resources, session, name.theory))
+				for (command <- Build_Job.read_theory(db_context, hierarchy, name.theory))
 				{
 						val snapshot = Document.State.init.snippet(command)
 						val files_html =

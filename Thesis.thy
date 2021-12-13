@@ -374,7 +374,8 @@ In particular, the thesis is written relative to the version of PLM dated Octobe
 While a certain degree of familiarity with the reasoning environment of Isabelle/HOL might be helpful,
 the fact that reasoning in Isabelle/HOL is designed to be natural and intelligible should allow
 following the constructions without extensive prior knowledge of Isabelle/HOL. An introduction
-to reasoning in Isabelle/HOL can be found in~\cite{IsabelleTutorial}.
+to reasoning in Isabelle/HOL can be found in~\cite{IsabelleTutorial}. The implementation
+is written relative to the Isabelle2021-1 (December 2021) release of Isabelle.
 \<close>
 
 
@@ -3242,8 +3243,7 @@ structured reasoning in the embedding.
 (*<*)
 setup\<open>
 let
-val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
-(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
+val antiquotation_pretty_source = Document_Output.antiquotation_pretty_source
 in
 antiquotation_pretty_source
 end @{binding "ML_print_term"} Args.term (
@@ -3256,8 +3256,7 @@ fn ctxt => fn trm =>
 )\<close>
 setup\<open>
 let
-val antiquotation_pretty_source = Thy_Output.antiquotation_pretty_source
-(* Next Isabelle release:  = Document_Output.antiquotation_pretty_source *)
+val antiquotation_pretty_source = Document_Output.antiquotation_pretty_source
 in
 antiquotation_pretty_source
 end @{binding "ML_print_term'"} Args.term (
@@ -4350,7 +4349,7 @@ lemma
   assumes \<open>\<And> \<phi> . \<Turnstile> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<phi>)\<close>
       and \<open>\<And> \<phi> . \<Turnstile> (\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<A>\<^bold>\<box>\<phi>)\<close>
     shows \<open>\<forall> x y . r x y\<close>
-  by (metis (mono_tags, hide_lams) assms equiv_def actual_def box_def impl_def valid_def)
+  by (metis (mono_tags, opaque_lifting) assms equiv_def actual_def box_def impl_def valid_def)
 
 text\<open>However, note that this does not mean that a trivial accessibility relation is in fact the only
 choice in modelling AOT's modal logic. While the S5 axioms imply that the accessibility relation has
