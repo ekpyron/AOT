@@ -1852,7 +1852,7 @@ construction, it would be sufficient to require there being countably infinitely
 special urelements that serve as proxies for discernible objects, while allowing an
 arbitrary number of special urelements for indiscernible objects. Interestingly, without
 the restriction that the size of the set of discernible objects is at most countably infinite,
-the model construction would depend on the generalized continuum hypothesis.\<close>}
+the model construction may depend on the generalized continuum hypothesis.\<close>}
 From this restriction it can be derived that the class of cardinal numbers that measure
 the size of sets of discernible objects is itself a countable set.@{footnote \<open>For every @{text n}, there is
 one cardinal number for finite sets of @{text n} discernibles, and additionally there is one cardinal for countably
@@ -2221,44 +2221,48 @@ Methodologically, we can conclude that:
   \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
     construct proofs that accurately correspond to derivations in the target system.
 
-Furthermore, it is not only possible to technically reproduce the logic of a complex
+While some constructions or modes of reasoning in a target system may be challenging to reproduce
+in an embedding, we developed several techniques to counteract potential complications, including the definition of
+custom theorem attributes and proving methods and the extension of Isabelle's Isar language by specialized outer syntax commands.
+Furthermore, we devise an elaborate system of syntax translations on a custom sub-grammar of Isabelle's
+inner syntax.
+
+Using such techniques, it is not only possible to technically reproduce the logic of a complex
 target theory, but also to construct a nearly transparent representation of its
 syntax and reasoning flow. This allows for an efficient and effortless exchange
-of results between traditional pen-and-paper based reasoning and theorems and
-properties of the system discovered on the basis of its computerized implementation.
+of results between traditional pen-and-paper based reasoning and the computerized implementation.
 
-While some constructions or modes of reasoning in a target system may be challenging to reproduce,
-we developed several techniques to counteract potential complications, including the definition of
-custom theorem attributes and proving methods and the extension of Isabelle's Isar language by specialized outer syntax commands.
-
-This way, we effectively arrive at a dedicated automated theorem proving environment for
+This way, we can effectively arrive at a dedicated automated theorem proving environment for
 our target system, while retaining a verifiably consistent meta-logical backend.
 
 The construction of such a framework is not merely a technical exercise, but can trigger a fruitful
-exchange that in our case led to significant improvements of the analyzed theory
-on the one hand and shed new light on the technical possibilities and limitations
-of the SSE approach on the other hand.
+exchange that, in our case, led to significant improvements of the analyzed theory itself.
 
-In particular, in the practical application of our method to our target theory, \emph{Abstract Object Theory} (AOT),
-we could demonstrate that:
+In particular, in the application of our method to the second-order fragment
+of \emph{Abstract Object Theory} (AOT), we could demonstrate that:
 
   \<^item> A semantic implementation can serve as a flexible backend that can be used to explore
     variations and axiomatic extensions of the target system.
-    Our embedding enabled the rapid analysis of such changes and extensions,
-    which enabled us to significantly contribute to the evolution of our target theory itself.
+  \<^item> Our semantic analysis could significantly contribute especially to the
+    theoretical understanding of the conditions, in AOT, under which relations exist.
+    This has led to considerable changes and improvements in the formulation of AOT.
   \<^item> We can verify complex constructions and reasoning within a given axiomatization of the target system
     and efficiently analyze the effects of variations and extensions of such constructions.
 
-In the process, we could confirm that AOT itself
-can verifiably live up to its claim to be able to provide a philosophically grounded construction
-and analysis of objects of natural mathematics. In particular, we can confirm that AOT can serve as a sound
-basis for a variant of Frege's construction of natural numbers. Furthermore, we could contribute
-to the evolution of this construction and provide further insights into the nature
-of its required axioms, and into variants of the construction.
+Concretely, we can confirm that AOT can serve as a sound
+basis for a variant of Frege's construction of natural numbers. We can verify
+that the Peano-Dedekind postulates thus become consistently derivable in AOT.
+
+We could contribute to the evolution of this construction and
+provide insights into the nature of its required additional axioms,
+and into variants of the construction.
+This includes a generalization of one of the axioms that may serve to strengthen
+the philosophical justification of the construction.
+\\
 
 Curiously, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
-to accurately represent even challenging foundational logical theories, while our results also
+to accurately represent even challenging logical theories, while our results also
 strengthen the position of our target theory AOT as foundational system in confirming
 its ability to provide a philosophically grounded construction of mathematical objects.
 
