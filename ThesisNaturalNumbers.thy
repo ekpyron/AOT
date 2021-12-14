@@ -2208,24 +2208,28 @@ interesting questions for future research.
 chapter\<open>Conclusion\<close>
 
 text\<open>
-We presented an implementation of a foundational metaphysical theory
-in an automated reasoning environment by leveraging and extending the concept of
+We have implemented a foundational metaphysical theory
+in the automated reasoning environment of Isabelle/HOL by leveraging and extending the concept of
 \emph{shallow semantic embeddings} (SSEs) in classical higher-order logic.
 
 Methodologically, we can conclude that:
 
-  \<^item> The SSE approach is scalable and can not only be used for analyzing isolated arguments,
+  \<^item> The SSE approach is scalable and can not only be used to analyze isolated arguments,
     but can also be applied to full metaphysical theories.
-  \<^item> We can construct an accurate implementation of the axioms and deductive system of our
+  \<^item> We can construct an accurate implementation of the axioms and deductive system of a
     target theory using abstraction layers.
   \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
     construct proofs that accurately correspond to derivations in the target system.
 
 Furthermore, it is not only possible to technically reproduce the logic of a complex
 target theory, but also to construct a nearly transparent representation of its
-syntax and reasoning flow, allowing for an efficient and effortless exchange
+syntax and reasoning flow. This allows for an efficient and effortless exchange
 of results between traditional pen-and-paper based reasoning and theorems and
 properties of the system discovered on the basis of its computerized implementation.
+
+While some constructions or modes of reasoning in a target system may be challenging to reproduce,
+we developed several techniques to counteract potential complications, including the definition of
+custom theorem attributes and proving methods and the extension of Isabelle's Isar language by specialized outer syntax commands.
 
 This way, we effectively arrive at a dedicated automated theorem proving environment for
 our target system, while retaining a verifiably consistent meta-logical backend.
@@ -2233,23 +2237,24 @@ our target system, while retaining a verifiably consistent meta-logical backend.
 The construction of such a framework is not merely a technical exercise, but can trigger a fruitful
 exchange that in our case led to significant improvements of the analyzed theory
 on the one hand and shed new light on the technical possibilities and limitations
-of the SSE approach on the other hand. In particular, in the practical application
-of our constructed framework we could demonstrate that:
+of the SSE approach on the other hand.
 
-  \<^item> The semantic implementation can serve as a flexible backend that can be used to explore
+In particular, in the practical application of our method to our target theory, \emph{Abstract Object Theory} (AOT),
+we could demonstrate that:
+
+  \<^item> A semantic implementation can serve as a flexible backend that can be used to explore
     variations and axiomatic extensions of the target system.
     Our embedding enabled the rapid analysis of such changes and extensions,
-    which led to significant improvements of our target theory.
-  \<^item> We can verify complex constructions within a given axiomatization of the target system
-    and analyze the effects of variations and extensions of such constructions.
+    which enabled us to significantly contribute to the evolution of our target theory itself.
+  \<^item> We can verify complex constructions and reasoning within a given axiomatization of the target system
+    and efficiently analyze the effects of variations and extensions of such constructions.
 
-In the process, we could confirm that the target theory \emph{Abstract Object Theory} (AOT) itself
+In the process, we could confirm that AOT itself
 can verifiably live up to its claim to be able to provide a philosophically grounded construction
 and analysis of objects of natural mathematics. In particular, we can confirm that AOT can serve as a sound
 basis for a variant of Frege's construction of natural numbers. Furthermore, we could contribute
 to the evolution of this construction and provide further insights into the nature
-of its required axioms, and into variants of the construction. See~\ref{NaturalNumbersSummary} for
-a more detailed summary.
+of its required axioms, and into variants of the construction.
 
 Curiously, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
