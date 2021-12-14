@@ -235,7 +235,7 @@ subsection\<open>Prior Work involving Shallow Semantic Embeddings\<close>text\<o
 text\<open>
 Independently, the emergence of sophisticated higher-order reasoning environments like Isabelle/HOL
 allows for a different approach, namely the analysis of arguments and theories directly in higher-order
-logic by constructing Shallow Semantic Embeddings (SSEs) (see~\cite{UniversalReasoning}). In contrast to
+logic by constructing Shallow Semantic Embeddings (SSEs) (see~\cite{J41}). In contrast to
 a @{emph \<open>deep embedding\<close>} which defines the syntax of a target system using an inductive data
 structure and evaluates statements semantically by recursively traversing this data structure,
 a @{emph \<open>shallow\<close>} semantic embedding instead provides a syntactic translation from the target logic
@@ -250,8 +250,8 @@ For example, Benzm{\"u}ller et al. provide an extensive analysis of quantified m
 by means of embedding modal operators based on their Kripke semantics
 \cite{ModalLogics, ModalLogicCube, HOMLAutomationAndApplications}. This allowed for an
 analysis of G\"odel's ontological argument in second-order S5 modal logic and weaker logics
-such as KB (see~\cite{GoedelGod}), followed by a range of studies of similar ontological
-arguments (see e.g.~\cite{LeibnizOntologicalArgument}).
+such as KB (see~\cite{GoedelGod, J52}), followed by a range of studies of similar ontological
+arguments (see e.g.~\cite{B17}).
 
 Another more recent example of the application of SSEs is the LogiKEy framework for
 ethical reasoning, normative theories and deontic logics (see~\cite{LogiKEy} and~\cite{LogiKEyData}).
@@ -476,7 +476,7 @@ section\<open>SSEs as Universal Reasoning Tools\<close>
 
 text\<open>
 
-In \cite{UniversalReasoning}, Benzm\"uller develops the idea of using @{emph \<open>Shallow Semantic Embeddings\<close>} (SSEs)
+In \cite{J41}, Benzm\"uller develops the idea of using @{emph \<open>Shallow Semantic Embeddings\<close>} (SSEs)
 in classical higher-order logics (HOL) as a means for universal reasoning.
 
 He notes that while already Leibniz envisioned a @{emph \<open>characteristica universalis\<close>}, a most
@@ -3445,7 +3445,7 @@ concrete variables to schematic variables for pattern matching.
 theorems are ignored and only the theorems and rules of the abstraction layer are allowed for proofs.
 
 The list of commands can be found in~\ref{AOT:AOT_commands}, while the actual
-ML implementation is available at (TODO: cite github repository).
+ML implementation is available at~\cite{EmbeddingDissertationBranch}.
 \<close>
 
 section\<open>Representation of an Abstract Semantics of AOT\<close>text\<open>\label{Semantics}\<close>
@@ -4500,7 +4500,7 @@ in ZF+U, then the claim:
 $\phi$ =  $\forall x(Fx \equiv Gx) \to F=G$
 
 becomes derivable in ZF+U from @{text \<open>\<M>\<close>}, even though it is not a theorem of 2OL=.
-(in this case, $\phi$ is interpreted in @{text \<open>\<M>\<close>} as an
+(In this case, $\phi$ is interpreted in @{text \<open>\<M>\<close>} as an
 instance of the axiom of Extensionality of ZF+U.) This particular
 $\phi$ is therefore an artifactual theorem of 2OL= relative to ZF+U 
 and the model @{text \<open>\<M>\<close>} of predicates as sets.  
@@ -4509,7 +4509,7 @@ The abstraction layer we define in our embedding aims to disallow
 artifactual theorems by limiting theoremhood to what can be
 derived from the representation of the axioms and rules of $T$
 in @{text \<open>\<M>\<close>}; thus, appeals to the axioms and rules of $M$ (beyond those that
-represent the rules of $T$) are not allowed in the derivations of theorems of $T$.
+correspond to the axioms and rules of $T$) are not allowed in the derivations of theorems of $T$.
 \<close>
 (*
 text\<open>

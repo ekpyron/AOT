@@ -1971,8 +1971,8 @@ an embedding. We forgo marking the statements in this chapter using vertical bar
 section\<open>Overview of Higher-Order Object Theory\<close>
 text\<open>
 Our description is based on an at the time of writing unpublished draft of a chapter
-of PLM. However, the full type-theoretic version of AOT is also already discussed in
-(TODO cite) and a simplified version serves as the basis of the upcoming
+of PLM. However, the full type-theoretic version of AOT is also already discussed in~\cite{ZaltaNeoLogicism}
+and a simplified version serves as the basis of the upcoming
 paper @{emph \<open>A Defense of Logicism\<close>} jointly authored by Hannes Leitgeb, Uri Nodelman and
 Edward Zalta (see~\cite{Logicism}).
 
@@ -2020,7 +2020,7 @@ section\<open>Applications to Theoretical Mathematics\<close>
 
 text\<open>
 The analysis of Theoretical Mathematics in higher-order object theory was described
-in (TODO: cite) and a variant is discussed in~\cite{Logicism}.
+in~\cite{ZaltaNeoLogicism} and a variant is discussed in~\cite{Logicism}.
 
 While a full-discussion of the involved subtleties again goes beyond the scope of this
 thesis, we illustrate the general idea at the example of the representation of
@@ -2152,41 +2152,41 @@ models.
 Thinking in terms of Aczel models, let @{text \<open>O\<^sub>t\<close>} be the set of ordinary objects at
 type @{text t} and @{text \<open>S\<^sub>t\<close>} the set of special urelements of type @{text t}.
 Now the set of relations among objects of type @{text t}, i.e. @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle>\<close>} will
-be at least as large as the power set @{text \<open>\<bbbP>(O\<^sub>t \<union> S\<^sub>t)\<close>}. For simplicity, we consider
-minimal, extensional Aczel models, in which we have @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle> = \<bbbP>(O\<^sub>t \<union> S\<^sub>t)\<close>}.
+be at least as large as the power set @{text \<open>\<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}. For simplicity, we consider
+minimal, extensional Aczel models, in which we have @{text \<open>O\<^sub>\<langle>\<^sub>t\<^sub>\<rangle> = \<P>(O\<^sub>t \<union> S\<^sub>t)\<close>}.
 
 If we restrict ourselves to unary relations and write @{text 0} for the type of ordinary individuals @{text i},
 @{text 1} for the type of relations among individuals @{text \<open>\<langle>i\<rangle>\<close>} and so on, i.e. in general
 we choose @{text \<open>n+1\<close>} for unary relations among the type we identified with @{text n}, we get
 the following:
 
-@{text \<open>O\<^sub>1 = \<bbbP>(O\<^sub>0 \<union> S\<^sub>0)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>2 = \<bbbP>(O\<^sub>1 \<union> S\<^sub>1)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>3 = \<bbbP>(O\<^sub>2 \<union> S\<^sub>2)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S\<^sub>0)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S\<^sub>1)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S\<^sub>2)\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}
 
 Now if we, solely for the purpose of arriving at a crude size estimate,
 further assume @{text \<open>O\<^sub>0\<close>} is empty and @{text \<open>S\<^sub>i = S\<^sub>0 = S\<close>}, we get:
 
 @{text \<open>O\<^sub>0 = \<emptyset>\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>1 = \<bbbP>(O\<^sub>0 \<union> S) = \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>2 = \<bbbP>(O\<^sub>1 \<union> S) = \<bbbP>(\<bbbP>(S) \<union> S) \<supseteq> \<bbbP>(\<bbbP>(S)) \<union> \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>O\<^sub>3 = \<bbbP>(O\<^sub>2 \<union> S) = \<bbbP>(\<bbbP>(\<bbbP>(S) \<union> S) \<union> S) \<supseteq> \<bbbP>(\<bbbP>(\<bbbP>(S))) \<union> \<bbbP>(\<bbbP>(S)) \<union> \<bbbP>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>1 = \<P>(O\<^sub>0 \<union> S) = \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>2 = \<P>(O\<^sub>1 \<union> S) = \<P>(\<P>(S) \<union> S) \<supseteq> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>O\<^sub>3 = \<P>(O\<^sub>2 \<union> S) = \<P>(\<P>(\<P>(S) \<union> S) \<union> S) \<supseteq> \<P>(\<P>(\<P>(S))) \<union> \<P>(\<P>(S)) \<union> \<P>(S)\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}
 
 Now if we assume that @{text S} has only one element and identify it with
-@{text \<open>\<bbbP>(\<emptyset>)\<close>}, and (informally for the purpose of illustrating) consider the limit @{text \<open>O\<^sub>\<omega>\<close>}
+@{text \<open>\<P>(\<emptyset>)\<close>}, and (informally for the purpose of illustrating) consider the limit @{text \<open>O\<^sub>\<omega>\<close>}
 of relations at countably infinite height, we arrive at a model of
 the natural numbers, i.e. @{text \<open>|O\<^sub>\<omega>| \<ge> |\<nat>|\<close>}.
 
 The set of abstract objects at type @{text \<open>m - 1\<close>} is the power set of ordinary and
-abstract objects of type @{text m}, i.e. @{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<bbbP>(O\<^sub>m \<union> A\<^sub>m)\<close>}. So we get:
+abstract objects of type @{text m}, i.e. @{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}. So we get:
 
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<bbbP>(O\<^sub>m \<union> A\<^sub>m)\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>2 = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> A\<^sub>m\<^sub>-\<^sub>1) = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<bbbP>(O\<^sub>m \<union> A\<^sub>m))\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>m\<^sub>-\<^sub>3 = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>2 \<union> A\<^sub>m\<^sub>-\<^sub>2) = \<bbbP>(O\<^sub>m\<^sub>-\<^sub>2 \<union> \<bbbP>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<bbbP>(O\<^sub>m \<union> A\<^sub>m)))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>1 = \<P>(O\<^sub>m \<union> A\<^sub>m)\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>2 = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> A\<^sub>m\<^sub>-\<^sub>1) = \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m))\<close>}\<^latex>\<open>\\\<close>
+@{text \<open>A\<^sub>m\<^sub>-\<^sub>3 = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> A\<^sub>m\<^sub>-\<^sub>2) = \<P>(O\<^sub>m\<^sub>-\<^sub>2 \<union> \<P>(O\<^sub>m\<^sub>-\<^sub>1 \<union> \<P>(O\<^sub>m \<union> A\<^sub>m)))\<close>}\<^latex>\<open>\\\<close>
 @{text \<open>\<dots>\<close>}\<^latex>\<open>\\\<close>
-@{text \<open>A\<^sub>0 = \<bbbP>(O\<^sub>1 \<union> \<bbbP>(O\<^sub>2 \<union> \<bbbP>(O\<^sub>3 \<union> \<bbbP>(\<dots> \<union> A\<^sub>m)\<dots>)))\<close>}
+@{text \<open>A\<^sub>0 = \<P>(O\<^sub>1 \<union> \<P>(O\<^sub>2 \<union> \<P>(O\<^sub>3 \<union> \<P>(\<dots> \<union> A\<^sub>m)\<dots>)))\<close>}
 
 In particular, no finite application of power set operations is enough to
 construct @{text \<open>A\<^sub>0\<close>} from the (illustrative) limit set @{text \<open>A\<^sub>\<omega>\<close>}, which in turn would be the power set
