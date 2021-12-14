@@ -29,8 +29,7 @@ foreseeable future.\<close>} and arrived at the following results:
   \<^item> We could model the additional axioms required for the construction in our framework.
   \<^item> We could generalize one of the aforementioned axioms, strengthening the theoretical basis and
     justification of the construction.
-  \<^item> We could suggest several amendments to the construction and discover and fix several
-    minor errors and inconsistencies in the presentation.
+  \<^item> We can analyze variations of the construction that may be adopted in the future.
 
 In particular, we can derive the Dedekind-Peano postulates about Natural Numbers as follows:
     \<^enum> Zero is a natural number.
@@ -222,7 +221,7 @@ a (denoting) relation.
 
 Symmetry is a simple consequence of the symmetry of the definition of one-to-one correspondences@{text \<open>\<^sub>E\<close>}.
 
-Transitivitity requires a slightly more verbose proof (see~\nameref{AOT:eq-part:3}), that hinges on the fact that
+Transitivity requires a slightly more verbose proof (see~\nameref{AOT:eq-part:3}), that hinges on the fact that
 @{term \<open>\<guillemotleft>[\<lambda>xy O!x & O!y & \<exists>v ([G]v & [R\<^sub>1]xv & [R\<^sub>2]vy)]\<guillemotright>\<close>} can be chosen as a witness for the existence
 of a one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between @{term F} and @{term H}, if @{term R\<^sub>1} is a one-to-one-correspondence@{text \<open>\<^sub>E\<close>}
 between @{term F} and @{term G} and @{term R\<^sub>2} is a one-to-one-correspondence@{text \<open>\<^sub>E\<close>} between @{term G} and @{term H}.
@@ -385,7 +384,7 @@ speaking - based on how many objects those properties exemplify, a natural defin
 The number Zero is the object that numbers the empty property, to be more precise the number of
 @{emph \<open>being a non-self-identical ordinary object\<close>} (see~\nameref{AOT:zero:1}).@{footnote \<open>To be precise being a
 non-self-identical@{text \<open>\<^sub>E\<close>} object (see section~\ref{IdentitySubE}).
-This distincation is non-trivial: While @{thm ord_eq_e_eq[of _ x, print_as_theorem]} is a theorem,
+This distinction is non-trivial: While @{thm ord_eq_e_eq[of _ x, print_as_theorem]} is a theorem,
 due to the hyperintensionality of object theory, it does not have to be the case that
 @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq>\<^sub>E x]\<guillemotright>\<close>} and @{term \<open>\<guillemotleft>[\<lambda>x O!x & x \<noteq> x]\<guillemotright>\<close>} are the same property (as a matter of fact it is
 not even asserted @{emph \<open>a priori\<close>} that the latter even denotes a property at all). So
@@ -901,7 +900,7 @@ The idea can be clarified by considering how the first natural numbers are relat
 \<^item> The number Two numbers properties that are exemplified by two distinct ordinary objects.
   Being an object that exemplifies any of these properties other than any particular object the given
   property exemplifies, is a property exemplified by only one ordinary object, hence numbered by One, i.e.
-  One preceeds Two, etc.
+  One precedes Two, etc.
 \<close>
 
 
@@ -1088,7 +1087,7 @@ successor), they have to be identical.
 section\<open>Mathematical Induction\<close>text\<open>\label{MathematicalInduction}\<close>
 
 text\<open>
-Futhermore, we can now derive Mathematical Induction (see~\nameref{AOT:induction}):
+Furthermore, we can now derive Mathematical Induction (see~\nameref{AOT:induction}):
 
 \begin{quote}
 @{thm induction[print_as_theorem]}
@@ -1188,7 +1187,7 @@ Successors of natural numbers are (transitively) natural numbers (see~\nameref{A
                "suc-num:3"[of _ n x, print_as_theorem]}
 \end{quote}
 
-Predecessors of natural numbers are (transivitely) natural numbers (see~\nameref{AOT:pred-num}):
+Predecessors of natural numbers are (transitively) natural numbers (see~\nameref{AOT:pred-num}):
 
 \begin{quote}
 @{thm[display] "pred-num"[of _ x n, print_as_theorem]
@@ -1246,7 +1245,7 @@ of more than one @{emph \<open>abstract\<close>} object, for example that there 
 True and the False,@{footnote \<open>In particular, they refer to Frege's logic.\<close>} and that on the other hand logicians traditionally
 work under the assumption that @{emph \<open>the domain of objects @{emph \<open>might\<close>} be of any size\<close>}, which
 they take as a modal claim: while logic may not presuppose that the domain of concrete objects
-has any particular size, it allows for the @{emph \<open>possiblity\<close>} of the domain being of any size, i.e.
+has any particular size, it allows for the @{emph \<open>possibility\<close>} of the domain being of any size, i.e.
 it is valid for a logic to presuppose that there @{emph \<open>may possibly\<close>} be more than one object, as
 long as that does not imply that there is @{emph \<open>actually\<close>} more than one (concrete) object.
 
@@ -1477,7 +1476,7 @@ objects @{term a} and @{term b} to be exemplification-indistinguishable implies 
 for anyone to think about one without thinking about the other: @{term \<open>\<guillemotleft>\<forall>x \<box>([R\<^sub>t]xa \<equiv> [R\<^sub>t]xb)\<guillemotright>\<close>}, resp.
 @{term \<open>\<guillemotleft>\<not>\<diamond>\<exists>x ([R\<^sub>t]xa & \<not>[R\<^sub>t]xb \<or> [R\<^sub>t]xb & \<not>[R\<^sub>t]xa)\<guillemotright>\<close>}.
 
-While the existence of such objects is justifiable, it is not necessarily a pre-theoretic intuition.
+While the existence of such objects is justifiable, it is not necessarily a pretheoretic intuition.
 Interestingly, it is not possible to @{emph \<open>independently\<close>} construct two abstract objects that
 are in fact exemplification-indistinguishable: while it is provable that there @{emph \<open>exist\<close>} such
 pairs of objects, the construction always has to rely on constructing one of the objects particularly
@@ -1491,7 +1490,7 @@ second abstract object @{emph \<open>depends\<close>} on the choice of a special
 both objects to be collapsed under the mapping from abstract objects to special urelements,
 this becomes infeasible.
 
-This helps in consolidating the fact that there are indistinguishable abstract objects with pre-theoretic
+This helps in consolidating the fact that there are indistinguishable abstract objects with pretheoretic
 intuition: given two independent abstract objects, we can always find ourselves thinking about one, but
 not the other. However, we can conceive of concepts that e.g. themselves involve @{emph \<open>being indistinguishable from other
 abstract objects\<close>}, for which a clever construction in fact yields distinct concepts that are indistinguishable.@{footnote \<open>Recall
@@ -1739,11 +1738,8 @@ Furthermore, there is no way to model the axiom @{emph \<open>without\<close>} e
 ordinary objects in the model to infinitely many objects.
 
 So for this axiom, the more interesting issue compared to modelling it is whether it can be philosophically
-justified as a purely logical axiom or not. It is interesting to note that the axiom does not
-require @{emph \<open>actual completed infinity\<close>}, but merely @{emph \<open>potential infinity\<close>}, which is
-philosophically less controversial (TODO: cite).
-While we do not presume to judge whether this fact and the justifications provided by Zalta and
-Nodelman in PLM item (799) is sufficient to consider this axiom purely logical, we certainly
+justified as a purely logical axiom or not (see~\ref{ModalAxiom}). While we do not presume to judge whether the justification provided by Zalta and
+Nodelman in PLM item (799) is sufficient to establish this axiom as purely logical, we certainly
 agree that it captures a natural and intuitive conception of @{emph \<open>counting\<close>}.
 
 Interestingly, however, it may be possible to eliminate the axiom altogether and
@@ -1850,7 +1846,7 @@ yielding @{term \<open>\<guillemotleft>[\<bbbP>]n n\<^bold>'\<guillemotright>\<c
 
 At the time of writing, we have prototypes for models of this new derivation available.
 In these models we restrict the domain of ordinary urelements to be at most countably
-infinite (i.e. either finite or in bijiection to the natural numbers), and require the
+infinite (i.e. either finite or in bijection to the natural numbers), and require the
 domain of special urelements to be countably infinite.@{footnote \<open>In a more general
 construction, it would be sufficient to require there being countably infinitely many
 special urelements that serve as proxies for discernible objects, while allowing an
@@ -1919,7 +1915,7 @@ are equivalent (i.e. such properties are equinumerous in the first variant if an
 only if they are equinumerous in the second).
 \<close>
 
-section\<open>Summary\<close>
+section\<open>Summary\<close>text\<open>\label{NaturalNumbersSummary}\<close>
 
 text\<open>
 In summary, we can conclude that the construction of natural numbers and the derivation
@@ -1943,7 +1939,7 @@ Methodologically, we can conclude that:
 
 \<close>
 
-chapter\<open>Type-Theoretic Higher-Order\\ Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
+chapter\<open>Higher-Order Object Theory\<close>text\<open>\label{HigherOrderAOT}\<close>
 
 text\<open>
 While the second-order fragment of AOT is expressive enough for a variety of
@@ -2195,8 +2191,8 @@ of @{text \<open>O\<^sub>\<omega>\<close>}, i.e. of a set at least as large as t
 While this informal argument may not hold up to scrutiny, it is safe to say that the
 set of abstract objects in an unbounded model of higher-order object theory will
 be huge. We wouldn't be surprised if a future more rigorous analysis were to
-conclude that the set of abstract individuals in non-trivial models of higher
-order AOT had to be sufficiently large to form a model of ZF itself (resp. that
+conclude that the set of abstract individuals in non-trivial models of higher-order
+AOT had to be sufficiently large to form a model of ZF itself (resp. that
 the cardinality of @{text \<open>A\<^sub>0\<close>} is strongly inaccessible).
 
 Consequently, a verifiably sound implementation relative to the unextended background theory
@@ -2216,41 +2212,56 @@ We presented an implementation of a foundational metaphysical theory
 in an automated reasoning environment by leveraging and extending the concept of
 \emph{shallow semantic embeddings} (SSEs) in classical higher-order logic.
 
-In the process, we could demonstrate that:
+Methodologically, we can conclude that:
+
   \<^item> The SSE approach is scalable and can not only be used for analyzing isolated arguments,
-    but can also be applied to a full metaphysical theory, while providing an accurate
-    implementation of its axioms and deductive system.
-  \<^item> Such an implementation is not merely a technical exercise, but can trigger a fruitful
-    exchange that in our case led to significant improvements of the analyzed theory
-    on the one hand and sched new light on the technical possibilities and limitations
-    of the SSE approach on the other hand. In particular, our embedding allows for the
-    rapid analysis of changes to and extensions of the axiom system of the target theory
-    on the one hand, and of the effects of variations of complex constructions within a given
-    axiomatization of the target system on the other hand.
-  \<^item> It is not only possible to technically reproduce the logic of a complex
-    target theory, but also to construct a nearly transparent representation of its
-    syntax and reasoning flow, allowing for an efficient and effortless exchange
-    of results between traditional pen-and-paper based reasoning and theorems and
-    properties of the system discovered on the basis of its computerized implementation.
+    but can also be applied to full metaphysical theories.
+  \<^item> We can construct an accurate implementation of the axioms and deductive system of our
+    target theory using abstraction layers.
   \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
     construct proofs that accurately correspond to derivations in the target system.
-    This way we effectively arrive at a dedicated automated theorem proving environment for
-    our target system, while retaining a verifiably consistent meta-logical backend.
-  \<^item> The target theory \emph{Abstract Object Theory} (AOT) itself can verifiably live up to its claim to be able to
-    provide a philosophically grounded construction and analysis of natural mathematics.
-    In particular, we can confirm that AOT can serve as a sound basis for a variant of
-    Frege's construction of natural numbers. Furthermore, we could significantly contribute
-    to the evolution of this construction and provide further insights into the nature
-    of its required axioms, and into variants of the construction.
+
+Furthermore, it is not only possible to technically reproduce the logic of a complex
+target theory, but also to construct a nearly transparent representation of its
+syntax and reasoning flow, allowing for an efficient and effortless exchange
+of results between traditional pen-and-paper based reasoning and theorems and
+properties of the system discovered on the basis of its computerized implementation.
+
+This way, we effectively arrive at a dedicated automated theorem proving environment for
+our target system, while retaining a verifiably consistent meta-logical backend.
+
+The construction of such a framework is not merely a technical exercise, but can trigger a fruitful
+exchange that in our case led to significant improvements of the analyzed theory
+on the one hand and shed new light on the technical possibilities and limitations
+of the SSE approach on the other hand. In particular, in the practical application
+of our constructed framework we could demonstrate that:
+
+  \<^item> The semantic implementation can serve as a flexible backend that can be used to explore
+    variations and axiomatic extensions of the target system.
+    Our embedding enabled the rapid analysis of such changes and extensions,
+    which led to significant improvements of our target theory.
+  \<^item> We can verify complex constructions within a given axiomatization of the target system
+    and analyze the effects of variations and extensions of such constructions.
+
+In the process, we could confirm that the target theory \emph{Abstract Object Theory} (AOT) itself
+can verifiably live up to its claim to be able to provide a philosophically grounded construction
+and analysis of objects of natural mathematics. In particular, we can confirm that AOT can serve as a sound
+basis for a variant of Frege's construction of natural numbers. Furthermore, we could contribute
+to the evolution of this construction and provide further insights into the nature
+of its required axioms, and into variants of the construction. See~\ref{NaturalNumbersSummary} for
+a more detailed summary.
 
 Curiously, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
 to accurately represent even challenging foundational logical theories, while our results also
 strengthen the position of our target theory AOT as foundational system in confirming
 its ability to provide a philosophically grounded construction of mathematical objects.
+
 In this context, an attempt of an implementation of the full type-theoretic higher-order
 version of AOT using the SSE approach, as well as the formal analysis of its relative
 strength compared to HOL and ZF are fascinating opportunities for future research.
+
+
 \<close>
 
 (*<*)

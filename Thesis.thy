@@ -26,7 +26,7 @@ section\<open>Motivation\<close>
 
 text\<open>
 The analysis of foundational formal systems using automated theorem provers is as old
-as automated theorem provers themselves: Already in the middle of the last century, Betrand Russell was quick to recognize the potential
+as automated theorem provers themselves: Already in the middle of the last century, Bertrand Russell was quick to recognize the potential
 of computational methods, when confronted with the \emph{Logic Theorist},@{footnote \<open>A system developed by
 Allen Newell and Herbert Simon at Carnegie Mellon and programmed by J. C. Shaw using the vacuum tubes of
 the JOHNNIAC computer at the Institute for Advanced Study.\<close>}
@@ -256,7 +256,7 @@ arguments (see e.g.~\cite{B17}).
 Another more recent example of the application of SSEs is the LogiKEy framework for
 ethical reasoning, normative theories and deontic logics (see~\cite{LogiKEy} and~\cite{LogiKEyData}).
 The goal of LogiKEy is to develop the means for the control and governance of intelligent
-autonomous systems. The framework is based on a set of SSEs of different denotic logics,
+autonomous systems. The framework is based on a set of SSEs of different deontic logics,
 combinations thereof, as well as ethico-legal domain theories in higher-order logic
 with an implementation in Isabelle/HOL.
 
@@ -482,12 +482,12 @@ in classical higher-order logics (HOL) as a means for universal reasoning.
 He notes that while already Leibniz envisioned a @{emph \<open>characteristica universalis\<close>}, a most
 universal formal language in which all knowledge (and all arguments) about the world
 and the sciences can be encoded, in practice, today we rather find a @{emph \<open>rich and
-heterogenous zoo of different logical systems\<close>}.
+heterogeneous zoo of different logical systems\<close>}.
 
 A solution to this dilemma is the use of a universal @{emph \<open>meta\<close>}-logic,
 in which a multitude of logic formalisms can be @{emph \<open>embedded\<close>}.
 
-While there are multiple such unifying approaches, for example using algebratic
+While there are multiple such unifying approaches, for example using algebraic
 logic or category theory as framework,  Benzm\"uller defends
 the use of SSEs in HOL for pragmatic reasons:
 
@@ -775,7 +775,7 @@ of booleans (i.e. @{term \<open>{True, False}\<close>}) as representation set.@{
 an explicit representation set (@{command typedef}), we need to prove that the set is non-empty. In the case of the universal
 set of another type, this proof is trivial, as indicated by the two dots.\<close>}\<close>
 definition valid_\<o>\<^sub>1 :: \<open>\<o>\<^sub>1 \<Rightarrow> bool\<close> where
-  \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.@{footnote \<open>For any @{command typedef}, Isabelle intoduces
+  \<open>valid_\<o>\<^sub>1 p \<equiv> Rep_\<o>\<^sub>1 p\<close> \<comment> \<open>Validity is simply given by the boolean representing the proposition.@{footnote \<open>For any @{command typedef}, Isabelle introduces
      constants prefixed with @{text Abs_} and @{text Rep_}, mapping the representation type to the
      defined abstract type and vice-versa.\<close>}\<close>
 
@@ -814,7 +814,7 @@ no_notation \<o>\<^sub>1_conj (infixl \<open>\<^bold>\<and>\<close> 100)
 text\<open>
 In order to avoid this issue, we cannot simply rely on the @{command specification} command, but
 also have to take care that the @{emph \<open>types\<close>} of the specified constants can actually deliver the desired degree
-of intensionality. In our example, we can introduce an abstract @{emph \<open>intensional type\<close>} for propositons
+of intensionality. In our example, we can introduce an abstract @{emph \<open>intensional type\<close>} for propositions
 that merely has a boolean @{emph \<open>extension\<close>}. First we introduce an abstract type:
 \<close>
 
@@ -1109,7 +1109,7 @@ lemma \<open>(\<Turnstile> \<diamond>p \<longrightarrow> q) \<longrightarrow> (\
   using dia_\<o>\<^sub>3_def imp_\<o>\<^sub>3_def valid_\<o>\<^sub>3_def by auto
 
 text\<open>In the above the left-most implication and the diamond operator are the implication of the embedded logic and
-our defined possiblity operator. The other logical connectives are the ones of the meta-logic HOL.
+our defined possibility operator. The other logical connectives are the ones of the meta-logic HOL.
 
 While the mechanism described above is sufficient for introducing an accurate representation
 of the syntax of most target theories that are compatible with the lexical syntax of
@@ -1238,7 +1238,7 @@ condition; formally: @{thm "A-objects"[axiom_inst, of _ \<phi>, print_as_theorem
 Here @{text "\<phi>{F}"} is the notation we use in the embedding to signify that @{term \<phi>} may contain
 a free occurrence of the bound variable @{term F} (@{term \<phi>} may not contain a free occurrence of @{term x},
 unless we had explicitly added @{term x} in curly braces as well).\footnote{PLM, on the
-other hand, uses the opposite convention: any @{emph \<open>metavariable\<close>} like @{term \<phi>} may contain free
+other hand, uses the opposite convention: any @{emph \<open>meta-variable\<close>} like @{term \<phi>} may contain free
 occurrences of arbitrary variables (even those that are bound at the occurrence of @{term \<phi>}) unless explicitly excluded,
 i.e. instead of @{text "\<phi>{F}"}, PLM simply states @{term \<open>\<phi>\<close>} and uses natural language to add the proviso that @{term x} may
 @{emph \<open>not\<close>} occur free in @{term \<phi>}. See~\ref{substitutability} for a more detailed discussion.} Taken together,
@@ -1841,7 +1841,7 @@ A common theme in abstract object theory is the definition and analysis of certa
 of objects. For instance, Possible Worlds, Logical Sets or Natural Numbers are families
 of abstract objects with specific properties. Furthermore, some constructions involve talking
 about the Ordinary Objects specifically. To be able to more conveniently state
-theorems involving such families of objects, PLM introduces a generic mechansism for defining
+theorems involving such families of objects, PLM introduces a generic mechanism for defining
 @{emph \<open>restricted variables\<close>} that range over objects satisfying a certain @{emph \<open>restriction condition\<close>} (see PLM section~10.5).
 \<close>
 
@@ -1851,7 +1851,7 @@ that can be written as @{text \<open>\<psi>{\<alpha>}\<close>} in the notational
 a @{emph \<open>restriction condition\<close>}, just in case that it is both @{emph \<open>non-empty\<close>}, i.e.
 @{thm (concl) "AOT_restriction_condition.res-var:2"[of \<psi>, print_as_theorem]} is a (modally-strict)
 theorem, and has @{emph \<open>strict existential import\<close>}, i.e. @{thm (concl) "AOT_restriction_condition.res-var:3"[of \<psi> _ \<tau>, print_as_theorem]}
-is a (modally-strict) theorem. PLM distinguishes @{emph \<open>restriction conditions\<close>}, in which non-emptyness
+is a (modally-strict) theorem. PLM distinguishes @{emph \<open>restriction conditions\<close>}, in which non-emptiness
 and strict existential import are modally-strict and @{emph \<open>weak restriction conditions\<close>}, in which neither
 are required to be modally-strict. Since the parts of PLM implemented in our embedding do not involve
 weak restriction conditions, the embedding thus far forgoes an implementation of them. However,
@@ -2540,7 +2540,7 @@ occurs only in the exemplification formula @{text \<open>[F]y\<close>}),
 @{term \<open>print_as_theorem \<guillemotleft>[\<lambda>x \<phi>{x}]\<down>\<guillemotright>\<close>} follows by the coexistence axiom. The left-to-right direction
 can be shown by instantiating @{term F} to @{term \<open>print_term \<guillemotleft>[\<lambda>x \<phi>{x}]\<guillemotright>\<close>} and some modal reasoning.
 
-This theorem has several repercussions. It provides the analytical means to judge
+This theorem has several repercussions. It provides the analytic means to judge
 whether a @{text \<open>\<lambda>\<close>}-expression denotes within the system of AOT itself.
 Notably, this led to a proof of the existence of world-relative relations and
 thereby of rigidifying relations, as discussed in more detail in the next section.
@@ -3043,7 +3043,7 @@ special urelements can be extended to a surjective mapping
 @{term \<open>\<alpha>\<sigma>\<close>} that distinguishes all abstract objects that are distinguished by
 @{term \<open>\<alpha>\<sigma>'\<close>}, i.e. if @{term \<open>\<alpha>\<sigma>' x \<noteq> \<alpha>\<sigma>' y\<close>}, then @{term \<open>\<alpha>\<sigma> x \<noteq> \<alpha>\<sigma> y\<close>}.
 This is possible due to the fact that the set of abstract objects is significantly
-larger than the set of special urelements. In particular, under any arbitary
+larger than the set of special urelements. In particular, under any arbitrary
 mapping from abstract objects to special urelements, there has to be at least
 one abstract object @{term a} that shares the same urelement with more
 other abstract objects than there are special urelements (proof by a pigeonhole-style argument,
@@ -3682,7 +3682,7 @@ Now we enrich the abstraction layer with several introduction rules for @{const 
   \<^item> Let @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} be the variables bound by the initial @{text \<lambda>}. Then an exemplification formula of the form
     @{term \<open>print_term \<guillemotleft>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<guillemotright>\<close>} as matrix falls under the axiom, if
     (1) all individual terms @{text \<open>\<kappa>\<^sub>i\<close>} fall under the axiom as described below and
-    (2) @{term \<phi>} falls under the axiom wrt. @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>}, i.e. @{term \<phi>} does not
+    (2) @{term \<phi>} falls under the axiom w.r.t @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>}, i.e. @{term \<phi>} does not
     contain any occurrences of @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} in encoding formula subterms, respectively
     for any @{text \<open>\<mu>\<^sub>1...\<mu>\<^sub>n\<close>} it holds that @{text \<open>\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n,\<mu>\<^sub>1...\<mu>\<^sub>n}\<close>} as function on
     @{text \<open>\<nu>\<^sub>1...\<nu>\<^sub>n\<close>} satisfies @{const AOT_instance_of_cqt_2} (see~\nameref{AOT:AOT_semantics.AOT_instance_of_cqt_2_intros_exe_lam}).
@@ -3782,7 +3782,7 @@ subformula of @{term \<open>print_term \<guillemotleft>[F]\<^bold>\<iota>x \<phi
 
 While the inductive base cases for proving the rule can easily be reproduced in the
 embedding (see~\nameref{AOT:rule-sub-lem:1:a}), combining the rule to a single statement
-in Isabelle is challenging. Therefore we instead provide customly written proving
+in Isabelle is challenging. Therefore we instead provide custom-written proving
 @{theory_text method}s that allow applying the rule as intended by PLM. This works
 by internally analyzing the structure of (the ML representation of)@{footnote \<open>A proving method
 written in Isabelle/ML can traverse the ML representation of terms and determine structural properties.
