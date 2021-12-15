@@ -119,8 +119,8 @@ proof (rule AOT_model_axiomI)
   AOT_modally_strict {
     AOT_show \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
       by (induct; simp add: AOT_sem_equiv AOT_sem_forall AOT_sem_act AOT_sem_eq)
-         (metis (no_types, hide_lams) AOT_sem_desc_denotes AOT_sem_desc_prop
-                                      AOT_sem_denotes)
+         (metis (no_types, opaque_lifting) AOT_sem_desc_denotes AOT_sem_desc_prop
+                                           AOT_sem_denotes)
   }
 qed
 

@@ -43,8 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 fun AOT_item_by_name name = Option.map fst (List.find (fn (_,n) => n = name) AOT_items)
 fun AOT_name_of_item id = Option.map snd (List.find (fn (i,_) => id = i) AOT_items)
 
-val Sign_add_syntax = Sign.add_syntax (* Next Isabelle release: = Sign.syntax true *)
-
 val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
 local
     fun AOT_map_translation b (name:string, f) = (name, fn ctxt =>
@@ -236,7 +234,7 @@ let
   val oldctxt = ctxt
   val (thm, ctxt) = Local_Theory.background_theory_result (fn lthy => let
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -307,7 +305,7 @@ let
        in thm RS spec' end
      fun remove_alls frees (thy, thm) = (thy, fold (inst_all thy) frees thm)
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -327,7 +325,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     (* Add a generic constant and the requested syntax to a temporary context. *)
     val thy = Proof_Context.theory_of ctxt
     val thy' = Sign.add_consts [(bnd, @{typ 'a}, Mixfix.NoSyn)] thy
-    val thy' = Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
+    val thy' = Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
     (* Try to parse the definition using the temporary context. *)
     val trm = AOT_check_prop @{nonterminal AOT_prop}
       (Proof_Context.init_global thy') defprop

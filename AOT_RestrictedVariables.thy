@@ -212,9 +212,7 @@ val allthm = (case thms of (thm::_) => thm
 val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (vartrm, trm))
 val trm = Thm.cterm_of (Context.proof_of ctxt) trm
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
-val TVars_empty = [] (* Next Isabelle release: = TVars.empty *)
-fun Vars_make x = x (* Next Isabelle release: = Vars.make x *)
-val allthm = Drule.instantiate_normalize (TVars_empty,Vars_make [(phi,trm)]) allthm
+val allthm = Drule.instantiate_normalize (TVars.empty,Vars.make [(phi,trm)]) allthm
 in
 allthm
 end

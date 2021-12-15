@@ -294,8 +294,10 @@ proof -
       by presburger
     moreover obtain a where \<open>f a = \<alpha>\<sigma>' x\<close> and \<open>\<alpha>\<sigma>' a = \<alpha>\<sigma>' x\<close>
       by (smt (verit, best) calculation UNIV_I image_iff mem_Collect_eq)
-    ultimately show ?thesis
-      by (auto intro!: exI[where x=\<open>Fun.swap x a f\<close>])
+    ultimately have \<open>(f (a := f x, x := f a)) ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV \<and>
+                      (f (a := f x, x := f a)) x = \<alpha>\<sigma>' x\<close>
+      by (auto simp: image_def)
+    thus ?thesis by blast
   qed
   then obtain f where fimage: \<open>f ` {y. \<alpha>\<sigma>' x = \<alpha>\<sigma>' y} = UNIV\<close>
                   and fx: \<open>f x = \<alpha>\<sigma>' x\<close>
