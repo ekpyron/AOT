@@ -1850,9 +1850,7 @@ infinite (i.e. either finite or in bijection to the natural numbers), and requir
 domain of special urelements to be countably infinite.@{footnote \<open>In a more general
 construction, it would be sufficient to require there being countably infinitely many
 special urelements that serve as proxies for discernible objects, while allowing an
-arbitrary number of special urelements for indiscernible objects. Interestingly, without
-the restriction that the size of the set of discernible objects is at most countably infinite,
-the model construction may depend on the generalized continuum hypothesis.\<close>}
+arbitrary number of special urelements for indiscernible objects.\<close>}
 From this restriction it can be derived that the class of cardinal numbers that measure
 the size of sets of discernible objects is itself a countable set.@{footnote \<open>For every @{text n}, there is
 one cardinal number for finite sets of @{text n} discernibles, and additionally there is one cardinal for countably
@@ -1860,9 +1858,7 @@ infinite sets of discernibles.\<close>} Since abstract objects that number prope
 will be in one-to-one correspondence with the cardinals of sets of discernible urelements,@{footnote \<open>In
 another variant mentioned below they will be in one-to-one correspondence with the cardinals of
 sets of arbitrary urelements.\<close>} they can thus injectively be mapped into the special
-urelements, making them discernible.@{footnote \<open>Starting from a larger than countable set of discernible
-urelements would require a similar bound on the cardinality of the set of cardinals measuring sets of
-discernible objects. Such a bound could for example be provided by the generalized continuum hypothesis.\<close>} Hence this validates the theorem that
+urelements, making them discernible. Hence this validates the theorem that
 @{emph \<open>numbering a property\<close>} denotes and consequently yields models for the predecessor
 axiom.
 
@@ -2052,8 +2048,8 @@ This theorem can be imported to AOT using the following instance of the Importat
 Furthermore, the involved indexed terms of ZF are in turn abstract objects in AOT, e.g.
 \begin{quote}
   @{text[display] \<open>\<emptyset>\<^sub>Z\<^sub>F = \<^bold>\<iota>x([A!]x & \<forall>F(x[F] \<equiv> ZF \<Turnstile> [F]\<emptyset>\<^sub>Z\<^sub>F)\<close>}
-  @{text[display] \<open>S\<^sub>Z\<^sub>F = \<^bold>\<iota>F([A!]F & \<forall>\<F>(x[\<F>] \<equiv> ZF \<Turnstile> [\<F>]S\<^sub>Z\<^sub>F)\<close>}
-  @{text[display] \<open>\<in>\<^sub>Z\<^sub>F = \<^bold>\<iota>R([A!]R & \<forall>\<R>(x[\<R>] \<equiv> ZF \<Turnstile> [\<R>]\<in>\<^sub>Z\<^sub>F)\<close>}
+  @{text[display] \<open>S\<^sub>Z\<^sub>F = \<^bold>\<iota>F([A!]F & \<forall>\<F>(F[\<F>] \<equiv> ZF \<Turnstile> [\<F>]S\<^sub>Z\<^sub>F)\<close>}
+  @{text[display] \<open>\<in>\<^sub>Z\<^sub>F = \<^bold>\<iota>R([A!]R & \<forall>\<R>(R[\<R>] \<equiv> ZF \<Turnstile> [\<R>]\<in>\<^sub>Z\<^sub>F)\<close>}
 \end{quote}
 
 Exemplifying properties in ZF can be translated to encoding claims in AOT. E.g.
@@ -2245,7 +2241,7 @@ of \emph{Abstract Object Theory} (AOT), we could demonstrate that:
     variations and axiomatic extensions of the target system.
   \<^item> Our semantic analysis could significantly contribute especially to the
     theoretical understanding of the conditions, in AOT, under which relations exist.
-    This has led to considerable changes and improvements in the formulation of AOT.
+    This has led to considerable improvements in the formulation of AOT.
   \<^item> We can verify complex constructions and reasoning within a given axiomatization of the target system
     and efficiently analyze the effects of variations and extensions of such constructions.
 
