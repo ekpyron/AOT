@@ -4461,7 +4461,7 @@ those cannot be derived without explicit appeals to the semantics. For implicit 
 that occur in alphabetic variants, we argued in section~\ref{alphabetic-variants}
 that the meta-logical equality is consistent with reasoning in PLM.
 
-While we do not claim that this analysis is exhaustive,@{footnote \<open>While the rules of our
+While we do not claim that this analysis is exhaustive,@{footnote \<open>For example, while the rules of our
 target theory are implemented in the format of rules of Isabelle/Pure, the automated proving methods we use (e.g.
 @{method metis}, @{method meson} and @{method blast}) work relative to the richer logic of
 Isabelle/HOL (see chapter~2 of ~\cite{IsabelleLogics}) and for a full account the
@@ -4850,7 +4850,7 @@ the identity of the ternary relations.
 We expect that a future more extensive analysis of this issue will,
 similarly to previous artifactual theorems, result in further theoretical insights,
 ultimately followed by either an enhancement of the formulation of AOT or a refined embedding, in
-which e.g. the above might provably not be a theorem (even outside the abstraction layer).
+which e.g. the above might provably not be theorems, even outside the abstraction layer.
 \<close>
 
 section\<open>Discussion\<close>

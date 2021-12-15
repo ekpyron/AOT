@@ -2256,7 +2256,7 @@ This includes a generalization of one of the axioms that may serve to strengthen
 the philosophical justification of the construction.
 \\
 
-Interestingly, our results simultaneously support the use of higher-order logic
+Interestingly, our results simultaneously support the use of HOL
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
 to accurately represent even challenging logical theories, while our results also
 strengthen the position of our target theory AOT as foundational system in confirming
