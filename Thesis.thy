@@ -4453,13 +4453,13 @@ that if @{text \<open>\<Gamma>\<^sub>1 \<turnstile> \<phi>\<close>} and @{text \
 
 Furthermore, Pure is equipped with a primitive equality that allows for
 substituting terms that are meta-logically equal.
-Such substitutions are justified, since it is a property of our embedding that
-PLM's identity corresponds to meta-logical equality on denoting terms
-on the one hand (see~\nameref{AOT:AOT_eq_spec}) and the fact that distinct
-non-denoting terms in PLM are @{emph \<open>not\<close>} meta-logically identical in our embedding on the
-other hand (e.g. recall the fact that non-denoting definite descriptions can be assigned distinct @{emph \<open>null\<close>}-urelements).
-Furthermore we argued in section~\ref{alphabetic-variants} that the meta-logical equality
-of alphabetic variants is consistent with reasoning in PLM.
+In general, PLM's identity corresponds to meta-logical equality on denoting terms
+(see~\nameref{AOT:AOT_eq_spec}) and non-denoting terms in PLM are @{emph \<open>not\<close>} meta-logically
+identical (e.g. recall the fact that non-denoting definite descriptions can be assigned distinct @{emph \<open>null\<close>}-urelements).
+While in certain corner cases, the embedding may involve artifactual identities (see~\ref{ArtifactualTheorems}),
+those cannot be derived without explicit appeals to the semantics. For implicit meta-logical identities
+that occur in alphabetic variants, we argued in section~\ref{alphabetic-variants}
+that the meta-logical equality is consistent with reasoning in PLM.
 
 While we do not claim that this analysis is exhaustive,@{footnote \<open>While the rules of our
 target theory are implemented in the format of rules of Isabelle/Pure, the automated proving methods we use (e.g.
@@ -4537,8 +4537,7 @@ $T$ itself are derivable from @{text \<open>\<M>\<close>} using the representati
 
 Ideally, the construction of @{text \<open>\<M>\<close>} is general enough, s.t. even using the full system
 of axioms and rules of $M$, no theorem is derivable from @{text \<open>\<M>\<close>} that does not have
-a derivation in the formal system of $T$ itself. Or in other words, ideally, there are
-no artifactual theorems and the abstraction layer becomes unnecessary. However, 
+a derivation in the formal system of $T$ itself. However, 
 in the case of our embedding, there are still counterexamples.
 
 As a matter of fact, comparing derivability in the abstraction layer of the embedding,

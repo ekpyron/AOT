@@ -2208,26 +2208,26 @@ interesting questions for future research.
 chapter\<open>Conclusion\<close>
 
 text\<open>
-We have implemented a foundational metaphysical theory
-in the automated reasoning environment of Isabelle/HOL by leveraging and extending the concept of
+We have presented an implementation of a foundational metaphysical theory
+in an automated reasoning environment by leveraging and extending the concept of
 \emph{shallow semantic embeddings} (SSEs) in classical higher-order logic.
 
-Methodologically, we can conclude that:
+Methodologically, we could demonstrate that:
 
   \<^item> The SSE approach is scalable and can not only be used to analyze isolated arguments,
     but can also be applied to full metaphysical theories.
-  \<^item> We can construct an accurate implementation of the axioms and deductive system of a
+  \<^item> We can construct an accurate implementation of the axioms and deductive system of the
     target theory using abstraction layers.
   \<^item> The automation infrastructure of Isabelle/HOL can be preserved and applied to
     construct proofs that accurately correspond to derivations in the target system.
 
-While some constructions or modes of reasoning in a target system may be challenging to reproduce
-in an embedding, we developed several techniques to counteract potential complications, including the definition of
+While some constructions and modes of reasoning in a target system may be challenging to reproduce
+in an embedding, we developed several techniques to address such cases, including the definition of
 custom theorem attributes and proving methods and the extension of Isabelle's Isar language by specialized outer syntax commands.
-Furthermore, we devised an elaborate system of syntax translations on a custom sub-grammar of Isabelle's
-inner syntax.
+Furthermore, we devised a system of syntax translations on a custom sub-grammar of Isabelle's
+inner syntax to construct a close representation of the syntax of our target theory.
 
-Using such techniques, it is not only possible to technically reproduce the logic of a complex
+Using these techniques, it is not only possible to technically reproduce the logic of a
 target theory, but also to construct a nearly transparent representation of its
 syntax and reasoning flow. This allows for an efficient and effortless exchange
 of results between traditional pen-and-paper based reasoning and the computerized implementation.
@@ -2260,7 +2260,7 @@ This includes a generalization of one of the axioms that may serve to strengthen
 the philosophical justification of the construction.
 \\
 
-Curiously, our results simultaneously support the use of higher-order logic
+Interestingly, our results simultaneously support the use of higher-order logic
 as universal meta-logic in that we can demonstrate that the SSE approach can be used
 to accurately represent even challenging logical theories, while our results also
 strengthen the position of our target theory AOT as foundational system in confirming
