@@ -23,7 +23,7 @@
 \usepackage{biblatex}
 
 \newboolean{druck}
-\setboolean{druck}{false}
+\setboolean{druck}{true}
 
 \AtEveryBibitem{%
   \iffieldundef{doi}{}{\clearfield{url}\clearfield{urldate}\clearfield{eprint}}%
@@ -407,36 +407,49 @@
 \begin{titlepage}
 \vspace{1cm}
 
+    \vspace*{\fill}
 \begin{center}
     %\includegraphics[width=0.6\textwidth]{logo}
-    \vspace{1cm}
+    \LARGE{\textsf{Computer-Verified Foundations of Metaphysics\\ and an Ontology of Natural Numbers in Isabelle/HOL}}
 
+    \vspace{3cm}
+    
+\large{\textbf{Dissertation}}\\
+zur Erlangung des Grades eines\\
+\textbf{Doktors der Naturwissenschaften}\\
+    \vspace{0.5cm}
+am Fachbereich Mathematik und Informatik\\
+der Freien Universität Berlin
 
-Dissertation am Fachbereich für Mathematik und Informatik\\ der Freien Universität Berlin
+    \vspace{3cm}
 
-    \vspace{2cm}
-
-
-    \Large{\textsf{Computer-Verified Foundations of Metaphysics\\ and an Ontology of Natural Numbers in Isabelle/HOL}}
-
-    \vspace{2cm}
-
+    \small{vorgelegt von}\\
+    \vspace{0.25cm}
     \large{\textbf{Daniel Kirchner}}
 
-    \vspace{2cm}
-
-    \large{\textbf{
-        Supervisors:\\
-Prof. Dr. habil Christoph Benzm\"uller\\
-Dr. Edward Zalta
-    }}
-
-    \vspace{2cm}
-    \large{Berlin, \today}
+    \vspace{3cm}
+    \large{Berlin, December 2021}
 \end{center}
+    \vspace*{\fill}
 \end{titlepage}
 
+
 \cleardoublepage
+
+\pagestyle{empty}
+
+%\begin{flushleft}
+    \vspace*{\fill}
+\begin{tabular}{lll}
+Betreuer: & & \textbf{Prof. Dr. habil Christoph Benzm\"uller}
+\end{tabular}
+    \vspace*{\fill}
+%\end{flushleft}
+
+
+\cleardoublepage
+\pagestyle{plain}
+\pagenumbering{roman}
 
 \begin{abstract}
 We utilize and extend the method of \emph{shallow semantic embeddings} (SSEs) in classical higher-order logic (HOL) to construct a custom theorem proving environment
@@ -445,7 +458,7 @@ for \emph{abstract objects theory} (AOT) on the basis of Isabelle/HOL.
 SSEs are a means for universal logical reasoning by translating a target logic to HOL using a representation of its semantics.
 AOT is a foundational metaphysical theory, developed by Edward Zalta, that explains the objects presupposed by the sciences as \emph{abstract objects} that reify property patterns. In particular, AOT aspires to provide a philosphically grounded basis for the construction and analysis of the objects of mathematics.
 
-We can support this claim by verifying Uri Nodelman's and Edward Zalta's reconstruction of Frege's theorem: we can confirm that the Peano-Dedekind postulates for natural numbers are consistently derivable in AOT using Frege's method. Furthermore, we can suggest and discuss generalizations and variants of the construction and can thereby provide theoretical insights into, and contribute to the philosophical justification of, the construction.
+We can support this claim by verifying Uri Nodelman's and Edward Zalta's reconstruction of Frege's theorem: we can confirm that the Dedekind-Peano postulates for natural numbers are consistently derivable in AOT using Frege's method. Furthermore, we can suggest and discuss generalizations and variants of the construction and can thereby provide theoretical insights into, and contribute to the philosophical justification of, the construction.
 
 In the process, we can demonstrate that our method allows for a nearly transparent exchange of results between traditional pen-and-paper-based reasoning and the computerized implementation, which in turn can retain the automation mechanisms available for Isabelle/HOL.
 
@@ -461,6 +474,7 @@ In general, our results demonstrate the fruitfulness of the practice of Computat
 
 \cleardoublepage
 
+\pagenumbering{arabic}
 \pagestyle{scrheadings}
 
 % sane default for proof documents

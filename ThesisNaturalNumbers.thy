@@ -23,9 +23,9 @@ axioms or notions.
 
 We have reproduced parts of this construction in our implementation@{footnote \<open>At the
 time of writing the implementation encompasses the construction of natural numbers and the
-Peano-Dedekind postulates. We expect a full derivation of Second-Order Peano Arithmetic in the
+Dedekind-Peano postulates. We expect a full derivation of Second-Order Peano Arithmetic in the
 foreseeable future.\<close>} and arrived at the following results:
-  \<^item> The construction of natural numbers is sound and the Peano-Dedekind postulates, including mathematical induction, are consistently derivable.
+  \<^item> The construction of natural numbers is sound and the Dedekind-Peano postulates, including mathematical induction, are consistently derivable.
   \<^item> We could model the additional axioms required for the construction in our framework.
   \<^item> We could generalize one of the aforementioned axioms, strengthening the theoretical basis and
     justification of the construction.
@@ -1375,8 +1375,8 @@ In our general models we choose an @{emph \<open>abstract\<close>} type @{typ \<
 we allow any non-empty domain for @{typ \<sigma>} in models of the meta-logic without restriction.\<close>}
 In our extended models that validate the predecessor axiom, we instead @{emph \<open>define\<close>} the
 type @{typ \<sigma>} using the set of objects of type @{typ \<open>(\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> (\<omega> \<Rightarrow> w \<Rightarrow> bool) set \<times> \<sigma>'\<close>}
-as representation set.@{footnote \<open>A subset of the set of such triples @{term \<open>(a,b,s)\<close>}, in which @{term \<open>a = b\<close>}
-implies @{term \<open>s = s\<^sub>0\<close>} for some fixed @{term \<open>s\<^sub>0\<close>} would suffice.\<close>}
+as representation set.@{footnote \<open>A smaller subset of the set of such triples @{term \<open>(a,b,s)\<close>}, e.g. for which
+it always holds that @{term \<open>a \<subseteq> b\<close>} and for which \mbox{@{term \<open>a = b\<close>}} implies @{term \<open>s = s\<^sub>0\<close>} for some fixed @{term \<open>s\<^sub>0\<close>}, would suffice.\<close>}
 
 Recall that the type @{typ \<omega>} is the type of ordinary urelements and @{typ w} is the type of
 semantic possible worlds. @{typ \<sigma>'} is an additional abstract type of @{emph \<open>very special urelements\<close>}
@@ -2224,7 +2224,7 @@ Methodologically, we can conclude that:
 While some constructions or modes of reasoning in a target system may be challenging to reproduce
 in an embedding, we developed several techniques to counteract potential complications, including the definition of
 custom theorem attributes and proving methods and the extension of Isabelle's Isar language by specialized outer syntax commands.
-Furthermore, we devise an elaborate system of syntax translations on a custom sub-grammar of Isabelle's
+Furthermore, we devised an elaborate system of syntax translations on a custom sub-grammar of Isabelle's
 inner syntax.
 
 Using such techniques, it is not only possible to technically reproduce the logic of a complex
@@ -2251,7 +2251,7 @@ of \emph{Abstract Object Theory} (AOT), we could demonstrate that:
 
 Concretely, we can confirm that AOT can serve as a sound
 basis for a variant of Frege's construction of natural numbers. We can verify
-that the Peano-Dedekind postulates thus become consistently derivable in AOT.
+that the Dedekind-Peano postulates thus become consistently derivable in AOT.
 
 We could contribute to the evolution of this construction and
 provide insights into the nature of its required additional axioms,

@@ -95,7 +95,7 @@ however, that our embedding currently only extends to the second-order fragment 
 We briefly discuss the challenges of representing full higher-order object theory in chapter~\ref{HigherOrderAOT}.}
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
-of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
+of the Dedekind-Peano postulates, including Mathematical Induction, described in Principia
 Logico-Metaphysica (PLM)@{footnote \<open>PLM is a continuously developed online
 monograph (see~\cite{PLM-current}) written by Edward Zalta, that contains
 the most recent canonical presentation of AOT. This thesis is written relative
@@ -172,7 +172,7 @@ however, that our embedding currently only extends to the second-order fragment 
 We briefly discuss the challenges of representing full higher-order object theory in chapter~\ref{HigherOrderAOT}.}
 
 As a prime result, we can show that the construction of Natural Numbers and the derivation
-of the Peano-Dedekind postulates, including Mathematical Induction, described in Principia
+of the Dedekind-Peano postulates, including Mathematical Induction, described in Principia
 Logico-Metaphysica (PLM)@{footnote \<open>PLM is a continuously developed online monograph (see~\cite{PLM-current}) written by Edward Zalta, that contains
 the most recent canonical presentation of AOT. This thesis is written relative to the version dated October 13, 2021, archived in~\cite{PLM-Oct-13-2021}.\<close>} are verifiably sound. Furthermore, we can suggest the generalization of
 an additional axiom required for this construction, that we believe strengthens
@@ -352,7 +352,8 @@ in the embedding, unless specifically stated otherwise and marked with vertical 
 at the page margins.@{footnote \<open>With the exception of chapter~\ref{HigherOrderAOT} which
 is not written relative to an embedding in Isabelle and omits the marking at the page margins.\<close>}
 
-The appendix contains a rendering of the raw theory files of the embedding including all proofs. The implementation
+The appendix contains a rendering of the raw theory files of the embedding including all proofs.@{footnote \<open>The corresponding
+theory files can also be found at~\cite{EmbeddingDissertationBranch}.\<close>} The implementation
 currently consists of around 25.000 lines of Isabelle proof text.@{footnote \<open>Around 20.000 lines are reasoning in the abstraction layer, i.e.
 reasoning in the logic of the target theory, while the remainder builds up the required model structure and semantics as well as
 the syntax representation of AOT.\<close>} While Isabelle allows producing latex code for raw theories directly,@{footnote \<open>This mechanism is used
