@@ -8585,9 +8585,9 @@ proof -
                [\<lambda>z [\<lambda>xy \<forall>F ([F]x \<equiv> [F]y)]zy])\<close>
     using "\<exists>E"[rotated] by blast
   AOT_have \<open>[\<lambda>z [\<lambda>xy \<forall>F ([F]x \<equiv> [F]y)]zx]x\<close>
-    by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2";
-        simp add: "&I" "ex:1:a" prod_denotesI "rule-ui:3"
-                  "oth-class-taut:3:a" "universal-cor")
+    by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2"
+             simp: "&I" "ex:1:a" prod_denotesI "rule-ui:3"
+                   "oth-class-taut:3:a" "universal-cor")
   AOT_hence \<open>[\<lambda>z [\<lambda>xy \<forall>F ([F]x \<equiv> [F]y)]zy]x\<close>
     by (rule "rule=E"[rotated, OF 0[THEN "&E"(2)]])
   AOT_hence \<open>[\<lambda>xy \<forall>F ([F]x \<equiv> [F]y)]xy\<close>

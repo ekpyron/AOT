@@ -2,6 +2,8 @@ theory AOT_misc
   imports AOT_NaturalNumbers
 begin
 
+section\<open>Miscellaneous Theorems\<close>
+
 AOT_theorem PossiblyNumbersEmptyPropertyImpliesZero:
   \<open>\<diamond>Numbers(x,[\<lambda>z O!z & z \<noteq>\<^sub>E z]) \<rightarrow> x = 0\<close>
 proof(rule "\<rightarrow>I")

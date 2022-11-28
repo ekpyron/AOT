@@ -6,6 +6,18 @@ begin
 declare[[typedef_overloaded]]
 (*>*)
 
+section\<open>References\<close>
+
+text\<open>
+A full description of this formalization including references can be found
+at @{url \<open>http://dx.doi.org/10.17169/refubium-35141\<close>}.
+
+The version of Principia Logico-Metaphysica (PLM) implemented in this formalization
+can be found at @{url \<open>http://mally.stanford.edu/principia-2021-10-13.pdf\<close>}, while
+the latest version of PLM is available at @{url \<open>http://mally.stanford.edu/principia.pdf\<close>}.
+
+\<close>
+
 section\<open>Model for the Logic of AOT\<close>
 
 text\<open>We introduce a primitive type for hyperintensional propositions.\<close>
@@ -15,7 +27,7 @@ text\<open>To be able to model modal operators following Kripke semantics,
      we introduce a primitive type for possible worlds and assert, by axiom,
      that there is a surjective function mapping propositions to the
      boolean-valued functions acting on possible worlds. We call the result
-     of applying this function to a proposition the Kripke-extension
+     of applying this function to a proposition the Montague intension
      of the proposition.\<close>
 typedecl w \<comment>\<open>The primtive type of possible worlds.\<close>
 axiomatization AOT_model_d\<o> :: \<open>\<o>\<Rightarrow>(w\<Rightarrow>bool)\<close> where
@@ -26,12 +38,12 @@ consts w\<^sub>0 :: w \<comment>\<open>The designated actual world.\<close>
 axiomatization where AOT_model_nonactual_world: \<open>\<exists>w . w \<noteq> w\<^sub>0\<close>
 
 text\<open>Validity of a proposition in a given world can now be modelled as the result
-     of applying that world to the Kripke-extension of the proposition.\<close>
+     of applying that world to the Montague intension of the proposition.\<close>
 definition AOT_model_valid_in :: \<open>w\<Rightarrow>\<o>\<Rightarrow>bool\<close> where
   \<open>AOT_model_valid_in w \<phi> \<equiv> AOT_model_d\<o> \<phi> w\<close>
 
-text\<open>By construction, we can choose a proposition for any given Kripke-extension,
-     s.t. the proposition is valid in a possible world iff the Kripke-extension
+text\<open>By construction, we can choose a proposition for any given Montague intension,
+     s.t. the proposition is valid in a possible world iff the Montague intension
      evaluates to true at that world.\<close>
 definition AOT_model_proposition_choice :: \<open>(w\<Rightarrow>bool) \<Rightarrow> \<o>\<close> (binder \<open>\<epsilon>\<^sub>\<o> \<close> 8)
   where \<open>\<epsilon>\<^sub>\<o> w. \<phi> w \<equiv> (inv AOT_model_d\<o>) \<phi>\<close>
@@ -893,18 +905,19 @@ next
     apply (subst (asm) (1 2) Abs_urrel_inverse)
     using AOT_model_proposition_choice_simp a_def b_def by force+
   assume \<Pi>_den: \<open>AOT_model_denotes \<Pi>\<close>
-  have \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
-    apply (rule exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
-    apply auto
-    unfolding rel_to_urrel_def
-    apply (subst Abs_urrel_inverse)
-    apply auto
-     apply (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
+  have \<open>\<not>AOT_model_valid_in w (Rep_rel \<Pi> (SOME xa. \<kappa>\<upsilon> xa = null\<upsilon> x))\<close> for x w
+    by (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
               AOT_model_denotes_rel.rep_eq \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1,2,3)
               \<open>AOT_model_denotes \<Pi>\<close> \<upsilon>.disc(8,9) \<upsilon>.distinct(3)
               is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def verit_sko_ex')
+  moreover have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_rel \<Pi> (SOME y. \<kappa>\<upsilon> y = \<omega>\<upsilon> x)\<close> for x
     by (metis (mono_tags, lifting) AOT_model_denotes_rel.rep_eq
           AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den verit_sko_ex')
+  ultimately have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> x)\<close> for x
+    unfolding rel_to_urrel_def
+    by (subst Abs_urrel_inverse) auto
+  hence \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
+    by (auto intro!: exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
   then obtain r where r_prop: \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close> for x
     by blast
   assume \<open>AOT_model_denotes \<Pi>' \<Longrightarrow>
@@ -973,18 +986,19 @@ next
     apply (subst (asm) (1 2) Abs_urrel_inverse)
     using AOT_model_proposition_choice_simp a_def b_def by force+
   assume \<Pi>_den: \<open>AOT_model_denotes \<Pi>\<close>
-  have \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
-    apply (rule exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
-    apply auto
-    unfolding rel_to_urrel_def
-    apply (subst Abs_urrel_inverse)
-    apply auto
-     apply (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
+  have \<open>\<not>AOT_model_valid_in w (Rep_rel \<Pi> (SOME xa. \<kappa>\<upsilon> xa = null\<upsilon> x))\<close> for x w
+    by (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
           AOT_model_denotes_rel.rep_eq \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1,2,3)
           \<open>AOT_model_denotes \<Pi>\<close> \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.distinct(3)
           is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def verit_sko_ex')
+  moreover have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_rel \<Pi> (SOME xa. \<kappa>\<upsilon> xa = \<omega>\<upsilon> x)\<close> for x
     by (metis (mono_tags, lifting) AOT_model_denotes_rel.rep_eq
           AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den verit_sko_ex')
+  ultimately have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> x)\<close> for x
+    unfolding rel_to_urrel_def
+    by (subst Abs_urrel_inverse) auto
+  hence \<open>\<exists>r . \<forall> x . Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close>
+    by (auto intro!: exI[where x=\<open>rel_to_urrel \<Pi>\<close>])
   then obtain r where r_prop: \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel r (\<omega>\<upsilon> x)\<close> for x
     by blast
 

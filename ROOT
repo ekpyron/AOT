@@ -1,5 +1,5 @@
 session "AOT" = "HOL-Cardinals" +
-  options [show_question_marks = false, names_short = true, browser_info]
+  options [show_question_marks = false, names_short = true, browser_info, document = pdf, document_output = "output"]
   sessions
     "HOL-Eisbach"
   theories

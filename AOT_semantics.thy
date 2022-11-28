@@ -127,9 +127,9 @@ specification(AOT_exe AOT_lambda)
   \<comment> \<open>Truth conditions of exemplification formulas.\<close>
   AOT_sem_exe: \<open>[w \<Turnstile> [\<Pi>]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = ([w \<Turnstile> \<Pi>\<down>] \<and> [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<and>
                                      [w \<Turnstile> \<guillemotleft>Rep_rel \<Pi> \<kappa>\<^sub>1\<kappa>\<^sub>n\<guillemotright>])\<close>
-  \<comment> \<open>\<eta>-conversion for denoting terms; equivalent to AOT's axiom\<close>
+  \<comment> \<open>\eta-conversion for denoting terms; equivalent to AOT's axiom\<close>
   AOT_sem_lambda_eta: \<open>[w \<Turnstile> \<Pi>\<down>] \<Longrightarrow> [w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<Pi>]\<nu>\<^sub>1...\<nu>\<^sub>n] = \<Pi>]\<close>
-  \<comment> \<open>\<beta>-conversion; equivalent to AOT's axiom\<close>
+  \<comment> \<open>\beta-conversion; equivalent to AOT's axiom\<close>
   AOT_sem_lambda_beta: \<open>[w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>] \<Longrightarrow> [w \<Turnstile> \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>] \<Longrightarrow>
                         [w \<Turnstile> [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n] = [w \<Turnstile> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}]\<close>
   \<comment> \<open>Necessary and sufficient conditions for relations to denote. Equivalent
@@ -455,10 +455,10 @@ instance proof
   have AOT_meta_proj_denotes1: \<open>AOT_model_denotes (Abs_rel (\<lambda>z. AOT_exe \<Pi> (z, \<beta>)))\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close> and \<beta>
     using that unfolding AOT_model_denotes_rel.rep_eq
-    apply (auto simp: Abs_rel_inverse AOT_meta_prod_equivI(2) AOT_sem_denotes
-                      that intro!: AOT_sem_exe_equiv)
-    apply (metis AOT_model_denotes_prod_def AOT_sem_exe case_prodD)
-    using AOT_model_unary_regular by blast
+    apply (simp add: Abs_rel_inverse AOT_meta_prod_equivI(2) AOT_sem_denotes
+                      that)
+    by (metis (no_types, lifting) AOT_meta_prod_equivI(2) AOT_model_denotes_prod_def
+              AOT_model_unary_regular AOT_sem_exe AOT_sem_exe_equiv case_prodD)
   {
     fix \<kappa> :: 'a and \<Pi> :: \<open><'a\<times>'b>\<close>
     assume \<Pi>_denotes: \<open>AOT_model_denotes \<Pi>\<close>
@@ -1638,15 +1638,19 @@ proof -
         ultimately have \<open>[v \<Turnstile> \<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)]\<close>
           using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
       } note 4 = this
+      {
+        fix \<Pi>'' :: \<open><\<kappa>>\<close>
+        assume \<open>[v \<Turnstile> \<Pi>''\<down>]\<close>
+        moreover assume \<open>[w \<Turnstile> [\<Pi>'']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0]\<close> if \<open>[v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>\<^sub>0]\<close> for \<kappa>\<^sub>0 w
+        ultimately have 5: \<open>[v \<Turnstile> x[\<Pi>'']]\<close>
+          using 4 3
+          by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+      } note 5 = this
       have \<open>[v \<Turnstile> y[\<Pi>']]\<close>
         apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
         apply (fact 0)
-             apply (auto simp: 0 1 \<Pi>_den indist[simplified AOT_sem_forall
-                               AOT_sem_box AOT_sem_equiv])
-        apply (rule 3)
-         apply auto[1]
-        using 4
-        by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+        by (auto simp: 5 0 1 \<Pi>_den indist[simplified AOT_sem_forall
+                       AOT_sem_box AOT_sem_equiv])
     }
     moreover {
     {
@@ -1659,7 +1663,7 @@ proof -
         assume 2: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]z \<rightarrow> \<box>([\<Pi>']z \<equiv> [\<Pi>]z)]\<close> for z
         have \<open>[v \<Turnstile> y[\<Pi>']]\<close>
           using 3
-          apply (auto simp: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
+          apply (simp add: AOT_sem_forall AOT_sem_imp AOT_sem_box AOT_sem_denotes)
           by (metis (no_types, lifting) 1 2 AOT_model.AOT_term_of_var_cases
                                         AOT_sem_box AOT_sem_denotes AOT_sem_imp)
       } note 3 = this
@@ -1676,15 +1680,18 @@ proof -
         ultimately have \<open>[v \<Turnstile> \<box>([\<Pi>']\<kappa>\<^sub>0 \<equiv> [\<Pi>]\<kappa>\<^sub>0)]\<close>
           using 4 by (auto simp: AOT_sem_forall AOT_sem_imp)
       } note 4 = this
+      {
+        fix \<Pi>'' :: \<open><\<kappa>>\<close>
+        assume \<open>[v \<Turnstile> \<Pi>''\<down>]\<close>
+        moreover assume \<open>[w \<Turnstile> [\<Pi>'']\<kappa>\<^sub>0] = [w \<Turnstile> [\<Pi>']\<kappa>\<^sub>0]\<close> if \<open>[v \<Turnstile> [\<lambda>x \<diamond>E!x]\<kappa>\<^sub>0]\<close> for w \<kappa>\<^sub>0
+        ultimately have \<open>[v \<Turnstile> y[\<Pi>'']]\<close>
+          using 3 4 by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+      } note 5 = this
       have \<open>[v \<Turnstile> x[\<Pi>']]\<close>
         apply (rule AOT_sem_enc_indistinguishable_all[OF AOT_ExtendedModel])
               apply (fact 1)
-             apply (auto simp: 0 1 \<Pi>_den indist[simplified AOT_sem_forall
-                               AOT_sem_box AOT_sem_equiv])
-        apply (rule 3)
-         apply auto[1]
-        using 4
-        by (auto simp: AOT_sem_imp AOT_sem_equiv AOT_sem_box)
+        by (auto simp: 5 0 1 \<Pi>_den indist[simplified AOT_sem_forall
+                       AOT_sem_box AOT_sem_equiv])
     }
   }
   ultimately show \<open>[v \<Turnstile> \<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) \<rightarrow> x[G])] =
@@ -1750,7 +1757,7 @@ proof -
           by (simp add: y_enc_\<Pi>'')
       } note 2 = this
       AOT_have \<open>\<exists>G(\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [\<Pi>]z)) & y[G])\<close>
-        apply (auto simp: AOT_sem_exists AOT_sem_ordinary
+        apply (simp add: AOT_sem_exists AOT_sem_ordinary
             AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_equiv AOT_sem_conj)
         using 2[simplified AOT_sem_box AOT_sem_equiv AOT_sem_imp AOT_sem_forall]
         by blast
