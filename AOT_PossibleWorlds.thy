@@ -7,7 +7,44 @@ begin
 section\<open>Possible Worlds\<close>
 
 AOT_define Situation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Situation'(_')\<close>)
-  situations: \<open>Situation(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>
+  "situations:1": \<open>Situation(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>
+
+(* TODO: temporary alias to keep the old key used for the definition working *)
+lemmas "situations" = "situations:1"
+
+AOT_theorem "situations:2": \<open>\<exists>x Situation(x)\<close>
+proof -
+  AOT_have \<open>\<exists>x (A!x & \<forall>F (x[F] \<equiv> F = [\<lambda>y [R]ab]))\<close>
+    using "A-objects" "vdash-properties:1[2]" by auto
+  then AOT_obtain c where c_prop: \<open>A!c & \<forall>F (c[F] \<equiv> F = [\<lambda>y [R]ab])\<close>
+    using "\<exists>E" by meson
+  AOT_have \<open>Situation(c)\<close>
+  proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "situations:1"] "&I" GEN "\<rightarrow>I")
+    AOT_show \<open>A!c\<close>
+      using c_prop "&E" by blast
+  next
+    fix F
+    AOT_assume \<open>c[F]\<close>
+    AOT_hence F_eq: \<open>F = [\<lambda>y [R]ab]\<close>
+      using "con-dis-i-e:2:b" "intro-elim:3:a" "rule-ui:3" c_prop by blast
+    AOT_find_theorems \<open>Propositional([\<Pi>])\<close>
+    AOT_show \<open>Propositional([F])\<close>
+    proof(rule "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+      AOT_show "\<exists>p F = [\<lambda>y p]"
+        using F_eq "\<exists>I"(1)
+        using "log-prop-prop:2" by fastforce
+    qed
+  qed
+  AOT_thus \<open>\<exists>x Situation(x)\<close>
+    using "\<exists>I" by blast
+qed
+
+AOT_theorem "situations:3": \<open>Situation(\<kappa>) \<rightarrow> \<kappa>\<down>\<close>
+proof (rule "\<rightarrow>I")
+  AOT_assume \<open>Situation(\<kappa>)\<close>
+  AOT_hence \<open>A!\<kappa>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) "situations:1")
+  AOT_thus \<open>\<kappa>\<down>\<close> by (metis "russell-axiom[exe,1].\<psi>_denotes_asm")
+qed
 
 AOT_theorem "T-sit": \<open>TruthValue(x) \<rightarrow> Situation(x)\<close>
 proof(rule "\<rightarrow>I")
@@ -18,7 +55,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<theta>: \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>q((q \<equiv> p) & F = [\<lambda>y q]))\<close>
     using "tv-p"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_show \<open>Situation(x)\<close>
-  proof(rule situations[THEN "\<equiv>\<^sub>d\<^sub>fI"]; safe intro!: "&I" GEN "\<rightarrow>I" \<theta>[THEN "&E"(1)])
+  proof(rule "situations:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"]; safe intro!: "&I" GEN "\<rightarrow>I" \<theta>[THEN "&E"(1)])
     fix F
     AOT_assume \<open>x[F]\<close>
     AOT_hence \<open>\<exists>q((q \<equiv> p) & F = [\<lambda>y q])\<close>
@@ -34,7 +71,7 @@ AOT_theorem "possit-sit:1": \<open>Situation(x) \<equiv> \<box>Situation(x)\<clo
 proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume \<open>Situation(x)\<close>
   AOT_hence 0: \<open>A!x & \<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>
-    using situations[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+    using "situations:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
   AOT_have 1: \<open>\<box>(A!x & \<forall>F (x[F] \<rightarrow> Propositional([F])))\<close>
   proof(rule "KBasic:3"[THEN "\<equiv>E"(2)]; rule "&I")
     AOT_show \<open>\<box>A!x\<close> using 0[THEN "&E"(1)] by (metis "oa-facts:2"[THEN "\<rightarrow>E"])
@@ -47,7 +84,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   qed
   AOT_show \<open>\<box>Situation(x)\<close>
     by (AOT_subst \<open>Situation(x)\<close> \<open>A!x & \<forall>F (x[F] \<rightarrow> Propositional([F]))\<close>)
-       (auto simp: 1 "\<equiv>Df" situations)
+       (auto simp: 1 "\<equiv>Df" "situations:1")
 next
   AOT_show \<open>Situation(x)\<close> if \<open>\<box>Situation(x)\<close>
     using "qml:2"[axiom_inst, THEN "\<rightarrow>E", OF that].
@@ -64,7 +101,7 @@ AOT_theorem "possit-sit:4": \<open>\<^bold>\<A>Situation(x) \<equiv> Situation(x
   by (meson "Act-Basic:5" "Act-Sub:2" "RA[2]" "\<equiv>E"(1) "\<equiv>E"(6) "possit-sit:2")
 
 AOT_theorem "possit-sit:5": \<open>Situation(\<circ>p)\<close>
-proof (safe intro!: situations[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" GEN "\<rightarrow>I" "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+proof (safe intro!: "situations:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" GEN "\<rightarrow>I" "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_have \<open>\<exists>F \<circ>p[F]\<close>
     using "tv-id:2"[THEN "prop-enc"[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)]
           "existential:1" "prop-prop2:2" by blast
@@ -128,22 +165,13 @@ AOT_register_rigid_restricted_type
   Situation: \<open>Situation(\<kappa>)\<close>
 proof
   AOT_modally_strict {
-    fix p
-    AOT_obtain x where \<open>TruthValueOf(x,p)\<close>
-      by (metis "instantiation" "p-has-!tv:1")
-    AOT_hence \<open>\<exists>p TruthValueOf(x,p)\<close> by (rule "\<exists>I")
-    AOT_hence \<open>TruthValue(x)\<close> by (metis "\<equiv>\<^sub>d\<^sub>fI" "T-value")
-    AOT_hence \<open>Situation(x)\<close> using "T-sit"[THEN "\<rightarrow>E"] by blast
-    AOT_thus \<open>\<exists>x Situation(x)\<close> by (rule "\<exists>I")
+    AOT_show \<open>\<exists>x Situation(x)\<close>
+      using "situations:2".
   }
 next
   AOT_modally_strict {
     AOT_show \<open>Situation(\<kappa>) \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
-    proof (rule "\<rightarrow>I")
-      AOT_assume \<open>Situation(\<kappa>)\<close>
-      AOT_hence \<open>A!\<kappa>\<close> by (metis "\<equiv>\<^sub>d\<^sub>fE" "&E"(1) situations)
-      AOT_thus \<open>\<kappa>\<down>\<close> by (metis "russell-axiom[exe,1].\<psi>_denotes_asm")
-    qed
+      using "situations:3".
   }
 next
   AOT_modally_strict {
@@ -364,12 +392,70 @@ next
           THEN "\<forall>E"(2), THEN "\<rightarrow>E", OF that(1)].
 qed
 
+(* TODO: removed in PLM *)
 AOT_define Persistent :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>Persistent'(_')\<close>)
   persistent: \<open>Persistent(p) \<equiv>\<^sub>d\<^sub>f \<forall>s (s \<Turnstile> p \<rightarrow> \<forall>s' (s \<unlhd> s' \<rightarrow> s' \<Turnstile> p))\<close>
 
 AOT_theorem "pers-prop": \<open>\<forall>p Persistent(p)\<close>
   by (safe intro!: GEN[where 'a=\<o>] Situation.GEN persistent[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I")
      (simp add: "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"])
+
+(* TODO: put this at the correct place *)
+AOT_theorem "sit-comp-simp": \<open>\<exists>s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
+proof -
+  AOT_have \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<exists>p (\<phi>{p} & F = [\<lambda>y p])))\<close>
+    using "A-objects" "vdash-properties:1[2]" by force
+  then AOT_obtain c where c_prop: \<open>A!c & \<forall>F(c[F] \<equiv> \<exists>p (\<phi>{p} & F = [\<lambda>y p]))\<close>
+    using "\<exists>E" by meson
+  AOT_have sit_c: \<open>Situation(c)\<close>
+  proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF situations] "&I" GEN "\<rightarrow>I")
+    AOT_show \<open>A!c\<close>
+      using c_prop "&E" by blast
+  next
+    fix F
+    AOT_assume \<open>c[F]\<close>
+    AOT_hence F_eq: \<open>\<exists>p (\<phi>{p} & F = [\<lambda>y p])\<close>
+      using "con-dis-i-e:2:b" "intro-elim:3:a" "rule-ui:3" c_prop by blast
+    then AOT_obtain q where q_prop: \<open>\<phi>{q} & F = [\<lambda>y q]\<close>
+      using "\<exists>E" by meson
+    AOT_show \<open>Propositional([F])\<close>
+    proof(rule "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+      AOT_show "\<exists>p F = [\<lambda>y p]"
+        using q_prop[THEN "&E"(2)] "\<exists>I"(1)
+        by (metis "log-prop-prop:2")
+    qed
+  qed
+  moreover AOT_have \<open>\<forall>p(c \<Turnstile> p \<equiv> \<phi>{p})\<close>
+  proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+    fix p
+    AOT_assume \<open>c \<Turnstile> p\<close>
+    AOT_hence 1: \<open>c[\<lambda>y p]\<close>
+      using "intro-elim:3:a" "vdash-properties:10" calculation lem1 by blast
+    AOT_have \<open>\<exists>q (\<phi>{q} & [\<lambda>y p] = [\<lambda>y q])\<close>
+      by (safe intro!: c_prop[THEN "&E"(2), THEN "\<forall>E"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"], THEN "\<equiv>E"(1)] 1 "cqt:2")
+    then AOT_obtain q where 2: \<open>\<phi>{q} & [\<lambda>y p] = [\<lambda>y q]\<close>
+      using "\<exists>E" by meson
+    AOT_hence \<open>p = q\<close>
+      using "con-dis-i-e:2:b" "intro-elim:3:b" "p-identity-thm2:3" by blast
+    AOT_thus \<open>\<phi>{p}\<close>
+      using 2
+      using "con-dis-i-e:2:a" "rule=E" id_sym by blast
+  next
+    fix p
+    AOT_assume \<open>\<phi>{p}\<close>
+    moreover AOT_have \<open>[\<lambda>y p] = [\<lambda>y p]\<close>
+      by (simp add: "prop-prop2:2" "rule=I:1")
+    ultimately AOT_have \<open>\<phi>{p} & [\<lambda>y p] = [\<lambda>y p]\<close> using "&I" by blast
+    AOT_hence \<open>\<exists>q (\<phi>{q} & [\<lambda>y p] = [\<lambda>y q])\<close>
+      using "\<exists>I" by fast
+    AOT_hence \<open>c[\<lambda>y p]\<close>
+      by (safe intro!: c_prop[THEN "&E"(2), THEN "\<forall>E"(1)[where \<tau>="\<guillemotleft>[\<lambda>y p]\<guillemotright>"], THEN "\<equiv>E"(2)] "cqt:2")
+    AOT_thus \<open>c \<Turnstile> p\<close>
+      by (metis "intro-elim:3:b" "vdash-properties:10" sit_c lem1)
+  qed
+  ultimately AOT_show \<open>\<exists>s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
+    by (meson "con-dis-i-e:1" "existential:2[const_var]")
+qed
 
 AOT_define NullSituation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NullSituation'(_')\<close>)
   "df-null-trivial:1": \<open>NullSituation(s) \<equiv>\<^sub>d\<^sub>f \<not>\<exists>p s \<Turnstile> p\<close>
@@ -3189,6 +3275,70 @@ AOT_theorem "rigid-rel-thms:3": \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<
   by (AOT_subst_thm "df-rigid-rel:1"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "cqt:2"(1)];
       AOT_subst_thm "rigid-rel-thms:2")
      (simp add: "oth-class-taut:3:a")
+
+AOT_theorem \<open>Possible(s) \<equiv> \<exists>w(s \<unlhd> w)\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>Possible(s)\<close>
+  AOT_hence \<open>\<diamond>Actual(s)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" pos by blast
+  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+    apply (AOT_subst (reverse) \<open>\<forall>p (s \<Turnstile> p \<rightarrow> p)\<close> \<open>Actual(s)\<close>)
+    using "df-simplify:1" "rule-eq-df:1" Situation.restricted_var_condition actual apply blast
+    by auto
+  AOT_hence \<open>\<exists>w w \<Turnstile> \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+    by (safe intro!: "fund:1"[unvarify p, THEN "\<equiv>E"(1)] "log-prop-prop:2")
+  then AOT_obtain w where \<open>w \<Turnstile> \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+    using PossibleWorld.instantiation by meson
+  AOT_hence 1: \<open>\<forall>p w \<Turnstile> (s \<Turnstile> p \<rightarrow> p)\<close>
+    using "conj-dist-w:5"
+    using "intro-elim:3:a" by blast
+  AOT_have \<open>s \<unlhd> w\<close>
+  proof(safe intro!: "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "Situation.\<psi>" GEN "\<rightarrow>I")
+    AOT_show \<open>Situation(w)\<close>
+      using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "world-pos" pos by blast
+  next
+    fix p
+    AOT_assume \<open>s \<Turnstile> p\<close>
+    AOT_hence \<open>\<box>s \<Turnstile> p\<close>
+      using "intro-elim:3:a" "lem2:1" by blast
+    AOT_hence \<open>\<forall>w w \<Turnstile> s \<Turnstile> p\<close>
+      by (safe intro!: "fund:2"[unvarify p, THEN "\<equiv>E"(1)] "log-prop-prop:2")
+    AOT_hence \<open>w \<Turnstile> s \<Turnstile> p\<close>
+      using "rule-ui:3" "vdash-properties:10" PossibleWorld.restricted_var_condition by blast
+    moreover AOT_have \<open>w \<Turnstile> (s \<Turnstile> p \<rightarrow> p)\<close>
+      using 1 "\<forall>E" by blast
+    ultimately AOT_show \<open>w \<Turnstile> p\<close>
+      using "conj-dist-w:2"[unvarify p, THEN "\<equiv>E"(1)] "log-prop-prop:2" "\<rightarrow>E" by blast
+  qed
+  AOT_thus \<open>\<exists>w(s \<unlhd> w)\<close>
+    using "PossibleWorld.\<exists>I" by blast
+next
+  AOT_assume \<open>\<exists>w(s \<unlhd> w)\<close>
+  then AOT_obtain w where \<open>s \<unlhd> w\<close>
+    using "PossibleWorld.\<exists>E" by meson
+  AOT_hence 1: \<open>\<forall>p (s \<Turnstile> p \<rightarrow> w \<Turnstile> p)\<close>
+    using "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
+  AOT_have \<open>\<forall>p (w \<Turnstile> (s \<Turnstile> p \<rightarrow> p))\<close>
+  proof (safe intro!: GEN "conj-dist-w:2"[unvarify p, THEN "\<equiv>E"(2)] "log-prop-prop:2" "\<rightarrow>I")
+    fix p
+    AOT_assume \<open>w \<Turnstile> s \<Turnstile> p\<close>
+    AOT_hence \<open>\<diamond>s \<Turnstile> p\<close>
+      by (auto intro!: "fund:1"[unvarify p, THEN "\<equiv>E"(2)] "log-prop-prop:2" "PossibleWorld.\<exists>I")
+    AOT_hence \<open>s \<Turnstile> p\<close>
+      using "intro-elim:3:a" "lem2:2" by blast
+    AOT_thus \<open>w \<Turnstile> p\<close>
+      using 1 "log-prop-prop:2" "rule-ui:1" "vdash-properties:10" by blast
+  qed
+  AOT_hence \<open>w \<Turnstile> \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+    by (metis "\<equiv>E"(2) "conj-dist-w:5")
+  AOT_hence \<open>\<diamond>\<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
+    by (safe intro!: "fund:1"[unvarify p, THEN "\<equiv>E"(2)] "log-prop-prop:2" PossibleWorld.existential)
+  AOT_hence \<open>\<diamond>Actual(s)\<close>
+    by (AOT_subst_def actual)
+       (metis "KBasic:16" "&I" "\<rightarrow>E" RN "Situation.\<psi>")
+  AOT_thus \<open>Possible(s)\<close>
+    by(safe intro!: "pos"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "Situation.\<psi>")
+qed
 
 (*<*)
 end
