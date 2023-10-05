@@ -27,7 +27,7 @@ val global_facts = Global_Theory.facts_of thy;
 in
 Facts.dest_all (Context.Proof ctxt) false [] global_facts |>
   map (fn (n, thms) => let
-    val {concealed = _, group = _, theory_long_name = thy_name, pos = pos, serial = _} =
+    val {theory_long_name = thy_name, pos = pos, ...} =
       Name_Space.the_entry (Facts.space_of global_facts) n
     val name = Binding.name_of (Binding.qualified_name n)
     val items = Symtab.keys (fold (fn thm => fn set =>

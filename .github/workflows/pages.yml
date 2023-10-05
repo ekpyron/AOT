@@ -18,7 +18,8 @@ jobs:
            mkdir AOT.ExportInfo
            chmod 777 output
            chmod 777 AOT.ExportInfo
-           docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:Isabelle2021-1 build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/output -e
+           sed -i -e 's/document = pdf, //' ROOT
+           docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:Isabelle2023 build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/output -e
            cp -r output build
       - name: Patch pages.
         run: .github/workflows/patch_pages.py build/Unsorted/AOT/*.html
