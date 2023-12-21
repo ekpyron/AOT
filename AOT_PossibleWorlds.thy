@@ -457,6 +457,41 @@ proof -
     by (meson "con-dis-i-e:1" "existential:2[const_var]")
 qed
 
+AOT_theorem "sit-comp-simp-unique": \<open>\<exists>!s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
+proof(safe intro!: "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  AOT_obtain s where s_prop: \<open>\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
+    using "sit-comp-simp" Situation.instantiation[rotated] by meson
+  AOT_show \<open>\<exists>\<alpha> (Situation(\<alpha>) & \<forall>p (\<alpha> \<Turnstile> p \<equiv> \<phi>{p}) & \<forall>\<beta> (Situation(\<beta>) & \<forall>p (\<beta> \<Turnstile> p \<equiv> \<phi>{p}) \<rightarrow> \<beta> = \<alpha>))\<close>
+  proof(safe intro!: "\<exists>I"(2) "&I")
+    AOT_show \<open>Situation(s)\<close>
+      using "Situation.\<psi>" by auto
+  next
+    AOT_show \<open>\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close> using s_prop.
+  next
+    AOT_show \<open>\<forall>\<beta> (Situation(\<beta>) & \<forall>p (\<beta> \<Turnstile> p \<equiv> \<phi>{p}) \<rightarrow> \<beta> = s)\<close>
+    proof(safe intro!: GEN "\<rightarrow>I")
+      fix x
+      AOT_assume 1: \<open>Situation(x) & \<forall>p (x \<Turnstile> p \<equiv> \<phi>{p})\<close>
+      AOT_show \<open>x = s\<close>
+      proof (safe intro!: "sit-identity"[unconstrain s, THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] 1[THEN "&E"(1)] GEN "\<equiv>I" "\<rightarrow>I")
+        fix p
+        AOT_assume \<open>x \<Turnstile> p\<close>
+        AOT_hence \<open>\<phi>{p}\<close>
+          using "1" "con-dis-i-e:2:b" "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" by blast
+        AOT_thus \<open>s \<Turnstile> p\<close>
+          using s_prop  "intro-elim:3:b" "log-prop-prop:2" "rule-ui:1" by blast
+      next
+        fix p
+        AOT_assume \<open>s \<Turnstile> p\<close>
+        AOT_hence \<open>\<phi>{p}\<close>
+          using "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" s_prop by blast
+        AOT_thus \<open>x \<Turnstile> p\<close>
+          using "1" "con-dis-i-e:2:b" "intro-elim:3:b" "log-prop-prop:2" "rule-ui:1" by blast
+      qed
+    qed
+  qed
+qed
+
 AOT_define NullSituation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NullSituation'(_')\<close>)
   "df-null-trivial:1": \<open>NullSituation(s) \<equiv>\<^sub>d\<^sub>f \<not>\<exists>p s \<Turnstile> p\<close>
 
@@ -1740,6 +1775,22 @@ AOT_define NecImpl :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<c
   "nec-impl-p:1": \<open>p \<Rightarrow> q \<equiv>\<^sub>d\<^sub>f \<box>(p \<rightarrow> q)\<close>
 AOT_define NecEquiv :: \<open>\<phi> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (infixl \<open>\<Leftrightarrow>\<close> 21)
   "nec-impl-p:2": \<open>p \<Leftrightarrow> q \<equiv>\<^sub>d\<^sub>f (p \<Rightarrow> q) & (q \<Rightarrow> p)\<close>
+
+AOT_theorem "nec-impl-p:3[rec]": \<open>p \<Rightarrow> p\<close>
+  by (safe intro!: "nec-impl-p:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] RN "\<rightarrow>I")
+
+AOT_theorem "nec-impl-p:3[trans]": \<open>((p \<Rightarrow> q) & (q \<Rightarrow> r)) \<rightarrow> p \<Rightarrow> r\<close>
+proof (safe intro!: "nec-impl-p:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "\<rightarrow>I")
+  AOT_assume \<open>(p \<Rightarrow> q) & (q \<Rightarrow> r)\<close>
+  AOT_hence \<open>\<box>((p \<rightarrow> q) & (q \<rightarrow> r))\<close>
+    by (metis "KBasic:3" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "intro-elim:3:b" "nec-impl-p:1")
+  moreover AOT_modally_strict {
+    AOT_have \<open>((p \<rightarrow> q) & (q \<rightarrow> r)) \<rightarrow> (p \<rightarrow> r)\<close>
+      by (metis "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "vdash-properties:10")
+  }
+  ultimately AOT_show \<open>\<box>(p \<rightarrow> r)\<close>
+    using "RM:1" "\<rightarrow>E" by blast
+qed
 
 AOT_theorem "nec-equiv-nec-im": \<open>p \<Leftrightarrow> q \<equiv> \<box>(p \<equiv> q)\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
@@ -3276,7 +3327,7 @@ AOT_theorem "rigid-rel-thms:3": \<open>Rigid(F) \<equiv> \<forall>x\<^sub>1...\<
       AOT_subst_thm "rigid-rel-thms:2")
      (simp add: "oth-class-taut:3:a")
 
-AOT_theorem \<open>Possible(s) \<equiv> \<exists>w(s \<unlhd> w)\<close>
+AOT_theorem "poss-sit-part-w:1": \<open>Possible(s) \<equiv> \<exists>w(s \<unlhd> w)\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>Possible(s)\<close>
   AOT_hence \<open>\<diamond>Actual(s)\<close>
@@ -3339,6 +3390,9 @@ next
   AOT_thus \<open>Possible(s)\<close>
     by(safe intro!: "pos"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "Situation.\<psi>")
 qed
+
+AOT_define GapOn :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>GapOn'(_,_')\<close>)
+  "routley-star:5": \<open>GapOn(s,p) \<equiv>\<^sub>d\<^sub>f \<not>s \<Turnstile> p & \<not>s \<Turnstile> \<not>p\<close>
 
 (*<*)
 end
