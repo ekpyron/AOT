@@ -112,10 +112,10 @@ AOT_axiom "qml-act:2": \<open>\<box>\<phi> \<equiv> \<^bold>\<A>\<box>\<phi>\<cl
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_box AOT_sem_equiv)
 
-AOT_axiom descriptions: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+AOT_axiom descriptions: \<open>y = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>x(\<^bold>\<A>\<phi>{x} \<equiv> x = y)\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
-    AOT_show \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+    AOT_show \<open>y = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>x(\<^bold>\<A>\<phi>{x} \<equiv> x = y)\<close>
       by (induct; simp add: AOT_sem_equiv AOT_sem_forall AOT_sem_act AOT_sem_eq)
          (metis (no_types, opaque_lifting) AOT_sem_desc_denotes AOT_sem_desc_prop
                                            AOT_sem_denotes)

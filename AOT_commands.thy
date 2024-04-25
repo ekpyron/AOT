@@ -42,6 +42,11 @@ setup\<open>AOT_Theorems.setup\<close>
 setup\<open>AOT_Definitions.setup\<close>
 setup\<open>AOT_no_atp.setup\<close>
 
+attribute_setup AOT_elim = \<open>
+Args.term >>
+(fn (Const (name, _)) => Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyRules.map (Symtab.map_default (name,[]) (fn thms => thm::thms))) I))
+\<close>
+
 (*<*)
 end
 (*>*)

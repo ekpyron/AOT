@@ -187,12 +187,12 @@ val _ =
 
 (* Generalized mechanism for "AOT_restricted_type.\<forall>I" followed by \<forall>E *)
 ML\<open>
-fun get_instantiated_allI ctxt varname thm = let
+fun get_instantiated_allI_restricted' ctxt match thm = let
 val trm = Thm.concl_of thm
 val trm = case trm of (@{const Trueprop} $ (@{const AOT_model_valid_in} $ _ $ x)) => x
                       | _ => raise Term.TERM ("Expected simple theorem.", [trm])
 fun extractVars (Const (\<^const_name>\<open>AOT_term_of_var\<close>, t) $ (Const rep $ Var v)) =
-    (if fst (fst v) = fst varname
+    (if match v
      then [Const (\<^const_name>\<open>AOT_term_of_var\<close>, t) $ (Const rep $ Var v)]
      else []) (* TODO: care about the index *)
   | extractVars (t1 $ t2) = extractVars t1 @ extractVars t2
@@ -208,24 +208,34 @@ val varty = snd var
 val tyname = fst (Term.dest_Type varty)
 val b = tyname^".\<forall>I" (* TODO: better way to find the theorem *)
 val thms = fst (Context.map_proof_result (fn ctxt => (Attrib.eval_thms ctxt
-    [(Facts.Named ((b,Position.none),NONE),[])], ctxt)) ctxt)
+    [(Facts.Named ((b,Position.none),NONE),[])], ctxt)) (Context.Proof ctxt))
 val allthm = (case thms of (thm::_) => thm
     | _ => raise Fail "Unknown restricted type.")
 val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (vartrm, trm))
-val trm = Thm.cterm_of (Context.proof_of ctxt) trm
+val trm = Thm.cterm_of ctxt trm
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
 val allthm = Drule.instantiate_normalize (TVars.empty, Vars.make [(phi,trm)]) allthm
+val allthm = Thm.put_name_hint ("unconstrain_"^fst (fst var)) allthm
 in
 allthm
 end
+fun get_instantiated_allI_restricted ctxt varname = get_instantiated_allI_restricted' (Context.proof_of ctxt) (fn v => fst (fst v) = fst varname)
 \<close>
+
+local_setup\<open>AOT_add_varify_rule (\<^const_name>\<open>AOT_var.AOT_term_of_var\<close>,
+fn ctxt => (                                                                                                            
+  fn (Const (_, _) $ Var arg) => (fn thm =>
+SOME (get_instantiated_allI_restricted' (Proof_Context.init_global (Context.theory_of ctxt)) (fn var => var = arg) thm)
+)
+   | x => K NONE
+))\<close>
 
 (* TODO: unconstraining multiple variables does not work yet *)
 attribute_setup "unconstrain" =
   \<open>Scan.lift (Scan.repeat1 Args.var) >> (fn args => Thm.rule_attribute []
   (fn ctxt => fn thm =>
     let
-    val thm = fold (fn arg => fn thm => thm RS get_instantiated_allI ctxt arg thm)
+    val thm = fold (fn arg => fn thm => thm RS get_instantiated_allI_restricted ctxt arg thm)
                    args thm
     val thm = fold (fn _ => fn thm => thm RS @{thm "\<forall>E"(2)}) args thm
     in

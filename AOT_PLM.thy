@@ -92,6 +92,7 @@ AOT_theorem "vdash-properties:10":
   shows \<open>\<psi>\<close>
   using MP assms by blast
 lemmas "\<rightarrow>E" = "vdash-properties:10"
+declare "\<rightarrow>E"[AOT_elim AOT_imp]
 
 subsection\<open>Two Fundamental Metarules: GEN and RN\<close>
 text\<open>\label{PLM: 9.3}\<close>
@@ -198,6 +199,7 @@ lemmas "Hypothetical Syllogism" = "ded-thm-cor:3"
 
 AOT_theorem "useful-tautologies:1": \<open>\<not>\<not>\<phi> \<rightarrow> \<phi>\<close>
   by (metis "pl:3"[axiom_inst] "\<rightarrow>I" "Hypothetical Syllogism")
+
 AOT_theorem "useful-tautologies:2": \<open>\<phi> \<rightarrow> \<not>\<not>\<phi>\<close>
   by (metis "pl:3"[axiom_inst] "\<rightarrow>I" "ded-thm-cor:4")
 AOT_theorem "useful-tautologies:3": \<open>\<not>\<phi> \<rightarrow> (\<phi> \<rightarrow> \<psi>)\<close>
@@ -318,7 +320,6 @@ proof -
 qed
 lemmas "Idempotence of \<or>" = "con-dis-taut:7"
 
-
 AOT_theorem "con-dis-i-e:1":
   assumes \<open>\<phi>\<close> and \<open>\<psi>\<close>
   shows \<open>\<phi> & \<psi>\<close>
@@ -334,6 +335,8 @@ AOT_theorem "con-dis-i-e:2:b":
   shows \<open>\<psi>\<close>
   using "Conjunction Simplification"(2) MP assms by blast
 lemmas "&E" = "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+declare "&E"(1)[AOT_elim AOT_conj]
+declare "&E"(2)[AOT_elim AOT_conj]
 
 AOT_theorem "con-dis-i-e:3:a":
   assumes \<open>\<phi>\<close>
@@ -595,6 +598,8 @@ AOT_theorem "intro-elim:3:f":
   by (metis "\<equiv>I" "\<rightarrow>I" "intro-elim:3:a" "intro-elim:3:b" assms)
 lemmas "\<equiv>E" = "intro-elim:3:a" "intro-elim:3:b" "intro-elim:3:c"
               "intro-elim:3:d" "intro-elim:3:e" "intro-elim:3:f"
+declare "\<equiv>E"(1)[AOT_elim AOT_equiv]
+declare "\<equiv>E"(2)[AOT_elim AOT_equiv]
 
 declare "Commutativity of \<equiv>"[THEN "\<equiv>E"(1), sym]
 
@@ -608,11 +613,14 @@ AOT_theorem "rule-eq-df:2":
   shows \<open>\<psi>\<close>
   using "\<equiv>Df" "\<equiv>E"(1) assms by blast
 lemmas "\<equiv>\<^sub>d\<^sub>fE" = "rule-eq-df:2"
+declare "\<equiv>\<^sub>d\<^sub>fE"[AOT_elim AOT_model_equiv_def]
+
 AOT_theorem "rule-eq-df:3":
   assumes \<open>\<phi> \<equiv>\<^sub>d\<^sub>f \<psi>\<close> and \<open>\<psi>\<close>
   shows \<open>\<phi>\<close>
   using "\<equiv>Df" "\<equiv>E"(2) assms by blast
 lemmas "\<equiv>\<^sub>d\<^sub>fI" = "rule-eq-df:3"
+declare "\<equiv>\<^sub>d\<^sub>fI"[AOT_elim AOT_model_equiv_def]
 
 AOT_theorem  "df-simplify:1":
   assumes \<open>\<phi> \<equiv> (\<psi> & \<chi>)\<close> and \<open>\<psi>\<close>
@@ -646,6 +654,7 @@ AOT_theorem "rule-ui:3":
   by (simp add: "rule-ui:2[const_var]" assms)
 lemmas "\<forall>E" = "rule-ui:1" "rule-ui:2[const_var]"
               "rule-ui:2[lambda]" "rule-ui:3"
+declare "\<forall>E"(1)[AOT_elim AOT_forall]
 
 AOT_theorem "cqt-orig:1[const_var]": \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<phi>{\<beta>}\<close>
   by (simp add: "\<forall>E"(2) "\<rightarrow>I")
@@ -666,13 +675,13 @@ lemmas "\<forall>I" = universal
 
 (* Generalized mechanism for \<forall>I followed by \<forall>E *)
 ML\<open>
-fun get_instantiated_allI ctxt varname thm = let
+fun get_instantiated_allI' ctxt match thm = let
 val trm = Thm.concl_of thm
 val trm =
   case trm of (@{const Trueprop} $ (@{const AOT_model_valid_in} $ _ $ x)) => x
   | _ => raise Term.TERM ("Expected simple theorem.", [trm])
 fun extractVars (Const (\<^const_name>\<open>AOT_term_of_var\<close>, _) $ Var v) =
-    (if fst (fst v) = fst varname then [Var v] else [])
+    (if match v then [Var v] else [])
   | extractVars (t1 $ t2) = extractVars t1 @ extractVars t2
   | extractVars (Abs (_, _, t)) = extractVars t
   | extractVars _ = []
@@ -691,10 +700,18 @@ val typ = Thm.ctyp_of (Context.proof_of ctxt) trmty
 val allthm = Drule.instantiate_normalize (TVars.make [(ty, typ)], Vars.empty) @{thm "\<forall>I"}
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
 val allthm = Drule.instantiate_normalize (TVars.empty, Vars.make [(phi,trm)]) allthm
+val allthm = Thm.put_name_hint ("unvarify_"^fst (fst var)) allthm
 in
 allthm
 end
+fun get_instantiated_allI ctxt varname thm = get_instantiated_allI' ctxt (fn v => fst (fst v) = fst varname) thm
 \<close>
+
+local_setup\<open>AOT_add_varify_rule (\<^const_name>\<open>AOT_var.AOT_term_of_var\<close>,
+fn ctxt => (
+  fn (Var arg) => (fn thm => SOME (get_instantiated_allI' ctxt (fn var => var = arg) thm))
+   | x => K NONE
+))\<close>
 
 attribute_setup "\<forall>I" =
   \<open>Scan.lift (Scan.repeat1 Args.var) >> (fn args => Thm.rule_attribute []
@@ -710,7 +727,7 @@ attribute_setup "unvarify" =
       val thm = fold get_inst_allI args thm
       val thm = fold (K (fn thm => thm RS @{thm "\<forall>E"(1)})) args thm
     in
-     thm
+     Object_Logic.rulify (Context.proof_of ctxt) thm
     end))\<close>
   "Generalize a statement about variables to a statement about denoting terms."
 
@@ -753,12 +770,19 @@ proof(rule "\<rightarrow>I")
     using "\<equiv>I" "\<rightarrow>I" by auto
 qed
 
-AOT_theorem "cqt-basic:4": \<open>\<forall>\<alpha>(\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} & \<forall>\<alpha> \<psi>{\<alpha>})\<close>
-proof(rule "\<rightarrow>I")
+AOT_theorem "cqt-basic:4": \<open>\<forall>\<alpha>(\<phi>{\<alpha>} & \<psi>{\<alpha>}) \<equiv> (\<forall>\<alpha> \<phi>{\<alpha>} & \<forall>\<alpha> \<psi>{\<alpha>})\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume 0: \<open>\<forall>\<alpha>(\<phi>{\<alpha>} & \<psi>{\<alpha>})\<close>
   AOT_have \<open>\<phi>{\<alpha>}\<close> and \<open>\<psi>{\<alpha>}\<close> for \<alpha> using "\<forall>E"(2) 0 "&E" by blast+
   AOT_thus \<open>\<forall>\<alpha> \<phi>{\<alpha>} & \<forall>\<alpha> \<psi>{\<alpha>}\<close>
     by (auto intro: "\<forall>I" "&I")
+next
+  AOT_assume 1: \<open>\<forall>\<alpha> \<phi>{\<alpha>} & \<forall>\<alpha> \<psi>{\<alpha>}\<close>
+  AOT_hence \<open>\<phi>{\<alpha>}\<close> and \<open>\<psi>{\<alpha>}\<close> for \<alpha>
+    using "\<forall>E" "&E" apply blast
+    using "1" "con-dis-i-e:2:b" "rule-ui:3" by blast
+  AOT_thus \<open>\<forall>\<alpha> (\<phi>{\<alpha>} & \<psi>{\<alpha>})\<close>
+    using "&I" "\<forall>I" by meson
 qed
 
 AOT_theorem "cqt-basic:5": \<open>(\<forall>\<alpha>\<^sub>1...\<forall>\<alpha>\<^sub>n(\<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n})) \<rightarrow> \<phi>{\<alpha>\<^sub>1...\<alpha>\<^sub>n}\<close>
@@ -863,6 +887,8 @@ AOT_theorem "instantiation":
   shows \<open>\<psi>\<close>
   by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" GEN "raa-cor:3" "conventions:4" assms)
 lemmas "\<exists>E" = "instantiation"
+lemmas "\<exists>E'" = "\<exists>E"[rotated]
+declare "\<exists>E'"[AOT_elim AOT_exists]
 
 AOT_theorem "cqt-further:1": \<open>\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<phi>{\<alpha>}\<close>
   using "\<forall>E"(4) "\<exists>I"(2) "\<rightarrow>I" by metis
@@ -1088,6 +1114,8 @@ proof -
     using "\<forall>E"(1) by blast
   AOT_thus \<open>\<phi>{\<sigma>}\<close> using assms "\<rightarrow>E" by blast
 qed
+lemmas "rule=E'" = "rule=E"[rotated]
+declare "rule=E'"[AOT_elim AOT_eq]
 
 AOT_theorem "propositions-lemma:1": \<open>[\<lambda> \<phi>] = \<phi>\<close>
 proof -

@@ -320,7 +320,6 @@ qed
 
 AOT_define PartOfSituation :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<unlhd>\<close> 80)
   "sit-part-whole": \<open>s \<unlhd> s' \<equiv>\<^sub>d\<^sub>f \<forall>p (s \<Turnstile> p \<rightarrow> s' \<Turnstile> p)\<close>
-
 AOT_theorem "part:1": \<open>s \<unlhd> s\<close>
   by (rule "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
      (safe intro!: "&I" Situation.\<psi> GEN "\<rightarrow>I")
@@ -401,7 +400,7 @@ AOT_theorem "pers-prop": \<open>\<forall>p Persistent(p)\<close>
      (simp add: "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E"])
 
 (* TODO: put this at the correct place *)
-AOT_theorem "sit-comp-simp": \<open>\<exists>s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
+AOT_theorem "sit-comp-simp:1": \<open>\<exists>s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
 proof -
   AOT_have \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<exists>p (\<phi>{p} & F = [\<lambda>y p])))\<close>
     using "A-objects" "vdash-properties:1[2]" by force
@@ -457,10 +456,114 @@ proof -
     by (meson "con-dis-i-e:1" "existential:2[const_var]")
 qed
 
+AOT_theorem "sit-comp-simp:3": \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<down>\<close>
+proof (safe intro!: "actual-desc:1"[THEN "\<equiv>E"(2)] "uniqueness:2"[THEN "\<equiv>E"(2)])
+  AOT_obtain s where s_prop: \<open>\<forall>p(s \<Turnstile> p \<equiv> \<^bold>\<A>\<phi>{p})\<close>
+    using "sit-comp-simp:1" Situation.instantiation[rotated] by meson
+  AOT_have \<open>\<forall>y (\<^bold>\<A>(Situation(y) & \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})) \<equiv> y = s)\<close>
+  proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+    fix y
+    AOT_assume \<open>\<^bold>\<A>(Situation(y) & \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p}))\<close>
+    AOT_hence \<open>\<^bold>\<A>Situation(y)\<close> and 2: \<open>\<^bold>\<A>\<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+      using "&E" "Act-Basic:2" "\<equiv>E"(1) by blast+
+    AOT_hence y_sit: \<open>Situation(y)\<close>
+      using "intro-elim:3:a" "possit-sit:4" by blast
+    AOT_have \<open>\<forall>p \<^bold>\<A>(y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+      using 2 "\<equiv>E"(1) "logic-actual-nec:3"[axiom_inst] by blast
+    AOT_hence \<open>\<^bold>\<A>(y \<Turnstile> p \<equiv> \<phi>{p})\<close> for p using "\<forall>E" by blast
+    AOT_hence 3: \<open>\<^bold>\<A>y \<Turnstile> p \<equiv> \<^bold>\<A>\<phi>{p}\<close> for p
+      using "Act-Basic:5" "\<equiv>E"(1) by blast
+    AOT_show \<open>y = s\<close>
+    proof(safe intro!: "sit-identity"[unconstrain s, THEN "\<rightarrow>E", OF y_sit, THEN "\<equiv>E"(2)] GEN "\<equiv>I" "\<rightarrow>I")
+      fix p
+      AOT_assume \<open>y \<Turnstile> p\<close>
+      AOT_hence \<open>\<^bold>\<A>y \<Turnstile> p\<close>
+        using "lem2:4"[unconstrain s, THEN "\<rightarrow>E", OF y_sit]
+        using "intro-elim:3:b" by blast
+      AOT_hence \<open>\<^bold>\<A>\<phi>{p}\<close>
+        using 3 "intro-elim:3:a" by blast
+      AOT_thus \<open>s \<Turnstile> p\<close>
+        using s_prop "intro-elim:3:b" "rule-ui:2[const_var]" by blast
+    next
+      fix p
+      AOT_assume \<open>s \<Turnstile> p\<close>
+      AOT_hence \<open>\<^bold>\<A>\<phi>{p}\<close>
+        using "intro-elim:3:a" "rule-ui:3" s_prop by blast
+      AOT_hence \<open>\<^bold>\<A>y \<Turnstile> p\<close>
+        using "3" "intro-elim:3:b" by blast
+      AOT_thus \<open>y \<Turnstile> p\<close>
+        using "lem2:4"[unconstrain s, THEN "\<rightarrow>E", OF y_sit]
+        using "intro-elim:3:a" by blast
+    qed
+  next
+    fix y
+    AOT_assume \<open>y = s\<close>
+    moreover AOT_have \<open>\<^bold>\<A>(Situation(s) & \<forall>p (s \<Turnstile> p \<equiv> \<phi>{p}))\<close>
+    proof(safe intro!: "act-conj-act:3"[THEN "\<rightarrow>E"] "&I" "logic-actual-nec:3"[axiom_inst, THEN "\<equiv>E"(2)] GEN)
+      AOT_show \<open>\<^bold>\<A>Situation(s)\<close>
+        using "\<equiv>E"(2) "possit-sit:4" "Situation.\<psi>" by blast
+    next
+      AOT_show \<open>\<^bold>\<A>(s \<Turnstile> p \<equiv> \<phi>{p})\<close> for p
+      proof(safe intro!: "Act-Basic:5"[THEN "\<equiv>E"(2)] "\<equiv>I" "\<rightarrow>I")
+        AOT_assume \<open>\<^bold>\<A>s \<Turnstile> p\<close>
+        AOT_hence \<open>s \<Turnstile> p\<close>
+          using "intro-elim:3:a" "lem2:4" by blast
+        AOT_thus \<open>\<^bold>\<A>\<phi>{p}\<close>
+          using s_prop "intro-elim:3:a" "rule-ui:3" by blast
+      next
+        AOT_assume \<open>\<^bold>\<A>\<phi>{p}\<close>
+        AOT_hence \<open>s \<Turnstile> p\<close>
+          using "intro-elim:3:b" "rule-ui:3" s_prop by blast
+        AOT_thus \<open>\<^bold>\<A>s \<Turnstile> p\<close>
+          using "intro-elim:3:b" "lem2:4" by blast
+      qed
+    qed
+    ultimately AOT_show \<open>\<^bold>\<A>(Situation(y) & \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p}))\<close>
+      using id_sym "l-identity"[axiom_inst, THEN "\<rightarrow>E", THEN "\<rightarrow>E"] by fast
+  qed
+  AOT_thus \<open>\<exists>x \<forall>y (\<^bold>\<A>(Situation(y) & \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})) \<equiv> y = x)\<close>
+    using "\<exists>I" by fast
+qed
+
+AOT_theorem "sit-comp-simp:4":
+  assumes \<open>RIGID_CONDITION(\<phi>)\<close>
+  shows \<open>y = \<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> \<phi>{p}) \<rightarrow> \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>y = \<^bold>\<iota>s(\<forall>p (s \<Turnstile> p \<equiv> \<phi>{p}))\<close>
+  AOT_hence 0: \<open>\<^bold>\<A>(Situation(y) & \<forall>p (y \<Turnstile> p \<equiv> \<phi>{p}))\<close>
+    using "actual-desc:2" "\<rightarrow>E" by blast
+  AOT_hence \<open>\<^bold>\<A>\<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+    using "Act-Basic:2" "con-dis-i-e:2:b" "intro-elim:3:a" by blast
+  AOT_hence 1: \<open>\<forall>p \<^bold>\<A>(y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+    using "intro-elim:3:a" "logic-actual-nec:3" "vdash-properties:1[2]" by blast
+
+  AOT_have sit_y: \<open>Situation(y)\<close>
+    using 0 "&E"(1) "Act-Basic:2" "intro-elim:3:a" "possit-sit:4" by blast
+
+  AOT_show \<open>\<forall>p (y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+  proof(rule GEN)
+    fix p
+    AOT_have \<open>\<^bold>\<A>(y \<Turnstile> p \<equiv> \<phi>{p})\<close>
+      using 1 "\<forall>E" by blast
+    AOT_hence \<open>\<^bold>\<A>y \<Turnstile> p \<equiv> \<^bold>\<A>\<phi>{p}\<close>
+      using "Act-Basic:5" "intro-elim:3:a" by blast
+    moreover {
+      AOT_have \<open>\<box>(\<phi>{p} \<rightarrow> \<box>\<phi>{p})\<close>
+        using "strict-can:1[E]"[OF assms] RN "BFs:2" "\<rightarrow>E" "\<forall>E" by blast
+      AOT_hence \<open>\<^bold>\<A>\<phi>{p} \<equiv> \<phi>{p}\<close>
+        using "sc-eq-fur:2" "vdash-properties:10" by blast
+    }
+    ultimately AOT_show \<open>y \<Turnstile> p \<equiv> \<phi>{p}\<close>
+      using "lem2:4"[unconstrain s, THEN "\<rightarrow>E", OF sit_y]
+      by (meson "intro-elim:3:f")
+  qed
+qed
+
+
 AOT_theorem "sit-comp-simp-unique": \<open>\<exists>!s\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
 proof(safe intro!: "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   AOT_obtain s where s_prop: \<open>\<forall>p(s \<Turnstile> p \<equiv> \<phi>{p})\<close>
-    using "sit-comp-simp" Situation.instantiation[rotated] by meson
+    using "sit-comp-simp:1" Situation.instantiation[rotated] by meson
   AOT_show \<open>\<exists>\<alpha> (Situation(\<alpha>) & \<forall>p (\<alpha> \<Turnstile> p \<equiv> \<phi>{p}) & \<forall>\<beta> (Situation(\<beta>) & \<forall>p (\<beta> \<Turnstile> p \<equiv> \<phi>{p}) \<rightarrow> \<beta> = \<alpha>))\<close>
   proof(safe intro!: "\<exists>I"(2) "&I")
     AOT_show \<open>Situation(s)\<close>
