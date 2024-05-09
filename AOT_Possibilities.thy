@@ -51,7 +51,8 @@ proof(safe intro!: "\<rightarrow>I" GEN)
     using \<zeta> "\<rightarrow>E" by blast
 qed
 
-AOT_theorem "modal-clos-facts:1b": \<open>ModallyClosed(s) \<rightarrow> \<forall>p\<^sub>1\<forall>p\<^sub>2\<forall>q((s \<Turnstile> p\<^sub>1 & s \<Turnstile> p\<^sub>2 & ((p\<^sub>1 & p\<^sub>2) \<Rightarrow> q)) \<rightarrow> s \<Turnstile> q)\<close>
+AOT_theorem "modal-clos-facts:1b":
+  \<open>ModallyClosed(s) \<rightarrow> \<forall>p\<^sub>1\<forall>p\<^sub>2\<forall>q((s \<Turnstile> p\<^sub>1 & s \<Turnstile> p\<^sub>2 & ((p\<^sub>1 & p\<^sub>2) \<Rightarrow> q)) \<rightarrow> s \<Turnstile> q)\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
   fix p\<^sub>1 p\<^sub>2 q
   AOT_assume \<open>ModallyClosed(s)\<close>
@@ -93,13 +94,15 @@ proof(safe intro!: "\<rightarrow>I" GEN)
   ultimately AOT_have \<open>\<box>(Actual(s) \<rightarrow> p\<^sub>2)\<close>
     using "vdash-properties:10" by blast
   AOT_hence \<open>\<box>(Actual(s) \<rightarrow> (p\<^sub>1 & p\<^sub>2))\<close>
-    by (meson "1" "KBasic:1.\<rightarrow>E" "KBasic:5.\<rightarrow>E.\<equiv>E_1" "RM:1.\<rightarrow>E" "con-dis-i-e:1" "oth-class-taut:8:b")
+    by (meson "1" "KBasic:1.\<rightarrow>E" "KBasic:5.\<rightarrow>E.\<equiv>E_1" "RM:1.\<rightarrow>E"
+              "con-dis-i-e:1" "oth-class-taut:8:b")
   AOT_hence \<open>Actual(s) \<Rightarrow> (p\<^sub>1 & p\<^sub>2)\<close>
     by (simp add: "nec-impl-p:1.\<equiv>\<^sub>d\<^sub>fI")
   AOT_hence \<open>Actual(s) \<Rightarrow> q\<close>
     using \<xi>
     using "nec-impl-p:3[trans]"[unvarify p, OF "log-prop-prop:2"]
-    by (meson "&E"(2) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "log-prop-prop:2" "nec-impl-p:3[trans].unvarify_p.unvarify_q.unvarify_r.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E")
+    by (meson "&E"(2) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "log-prop-prop:2"
+              "nec-impl-p:3[trans].unvarify_p.unvarify_q.unvarify_r.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E")
   AOT_thus \<open>s \<Turnstile> q\<close>
     using \<zeta> "\<rightarrow>E" by blast
 qed
@@ -111,7 +114,8 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_have \<theta>: \<open>\<forall>q((Actual(s) \<Rightarrow> q) \<rightarrow> s \<Turnstile> q)\<close>
     using 1 "\<equiv>\<^sub>d\<^sub>fE" "&E" "sit-clo" by blast
   AOT_have \<xi>: \<open>\<not>\<exists>p(s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
-    using 1 by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "existential:2[const_var]" "instantiation" "reductio-aa:1" cons)
+    using 1 by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "existential:2[const_var]"
+                                          "instantiation" "reductio-aa:1" cons)
 
   AOT_show \<open>Possible(s)\<close>
   proof(rule "RAA")
@@ -143,7 +147,8 @@ proof(safe intro!: "\<rightarrow>I")
       using "\<exists>E" by meson
     AOT_hence \<open>\<not>s \<Turnstile> \<not>p\<^sub>1\<close>
       using \<xi>
-      by (metis (mono_tags, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "existential:2[const_var]" "raa-cor:6")
+      by (metis (mono_tags, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a"
+                                     "existential:2[const_var]" "raa-cor:6")
     moreover AOT_have \<open>((Actual(s) \<Rightarrow> \<not>p\<^sub>1) \<rightarrow> s \<Turnstile> \<not>p\<^sub>1)\<close>
       using \<theta> "log-prop-prop:2" "rule-ui:1" by blast
     ultimately AOT_have \<open>\<not>(Actual(s) \<Rightarrow> \<not>p\<^sub>1)\<close>
@@ -195,7 +200,8 @@ proof (rule "\<rightarrow>I")
     using "modal-clos-facts:3" 1
     by (meson "con-dis-i-e:1" "vdash-properties:10")
   AOT_thus \<open>\<not>NullSituation(s)\<close>
-    using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "df-null-trivial:1" "existential:2[const_var]" "raa-cor:3" by blast
+    using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "df-null-trivial:1"
+          "existential:2[const_var]" "raa-cor:3" by blast
 qed
 
 AOT_theorem "world-closed:1": \<open>ModallyClosed(w)\<close>
@@ -206,7 +212,8 @@ proof -
       AOT_assume \<theta>: \<open>Actual(s) \<rightarrow> q\<close>
       AOT_assume \<xi>: \<open>\<forall>p(s \<Turnstile> p \<equiv> p)\<close>
       AOT_hence \<open>\<forall>p(s \<Turnstile> p \<rightarrow> p)\<close>
-        by (metis (no_types, lifting) "deduction-theorem" "intro-elim:3:a" "rule-ui:2[const_var]" "universal-cor")
+        by (metis (no_types, lifting) "deduction-theorem" "intro-elim:3:a"
+                                      "rule-ui:2[const_var]" "universal-cor")
       AOT_hence \<open>Actual(s)\<close>
         using "\<equiv>\<^sub>d\<^sub>fI" "con-dis-i-e:1" Situation.restricted_var_condition actual by blast
       AOT_hence \<open>q\<close>
@@ -261,12 +268,14 @@ AOT_theorem "world-closed:3":\<open>PossibleWorld(s) \<equiv> Maximal(s) & Consi
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>PossibleWorld(s)\<close>
   AOT_thus \<open>Maximal(s) & Consistent(s) & ModallyClosed(s)\<close>
-    (* Note: takes a moment to prove - might be good to add an intermediate step *)
-    by (smt (verit) "PossibleWorld.\<forall>I" "con-dis-i-e:1" "rule-ui:3" "vdash-properties:10" "world-closed:1" "world-cons:1" "world-max")
+    by (simp add: "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "world-closed:1.unconstrain_w.\<forall>E_1.\<rightarrow>E"
+                  "world-cons:1.unconstrain_w.\<forall>E_1.\<rightarrow>E" "world:3.\<rightarrow>E"
+                  "world=maxpos:2.unvarify_x.\<forall>E_1.\<equiv>E_1.&E_1")
 next
   AOT_assume 1: \<open>Maximal(s) & Consistent(s) & ModallyClosed(s)\<close>
   AOT_hence \<open>Possible(s)\<close>
-    by (meson "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "modal-clos-facts:2" "vdash-properties:10")
+    by (meson "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+              "modal-clos-facts:2" "vdash-properties:10")
   AOT_thus \<open>PossibleWorld(s)\<close>
     using "1" "con-dis-i-e:2:a" "df-simplify:1" "intro-elim:3:b" "world=maxpos:2" by blast
 qed
@@ -312,7 +321,8 @@ proof -
         moreover AOT_have \<open>q = p \<rightarrow> \<box>q = p\<close>
           using "id-nec:1" by blast
         ultimately AOT_show \<open>\<box>(s \<Turnstile> q \<or> q = p)\<close>
-          by (metis "KBasic:15" "con-dis-i-e:3:a" "con-dis-i-e:3:b" "con-dis-i-e:4:a" "deduction-theorem")
+          by (metis "KBasic:15" "con-dis-i-e:3:a" "con-dis-i-e:3:b"
+                    "con-dis-i-e:4:a" "deduction-theorem")
       qed
     }
   qed
@@ -334,18 +344,22 @@ AOT_theorem tmp: \<open>Situation(s\<^sup>+p)\<close>
 (* TODO: put into correct position *)
 AOT_theorem "oth-class-taut:8:j":
   \<open>((\<phi> \<or> \<psi>) \<rightarrow> \<chi>) \<equiv> ((\<phi> \<rightarrow> \<chi>) & (\<psi> \<rightarrow> \<chi>))\<close>
-  by (metis "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-i-e:3:a" "con-dis-i-e:3:b" "con-dis-i-e:4:c" "deduction-theorem" "intro-elim:2" "reductio-aa:1" "vdash-properties:10")
+  by (metis "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-i-e:3:a"
+            "con-dis-i-e:3:b" "con-dis-i-e:4:c" "deduction-theorem" "intro-elim:2"
+            "reductio-aa:1" "vdash-properties:10")
 
 (* TODO: put into correct position *)
 AOT_theorem "term-out:5": \<open>\<forall>\<alpha>(\<alpha> = \<beta> \<rightarrow> \<phi>{\<alpha>}) \<equiv> \<phi>{\<beta>}\<close>
-  by (metis (no_types, lifting) "\<forall>E"(4) "\<rightarrow>E" "deduction-theorem" "id-eq:1" "intro-elim:2" "rule=E" GEN id_sym)
+  by (metis (no_types, lifting) "\<forall>E"(4) "\<rightarrow>E" "deduction-theorem" "id-eq:1"
+                                "intro-elim:2" "rule=E" GEN id_sym)
 
 AOT_theorem "poss-sit-part-w:2": \<open>s\<^sup>+p \<unlhd> w \<equiv> s \<unlhd> w & w \<Turnstile> p\<close>
 proof -
   AOT_have 1: \<open>s\<^sup>+p \<unlhd> w \<equiv> (Situation(s\<^sup>+p) & Situation(w) & \<forall>q(s\<^sup>+p \<Turnstile> q \<rightarrow> w \<Turnstile> q))\<close>
     using "sit-part-whole"[THEN "\<equiv>Df"].
   also AOT_have \<open>... \<equiv> \<forall>q(s\<^sup>+p \<Turnstile> q \<rightarrow> w \<Turnstile> q)\<close>
-    by (meson "&E"(1) "\<equiv>S"(1) "intro-elim:3:b" "oth-class-taut:3:a" "rule-eq-df:2" "world-pos" pos tmp)
+    by (meson "&E"(1) "\<equiv>S"(1) "intro-elim:3:b" "oth-class-taut:3:a"
+              "rule-eq-df:2" "world-pos" pos tmp)
   also AOT_have \<open>... \<equiv> \<forall>q((s \<Turnstile> q \<or> q = p) \<rightarrow> w \<Turnstile> q)\<close>
     by (simp add: "pext-lem:2" "rule-sub-lem:1:b" "rule-sub-lem:1:d" RN)
   also AOT_have \<open>... \<equiv> \<forall>q((s \<Turnstile> q \<rightarrow> w \<Turnstile> q) & (q = p \<rightarrow> w \<Turnstile> q))\<close>
@@ -358,7 +372,10 @@ proof -
     using "term-out:5" apply blast
     using "oth-class-taut:3:a" by blast
   also AOT_have \<open>... \<equiv> (Situation(s) & Situation(w) & \<forall>q(s \<Turnstile> q \<rightarrow> w \<Turnstile> q)) & w \<Turnstile> p\<close>
-    by (metis (no_types, lifting) 1 "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b" Situation.restricted_var_condition calculation)
+    by (metis (no_types, lifting) 1 "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                                  "deduction-theorem" "intro-elim:2" "intro-elim:3:a"
+                                  "intro-elim:3:b" Situation.restricted_var_condition
+                                  calculation)
   also AOT_have \<open>... \<equiv> s \<unlhd> w & w \<Turnstile> p\<close>
     apply (AOT_subst \<open>Situation(s) & Situation(w) & \<forall>q (s \<Turnstile> q \<rightarrow> w \<Turnstile> q)\<close> \<open>s \<unlhd> w\<close>)
     using "sit-part-whole"[THEN "\<equiv>Df", symmetric] apply simp
@@ -373,16 +390,17 @@ AOT_theorem aux: \<open>w \<Turnstile> s \<Turnstile> p \<equiv> s \<Turnstile> 
 AOT_theorem aux2: \<open>w \<Turnstile> Actual(s) \<equiv> s \<unlhd> w\<close>
 proof -
   AOT_have \<open>w \<Turnstile> (Actual(s) \<equiv> (Situation(s) & \<forall>p (s \<Turnstile> p \<rightarrow> p)))\<close>
-    using actual[THEN "\<equiv>Df", THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E"]
-    by blast
+    by (simp add: "\<equiv>Df" "fund:2.unvarify_p.\<forall>E_1.\<equiv>E_1.\<forall>E_1.\<rightarrow>E" "log-prop-prop:2"
+                  "world:3.\<rightarrow>E" PossibleWorld.restricted_var_condition RN actual)
   AOT_hence \<open>w \<Turnstile> Actual(s) \<equiv> w \<Turnstile> (Situation(s) & \<forall>p (s \<Turnstile> p \<rightarrow> p))\<close>
     using "conj-dist-w:4"[unvarify p, OF "log-prop-prop:2", unvarify q, OF "log-prop-prop:2"]
     using "intro-elim:3:a" by blast
   also AOT_have \<open>... \<equiv> (w \<Turnstile> Situation(s) & w \<Turnstile> \<forall>p (s \<Turnstile> p \<rightarrow> p))\<close>
     using "conj-dist-w:1"[unvarify p, OF "log-prop-prop:2", unvarify q, OF "log-prop-prop:2"].
   also AOT_have \<open>... \<equiv> w \<Turnstile> \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
-    using "Situation.\<psi>"[THEN RN, THEN "fund:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)], THEN "PossibleWorld.\<forall>E"]
-    using "df-simplify:1" "oth-class-taut:3:a" by blast
+    by (meson "fund:2.unvarify_p.\<forall>E_1.\<equiv>E_1.\<forall>E_1.\<rightarrow>E" "log-prop-prop:2" "oth-class-taut:3:a"
+              "oth-class-taut:8:i.\<rightarrow>E.\<rightarrow>E" "world:3.\<rightarrow>E" PossibleWorld.restricted_var_condition
+              RN Situation.restricted_var_condition)
   also AOT_have \<open>... \<equiv> \<forall>p w \<Turnstile> (s \<Turnstile> p \<rightarrow> p)\<close>
     by (simp add: "conj-dist-w:5")
   also AOT_have \<open>... \<equiv> \<forall>p (w \<Turnstile> s \<Turnstile> p \<rightarrow> w \<Turnstile> p)\<close>
@@ -391,8 +409,9 @@ proof -
   also AOT_have \<open>... \<equiv> \<forall>p (s \<Turnstile> p \<rightarrow> w \<Turnstile> p)\<close>
     using aux by (simp add: "rule-sub-lem:1:b" "rule-sub-lem:1:d" RN)
   also AOT_have \<open>... \<equiv> s \<unlhd> w\<close>
-    apply (AOT_subst_def "sit-part-whole")
-    by (meson "\<equiv>S"(1) "con-dis-taut:1" "df-rules-formulas[3]" "intro-elim:3:b" "oth-class-taut:2:e" "oth-class-taut:3:a" "vdash-properties:10" "world-pos" Situation.\<psi> pos)
+    by (AOT_subst_def "sit-part-whole")
+       (simp add: "con-dis-taut:2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "deduction-theorem"
+                  "intro-elim:2" "sit-clo.\<equiv>\<^sub>d\<^sub>fE.&E_1" "world-closed:1" Situation.\<psi>)
   finally show ?thesis.
 qed
 
@@ -409,7 +428,8 @@ proof -
     by (metis "deduction-theorem" "intro-elim:2" "oth-class-taut:4:d" "vdash-properties:10")
   also AOT_have \<open>... \<equiv> \<forall>w(s \<unlhd> w \<rightarrow> w \<Turnstile> p)\<close>
     apply (safe intro!: "rule-sub-lem:1:d" RN)
-    using aux2[unconstrain w] by (metis "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b")
+    using aux2[unconstrain w]
+    by (metis "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b")
   finally show ?thesis
     using "intro-elim:3:f" "oth-class-taut:3:a" by blast
 qed
@@ -457,7 +477,8 @@ proof -
     AOT_hence \<open>\<not>(s \<unlhd> w & \<not>w \<Turnstile> p)\<close> for w
       using "rule-ui:3" "vdash-properties:10" PossibleWorld.restricted_var_condition by blast
     AOT_hence \<open>\<not>(s \<unlhd> w & w \<Turnstile> \<not>p)\<close> for w
-      by (metis "&E"(2) "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "intro-elim:3:a" "reductio-aa:1")
+      by (metis "&E"(2) "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a"
+                "intro-elim:3:a" "reductio-aa:1")
     AOT_thus \<open>\<forall>w \<not>(s \<unlhd> w & w \<Turnstile> \<not>p)\<close>
       using "PossibleWorld.\<forall>I" by presburger
   next
@@ -465,21 +486,27 @@ proof -
     AOT_hence \<open>\<not>(s \<unlhd> w & w \<Turnstile> \<not>p)\<close> for w
       using "PossibleWorld.rule-ui" by fastforce
     AOT_hence \<open>\<not>(s \<unlhd> w & \<not>w \<Turnstile> p)\<close> for w
-      by (metis "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "intro-elim:3:b" "reductio-aa:1")
+      by (metis "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                "intro-elim:3:b" "reductio-aa:1")
     AOT_thus \<open>\<forall>w \<not>(s \<unlhd> w & \<not>w \<Turnstile> p)\<close>
       using "PossibleWorld.\<forall>I" by presburger
   qed
   also AOT_have \<open>... \<equiv> \<not>\<exists>w(s \<unlhd> w & w \<Turnstile> \<not>p)\<close>
-    by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "existential:2[const_var]" "instantiation" "intro-elim:2" "reductio-aa:1" "rule-ui:3" "universal-cor" "vdash-properties:10")
+    by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                                  "deduction-theorem" "existential:2[const_var]"
+                                  "instantiation" "intro-elim:2" "reductio-aa:1"
+                                  "rule-ui:3" "universal-cor" "vdash-properties:10")
   also AOT_have \<open>... \<equiv> \<not>\<exists>w(s\<^sup>+(\<not>p) \<unlhd> w)\<close>
-    apply (AOT_subst \<open>PossibleWorld(w) & (s \<unlhd> w & w \<Turnstile> (\<not>p))\<close> \<open>PossibleWorld(w) & (s\<^sup>+(\<not>p) \<unlhd> w)\<close> for: w)
+    apply (AOT_subst \<open>PossibleWorld(w) & (s \<unlhd> w & w \<Turnstile> (\<not>p))\<close>
+                     \<open>PossibleWorld(w) & (s\<^sup>+(\<not>p) \<unlhd> w)\<close> for: w)
      apply (rule tmp2[THEN "\<rightarrow>E"])
      apply (rule "PossibleWorld.\<forall>I"[THEN "\<forall>E"(2)])
     using "poss-sit-part-w:2"[unvarify p, OF "log-prop-prop:2", symmetric]
      apply force
     using "oth-class-taut:3:a" by auto
   also AOT_have \<open>... \<equiv> \<not>Possible(s\<^sup>+(\<not>p))\<close>
-    using "poss-sit-part-w:1"[unconstrain s, unvarify \<beta>, OF tmp3, THEN "\<rightarrow>E", OF tmp, symmetric, unvarify p, OF "log-prop-prop:2"]
+    using "poss-sit-part-w:1"[unconstrain s, unvarify \<beta>, OF tmp3, THEN "\<rightarrow>E",
+                              OF tmp, symmetric, unvarify p, OF "log-prop-prop:2"]
     by (simp add: "rule-sub-lem:1:a" RN)
   also AOT_have \<open>... \<equiv> \<not>\<diamond>Actual(s\<^sup>+(\<not>p))\<close>
     apply (AOT_subst_def pos)
@@ -491,12 +518,13 @@ proof -
     apply (rule "oth-class-taut:4:b"[THEN "\<equiv>E"(1)])
     using tmp[unvarify p, OF "log-prop-prop:2"]
     by (simp add: "RE\<diamond>" "con-dis-i-e:1" "con-dis-taut:2" "deduction-theorem" "intro-elim:2")
-  also AOT_have \<open>... \<equiv> \<not>\<diamond>\<forall>q((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close> (* NOTE: wrong parentheses in principia! *)
+  also AOT_have \<open>... \<equiv> \<not>\<diamond>\<forall>q((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>
     apply (AOT_subst \<open>s\<^sup>+(\<not>p) \<Turnstile> q\<close> \<open>s \<Turnstile> q \<or> q = (\<not>p)\<close> for: q)
     using "pext-lem:2"[unvarify p, OF "log-prop-prop:2"]
     using "oth-class-taut:3:a" by auto
-  also AOT_have \<open>... \<equiv> \<not>\<diamond>\<forall>q((s \<Turnstile> q \<rightarrow> q) & (q = (\<not>p) \<rightarrow> q))\<close> (* NOTE: too many parentheses in principia! *)
-    by (meson "RE\<diamond>" "intro-elim:3:a" "oth-class-taut:4:b" "oth-class-taut:8:j" "rule-sub-lem:1:d" RN)
+  also AOT_have \<open>... \<equiv> \<not>\<diamond>\<forall>q((s \<Turnstile> q \<rightarrow> q) & (q = (\<not>p) \<rightarrow> q))\<close>
+    by (meson "RE\<diamond>" "intro-elim:3:a" "oth-class-taut:4:b" "oth-class-taut:8:j"
+              "rule-sub-lem:1:d" RN)
   also AOT_have \<open>... \<equiv> \<not>\<diamond>(\<forall>q(s \<Turnstile> q \<rightarrow> q) & \<forall>q(q = (\<not>p) \<rightarrow> q))\<close>
     apply (AOT_subst \<open>\<forall>q ((s \<Turnstile> q \<rightarrow> q) & (q = (\<not>p) \<rightarrow> q))\<close> \<open>\<forall>q(s \<Turnstile> q \<rightarrow> q) & \<forall>q(q = (\<not>p) \<rightarrow> q)\<close>)
      apply (simp add: "cqt-basic:4")
@@ -509,7 +537,8 @@ proof -
   also AOT_have \<open>... \<equiv> \<not>\<diamond>(Actual(s) & \<not>p)\<close>
     apply (AOT_subst_def actual)
     apply (AOT_subst \<open>Situation(s) & \<forall>p (s \<Turnstile> p \<rightarrow> p) & \<not>p\<close> \<open>\<forall>p (s \<Turnstile> p \<rightarrow> p) & \<not>p\<close>)
-    apply (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "intro-elim:2" Situation.restricted_var_condition)
+     apply (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+            "deduction-theorem" "intro-elim:2" Situation.restricted_var_condition)
     using "oth-class-taut:3:a" by auto
   also AOT_have \<open>... \<equiv> \<box>\<not>(Actual(s) & \<not>p)\<close>
     using "KBasic2:1" "intro-elim:3:f" "oth-class-taut:3:a" by blast
@@ -531,7 +560,7 @@ proof -
     using "rule-id-df:1"[OF "poss-sit-part-w:4", OF "sit-comp-simp:3"]
     by blast
   AOT_obtain y where 1: \<open>y = \<^bold>\<iota>s' \<forall>p(s' \<Turnstile> p \<equiv> (Actual(s) \<Rightarrow> p))\<close>
-      by (smt (verit, del_insts) "0" "existential:1" "instantiation" "t=t-proper:1" "vdash-properties:10" id_sym)
+    using "free-thms:3[const_var].unvarify_\<alpha>.\<forall>E_1.\<exists>E'" "sit-comp-simp:3" by blast
   AOT_have \<open>\<forall>p(y \<Turnstile> p \<equiv> (Actual(s) \<Rightarrow> p))\<close>
   proof(safe intro!: "sit-comp-simp:4"[THEN "\<rightarrow>E"] "strict-can:1[I]")
     AOT_modally_strict {
@@ -559,8 +588,9 @@ qed
 AOT_theorem aux4: \<open>Situation(s\<^sup>\<star>)\<close>
 proof -
   AOT_have \<open>Situation(\<^bold>\<iota>s'(\<forall>p (s' \<Turnstile> p \<equiv> Actual(s) \<Rightarrow> p)))\<close>
-    using "actual-desc:4"[THEN "\<rightarrow>E", OF "sit-comp-simp:3", THEN "Act-Basic:2"[THEN "\<equiv>E"(1)], THEN "&E"(1)]
-      "possit-sit:4"[unvarify x, THEN "\<equiv>E"(1)]
+    using "actual-desc:4"[THEN "\<rightarrow>E", OF "sit-comp-simp:3",
+        THEN "Act-Basic:2"[THEN "\<equiv>E"(1)], THEN "&E"(1)]
+        "possit-sit:4"[unvarify x, THEN "\<equiv>E"(1)]
     using "sit-comp-simp:3" by blast
   thus ?thesis
     using "sit-comp-simp:3" "=\<^sub>d\<^sub>fI"(1)[OF "poss-sit-part-w:4", OF "sit-comp-simp:3"]
@@ -583,7 +613,7 @@ next
     proof (rule RM[THEN "\<rightarrow>E"])
         AOT_modally_strict {
           AOT_show \<open>(s \<Turnstile> p) \<rightarrow> (Actual(s) \<rightarrow> p)\<close>
-            by (metis (no_types, lifting) "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "deduction-theorem" "rule-ui:3" "vdash-properties:10" actual)
+            by (meson "actual.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" "log-prop-prop:2" CP)
         }
       next
         AOT_show \<open>\<box>s \<Turnstile> p\<close> using 1 "intro-elim:3:a" "lem2:1" by blast
@@ -605,17 +635,19 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
     AOT_hence \<open>\<not>(Situation(s\<^sup>\<star>) & Situation(w) & \<forall>p (s\<^sup>\<star> \<Turnstile> p \<rightarrow> w \<Turnstile> p))\<close>
       by (AOT_subst_def (reverse) "sit-part-whole")
     AOT_hence \<open>\<not>(\<forall>p (s\<^sup>\<star> \<Turnstile> p \<rightarrow> w \<Turnstile> p))\<close>
-      by (metis (no_types, lifting) "1" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "raa-cor:6" "sit-part-whole" aux4)
+      by (metis "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "raa-cor:2" "sit-clo.\<equiv>\<^sub>d\<^sub>fE.&E_1" "world-closed:1" aux4)
     AOT_hence \<open>\<exists>p \<not>(s\<^sup>\<star> \<Turnstile> p \<rightarrow> w \<Turnstile> p)\<close>
-      by (meson "existential:1" "log-prop-prop:2" "reductio-aa:1" "universal-cor")
+      by (metis "cqt-further:2.\<rightarrow>E.\<exists>E'" "existential:1" "log-prop-prop:2")
     AOT_hence \<open>\<exists>p (s\<^sup>\<star> \<Turnstile> p & \<not>w \<Turnstile> p)\<close>
-      by (metis (no_types, lifting) "con-dis-i-e:1" "deduction-theorem" "existential:2[const_var]" "instantiation" "raa-cor:3")
+      by (metis (no_types, lifting) "con-dis-i-e:1" "deduction-theorem"
+          "existential:2[const_var]" "instantiation" "raa-cor:3")
     then AOT_obtain p\<^sub>1 where p\<^sub>1_prop: \<open>s\<^sup>\<star> \<Turnstile> p\<^sub>1 & \<not>w \<Turnstile> p\<^sub>1\<close>
       using "\<exists>E"[rotated] by meson
     AOT_hence 2: \<open>\<not>(w \<Turnstile> p\<^sub>1)\<close>
       using "con-dis-i-e:2:b" by blast
     AOT_have \<open>Actual(s) \<Rightarrow> p\<^sub>1\<close>
-      using p\<^sub>1_prop[THEN "&E"(1)] "intro-elim:3:a" "log-prop-prop:2" "poss-sit-part-w:5" "rule-ui:1" by blast
+      using p\<^sub>1_prop[THEN "&E"(1)] "intro-elim:3:a" "log-prop-prop:2"
+            "poss-sit-part-w:5" "rule-ui:1" by blast
     AOT_hence \<open>s \<unlhd> w \<rightarrow> w \<Turnstile> p\<^sub>1\<close>
       using "poss-sit-part-w:3"[THEN "\<equiv>E"(2), THEN "PossibleWorld.\<forall>E"]
       by blast
@@ -635,7 +667,8 @@ next
   AOT_have 2: \<open>Situation(w)\<close>
     using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "world-pos" pos by blast
   AOT_show \<open>s \<unlhd> w\<close>
-    using "part:3"[unconstrain s', unconstrain s'', THEN "\<rightarrow>E", OF 2, unvarify \<beta>, OF 1, THEN "\<rightarrow>E", OF aux4]
+    using "part:3"[unconstrain s', unconstrain s'', THEN "\<rightarrow>E",
+                   OF 2, unvarify \<beta>, OF 1, THEN "\<rightarrow>E", OF aux4]
     using A B
     by (meson "con-dis-i-e:1" "vdash-properties:10")
 qed
@@ -645,7 +678,8 @@ proof -
   AOT_have \<open>Possible(s) \<equiv> \<exists>w(s \<unlhd> w)\<close>
     using "poss-sit-part-w:1" by auto
   also AOT_have \<open>\<exists>w(s \<unlhd> w) \<equiv> \<exists>w(s\<^sup>\<star> \<unlhd> w)\<close>
-    by (metis "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b" "poss-sit-part-w:7" PossibleWorld.existential PossibleWorld.instantiation)
+    by (metis "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b"
+              "poss-sit-part-w:7" PossibleWorld.existential PossibleWorld.instantiation)
   also AOT_have \<open>\<exists>w(s\<^sup>\<star> \<unlhd> w) \<equiv> Possible(s\<^sup>\<star>)\<close>
     using "poss-sit-part-w:1"[unconstrain s, unvarify \<beta>, THEN "\<rightarrow>E", symmetric]
     using "Situation.res-var:3" "vdash-properties:10" aux4 by blast
@@ -677,7 +711,9 @@ proof -
         moreover {
           AOT_have \<open>\<diamond>(Actual(s) & (\<not>p)) \<equiv> \<diamond>(\<forall>q(s \<Turnstile> q \<rightarrow> q) & \<not>p)\<close>
             by (AOT_subst_def actual)
-               (smt (verit, del_insts) "RM\<diamond>" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "intro-elim:2" Situation.restricted_var_condition)
+               (smt (verit, del_insts) "RM\<diamond>" "con-dis-i-e:1" "con-dis-i-e:2:a"
+                 "con-dis-i-e:2:b" "deduction-theorem" "intro-elim:2"
+                 Situation.\<psi>)
           also AOT_have \<open>\<dots> \<equiv> \<diamond>(\<forall>q(s \<Turnstile> q \<rightarrow> q) & \<forall>q(q = (\<not>p) \<rightarrow> q))\<close>
           proof (AOT_subst \<open>\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<not>p\<close> \<open>\<forall>q(s \<Turnstile> q \<rightarrow> q) & \<forall>q(q = (\<not>p) \<rightarrow> q)\<close>)
             AOT_modally_strict {
@@ -691,11 +727,14 @@ proof -
           also AOT_have \<open>\<dots> \<equiv> \<diamond>\<forall>q((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>
           proof (AOT_subst \<open>\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<forall>q (q = (\<not>p) \<rightarrow> q)\<close> \<open>\<forall>q ((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>)
             AOT_modally_strict {
-              AOT_have \<open>(\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<forall>q (q = (\<not>p) \<rightarrow> q)) \<equiv> \<forall>q((s \<Turnstile> q \<rightarrow> q) & (q = (\<not>p) \<rightarrow> q))\<close>
+              AOT_have \<open>(\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<forall>q (q = (\<not>p) \<rightarrow> q)) \<equiv>
+                        \<forall>q((s \<Turnstile> q \<rightarrow> q) & (q = (\<not>p) \<rightarrow> q))\<close>
                 using "cqt-basic:13" "cqt-basic:4" "intro-elim:3:f" by blast
               also AOT_have \<open>\<dots> \<equiv> \<forall>q ((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>
-                by (meson "Commutativity of \<equiv>" "intro-elim:3:a" "oth-class-taut:8:j" "rule-sub-lem:1:d" RN)
-              finally AOT_show \<open>(\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<forall>q (q = (\<not>p) \<rightarrow> q)) \<equiv> \<forall>q ((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>
+                by (meson "Commutativity of \<equiv>" "intro-elim:3:a"
+                          "oth-class-taut:8:j" "rule-sub-lem:1:d" RN)
+              finally AOT_show \<open>(\<forall>q (s \<Turnstile> q \<rightarrow> q) & \<forall>q (q = (\<not>p) \<rightarrow> q)) \<equiv>
+                                \<forall>q ((s \<Turnstile> q \<or> q = (\<not>p)) \<rightarrow> q)\<close>
                 by blast
             }
           qed(safe intro!: "\<equiv>I" "\<rightarrow>I")
@@ -706,11 +745,12 @@ proof -
             using "oth-class-taut:3:a" by blast
           also AOT_have \<open>\<dots> \<equiv> \<diamond>Actual(s\<^sup>+(\<not>p))\<close>
             apply (AOT_subst_def actual)
-            using aux5
-            using "RE\<diamond>" "con-dis-i-e:1" "con-dis-taut:2" "deduction-theorem" "intro-elim:2" by presburger
+            by (simp add: "RE\<diamond>" "con-dis-taut:2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+                          "deduction-theorem" "intro-elim:2" aux5)
           also AOT_have \<open>\<dots> \<equiv> Possible(s\<^sup>+(\<not>p))\<close>
             apply (AOT_subst_def pos)
-            by (simp add: "con-dis-i-e:1" "con-dis-taut:2" "deduction-theorem" "intro-elim:2" aux5)
+            by (simp add: "con-dis-i-e:1" "con-dis-taut:2" "deduction-theorem"
+                          "intro-elim:2" aux5)
           also AOT_have \<open>\<dots> \<equiv> \<exists>w(s\<^sup>+(\<not>p) \<unlhd> w)\<close>
             using "poss-sit-part-w:1"[unconstrain s, unvarify \<beta>, THEN "\<rightarrow>E"]
             using "Situation.res-var:3" "vdash-properties:10" aux5 by blast
@@ -723,7 +763,8 @@ proof -
               using "poss-sit-part-w:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(1)]
               by blast
             AOT_hence \<open>s\<^sup>\<star> \<unlhd> w & \<not>w \<Turnstile> p\<close>
-              by (metis "\<equiv>E"(4) "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-taut:2" "modus-tollens:1" "poss-sit-part-w:7" "reductio-aa:1")
+              by (metis "\<equiv>E"(4) "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-taut:2"
+                        "modus-tollens:1" "poss-sit-part-w:7" "reductio-aa:1")
             AOT_thus \<open>\<exists>w(s\<^sup>\<star> \<unlhd> w & \<not>w \<Turnstile> p)\<close>
               using "PossibleWorld.\<exists>I" by simp
           next
@@ -731,7 +772,8 @@ proof -
             then AOT_obtain w where \<open>s\<^sup>\<star> \<unlhd> w & \<not>w \<Turnstile> p\<close>
               using PossibleWorld.instantiation[rotated] by meson
             AOT_hence \<open>s \<unlhd> w & w \<Turnstile> (\<not>p)\<close>
-              by (metis "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "intro-elim:3:b" "poss-sit-part-w:7")
+              by (metis "coherent:1" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                        "intro-elim:3:b" "poss-sit-part-w:7")
             AOT_hence \<open>s\<^sup>+\<not>p \<unlhd> w\<close>
               using "poss-sit-part-w:2"[unvarify p, OF "log-prop-prop:2", THEN "\<equiv>E"(2)]
               by blast
@@ -739,12 +781,19 @@ proof -
               using "PossibleWorld.\<exists>I" by simp
           qed
           also AOT_have \<open>\<dots> \<equiv> \<exists>w \<not>(s\<^sup>\<star> \<unlhd> w \<rightarrow> w \<Turnstile> p)\<close>
-            by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "existential:2[const_var]" "instantiation" "intro-elim:2" "reductio-aa:1" "vdash-properties:10")
+            by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                                          "deduction-theorem" "existential:2[const_var]"
+                                          "instantiation" "intro-elim:2" "reductio-aa:1"
+                                          "vdash-properties:10")
           also AOT_have \<open>\<dots> \<equiv> \<not>\<forall>w (s\<^sup>\<star> \<unlhd> w \<rightarrow> w \<Turnstile> p)\<close>
-            by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem" "existential:2[const_var]" "instantiation" "intro-elim:2" "reductio-aa:1" "rule-ui:3" "universal-cor" "vdash-properties:10")
+            by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+                  "deduction-theorem" "existential:2[const_var]" "instantiation"
+                  "intro-elim:2" "reductio-aa:1" "rule-ui:3" "universal-cor"
+                  "vdash-properties:10")
           also AOT_have \<open>\<dots> \<equiv> \<not>(Actual(s\<^sup>\<star>) \<Rightarrow> p)\<close>
             using "poss-sit-part-w:3"[unconstrain s, unvarify \<beta>, THEN "\<rightarrow>E"]
-            by (meson "Situation.res-var:3" "intro-elim:3:a" "oth-class-taut:4:b" "vdash-properties:10" aux4)
+            by (meson "Situation.res-var:3" "intro-elim:3:a" "oth-class-taut:4:b"
+                      "vdash-properties:10" aux4)
           finally AOT_have \<open>\<diamond>(Actual(s) & \<not>p) \<equiv> \<not>(Actual(s\<^sup>\<star>) \<Rightarrow> p)\<close>.
         }
         ultimately AOT_show \<open>\<not>(Actual(s\<^sup>\<star>) \<Rightarrow> p)\<close>
@@ -754,7 +803,8 @@ proof -
       qed
     qed
     moreover AOT_have B: \<open>(Actual(s) \<Rightarrow> p) \<rightarrow> s\<^sup>\<star> \<Turnstile> p\<close>
-      using "deduction-theorem" "intro-elim:3:b" "log-prop-prop:2" "poss-sit-part-w:5" "rule-ui:1" by blast
+      using "deduction-theorem" "intro-elim:3:b" "log-prop-prop:2"
+            "poss-sit-part-w:5" "rule-ui:1" by blast
     moreover AOT_assume \<open>Actual(s\<^sup>\<star>) \<Rightarrow> p\<close>
     ultimately AOT_show \<open>s\<^sup>\<star> \<Turnstile> p\<close>
       using "vdash-properties:10" by blast
@@ -826,7 +876,8 @@ proof(safe intro!: "\<rightarrow>I" dest!: "possibilities:1"[THEN "\<equiv>\<^su
   AOT_assume \<open>Situation(s) & (Consistent(s) & ModallyClosed(s))\<close>
   AOT_thus \<open>\<box>Possibility(s)\<close>
     apply (AOT_subst_def "possibilities:1")
-    by (metis "1" "2" "KBasic:3" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "intro-elim:3:a" "intro-elim:3:b" RN Situation.restricted_var_condition)
+    by (metis "1" "2" "KBasic:3" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b"
+              "intro-elim:3:a" "intro-elim:3:b" RN Situation.restricted_var_condition)
 qed
 
 
@@ -840,13 +891,15 @@ proof
 next
   AOT_modally_strict {
     AOT_show \<open>Possibility(\<kappa>) \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
-      by (metis "Hypothetical Syllogism" "Situation.res-var:3" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "deduction-theorem" "possibilities:1")
+      by (metis "Hypothetical Syllogism" "Situation.res-var:3" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a"
+                "deduction-theorem" "possibilities:1")
   }
 next
   AOT_modally_strict {
     AOT_show \<open>\<forall>\<alpha>(Possibility(\<alpha>) \<rightarrow> \<box>Possibility(\<alpha>))\<close>
       using "possiblities:3"
-      by (smt (verit, del_insts) "Situation.\<forall>I" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "deduction-theorem" "possibilities:1" "rule-ui:3" "universal-cor" "vdash-properties:10")
+      by (smt (verit, del_insts) "Situation.\<forall>I" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "deduction-theorem"
+            "possibilities:1" "rule-ui:3" "universal-cor" "vdash-properties:10")
   }
 qed
 
@@ -858,10 +911,10 @@ proof(safe intro!: "\<rightarrow>I" "Possibilities.\<forall>I")
   fix \<ss>
   AOT_assume 1: \<open>\<box>p\<close>
   AOT_show \<open>\<ss> \<Turnstile> p\<close>
-    apply (rule "modal-clos-facts:3"[unconstrain s, unvarify \<beta>, THEN "\<rightarrow>E", THEN "\<rightarrow>E"])
-    using "cqt:2"(1) apply blast
-    using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:a" "possibilities:1" Possibilities.restricted_var_condition apply blast
-    by (meson "1" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:1" "con-dis-i-e:2:b" "possibilities:1" AOT_restricted_type.\<psi> Possibilities.AOT_restricted_type_axioms)
+    by (meson "1" "con-dis-i-e:1" "cqt:2"(1)
+        "modal-clos-facts:3.unconstrain_s.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E"
+        "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_1" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2"
+        AOT_restricted_type.\<psi> Possibilities.AOT_restricted_type_axioms)
 qed
 
 AOT_define Contains :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<unrhd>\<close> 80)
@@ -997,11 +1050,10 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
       by (AOT_subst_def (reverse) cons)
     AOT_hence \<open>\<exists>p(s\<^sub>\<box> \<Turnstile> p & s\<^sub>\<box> \<Turnstile> \<not>p)\<close>
       using "con-dis-i-e:1" "raa-cor:4" absolute_necessity_situation by blast
-    then AOT_obtain q\<^sub>1 where q_prop: \<open>s\<^sub>\<box> \<Turnstile> q\<^sub>1 & s\<^sub>\<box> \<Turnstile> \<not>q\<^sub>1\<close>
+    then AOT_obtain q\<^sub>1 where \<open>s\<^sub>\<box> \<Turnstile> q\<^sub>1 & s\<^sub>\<box> \<Turnstile> \<not>q\<^sub>1\<close>
       using "\<exists>E"[rotated] by blast
     AOT_hence \<open>\<box>q\<^sub>1\<close> and \<open>\<box>\<not>q\<^sub>1\<close>
-      using "con-dis-i-e:2:a" "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" absolute_necessity_matrix apply blast
-      using "con-dis-i-e:2:b" "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" absolute_necessity_matrix q_prop by blast
+      using "&E" "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" absolute_necessity_matrix by blast+
     AOT_hence \<open>q\<^sub>1 & \<not>q\<^sub>1\<close>
       by (meson "B\<diamond>" "T\<diamond>" "con-dis-i-e:1" "vdash-properties:10")
     AOT_thus \<open>p & \<not>p\<close>
@@ -1015,7 +1067,8 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
     AOT_hence \<open>\<box>(Actual(s\<^sub>\<box>) \<rightarrow> p)\<close>
       using "\<equiv>\<^sub>d\<^sub>fE" "nec-impl-p:1" by blast
     AOT_hence \<open>\<box>(\<not>p \<rightarrow> \<not>Actual(s\<^sub>\<box>))\<close>
-      by (simp add: "intro-elim:2" "rule-sub-remark:5[1]" "useful-tautologies:4" "useful-tautologies:5")
+      by (simp add: "intro-elim:2" "rule-sub-remark:5[1]"
+                    "useful-tautologies:4" "useful-tautologies:5")
     AOT_hence \<xi>: \<open>\<diamond>\<not>p \<rightarrow> \<diamond>\<not>Actual(s\<^sub>\<box>)\<close>
       using "K\<diamond>" "vdash-properties:10" by blast
     AOT_have \<open>\<box>p\<close>
@@ -1028,11 +1081,10 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
       AOT_hence \<open>\<diamond>(\<not>(Situation(s\<^sub>\<box>) & \<forall>p (s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)))\<close>
         by (AOT_subst_def (reverse) actual)
       AOT_hence \<open>\<diamond>(\<not>\<forall>p (s\<^sub>\<box> \<Turnstile> p \<rightarrow> p))\<close>
-        by (smt (z3) "RM\<diamond>" "con-dis-i-e:1" "deduction-theorem" "raa-cor:3" "vdash-properties:6" absolute_necessity_situation)
+        by (smt (z3) "RM\<diamond>" "con-dis-i-e:1" "deduction-theorem" "raa-cor:3"
+                     "vdash-properties:6" absolute_necessity_situation)
       AOT_hence \<open>\<diamond>(\<exists>p \<not>(s\<^sub>\<box> \<Turnstile> p \<rightarrow> p))\<close>
-        apply (AOT_subst \<open>\<exists>p \<not>(s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)\<close> \<open>\<not>\<forall>p (s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)\<close>)
-         apply (metis (full_types) "cqt-further:2" "cqt-further:3" "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "raa-cor:3")
-        by auto
+        using "RM:2.\<rightarrow>E" "cqt-further:2" by blast
       AOT_hence \<open>\<exists>p \<diamond>\<not>(s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)\<close>
         using "BF\<diamond>" "vdash-properties:10" by blast
       then AOT_obtain p\<^sub>1 where \<open>\<diamond>\<not>(s\<^sub>\<box> \<Turnstile> p\<^sub>1 \<rightarrow> p\<^sub>1)\<close>
@@ -1047,7 +1099,8 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
       AOT_hence 4: \<open>\<not>\<box>p\<^sub>1\<close>
         using 3  "KBasic:11" "intro-elim:3:b" by blast
       AOT_have \<open>\<box>(s\<^sub>\<box> \<Turnstile> p\<^sub>1 \<rightarrow> \<box>p\<^sub>1)\<close>
-        using "if-p-then-p" "log-prop-prop:2" "rule-sub-remark:6[1]" "rule-ui:1" RN absolute_necessity_matrix by blast
+        using "if-p-then-p" "log-prop-prop:2" "rule-sub-remark:6[1]" "rule-ui:1"
+              RN absolute_necessity_matrix by blast
       AOT_hence \<open>\<diamond>\<box>p\<^sub>1\<close>
         using 2
         using "K\<diamond>" "vdash-properties:10" by blast
@@ -1057,7 +1110,8 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
         using 4 "raa-cor:3" by blast
     qed
     AOT_thus \<open>s\<^sub>\<box> \<Turnstile> p\<close>
-      using "cqt-orig:3" "intro-elim:3:b" "vdash-properties:10" absolute_necessity_matrix by blast
+      using "cqt-orig:3" "intro-elim:3:b" "vdash-properties:10"
+            absolute_necessity_matrix by blast
   qed
 qed
 
@@ -1073,20 +1127,22 @@ proof (safe intro!: "\<rightarrow>I" "Situation.GEN")
   AOT_hence \<open>\<not>(s = s\<^sub>\<box>)\<close>
     using "=-infix" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" by blast
   AOT_hence \<open>\<not>\<forall>p(s \<Turnstile> p \<equiv> s\<^sub>\<box> \<Turnstile> p)\<close>
-    by (metis (full_types) "reductio-aa:1" "rule=I:1" "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E.\<equiv>E_2.rule=E'" "situations:3.\<rightarrow>E" Situation.restricted_var_condition absolute_necessity_situation)
+    by (metis (full_types) "reductio-aa:1" "rule=I:1"
+          "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E.\<equiv>E_2.rule=E'"
+          "situations:3.\<rightarrow>E" Situation.restricted_var_condition absolute_necessity_situation)
   AOT_hence \<open>\<exists>p \<not>(s \<Turnstile> p \<equiv> s\<^sub>\<box> \<Turnstile> p)\<close>
     using "cqt-further:2" "vdash-properties:10" by blast
   then AOT_obtain q\<^sub>1 where \<open>\<not>(s \<Turnstile> q\<^sub>1 \<equiv> s\<^sub>\<box> \<Turnstile> q\<^sub>1)\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>(s \<Turnstile> q\<^sub>1 & \<not>s\<^sub>\<box> \<Turnstile> q\<^sub>1) \<or> (s\<^sub>\<box> \<Turnstile> q\<^sub>1 & \<not>s \<Turnstile> q\<^sub>1)\<close>
-    by (metis "con-dis-i-e:1" "con-dis-i-e:3:a" "con-dis-i-e:3:b" "deduction-theorem" "intro-elim:2" "reductio-aa:1")
+    by (metis "con-dis-i-e:1" "con-dis-i-e:3:a" "con-dis-i-e:3:b"
+              "deduction-theorem" "intro-elim:2" "reductio-aa:1")
   moreover {
     AOT_assume 0: \<open>s \<Turnstile> q\<^sub>1 & \<not>s\<^sub>\<box> \<Turnstile> q\<^sub>1\<close>
     AOT_have \<open>s \<unlhd> s\<^sub>\<box>\<close>
       using "1" "con-dis-i-e:2:a" by blast
     AOT_hence \<open>\<forall>p (s \<Turnstile> p \<rightarrow> s\<^sub>\<box> \<Turnstile> p)\<close>
-      using "Aux"[unconstrain s', unvarify \<beta>, OF absolute_necessity_denotes, THEN "\<rightarrow>E", OF absolute_necessity_situation]
-      using "con-dis-i-e:2:b" "intro-elim:3:a" by blast
+      using "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" "sit-part-whole" by blast
     AOT_hence \<open>s\<^sub>\<box> \<Turnstile> q\<^sub>1\<close>
       using 0 "con-dis-i-e:2:a" "log-prop-prop:2" "rule-ui:1" "vdash-properties:10" by blast
     AOT_hence \<open>\<exists>p (p & \<not>p)\<close>
@@ -1095,7 +1151,7 @@ proof (safe intro!: "\<rightarrow>I" "Situation.GEN")
   ultimately AOT_have 3: \<open>s\<^sub>\<box> \<Turnstile> q\<^sub>1 & \<not>s \<Turnstile> q\<^sub>1\<close>
     by (metis "con-dis-i-e:4:c" "instantiation" "raa-cor:1")
   AOT_hence 2: \<open>\<box>q\<^sub>1\<close>
-    using "con-dis-i-e:2:a" "intro-elim:3:a" "log-prop-prop:2" "rule-ui:1" absolute_necessity_matrix by blast
+    using "absolute_necessity_matrix.\<forall>E_1.\<equiv>E_1" "con-dis-i-e:2:a" "log-prop-prop:2" by blast
   AOT_show \<open>\<not>Possibility(s)\<close>
   proof(rule "raa-cor:2")
     AOT_assume \<open>Possibility(s)\<close>
@@ -1144,11 +1200,13 @@ proof(safe intro!: "\<rightarrow>I")
     AOT_hence \<open>\<not>(\<diamond>p & \<diamond>\<not>p)\<close>
       using "intro-elim:3:c" "thm-cont-propos:2" by blast
     AOT_hence \<open>\<box>\<not>p \<or> \<box>p\<close>
-      by (meson "Commutativity of \<equiv>" "KBasic2:1" "KBasic:12" "intro-elim:1" "intro-elim:3:a" "oth-class-taut:5:c")
+      by (metis "KBasic2:1.\<equiv>E_2" "KBasic:12.\<equiv>E_2" "con-dis-i-e:1" "con-dis-i-e:3:a"
+                "con-dis-i-e:3:b" "reductio-aa:2")
     moreover {
       AOT_assume \<open>\<box>\<not>p\<close>
       AOT_hence \<open>\<ss> \<Turnstile> \<not>p\<close>
-        by (simp add: "cqt:2"(1) "log-prop-prop:2" "possibilities:4.unvarify_p.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E" Possibilities.restricted_var_condition)
+        by (simp add: "cqt:2"(1) "log-prop-prop:2"
+                      "possibilities:4.unvarify_p.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E" Possibilities.\<psi>)
       AOT_hence \<open>p & \<not>p\<close>
         using "2" "raa-cor:3" by blast
     }
@@ -1174,15 +1232,16 @@ proof(rule "\<rightarrow>I")
 qed
 
 AOT_theorem "possibilities:15[b]": \<open>Possible(\<ss>)\<close>
-  using "possibilities:15[a]"
-  by (metis "vdash-properties:10" Possibilities.restricted_var_condition Possibilities_are_Situations Situation.Rep_cases mem_Collect_eq)
+  by (simp add: "cqt:2"(1) "possibilities:15[a].unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E"
+                Possibilities.\<psi> Possibilities_are_Situations)
 
 AOT_theorem "possibilities:16": \<open>GapOn(\<ss>, p) \<rightarrow> \<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> p) & \<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> \<not>p)\<close>
 proof(safe intro!: "\<rightarrow>I" "&I")
   {
     fix p
     AOT_have sit: \<open>Situation(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
-      by (simp add: "aux4.unconstrain_s.\<forall>E_1.\<rightarrow>E" "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E" "situations:3.\<rightarrow>E" Possibilities_are_Situations)
+      by (simp add: "aux4.unconstrain_s.\<forall>E_1.\<rightarrow>E" "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E"
+                    "situations:3.\<rightarrow>E" Possibilities_are_Situations)
     AOT_assume A: \<open>GapOn(\<ss>, p)\<close>
     AOT_show \<open>\<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> p)\<close>
     proof(safe intro!: "\<exists>I"(1) "&I")
@@ -1191,46 +1250,61 @@ proof(safe intro!: "\<rightarrow>I" "&I")
         fix q
         AOT_assume \<open>\<ss> \<Turnstile> q\<close>
         AOT_thus \<open>\<ss>\<^sup>+p\<^sup>\<star> \<Turnstile> q\<close>
-          by (meson "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E" "log-prop-prop:2" "pext-lem:3.unconstrain_s.unvarify_q.unvarify_p.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "poss-sit-part-w:6.unconstrain_s.\<forall>E_1.\<rightarrow>E" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" "situations:3.\<rightarrow>E" Possibilities_are_Situations)
+          by (meson "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E" "log-prop-prop:2"
+                    "pext-lem:3.unconstrain_s.unvarify_q.unvarify_p.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E"
+                    "poss-sit-part-w:6.unconstrain_s.\<forall>E_1.\<rightarrow>E" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E"
+                    "situations:3.\<rightarrow>E" Possibilities_are_Situations)
       qed
       AOT_hence \<open>\<ss> \<unlhd> \<ss>\<^sup>+p\<^sup>\<star>\<close>
         by (simp add: "con-dis-i-e:1" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fI" Possibilities_are_Situations sit)
       AOT_thus \<open>\<ss>\<^sup>+p\<^sup>\<star> \<unrhd> \<ss>\<close>
         by (simp add: "con-dis-i-e:1" "possibilities:5.\<equiv>\<^sub>d\<^sub>fI" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_1.&E_1" sit)
       AOT_show \<open>\<ss>\<^sup>+p\<^sup>\<star> \<Turnstile> p\<close>
-        by (meson "log-prop-prop:2" "pext-lem:4.unconstrain_s.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E" "poss-sit-part-w:6.unconstrain_s.\<forall>E_1.\<rightarrow>E" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" "situations:3.\<rightarrow>E" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities_are_Situations)
+        by (meson "log-prop-prop:2" "pext-lem:4.unconstrain_s.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E"
+                  "poss-sit-part-w:6.unconstrain_s.\<forall>E_1.\<rightarrow>E" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E"
+                  "situations:3.\<rightarrow>E" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities_are_Situations)
       AOT_show 1: \<open>Possibility(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
       proof(safe intro!: "possibilities:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" sit)
         AOT_have B: \<open>Possible(\<ss>\<^sup>+p)\<close>
         proof(rule "raa-cor:1")
           AOT_assume \<open>\<not>Possible(\<ss>\<^sup>+p)\<close>
           AOT_hence \<open>\<not>\<exists>w (\<ss>\<^sup>+p \<unlhd> w)\<close>
-            using "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E" "poss-sit-part-w:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_2" "raa-cor:3" "situations:3.\<rightarrow>E" Possibilities_are_Situations by blast
+            using "aux5.unconstrain_s.\<forall>E_1.\<rightarrow>E" "poss-sit-part-w:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_2"
+                  "raa-cor:3" "situations:3.\<rightarrow>E" Possibilities_are_Situations by blast
           AOT_hence \<open>\<forall>w \<not>(\<ss>\<^sup>+p \<unlhd> w)\<close>
-            by (metis (no_types, lifting) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "deduction-theorem" "existential:2[const_var]" "reductio-aa:2" "universal-cor")
+            by (metis (no_types, lifting) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "deduction-theorem"
+                "existential:2[const_var]" "reductio-aa:2" "universal-cor")
           AOT_hence \<open>\<not>(\<ss>\<^sup>+p \<unlhd> w)\<close> for w
             using "PossibleWorld.\<forall>E" by fastforce
           AOT_hence \<open>\<not>(\<ss> \<unlhd> w & w \<Turnstile> p)\<close> for w
-            by (metis "cqt:2"(1) "poss-sit-part-w:2.unconstrain_s.unvarify_p.unconstrain_w.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2" "reductio-aa:2" Possibilities_are_Situations PossibleWorld.restricted_var_condition)
+            by (metis "cqt:2"(1)
+                "poss-sit-part-w:2.unconstrain_s.unvarify_p.unconstrain_w.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2"
+                "reductio-aa:2" Possibilities_are_Situations PossibleWorld.\<psi>)
           AOT_hence \<open>\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> \<not>p\<close> for w
             by (metis "\<equiv>E"(2) "coherent:1" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "reductio-aa:2" CP)
           AOT_hence \<open>\<forall>w (\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> \<not>p)\<close>
             using "PossibleWorld.\<forall>I" by force
           AOT_hence \<open>Actual(\<ss>) \<Rightarrow> \<not>p\<close>
-            by (simp add: "log-prop-prop:2" "poss-sit-part-w:3[newproof].unconstrain_s.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1" "situations:3.\<rightarrow>E" Possibilities_are_Situations)
+            by (simp add: "log-prop-prop:2"
+                "poss-sit-part-w:3[newproof].unconstrain_s.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1"
+                "situations:3.\<rightarrow>E" Possibilities_are_Situations)
           AOT_hence \<open>\<ss> \<Turnstile> \<not>p\<close>
-            by (meson "log-prop-prop:2" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" "sit-clo.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" AOT_restricted_type.restricted_var_condition Possibilities.AOT_restricted_type_axioms)
+            by (meson "log-prop-prop:2" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2"
+                      "sit-clo.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" AOT_restricted_type.\<psi>
+                      Possibilities.AOT_restricted_type_axioms)
           moreover AOT_have \<open>\<not>\<ss> \<Turnstile> \<not>p\<close>
             using "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" A by auto
           ultimately AOT_show \<open>p & \<not>p\<close>
             using "raa-cor:3" by blast
         qed
         AOT_hence C: \<open>Possible(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
-          by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "poss-sit-part-w:8.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_1" "situations:3.\<rightarrow>E")
+          by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "poss-sit-part-w:8.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_1"
+                        "situations:3.\<rightarrow>E")
         AOT_thus \<open>Consistent(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
           by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "situations:3.\<rightarrow>E" sit)
         AOT_show \<open>ModallyClosed(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
-          by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "poss-sit-part-w:9.unconstrain_s.\<forall>E_1.\<rightarrow>E" "situations:3.\<rightarrow>E" local.B)
+          by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "poss-sit-part-w:9.unconstrain_s.\<forall>E_1.\<rightarrow>E"
+                        "situations:3.\<rightarrow>E" local.B)
       qed
       AOT_show \<open>\<ss>\<^sup>+p\<^sup>\<star>\<down>\<close>
         by (simp add: "situations:3.\<rightarrow>E" sit)
@@ -1267,7 +1341,8 @@ proof(safe intro!: "\<rightarrow>I" "&I")
           AOT_show \<open>(\<not>\<not>p)\<down>\<close>
             by (simp add: "log-prop-prop:2")
           AOT_show \<open>\<ss> \<Turnstile> \<not>\<not>p & (\<not>\<not>p \<Rightarrow> p)\<close>
-            by (simp add: "2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "nec-impl-p:1.\<equiv>\<^sub>d\<^sub>fI" "useful-tautologies:1" RN)
+            by (simp add: "2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "nec-impl-p:1.\<equiv>\<^sub>d\<^sub>fI"
+                          "useful-tautologies:1" RN)
         qed
         AOT_hence \<open>\<forall>p(p & \<not>p)\<close>
           using "1" "raa-cor:4" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_1" by blast
@@ -1296,11 +1371,12 @@ proof(safe intro!: "\<rightarrow>I")
         by (simp add: "possibilitites:7(a).unconstrain_s.\<forall>E_1.\<rightarrow>E" "situations:3.\<rightarrow>E"
                       Possibilities_are_Situations)
       AOT_hence \<open>\<exists>\<ss>''(\<ss>'' \<unrhd> \<ss> & \<ss>'' \<Turnstile> p)\<close>
-        using \<theta>[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "cqt:2"(1) Possibilities.restricted_var_condition by blast
+        using \<theta>[THEN "\<forall>E"(1), THEN "\<rightarrow>E", THEN "\<rightarrow>E"] "cqt:2"(1) Possibilities.\<psi> by blast
       then AOT_obtain \<ss>\<^sub>1 where 1: \<open>\<ss>\<^sub>1 \<unrhd> \<ss> & \<ss>\<^sub>1 \<Turnstile> p\<close>
         using "Possibilities.\<exists>E" by meson
       AOT_hence 2: \<open>\<ss>\<^sub>1 \<Turnstile> \<not>p\<close>
-        using "con-dis-i-e:2:a" "log-prop-prop:2" "possibilities:5.\<equiv>\<^sub>d\<^sub>fE.&E_2" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" a by blast
+        using "con-dis-i-e:2:a" "log-prop-prop:2" "possibilities:5.\<equiv>\<^sub>d\<^sub>fE.&E_2"
+              "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" a by blast
       AOT_have \<open>Consistent(\<ss>\<^sub>1)\<close>
         using "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_1" Possibilities.restricted_var_condition by auto
       AOT_hence \<open>\<not>\<exists>p (\<ss>\<^sub>1 \<Turnstile> p & \<ss>\<^sub>1 \<Turnstile> \<not>p)\<close>
@@ -1315,7 +1391,8 @@ proof(safe intro!: "\<rightarrow>I")
       AOT_hence \<open>GapOn(\<ss>, p)\<close>
         using "0" "con-dis-i-e:1" "routley-star:5.\<equiv>\<^sub>d\<^sub>fI" Possibilities_are_Situations by presburger
       AOT_hence \<open>\<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> \<not>p)\<close>
-        by (meson "\<exists>I"(2) "cqt:2"(1) "possibilities:16.unconstrain_\<ss>.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.&E_2.\<exists>E'" Possibilities.restricted_var_condition)
+        by (meson "\<exists>I"(2) "cqt:2"(1)
+            "possibilities:16.unconstrain_\<ss>.unvarify_p.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.&E_2.\<exists>E'" Possibilities.\<psi>)
       then AOT_obtain \<ss>\<^sub>2 where 1: \<open>\<ss>\<^sub>2 \<unrhd> \<ss> & \<ss>\<^sub>2 \<Turnstile> \<not>p\<close>
         using "Possibilities.\<exists>E" by meson
       AOT_hence \<open>\<exists>\<ss>''(\<ss>'' \<unrhd> \<ss>\<^sub>2 & \<ss>'' \<Turnstile> p)\<close>
@@ -1327,7 +1404,8 @@ proof(safe intro!: "\<rightarrow>I")
         using "possibilities:8"[THEN "\<forall>E"(1), OF "log-prop-prop:2"] 1[THEN "&E"(2)] 2[THEN "&E"(1)]
               "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" by blast
       AOT_have \<open>Consistent(\<ss>\<^sub>3)\<close>
-        by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "possibilities:15[b]" "situations:3.\<rightarrow>E")
+        by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1"
+                      "possibilities:15[b]" "situations:3.\<rightarrow>E")
       AOT_hence \<open>\<not>\<exists>p (\<ss>\<^sub>3 \<Turnstile> p & \<ss>\<^sub>3 \<Turnstile> \<not>p)\<close>
         by (simp add: "cons.\<equiv>\<^sub>d\<^sub>fE.&E_2")
       moreover AOT_have \<open>\<exists>p (\<ss>\<^sub>3 \<Turnstile> p & \<ss>\<^sub>3 \<Turnstile> \<not>p)\<close>
@@ -1348,7 +1426,8 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "Possibilities.GEN")
   AOT_hence 1: \<open>\<ss> \<unlhd> \<ss>'\<close>
     using "possibilities:5.\<equiv>\<^sub>d\<^sub>fE.&E_2" by auto
   AOT_hence \<open>\<forall>p(\<ss> \<Turnstile> p \<rightarrow> \<ss>' \<Turnstile> p)\<close>
-    by (simp add: "deduction-theorem" "log-prop-prop:2" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" "universal-cor")
+    by (simp add: "deduction-theorem" "log-prop-prop:2"
+                  "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" "universal-cor")
   AOT_hence 2: \<open>\<ss>' \<Turnstile> \<not>p\<close>
     using "0" "1" "log-prop-prop:2" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E" by auto
   AOT_show \<open>\<not>\<ss>' \<Turnstile> p\<close>
@@ -1359,7 +1438,8 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "Possibilities.GEN")
     AOT_hence \<open>\<not>Consistent(\<ss>')\<close>
       using "cons.\<equiv>\<^sub>d\<^sub>fE.&E_2" "raa-cor:3" by blast
     moreover AOT_have \<open>Consistent(\<ss>')\<close>
-      by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "possibilities:15[b]" "situations:3.\<rightarrow>E")
+      by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1"
+                    "possibilities:15[b]" "situations:3.\<rightarrow>E")
     ultimately AOT_show \<open>p & \<not>p\<close>
       using "raa-cor:3" by blast
   qed
@@ -1369,7 +1449,8 @@ next
   proof(rule "raa-cor:1")
     AOT_assume 2: \<open>\<not>\<ss> \<Turnstile> \<not>p\<close>
     AOT_have \<open>\<ss> \<unrhd> \<ss>\<close>
-      using "cqt:2"(1) "possibilitites:7(a).unconstrain_s.\<forall>E_1.\<rightarrow>E" Possibilities_are_Situations by blast
+      using "cqt:2"(1) "possibilitites:7(a).unconstrain_s.\<forall>E_1.\<rightarrow>E"
+            Possibilities_are_Situations by blast
     AOT_hence \<open>\<not>\<ss> \<Turnstile> p\<close>
       using "1" "rule-ui:3" "vdash-properties:10" Possibilities.restricted_var_condition by blast
     AOT_hence \<open>GapOn(\<ss>, p)\<close>
@@ -1380,7 +1461,7 @@ next
       using "Possibilities.\<exists>E" by meson
     AOT_hence \<open>\<not>\<ss>\<^sub>1 \<Turnstile> p\<close>
       using 1
-      using "con-dis-i-e:2:a" "ded-thm-cor:4.\<rightarrow>E" "rule-ui:3" Possibilities.restricted_var_condition by blast
+      using "con-dis-i-e:2:a" "ded-thm-cor:4.\<rightarrow>E" "rule-ui:3" Possibilities.\<psi> by blast
     AOT_thus \<open>p & \<not>p\<close>
       using "3" "con-dis-i-e:2:b" "raa-cor:3" by blast
   qed
@@ -1392,19 +1473,26 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I")
   moreover AOT_have \<open>(p & q) \<Rightarrow> p\<close>
     by (simp add: "con-dis-taut:1" "nec-impl-p:1.\<equiv>\<^sub>d\<^sub>fI" RN)
   ultimately AOT_show \<open>\<ss> \<Turnstile> p\<close>
-    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "log-prop-prop:2" "modal-clos-facts:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities.restricted_var_condition)
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "log-prop-prop:2"
+              "modal-clos-facts:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E"
+              "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities.\<psi>)
 next
   AOT_assume \<open>\<ss> \<Turnstile> (p & q)\<close>
   moreover AOT_have \<open>(p & q) \<Rightarrow> q\<close>
     using "con-dis-taut:2" "nec-impl-p:1.\<equiv>\<^sub>d\<^sub>fI" RN by blast
   ultimately AOT_show \<open>\<ss> \<Turnstile> q\<close>
-    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "log-prop-prop:2" "modal-clos-facts:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities.restricted_var_condition)
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "log-prop-prop:2"
+              "modal-clos-facts:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E"
+              "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E_1" Possibilities.\<psi>)
 next
   AOT_assume \<open>\<ss> \<Turnstile> p & \<ss> \<Turnstile> q\<close>
   moreover AOT_have \<open>(p & q) \<Rightarrow> (p & q)\<close>
     using "log-prop-prop:2" "nec-impl-p:3[rec].unvarify_p.\<forall>E_1" by auto
   ultimately AOT_show \<open>\<ss> \<Turnstile> (p & q)\<close>
-    by (meson "con-dis-i-e:1" "cqt:2"(1) "log-prop-prop:2" "modal-clos-facts:1b.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" AOT_restricted_type.restricted_var_condition Possibilities.AOT_restricted_type_axioms Possibilities_are_Situations)
+    by (meson "con-dis-i-e:1" "cqt:2"(1) "log-prop-prop:2"
+        "modal-clos-facts:1b.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E"
+        "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E_2.&E_2" AOT_restricted_type.\<psi>
+        Possibilities.AOT_restricted_type_axioms Possibilities_are_Situations)
 qed
 
 AOT_theorem "possibilities:20": \<open>\<diamond>p \<equiv> \<exists>\<ss>(\<ss> \<Turnstile> p)\<close>
@@ -1423,13 +1511,15 @@ next
   AOT_have \<open>Possible(\<ss>)\<close>
     by (simp add: "possibilities:15[b]")
   AOT_hence \<open>\<exists>w \<ss> \<unlhd> w\<close>
-    by (meson "\<exists>I"(2) "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "situations:3.\<rightarrow>E" "poss-sit-part-w:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_1.\<exists>E'")
+    by (meson "\<exists>I"(2) "pos.\<equiv>\<^sub>d\<^sub>fE.&E_1" "situations:3.\<rightarrow>E"
+              "poss-sit-part-w:1.unconstrain_s.\<forall>E_1.\<rightarrow>E.\<equiv>E_1.\<exists>E'")
   then AOT_obtain w where \<open>\<ss> \<unlhd> w\<close>
     using PossibleWorld.instantiation by blast
   AOT_hence \<open>w \<Turnstile> p\<close>
     using 1 by (simp add: "log-prop-prop:2" "sit-part-whole.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<rightarrow>E")
   AOT_thus \<open>\<diamond>p\<close>
-    by (metis (no_types, lifting) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:2[const_var]" "fund:1" "intro-elim:3:b" PossibleWorld.restricted_var_condition)
+    by (metis (no_types, lifting) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:2[const_var]"
+          "fund:1" "intro-elim:3:b" PossibleWorld.restricted_var_condition)
 qed
 
 AOT_theorem "possibilities:21": \<open>\<box>p \<equiv> \<forall>\<ss>(\<ss> \<Turnstile> p)\<close>
@@ -1437,7 +1527,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" Possibilities.GEN)
   fix \<ss>
   AOT_assume \<open>\<box>p\<close>
   AOT_thus \<open>\<ss> \<Turnstile> p\<close>
-    by (simp add: "cqt:2"(1) "possibilities:4.unvarify_p.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E" Possibilities.restricted_var_condition)
+    by (simp add: "cqt:2"(1) "possibilities:4.unvarify_p.\<forall>E_1.\<rightarrow>E.\<forall>E_1.\<rightarrow>E" Possibilities.\<psi>)
 next
   AOT_assume \<open>\<forall>\<ss>(\<ss> \<Turnstile> p)\<close>
   AOT_hence \<open>s\<^sub>\<box> \<Turnstile> p\<close>
