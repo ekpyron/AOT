@@ -24,7 +24,7 @@ jobs:
       - name: Patch pages.
         run: .github/workflows/patch_pages.py build/AOT/AOT/*.html
       - name: Replace index.
-        run: cp .github/workflows/index.html build
+        run: cp .github/workflows/*.html build
       - name: Deploy github pages.
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
