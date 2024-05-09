@@ -1,5 +1,5 @@
 theory ExportInfo
-  imports AOT_misc
+  imports AOT_misc AOT_Possibilities
 begin
 
 local_setup\<open>fn ctxt =>
