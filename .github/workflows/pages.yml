@@ -22,9 +22,11 @@ jobs:
            docker run -v "$(pwd):/home/isabelle/AOT:rw" makarius/isabelle:Isabelle2023 build -D /home/isabelle/AOT -o browser_info -P /home/isabelle/AOT/output -e
            cp -r output build
       - name: Patch pages.
-        run: .github/workflows/patch_pages.py build/Unsorted/AOT/*.html
+        run: .github/workflows/patch_pages.py build/AOT/AOT/*.html
+      - name: Replace index.
+        run: cp .github/workflows/index.html build
       - name: Deploy github pages.
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
-          folder: build/Unsorted/AOT
+          folder: build

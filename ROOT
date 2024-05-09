@@ -1,3 +1,4 @@
+chapter AOT
 session "AOT" = "HOL-Cardinals" +
   options [show_question_marks = false, names_short = true, browser_info, document_output = "output"]
   sessions
@@ -15,7 +16,7 @@ session "AOT" = "HOL-Cardinals" +
     AOT_ExtendedRelationComprehension
     AOT_PossibleWorlds
     AOT_NaturalNumbers
-	AOT_Possibilities
+	  AOT_Possibilities
     AOT_misc
   theories [document = false]
     ExportInfo
