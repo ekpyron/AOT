@@ -39,6 +39,8 @@ attribute_setup act_axiom_inst =
   \<open>Scan.succeed (Thm.rule_attribute []
     (K (fn thm => thm RS @{thm "vdash-properties:1[1]"})))\<close>
   "Instantiate modally fragile axiom as modally fragile theorem."
+lemmas "act_axiom_inst" = "vdash-properties:1[1]"
+declare "act_axiom_inst"[AOT_inst AOT_model_act_axiom]
 
 AOT_theorem "vdash-properties:1[2]":
   assumes \<open>\<phi> \<in> \<Lambda>\<^sub>\<box>\<close>
@@ -51,6 +53,8 @@ attribute_setup axiom_inst =
   \<open>Scan.succeed (Thm.rule_attribute []
     (K (fn thm => thm RS @{thm "vdash-properties:1[2]"})))\<close>
   "Instantiate axiom as theorem."
+lemmas "axiom_inst" = "vdash-properties:1[2]"
+declare "axiom_inst"[AOT_inst AOT_model_axiom]
 
 text\<open>Convenience methods and theorem sets for applying "cqt:2".\<close>
 method cqt_2_lambda_inst_prover =

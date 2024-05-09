@@ -41,6 +41,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 (**** RULIFICATION START *****)
+structure AOT_RulifyInsts = Theory_Data (
+  type T = thm Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.merge (K true)
+);
 structure AOT_RulifyElims = Theory_Data (
   type T = (thm list) Symtab.table
   val empty = Symtab.empty
@@ -86,14 +91,19 @@ fun getUnvarifyRules ctxt thm = (
                                | NONE => []
 )
 
-val unvarifyRules = getUnvarifyRules ctxt thm
-val unvarifiedThm = fold (fn rule => fn thm => thm RS rule) unvarifyRules thm
-
 fun outermost_proper_const trm = case Term.strip_comb trm of
   (Const (\<^const_name>\<open>Trueprop\<close>, _), [trm]) => outermost_proper_const trm
  | (Const (\<^const_name>\<open>AOT_model_valid_in\<close>, _), [_,trm]) => outermost_proper_const trm
  | (Const c, _) => SOME (Const c)
  | _ => NONE
+
+val (thm,inst_thms) =
+  case Option.mapPartial (fn Const (trm,_) => Symtab.lookup (AOT_RulifyInsts.get (Context.theory_of ctxt)) trm | _ => NONE)
+                         (outermost_proper_const (Thm.concl_of thm))
+        of SOME instThm => (thm RS instThm,[instThm]) | _ => (thm,[])
+
+val unvarifyRules = getUnvarifyRules ctxt thm
+val unvarifiedThm = fold (fn rule => fn thm => thm RS rule) unvarifyRules thm
 
 fun getRules term = case (Symtab.lookup (AOT_RulifyElims.get (Context.theory_of ctxt)) term) of SOME list => list | _ => []
 
@@ -111,7 +121,7 @@ in flat simps end)
     | NONE => []
 
 val simps = getSimplifications unvarifiedThm
-val simps = map (fn thms => unvarifyRules@thms) simps
+val simps = map (fn thms => inst_thms@unvarifyRules@thms) simps
 in
 simps
 end

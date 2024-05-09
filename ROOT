@@ -15,6 +15,7 @@ session "AOT" = "HOL-Cardinals" +
     AOT_ExtendedRelationComprehension
     AOT_PossibleWorlds
     AOT_NaturalNumbers
+	AOT_Possibilities
     AOT_misc
   theories [document = false]
     ExportInfo

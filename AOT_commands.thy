@@ -46,6 +46,10 @@ attribute_setup AOT_elim = \<open>
 Args.term >>
 (fn (Const (name, _)) => Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyElims.map (Symtab.map_default (name,[]) (fn thms => thm::thms))) I))
 \<close>
+attribute_setup AOT_inst = \<open>
+Args.term >>
+(fn (Const (name, _)) => Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyInsts.map (Symtab.update_new (name,thm))) I))
+\<close>
 attribute_setup AOT_intro = \<open>
 Scan.succeed
 (Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyIntros.map (Net.insert (K true) (Net.key_of_term (Thm.concl_of thm), thm))) I))
