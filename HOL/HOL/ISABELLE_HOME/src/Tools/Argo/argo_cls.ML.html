@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹~~/src/Tools/Argo/argo_cls.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹~~/src/Tools/Argo/argo_cls.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Tools/Argo/argo_cls.ML
+    Author:     Sascha Boehme
+
+Representation of clauses. Clauses are disjunctions of literals with a proof that explains
+why the disjunction holds.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>ARGO_CLS</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>clause</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> </span><span>list</span><span> * </span><span class="entity"><span>Argo_Proof.proof</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> eq_clause</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>clause</span></span><span> * </span><span class="entity"><span>clause</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>bool</span><span>
+
+  </span><span class="comment1"><span>(* two-literal watches for clauses *)</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>table</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> table</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>table</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> put_watches</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>clause</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> * </span><span class="entity"><span>Argo_Lit.literal</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>table</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> get_watches</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>clause</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> * </span><span class="entity"><span>Argo_Lit.literal</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Argo_Cls</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>ARGO_CLS</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>clause</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> </span><span>list</span><span> * </span><span class="entity"><span>Argo_Proof.proof</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>eq_clause</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p1</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Proof.eq_proof_id</span></span><span> </span><span class="main"><span>(</span></span><span>apply2</span><span> </span><span class="entity"><span>Argo_Proof.id_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>p1</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>clause_ord</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p1</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Proof.proof_id_ord</span></span><span> </span><span class="main"><span>(</span></span><span>apply2</span><span> </span><span class="entity"><span>Argo_Proof.id_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>p1</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+
+
+</span><span class="comment1"><span>(* two-literal watches for clauses *)</span></span><span>
+
+</span><span class="comment1"><span>(*
+  The CDCL solver keeps a mapping of some literals to clauses. Exactly two literals
+  of a clause are used to index the clause.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Clstab</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Table</span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>key</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>clause</span></span><span> </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>ord</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>clause_ord</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Argo_Lit.literal</span></span><span> * </span><span class="entity"><span>Argo_Lit.literal</span></span><span class="main"><span>)</span></span><span> </span><span>Clstab.table</span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>table</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Clstab.empty</span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>put_watches</span></span><span> </span><span class="entity"><span>cls</span></span><span> </span><span class="entity"><span>lp</span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Clstab.update</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>cls</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>lp</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>table</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>get_watches</span></span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="entity"><span>cls</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>the</span><span> </span><span class="main"><span>(</span></span><span>Clstab.lookup</span><span> </span><span class="entity"><span>table</span></span><span> </span><span class="entity"><span>cls</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

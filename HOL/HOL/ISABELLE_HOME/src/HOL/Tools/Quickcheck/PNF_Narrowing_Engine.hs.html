@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Quickcheck/PNF_Narrowing_Engine.hs›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Quickcheck/PNF_Narrowing_Engine.hs›</h1>
+</div>
+
+<pre class="source"><span>{-
+A narrowing-based Evaluator for Formulas in Prefix Normal Form based on the compilation technique of LazySmallCheck
+-}
+module Narrowing_Engine where
+
+import Control.Monad
+import Control.Exception
+import System.IO
+import System.Exit
+import Data.Maybe
+import Data.List (partition, findIndex)
+import qualified Generated_Code
+import qualified Typerep
+
+type Pos = [Int]
+
+--  Refinement Tree
+
+data Quantifier = Existential | Universal
+
+data Truth = Eval Bool | Unevaluated | Unknown deriving Eq
+
+conj :: Truth -&gt; Truth -&gt; Truth
+conj (Eval True) b = b
+conj (Eval False) _ = Eval False
+conj b (Eval True) = b
+conj _ (Eval False) = Eval False
+conj Unevaluated _ = Unevaluated
+conj _ Unevaluated = Unevaluated
+conj Unknown Unknown = Unknown
+
+disj :: Truth -&gt; Truth -&gt; Truth
+disj (Eval True) _ = Eval True
+disj (Eval False) b = b
+disj _ (Eval True) = Eval True
+disj b (Eval False) = b
+disj Unknown _ = Unknown
+disj _ Unknown = Unknown
+disj Unevaluated Unevaluated = Unevaluated
+
+ball ts = foldl (\s t -&gt; conj s (value_of t)) (Eval True) ts
+bexists ts = foldl (\s t -&gt; disj s (value_of t)) (Eval False) ts
+
+data Tree = Leaf Truth
+  | Variable Quantifier Truth Pos Generated_Code.Narrowing_type Tree
+  | Constructor Quantifier Truth Pos [Tree]
+
+value_of :: Tree -&gt; Truth
+value_of (Leaf r) = r
+value_of (Variable _ r _ _ _) = r
+value_of (Constructor _ r _ _) = r
+
+data Edge = V Pos Generated_Code.Narrowing_type | C Pos Int
+type Path = [Edge]
+
+position_of :: Edge -&gt; Pos
+position_of (V pos _) = pos
+position_of (C pos _) = pos
+
+-- Operation find: finds first relevant unevaluated node and returns its path
+
+find :: Tree -&gt; Path
+find (Leaf Unevaluated) = []
+find (Variable _ _ pos ty t) = V pos ty : (find t)
+find (Constructor _ _ pos ts) = C pos i : find (ts !! i)
+  where  
+    Just i = findIndex (\t -&gt; value_of t == Unevaluated) ts
+
+-- Operation update: updates the leaf and the cached truth values results along the path
+
+update :: Path -&gt; Truth -&gt; Tree -&gt; Tree
+update [] v (Leaf _) = Leaf v
+update (V _ _ : es) v (Variable q r p ty t) = Variable q (value_of t') p ty t'
+  where
+    t' = update es v t    
+update (C _ i : es) v (Constructor q r pos ts) = Constructor q r' pos ts' 
+  where
+    (xs, y : ys) = splitAt i ts
+    y' = update es v y
+    ts' = xs ++ (y' : ys)
+    r' = valueOf ts'
+    valueOf = case q of { Universal -&gt; ball; Existential -&gt; bexists}
+ 
+-- Operation: refineTree
+
+replace :: (Tree -&gt; Tree) -&gt; Path -&gt; Tree -&gt; Tree
+replace f [] t = (f t)
+replace f (V _ _ : es) (Variable q r pos ty t) = Variable q r pos ty (replace f es t)
+replace f (C _ i : es) (Constructor q r pos ts) = Constructor q r pos (xs ++ (replace f es y : ys))
+   where
+     (xs, y : ys) = splitAt i ts
+
+refine_tree :: [Edge] -&gt; Pos -&gt; Tree -&gt; Tree
+refine_tree es p t = replace refine (path_of_position p es) t
+  where
+    path_of_position p es = takeWhile (\e -&gt; position_of e /= p) es  
+    refine (Variable q r p (Generated_Code.Narrowing_sum_of_products ps) t) =
+      Constructor q r p [ foldr (\(i,ty) t -&gt; Variable q r (p++[i]) ty t) t (zip [0..] ts) | ts &lt;- ps ]
+
+-- refute
+
+refute :: ([Generated_Code.Narrowing_term] -&gt; Bool) -&gt; Bool -&gt; Int -&gt; Tree -&gt; IO Tree
+refute exec genuine_only d t = ref t
+  where
+    ref t =
+      let path = find t in
+        do
+          t' &lt;- answer genuine_only (exec (terms_of [] path)) (\b -&gt; return (update path (Eval b) t))
+            (\p -&gt; return (if length p &lt; d then refine_tree path p t else update path Unknown t));
+          case value_of t' of
+            Unevaluated -&gt; ref t'
+            _ -&gt; return t'
+
+depthCheck :: Bool -&gt; Int -&gt; Generated_Code.Property -&gt; IO ()
+depthCheck genuine_only d p = refute (checkOf p) genuine_only d (treeOf 0 p) &gt;&gt;= (\t -&gt; 
+  case value_of t of
+   Eval False -&gt; putStrLn ("SOME (" ++ show (counterexampleOf (reifysOf p) (exampleOf 0 t)) ++ ")")  
+   _ -&gt; putStrLn ("NONE"))
+
+-- Term refinement
+
+-- Operation: termOf
+
+term_of :: Pos -&gt; Path -&gt; Generated_Code.Narrowing_term
+term_of p (C [] i : es) = Generated_Code.Narrowing_constructor i (terms_of p es)
+term_of p [V [] ty] = Generated_Code.Narrowing_variable p ty
+
+terms_of :: Pos -&gt; Path -&gt; [Generated_Code.Narrowing_term]
+terms_of p es = terms_of' 0 es
+  where
+    terms_of' i [] = []
+    terms_of' i (e : es) = (t : terms_of' (i + 1) rs) 
+      where
+        (ts, rs) = Data.List.partition (\e -&gt; head (position_of e) == i) (e : es)
+        t = term_of (p ++ [i]) (map (map_pos tail) ts)
+        map_pos f (V p ty) = V (f p) ty
+        map_pos f (C p ts) = C (f p) ts
+
+-- Answers
+
+data Answer = Known Bool | Refine Pos;
+
+answeri :: a -&gt; (a -&gt; IO b) -&gt; (Pos -&gt; IO b) -&gt; IO b;
+answeri a known unknown =
+  do res &lt;- try (evaluate a)
+     case res of
+       Right b -&gt; known b
+       Left (ErrorCall ('\0':p)) -&gt; unknown (map fromEnum p)
+       Left e -&gt; throw e
+
+answer :: Bool -&gt; Bool -&gt; (Bool -&gt; IO b) -&gt; (Pos -&gt; IO b) -&gt; IO b;
+answer genuine_only a known unknown =
+  Control.Exception.catch (answeri a known unknown) 
+    (\ (PatternMatchFail _) -&gt; known genuine_only)
+
+
+-- presentation of counterexample
+
+
+instance Show Typerep.Typerep where {
+  show (Typerep.Typerep c ts) = "Type (\"" ++ c ++ "\", " ++ show ts ++ ")";
+};
+
+instance Show Generated_Code.Term where {
+  show (Generated_Code.Const c t) = "Const (\"" ++ c ++ "\", " ++ show t ++ ")";
+  show (Generated_Code.App s t) = "(" ++ show s ++ ") $ (" ++ show t ++ ")";
+  show (Generated_Code.Abs s ty t) = "Abs (\"" ++ s ++ "\", " ++ show ty ++ ", " ++ show t ++ ")";
+  show (Generated_Code.Free s ty) = "Free (\"" ++ s ++  "\", " ++ show ty ++ ")";
+};
+{-
+posOf :: Edge -&gt; Pos
+posOf (VN pos _) = pos
+posOf (CtrB pos _) = pos
+
+tailPosEdge :: Edge -&gt; Edge
+tailPosEdge (VN pos ty) = VN (tail pos) ty
+tailPosEdge (CtrB pos ts) = CtrB (tail pos) ts
+
+termOf :: Pos -&gt; Tree -&gt; (Narrowing_term, Tree)
+termOf pos = if Ctr i (termListOf (pos ++ [i]) )
+termOf pos [VN [] ty] = Var pos ty
+
+termListOf :: Pos -&gt; [Narrowing_term]
+termListOf pos es = termListOf' 0 es
+  where
+    termListOf' i [] = []
+    termListOf' i (e : es) =
+      let
+        (ts, rs) = List.partition (\e -&gt; head (posOf e) == i) (e : es)
+        t = termOf (pos ++ [i]) (map tailPosEdge ts)
+      in
+        (t : termListOf' (i + 1) rs) 
+
+termlist_of :: Pos -&gt; QuantTree -&gt; ([Term], QuantTree)
+
+termlist_of p' (Node r)
+
+term_of p' (VarNode _ _ p ty t) = if p == p' then
+    (Some (Var ty), t)
+  else
+    (None, t)
+term_of p' (CtrBranch q _ p ts) =
+  if p == p' then
+    let
+      i = findindex (\t -&gt; evalOf t == Eval False)        
+    in
+      Ctr i (termlist_of (p ++ [i])  (ts ! i) [])
+  else
+    error ""
+-}
+termlist_of :: Pos -&gt; ([Generated_Code.Narrowing_term], Tree) -&gt; ([Generated_Code.Narrowing_term], Tree)
+termlist_of p' (terms, Leaf b) = (terms, Leaf b) 
+termlist_of p' (terms, Variable q r p ty t) = if p' == take (length p') p then
+    termlist_of p' (terms ++ [Generated_Code.Narrowing_variable p ty], t)
+  else
+    (terms, Variable q r p ty t)
+termlist_of p' (terms, Constructor q r p ts) = if p' == take (length p') p then
+    let
+      Just i = findIndex (\t -&gt; value_of t == Eval False) ts
+      (subterms, t') = fixp (\j -&gt; termlist_of (p ++ [j])) 0 ([], ts !! i)
+    in
+      (terms ++ [Generated_Code.Narrowing_constructor i subterms], t')
+  else
+    (terms, Constructor q r p ts)
+  where
+    fixp f j s = if length (fst (f j s)) == length (fst s) then s else fixp f (j + 1) (f j s)
+
+
+alltermlist_of :: Pos -&gt; ([Generated_Code.Narrowing_term], Tree) -&gt; [([Generated_Code.Narrowing_term], Tree)]
+alltermlist_of p' (terms, Leaf b) = [(terms, Leaf b)] 
+alltermlist_of p' (terms, Variable q r p ty t) = if p' == take (length p') p then
+    alltermlist_of p' (terms ++ [Generated_Code.Narrowing_variable p ty], t)
+  else
+    [(terms, Variable q r p ty t)]
+alltermlist_of p' (terms, Constructor q r p ts) =
+  if p' == take (length p') p then
+    let
+      its = filter (\(i, t) -&gt; value_of t == Eval False) (zip [0..] ts)
+    in
+      concatMap
+        (\(i, t) -&gt; map (\(subterms, t') -&gt; (terms ++ [Generated_Code.Narrowing_constructor i subterms], t'))
+           (fixp (\j -&gt; alltermlist_of (p ++ [j])) 0 ([], t))) its
+  else
+    [(terms, Constructor q r p ts)]
+  where
+    fixp f j s = case (f j s) of
+      [s'] -&gt; if length (fst s') == length (fst s) then [s'] else concatMap (fixp f (j + 1)) (f j s)
+      _ -&gt; concatMap (fixp f (j + 1)) (f j s)
+
+data Example = UnivExample Generated_Code.Narrowing_term Example | ExExample [(Generated_Code.Narrowing_term, Example)] | EmptyExample
+
+quantifierOf (Variable q _ _ _ _) = q
+quantifierOf (Constructor q _ _ _) = q
+
+exampleOf :: Int -&gt; Tree -&gt; Example
+exampleOf _ (Leaf _) = EmptyExample
+exampleOf p t =
+   case quantifierOf t of
+     Universal -&gt;
+       let
+         ([term], rt) = termlist_of [p] ([], t)
+       in UnivExample term (exampleOf (p + 1) rt)
+     Existential -&gt;
+       ExExample (map (\([term], rt) -&gt; (term, exampleOf (p + 1) rt)) (alltermlist_of [p] ([], t)))
+
+data Counterexample = Universal_Counterexample (Generated_Code.Term, Counterexample)
+  | Existential_Counterexample [(Generated_Code.Term, Counterexample)] | Empty_Assignment
+  
+instance Show Counterexample where {
+show Empty_Assignment = "Narrowing_Generators.Empty_Assignment";
+show (Universal_Counterexample x) = "Narrowing_Generators.Universal_Counterexample" ++ show x;
+show (Existential_Counterexample x) = "Narrowing_Generators.Existential_Counterexample" ++ show x;
+};
+
+counterexampleOf :: [Generated_Code.Narrowing_term -&gt; Generated_Code.Term] -&gt; Example -&gt; Counterexample
+counterexampleOf [] EmptyExample = Empty_Assignment
+counterexampleOf (reify : reifys) (UnivExample t ex) = Universal_Counterexample (reify t, counterexampleOf reifys ex)
+counterexampleOf (reify : reifys) (ExExample exs) = Existential_Counterexample (map (\(t, ex) -&gt; (reify t, counterexampleOf reifys ex)) exs)
+
+checkOf :: Generated_Code.Property -&gt; [Generated_Code.Narrowing_term] -&gt; Bool
+checkOf (Generated_Code.Property b) = (\[] -&gt; b)
+checkOf (Generated_Code.Universal _ f _) = (\(t : ts) -&gt; checkOf (f t) ts)
+checkOf (Generated_Code.Existential _ f _) = (\(t : ts) -&gt; checkOf (f t) ts)
+
+treeOf :: Int -&gt; Generated_Code.Property -&gt; Tree
+treeOf n (Generated_Code.Property _) = Leaf Unevaluated
+treeOf n (Generated_Code.Universal ty f _)  = Variable Universal Unevaluated [n] ty (treeOf (n + 1) (f undefined)) 
+treeOf n (Generated_Code.Existential ty f _) = Variable Existential Unevaluated [n] ty (treeOf (n + 1) (f undefined))
+
+reifysOf :: Generated_Code.Property -&gt; [Generated_Code.Narrowing_term -&gt; Generated_Code.Term]
+reifysOf (Generated_Code.Property _) = []
+reifysOf (Generated_Code.Universal _ f r)  = (r : (reifysOf (f undefined)))
+reifysOf (Generated_Code.Existential _ f r) = (r : (reifysOf (f undefined)))
+
+</span></pre>
+</body>
+
+</html>

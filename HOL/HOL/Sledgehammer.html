@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Sledgehammer</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Sledgehammer</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Sledgehammer.thy
+    Author:     Lawrence C. Paulson, Cambridge University Computer Laboratory
+    Author:     Jia Meng, Cambridge University Computer Laboratory and NICTA
+    Author:     Jasmin Blanchette, TU Muenchen
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>section</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Sledgehammer: Isabelle--ATP Linkup›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="Sledgehammer.html"><span>Sledgehammer</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Presburger.html"><span>Presburger</span></a><span> </span><a href="SMT.html"><span>SMT</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>keywords</span></span></span><span>
+  </span><span class="quoted"><span>"sledgehammer"</span></span><span> </span><span class="main"><span>::</span></span><span> diag </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span>
+  </span><span class="quoted"><span>"sledgehammer_params"</span></span><span> </span><span class="main"><span>::</span></span><span> thy_decl
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/ATP/system_on_tptp.ML.html"><span>‹Tools/ATP/system_on_tptp.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/async_manager_legacy.ML.html"><span>‹Tools/Sledgehammer/async_manager_legacy.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_util.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_util.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_fact.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_fact.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_proof_methods.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_proof_methods.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar_annotate.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar_annotate.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar_proof.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar_proof.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar_preplay.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar_preplay.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar_compress.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar_compress.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar_minimize.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar_minimize.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_isar.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_isar.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_atp_systems.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_atp_systems.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_prover.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_prover.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_prover_atp.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_prover_atp.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_prover_smt.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_prover_smt.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_prover_minimize.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_prover_minimize.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_mepo.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_mepo.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_mash.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_mash.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer.ML.html"><span>‹Tools/Sledgehammer/sledgehammer.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_commands.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_commands.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Sledgehammer/sledgehammer_tactics.ML.html"><span>‹Tools/Sledgehammer/sledgehammer_tactics.ML›</span></a></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

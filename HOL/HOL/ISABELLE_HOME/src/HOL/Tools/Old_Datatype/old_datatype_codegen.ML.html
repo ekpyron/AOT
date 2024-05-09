@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Old_Datatype/old_datatype_codegen.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Old_Datatype/old_datatype_codegen.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/Old_Datatype/old_datatype_codegen.ML
+    Author:     Stefan Berghofer and Florian Haftmann, TU Muenchen
+
+Code generator facilities for inductive datatypes.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>OLD_DATATYPE_CODEGEN</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Old_Datatype_Codegen</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>OLD_DATATYPE_CODEGEN</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>add_code_for_datatype</span></span><span> </span><span class="entity"><span>fcT_name</span></span><span> </span><span class="entity"><span>thy</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Proof_Context.init_global</span><span> </span><span class="entity"><span>thy</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span>SOME</span><span> </span><span class="main"><span>{</span></span><span class="entity"><span>ctrs</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>injects</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>distincts</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>case_thms</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>...</span></span><span class="main"><span>}</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Ctr_Sugar.ctr_sugar_of</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>fcT_name</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span>Type</span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>As</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>body_type</span><span> </span><span class="main"><span>(</span></span><span>fastype_of</span><span> </span><span class="main"><span>(</span></span><span>hd</span><span> </span><span class="entity"><span>ctrs</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+    </span><span class="entity"><span>Ctr_Sugar_Code.add_ctr_code</span></span><span> </span><span class="entity"><span>fcT_name</span></span><span> </span><span class="entity"><span>As</span></span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span>dest_Const</span><span> </span><span class="entity"><span>ctrs</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>injects</span></span><span> </span><span class="entity"><span>distincts</span></span><span> </span><span class="entity"><span>case_thms</span></span><span> </span><span class="entity"><span>thy</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Theory.setup</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Old_Datatype_Data.interpretation</span></span><span> </span><span class="main"><span>(</span></span><span>K</span><span> </span><span class="main"><span>(</span></span><span>fold</span><span> </span><span class="entity"><span>add_code_for_datatype</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+</span></pre>
+</body>
+
+</html>

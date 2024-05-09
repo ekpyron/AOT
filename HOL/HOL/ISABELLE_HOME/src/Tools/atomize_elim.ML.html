@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹~~/src/Tools/atomize_elim.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹~~/src/Tools/atomize_elim.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Tools/atomize_elim.ML
+    Author:     Alexander Krauss, TU Muenchen
+
+Turn elimination rules into atomic expressions in the object logic.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>ATOMIZE_ELIM</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> atomize_elim_conv </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>conv</span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> full_atomize_elim_conv </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>conv</span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> atomize_elim_tac </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>int</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>tactic</span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Atomize_Elim</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>ATOMIZE_ELIM</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="comment1"><span>(* atomize_elim rules *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>named_theorems</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>Context.&gt;&gt;&gt;</span><span> </span><span class="main"><span>(</span></span><span>Context.map_theory_result</span><span>
+   </span><span class="main"><span>(</span></span><span class="entity"><span>Named_Target.theory_init</span></span><span> </span><span>#&gt;</span><span>
+    </span><span class="entity"><span>Named_Theorems.declare</span></span><span> </span><span class="antiquoted"><span class="entity"><span class="operator"><span><span class="hidden">\&lt;^</span><span class="control">binding</span><span class="hidden">&gt;</span></span></span><span>‹</span><span class="entity_def" id="HOL.atomize_elim|attribute"><span class="entity_def" id="HOL.atomize_elim|fact"><span>atomize_elim</span></span></span><span>›</span></span></span><span> </span><span class="inner_quoted"><span>"atomize_elim rewrite rule"</span></span><span> </span><span>##&gt;</span><span>
+    </span><span>Local_Theory.exit_global</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+
+
+</span><span class="comment1"><span>(* More conversions: *)</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>local</span></span></span><span> </span><span class="keyword3"><span class="keyword"><span>open</span></span></span><span> </span><span>Conv</span><span> </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+
+</span><span class="comment1"><span>(* Compute inverse permutation *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>invert_perm</span></span><span> </span><span class="entity"><span>pi</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="main"><span>(</span></span><span class="entity"><span>pi</span></span><span> </span><span>@</span><span> </span><span>subtract</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>op</span></span></span><span> </span><span class="main"><span>=</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>pi</span></span><span> </span><span class="main"><span>(</span></span><span class="inner_numeral"><span>0</span></span><span> </span><span>upto</span><span> </span><span class="main"><span>(</span></span><span>fold</span><span> </span><span>Integer.max</span><span> </span><span class="entity"><span>pi</span></span><span> </span><span class="inner_numeral"><span>0</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+           </span><span>|&gt;</span><span> </span><span>map_index</span><span> </span><span>I</span><span>
+           </span><span>|&gt;</span><span> </span><span>sort</span><span> </span><span class="main"><span>(</span></span><span>int_ord</span><span> </span><span>o</span><span> </span><span>apply2</span><span> </span><span>snd</span><span class="main"><span>)</span></span><span>
+           </span><span>|&gt;</span><span> </span><span>map</span><span> </span><span>fst</span><span>
+
+</span><span class="comment1"><span>(* rearrange_prems as a conversion *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>rearrange_prems_conv</span></span><span> </span><span class="entity"><span>pi</span></span><span> </span><span class="entity"><span>ct</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>pi'</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="inner_numeral"><span>0</span></span><span> </span><span>::</span><span> </span><span>map</span><span> </span><span class="main"><span>(</span></span><span>Integer.add</span><span> </span><span class="inner_numeral"><span>1</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>pi</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>fwd</span></span><span>  </span><span class="main"><span>=</span></span><span> </span><span>Thm.trivial</span><span> </span><span class="entity"><span>ct</span></span><span>
+                  </span><span>|&gt;</span><span> </span><span>Drule.rearrange_prems</span><span> </span><span class="entity"><span>pi'</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>back</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.trivial</span><span> </span><span class="main"><span>(</span></span><span>snd</span><span> </span><span class="main"><span>(</span></span><span>Thm.dest_implies</span><span> </span><span class="main"><span>(</span></span><span>Thm.cprop_of</span><span> </span><span class="entity"><span>fwd</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+                  </span><span>|&gt;</span><span> </span><span>Drule.rearrange_prems</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>invert_perm</span></span><span> </span><span class="entity"><span>pi'</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span>Thm.equal_intr</span><span> </span><span class="entity"><span>fwd</span></span><span> </span><span class="entity"><span>back</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+
+</span><span class="comment1"><span>(* convert !!thesis. (!!x y z. ... =&gt; thesis) ==&gt; ...
+                     ==&gt; (!!a b c. ... =&gt; thesis)
+                     ==&gt; thesis
+
+   to
+
+   (EX x y z. ...) | ... | (EX a b c. ...)
+*)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>atomize_elim_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>ct</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="main"><span>(</span></span><span>forall_conv</span><span> </span><span class="main"><span>(</span></span><span>prems_conv</span><span> </span><span class="inner_numeral"><span>~1</span></span><span> </span><span>o</span><span> </span><span>Object_Logic.atomize_prems</span><span> </span><span>o</span><span> </span><span>snd</span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ctxt</span></span><span>
+    </span><span>then_conv</span><span> </span><span>Raw_Simplifier.rewrite</span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span>true</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Named_Theorems.get</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>named_theorems</span></span><span class="main"><span>)</span></span><span>
+    </span><span>then_conv</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="entity"><span>ct'</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="keyword2"><span class="keyword"><span>if</span></span></span><span> </span><span>can</span><span> </span><span class="main"><span>(</span></span><span>Object_Logic.dest_judgment</span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ct'</span></span><span>
+                         </span><span class="keyword2"><span class="keyword"><span>then</span></span></span><span> </span><span>all_conv</span><span> </span><span class="entity"><span>ct'</span></span><span>
+                         </span><span class="keyword2"><span class="keyword"><span>else</span></span></span><span> </span><span class="keyword3"><span class="keyword"><span>raise</span></span></span><span> </span><span>CTERM</span><span> </span><span class="main"><span>(</span></span><span class="inner_quoted"><span>"atomize_elim"</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>[</span></span><span class="entity"><span>ct'</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>ct</span></span><span class="main"><span>]</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="entity"><span>ct</span></span><span>
+
+
+</span><span class="comment1"><span>(* Move the thesis-quantifier inside over other quantifiers and unrelated prems *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>thesis_miniscope_conv</span></span><span> </span><span class="entity"><span>inner_cv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+      </span><span class="comment1"><span>(* check if the outermost quantifier binds the conclusion *)</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>is_forall_thesis</span></span><span> </span><span class="entity"><span>t</span></span><span> </span><span class="main"><span>=</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>case</span></span></span><span> </span><span>Logic.strip_assums_concl</span><span> </span><span class="entity"><span>t</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span>
+            </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span> </span><span>$</span><span> </span><span>Bound</span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>length</span><span> </span><span class="main"><span>(</span></span><span>Logic.strip_params</span><span> </span><span class="entity"><span>t</span></span><span class="main"><span>)</span></span><span> </span><span>-</span><span> </span><span class="inner_numeral"><span>1</span></span><span>
+          </span><span class="main"><span>|</span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>false</span><span>
+
+      </span><span class="comment1"><span>(* move unrelated assumptions out of the quantification *)</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>movea_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>ct</span></span><span> </span><span class="main"><span>=</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+            </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span>$</span><span> </span><span>Abs</span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>b</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.term_of</span><span> </span><span class="entity"><span>ct</span></span><span>
+            </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>idxs</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>fold_index</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>i</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>t</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>not</span><span> </span><span class="main"><span>(</span></span><span>Term.is_dependent</span><span> </span><span class="entity"><span>t</span></span><span class="main"><span>)</span></span><span> </span><span>?</span><span> </span><span>cons</span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span>
+                       </span><span class="main"><span>(</span></span><span>Logic.strip_imp_prems</span><span> </span><span class="entity"><span>b</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>[</span></span><span class="main"><span>]</span></span><span>
+                       </span><span>|&gt;</span><span> </span><span>rev</span><span>
+
+            </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>skip_over_assm</span></span><span> </span><span class="entity"><span>cv</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>rewr_conv</span><span> </span><span class="main"><span>(</span></span><span>Thm.symmetric</span><span> </span><span>Drule.norm_hhf_eq</span><span class="main"><span>)</span></span><span>
+                                    </span><span>then_conv</span><span> </span><span class="main"><span>(</span></span><span>implies_concl_conv</span><span> </span><span class="entity"><span>cv</span></span><span class="main"><span>)</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+            </span><span class="main"><span>(</span></span><span>forall_conv</span><span> </span><span class="main"><span>(</span></span><span>K</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>rearrange_prems_conv</span></span><span> </span><span class="entity"><span>idxs</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ctxt</span></span><span>
+             </span><span>then_conv</span><span> </span><span class="main"><span>(</span></span><span>funpow</span><span> </span><span class="main"><span>(</span></span><span>length</span><span> </span><span class="entity"><span>idxs</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>skip_over_assm</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>inner_cv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+            </span><span class="entity"><span>ct</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+      </span><span class="comment1"><span>(* move current quantifier to the right *)</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>moveq_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>=</span></span><span>
+          </span><span class="main"><span>(</span></span><span>rewr_conv</span><span> </span><span class="antiquoted"><span class="entity"><span class="antiquote"><span>@{</span></span><span class="operator"><span>thm</span></span><span> </span><a class="entity_ref" href="../../../../../Pure/Pure/Pure.html#Pure.swap_params|fact"><span>swap_params</span></a><span class="antiquote"><span>}</span></span></span></span><span> </span><span>then_conv</span><span> </span><span class="main"><span>(</span></span><span>forall_conv</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>moveq_conv</span></span><span> </span><span>o</span><span> </span><span>snd</span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+          </span><span>else_conv</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>movea_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span>
+
+      </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>ms_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>ct</span></span><span> </span><span class="main"><span>=</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>if</span></span></span><span> </span><span class="entity"><span>is_forall_thesis</span></span><span> </span><span class="main"><span>(</span></span><span>Thm.term_of</span><span> </span><span class="entity"><span>ct</span></span><span class="main"><span>)</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>then</span></span></span><span> </span><span class="entity"><span>moveq_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>ct</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>else</span></span></span><span> </span><span class="main"><span>(</span></span><span>implies_concl_conv</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>ms_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span>
+            </span><span>else_conv</span><span>
+            </span><span class="main"><span>(</span></span><span>forall_conv</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>ms_conv</span></span><span> </span><span>o</span><span> </span><span>snd</span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+            </span><span class="entity"><span>ct</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+      </span><span class="entity"><span>ms_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>full_atomize_elim_conv</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>thesis_miniscope_conv</span></span><span> </span><span class="entity"><span>atomize_elim_conv</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>atomize_elim_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>SUBGOAL</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>subg</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>thy</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Proof_Context.theory_of</span><span> </span><span class="entity"><span>ctxt</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span>$</span><span> </span><span class="entity"><span>thesis</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Logic.strip_assums_concl</span><span> </span><span class="entity"><span>subg</span></span><span>
+
+      </span><span class="comment1"><span>(* Introduce a quantifier first if the thesis is not bound *)</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>quantify_thesis</span></span><span> </span><span class="main"><span>=</span></span><span>
+          </span><span class="keyword2"><span class="keyword"><span>if</span></span></span><span> </span><span>is_Bound</span><span> </span><span class="entity"><span>thesis</span></span><span> </span><span class="keyword2"><span class="keyword"><span>then</span></span></span><span> </span><span>all_tac</span><span>
+          </span><span class="keyword2"><span class="keyword"><span>else</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+              </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>cthesis</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.global_cterm_of</span><span> </span><span class="entity"><span>thy</span></span><span> </span><span class="entity"><span>thesis</span></span><span>
+              </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>rule</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.instantiate'</span><span> </span><span class="main"><span>[</span></span><span>SOME</span><span> </span><span class="main"><span>(</span></span><span>Thm.ctyp_of_cterm</span><span> </span><span class="entity"><span>cthesis</span></span><span class="main"><span>)</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>[</span></span><span>NONE</span><span class="main"><span>,</span></span><span> </span><span>SOME</span><span> </span><span class="entity"><span>cthesis</span></span><span class="main"><span>]</span></span><span>
+                         </span><span class="antiquoted"><span class="entity"><span class="antiquote"><span>@{</span></span><span class="operator"><span>thm</span></span><span> </span><a class="entity_ref" href="../../../../../Pure/Pure/Pure.html#Pure.meta_spec|fact"><span>meta_spec</span></a><span class="antiquote"><span>}</span></span></span></span><span>
+            </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+              </span><span>compose_tac</span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>(</span></span><span>false</span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>rule</span></span><span class="main"><span>,</span></span><span> </span><span class="inner_numeral"><span>1</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>i</span></span><span>
+            </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+      </span><span class="entity"><span>quantify_thesis</span></span><span>
+      </span><span>THEN</span><span> </span><span class="main"><span>(</span></span><span>CONVERSION</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>full_atomize_elim_conv</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>Theory.setup</span><span>
+    </span><span class="main"><span>(</span></span><span class="entity"><span>Method.setup</span></span><span> </span><span class="antiquoted"><span class="entity"><span class="operator"><span><span class="hidden">\&lt;^</span><span class="control">binding</span><span class="hidden">&gt;</span></span></span><span>‹</span><span class="entity_def" id="HOL.atomize_elim|method"><span>atomize_elim</span></span><span>›</span></span></span><span> </span><span class="main"><span>(</span></span><span>Scan.succeed</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>SIMPLE_METHOD'</span></span><span> </span><span>o</span><span> </span><span class="entity"><span>atomize_elim_tac</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+      </span><span class="inner_quoted"><span>"convert obtains statement to atomic object logic goal"</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

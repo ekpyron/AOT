@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/SMT/cvc_interface.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/SMT/cvc_interface.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/SMT/cvc_interface.ML
+    Author:     Jasmin Blanchette, TU Muenchen
+
+Interface to CVC4 and cvc5 based on an extended version of SMT-LIB.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>CVC_INTERFACE</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> smtlib_cvcC</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>SMT_Util.class</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> hosmtlib_cvcC</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>SMT_Util.class</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>CVC_Interface</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>CVC_INTERFACE</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>cvcC</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>[</span></span><span class="inner_quoted"><span>"cvc"</span></span><span class="main"><span>]</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>smtlib_cvcC</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>SMTLIB_Interface.smtlibC</span></span><span> </span><span>@</span><span> </span><span class="entity"><span>cvcC</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>hosmtlib_cvcC</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>SMTLIB_Interface.hosmtlibC</span></span><span> </span><span>@</span><span> </span><span class="entity"><span>cvcC</span></span><span>
+
+
+</span><span class="comment1"><span>(* interface *)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>local</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>translate_config</span></span><span> </span><span class="entity"><span>order</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="main"><span>{</span></span><span>order </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>order</span></span><span class="main"><span>,</span></span><span>
+     logic </span><span class="main"><span>=</span></span><span> </span><span>K</span><span> </span><span class="main"><span>(</span></span><span>K</span><span> </span><span class="inner_quoted"><span>"(set-logic ALL_SUPPORTED)\n"</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span>
+     fp_kinds </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>[</span></span><span class="entity"><span>BNF_Util.Least_FP</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>BNF_Util.Greatest_FP</span></span><span class="main"><span>]</span></span><span class="main"><span>,</span></span><span>
+     serialize </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>#</span></span><span>serialize </span><span class="main"><span>(</span></span><span class="entity"><span>SMTLIB_Interface.translate_config</span></span><span> </span><span class="entity"><span>order</span></span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span class="main"><span>}</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Theory.setup</span><span> </span><span class="main"><span>(</span></span><span>Context.theory_map</span><span>
+  </span><span class="main"><span>(</span></span><span class="entity"><span>SMT_Translate.add_config</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>smtlib_cvcC</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>translate_config</span></span><span> </span><span class="entity"><span>SMT_Util.First_Order</span></span><span class="main"><span>)</span></span><span> </span><span>#&gt;</span><span>
+   </span><span class="entity"><span>SMT_Translate.add_config</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>hosmtlib_cvcC</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>translate_config</span></span><span> </span><span class="entity"><span>SMT_Util.Higher_Order</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+</span></pre>
+</body>
+
+</html>

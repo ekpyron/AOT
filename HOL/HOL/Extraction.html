@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Extraction</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Extraction</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Extraction.thy
+    Author:     Stefan Berghofer, TU Muenchen
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>section</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Program extraction for HOL›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="Extraction.html"><span>Extraction</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Option.html"><span>Option</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>subsection</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Setup›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>setup</span></span></span><span> </span><span class="quoted"><span>‹
+  </span><span class="entity"><span>Extraction.add_types</span></span><span>
+      </span><span class="main"><span>[</span></span><span class="main"><span>(</span></span><span class="inner_quoted"><span>"bool"</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>[</span></span><span class="main"><span>]</span></span><span class="main"><span>,</span></span><span> </span><span>NONE</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>]</span></span><span> </span><span>#&gt;</span><span>
+  </span><span class="entity"><span>Extraction.set_preprocessor</span></span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="entity"><span>thy</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span>Proofterm.rewrite_proof_notypes</span><span>
+      </span><span class="main"><span>(</span></span><span class="main"><span>[</span></span><span class="main"><span>]</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>Rewrite_HOL_Proof.elim_cong</span></span><span> </span><span>::</span><span> </span><span class="entity"><span>Proof_Rewrite_Rules.rprocs</span></span><span> </span><span>true</span><span class="main"><span>)</span></span><span> </span><span>o</span><span>
+    </span><span>Proofterm.rewrite_proof</span><span> </span><span class="entity"><span>thy</span></span><span>
+      </span><span class="main"><span>(</span></span><span class="entity"><span>Rewrite_HOL_Proof.rews</span></span><span class="main"><span>,</span></span><span>
+       </span><span class="entity"><span>Proof_Rewrite_Rules.rprocs</span></span><span> </span><span>true</span><span> </span><span>@</span><span> </span><span class="main"><span>[</span></span><span class="entity"><span>Proof_Rewrite_Rules.expand_of_class</span></span><span> </span><span class="entity"><span>thy</span></span><span class="main"><span>]</span></span><span class="main"><span>)</span></span><span> </span><span>o</span><span>
+    </span><span class="entity"><span>Proof_Rewrite_Rules.elim_vars</span></span><span> </span><span class="main"><span>(</span></span><span>curry</span><span> </span><span>Const</span><span> </span><span class="antiquoted"><span class="operator"><span><span class="hidden">\&lt;^</span><span class="control">const_name</span><span class="hidden">&gt;</span></span></span><span>‹</span><a class="entity_ref" href="HOL.html#HOL.default_class.default|const"><span>default</span></a><span>›</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+›</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>lemmas</span></span></span><span> </span><span class="main"><span>[</span></span><span class="operator"><span>extraction_expand</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><a class="entity_ref" href="../../Pure/Pure/Pure.html#Pure.meta_spec|fact"><span>meta_spec</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.atomize_eq|fact"><span>atomize_eq</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.atomize_all|fact"><span>atomize_all</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.atomize_imp|fact"><span>atomize_imp</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.atomize_conj|fact"><span>atomize_conj</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.allE|fact"><span>allE</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.rev_mp|fact"><span>rev_mp</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.conjE|fact"><span>conjE</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.Eq_TrueI|fact"><span>Eq_TrueI</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.Eq_FalseI|fact"><span>Eq_FalseI</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.eqTrueI|fact"><span>eqTrueI</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.eqTrueE|fact"><span>eqTrueE</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.eq_cong2|fact"><span>eq_cong2</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.notE&apos;|fact"><span>notE'</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.impE&apos;|fact"><span>impE'</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.impE|fact"><span>impE</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.iffE|fact"><span>iffE</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.imp_cong|fact"><span>imp_cong</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.simp_thms|fact"><span>simp_thms</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.eq_True|fact"><span>eq_True</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.eq_False|fact"><span>eq_False</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.induct_forall_eq|fact"><span>induct_forall_eq</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_implies_eq|fact"><span>induct_implies_eq</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_equal_eq|fact"><span>induct_equal_eq</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_conj_eq|fact"><span>induct_conj_eq</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.induct_atomize|fact"><span>induct_atomize</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_atomize&apos;|fact"><span>induct_atomize'</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_rulify|fact"><span>induct_rulify</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_rulify&apos;|fact"><span>induct_rulify'</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.induct_rulify_fallback|fact"><span>induct_rulify_fallback</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_trueI|fact"><span>induct_trueI</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.True_implies_equals|fact"><span>True_implies_equals</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.implies_True_equals|fact"><span>implies_True_equals</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.TrueE|fact"><span>TrueE</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.False_implies_equals|fact"><span>False_implies_equals</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.implies_False_swap|fact"><span>implies_False_swap</span></a><span>
+
+</span><span class="keyword1"><span class="command"><span>lemmas</span></span></span><span> </span><span class="main"><span>[</span></span><span class="operator"><span>extraction_expand_def</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.induct_forall_def|fact"><span>HOL.induct_forall_def</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_implies_def|fact"><span>HOL.induct_implies_def</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_equal_def|fact"><span>HOL.induct_equal_def</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_conj_def|fact"><span>HOL.induct_conj_def</span></a><span>
+  </span><a class="entity_ref" href="HOL.html#HOL.induct_true_def|fact"><span>HOL.induct_true_def</span></a><span> </span><a class="entity_ref" href="HOL.html#HOL.induct_false_def|fact"><span>HOL.induct_false_def</span></a><span>
+
+</span><span class="keyword1"><span class="command"><span class="entity_def" id="Extraction.sumbool.simps|fact"><span class="entity_def" id="Extraction.sumbool.rec_transfer|fact"><span class="entity_def" id="Extraction.sumbool.rec|fact"><span class="entity_def" id="Extraction.sumbool.induct|fact"><span class="entity_def" id="Extraction.sumbool.splits|fact"><span class="entity_def" id="Extraction.sumbool.split_asm|fact"><span class="entity_def" id="Extraction.sumbool.split|fact"><span class="entity_def" id="Extraction.sumbool.nchotomy|fact"><span class="entity_def" id="Extraction.sumbool.exhaust|fact"><span class="entity_def" id="Extraction.sumbool.distinct|fact"><span class="entity_def" id="Extraction.sumbool.case_distrib|fact"><span class="entity_def" id="Extraction.sumbool.case_cong_weak|fact"><span class="entity_def" id="Extraction.sumbool.case_cong|fact"><span class="entity_def" id="Extraction.sumbool.case|fact"><span class="entity_def" id="Extraction.sumbool.eq.simps|fact"><span class="entity_def" id="Extraction.sumbool.eq.refl|fact"><span class="entity_def" id="Extraction.arity_equal_sumbool|fact"><span class="entity_def" id="Extraction.equal_sumbool_def|fact"><span class="entity_def" id="Extraction.equal_sumbool_inst.equal_sumbool|fact"><span class="entity_def" id="Extraction.sumbool.case_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.ctor_rec_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.dtor_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.ctor_fold_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.ctor_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_induct|fact"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_induct|fact"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_cases|fact"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_cases|fact"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_inject|fact"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_inject|fact"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_inverse|fact"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_inverse|fact"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool|fact"><span class="entity_def" id="Extraction.sumbool.type_definition_sumbool|fact"><span class="entity_def" id="Extraction.arity_type_sumbool|fact"><span class="entity_def" id="Extraction.sumbool.str_init_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_induct|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_induct|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_cases|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_cases|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_inject|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_inject|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_inverse|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_inverse|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool|fact"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.type_definition_sumbool_IITN_sumbool|fact"><span class="entity_def" id="Extraction.arity_type_sumbool_IITN_sumbool|fact"><span class="entity_def" id="Extraction.sumbool.min_alg_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.mor_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.alg_sumbool_def|fact"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.set_pre_sumbool_def|fact"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.rel_pre_sumbool_def|fact"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.map_pre_sumbool_def|fact"><span class="entity_def" id="Extraction.sumbool.simps(6)|thm"><span class="entity_def" id="Extraction.sumbool.simps(5)|thm"><span class="entity_def" id="Extraction.sumbool.simps(4)|thm"><span class="entity_def" id="Extraction.sumbool.simps(3)|thm"><span class="entity_def" id="Extraction.sumbool.simps(2)|thm"><span class="entity_def" id="Extraction.sumbool.simps(1)|thm"><span class="entity_def" id="Extraction.sumbool.rec_transfer|thm"><span class="entity_def" id="Extraction.sumbool.rec(2)|thm"><span class="entity_def" id="Extraction.sumbool.rec(1)|thm"><span class="entity_def" id="Extraction.sumbool.induct|thm"><span class="entity_def" id="Extraction.sumbool.splits(2)|thm"><span class="entity_def" id="Extraction.sumbool.splits(1)|thm"><span class="entity_def" id="Extraction.sumbool.split_asm|thm"><span class="entity_def" id="Extraction.sumbool.split|thm"><span class="entity_def" id="Extraction.sumbool.nchotomy|thm"><span class="entity_def" id="Extraction.sumbool.exhaust|thm"><span class="entity_def" id="Extraction.sumbool.distinct(2)|thm"><span class="entity_def" id="Extraction.sumbool.distinct(1)|thm"><span class="entity_def" id="Extraction.sumbool.case_distrib|thm"><span class="entity_def" id="Extraction.sumbool.case_cong_weak|thm"><span class="entity_def" id="Extraction.sumbool.case_cong|thm"><span class="entity_def" id="Extraction.sumbool.case(2)|thm"><span class="entity_def" id="Extraction.sumbool.case(1)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(6)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(5)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(4)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(3)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(2)|thm"><span class="entity_def" id="Extraction.sumbool.eq.simps(1)|thm"><span class="entity_def" id="Extraction.sumbool.eq.refl|thm"><span class="entity_def" id="Extraction.arity_equal_sumbool|thm"><span class="entity_def" id="Extraction.equal_sumbool_def|thm"><span class="entity_def" id="Extraction.equal_sumbool_inst.equal_sumbool|thm"><span class="entity_def" id="Extraction.sumbool.case_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.ctor_rec_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.dtor_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.ctor_fold_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.ctor_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_induct|thm"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_induct|thm"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_cases|thm"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_cases|thm"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_inject|thm"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_inject|thm"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool_inverse|thm"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool_inverse|thm"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool|thm"><span class="entity_def" id="Extraction.sumbool.type_definition_sumbool|thm"><span class="entity_def" id="Extraction.arity_type_sumbool|thm"><span class="entity_def" id="Extraction.sumbool.str_init_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_induct|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_induct|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_cases|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_cases|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_inject|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_inject|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool_inverse|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool_inverse|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool|thm"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.type_definition_sumbool_IITN_sumbool|thm"><span class="entity_def" id="Extraction.arity_type_sumbool_IITN_sumbool|thm"><span class="entity_def" id="Extraction.sumbool.min_alg_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.mor_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.alg_sumbool_def|thm"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.set_pre_sumbool_def|thm"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.rel_pre_sumbool_def|thm"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.map_pre_sumbool_def|thm"><span class="entity_def" id="Extraction.sumbool.rec_sumbool_def|axiom"><span class="entity_def" id="Extraction.equal_sumbool_def_raw|axiom"><span class="entity_def" id="Extraction.equal_sumbool_inst.equal_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.case_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.Right_def|axiom"><span class="entity_def" id="Extraction.sumbool.Left_def|axiom"><span class="entity_def" id="Extraction.sumbool.ctor_rec_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.dtor_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.ctor_fold_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.ctor_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.type_definition_sumbool|axiom"><span class="entity_def" id="Extraction.arity_type_sumbool|axiom"><span class="entity_def" id="Extraction.sumbool.str_init_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.type_definition_sumbool_IITN_sumbool|axiom"><span class="entity_def" id="Extraction.arity_type_sumbool_IITN_sumbool|axiom"><span class="entity_def" id="Extraction.sumbool.min_alg_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.mor_sumbool_def|axiom"><span class="entity_def" id="Extraction.sumbool.alg_sumbool_def|axiom"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.wit_pre_sumbool_def|axiom"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.pred_pre_sumbool_def|axiom"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.rel_pre_sumbool_def|axiom"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.set_pre_sumbool_def|axiom"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.map_pre_sumbool_def|axiom"><span class="entity_def" id="Extraction.equal_sumbool_inst.equal_sumbool|const"><span class="entity_def" id="Extraction.sumbool.case_sumbool|const"><span class="entity_def" id="Extraction.sumbool.Abs_sumbool|const"><span class="entity_def" id="Extraction.sumbool.Rep_sumbool|const"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Abs_sumbool_IITN_sumbool|const"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool.Rep_sumbool_IITN_sumbool|const"><span class="entity_def" id="Extraction.sumbool.mor_sumbool|const"><span class="entity_def" id="Extraction.sumbool.alg_sumbool|const"><span class="entity_def" id="Extraction.sumbool.sumbool_IITN_sumbool|type"><span>datatype</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="main"><span>(</span></span><span class="quasi_keyword"><span>plugins</span></span><span> </span><span class="quasi_keyword"><span>only</span></span><span class="main"><span>:</span></span><span> </span><span>code</span><span> </span><span>extraction</span><span class="main"><span>)</span></span><span> </span><span class="entity_def" id="Extraction.sumbool.rec_sumbool|const"><span class="entity_def" id="Extraction.sumbool.ctor_rec_sumbool|const"><span class="entity_def" id="Extraction.sumbool.dtor_sumbool|const"><span class="entity_def" id="Extraction.sumbool.ctor_fold_sumbool|const"><span class="entity_def" id="Extraction.sumbool.ctor_sumbool|const"><span class="entity_def" id="Extraction.sumbool.str_init_sumbool|const"><span class="entity_def" id="Extraction.sumbool.min_alg_sumbool|const"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.wit_pre_sumbool|const"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.pred_pre_sumbool|const"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.rel_pre_sumbool|const"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.set_pre_sumbool|const"><span class="entity_def" id="Extraction.pre_sumbool.sumbool.map_pre_sumbool|const"><span class="entity_def" id="Extraction.sumbool|type"><span>sumbool</span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity_def" id="Extraction.sumbool.Left|const"><span>Left</span></span><span> </span><span class="main"><span>|</span></span><span> </span><span class="entity_def" id="Extraction.sumbool.Right|const"><span>Right</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>subsection</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Type of extracted program›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>extract_type</span></span></span><span>
+  </span><span class="quoted"><span>"typeof (Trueprop P) ≡ typeof P"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE(Null)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ⟶ Q) ≡ Type (TYPE('Q))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof Q ≡ Type (TYPE(Null)) ⟹ typeof (P ⟶ Q) ≡ Type (TYPE(Null))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ⟶ Q) ≡ Type (TYPE('P ⇒ 'Q))"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE(Null))) ⟹
+     typeof (∀x. P x) ≡ Type (TYPE(Null))"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE('P))) ⟹
+     typeof (∀x::'a. P x) ≡ Type (TYPE('a ⇒ 'P))"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE(Null))) ⟹
+     typeof (∃x::'a. P x) ≡ Type (TYPE('a))"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE('P))) ⟹
+     typeof (∃x::'a. P x) ≡ Type (TYPE('a × 'P))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE(Null)) ⟹ typeof Q ≡ Type (TYPE(Null)) ⟹
+     typeof (P ∨ Q) ≡ Type (TYPE(sumbool))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE(Null)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ∨ Q) ≡ Type (TYPE('Q option))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹ typeof Q ≡ Type (TYPE(Null)) ⟹
+     typeof (P ∨ Q) ≡ Type (TYPE('P option))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ∨ Q) ≡ Type (TYPE('P + 'Q))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE(Null)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ∧ Q) ≡ Type (TYPE('Q))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹ typeof Q ≡ Type (TYPE(Null)) ⟹
+     typeof (P ∧ Q) ≡ Type (TYPE('P))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹ typeof Q ≡ Type (TYPE('Q)) ⟹
+     typeof (P ∧ Q) ≡ Type (TYPE('P × 'Q))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof (P = Q) ≡ typeof ((P ⟶ Q) ∧ (Q ⟶ P))"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof (x ∈ P) ≡ typeof P"</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>subsection</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Realizability›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>realizability</span></span></span><span>
+  </span><span class="quoted"><span>"(realizes t (Trueprop P)) ≡ (Trueprop (realizes t P))"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof P) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ⟶ Q)) ≡ (realizes Null P ⟶ realizes t Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof P) ≡ (Type (TYPE('P))) ⟹
+   (typeof Q) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ⟶ Q)) ≡ (∀x::'P. realizes x P ⟶ realizes Null Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (P ⟶ Q)) ≡ (∀x. realizes x P ⟶ realizes (t x) Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE(Null))) ⟹
+     (realizes t (∀x. P x)) ≡ (∀x. realizes Null (P x))"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (∀x. P x)) ≡ (∀x. realizes (t x) (P x))"</span></span><span>
+
+  </span><span class="quoted"><span>"(λx. typeof (P x)) ≡ (λx. Type (TYPE(Null))) ⟹
+     (realizes t (∃x. P x)) ≡ (realizes Null (P t))"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (∃x. P x)) ≡ (realizes (snd t) (P (fst t)))"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof P) ≡ (Type (TYPE(Null))) ⟹
+   (typeof Q) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ∨ Q)) ≡
+     (case t of Left ⇒ realizes Null P | Right ⇒ realizes Null Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof P) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ∨ Q)) ≡
+     (case t of None ⇒ realizes Null P | Some q ⇒ realizes q Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof Q) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ∨ Q)) ≡
+     (case t of None ⇒ realizes Null Q | Some p ⇒ realizes p P)"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (P ∨ Q)) ≡
+   (case t of Inl p ⇒ realizes p P | Inr q ⇒ realizes q Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof P) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ∧ Q)) ≡ (realizes Null P ∧ realizes t Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(typeof Q) ≡ (Type (TYPE(Null))) ⟹
+     (realizes t (P ∧ Q)) ≡ (realizes t P ∧ realizes Null Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (P ∧ Q)) ≡ (realizes (fst t) P ∧ realizes (snd t) Q)"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE(Null)) ⟹
+     realizes t (¬ P) ≡ ¬ realizes Null P"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof P ≡ Type (TYPE('P)) ⟹
+     realizes t (¬ P) ≡ (∀x::'P. ¬ realizes x P)"</span></span><span>
+
+  </span><span class="quoted"><span>"typeof (P::bool) ≡ Type (TYPE(Null)) ⟹
+   typeof Q ≡ Type (TYPE(Null)) ⟹
+     realizes t (P = Q) ≡ realizes Null P = realizes Null Q"</span></span><span>
+
+  </span><span class="quoted"><span>"(realizes t (P = Q)) ≡ (realizes t ((P ⟶ Q) ∧ (Q ⟶ P)))"</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>subsection</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Computational content of basic inference rules›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.disjE_realizer|fact"><span class="entity_def" id="Extraction.disjE_realizer|thm"><span>disjE_realizer</span></span></span><span class="main"><span>:</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>assumes</span></span></span><span> </span><span class="entity_def" id="offset_4893..4894">r</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> Inl </span><span class="bound"><span>p</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="bound"><span>p</span></span><span> </span><span class="main"><span>|</span></span><span> Inr </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="bound"><span>q</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_4940..4942">r1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="main"><span>⋀</span></span><span class="bound"><span>p</span></span><span class="main"><span>.</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="bound"><span>p</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="free"><span>f</span></span><span> </span><span class="bound"><span>p</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_4968..4970">r2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="main"><span>⋀</span></span><span class="bound"><span>q</span></span><span class="main"><span>.</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="free"><span>g</span></span><span> </span><span class="bound"><span>q</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>shows</span></span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> Inl </span><span class="bound"><span>p</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>f</span></span><span> </span><span class="bound"><span>p</span></span><span> </span><span class="main"><span>|</span></span><span> Inr </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>g</span></span><span> </span><span class="bound"><span>q</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+</span><span class="keyword1"><span class="command"><span>proof</span></span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Tools/induct.ML.html#HOL.cases|method"><span class="operator"><span>cases</span></span></a><span> </span><span class="quoted"><span class="free"><span>x</span></span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>Inl</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_4893..4894"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_4940..4942"><span>r1</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>next</span></span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>Inr</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_4893..4894"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_4968..4970"><span>r2</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>qed</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.disjE_realizer2|fact"><span class="entity_def" id="Extraction.disjE_realizer2|thm"><span>disjE_realizer2</span></span></span><span class="main"><span>:</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>assumes</span></span></span><span> </span><span class="entity_def" id="offset_5205..5206">r</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> None </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="main"><span>|</span></span><span> Some </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="bound"><span>q</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_5250..5252">r1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="free"><span>f</span></span><span>"</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_5268..5270">r2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="main"><span>⋀</span></span><span class="bound"><span>q</span></span><span class="main"><span>.</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="free"><span>g</span></span><span> </span><span class="bound"><span>q</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>shows</span></span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> None </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>f</span></span><span> </span><span class="main"><span>|</span></span><span> Some </span><span class="bound"><span>q</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>g</span></span><span> </span><span class="bound"><span>q</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+</span><span class="keyword1"><span class="command"><span>proof</span></span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Tools/induct.ML.html#HOL.cases|method"><span class="operator"><span>cases</span></span></a><span> </span><span class="quoted"><span class="free"><span>x</span></span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>None</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_5205..5206"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_5250..5252"><span>r1</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>next</span></span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>Some</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_5205..5206"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_5268..5270"><span>r2</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>qed</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.disjE_realizer3|fact"><span class="entity_def" id="Extraction.disjE_realizer3|thm"><span>disjE_realizer3</span></span></span><span class="main"><span>:</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>assumes</span></span></span><span> </span><span class="entity_def" id="offset_5505..5506">r</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> Left </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="main"><span>|</span></span><span> Right </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>Q</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_5547..5549">r1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="free"><span>f</span></span><span>"</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span> </span><span class="entity_def" id="offset_5565..5567">r2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>Q</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>R</span></span><span> </span><span class="free"><span>g</span></span><span>"</span></span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>shows</span></span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>R</span></span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span>case</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="keyword1"><span>of</span></span><span> Left </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>f</span></span><span> </span><span class="main"><span>|</span></span><span> Right </span><span class="main"><span>⇒</span></span><span> </span><span class="free"><span>g</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+</span><span class="keyword1"><span class="command"><span>proof</span></span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Tools/induct.ML.html#HOL.cases|method"><span class="operator"><span>cases</span></span></a><span> </span><span class="quoted"><span class="free"><span>x</span></span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>Left</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_5505..5506"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_5547..5549"><span>r1</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>next</span></span></span><span>
+  </span><span class="keyword3"><span class="command"><span>case</span></span></span><span> </span><span>Right</span><span>
+  </span><span class="keyword1"><span class="command"><span>with</span></span></span><span> </span><a class="entity_ref" href="Extraction.html#offset_5505..5506"><span>r</span></a><span> </span><span class="keyword3"><span class="command"><span>show</span></span></span><span> </span><span class="var"><span class="quoted"><span class="var"><span>?thesis</span></span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Provers/classical.ML.html#HOL.rule|method"><span class="operator"><span>rule</span></span></a><span> </span><a class="entity_ref" href="Extraction.html#offset_5565..5567"><span>r2</span></a><span class="main"><span>)</span></span><span>
+</span><span class="keyword1"><span class="command"><span>qed</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.conjI_realizer|fact"><span class="entity_def" id="Extraction.conjI_realizer|thm"><span>conjI_realizer</span></span></span><span class="main"><span>:</span></span><span>
+  </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="free"><span>p</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="free"><span>q</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.fst|const"><span>fst</span></a><span> </span><span class="main"><span>(</span></span><span class="free"><span>p</span></span><span class="main"><span>,</span></span><span> </span><span class="free"><span>q</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><a class="entity_ref" href="HOL.html#HOL.conj|const"><span>∧</span></a></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.snd|const"><span>snd</span></a><span> </span><span class="main"><span>(</span></span><span class="free"><span>p</span></span><span class="main"><span>,</span></span><span> </span><span class="free"><span>q</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+  </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.exI_realizer|fact"><span class="entity_def" id="Extraction.exI_realizer|thm"><span>exI_realizer</span></span></span><span class="main"><span>:</span></span><span>
+  </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="free"><span>y</span></span><span> </span><span class="free"><span>x</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.snd|const"><span>snd</span></a><span> </span><span class="main"><span>(</span></span><span class="free"><span>x</span></span><span class="main"><span>,</span></span><span> </span><span class="free"><span>y</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.fst|const"><span>fst</span></a><span> </span><span class="main"><span>(</span></span><span class="free"><span>x</span></span><span class="main"><span>,</span></span><span> </span><span class="free"><span>y</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="operator"><span>simp</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.exE_realizer|fact"><span class="entity_def" id="Extraction.exE_realizer|thm"><span>exE_realizer</span></span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.snd|const"><span>snd</span></a><span> </span><span class="free"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.fst|const"><span>fst</span></a><span> </span><span class="free"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>⟹</span></span><span>
+  </span><span class="main"><span>(</span></span><span class="main"><span>⋀</span></span><span class="bound"><span>x</span></span><span> </span><span class="bound"><span>y</span></span><span class="main"><span>.</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="bound"><span>y</span></span><span> </span><span class="bound"><span>x</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="main"><span>(</span></span><span class="free"><span>f</span></span><span> </span><span class="bound"><span>x</span></span><span> </span><span class="bound"><span>y</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>Q</span></span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span>let</span></span><span> </span><span class="main"><span>(</span></span><span class="bound"><span>x</span></span><span class="main"><span>,</span></span><span> </span><span class="bound"><span>y</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="free"><span>p</span></span><span> </span><span class="keyword1"><span>in</span></span><span> </span><span class="free"><span>f</span></span><span> </span><span class="bound"><span>x</span></span><span> </span><span class="bound"><span>y</span></span><span class="main"><span>)</span></span><span>"</span></span></span><span>
+  </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Tools/induct.ML.html#HOL.cases|method"><span class="operator"><span>cases</span></span></a><span> </span><span class="quoted"><span class="free"><span>p</span></span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><span class="operator"><span>simp</span></span><span> </span><span class="quasi_keyword"><span>add</span></span><span class="main"><span class="main"><span>:</span></span></span><span> </span><a class="entity_ref" href="HOL.html#HOL.Let_def|fact"><span>Let_def</span></a><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theorem</span></span></span><span> </span><span class="entity_def" id="Extraction.exE_realizer&apos;|fact"><span class="entity_def" id="Extraction.exE_realizer&apos;|thm"><span>exE_realizer'</span></span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>P</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.snd|const"><span>snd</span></a><span> </span><span class="free"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="Product_Type.html#Product_Type.prod.fst|const"><span>fst</span></a><span> </span><span class="free"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>⟹</span></span><span>
+  </span><span class="main"><span>(</span></span><span class="main"><span>⋀</span></span><span class="bound"><span>x</span></span><span> </span><span class="bound"><span>y</span></span><span class="main"><span>.</span></span><span> </span><span class="free"><span>P</span></span><span> </span><span class="bound"><span>y</span></span><span> </span><span class="bound"><span>x</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>Q</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>⟹</span></span><span> </span><span class="free"><span>Q</span></span><span>"</span></span></span><span> </span><span class="keyword1"><span class="command"><span>by</span></span></span><span> </span><span class="main"><span>(</span></span><a class="entity_ref" href="ISABELLE_HOME/src/Tools/induct.ML.html#HOL.cases|method"><span class="operator"><span>cases</span></span></a><span> </span><span class="quoted"><span class="free"><span>p</span></span></span><span class="main"><span>)</span></span><span> </span><span class="operator"><span>simp</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>realizers</span></span></span><span>
+  impI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq. pq"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq (h: _). allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h ⋅ x))"</span></span><span>
+
+  impI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (h: _). allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h ⋅ x))"</span></span><span>
+
+  impI </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λq. q"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q q. impI ⋅ _ ⋅ _"</span></span><span>
+
+  impI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"impI"</span></span><span>
+
+  mp </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq. pq"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq (h: _) p. mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ p ∙ c ∙ h)"</span></span><span>
+
+  mp </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (h: _) p. mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ p ∙ c ∙ h)"</span></span><span>
+
+  mp </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λq. q"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q q. mp ⋅ _ ⋅ _"</span></span><span>
+
+  mp</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"mp"</span></span><span>
+
+  allI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P (d: _) p. allI ⋅ _ ∙ d"</span></span><span>
+
+  allI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"allI"</span></span><span>
+
+  spec </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λx p. p x"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P x (d: _) p. spec ⋅ _ ⋅ x ∙ d"</span></span><span>
+
+  spec</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"spec"</span></span><span>
+
+  exI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λx p. (x, p)"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P x (d: _) p. exI_realizer ⋅ P ⋅ p ⋅ x ∙ c ∙ d"</span></span><span>
+
+  exI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λx. x"</span></span><span> </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>P x (c: _) (h: _). h"</span></span><span>
+
+  exE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp pq. let (x, y) = p in pq x y"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q (e: _) p (h: _) pq. exE_realizer ⋅ P ⋅ p ⋅ Q ⋅ pq ∙ c ∙ e ∙ d ∙ h"</span></span><span>
+
+  exE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (d: _) p. exE_realizer' ⋅ _ ⋅ _ ⋅ _ ∙ c ∙ d"</span></span><span>
+
+  exE </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λx pq. pq x"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (d: _) x (h1: _) pq (h2: _). h2 ⋅ x ∙ h1"</span></span><span>
+
+  exE</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>P Q (c: _) x (h1: _) (h2: _). h2 ⋅ x ∙ h1"</span></span><span>
+
+  conjI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Pair"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q p (h: _) q. conjI_realizer ⋅ P ⋅ p ⋅ Q ⋅ q ∙ c ∙ d ∙ h"</span></span><span>
+
+  conjI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p. conjI ⋅ _ ⋅ _"</span></span><span>
+
+  conjI </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λq. q"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (h: _) q. conjI ⋅ _ ⋅ _ ∙ h"</span></span><span>
+
+  conjI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"conjI"</span></span><span>
+
+  conjunct1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"fst"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq. conjunct1 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p. conjunct1 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct1 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q q. conjunct1 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"conjunct1"</span></span><span>
+
+  conjunct2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"snd"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq. conjunct2 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p. conjunct2 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct2 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p. conjunct2 ⋅ _ ⋅ _"</span></span><span>
+
+  conjunct2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"conjunct2"</span></span><span>
+
+  disjI1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Inl"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q p. iffD2 ⋅ _ ⋅ _ ∙ (sum.case_1 ⋅ P ⋅ _ ⋅ p ∙ arity_type_bool ∙ c ∙ d)"</span></span><span>
+
+  disjI1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Some"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p. iffD2 ⋅ _ ⋅ _ ∙ (option.case_2 ⋅ _ ⋅ P ⋅ p ∙ arity_type_bool ∙ c)"</span></span><span>
+
+  disjI1 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"None"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q. iffD2 ⋅ _ ⋅ _ ∙ (option.case_1 ⋅ _ ⋅ _ ∙ arity_type_bool ∙ c)"</span></span><span>
+
+  disjI1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Left"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>P Q. iffD2 ⋅ _ ⋅ _ ∙ (sumbool.case_1 ⋅ _ ⋅ _ ∙ arity_type_bool)"</span></span><span>
+
+  disjI2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Inr"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(d: _) (c: _) Q P q. iffD2 ⋅ _ ⋅ _ ∙ (sum.case_2 ⋅ _ ⋅ Q ⋅ q ∙ arity_type_bool ∙ c ∙ d)"</span></span><span>
+
+  disjI2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"None"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) Q P. iffD2 ⋅ _ ⋅ _ ∙ (option.case_1 ⋅ _ ⋅ _ ∙ arity_type_bool ∙ c)"</span></span><span>
+
+  disjI2 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Some"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) Q P q. iffD2 ⋅ _ ⋅ _ ∙ (option.case_2 ⋅ _ ⋅ Q ⋅ q ∙ arity_type_bool ∙ c)"</span></span><span>
+
+  disjI2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Right"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>Q P. iffD2 ⋅ _ ⋅ _ ∙ (sumbool.case_2 ⋅ _ ⋅ _ ∙ arity_type_bool)"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>,</span></span><span> R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq pr qr.
+     (case pq of Inl p ⇒ pr p | Inr q ⇒ qr q)"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) (e: _) P Q R pq (h1: _) pr (h2: _) qr.
+       disjE_realizer ⋅ _ ⋅ _ ⋅ pq ⋅ R ⋅ pr ⋅ qr ∙ c ∙ d ∙ e ∙ h1 ∙ h2"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>,</span></span><span> R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq pr qr.
+     (case pq of None ⇒ pr | Some q ⇒ qr q)"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q R pq (h1: _) pr (h2: _) qr.
+       disjE_realizer2 ⋅ _ ⋅ _ ⋅ pq ⋅ R ⋅ pr ⋅ qr ∙ c ∙ d ∙ h1 ∙ h2"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq pr qr.
+     (case pq of None ⇒ qr | Some p ⇒ pr p)"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q R pq (h1: _) pr (h2: _) qr (h3: _).
+       disjE_realizer2 ⋅ _ ⋅ _ ⋅ pq ⋅ R ⋅ qr ⋅ pr ∙ c ∙ d ∙ h1 ∙ h3 ∙ h2"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λpq pr qr.
+     (case pq of Left ⇒ pr | Right ⇒ qr)"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q R pq (h1: _) pr (h2: _) qr.
+       disjE_realizer3 ⋅ _ ⋅ _ ⋅ pq ⋅ R ⋅ pr ⋅ qr ∙ c ∙ h1 ∙ h2"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q R pq. disjE_realizer ⋅ _ ⋅ _ ⋅ pq ⋅ (λx. R) ⋅ _ ⋅ _ ∙ c ∙ d ∙ arity_type_bool"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q R pq. disjE_realizer2 ⋅ _ ⋅ _ ⋅ pq ⋅ (λx. R) ⋅ _ ⋅ _ ∙ c ∙ arity_type_bool"</span></span><span>
+
+  disjE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q R pq (h1: _) (h2: _) (h3: _).
+       disjE_realizer2 ⋅ _ ⋅ _ ⋅ pq ⋅ (λx. R) ⋅ _ ⋅ _ ∙ c ∙ arity_type_bool ∙ h1 ∙ h3 ∙ h2"</span></span><span>
+
+  disjE</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>P Q R pq. disjE_realizer3 ⋅ _ ⋅ _ ⋅ pq ⋅ (λx. R) ⋅ _ ⋅ _ ∙ arity_type_bool"</span></span><span>
+
+  FalseE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"default"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P. FalseE ⋅ _"</span></span><span>
+
+  FalseE</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"FalseE"</span></span><span>
+
+  notI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P (h: _). allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. notI ⋅ _ ∙ (h ⋅ x))"</span></span><span>
+
+  notI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"notI"</span></span><span>
+
+  notE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. default"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P R (h: _) p. notE ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ p ∙ c ∙ h)"</span></span><span>
+
+  notE </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P R (h: _) p. notE ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ p ∙ c ∙ h)"</span></span><span>
+
+  notE </span><span class="main"><span>(</span></span><span>R</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"default"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P R. notE ⋅ _ ⋅ _"</span></span><span>
+
+  notE</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"notE"</span></span><span>
+
+  subst </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λs t ps. ps"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) s t P (d: _) (h: _) ps. subst ⋅ s ⋅ t ⋅ P ps ∙ d ∙ h"</span></span><span>
+
+  subst</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"subst"</span></span><span>
+
+  iffD1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"fst"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(d: _) (c: _) Q P pq (h: _) p.
+       mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ p ∙ d ∙ (conjunct1 ⋅ _ ⋅ _ ∙ h))"</span></span><span>
+
+  iffD1 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) Q P p (h: _). mp ⋅ _ ⋅ _ ∙ (conjunct1 ⋅ _ ⋅ _ ∙ h)"</span></span><span>
+
+  iffD1 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) Q P q1 (h: _) q2.
+       mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ q2 ∙ c ∙ (conjunct1 ⋅ _ ⋅ _ ∙ h))"</span></span><span>
+
+  iffD1</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"iffD1"</span></span><span>
+
+  iffD2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"snd"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq (h: _) q.
+       mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ q ∙ d ∙ (conjunct2 ⋅ _ ⋅ _ ∙ h))"</span></span><span>
+
+  iffD2 </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q p (h: _). mp ⋅ _ ⋅ _ ∙ (conjunct2 ⋅ _ ⋅ _ ∙ h)"</span></span><span>
+
+  iffD2 </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q q1 (h: _) q2.
+       mp ⋅ _ ⋅ _ ∙ (spec ⋅ _ ⋅ q2 ∙ c ∙ (conjunct2 ⋅ _ ⋅ _ ∙ h))"</span></span><span>
+
+  iffD2</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"iffD2"</span></span><span>
+
+  iffI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>,</span></span><span> Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Pair"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) (d: _) P Q pq (h1 : _) qp (h2 : _). conjI_realizer ⋅
+       (λpq. ∀x. P x ⟶ Q (pq x)) ⋅ pq ⋅
+       (λqp. ∀x. Q x ⟶ P (qp x)) ⋅ qp ∙
+       (arity_type_fun ∙ c ∙ d) ∙
+       (arity_type_fun ∙ d ∙ c) ∙
+       (allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h1 ⋅ x))) ∙
+       (allI ⋅ _ ∙ d ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h2 ⋅ x)))"</span></span><span>
+
+  iffI </span><span class="main"><span>(</span></span><span>P</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λp. p"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q (h1 : _) p (h2 : _). conjI ⋅ _ ⋅ _ ∙
+       (allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h1 ⋅ x))) ∙
+       (impI ⋅ _ ⋅ _ ∙ h2)"</span></span><span>
+
+  iffI </span><span class="main"><span>(</span></span><span>Q</span><span class="main"><span>)</span></span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"λq. q"</span></span><span>
+    </span><span class="quoted"><span>"<span class="hidden">❙</span><b>λ</b>(c: _) P Q q (h1 : _) (h2 : _). conjI ⋅ _ ⋅ _ ∙
+       (impI ⋅ _ ⋅ _ ∙ h1) ∙
+       (allI ⋅ _ ∙ c ∙ (<span class="hidden">❙</span><b>λ</b>x. impI ⋅ _ ⋅ _ ∙ (h2 ⋅ x)))"</span></span><span>
+
+  iffI</span><span class="main"><span>:</span></span><span> </span><span class="quoted"><span>"Null"</span></span><span> </span><span class="quoted"><span>"iffI"</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

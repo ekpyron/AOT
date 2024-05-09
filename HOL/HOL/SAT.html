@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory SAT</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory SAT</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/SAT.thy
+    Author:     Alwen Tiu, Tjark Weber
+    Copyright   2005
+
+Basic setup for the 'sat' and 'satx' tactics.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>section</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Reconstructing external resolution proofs for propositional logic›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="SAT.html"><span>SAT</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Argo.html"><span>Argo</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/prop_logic.ML.html"><span>‹Tools/prop_logic.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/sat_solver.ML.html"><span>‹Tools/sat_solver.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/sat.ML.html"><span>‹Tools/sat.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Argo/argo_sat_solver.ML.html"><span>‹Tools/Argo/argo_sat_solver.ML›</span></a></span><span>
+
+</span><span class="keyword1"><span class="command"><span>method_setup</span></span></span><span> </span><span class="entity_def" id="SAT.sat|method"><span>sat</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="quoted"><span>‹</span><span>Scan.succeed</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>SIMPLE_METHOD'</span></span><span> </span><span>o</span><span> </span><span class="entity"><span>SAT.sat_tac</span></span><span class="main"><span>)</span></span><span>›</span></span><span>
+  </span><span class="quoted"><span>"SAT solver"</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>method_setup</span></span></span><span> </span><span class="entity_def" id="SAT.satx|method"><span>satx</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="quoted"><span>‹</span><span>Scan.succeed</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>SIMPLE_METHOD'</span></span><span> </span><span>o</span><span> </span><span class="entity"><span>SAT.satx_tac</span></span><span class="main"><span>)</span></span><span>›</span></span><span>
+  </span><span class="quoted"><span>"SAT solver (with definitional CNF)"</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

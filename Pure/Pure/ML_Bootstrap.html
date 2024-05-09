@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory ML_Bootstrap</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory ML_Bootstrap</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Pure/ML_Bootstrap.thy
+    Author:     Makarius
+
+ML bootstrap environment -- with access to low-level structures!
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="ML_Bootstrap.html"><span>ML_Bootstrap</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Pure.html"><span>Pure</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML</span></span></span><span> </span><span class="quoted"><span>‹
+  </span><span class="main"><span>#</span></span><span>allStruct </span><span>ML_Name_Space.global</span><span> </span><span class="main"><span>(</span></span><span class="main"><span>)</span></span><span> </span><span>|&gt;</span><span> </span><span>List.app</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>name</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>if</span></span></span><span> </span><span>member</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>op</span></span></span><span> </span><span class="main"><span>=</span></span><span class="main"><span>)</span></span><span> </span><span>ML_Name_Space.hidden_structures</span><span> </span><span class="entity"><span>name</span></span><span> </span><span class="keyword2"><span class="keyword"><span>then</span></span></span><span>
+      </span><span>ML</span><span> </span><span class="main"><span>(</span></span><span>Input.string</span><span> </span><span class="main"><span>(</span></span><span class="inner_quoted"><span>"structure "</span></span><span> </span><span>^</span><span> </span><span class="entity"><span>name</span></span><span> </span><span>^</span><span> </span><span class="inner_quoted"><span>" = "</span></span><span> </span><span>^</span><span> </span><span class="entity"><span>name</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>else</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Output_Primitives</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Output_Primitives_Virtual</span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Thread_Data</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thread_Data_Virtual</span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>PolyML</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>PolyML</span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>ML_system_pp</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>:</span></span><span> </span><span>FixedInt.int</span><span> </span><span class="main"><span>-&gt;</span></span><span> 'a </span><span class="main"><span>-&gt;</span></span><span> 'b </span><span class="main"><span>-&gt;</span></span><span> </span><span>PolyML.pretty</span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+
+  </span><span>Proofterm.proofs</span><span> </span><span>:=</span><span> </span><span class="inner_numeral"><span>0</span></span><span class="main"><span>;</span></span><span>
+
+  </span><span>Context.setmp_generic_context</span><span> </span><span>NONE</span><span>
+    </span><span>ML</span><span> </span><span class="antiquoted"><span class="entity"><span class="operator"><span>‹</span></span><span>
+      </span><span>List.app</span><span> </span><span>ML_Name_Space.forget_structure</span><span> </span><span>ML_Name_Space.hidden_structures</span><span class="main"><span>;</span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>PolyML</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+        </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>pointerEq</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>pointer_eq</span><span class="main"><span>;</span></span><span>
+        </span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>IntInf</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>PolyML.IntInf</span><span class="main"><span>;</span></span><span>
+        </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> context </span><span class="main"><span>=</span></span><span> </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> PolyML.context</span><span class="main"><span>;</span></span><span>
+        </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> pretty </span><span class="main"><span>=</span></span><span> </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> PolyML.pretty</span><span class="main"><span>;</span></span><span>
+      </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+    ›</span></span></span><span>
+›</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>setup</span></span></span><span> </span><span class="quoted"><span>‹</span><span>Context.theory_map</span><span> </span><span>ML_Env.bootstrap_name_space</span><span>›</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>declare</span></span></span><span> </span><span class="main"><span>[</span></span><span class="main"><span>[</span></span><span class="operator"><span>ML_read_global</span></span><span> </span><span class="main"><span class="main"><span>=</span></span></span><span> </span><span class="quasi_keyword"><span>false</span></span><span class="main"><span>]</span></span><span class="main"><span>]</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

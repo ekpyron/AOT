@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹~~/src/Tools/IsaPlanner/isand.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹~~/src/Tools/IsaPlanner/isand.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Tools/IsaPlanner/isand.ML
+    Author:     Lucas Dixon, University of Edinburgh
+
+Natural Deduction tools (obsolete).
+
+For working with Isabelle theorems in a natural detuction style.
+ie, not having to deal with meta level quantified varaibles,
+instead, we work with newly introduced frees, and hide the
+"all"'s, exporting results from theorems proved with the frees, to
+solve the all cases of the previous goal. This allows resolution
+to do proof search normally.
+
+Note: A nice idea: allow exporting to solve any subgoal, thus
+allowing the interleaving of proof, or provide a structure for the
+ordering of proof, thus allowing proof attempts in parrell, but
+recording the order to apply things in.
+
+THINK: are we really ok with our varify name w.r.t the prop - do
+we also need to avoid names in the hidden hyps? What about
+unification contraints in flex-flex pairs - might they also have
+extra free vars?
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>ISA_ND</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> variant_names</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>term</span><span> </span><span>list</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>string</span><span> </span><span>list</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>string</span><span> </span><span>list</span><span>
+
+  </span><span class="comment1"><span>(* meta level fixed params (i.e. !! vars) *)</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> fix_alls_term</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>int</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>term</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>term</span><span> * </span><span>term</span><span> </span><span>list</span><span>
+
+  </span><span class="comment1"><span>(* assumptions/subgoals *)</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> fixed_subgoal_thms</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>thm</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>thm</span><span> </span><span>list</span><span> * </span><span class="main"><span>(</span></span><span>thm</span><span> </span><span>list</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>thm</span><span class="main"><span>)</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>IsaND</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>ISA_ND</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="comment1"><span>(* datatype to capture an exported result, ie a fix or assume. *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> </span><span class="entity"><span>export</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="entity"><span>Export</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span>
+   </span><span class="main"><span>{</span></span><span>fixes </span><span class="main"><span>:</span></span><span> Thm.cterm list</span><span class="main"><span>,</span></span><span> </span><span class="comment1"><span>(* fixed vars *)</span></span><span>
+    assumes </span><span class="main"><span>:</span></span><span> Thm.cterm list</span><span class="main"><span>,</span></span><span> </span><span class="comment1"><span>(* hidden hyps/assumed prems *)</span></span><span>
+    sgid </span><span class="main"><span>:</span></span><span> int</span><span class="main"><span>,</span></span><span>
+    gth </span><span class="main"><span>:</span></span><span>  Thm.thm</span><span class="main"><span>}</span></span><span class="main"><span>;</span></span><span> </span><span class="comment1"><span>(* subgoal/goalthm *)</span></span><span>
+
+</span><span class="comment1"><span>(* exporting function that takes a solution to the fixed/assumed goal,
+and uses this to solve the subgoal in the main theorem *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>export_solution</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Export</span></span><span> </span><span class="main"><span>{</span></span><span>fixes </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>cfvs</span></span><span class="main"><span>,</span></span><span> assumes </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>hcprems</span></span><span class="main"><span>,</span></span><span> sgid </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>,</span></span><span> gth </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>gth</span></span><span class="main"><span>}</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>solth</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>solth'</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>solth</span></span><span>
+      </span><span>|&gt;</span><span> </span><span>Drule.implies_intr_list</span><span> </span><span class="entity"><span>hcprems</span></span><span>
+      </span><span>|&gt;</span><span> </span><span>Drule.forall_intr_list</span><span> </span><span class="entity"><span>cfvs</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span>Drule.compose</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>solth'</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>gth</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>variant_names</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>ts</span></span><span> </span><span class="entity"><span>xs</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>names</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span>Variable.names_of</span><span> </span><span class="entity"><span>ctxt</span></span><span>
+      </span><span>|&gt;</span><span> </span><span class="main"><span>(</span></span><span>fold</span><span> </span><span>o</span><span> </span><span>fold_aterms</span><span class="main"><span>)</span></span><span>
+          </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span>Var</span><span> </span><span class="main"><span>(</span></span><span class="main"><span>(</span></span><span class="entity"><span>a</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>Name.declare</span><span> </span><span class="entity"><span>a</span></span><span>
+            </span><span class="main"><span>|</span></span><span> </span><span>Free</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>a</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>Name.declare</span><span> </span><span class="entity"><span>a</span></span><span>
+            </span><span class="main"><span>|</span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>I</span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>ts</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span>fst</span><span> </span><span class="main"><span>(</span></span><span>fold_map</span><span> </span><span>Name.variant</span><span> </span><span class="entity"><span>xs</span></span><span> </span><span class="entity"><span>names</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="comment1"><span>(* fix parameters of a subgoal "i", as free variables, and create an
+exporting function that will use the result of this proved goal to
+show the goal in the original theorem.
+
+Note, an advantage of this over Isar is that it supports instantiation
+of unkowns in the earlier theorem, ie we can do instantiation of meta
+vars!
+
+avoids constant, free and vars names.
+
+loosely corresponds to:
+Given "[| SG0; ... !! x. As ==&gt; SGi x; ... SGm |] ==&gt; G" : thm
+Result:
+  ("(As ==&gt; SGi x') ==&gt; (As ==&gt; SGi x')" : thm,
+   expf :
+     ("As ==&gt; SGi x'" : thm) -&gt;
+     ("[| SG0; ... SGi-1; SGi+1; ... SGm |] ==&gt; G") : thm)
+*)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>fix_alls_term</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="entity"><span>t</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>gt</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Logic.get_goal</span><span> </span><span class="entity"><span>t</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>body</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Term.strip_all_body</span><span> </span><span class="entity"><span>gt</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>alls</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>rev</span><span> </span><span class="main"><span>(</span></span><span>Term.strip_all_vars</span><span> </span><span class="entity"><span>gt</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>xs</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>variant_names</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>[</span></span><span class="entity"><span>t</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span>fst</span><span> </span><span class="entity"><span>alls</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>fvs</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>map</span><span> </span><span>Free</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>xs</span></span><span> </span><span>~~</span><span> </span><span>map</span><span> </span><span>snd</span><span> </span><span class="entity"><span>alls</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>(</span></span><span>subst_bounds</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>fvs</span></span><span class="main"><span>,</span></span><span class="entity"><span>body</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>fvs</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>fix_alls_cterm</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>fixedbody</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>fvs</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>fix_alls_term</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>(</span></span><span>Thm.prop_of</span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>cfvs</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>rev</span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span class="main"><span>(</span></span><span>Thm.cterm_of</span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>fvs</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>ct_body</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.cterm_of</span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>fixedbody</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>ct_body</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>cfvs</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>fix_alls'</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>apfst</span><span> </span><span>Thm.trivial</span><span> </span><span>o</span><span> </span><span class="entity"><span>fix_alls_cterm</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>;</span></span><span>
+
+
+</span><span class="comment1"><span>(* hide other goals *)</span></span><span>
+</span><span class="comment1"><span>(* note the export goal is rotated by (i - 1) and will have to be
+unrotated to get backto the originial position(s) *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>hide_other_goals</span></span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="comment1"><span>(* tl beacuse fst sg is the goal we are interested in *)</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>cprems</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>tl</span><span> </span><span class="main"><span>(</span></span><span>Drule.cprems_of</span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>aprems</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>map</span><span> </span><span>Thm.assume</span><span> </span><span class="entity"><span>cprems</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span>Drule.implies_elim_list</span><span> </span><span class="main"><span>(</span></span><span>Drule.rotate_prems</span><span> </span><span class="inner_numeral"><span>1</span></span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>aprems</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>cprems</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="comment1"><span>(* a nicer version of the above that leaves only a single subgoal (the
+other subgoals are hidden hyps, that the exporter suffles about)
+namely the subgoal that we were trying to solve. *)</span></span><span>
+</span><span class="comment1"><span>(* loosely corresponds to:
+Given "[| SG0; ... !! x. As ==&gt; SGi x; ... SGm |] ==&gt; G" : thm
+Result:
+  ("(As ==&gt; SGi x') ==&gt; SGi x'" : thm,
+   expf :
+     ("SGi x'" : thm) -&gt;
+     ("[| SG0; ... SGi-1; SGi+1; ... SGm |] ==&gt; G") : thm)
+*)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>fix_alls</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>fixed_gth</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>fixedvars</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>fix_alls'</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="entity"><span>th</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>sml_gth</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>othergoals</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>hide_other_goals</span></span><span> </span><span class="entity"><span>fixed_gth</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>sml_gth</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>Export</span></span><span> </span><span class="main"><span>{</span></span><span>fixes </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>fixedvars</span></span><span class="main"><span>,</span></span><span> assumes </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>othergoals</span></span><span class="main"><span>,</span></span><span> sgid </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>,</span></span><span> gth </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>}</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+
+</span><span class="comment1"><span>(* Fixme: allow different order of subgoals given to expf *)</span></span><span>
+</span><span class="comment1"><span>(* make each subgoal into a separate thm that needs to be proved *)</span></span><span>
+</span><span class="comment1"><span>(* loosely corresponds to:
+Given
+  "[| SG0; ... SGm |] ==&gt; G" : thm
+Result:
+(["SG0 ==&gt; SG0", ... ,"SGm ==&gt; SGm"] : thm list, -- goals
+ ["SG0", ..., "SGm"] : thm list -&gt;   -- export function
+   "G" : thm)
+*)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>subgoal_thms</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>t</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Thm.prop_of</span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>;</span></span><span>
+
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>prems</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Logic.strip_imp_prems</span><span> </span><span class="entity"><span>t</span></span><span class="main"><span>;</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>aprems</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>map</span><span> </span><span class="main"><span>(</span></span><span>Thm.trivial</span><span> </span><span>o</span><span> </span><span>Thm.cterm_of</span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>prems</span></span><span class="main"><span>;</span></span><span>
+
+    </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>explortf</span></span><span> </span><span class="entity"><span>premths</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Drule.implies_elim_list</span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="entity"><span>premths</span></span><span class="main"><span>;</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>aprems</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>explortf</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+
+</span><span class="comment1"><span>(* Fixme: allow different order of subgoals in exportf *)</span></span><span>
+</span><span class="comment1"><span>(* as above, but also fix all parameters in all subgoals, and uses
+fix_alls, not fix_alls', ie doesn't leave extra asumptions as apparent
+subgoals. *)</span></span><span>
+</span><span class="comment1"><span>(* loosely corresponds to:
+Given
+  "[| !! x0s. A0s x0s ==&gt; SG0 x0s;
+      ...; !! xms. Ams xms ==&gt; SGm xms|] ==&gt; G" : thm
+Result:
+(["(A0s x0s' ==&gt; SG0 x0s') ==&gt; SG0 x0s'",
+  ... ,"(Ams xms' ==&gt; SGm xms') ==&gt; SGm xms'"] : thm list, -- goals
+ ["SG0 x0s'", ..., "SGm xms'"] : thm list -&gt;   -- export function
+   "G" : thm)
+*)</span></span><span>
+</span><span class="comment1"><span>(* requires being given solutions! *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>fixed_subgoal_thms</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>th</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>subgoals</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>expf</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>subgoal_thms</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>th</span></span><span class="main"><span>;</span></span><span>
+</span><span class="comment1"><span>(*  fun export_sg (th, exp) = exp th; *)</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>export_sgs</span></span><span> </span><span class="entity"><span>expfs</span></span><span> </span><span class="entity"><span>solthms</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="entity"><span>expf</span></span><span> </span><span class="main"><span>(</span></span><span>map2</span><span> </span><span class="main"><span>(</span></span><span>curry</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>op</span></span></span><span> </span><span>|&gt;</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>solthms</span></span><span> </span><span class="entity"><span>expfs</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+</span><span class="comment1"><span>(*    expf (map export_sg (ths ~~ expfs)); *)</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+    </span><span>apsnd</span><span> </span><span class="entity"><span>export_sgs</span></span><span>
+      </span><span class="main"><span>(</span></span><span>Library.split_list</span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span class="main"><span>(</span></span><span>apsnd</span><span> </span><span class="entity"><span>export_solution</span></span><span> </span><span>o</span><span> </span><span class="entity"><span>fix_alls</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="inner_numeral"><span>1</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>subgoals</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+</span></pre>
+</body>
+
+</html>

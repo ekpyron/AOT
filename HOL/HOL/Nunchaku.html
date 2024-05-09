@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Nunchaku</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Nunchaku</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Nunchaku.thy
+    Author:     Jasmin Blanchette, VU Amsterdam
+    Copyright   2015, 2016, 2017
+
+Nunchaku: Yet another counterexample generator for Isabelle/HOL.
+
+Nunchaku relies on an external program of the same name. The sources are
+available at
+
+    https://github.com/nunchaku-inria
+
+The "$NUNCHAKU_HOME" environment variable must be set to the absolute path to
+the directory containing the "nunchaku" executable. The Isabelle components
+for CVC4, Kodkodi, and SMBC are necessary to use these backend solvers.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="Nunchaku.html"><span>Nunchaku</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Nitpick.html"><span>Nitpick</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>keywords</span></span></span><span>
+  </span><span class="quoted"><span>"nunchaku"</span></span><span> </span><span class="main"><span>::</span></span><span> diag </span><span class="keyword2"><span class="keyword"><span>and</span></span></span><span>
+  </span><span class="quoted"><span>"nunchaku_params"</span></span><span> </span><span class="main"><span>::</span></span><span> thy_decl
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>consts</span></span></span><span> </span><span class="entity_def" id="Nunchaku.unreachable|const"><span>unreachable</span></span><span> </span><span class="main"><span>::</span></span><span> </span><span class="tfree"><span class="quoted"><span class="tfree"><span>'a</span></span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span class="entity_def" id="Nunchaku.The_unsafe_def|fact"><span class="entity_def" id="Nunchaku.The_unsafe_def|thm"><span class="entity_def" id="Nunchaku.The_unsafe_def_raw|axiom"><span>definition</span></span></span></span></span></span><span> </span><span class="entity"><span class="entity_def" id="Nunchaku.The_unsafe|const"><span>The_unsafe</span></span></span><span> </span><span class="main"><span>::</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="main"><span>(</span></span><span class="tfree"><span>'a</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><a class="entity_ref" href="HOL.html#HOL.bool|type"><span>bool</span></a><span class="main"><span>)</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="tfree"><span>'a</span></span><span>"</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>where</span></span></span><span>
+  </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>The_unsafe</span></span><span> </span><span class="main"><a class="entity_ref" href="HOL.html#HOL.eq|const"><span>=</span></a></span><span> </span><a class="entity_ref" href="HOL.html#HOL.The|const"><span>The</span></a><span>"</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span class="entity_def" id="Nunchaku.rmember_def|fact"><span class="entity_def" id="Nunchaku.rmember_def|thm"><span class="entity_def" id="Nunchaku.rmember_def_raw|axiom"><span>definition</span></span></span></span></span></span><span> </span><span class="entity"><span class="entity_def" id="Nunchaku.rmember|const"><span>rmember</span></span></span><span> </span><span class="main"><span>::</span></span><span> </span><span class="quoted"><span class="quoted"><span>"</span><span class="tfree"><span>'a</span></span><span> </span><a class="entity_ref" href="Set.html#Set.set|type"><span>set</span></a><span> </span><span class="main"><span>⇒</span></span><span> </span><span class="tfree"><span>'a</span></span><span> </span><span class="main"><span>⇒</span></span><span> </span><a class="entity_ref" href="HOL.html#HOL.bool|type"><span>bool</span></a><span>"</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>where</span></span></span><span>
+  </span><span class="quoted"><span class="quoted"><span>"</span><span class="free"><span>rmember</span></span><span> </span><span class="free"><span class="bound"><span class="entity"><span>A</span></span></span></span><span> </span><span class="free"><span class="bound"><span class="entity"><span>x</span></span></span></span><span> </span><span class="main"><a class="entity_ref" href="HOL.html#HOL.iff|const"><span>⟷</span></a></span><span> </span><span class="free"><span class="bound"><span class="entity"><span>x</span></span></span></span><span> </span><span class="main"><a class="entity_ref" href="Set.html#Set.member|const"><span>∈</span></a></span><span> </span><span class="free"><span class="bound"><span class="entity"><span>A</span></span></span></span><span>"</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_util.ML.html"><span>‹Tools/Nunchaku/nunchaku_util.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_collect.ML.html"><span>‹Tools/Nunchaku/nunchaku_collect.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_problem.ML.html"><span>‹Tools/Nunchaku/nunchaku_problem.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_translate.ML.html"><span>‹Tools/Nunchaku/nunchaku_translate.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_model.ML.html"><span>‹Tools/Nunchaku/nunchaku_model.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_reconstruct.ML.html"><span>‹Tools/Nunchaku/nunchaku_reconstruct.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_display.ML.html"><span>‹Tools/Nunchaku/nunchaku_display.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_tool.ML.html"><span>‹Tools/Nunchaku/nunchaku_tool.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku.ML.html"><span>‹Tools/Nunchaku/nunchaku.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Nunchaku/nunchaku_commands.ML.html"><span>‹Tools/Nunchaku/nunchaku_commands.ML›</span></a></span><span>
+
+</span><span class="keyword1"><span class="command"><span>hide_const</span></span></span><span> </span><span class="main"><span>(</span></span><span class="keyword2"><span class="keyword"><span>open</span></span></span><span class="main"><span>)</span></span><span> </span><a class="entity_ref" href="Nunchaku.html#Nunchaku.unreachable|const"><span>unreachable</span></a><span> </span><a class="entity_ref" href="Nunchaku.html#Nunchaku.The_unsafe|const"><span>The_unsafe</span></a><span> </span><a class="entity_ref" href="Nunchaku.html#Nunchaku.rmember|const"><span>rmember</span></a><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

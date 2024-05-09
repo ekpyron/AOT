@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Fun_Def_Base</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Fun_Def_Base</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Fun_Def_Base.thy
+    Author:     Alexander Krauss, TU Muenchen
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>section</span></span></span><span> </span><span class="quoted"><span class="plain_text"><span>‹Function Definition Base›</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="Fun_Def_Base.html"><span>Fun_Def_Base</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Ctr_Sugar.html"><span>Ctr_Sugar</span></a><span> </span><a href="Set.html"><span>Set</span></a><span> </span><a href="Wellfounded.html"><span>Wellfounded</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Function/function_lib.ML.html"><span>‹Tools/Function/function_lib.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>named_theorems</span></span></span><span> </span><span class="entity_def" id="Fun_Def_Base.termination_simp|attribute"><span class="entity_def" id="Fun_Def_Base.termination_simp|fact"><span>termination_simp</span></span></span><span> </span><span class="quoted"><span>"simplification rules for termination proofs"</span></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Function/function_common.ML.html"><span>‹Tools/Function/function_common.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Function/function_context_tree.ML.html"><span>‹Tools/Function/function_context_tree.ML›</span></a></span><span>
+
+</span><span class="keyword1"><span class="command"><span>attribute_setup</span></span></span><span> </span><span class="entity_def" id="Fun_Def_Base.fundef_cong|attribute"><span>fundef_cong</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="quoted"><span>‹</span><span class="entity"><span>Attrib.add_del</span></span><span> </span><span class="entity"><span>Function_Context_Tree.cong_add</span></span><span> </span><span class="entity"><span>Function_Context_Tree.cong_del</span></span><span>›</span></span><span>
+  </span><span class="quoted"><span>"declaration of congruence rule for function definitions"</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Function/sum_tree.ML.html"><span>‹Tools/Function/sum_tree.ML›</span></a></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

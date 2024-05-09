@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Function/relation.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Function/relation.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/Function/relation.ML
+    Author:     Alexander Krauss, TU Muenchen
+
+Tactics to start a termination proof using a user-specified relation.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>FUNCTION_RELATION</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> relation_tac</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="main"><span>(</span></span><span>typ</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>term</span><span class="main"><span>)</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>int</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>tactic</span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> relation_infer_tac</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Proof.context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>term</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>int</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>tactic</span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Function_Relation</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>FUNCTION_RELATION</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="comment1"><span>(* tactic version *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>inst_state_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>inst</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>SUBGOAL</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>goal</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span class="main"><span>(</span></span><span class="keyword2"><span class="keyword"><span>case</span></span></span><span> </span><span>Term.add_vars</span><span> </span><span class="entity"><span>goal</span></span><span> </span><span class="main"><span>[</span></span><span class="main"><span>]</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span>
+      </span><span class="main"><span>[</span></span><span class="entity"><span>v</span></span><span> </span><span class="keyword1"><span class="keyword"><span>as</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>T</span></span><span class="main"><span>)</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+        </span><span>PRIMITIVE</span><span> </span><span class="main"><span>(</span></span><span>Thm.instantiate</span><span> </span><span class="main"><span>(</span></span><span>TVars.empty</span><span class="main"><span>,</span></span><span> </span><span>Vars.make1</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>v</span></span><span class="main"><span>,</span></span><span> </span><span>Thm.cterm_of</span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>inst</span></span><span> </span><span class="entity"><span>T</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="main"><span>|</span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>no_tac</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>relation_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>TRY</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Function_Common.termination_rule_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span>
+  </span><span>THEN</span><span> </span><span class="entity"><span>inst_state_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>;</span></span><span>
+
+
+</span><span class="comment1"><span>(* version with type inference *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>inst_state_infer_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>SUBGOAL</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>goal</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>_</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span class="main"><span>(</span></span><span class="keyword2"><span class="keyword"><span>case</span></span></span><span> </span><span>Term.add_vars</span><span> </span><span class="entity"><span>goal</span></span><span> </span><span class="main"><span>[</span></span><span class="main"><span>]</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span>
+      </span><span class="main"><span>[</span></span><span class="entity"><span>v</span></span><span> </span><span class="keyword1"><span class="keyword"><span>as</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>_</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>T</span></span><span class="main"><span>)</span></span><span class="main"><span>]</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+        </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+          </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>rel'</span></span><span> </span><span class="main"><span>=</span></span><span>
+            </span><span>singleton</span><span> </span><span class="main"><span>(</span></span><span>Variable.polymorphic</span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>rel</span></span><span>
+            </span><span>|&gt;</span><span> </span><span>map_types</span><span> </span><span>Type_Infer.paramify_vars</span><span>
+            </span><span>|&gt;</span><span> </span><span>Type.constraint</span><span> </span><span class="entity"><span>T</span></span><span>
+            </span><span>|&gt;</span><span> </span><span>Syntax.check_term</span><span> </span><span class="entity"><span>ctxt</span></span><span class="main"><span>;</span></span><span>
+        </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span>PRIMITIVE</span><span> </span><span class="main"><span>(</span></span><span>Thm.instantiate</span><span> </span><span class="main"><span>(</span></span><span>TVars.empty</span><span class="main"><span>,</span></span><span> </span><span>Vars.make1</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>v</span></span><span class="main"><span>,</span></span><span> </span><span>Thm.cterm_of</span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel'</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+    </span><span class="main"><span>|</span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span>no_tac</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>relation_infer_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>TRY</span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Function_Common.termination_rule_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span>
+  </span><span>THEN</span><span> </span><span class="entity"><span>inst_state_infer_tac</span></span><span> </span><span class="entity"><span>ctxt</span></span><span> </span><span class="entity"><span>rel</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

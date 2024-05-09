@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹~~/src/Tools/Argo/argo_solver.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹~~/src/Tools/Argo/argo_solver.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Tools/Argo/argo_solver.ML
+    Author:     Sascha Boehme
+
+The main interface to the Argo solver.
+
+The solver performs satisfiability checking for a given set of assertions. If these assertions
+are unsatisfiable, a proof trace is returned. If these assertions are satisfiable, the computed
+model can be queried or further assertions may be added.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>ARGO_SOLVER</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>context</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> context</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> assert</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Argo_Expr.expr</span></span><span> </span><span>list</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="comment1"><span>(* raises Argo_Expr.TYPE, Argo_Expr.EXPR
+    and Argo_Proof.UNSAT *)</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> model_of</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>string</span><span> * </span><span class="entity"><span>Argo_Expr.typ</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>bool</span><span> </span><span>option</span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Argo_Solver</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>ARGO_SOLVER</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="comment1"><span>(* context *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>{</span></span><span>
+  next_axiom</span><span class="main"><span>:</span></span><span> </span><span>int</span><span class="main"><span>,</span></span><span>
+  prf</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Argo_Proof.context</span></span><span class="main"><span>,</span></span><span>
+  core</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Argo_Core.context</span></span><span class="main"><span>}</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>mk_context</span></span><span> </span><span class="entity"><span>next_axiom</span></span><span> </span><span class="entity"><span>prf</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>{</span></span><span>next_axiom</span><span class="main"><span>=</span></span><span class="entity"><span>next_axiom</span></span><span class="main"><span>,</span></span><span> prf</span><span class="main"><span>=</span></span><span class="entity"><span>prf</span></span><span class="main"><span>,</span></span><span> core</span><span class="main"><span>=</span></span><span class="entity"><span>core</span></span><span class="main"><span>}</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>mk_context</span></span><span> </span><span class="inner_numeral"><span>0</span></span><span> </span><span class="entity"><span>Argo_Proof.solver_context</span></span><span> </span><span class="entity"><span>Argo_Core.context</span></span><span>
+
+
+</span><span class="comment1"><span>(* rewriting and normalizing axioms *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>simp_context</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="entity"><span>Argo_Rewr.context</span></span><span>
+  </span><span>|&gt;</span><span> </span><span class="entity"><span>Argo_Rewr.nnf</span></span><span>
+  </span><span>|&gt;</span><span> </span><span class="entity"><span>Argo_Rewr.norm_prop</span></span><span>
+  </span><span>|&gt;</span><span> </span><span class="entity"><span>Argo_Rewr.norm_ite</span></span><span>
+  </span><span>|&gt;</span><span> </span><span class="entity"><span>Argo_Rewr.norm_eq</span></span><span>
+  </span><span>|&gt;</span><span> </span><span class="entity"><span>Argo_Rewr.norm_arith</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>simp_axiom</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Rewr.with_proof</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Argo_Rewr.rewrite</span></span><span> </span><span class="entity"><span>simp_context</span></span><span class="main"><span>)</span></span><span>
+
+
+</span><span class="comment1"><span>(* asserting axioms *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>add_axiom</span></span><span> </span><span class="entity"><span>e</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>{</span></span><span class="entity"><span>next_axiom</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prf</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>}</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.check</span></span><span> </span><span class="entity"><span>e</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>p</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prf</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Proof.mk_axiom</span></span><span> </span><span class="entity"><span>next_axiom</span></span><span> </span><span class="entity"><span>prf</span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>ep</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prf</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>simp_axiom</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>e</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>prf</span></span><span> 
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>prf</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Clausify.clausify</span></span><span> </span><span class="entity"><span>simp_context</span></span><span> </span><span class="entity"><span>ep</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>prf</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="entity"><span>mk_context</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>next_axiom</span></span><span> </span><span>+</span><span> </span><span class="inner_numeral"><span>1</span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>prf</span></span><span> </span><span class="entity"><span>core</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>assert</span></span><span> </span><span class="entity"><span>es</span></span><span> </span><span class="entity"><span>cx</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span> </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>{</span></span><span class="entity"><span>next_axiom</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prf</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>}</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>fold</span><span> </span><span class="entity"><span>add_axiom</span></span><span> </span><span class="entity"><span>es</span></span><span> </span><span class="entity"><span>cx</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="entity"><span>mk_context</span></span><span> </span><span class="entity"><span>next_axiom</span></span><span> </span><span class="entity"><span>prf</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Argo_Core.run</span></span><span> </span><span class="entity"><span>core</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+
+</span><span class="comment1"><span>(* models *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>model_of</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>{</span></span><span class="entity"><span>core</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>...</span></span><span class="main"><span>}</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>context</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Core.model_of</span></span><span> </span><span class="entity"><span>core</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

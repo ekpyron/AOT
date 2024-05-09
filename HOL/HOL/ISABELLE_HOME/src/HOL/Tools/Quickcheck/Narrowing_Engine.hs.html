@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Quickcheck/Narrowing_Engine.hs›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Quickcheck/Narrowing_Engine.hs›</h1>
+</div>
+
+<pre class="source"><span>module Narrowing_Engine where {
+
+import Control.Monad;
+import Control.Exception;
+import System.IO;
+import System.Exit;
+import qualified Typerep;
+import qualified Generated_Code;
+
+type Pos = [Int];
+
+-- Term refinement
+
+new :: Pos -&gt; [[Generated_Code.Narrowing_type]] -&gt; [Generated_Code.Narrowing_term];
+new p ps = [ Generated_Code.Narrowing_constructor c (zipWith (\i t -&gt; Generated_Code.Narrowing_variable (p++[i]) t) [0..] ts)
+           | (c, ts) &lt;- zip [0..] ps ];
+
+refine :: Generated_Code.Narrowing_term -&gt; Pos -&gt; [Generated_Code.Narrowing_term];
+refine (Generated_Code.Narrowing_variable p (Generated_Code.Narrowing_sum_of_products ss)) [] = new p ss;
+refine (Generated_Code.Narrowing_constructor c xs) p = map (Generated_Code.Narrowing_constructor c) (refineList xs p);
+
+refineList :: [Generated_Code.Narrowing_term] -&gt; Pos -&gt; [[Generated_Code.Narrowing_term]];
+refineList xs (i:is) = let (ls, x:rs) = splitAt i xs in [ls ++ y:rs | y &lt;- refine x is];
+
+-- Find total instantiations of a partial value
+
+total :: Generated_Code.Narrowing_term -&gt; [Generated_Code.Narrowing_term];
+total (Generated_Code.Narrowing_constructor c xs) = [Generated_Code.Narrowing_constructor c ys | ys &lt;- mapM total xs];
+total (Generated_Code.Narrowing_variable p (Generated_Code.Narrowing_sum_of_products ss)) = [y | x &lt;- new p ss, y &lt;- total x];
+
+-- Answers
+
+answeri :: a -&gt; (Bool -&gt; a -&gt; IO b) -&gt; (Pos -&gt; IO b) -&gt; IO b;
+answeri a known unknown =
+  try (evaluate a) &gt;&gt;= (\res -&gt;
+     case res of
+       Right b -&gt; known True b
+       Left (ErrorCall ('\0':p)) -&gt; unknown (map fromEnum p)
+       Left e -&gt; throw e);
+
+answer :: Bool -&gt; Bool -&gt; (Bool -&gt; Bool -&gt; IO b) -&gt; (Pos -&gt; IO b) -&gt; IO b;
+answer genuine_only a known unknown =
+  Control.Exception.catch (answeri a known unknown) 
+    (\ (PatternMatchFail _) -&gt; known False genuine_only);
+
+-- Refute
+
+str_of_list [] = "[]";
+str_of_list (x:xs) = "(" ++ x ++ " :: " ++ str_of_list xs ++ ")";
+
+report :: Bool -&gt; Result -&gt; [Generated_Code.Narrowing_term] -&gt; IO Int;
+report genuine r xs = putStrLn ("SOME (" ++ (if genuine then "true" else "false") ++
+  ", " ++ (str_of_list $ zipWith ($) (showArgs r) xs) ++ ")") &gt;&gt; hFlush stdout &gt;&gt; exitWith ExitSuccess;
+
+eval :: Bool -&gt; Bool -&gt; (Bool -&gt; Bool -&gt; IO a) -&gt; (Pos -&gt; IO a) -&gt; IO a;
+eval genuine_only p k u = answer genuine_only p k u;
+
+ref :: Bool -&gt; Result -&gt; [Generated_Code.Narrowing_term] -&gt; IO Int;
+ref genuine_only r xs = eval genuine_only (apply_fun r xs) (\genuine res -&gt; if res then return 1 else report genuine r xs)
+  (\p -&gt; sumMapM (ref genuine_only r) 1 (refineList xs p));
+
+refute :: Bool -&gt; Result -&gt; IO Int;
+refute genuine_only r = ref genuine_only r (args r);
+
+sumMapM :: (a -&gt; IO Int) -&gt; Int -&gt; [a] -&gt; IO Int;
+sumMapM f n [] = return n;
+sumMapM f n (a:as) = seq n (do m &lt;- f a ; sumMapM f (n+m) as);
+
+-- Testable
+
+instance Show Typerep.Typerep where {
+  show (Typerep.Typerep c ts) = "Type (\"" ++ c ++ "\", " ++ show ts ++ ")";
+};
+
+instance Show Generated_Code.Term where {
+  show (Generated_Code.Const c t) = "Const (\"" ++ c ++ "\", " ++ show t ++ ")";
+  show (Generated_Code.App s t) = "(" ++ show s ++ ") $ (" ++ show t ++ ")";
+  show (Generated_Code.Abs s ty t) = "Abs (\"" ++ s ++ "\", " ++ show ty ++ ", " ++ show t ++ ")";
+  show (Generated_Code.Free s ty) = "Free (\"" ++ s ++  "\", " ++ show ty ++ ")";
+};
+
+data Result =
+  Result { args     :: [Generated_Code.Narrowing_term]
+         , showArgs :: [Generated_Code.Narrowing_term -&gt; String]
+         , apply_fun    :: [Generated_Code.Narrowing_term] -&gt; Bool
+         };
+
+data P = P (Int -&gt; Int -&gt; Result);
+
+run :: Testable a =&gt; ([Generated_Code.Narrowing_term] -&gt; a) -&gt; Int -&gt; Int -&gt; Result;
+run a = let P f = property a in f;
+
+class Testable a where {
+  property :: ([Generated_Code.Narrowing_term] -&gt; a) -&gt; P;
+};
+
+instance Testable Bool where {
+  property app = P $ \n d -&gt; Result [] [] (app . reverse);
+};
+
+instance (Generated_Code.Partial_term_of a, Generated_Code.Narrowing a, Testable b) =&gt; Testable (a -&gt; b) where {
+  property f = P $ \n d -&gt;
+    let Generated_Code.Narrowing_cons t c = Generated_Code.narrowing d
+        c' = Generated_Code.conv c
+        r = run (\(x:xs) -&gt; f xs (c' x)) (n+1) d
+    in  r { args = Generated_Code.Narrowing_variable [n] t : args r,
+      showArgs = (show . Generated_Code.partial_term_of (Generated_Code.Type :: Generated_Code.Itself a)) : showArgs r };
+};
+
+-- Top-level interface
+
+depthCheck :: Testable a =&gt; Bool -&gt; Int -&gt; a -&gt; IO ();
+depthCheck genuine_only d p =
+  (refute genuine_only $ run (const p) 0 d) &gt;&gt; putStrLn ("NONE") &gt;&gt; hFlush stdout;
+
+smallCheck :: Testable a =&gt; Bool -&gt; Int -&gt; a -&gt; IO ();
+smallCheck genuine_only d p = mapM_ (\d -&gt; depthCheck genuine_only d p) [0..d] &gt;&gt; putStrLn ("NONE") &gt;&gt; hFlush stdout;
+
+}
+</span></pre>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Argo/argo_sat_solver.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Argo/argo_sat_solver.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/Argo/argo_sat_solver.ML
+    Author:     Sascha Boehme
+
+A SAT solver based on the Argo solver.
+This SAT solver produces models. For proofs use Argo_Tactic.prove instead.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Argo_SAT_Solver</span></span><span class="main"><span>:</span></span><span> </span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>con_of</span></span><span> </span><span class="entity"><span>i</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="main"><span>(</span></span><span>string_of_int</span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>Argo_Expr.Bool</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>Prop_Logic.True</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.true_expr</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>Prop_Logic.False</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.false_expr</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Prop_Logic.Not</span></span><span> </span><span class="entity"><span>p</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.mk_not</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Prop_Logic.Or</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>p1</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.mk_or2</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p1</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Prop_Logic.And</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>p1</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.mk_and2</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p1</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p2</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>expr_of</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Prop_Logic.BoolVar</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Expr.mk_con</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>con_of</span></span><span> </span><span class="entity"><span>i</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>argo_solver</span></span><span> </span><span class="entity"><span>p</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span> </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>argo</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Solver.assert</span></span><span> </span><span class="main"><span>[</span></span><span class="entity"><span>expr_of</span></span><span> </span><span class="entity"><span>p</span></span><span class="main"><span>]</span></span><span> </span><span class="entity"><span>Argo_Solver.context</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="entity"><span>SAT_Solver.SATISFIABLE</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Argo_Solver.model_of</span></span><span> </span><span class="entity"><span>argo</span></span><span> </span><span>o</span><span> </span><span class="entity"><span>con_of</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+  </span><span class="keyword3"><span class="keyword"><span>handle</span></span></span><span> </span><span class="entity"><span>Argo_Proof.UNSAT</span></span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="entity"><span>SAT_Solver.UNSATISFIABLE</span></span><span> </span><span>NONE</span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>SAT_Solver.add_solver</span></span><span> </span><span class="main"><span>(</span></span><span class="inner_quoted"><span>"argo"</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>argo_solver</span></span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

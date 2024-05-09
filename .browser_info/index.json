@@ -1,0 +1,18 @@
+{"kind": "root",
+ "items":
+   [{"name": "HOL",
+     "description":
+       "\n    Higher-Order Logic.\n\n    Isabelle/HOL is a version of classical higher-order logic resembling\n    that of the HOL System (https://www.cl.cam.ac.uk/Research/HVG/HOL).\n  "},
+    {"name": "FOL",
+     "description":
+       "\n    First-Order Logic with some variations: single-sorted vs. many-sorted\n    (polymorphic), classical vs. intuitionistic, domain-theory (LCF) vs.\n    set-theory (ZF).\n  "},
+    {"name": "Pure",
+     "description":
+       "\n    The Pure logical framework.\n\n    Isabelle/Pure is a version of intuitionistic higher-order logic that\n    expresses rules for Natural Deduction declaratively.\n  "},
+    {"name": "Misc",
+     "description":
+       "\n    Miscellaneous object-logics, tools, and experiments.\n  "},
+    {"name": "Doc", "description": "\n    Sources of Documentation.\n  "},
+    {"name": "Unsorted",
+     "description": "\n    Sessions without 'chapter' declaration.\n  "},
+    {"name": "AOT", "description": ""}]}

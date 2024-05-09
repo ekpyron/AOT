@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹~~/src/Tools/Argo/argo_common.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹~~/src/Tools/Argo/argo_common.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      Tools/Argo/argo_common.ML
+    Author:     Sascha Boehme
+
+Common infrastructure for the decision procedures of Argo.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>ARGO_COMMON</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>literal</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> * </span><span class="entity"><span>Argo_Proof.proof</span></span><span> </span><span>option</span><span>
+  </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> 'a </span><span class="entity"><span>implied</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Implied</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> 'a list </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>Conflict</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> Argo_Cls.clause
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Argo_Common</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>ARGO_COMMON</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>literal</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Argo_Lit.literal</span></span><span> * </span><span class="entity"><span>Argo_Proof.proof</span></span><span> </span><span>option</span><span>
+  </span><span class="comment1"><span>(* Implied new knowledge accompanied with an optional proof. If there is no proof,
+     the literal is to be treated hypothetically. If there is a proof, the literal is
+     to be treated as uni clause. *)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> 'a </span><span class="entity"><span>implied</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Implied</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> 'a list </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>Conflict</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> Argo_Cls.clause
+  </span><span class="comment1"><span>(* A result of a step of a decision procedure, either an implication of new knowledge
+     or clause whose literals are known to be false. *)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

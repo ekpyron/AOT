@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Mirabelle/mirabelle_quickcheck.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Mirabelle/mirabelle_quickcheck.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/Mirabelle/mirabelle_quickcheck.ML
+    Author:     Jasmin Blanchette, TU Munich
+    Author:     Sascha Boehme, TU Munich
+    Author:     Martin Desharnais, UniBw Munich
+
+Mirabelle action: "quickcheck".
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>Mirabelle_Quickcheck</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>MIRABELLE_ACTION</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>make_action</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>{</span></span><span class="entity"><span>arguments</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>timeout</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>...</span></span><span class="main"><span>}</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Mirabelle.action_context</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>has_valid_key</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>member</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>op</span></span></span><span> </span><span class="main"><span>=</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>[</span></span><span class="inner_quoted"><span>"iterations"</span></span><span class="main"><span>,</span></span><span> </span><span class="inner_quoted"><span>"size"</span></span><span class="main"><span>,</span></span><span> </span><span class="inner_quoted"><span>"generator"</span></span><span class="main"><span>]</span></span><span> </span><span>o</span><span> </span><span>fst</span><span>
+    </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>quickcheck</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="entity"><span>Quickcheck.quickcheck</span></span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span class="main"><span>(</span></span><span>apsnd</span><span> </span><span>single</span><span class="main"><span>)</span></span><span> </span><span class="main"><span>(</span></span><span>filter</span><span> </span><span class="entity"><span>has_valid_key</span></span><span> </span><span class="entity"><span>arguments</span></span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span> </span><span class="inner_numeral"><span>1</span></span><span>
+
+    </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>run</span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>{</span></span><span class="entity"><span>pre</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>...</span></span><span class="main"><span>}</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Mirabelle.command</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="main"><span>(</span></span><span class="keyword2"><span class="keyword"><span>case</span></span></span><span> </span><span>Timeout.apply</span><span> </span><span class="entity"><span>timeout</span></span><span> </span><span class="entity"><span>quickcheck</span></span><span> </span><span class="entity"><span>pre</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span>
+        </span><span>NONE</span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="inner_quoted"><span>"no counterexample"</span></span><span>
+      </span><span class="main"><span>|</span></span><span> </span><span>SOME</span><span> </span><span class="main"><span>_</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="inner_quoted"><span>"counterexample found"</span></span><span class="main"><span>)</span></span><span>
+  </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="inner_quoted"><span>""</span></span><span class="main"><span>,</span></span><span> </span><span class="main"><span>{</span></span><span>run </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>run</span></span><span class="main"><span>,</span></span><span> finalize </span><span class="main"><span>=</span></span><span> </span><span>K</span><span> </span><span class="inner_quoted"><span>""</span></span><span class="main"><span>}</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>Mirabelle.register_action</span></span><span> </span><span class="inner_quoted"><span>"quickcheck"</span></span><span> </span><span class="entity"><span>make_action</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>

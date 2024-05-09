@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/Mirabelle/mirabelle_util.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/Mirabelle/mirabelle_util.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/Mirabelle/mirabelle_util.ML
+    Author:     Martin Desharnais, MPI-INF Saarbruecken
+*)</span></span><span>
+
+</span><span class="comment1"><span>(* Pseudorandom number generator *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>PRNG</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>state</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> initialize </span><span class="main"><span>:</span></span><span> </span><span>int</span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span class="entity"><span>state</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> next </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>state</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>int</span><span> * </span><span class="entity"><span>state</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="comment1"><span>(* Pseudorandom algorithms *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>PRNG_ALGORITHMS</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>include</span></span></span><span> </span><span class="entity"><span>PRNG</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> shuffle </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>state</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> 'a </span><span>list</span><span> </span><span class="main"><span>-&gt;</span></span><span> 'a </span><span>list</span><span> * </span><span class="entity"><span>state</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>functor</span></span></span><span> </span><span class="entity"><span>PRNG_Algorithms</span></span><span class="main"><span>(</span></span><span>PRNG </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>PRNG</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>PRNG_ALGORITHMS</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword3"><span class="keyword"><span>open</span></span></span><span> </span><span class="entity"><span>PRNG</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>shuffle</span></span><span> </span><span class="entity"><span>prng_state</span></span><span> </span><span class="entity"><span>xs</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span>fold_map</span><span> </span><span class="main"><span>(</span></span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="entity"><span>x</span></span><span> </span><span class="main"><span>=&gt;</span></span><span> </span><span class="keyword1"><span class="keyword"><span>fn</span></span></span><span> </span><span class="entity"><span>prng_state</span></span><span> </span><span class="main"><span>=&gt;</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>n</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prng_state'</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>next</span></span><span> </span><span class="entity"><span>prng_state</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span> </span><span class="main"><span>(</span></span><span class="main"><span>(</span></span><span class="entity"><span>n</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>x</span></span><span class="main"><span>)</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>prng_state'</span></span><span class="main"><span>)</span></span><span> </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>)</span></span><span> </span><span class="entity"><span>xs</span></span><span> </span><span class="entity"><span>prng_state</span></span><span>
+  </span><span>|&gt;</span><span> </span><span>apfst</span><span> </span><span class="main"><span>(</span></span><span>sort</span><span> </span><span class="main"><span>(</span></span><span>int_ord</span><span> </span><span>o</span><span> </span><span>apply2</span><span> </span><span>fst</span><span class="main"><span>)</span></span><span class="main"><span>)</span></span><span>
+  </span><span>|&gt;</span><span> </span><span>apfst</span><span> </span><span class="main"><span>(</span></span><span>map</span><span> </span><span>snd</span><span class="main"><span>)</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="comment1"><span>(* multiplicative linear congruential generator *)</span></span><span>
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>MLCG_PRNG</span></span><span> </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>PRNG</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+  </span><span class="comment1"><span>(* The modulus is implicitly 2^64 through using Word64.
+     The multiplier and increment are the same as Newlib and Musl according to Wikipedia.
+     See: https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
+   *)</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>multiplier</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Word64.fromInt</span><span> </span><span class="inner_numeral"><span>6364136223846793005</span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>increment</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Word64.fromInt</span><span> </span><span class="inner_numeral"><span>1</span></span><span>
+
+  </span><span class="keyword1"><span class="keyword"><span>type</span></span></span><span> </span><span class="entity"><span>state</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Word64.word</span><span>
+
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>initialize</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span>Word64.fromInt</span><span>
+
+  </span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>next</span></span><span> </span><span class="entity"><span>s</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>let</span></span></span><span>
+      </span><span class="keyword3"><span class="keyword"><span>open</span></span></span><span> </span><span>Word64</span><span>
+      </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> </span><span class="entity"><span>s'</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>multiplier</span></span><span> </span><span>*</span><span> </span><span class="entity"><span>s</span></span><span> </span><span>+</span><span> </span><span class="entity"><span>increment</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>in</span></span></span><span>
+      </span><span class="main"><span>(</span></span><span>toInt</span><span> </span><span class="entity"><span>s'</span></span><span class="main"><span>,</span></span><span> </span><span class="entity"><span>s'</span></span><span class="main"><span>)</span></span><span>
+    </span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>MLCG</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>PRNG_Algorithms</span></span><span class="main"><span>(</span></span><span class="entity"><span>MLCG_PRNG</span></span><span class="main"><span>)</span></span><span>
+</span></pre>
+</body>
+
+</html>

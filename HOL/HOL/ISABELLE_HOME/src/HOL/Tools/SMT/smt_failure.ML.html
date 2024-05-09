@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>File ‹Tools/SMT/smt_failure.ML›</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>File ‹Tools/SMT/smt_failure.ML›</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Tools/SMT/smt_failure.ML
+    Author:     Sascha Boehme, TU Muenchen
+
+Failures and exception of SMT.
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>SMT_FAILURE</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> </span><span class="entity"><span>failure</span></span><span> </span><span class="main"><span>=</span></span><span>
+    </span><span class="entity"><span>Counterexample</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> bool </span><span class="main"><span>|</span></span><span>
+    </span><span class="entity"><span>Time_Out</span></span><span> </span><span class="main"><span>|</span></span><span>
+    </span><span class="entity"><span>Out_Of_Memory</span></span><span> </span><span class="main"><span>|</span></span><span>
+    </span><span class="entity"><span>Abnormal_Termination</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> int </span><span class="main"><span>|</span></span><span>
+    </span><span class="entity"><span>Other_Failure</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> string
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> string_of_failure</span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>failure</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>string</span><span>
+  </span><span class="keyword1"><span class="keyword"><span>exception</span></span></span><span> SMT </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> </span><span class="entity"><span>failure</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>structure</span></span></span><span> </span><span class="entity"><span>SMT_Failure</span></span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>SMT_FAILURE</span></span><span> </span><span class="main"><span>=</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>struct</span></span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>datatype</span></span></span><span> </span><span class="entity"><span>failure</span></span><span> </span><span class="main"><span>=</span></span><span>
+  </span><span class="entity"><span>Counterexample</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> bool </span><span class="main"><span>|</span></span><span>
+  </span><span class="entity"><span>Time_Out</span></span><span> </span><span class="main"><span>|</span></span><span>
+  </span><span class="entity"><span>Out_Of_Memory</span></span><span> </span><span class="main"><span>|</span></span><span>
+  </span><span class="entity"><span>Abnormal_Termination</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> int </span><span class="main"><span>|</span></span><span>
+  </span><span class="entity"><span>Other_Failure</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> string
+
+</span><span class="keyword1"><span class="keyword"><span>fun</span></span></span><span> </span><span class="entity"><span>string_of_failure</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Counterexample</span></span><span> </span><span class="entity"><span>genuine</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="keyword2"><span class="keyword"><span>if</span></span></span><span> </span><span class="entity"><span>genuine</span></span><span> </span><span class="keyword2"><span class="keyword"><span>then</span></span></span><span> </span><span class="inner_quoted"><span>"Counterexample found (possibly spurious)"</span></span><span>
+      </span><span class="keyword2"><span class="keyword"><span>else</span></span></span><span> </span><span class="inner_quoted"><span>"Potential counterexample found"</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>string_of_failure</span></span><span> </span><span class="entity"><span>Time_Out</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="inner_quoted"><span>"Timed out"</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>string_of_failure</span></span><span> </span><span class="entity"><span>Out_Of_Memory</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="inner_quoted"><span>"Ran out of memory"</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>string_of_failure</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Abnormal_Termination</span></span><span> </span><span class="entity"><span>err</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span>
+      </span><span class="inner_quoted"><span>"Solver terminated abnormally with error code "</span></span><span> </span><span>^</span><span> </span><span>string_of_int</span><span> </span><span class="entity"><span>err</span></span><span>
+  </span><span class="main"><span>|</span></span><span> </span><span class="entity"><span>string_of_failure</span></span><span> </span><span class="main"><span>(</span></span><span class="entity"><span>Other_Failure</span></span><span> </span><span class="entity"><span>msg</span></span><span class="main"><span>)</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="entity"><span>msg</span></span><span>
+
+</span><span class="keyword1"><span class="keyword"><span>exception</span></span></span><span> </span><span class="entity"><span>SMT</span></span><span> </span><span class="keyword2"><span class="keyword"><span>of</span></span></span><span> </span><span class="entity"><span>failure</span></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span class="main"><span>;</span></span><span>
+</span></pre>
+</body>
+
+</html>

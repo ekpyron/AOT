@@ -1,0 +1,6 @@
+{"kind": "chapter",
+ "items":
+   [{"name": "HOL",
+     "description": "\n    Classical Higher-order Logic.\n  "},
+    {"name": "HOL-Cardinals",
+     "description": "    Ordinals and Cardinals, Full Theories."}]}

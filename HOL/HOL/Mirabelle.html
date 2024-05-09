@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Mirabelle</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Mirabelle</h1>
+</div>
+
+<pre class="source"><span class="comment1"><span>(*  Title:      HOL/Mirabelle.thy
+    Author:     Jasmin Blanchette, TU Munich
+    Author:     Sascha Boehme, TU Munich
+    Author:     Makarius
+    Author:     Martin Desharnais, UniBw Munich, MPI-INF Saarbrücken
+*)</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>theory</span></span></span><span> </span><a href="Mirabelle.html"><span>Mirabelle</span></a><span>
+  </span><span class="keyword2"><span class="keyword"><span>imports</span></span></span><span> </span><a href="Sledgehammer.html"><span>Sledgehammer</span></a><span> </span><a href="Predicate_Compile.html"><span>Predicate_Compile</span></a><span> </span><a href="Presburger.html"><span>Presburger</span></a><span>
+</span><span class="keyword2"><span class="keyword"><span>begin</span></span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_util.ML.html"><span>‹Tools/Mirabelle/mirabelle_util.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle.ML.html"><span>‹Tools/Mirabelle/mirabelle.ML›</span></a></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML</span></span></span><span> </span><span class="quoted"><span>‹
+</span><span class="keyword1"><span class="keyword"><span>signature</span></span></span><span> </span><span class="entity"><span>MIRABELLE_ACTION</span></span><span> </span><span class="main"><span>=</span></span><span> </span><span class="keyword2"><span class="keyword"><span>sig</span></span></span><span>
+  </span><span class="keyword1"><span class="keyword"><span>val</span></span></span><span> make_action </span><span class="main"><span>:</span></span><span> </span><span class="entity"><span>Mirabelle.action_context</span></span><span> </span><span class="main"><span>-&gt;</span></span><span> </span><span>string</span><span> * </span><span class="entity"><span>Mirabelle.action</span></span><span>
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+›</span></span><span>
+
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_arith.ML.html"><span>‹Tools/Mirabelle/mirabelle_arith.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_metis.ML.html"><span>‹Tools/Mirabelle/mirabelle_metis.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_presburger.ML.html"><span>‹Tools/Mirabelle/mirabelle_presburger.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_quickcheck.ML.html"><span>‹Tools/Mirabelle/mirabelle_quickcheck.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_sledgehammer_filter.ML.html"><span>‹Tools/Mirabelle/mirabelle_sledgehammer_filter.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_sledgehammer.ML.html"><span>‹Tools/Mirabelle/mirabelle_sledgehammer.ML›</span></a></span><span>
+</span><span class="keyword1"><span class="command"><span>ML_file</span></span></span><span> </span><span class="quoted"><a href="ISABELLE_HOME/src/HOL/Tools/Mirabelle/mirabelle_try0.ML.html"><span>‹Tools/Mirabelle/mirabelle_try0.ML›</span></a></span><span>
+
+</span><span class="keyword2"><span class="keyword"><span>end</span></span></span><span>
+</span></pre>
+</body>
+
+</html>
