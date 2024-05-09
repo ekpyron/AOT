@@ -41,14 +41,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 (**** RULIFICATION START *****)
-structure AOT_RulifyRules = Theory_Data (
+structure AOT_RulifyElims = Theory_Data (
   type T = (thm list) Symtab.table
   val empty = Symtab.empty
   val merge = Symtab.merge (K true)
 );
-fun AOT_note_rulify_rule rule =
-  Local_Theory.background_theory (AOT_RulifyRules.map (Symtab.insert (K true) rule))
-
 structure AOT_VarifyRules = Theory_Data (
   type T = (Context.generic->term->thm->thm option) Symtab.table
   val empty = Symtab.empty
@@ -59,7 +56,6 @@ structure AOT_VarifyRules = Theory_Data (
 fun AOT_add_varify_rule (key,rule) =
   Local_Theory.background_theory (fn thy => let
 val oldrule = Symtab.lookup (AOT_VarifyRules.get thy) key
-val _ = @{print} ("OLDRULE", oldrule)
 in
 AOT_VarifyRules.map (Symtab.update (key,
 fn ctxt => fn term => fn thm => (
@@ -99,7 +95,7 @@ fun outermost_proper_const trm = case Term.strip_comb trm of
  | (Const c, _) => SOME (Const c)
  | _ => NONE
 
-fun getRules term = case (Symtab.lookup (AOT_RulifyRules.get (Context.theory_of ctxt)) term) of SOME list => list | _ => []
+fun getRules term = case (Symtab.lookup (AOT_RulifyElims.get (Context.theory_of ctxt)) term) of SOME list => list | _ => []
 
 fun getSimplifications thm = 
   case outermost_proper_const (Thm.concl_of thm) of
@@ -118,6 +114,56 @@ val simps = getSimplifications unvarifiedThm
 val simps = map (fn thms => unvarifyRules@thms) simps
 in
 simps
+end
+
+
+structure AOT_RulifyIntros = Theory_Data (
+  type T = thm Net.net
+  val empty = Net.empty
+  val merge = Net.merge (K true)
+);
+
+
+fun AOT_applyIntros ctxt thm = let
+val net = AOT_RulifyIntros.get (Context.theory_of ctxt)
+val _ = @{print} ("Prems:", cprems_of thm)
+val thms = map (fn cprem => let
+    val prem = Thm.term_of cprem
+    val thms = Net.unify_term net prem
+    val thm = case thms of [] => NONE | thm::_ => (let
+      val name = ((Binding.name_of o Binding.qualified_name o Thm.get_name_hint) thm)
+      val _ = @{print} name
+      val match = try Thm.first_order_match (Thm.cconcl_of thm, cprem)
+      val _ = @{print} match
+      val thm = Option.map (fn match => Drule.instantiate_normalize match thm) match
+      in Option.map (fn thm => (name,thm)) thm end)
+  in thm end) (cprems_of thm)
+val names = List.mapPartial (Option.map fst) thms
+val thms = map (Option.map snd) thms
+val _ = @{print} ("NAMES:", names, "THMS:", thms)
+
+fun resolve_prems thm thms = let
+    val c = fold (fn SOME _ => (fn n => n + 1)| _ => I) thms 0
+    val (_,_,is) = fold (fn SOME _ => (fn (n,m,is) => (n+1,m,is@[n])) | _ => (fn (n,m,is) => (n,m+1,is@[m+c]))) thms (0,0,[])
+
+    val y = List.tabulate (List.length is, fn n => (List.nth (is,n),n))
+    fun quicksort [] = []
+      | quicksort ((k,x)::xs) =
+        let 
+            val (left, right) = List.partition (fn (y,_) => y<k) xs
+        in
+            quicksort left @ [(k,x)] @ quicksort right
+        end
+    val is = map snd (quicksort y)
+
+    val thm = Drule.rearrange_prems is thm
+    val _ = @{print} (thm)
+    val thms = List.mapPartial I thms
+    val thm = thm OF thms
+  in thm end
+val thm = resolve_prems thm thms
+in
+(names,thm)
 end
 (**** RULIFICATION END *****)
 
@@ -236,13 +282,16 @@ let
   val name = fst name
   val name = (case thms of [_] => name | _ => Binding.qualify_name true name (Int.toString n))
   val simps = AOT_rulify (Context.Theory thy) thm
-  val thms = map (fn simps => (fold (fn rule => fn thm => thm RS rule) simps thm, simps)) simps
+  val thms = map (fn simps => (fold (fn rule => fn thm => thm RS rule) simps thm, map (fn thm => (Binding.name_of o Binding.qualified_name o Thm.get_name_hint) thm) simps)) simps
+  (* TODO *)
+(*  val thms = map (fn (thm,names) => let
+            val (moreNames,thm) = AOT_applyIntros (Context.Theory thy) thm
+            in (thm,names@moreNames) end) thms*)
   val thms = map (apfst (Object_Logic.rulify (Proof_Context.init_global thy))) thms
-  val thy = fold (fn (thm,simps) => fn thy =>
+  val thy = fold (fn (thm,names) => fn thy =>
         let
           val thm = Drule.export_without_context thm
-          val names = map (fn thm => (Binding.qualified_name o Thm.get_name_hint) thm) simps
-          val name = fold (fn suffix => fn name => Binding.qualify_name true name (Binding.name_of suffix)) names name
+          val name = fold (fn suffix => fn name => Binding.qualify_name true name suffix) names name
           val (thms,thy) = Global_Theory.add_thms [((name,thm),[])] thy
           val thy = Context.theory_map (fn thy => fold AOT_Theorems.add_thm thms thy) thy
         in thy end) thms thy

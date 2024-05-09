@@ -325,6 +325,7 @@ AOT_theorem "con-dis-i-e:1":
   shows \<open>\<phi> & \<psi>\<close>
   using Adjunction MP assms by blast
 lemmas "&I" = "con-dis-i-e:1"
+declare "&I"[AOT_intro]
 
 AOT_theorem "con-dis-i-e:2:a":
   assumes \<open>\<phi> & \<psi>\<close>
@@ -943,6 +944,7 @@ AOT_theorem "log-prop-prop:1": \<open>[\<lambda> \<phi>]\<down>\<close>
 
 AOT_theorem "log-prop-prop:2": \<open>\<phi>\<down>\<close>
   by (rule "\<equiv>\<^sub>d\<^sub>fI"[OF "existence:3"]) "cqt:2[lambda]"
+declare "log-prop-prop:2"[AOT_intro]
 
 AOT_theorem "exist-nec": \<open>\<tau>\<down> \<rightarrow> \<box>\<tau>\<down>\<close>
 proof -

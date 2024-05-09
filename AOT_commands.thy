@@ -44,7 +44,11 @@ setup\<open>AOT_no_atp.setup\<close>
 
 attribute_setup AOT_elim = \<open>
 Args.term >>
-(fn (Const (name, _)) => Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyRules.map (Symtab.map_default (name,[]) (fn thms => thm::thms))) I))
+(fn (Const (name, _)) => Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyElims.map (Symtab.map_default (name,[]) (fn thms => thm::thms))) I))
+\<close>
+attribute_setup AOT_intro = \<open>
+Scan.succeed
+(Thm.declaration_attribute (fn thm => Context.mapping (AOT_RulifyIntros.map (Net.insert (K true) (Net.key_of_term (Thm.concl_of thm), thm))) I))
 \<close>
 
 (*<*)
