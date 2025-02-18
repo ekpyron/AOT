@@ -362,7 +362,8 @@ fun isDefinedConst ctxt name = let
   val defined = case cons of
     SOME cons =>
       Termtab.defined (AOT_DefinedConstants.get (Proof_Context.theory_of ctxt)) cons
-      orelse cons = @{const AOT_concrete}
+      orelse (case cons of Const (name,_) => name = \<^const_name>\<open>AOT_concrete\<close>
+                                      | _ => false)
     | _ => false
   in defined end
 in
@@ -389,7 +390,10 @@ val AOT_print_individual_term = (fn ctxt =>
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))
 val AOT_print_relation_term = (fn ctxt =>
-    (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
+    (fn [Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
+                   Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
+        Ast.Constant \<^syntax_const>\<open>_AOT_concrete\<close>
+    | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
       Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_lambda\<close>::_)] => trm
@@ -411,8 +415,12 @@ val AOT_print_relation_term = (fn ctxt =>
         |  _ => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) [trm])
     | trms => Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_AOT_quoted\<close>) trms))
 val AOT_print_generic_term = (fn ctxt =>
-    (fn [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
-        Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm]
+    (fn [Ast.Appl [Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>,
+                   Ast.Constant \<^const_syntax>\<open>AOT_concrete\<close>]] => 
+        Ast.Constant \<^syntax_const>\<open>_AOT_concrete\<close>
+    | [trm as Ast.Appl (Ast.Constant \<^const_syntax>\<open>AOT_term_of_var\<close>::_)] =>
+(*        Ast.mk_appl (Ast.Constant \<^syntax_const>\<open>_explicitRelation\<close>) [trm] *)
+      trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_desc\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_free_var_ellipse\<close>::_)] => trm
     | [trm as Ast.Appl (Ast.Constant \<^syntax_const>\<open>_AOT_lambda\<close>::_)] => trm

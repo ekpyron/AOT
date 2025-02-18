@@ -1,10 +1,22 @@
 (*<*)
 theory AOT_model               
-  imports Main "HOL-Cardinals.Bounded_Set"
-begin                           
+  imports Main "HOL-Cardinals.Bounded_Set" "HOL-Cardinals.Cardinals"
+begin
 
 declare[[typedef_overloaded]]
 (*>*)
+
+section\<open>References\<close>
+
+text\<open>
+A full description of this formalization including references can be found
+at @{url \<open>http://dx.doi.org/10.17169/refubium-35141\<close>}.
+
+The version of Principia Logico-Metaphysica (PLM) implemented in this formalization
+can be found at @{url \<open>http://mally.stanford.edu/principia-2021-10-13.pdf\<close>}, while
+the latest version of PLM is available at @{url \<open>http://mally.stanford.edu/principia.pdf\<close>}.
+
+\<close>
 
 section\<open>Model for the Logic of AOT\<close>
 
@@ -15,7 +27,7 @@ text\<open>To be able to model modal operators following Kripke semantics,
      we introduce a primitive type for possible worlds and assert, by axiom,
      that there is a surjective function mapping propositions to the
      boolean-valued functions acting on possible worlds. We call the result
-     of applying this function to a proposition the Kripke-extension
+     of applying this function to a proposition the Montague intension
      of the proposition.\<close>
 typedecl w \<comment>\<open>The primtive type of possible worlds.\<close>
 axiomatization AOT_model_d\<o> :: \<open>\<o>\<Rightarrow>(w\<Rightarrow>bool)\<close> where
@@ -26,12 +38,12 @@ consts w\<^sub>0 :: w \<comment>\<open>The designated actual world.\<close>
 axiomatization where AOT_model_nonactual_world: \<open>\<exists>w . w \<noteq> w\<^sub>0\<close>
 
 text\<open>Validity of a proposition in a given world can now be modelled as the result
-     of applying that world to the Kripke-extension of the proposition.\<close>
+     of applying that world to the Montague intension of the proposition.\<close>
 definition AOT_model_valid_in :: \<open>w\<Rightarrow>\<o>\<Rightarrow>bool\<close> where
   \<open>AOT_model_valid_in w \<phi> \<equiv> AOT_model_d\<o> \<phi> w\<close>
 
-text\<open>By construction, we can choose a proposition for any given Kripke-extension,
-     s.t. the proposition is valid in a possible world iff the Kripke-extension
+text\<open>By construction, we can choose a proposition for any given Montague intension,
+     s.t. the proposition is valid in a possible world iff the Montague intension
      evaluates to true at that world.\<close>
 definition AOT_model_proposition_choice :: \<open>(w\<Rightarrow>bool) \<Rightarrow> \<o>\<close> (binder \<open>\<epsilon>\<^sub>\<o> \<close> 8)
   where \<open>\<epsilon>\<^sub>\<o> w. \<phi> w \<equiv> (inv AOT_model_d\<o>) \<phi>\<close>
@@ -47,13 +59,13 @@ typedecl \<omega> \<comment>\<open>The primtive type of ordinary objects/ureleme
 typedecl \<sigma>'
 datatype \<sigma> = \<sigma>'\<sigma> \<sigma>' | number\<sigma> nat
 
-typedecl null \<comment> \<open>Null-Urelements representing non-denoting terms.\<close>
+typedecl null \<comment> \<open>Null-urelements representing non-denoting terms.\<close>
 
-datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> | is_null\<upsilon>: null\<upsilon> null \<comment> \<open>Type of Urelements\<close>
+datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> | is_null\<upsilon>: null\<upsilon> null \<comment> \<open>Type of urelements\<close>
 
-text\<open>Urrelations are proposition-valued functions on Urelements.
+text\<open>Urrelations are proposition-valued functions on urelements.
      Urrelations are required to evaluate to necessarily false propositions for
-     Null-Urelements (note that there may be several distinct necessarily false
+     null-urelements (note that there may be several distinct necessarily false
      propositions).\<close>
 typedef urrel = \<open>{ \<phi> . \<forall> x w . \<not>AOT_model_valid_in w (\<phi> (null\<upsilon> x)) }\<close>
   by (rule exI[where x=\<open>\<lambda> x . (\<epsilon>\<^sub>\<o> w . \<not>is_null\<upsilon> x)\<close>])
@@ -176,7 +188,7 @@ proof -
 qed
 
 text\<open>Individual terms are either ordinary objects, represented by ordinary urelements,
-     abstract objects, modelled as sets of Urrelations, or null objects, used to
+     abstract objects, modelled as sets of urrelations, or null objects, used to
      represent non-denoting definite descriptions.\<close>
 datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
@@ -680,7 +692,7 @@ lemma \<kappa>\<upsilon>_surj: \<open>surj \<kappa>\<upsilon>\<close>
   using \<alpha>\<sigma>_surj by (metis \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.exhaust surj_def)
 
 text\<open>By construction if the urelement of an individual term is exemplified by
-     an (ur-)relation, it cannot be a null-object.\<close>
+     an urrelation, it cannot be a null-object.\<close>
 lemma urrel_null_false:
   assumes \<open>AOT_model_valid_in w (Rep_urrel f (\<kappa>\<upsilon> x))\<close>
   shows \<open>\<not>is_null\<kappa> x\<close>
@@ -804,7 +816,7 @@ interpretation AOT_model_irregular_spec AOT_model_irregular AOT_model_regular
 
 text\<open>Our concrete type for individual terms satisfies the type class of
      individual terms.
-     Note that all unary individuals are regular. In general an individual term
+     Note that all unary individuals are regular. In general, an individual term
      may be a tuple and is regular, if at most one tuple element does not denote.\<close>
 instantiation \<kappa> :: AOT_IndividualTerm
 begin
@@ -852,25 +864,25 @@ qed
 end
 
 text\<open>We define relations among individuals as proposition valued functions.
-     @{emph \<open>Denoting\<close>} relations among single individuals will match the
+     @{emph \<open>Denoting\<close>} unary relations (among @{typ \<kappa>}) will match the
      urrelations introduced above.\<close>
 typedef 'a rel (\<open><_>\<close>) = \<open>UNIV::('a::AOT_IndividualTerm \<Rightarrow> \<o>) set\<close> ..
 setup_lifting type_definition_rel
 
-text\<open>We use the transformation specified above to "fix" the behaviour of
-     functions on irregular terms.\<close>
-definition fix_special :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>)\<close> where
-  \<open>fix_special \<equiv> \<lambda> \<phi> x . if AOT_model_regular x
-                          then \<phi> x else AOT_model_irregular \<phi> x\<close>
-lemma fix_special_denoting:
-  \<open>AOT_model_denotes x \<Longrightarrow> fix_special \<phi> x = \<phi> x\<close>
-  by (meson AOT_model_irregular_nondenoting fix_special_def)
-lemma fix_special_non_special:
-  \<open>AOT_model_regular x \<Longrightarrow> fix_special \<phi> x = \<phi> x\<close>
-  by (meson AOT_model_irregular_nondenoting fix_special_def)
-lemma fix_special_special:
-  \<open>\<not>AOT_model_regular x \<Longrightarrow> fix_special \<phi> x = AOT_model_irregular \<phi> x\<close>
-  by (simp add: fix_special_def)
+text\<open>We will use the transformation specified above to "fix" the behaviour of
+     functions on irregular terms when defining @{text \<open>\<lambda>\<close>}-expressions.\<close>
+definition fix_irregular :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> ('a \<Rightarrow> \<o>)\<close> where
+  \<open>fix_irregular \<equiv> \<lambda> \<phi> x . if AOT_model_regular x
+                            then \<phi> x else AOT_model_irregular \<phi> x\<close>
+lemma fix_irregular_denoting:
+  \<open>AOT_model_denotes x \<Longrightarrow> fix_irregular \<phi> x = \<phi> x\<close>
+  by (meson AOT_model_irregular_nondenoting fix_irregular_def)
+lemma fix_irregular_regular:
+  \<open>AOT_model_regular x \<Longrightarrow> fix_irregular \<phi> x = \<phi> x\<close>
+  by (meson AOT_model_irregular_nondenoting fix_irregular_def)
+lemma fix_irregular_irregular:
+  \<open>\<not>AOT_model_regular x \<Longrightarrow> fix_irregular \<phi> x = AOT_model_irregular \<phi> x\<close>
+  by (simp add: fix_irregular_def)
 
 text\<open>Relations among individual terms are (potentially non-denoting) terms.
      A relation denotes, if it agrees on all equivalent terms (i.e. terms sharing
@@ -878,20 +890,18 @@ text\<open>Relations among individual terms are (potentially non-denoting) terms
      well-behaved on irregular terms.\<close>
 instantiation rel :: (AOT_IndividualTerm) AOT_IncompleteTerm
 begin
+text\<open>\linelabel{AOT_model_denotes_rel}\<close>
 lift_definition AOT_model_denotes_rel :: \<open><'a> \<Rightarrow> bool\<close> is
   \<open>\<lambda> \<phi> . (\<forall> x y . AOT_model_term_equiv x y \<longrightarrow> \<phi> x = \<phi> y) \<and>
          (\<forall> w x . AOT_model_valid_in w (\<phi> x) \<longrightarrow> AOT_model_denotes x) \<and>
          (\<forall> x . \<not>AOT_model_regular x \<longrightarrow> \<phi> x = AOT_model_irregular \<phi> x)\<close> .
-definition AOT_model_term_equiv_rel :: \<open><'a> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
-  \<open>AOT_model_term_equiv_rel \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and>
-                                      f = g\<close>
 instance proof
-  have \<open>AOT_model_irregular (fix_special \<phi>) x = AOT_model_irregular \<phi> x\<close>
+  have \<open>AOT_model_irregular (fix_irregular \<phi>) x = AOT_model_irregular \<phi> x\<close>
     for \<phi> and x :: 'a
-    by (rule AOT_model_irregular_eqI) (simp add: fix_special_def)
+    by (rule AOT_model_irregular_eqI) (simp add: fix_irregular_def)
   thus \<open>\<exists> x :: <'a> . AOT_model_denotes x\<close>
-    by (safe intro!: exI[where x=\<open>Abs_rel (fix_special (\<lambda>x. \<epsilon>\<^sub>\<o> w . False))\<close>])
-       (transfer; auto simp: AOT_model_proposition_choice_simp fix_special_def
+    by (safe intro!: exI[where x=\<open>Abs_rel (fix_irregular (\<lambda>x. \<epsilon>\<^sub>\<o> w . False))\<close>])
+       (transfer; auto simp: AOT_model_proposition_choice_simp fix_irregular_def
                              AOT_model_irregular_equiv AOT_model_term_equiv_regular
                              AOT_model_irregular_false)
 next
@@ -913,10 +923,10 @@ lemma AOT_model_term_equiv_eps:
   apply (metis AOT_model_term_equiv_part_equivp equivp_def someI_ex)
   by (metis AOT_model_term_equiv_part_equivp equivp_def)
 
-lemma AOT_model_denotes_Abs_rel_fix_specialI:
+lemma AOT_model_denotes_Abs_rel_fix_irregularI:
   assumes \<open>\<And> x y . AOT_model_term_equiv x y \<Longrightarrow> \<phi> x = \<phi> y\<close>
       and \<open>\<And> w x . AOT_model_valid_in w (\<phi> x) \<Longrightarrow> AOT_model_denotes x\<close>
-    shows \<open>AOT_model_denotes (Abs_rel (fix_special \<phi>))\<close>
+    shows \<open>AOT_model_denotes (Abs_rel (fix_irregular \<phi>))\<close>
 proof -
   have \<open>AOT_model_irregular \<phi> x = AOT_model_irregular
           (\<lambda>x. if AOT_model_regular x then \<phi> x else AOT_model_irregular \<phi> x) x\<close>
@@ -926,7 +936,7 @@ proof -
   thus ?thesis
   unfolding AOT_model_denotes_rel.rep_eq
   using assms by (auto simp: AOT_model_irregular_false Abs_rel_inverse
-                             AOT_model_irregular_equiv fix_special_def
+                             AOT_model_irregular_equiv fix_irregular_def
                              AOT_model_term_equiv_regular)
 qed
 
@@ -948,21 +958,20 @@ next
               equivp_def)
   assume \<open>\<forall> \<Pi> w . AOT_model_denotes \<Pi> \<longrightarrow> AOT_model_valid_in w (Rep_rel \<Pi> x) =
                                            AOT_model_valid_in w (Rep_rel \<Pi> y)\<close>
-  moreover have \<open>AOT_model_denotes (Abs_rel (fix_special
+  moreover have \<open>AOT_model_denotes (Abs_rel (fix_irregular
     (\<lambda> x . \<epsilon>\<^sub>\<o> w . AOT_model_denotes x \<and> AOT_model_term_equiv x y)))\<close>
     (is "AOT_model_denotes ?r")
-    by (rule AOT_model_denotes_Abs_rel_fix_specialI)
-       (auto simp: 0 AOT_model_denotes_rel.rep_eq Abs_rel_inverse fix_special_def
+    by (rule AOT_model_denotes_Abs_rel_fix_irregularI)
+       (auto simp: 0 AOT_model_denotes_rel.rep_eq Abs_rel_inverse fix_irregular_def
                    AOT_model_proposition_choice_simp AOT_model_irregular_false)
   ultimately have \<open>AOT_model_valid_in w (Rep_rel ?r x) =
                    AOT_model_valid_in w (Rep_rel ?r y)\<close> for w
     by blast
   thus \<open>AOT_model_term_equiv x y\<close>
     by (simp add: Abs_rel_inverse AOT_model_proposition_choice_simp
-                  fix_special_denoting[OF assms(1)] AOT_model_term_equiv_part_equivp
-                  fix_special_denoting[OF assms(2)] assms equivp_reflp)
+                  fix_irregular_denoting[OF assms(1)] AOT_model_term_equiv_part_equivp
+                  fix_irregular_denoting[OF assms(2)] assms equivp_reflp)
 qed
-
 
 text\<open>Denoting relations among terms of type @{typ \<kappa>} correspond to urrelations.\<close>
 
@@ -970,8 +979,10 @@ definition rel_to_urrel :: \<open><\<kappa>> \<Rightarrow> urrel\<close> where
   \<open>rel_to_urrel \<equiv> \<lambda> \<Pi> . Abs_urrel (\<lambda> u . Rep_rel \<Pi> (SOME x . \<kappa>\<upsilon> x = u))\<close>
 definition urrel_to_rel :: \<open>urrel \<Rightarrow> <\<kappa>>\<close> where
   \<open>urrel_to_rel \<equiv> \<lambda> \<phi> . Abs_rel (\<lambda> x . Rep_urrel \<phi> (\<kappa>\<upsilon> x))\<close>
+definition AOT_rel_equiv :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> <'a> \<Rightarrow> bool\<close> where
+  \<open>AOT_rel_equiv \<equiv> \<lambda> f g . AOT_model_denotes f \<and> AOT_model_denotes g \<and> f = g\<close>
 
-lemma urrel_quotient3: \<open>Quotient3 AOT_model_term_equiv_rel rel_to_urrel urrel_to_rel\<close>
+lemma urrel_quotient3: \<open>Quotient3 AOT_rel_equiv rel_to_urrel urrel_to_rel\<close>
 proof (rule Quotient3I)
   have \<open>(\<lambda>u. Rep_urrel a (\<kappa>\<upsilon> (SOME x. \<kappa>\<upsilon> x = u))) = (\<lambda>u. Rep_urrel a u)\<close> for a
     by (rule ext) (metis (mono_tags, lifting) \<kappa>\<upsilon>_surj surj_f_inv_f verit_sko_ex')
@@ -979,8 +990,8 @@ proof (rule Quotient3I)
     by (simp add: Abs_rel_inverse rel_to_urrel_def urrel_to_rel_def
                   Rep_urrel_inverse)
 next
-  show \<open>AOT_model_term_equiv_rel (urrel_to_rel a) (urrel_to_rel a)\<close> for a
-    unfolding AOT_model_term_equiv_rel_def urrel_to_rel_def
+  show \<open>AOT_rel_equiv (urrel_to_rel a) (urrel_to_rel a)\<close> for a
+    unfolding AOT_rel_equiv_def urrel_to_rel_def
     by transfer (simp add: AOT_model_regular_\<kappa>_def AOT_model_denotes_\<kappa>_def
                            AOT_model_term_equiv_\<kappa>_def urrel_null_false)
 next
@@ -1013,18 +1024,16 @@ next
       by (metis (mono_tags, lifting) A B AOT_model_term_equiv_\<kappa>_def someI_ex)
     hence \<open>r = s\<close> by auto
   } 
-  thus \<open>AOT_model_term_equiv_rel r s =
-        (AOT_model_term_equiv_rel r r \<and> AOT_model_term_equiv_rel s s \<and>
-         rel_to_urrel r = rel_to_urrel s)\<close> for r s
-    unfolding AOT_model_term_equiv_rel_def rel_to_urrel_def
+  thus \<open>AOT_rel_equiv r s = (AOT_rel_equiv r r \<and> AOT_rel_equiv s s \<and>
+                             rel_to_urrel r = rel_to_urrel s)\<close> for r s
+    unfolding AOT_rel_equiv_def rel_to_urrel_def
     by transfer auto
 qed
 
 lemma urrel_quotient:
-  \<open>Quotient AOT_model_term_equiv_rel rel_to_urrel urrel_to_rel
-            (\<lambda>x y. AOT_model_term_equiv_rel x x \<and> rel_to_urrel x = y)\<close>
+  \<open>Quotient AOT_rel_equiv rel_to_urrel urrel_to_rel
+            (\<lambda>x y. AOT_rel_equiv x x \<and> rel_to_urrel x = y)\<close>
   using Quotient3_to_Quotient[OF urrel_quotient3] by auto
-
 
 text\<open>Unary individual terms are always regular and equipped with encoding and
      concreteness. The specification of the type class anticipates the required
@@ -1032,7 +1041,7 @@ text\<open>Unary individual terms are always regular and equipped with encoding 
 class AOT_UnaryIndividualTerm =
   fixes AOT_model_enc :: \<open>'a \<Rightarrow> <'a::AOT_IndividualTerm> \<Rightarrow> bool\<close>
     and AOT_model_concrete :: \<open>w \<Rightarrow> 'a \<Rightarrow> bool\<close>
-  assumes AOT_model_no_special_nondenoting:
+  assumes AOT_model_unary_regular:
       \<open>AOT_model_regular x\<close> \<comment> \<open>All unary individual terms are regular.\<close>
       and AOT_model_enc_relid:
         \<open>AOT_model_denotes F \<Longrightarrow>
@@ -1074,7 +1083,7 @@ lemma AOT_meta_A_objects_\<kappa>:
             (\<forall>F. AOT_model_denotes F \<longrightarrow> AOT_model_enc x F = \<phi> F)\<close> for \<phi>
   apply (rule exI[where x=\<open>\<alpha>\<kappa> {f . \<phi> (urrel_to_rel f)}\<close>])
   apply (simp add: AOT_model_enc_\<kappa>_def AOT_model_denotes_\<kappa>_def)
-  by (metis (no_types, lifting) AOT_model_term_equiv_rel_def urrel_quotient
+  by (metis (no_types, lifting) AOT_rel_equiv_def urrel_quotient
                                 Quotient_rep_abs_fold_unmap)
 
 instance proof
@@ -1291,17 +1300,7 @@ lemma AOT_meta_prod_equivI:
     unfolding AOT_model_term_equiv_prod_def
     by (simp add: AOT_model_term_equiv_part_equivp equivp_reflp)+
 
-text\<open>The unit type and the type of propositions are trivial instances of terms.\<close>
-
-instantiation unit :: AOT_Term
-begin
-definition AOT_model_denotes_unit :: \<open>unit \<Rightarrow> bool\<close> where
-  \<open>AOT_model_denotes_unit \<equiv> \<lambda>_. True\<close>
-instance proof
-  show \<open>\<exists>x::unit. AOT_model_denotes x\<close>
-    by (simp add: AOT_model_denotes_unit_def)
-qed
-end
+text\<open>The type of propositions are trivial instances of terms.\<close>
 
 instantiation \<o> :: AOT_Term
 begin
@@ -1357,8 +1356,17 @@ specification(AOT_model_id_def)
                                       then \<tau> \<alpha> = \<sigma> \<alpha>
                                       else \<not>AOT_model_denotes (\<tau> \<alpha>)"])
      blast
+text\<open>To reduce definitions by identity without free variables to definitions
+     by identity with free variables acting on the unit type, we give the unit type
+     a trivial instantiation to @{class AOT_Term}.\<close>
+instantiation unit :: AOT_Term
+begin
+definition AOT_model_denotes_unit :: \<open>unit \<Rightarrow> bool\<close> where
+  \<open>AOT_model_denotes_unit \<equiv> \<lambda>_. True\<close>
+instance proof qed(simp add: AOT_model_denotes_unit_def)
+end
 
-text\<open>Models for modally-strict and modally-fragile axioms as necessary,
+text\<open>Modally-strict and modally-fragile axioms are as necessary,
      resp. actually valid propositions.\<close>
 definition AOT_model_axiom where
   \<open>AOT_model_axiom \<equiv> \<lambda> \<phi> . \<forall> v . AOT_model_valid_in v \<phi>\<close>

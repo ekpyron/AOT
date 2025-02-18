@@ -21,14 +21,11 @@ AOT_axiom "cqt:2[const_var]": \<open>\<alpha>\<down>\<close>
 AOT_axiom "cqt:2[lambda]":
   assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
   shows \<open>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
-  using assms
-  by (simp add: AOT_sem_denotes AOT_instance_of_cqt_2_def AOT_model_axiomI)
+  by (auto intro!: AOT_model_axiomI AOT_sem_cqt_2[OF assms])
 AOT_axiom "cqt:2[lambda0]":
   shows \<open>[\<lambda> \<phi>]\<down>\<close>
   by (auto intro!: AOT_model_axiomI
            simp: AOT_sem_lambda_denotes "existence:3"[unfolded AOT_model_equiv_def])
-AOT_axiom "cqt:2[concrete]": \<open>E!\<down>\<close>
-  by (auto intro!: AOT_model_axiomI simp: AOT_sem_concrete_denotes AOT_concrete_sem)
 
 AOT_axiom "cqt:3": \<open>\<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<psi>{\<alpha>}) \<rightarrow> (\<forall>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<psi>{\<alpha>})\<close>
   by (simp add: AOT_sem_forall AOT_sem_imp AOT_model_axiomI)
@@ -106,7 +103,7 @@ AOT_axiom "qml:4": \<open>\<diamond>\<exists>x (E!x & \<not>\<^bold>\<A>E!x)\<cl
   by (auto intro!: AOT_model_axiomI
              simp: AOT_sem_box AOT_sem_dia AOT_sem_imp AOT_sem_exists
                    AOT_sem_denotes AOT_sem_conj AOT_sem_not AOT_sem_act
-                   AOT_sem_exe AOT_concrete_sem)+
+                   AOT_sem_exe)+
 
 AOT_axiom "qml-act:1": \<open>\<^bold>\<A>\<phi> \<rightarrow> \<box>\<^bold>\<A>\<phi>\<close>
   by (rule AOT_model_axiomI)
@@ -115,12 +112,13 @@ AOT_axiom "qml-act:2": \<open>\<box>\<phi> \<equiv> \<^bold>\<A>\<box>\<phi>\<cl
   by (rule AOT_model_axiomI)
      (simp add: AOT_sem_act AOT_sem_box AOT_sem_equiv)
 
-AOT_axiom descriptions: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+AOT_axiom descriptions: \<open>y = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>x(\<^bold>\<A>\<phi>{x} \<equiv> x = y)\<close>
 proof (rule AOT_model_axiomI)
   AOT_modally_strict {
-    AOT_show \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
+    AOT_show \<open>y = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>x(\<^bold>\<A>\<phi>{x} \<equiv> x = y)\<close>
       by (induct; simp add: AOT_sem_equiv AOT_sem_forall AOT_sem_act AOT_sem_eq)
-         (metis (no_types, opaque_lifting) AOT_sem_denotes AOT_sem_desc_denotes AOT_sem_desc_prop)
+         (metis (no_types, opaque_lifting) AOT_sem_desc_denotes AOT_sem_desc_prop
+                                           AOT_sem_denotes)
   }
 qed
 
@@ -133,27 +131,15 @@ AOT_axiom "lambda-predicates:1[zero]": \<open>[\<lambda> p]\<down> \<rightarrow>
      (simp add: AOT_sem_denotes AOT_sem_eq AOT_sem_imp)
 AOT_axiom "lambda-predicates:2":
   \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> ([\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<phi>{x\<^sub>1...x\<^sub>n})\<close>
-      by induct (simp add: AOT_sem_denotes AOT_sem_equiv
-                           AOT_sem_imp AOT_sem_lambda_beta)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_equiv AOT_sem_imp AOT_sem_lambda_beta AOT_sem_vars_denote)
 AOT_axiom "lambda-predicates:3": \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
-      by induct (simp add: AOT_sem_denotes AOT_sem_lambda_eta AOT_sem_vars_denote)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_lambda_eta AOT_sem_vars_denote)
 AOT_axiom "lambda-predicates:3[zero]": \<open>[\<lambda> p] = p\<close>
-proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
-    AOT_show \<open>[\<lambda> p] = p\<close>
-      by induct (simp add: AOT_sem_eq AOT_sem_lambda0)
-  }
-qed
+  by (rule AOT_model_axiomI)
+     (simp add: AOT_sem_eq AOT_sem_lambda0 AOT_sem_vars_denote)
+
 AOT_axiom "safe-ext":
   \<open>([\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down> & \<box>\<forall>\<nu>\<^sub>1...\<forall>\<nu>\<^sub>n (\<phi>{\<nu>\<^sub>1...\<nu>\<^sub>n} \<equiv> \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n})) \<rightarrow>
    [\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n \<psi>{\<nu>\<^sub>1...\<nu>\<^sub>n}]\<down>\<close>
@@ -206,7 +192,7 @@ AOT_axiom encoding: \<open>x[F] \<rightarrow> \<box>x[F]\<close>
 AOT_axiom nocoder: \<open>O!x \<rightarrow> \<not>\<exists>F x[F]\<close>
   by (auto intro!: AOT_model_axiomI
            simp: AOT_sem_imp AOT_sem_not AOT_sem_exists AOT_sem_ordinary
-                 AOT_concrete_sem AOT_sem_dia
+                 AOT_sem_dia
                 AOT_sem_lambda_beta[OF AOT_sem_ordinary_def_denotes,
                                     OF AOT_sem_vars_denote])
      (metis AOT_sem_nocoder)
@@ -218,13 +204,13 @@ proof(rule AOT_model_axiomI)
       using AOT_sem_A_objects[of _ \<phi>]
       by (auto simp: AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_exists
                      AOT_sem_conj AOT_sem_not AOT_sem_dia AOT_sem_denotes
-                     AOT_sem_equiv AOT_concrete_sem) blast
+                     AOT_sem_equiv) blast
     AOT_thus \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
       unfolding AOT_sem_exists
       by (auto intro!: exI[where x=\<kappa>]
                simp: AOT_sem_lambda_beta[OF AOT_sem_abstract_def_denotes]
                      AOT_sem_box AOT_sem_dia AOT_sem_not AOT_sem_denotes
-                     AOT_var_of_term_inverse AOT_concrete_sem AOT_sem_conj
+                     AOT_var_of_term_inverse AOT_sem_conj
                      AOT_sem_equiv AOT_sem_forall AOT_sem_abstract)
   }
 qed
@@ -255,7 +241,8 @@ AOT_theorem universal_closure_act:
 AOT_theorem act_closure_act:
   assumes \<open>\<phi> \<in> \<Lambda>\<close>
   shows \<open>\<^bold>\<A>\<phi> \<in> \<Lambda>\<close>
-  using assms by (simp add: AOT_model_act_axiom_def AOT_sem_act)
+  using assms
+  by (simp add: AOT_model_act_axiom_def AOT_sem_act)
 
 (*<*)
 end

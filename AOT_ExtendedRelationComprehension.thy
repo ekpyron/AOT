@@ -4,8 +4,46 @@ begin
 
 section\<open>Extended Relation Comprehension\<close>
 
-text\<open>This theory depends choosing extended models.\<close>
+text\<open>This theory depends on choosing extended models.\<close>
 interpretation AOT_ExtendedModel by (standard; auto)
+
+text\<open>Auxiliary lemma: negations of denoting relations denote.\<close>
+AOT_theorem negation_denotes: \<open>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> [\<lambda>x \<not>\<phi>{x}]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
+  AOT_show \<open>[\<lambda>x \<not>\<phi>{x}]\<down>\<close>
+  proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<phi>{x}]x]\<down>\<close> by "cqt:2"
+  next
+    AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down>\<close>
+      using 0 "exist-nec"[THEN "\<rightarrow>E"] by blast
+    moreover AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<box>\<forall>x (\<not>[\<lambda>x \<phi>{x}]x \<equiv> \<not>\<phi>{x})\<close>
+      by(rule RM; safe intro!: GEN "\<equiv>I" "\<rightarrow>I" "\<beta>\<rightarrow>C"(2) "\<beta>\<leftarrow>C"(2) "cqt:2")
+    ultimately AOT_show \<open>\<box>\<forall>x (\<not>[\<lambda>x \<phi>{x}]x \<equiv> \<not>\<phi>{x})\<close>
+      using "\<rightarrow>E" by blast
+  qed
+qed
+
+text\<open>Auxiliary lemma: conjunctions of denoting relations denote.\<close>
+AOT_theorem conjunction_denotes: \<open>[\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down> \<rightarrow> [\<lambda>x \<phi>{x} & \<psi>{x}]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>\<close>
+  AOT_show \<open>[\<lambda>x \<phi>{x} & \<psi>{x}]\<down>\<close>
+  proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x [\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x]\<down>\<close> by "cqt:2"
+  next
+    AOT_have \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>)\<close>
+      using 0 "exist-nec"[THEN "\<rightarrow>E"] "&E"
+            "KBasic:3" "df-simplify:2" "intro-elim:3:b" by blast
+    moreover AOT_have
+      \<open>\<box>([\<lambda>x \<phi>{x}]\<down> & [\<lambda>x \<psi>{x}]\<down>) \<rightarrow> \<box>\<forall>x ([\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x \<equiv> \<phi>{x} & \<psi>{x})\<close>
+      by(rule RM; auto intro!: GEN "\<equiv>I" "\<rightarrow>I" "cqt:2" "&I"
+                        intro: "\<beta>\<leftarrow>C"
+                         dest: "&E" "\<beta>\<rightarrow>C")
+    ultimately AOT_show \<open>\<box>\<forall>x ([\<lambda>x \<phi>{x}]x & [\<lambda>x \<psi>{x}]x \<equiv> \<phi>{x} & \<psi>{x})\<close>
+      using "\<rightarrow>E" by blast
+  qed
+qed
 
 AOT_register_rigid_restricted_type
   Ordinary: \<open>O!\<kappa>\<close>
@@ -21,8 +59,8 @@ next
   }
 next
   AOT_modally_strict {
-    AOT_show \<open>\<box>(O!\<alpha> \<rightarrow> \<box>O!\<alpha>)\<close> for \<alpha>
-      by (simp add: RN "oa-facts:1")
+    AOT_show \<open>\<forall>\<alpha>(O!\<alpha> \<rightarrow> \<box>O!\<alpha>)\<close>
+      by (simp add: GEN "oa-facts:1")
   }
 qed
 
@@ -35,6 +73,7 @@ text\<open>In PLM this is defined in the Natural Numbers chapter,
 AOT_define eqE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<equiv>\<^sub>E\<close> 50)
   eqE: \<open>F \<equiv>\<^sub>E G \<equiv>\<^sub>d\<^sub>f F\<down> & G\<down> & \<forall>u ([F]u \<equiv> [G]u)\<close>
 
+text\<open>Derive existence claims about relations from the axioms.\<close>
 AOT_theorem denotes_all: \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]\<down>\<close>
     and denotes_all_neg: \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]\<down>\<close>
 proof -
@@ -209,7 +248,6 @@ proof -
           AOT_thus \<open>p & \<not>p\<close> for p
             using G_prop "&E" by (metis "raa-cor:3")
         qed
-    
         AOT_have \<open>\<exists>F([F]x & \<not>[F]y)\<close>
         proof(rule "raa-cor:1")
           AOT_assume \<open>\<not>\<exists>F([F]x & \<not>[F]y)\<close>
@@ -402,90 +440,64 @@ proof -
     by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
+text\<open>Reformulate the existence claims in terms of their negations.\<close>
+
 AOT_theorem denotes_ex: \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]\<down>\<close>
 proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-  AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x]\<down>\<close>
-    by "cqt:2"
+  AOT_show \<open>[\<lambda>x \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]\<down>\<close>
+    using denotes_all_neg[THEN negation_denotes[THEN "\<rightarrow>E"]].
 next
-  AOT_show \<open>\<box>\<forall>x (\<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
-  proof(safe intro!: RN "\<equiv>I" "\<rightarrow>I" GEN)
-    AOT_modally_strict {
-      fix x
-      AOT_assume \<open>\<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x\<close>
-      AOT_hence \<open>\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close>
-        by (safe intro!: "\<beta>\<leftarrow>C"(2) denotes_all_neg "cqt:2")
-      AOT_hence \<open>\<exists>G \<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close>
-        using "cqt-further:2"[THEN "\<rightarrow>E"] by blast
-      AOT_thus \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close>
-        apply (AOT_subst \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> for: G)
-        using "conventions:1" "rule-eq-df:1" apply presburger
-        by blast
-    }
-  next
-    AOT_modally_strict {
-      fix x
-      AOT_assume \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close>
-      AOT_hence \<open>\<exists>G \<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close>
-        apply (AOT_subst (reverse) \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close> for: G)
-        using "conventions:1" "rule-eq-df:1" apply presburger
-        by blast
-      AOT_hence \<open>\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close>
-        using "\<not>\<not>I" "cqt-further:3" "intro-elim:3:d" by fast
-      AOT_thus \<open>\<not>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])]x\<close>
-        by (safe intro!: "\<beta>\<rightarrow>C"(2))
-    }
-  qed
+  AOT_show \<open>\<box>\<forall>x (\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
+    by (AOT_subst  \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> \<not>x[G])\<close> for: G x)
+       (auto simp: "conventions:1" "rule-eq-df:1"
+             intro: "oth-class-taut:4:b"[THEN "\<equiv>E"(2)]
+                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"]
+             intro!: RN GEN)
 qed
 
-AOT_theorem denotes_ex_neg: \<open>[\<lambda>x \<not>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]\<down>\<close>
+AOT_theorem denotes_ex_neg: \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G])]\<down>\<close>
 proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-  AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x]\<down>\<close>
-    by "cqt:2"
+  AOT_show \<open>[\<lambda>x \<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]\<down>\<close>
+    using denotes_all[THEN negation_denotes[THEN "\<rightarrow>E"]].
 next
-  AOT_show \<open>\<box>\<forall>x (\<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x \<equiv> \<not>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G]))\<close>
-    by (AOT_subst \<open>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])]x\<close> \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close> for: x)
-       (safe intro!: GEN RN "beta-C-meta"[THEN "\<rightarrow>E"] denotes_ex "\<equiv>I" "\<rightarrow>I")
+  AOT_show \<open>\<box>\<forall>x (\<not>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G]) \<equiv> \<exists>G (\<box>G \<equiv>\<^sub>E F & \<not>x[G]))\<close>
+    by (AOT_subst (reverse) \<open>\<box>G \<equiv>\<^sub>E F & \<not>x[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])\<close> for: G x)
+       (auto simp: "oth-class-taut:1:b"
+             intro: "oth-class-taut:4:b"[THEN "\<equiv>E"(2)]
+                    "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:b"]
+             intro!: RN GEN)
 qed
 
+text\<open>Derive comprehension principles.\<close>
 
 AOT_theorem Comprehension_1:
-  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<exists>F (\<phi>{F} & x[F])]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume assm: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
   AOT_modally_strict {
     fix x y
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
-    AOT_assume x_prop: \<open>\<forall>F (\<phi>{F} \<rightarrow> x[F])\<close>
-    AOT_have \<open>\<forall>F (\<phi>{F} \<rightarrow> y[F])\<close>
-    proof(safe intro!: GEN "\<rightarrow>I")
-      fix F
-      AOT_assume \<phi>F: \<open>\<phi>{F}\<close>
-      AOT_hence \<open>x[F]\<close> using x_prop "\<forall>E"(2) "\<rightarrow>E" by blast
-      {
-        fix G
-        {
-          AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
-          AOT_hence \<open>\<phi>{G}\<close>
-            using 0[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] \<phi>F by blast
-          AOT_hence \<open>x[G]\<close> using x_prop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] by blast
-        }
-        AOT_hence \<open>\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G]\<close> using "\<rightarrow>I" by blast
-      }
-      AOT_hence \<open>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])\<close> by (rule GEN)
-      AOT_hence \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]x\<close>
-        by (safe intro!: "\<beta>\<leftarrow>C" denotes_all "cqt:2")
-      AOT_hence \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]y\<close>
-        using indist[THEN "\<forall>E"(1), OF denotes_all, THEN "\<equiv>E"(1)] by blast
-      AOT_hence \<open>\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> y[G])\<close>
-        using "\<beta>\<rightarrow>C" by blast
-      AOT_hence \<open>\<box>F \<equiv>\<^sub>E F \<rightarrow> y[F]\<close>
-        using "\<forall>E"(2) by blast
-      moreover AOT_have \<open>\<box>F \<equiv>\<^sub>E F\<close>
-        by(safe intro!: RN "\<equiv>I" "\<rightarrow>I" GEN "eqE"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2")
-      ultimately AOT_show \<open>y[F]\<close>
-        using "\<rightarrow>E" by blast
-    qed
+    AOT_assume x_prop: \<open>\<exists>F (\<phi>{F} & x[F])\<close>
+    then AOT_obtain F where F_prop: \<open>\<phi>{F} & x[F]\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<box>F \<equiv>\<^sub>E F & x[F]\<close>
+      by (auto intro!: RN eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" GEN "\<equiv>I" "\<rightarrow>I" dest: "&E")
+    AOT_hence \<open>\<exists>G(\<box>G \<equiv>\<^sub>E F & x[G])\<close>
+      by (rule "\<exists>I")
+    AOT_hence \<open>[\<lambda>x \<exists>G(\<box>G \<equiv>\<^sub>E F & x[G])]x\<close>
+      by (safe intro!: "\<beta>\<leftarrow>C" denotes_ex "cqt:2")
+    AOT_hence \<open>[\<lambda>x \<exists>G(\<box>G \<equiv>\<^sub>E F & x[G])]y\<close>
+      using indist[THEN "\<forall>E"(1), OF denotes_ex, THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<exists>G(\<box>G \<equiv>\<^sub>E F & y[G])\<close>
+      using "\<beta>\<rightarrow>C" by blast
+    then AOT_obtain G where \<open>\<box>G \<equiv>\<^sub>E F & y[G]\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<phi>{G} & y[G]\<close>
+      using 0[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(1)]
+            F_prop[THEN "&E"(1)] "&E" "&I" by blast
+    AOT_hence \<open>\<exists>F (\<phi>{F} & y[F])\<close>
+      by (rule "\<exists>I")
   } note 1 = this
   AOT_modally_strict {
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
@@ -495,58 +507,55 @@ proof(rule "\<rightarrow>I")
         AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
         moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
           by (metis calculation "cqt-basic:11" "\<equiv>E"(1))
-        ultimately AOT_have \<open>\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])\<close>
+        ultimately AOT_have \<open>\<exists>F (\<phi>{F} & x[F]) \<equiv> \<exists>F (\<phi>{F} & y[F])\<close>
           using 0 1[OF 0] "\<equiv>I" "\<rightarrow>I" by simp
       }
-      AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F]))\<close>
+      AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & x[F]) \<equiv> \<exists>F (\<phi>{F} & y[F]))\<close>
         using "\<rightarrow>I" by blast
     }
-    AOT_hence \<open>\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])))\<close> for x
-      by (rule GEN)
-    AOT_hence \<open>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])))\<close>
-      by (rule GEN)
+    AOT_hence \<open>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & x[F]) \<equiv>  \<exists>F (\<phi>{F} & y[F])))\<close>
+      by (auto intro!: GEN)
   } note 1 = this
   AOT_hence \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow>
-                \<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])))\<close>
+                \<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & x[F]) \<equiv> \<exists>F (\<phi>{F} & y[F])))\<close>
     by (rule "\<rightarrow>I")
   AOT_hence \<open>\<box>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow>
-             \<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])))\<close>
+             \<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & x[F]) \<equiv> \<exists>F (\<phi>{F} & y[F])))\<close>
     by (rule RM)
-  AOT_hence \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> y[F])))\<close>
+  AOT_hence \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & x[F]) \<equiv> \<exists>F (\<phi>{F} & y[F])))\<close>
     using "\<rightarrow>E" assm by blast
-  AOT_thus \<open>[\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+  AOT_thus \<open>[\<lambda>x \<exists>F (\<phi>{F} & x[F])]\<down>\<close>
     by (safe intro!: "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
 
 AOT_theorem Comprehension_2:
-  \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume assm: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
   AOT_modally_strict {
     fix x y
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
-    AOT_assume x_prop: \<open>\<forall>F (x[F] \<rightarrow> \<phi>{F})\<close>
-    AOT_have \<open>\<forall>F (y[F] \<rightarrow> \<phi>{F})\<close>
-    proof(safe intro!: GEN "\<rightarrow>I")
-      fix F
-      AOT_assume \<open>y[F]\<close>
-      AOT_hence \<open>\<box>F \<equiv>\<^sub>E F & y[F]\<close>
-        by (safe intro!: RN "&I" GEN "\<rightarrow>I" "\<equiv>I" "eqE"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "cqt:2")
-      AOT_hence \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & y[G])\<close> by (rule "\<exists>I")
-      AOT_hence \<open>[\<lambda>y \<exists>G (\<box>G \<equiv>\<^sub>E F & y[G])]y\<close>
-        by (safe intro!: "\<beta>\<leftarrow>C" denotes_ex "cqt:2")
-      AOT_hence \<open>[\<lambda>y \<exists>G (\<box>G \<equiv>\<^sub>E F & y[G])]x\<close>
-        using indist[THEN "\<forall>E"(1), OF denotes_ex, THEN "\<equiv>E"(2)] by blast
-      AOT_hence \<open>\<exists>G (\<box>G \<equiv>\<^sub>E F & x[G])\<close>
-        using "\<beta>\<rightarrow>C" by blast
-      then AOT_obtain G where \<open>\<box>G \<equiv>\<^sub>E F & x[G]\<close>
-        using "\<exists>E"[rotated] by blast
-      moreover AOT_have \<open>\<phi>{G}\<close>
-        using calculation x_prop[THEN "\<forall>E"(2), THEN "\<rightarrow>E"] "&E" by blast
-      ultimately AOT_show \<open>\<phi>{F}\<close>
-        using 0[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] "&E" by blast
-    qed
+    AOT_assume x_prop: \<open>\<exists>F (\<phi>{F} & \<not>x[F])\<close>
+    then AOT_obtain F where F_prop: \<open>\<phi>{F} & \<not>x[F]\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<box>F \<equiv>\<^sub>E F & \<not>x[F]\<close>
+      by (auto intro!: RN eqE[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" GEN "\<equiv>I" "\<rightarrow>I" dest: "&E")
+    AOT_hence \<open>\<exists>G(\<box>G \<equiv>\<^sub>E F & \<not>x[G])\<close>
+      by (rule "\<exists>I")
+    AOT_hence \<open>[\<lambda>x \<exists>G(\<box>G \<equiv>\<^sub>E F & \<not>x[G])]x\<close>
+      by (safe intro!: "\<beta>\<leftarrow>C" denotes_ex_neg "cqt:2")
+    AOT_hence \<open>[\<lambda>x \<exists>G(\<box>G \<equiv>\<^sub>E F & \<not>x[G])]y\<close>
+      using indist[THEN "\<forall>E"(1), OF denotes_ex_neg, THEN "\<equiv>E"(1)] by blast
+    AOT_hence \<open>\<exists>G(\<box>G \<equiv>\<^sub>E F & \<not>y[G])\<close>
+      using "\<beta>\<rightarrow>C" by blast
+    then AOT_obtain G where \<open>\<box>G \<equiv>\<^sub>E F & \<not>y[G]\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_hence \<open>\<phi>{G} & \<not>y[G]\<close>
+      using 0[THEN "\<forall>E"(2), THEN "\<forall>E"(2), THEN "\<rightarrow>E", THEN "\<equiv>E"(1)]
+            F_prop[THEN "&E"(1)] "&E" "&I" by blast
+    AOT_hence \<open>\<exists>F (\<phi>{F} & \<not>y[F])\<close>
+      by (rule "\<exists>I")
   } note 1 = this
   AOT_modally_strict {
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
@@ -556,63 +565,91 @@ proof(rule "\<rightarrow>I")
         AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
         moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
           by (metis calculation "cqt-basic:11" "\<equiv>E"(1))
-        ultimately AOT_have \<open>\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})\<close>
+        ultimately AOT_have \<open>\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<exists>F (\<phi>{F} & \<not>y[F])\<close>
           using 0 1[OF 0] "\<equiv>I" "\<rightarrow>I" by simp
       }
-      AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F}))\<close>
+      AOT_hence \<open>\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<exists>F (\<phi>{F} & \<not>y[F]))\<close>
         using "\<rightarrow>I" by blast
     }
-    AOT_hence \<open>\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})))\<close> for x
-      by (rule GEN)
-    AOT_hence \<open>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})))\<close>
-      by (rule GEN)
+    AOT_hence \<open>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv>  \<exists>F (\<phi>{F} & \<not>y[F])))\<close>
+      by (auto intro!: GEN)
   } note 1 = this
   AOT_hence \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow>
-                \<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})))\<close>
+                \<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<exists>F (\<phi>{F} & \<not>y[F])))\<close>
     by (rule "\<rightarrow>I")
   AOT_hence \<open>\<box>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow>
-             \<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})))\<close>
+             \<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<exists>F (\<phi>{F} & \<not>y[F])))\<close>
     by (rule RM)
-  AOT_hence \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<forall>F (x[F] \<rightarrow> \<phi>{F}) \<equiv> \<forall>F (y[F] \<rightarrow> \<phi>{F})))\<close>
+  AOT_hence \<open>\<box>\<forall>x\<forall>y(\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> (\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<exists>F (\<phi>{F} & \<not>y[F])))\<close>
     using "\<rightarrow>E" assm by blast
-  AOT_thus \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+  AOT_thus \<open>[\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]\<down>\<close>
     by (safe intro!: "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 qed
+
+text\<open>Derived variants of the comprehension principles above.\<close>
+
+AOT_theorem Comprehension_1':
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_hence 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}))\<close>
+    by (AOT_subst (reverse) \<open>\<not>\<phi>{F} \<equiv> \<not>\<phi>{G}\<close> \<open>\<phi>{F} \<equiv> \<phi>{G}\<close> for: F G)
+       (auto simp: "oth-class-taut:4:b")
+  AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>\<exists>F(\<not>\<phi>{F} & x[F])]\<down>\<close>
+      using Comprehension_1[THEN "\<rightarrow>E", OF 0, THEN negation_denotes[THEN "\<rightarrow>E"]].
+  next
+    AOT_show \<open>\<box>\<forall>x (\<not>\<exists>F (\<not>\<phi>{F} & x[F]) \<equiv> \<forall>F (x[F] \<rightarrow> \<phi>{F}))\<close>
+      by (AOT_subst (reverse) \<open>\<not>\<phi>{F} & x[F]\<close> \<open>\<not>(x[F] \<rightarrow> \<phi>{F})\<close> for: F x)
+         (auto simp: "oth-class-taut:1:b"[THEN "intro-elim:3:e",
+                                          OF "oth-class-taut:2:a"]
+             intro: "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:a",
+                                     symmetric]
+             intro!: RN GEN)
+  qed
+qed
+
+AOT_theorem Comprehension_2':
+  shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_show \<open>[\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<not>\<exists>F(\<phi>{F} & \<not>x[F])]\<down>\<close>
+      using Comprehension_2[THEN "\<rightarrow>E", OF 0, THEN negation_denotes[THEN "\<rightarrow>E"]].
+  next
+    AOT_show \<open>\<box>\<forall>x (\<not>\<exists>F (\<phi>{F} & \<not>x[F]) \<equiv> \<forall>F (\<phi>{F} \<rightarrow> x[F]))\<close>
+      by (AOT_subst (reverse) \<open>\<phi>{F} & \<not>x[F]\<close> \<open>\<not>(\<phi>{F} \<rightarrow> x[F])\<close> for: F x)
+         (auto simp: "oth-class-taut:1:b"
+             intro: "intro-elim:3:f"[OF "cqt-further:3", OF "oth-class-taut:3:a",
+                                     symmetric]
+             intro!: RN GEN)
+  qed
+qed
+
+text\<open>Derive a combined comprehension principles.\<close>
 
 AOT_theorem Comprehension_3:
   \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
 proof(rule "\<rightarrow>I")
-  AOT_assume \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-  AOT_hence \<open>\<box>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-    using "S5Basic:5"[THEN "\<rightarrow>E"] by blast
-  moreover AOT_have \<open>\<box>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> \<box>\<forall>x
-                     ([\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]x & [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]x \<equiv>
-                      \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-  proof(rule RM; rule "\<rightarrow>I")
-    AOT_modally_strict {
-      AOT_assume \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-      AOT_hence \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]\<down>\<close> and \<open>[\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
-        using Comprehension_1[THEN "\<rightarrow>E"] Comprehension_2[THEN "\<rightarrow>E"] by auto
-      AOT_thus \<open>\<forall>x ([\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]x & [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]x \<equiv>
-                    \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-        by(auto intro!: GEN "\<equiv>I" "\<rightarrow>I" "&I" "\<beta>\<leftarrow>C" "cqt:2[const_var]"[axiom_inst]
-                dest!: "\<beta>\<rightarrow>C" dest: "&E" "\<forall>E"(2) "\<rightarrow>E" "\<equiv>E")
-    }
+  AOT_assume 0: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
+  AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
+  proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
+    AOT_show \<open>[\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F}) & \<forall>F (\<phi>{F} \<rightarrow> x[F])]\<down>\<close>
+      by (safe intro!: conjunction_denotes[THEN "\<rightarrow>E", OF "&I"]
+                       Comprehension_1'[THEN "\<rightarrow>E"]
+                       Comprehension_2'[THEN "\<rightarrow>E"] 0)
+  next
+    AOT_show \<open>\<box>\<forall>x (\<forall>F (x[F] \<rightarrow> \<phi>{F}) & \<forall>F (\<phi>{F} \<rightarrow> x[F]) \<equiv> \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
+      by (auto intro!: RN GEN "\<equiv>I" "\<rightarrow>I" "&I" dest: "&E" "\<forall>E"(2) "\<rightarrow>E" "\<equiv>E"(1,2))
   qed
-  ultimately AOT_have \<open>\<box>\<forall>x ([\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]x & [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]x \<equiv>
-                            \<forall>F (x[F] \<equiv> \<phi>{F}))\<close>
-    using "\<rightarrow>E" by blast
-  AOT_thus \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<phi>{F})]\<down>\<close>
-  proof (safe_step intro!: "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
-    AOT_show \<open>[\<lambda>x [\<lambda>x \<forall>F (x[F] \<rightarrow> \<phi>{F})]x & [\<lambda>x \<forall>F (\<phi>{F} \<rightarrow> x[F])]x]\<down>\<close>
-      by "cqt:2"
-  qed(auto)
 qed
 
 notepad
 begin
-text\<open>Verify that the axioms are equivalent to @{text \<open>denotes_all\<close>}
-     and @{text \<open>denotes_ex\<close>}.\<close>
+text\<open>Verify that the original axioms are equivalent to @{thm denotes_ex}
+     and @{thm denotes_ex_neg}.\<close>
 AOT_modally_strict {
   fix x y H
   AOT_have \<open>A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
@@ -631,14 +668,23 @@ AOT_modally_strict {
         by (AOT_subst \<open>\<box>\<forall>u ([G]u \<equiv> [H]u)\<close> \<open>\<forall>u \<box>([G]u \<equiv> [H]u)\<close> for: G) auto
       AOT_hence \<open>\<forall>G (\<box>G \<equiv>\<^sub>E H \<rightarrow> x[G])\<close>
         by (AOT_subst \<open>G \<equiv>\<^sub>E H\<close> \<open>\<forall>u ([G]u \<equiv> [H]u)\<close> for: G)
-            (safe intro!: "eqE"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I"] "cqt:2") 
-      AOT_hence \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E H \<rightarrow> x[G])]x\<close>
-        by (safe intro!: "\<beta>\<leftarrow>C" denotes_all "cqt:2")
-      AOT_hence \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E H \<rightarrow> x[G])]y\<close>
-        using indist[THEN "\<forall>E"(1), OF denotes_all,
-                     THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"], THEN "\<equiv>E"(1)] by blast
-      AOT_hence \<open>\<forall>G (\<box>G \<equiv>\<^sub>E H \<rightarrow> y[G])\<close>
-        using "\<beta>\<rightarrow>C" by blast
+            (safe intro!: "eqE"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I"] "cqt:2")
+      AOT_hence \<open>\<not>\<exists>G (\<box>G \<equiv>\<^sub>E H & \<not>x[G])\<close>
+        by (AOT_subst (reverse) \<open>(\<box>G \<equiv>\<^sub>E H & \<not>x[G])\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E H \<rightarrow> x[G])\<close> for: G)
+           (auto simp: "oth-class-taut:1:b" "cqt-further:3"[THEN "\<equiv>E"(1)])
+      AOT_hence \<open>\<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E H & \<not>x[G])]x\<close>
+        by (auto intro: "\<beta>\<rightarrow>C")
+      AOT_hence \<open>\<not>[\<lambda>x \<exists>G (\<box>G \<equiv>\<^sub>E H & \<not>x[G])]y\<close>
+        using indist[THEN "\<forall>E"(1), OF denotes_ex_neg,
+                     THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"],
+                     THEN "\<equiv>E"(3)] by blast
+      AOT_hence \<open>\<not>\<exists>G (\<box>G \<equiv>\<^sub>E H & \<not>y[G])\<close>
+        by (safe intro!: "\<beta>\<leftarrow>C" denotes_ex_neg "cqt:2")
+      AOT_hence \<open>\<forall>G \<not>(\<box>G \<equiv>\<^sub>E H & \<not>y[G])\<close>
+        using "cqt-further:4"[THEN "\<rightarrow>E"] by blast
+      AOT_hence \<open>\<forall>G(\<box>G \<equiv>\<^sub>E H \<rightarrow> y[G])\<close>
+        by (AOT_subst \<open>\<box>G \<equiv>\<^sub>E H \<rightarrow> y[G]\<close> \<open>\<not>(\<box>G \<equiv>\<^sub>E H & \<not>y[G])\<close> for: G)
+           (auto simp: "oth-class-taut:1:a")
       AOT_hence \<open>\<forall>G (\<box>\<forall>u([G]u \<equiv> [H]u) \<rightarrow> y[G])\<close>
         by (AOT_subst (reverse) \<open>\<forall>u ([G]u \<equiv> [H]u)\<close> \<open>G \<equiv>\<^sub>E H\<close> for: G)
            (safe intro!: "eqE"[THEN "\<equiv>Df", THEN "\<equiv>S"(1), OF "&I"] "cqt:2") 
@@ -705,5 +751,4 @@ AOT_modally_strict {
   qed
 }
 end
-
 end

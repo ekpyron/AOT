@@ -40,6 +40,143 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
+(**** RULIFICATION START *****)
+structure AOT_RulifyInsts = Theory_Data (
+  type T = thm Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.merge (K true)
+);
+structure AOT_RulifyElims = Theory_Data (
+  type T = (thm list) Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.merge (K true)
+);
+structure AOT_VarifyRules = Theory_Data (
+  type T = (Context.generic->term->thm->thm option) Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.join (K (fn (r,r2) => 
+(fn ctxt => fn trm => fn thm => case r ctxt trm thm of SOME x => SOME x | _ => r2 ctxt trm thm
+))
+));
+fun AOT_add_varify_rule (key,rule) =
+  Local_Theory.background_theory (fn thy => let
+val oldrule = Symtab.lookup (AOT_VarifyRules.get thy) key
+in
+AOT_VarifyRules.map (Symtab.update (key,
+fn ctxt => fn term => fn thm => (
+case rule ctxt term thm of SOME r => SOME r
+| _ => ((case oldrule of SOME r => r ctxt term thm | _ => NONE))
+)
+))
+end thy)
+
+fun AOT_rulify ctxt thm = 
+let
+
+fun getUnvarifyRule ctxt thm (Const (name,_) $ args) = (
+  case Symtab.lookup (AOT_VarifyRules.get (Context.theory_of ctxt)) name of
+    SOME rule => (case rule ctxt args thm of SOME thm' => (
+SOME thm'
+) | _ => getUnvarifyRule ctxt thm args)
+  | NONE => getUnvarifyRule ctxt thm args
+)
+  | getUnvarifyRule ctxt thm (A $ B) = (
+      case getUnvarifyRule ctxt thm A of SOME thm => SOME thm | NONE => getUnvarifyRule ctxt thm B
+    )
+  | getUnvarifyRule ctxt thm (Abs (_,_,T)) = getUnvarifyRule ctxt thm T
+  | getUnvarifyRule _ _ _ = NONE
+
+fun getUnvarifyRules ctxt thm = (
+ case getUnvarifyRule ctxt thm (Thm.concl_of thm) of SOME thm' => thm'::getUnvarifyRules ctxt (thm RS thm')
+                               | NONE => []
+)
+
+fun outermost_proper_const trm = case Term.strip_comb trm of
+  (Const (\<^const_name>\<open>Trueprop\<close>, _), [trm]) => outermost_proper_const trm
+ | (Const (\<^const_name>\<open>AOT_model_valid_in\<close>, _), [_,trm]) => outermost_proper_const trm
+ | (Const c, _) => SOME (Const c)
+ | _ => NONE
+
+val (thm,inst_thms) =
+  case Option.mapPartial (fn Const (trm,_) => Symtab.lookup (AOT_RulifyInsts.get (Context.theory_of ctxt)) trm | _ => NONE)
+                         (outermost_proper_const (Thm.concl_of thm))
+        of SOME instThm => (thm RS instThm,[instThm]) | _ => (thm,[])
+
+val unvarifyRules = getUnvarifyRules ctxt thm
+val unvarifiedThm = fold (fn rule => fn thm => thm RS rule) unvarifyRules thm
+
+fun getRules term = case (Symtab.lookup (AOT_RulifyElims.get (Context.theory_of ctxt)) term) of SOME list => list | _ => []
+
+fun getSimplifications thm = 
+  case outermost_proper_const (Thm.concl_of thm) of
+     SOME (Const (const_name, _)) =>
+      (case getRules const_name of [] => [] |
+        rules => let
+          val simps = map (fn rule => let
+              val newthm = thm RS rule
+              val simps = map (fn thms => rule::thms) ((getSimplifications newthm): thm list list)
+            in case simps of [] => [[rule]] | _ => simps end) rules
+in flat simps end)
+    | SOME _ => []
+    | NONE => []
+
+val simps = getSimplifications unvarifiedThm
+val simps = map (fn thms => inst_thms@unvarifyRules@thms) simps
+in
+simps
+end
+
+
+structure AOT_RulifyIntros = Theory_Data (
+  type T = thm Net.net
+  val empty = Net.empty
+  val merge = Net.merge (K true)
+);
+
+
+fun AOT_applyIntros ctxt thm = let
+val net = AOT_RulifyIntros.get (Context.theory_of ctxt)
+val _ = @{print} ("Prems:", cprems_of thm)
+val thms = map (fn cprem => let
+    val prem = Thm.term_of cprem
+    val thms = Net.unify_term net prem
+    val thm = case thms of [] => NONE | thm::_ => (let
+      val name = ((Binding.name_of o Binding.qualified_name o Thm.get_name_hint) thm)
+      val _ = @{print} name
+      val match = try Thm.first_order_match (Thm.cconcl_of thm, cprem)
+      val _ = @{print} match
+      val thm = Option.map (fn match => Drule.instantiate_normalize match thm) match
+      in Option.map (fn thm => (name,thm)) thm end)
+  in thm end) (cprems_of thm)
+val names = List.mapPartial (Option.map fst) thms
+val thms = map (Option.map snd) thms
+val _ = @{print} ("NAMES:", names, "THMS:", thms)
+
+fun resolve_prems thm thms = let
+    val c = fold (fn SOME _ => (fn n => n + 1)| _ => I) thms 0
+    val (_,_,is) = fold (fn SOME _ => (fn (n,m,is) => (n+1,m,is@[n])) | _ => (fn (n,m,is) => (n,m+1,is@[m+c]))) thms (0,0,[])
+
+    val y = List.tabulate (List.length is, fn n => (List.nth (is,n),n))
+    fun quicksort [] = []
+      | quicksort ((k,x)::xs) =
+        let 
+            val (left, right) = List.partition (fn (y,_) => y<k) xs
+        in
+            quicksort left @ [(k,x)] @ quicksort right
+        end
+    val is = map snd (quicksort y)
+
+    val thm = Drule.rearrange_prems is thm
+    val _ = @{print} (thm)
+    val thms = List.mapPartial I thms
+    val thm = thm OF thms
+  in thm end
+val thm = resolve_prems thm thms
+in
+(names,thm)
+end
+(**** RULIFICATION END *****)
+
 fun AOT_item_by_name name = Option.map fst (List.find (fn (_,n) => n = name) AOT_items)
 fun AOT_name_of_item id = Option.map snd (List.find (fn (i,_) => id = i) AOT_items)
 
@@ -143,9 +280,40 @@ structure AOT_Definitions = Named_Thms(
 structure AOT_ProofData = Proof_Data
 (type T = term option
  fun init _ = NONE)
-fun AOT_note_theorems thms = Local_Theory.background_theory
-  (Context.theory_map (fold AOT_Theorems.add_thm
-    (map Drule.export_without_context (flat thms))))
+fun AOT_note_theorems (name:Attrib.binding) thms = (
+Local_Theory.background_theory
+  ((Context.theory_map (fn thy => fold AOT_Theorems.add_thm
+    (map Drule.export_without_context (flat thms)) thy)
+) #> (fn thy => let
+val thms = flat thms
+
+val idxs = List.tabulate (List.length thms, I)
+val thy = fold (fn n => fn thy => 
+let
+  val thm = List.nth (thms,n)
+  val name = fst name
+  val name = (case thms of [_] => name | _ => Binding.qualify_name true name (Int.toString n))
+  val simps = AOT_rulify (Context.Theory thy) thm
+  val thms = map (fn simps => (fold (fn rule => fn thm => thm RS rule) simps thm, map (fn thm => (Binding.name_of o Binding.qualified_name o Thm.get_name_hint) thm) simps)) simps
+  (* TODO *)
+(*  val thms = map (fn (thm,names) => let
+            val (moreNames,thm) = AOT_applyIntros (Context.Theory thy) thm
+            in (thm,names@moreNames) end) thms*)
+  val thms = map (apfst (Object_Logic.rulify (Proof_Context.init_global thy))) thms
+  val thy = fold (fn (thm,names) => fn thy =>
+        let
+          val thm = Drule.export_without_context thm
+          val name = fold (fn suffix => fn name => Binding.qualify_name true name suffix) names name
+          val (thms,thy) = Global_Theory.add_thms [((name,thm),[])] thy
+          val thy = Context.theory_map (fn thy => fold AOT_Theorems.add_thm thms thy) thy
+        in thy end) thms thy
+in
+thy
+end
+) idxs thy
+in thy end)     
+)
+)
 fun AOT_note_definitions thms = Local_Theory.background_theory
   (Context.theory_map (fold AOT_Definitions.add_thm
     (map Drule.export_without_context (flat thms))))
@@ -236,7 +404,7 @@ let
   val oldctxt = ctxt
   val (thm, ctxt) = Local_Theory.background_theory_result (fn lthy => let
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -307,7 +475,7 @@ let
        in thm RS spec' end
      fun remove_alls frees (thy, thm) = (thy, fold (inst_all thy) frees thm)
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -327,7 +495,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     (* Add a generic constant and the requested syntax to a temporary context. *)
     val thy = Proof_Context.theory_of ctxt
     val thy' = Sign.add_consts [(bnd, @{typ 'a}, Mixfix.NoSyn)] thy
-    val thy' = Sign_add_syntax Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
+    val thy' = Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
     (* Try to parse the definition using the temporary context. *)
     val trm = AOT_check_prop @{nonterminal AOT_prop}
       (Proof_Context.init_global thy') defprop
@@ -346,7 +514,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     val _ = AOT_print_item_number (Binding.name_of thmbind)
   in
     ctxt |> Local_Theory.note ((thmbind, thmattrs), [thm]) |> snd |>
-    AOT_note_theorems [[thm]] |> AOT_note_definitions [[thm]] |>
+    AOT_note_theorems (thmbind,thmattrs) [[thm]] |> AOT_note_definitions [[thm]] |>
     AOT_note_defined_constant
       (Proof_Context.read_const {proper=true,strict=true} ctxt (Binding.name_of bnd))
   end
@@ -559,8 +727,9 @@ fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding
     val _ = AOT_print_item_number (Binding.name_of (fst thmBinding))
     val _ = fold (fn ((bnd,_),_) => fn _ =>
       AOT_print_item_number (Binding.name_of bnd)) stmts ()
+    val name = fold (fn (bnd,_) => fn b => if Binding.is_empty (fst b) then bnd else b) stmts thmBinding
   in
-    Specification.theorem long "AOT_theorem" NONE afterQed thmBinding []
+    Specification.theorem long "AOT_theorem" NONE (afterQed name) thmBinding []
       assumptions (Element.Shows stmts) int ctxt
   end
 
@@ -569,7 +738,7 @@ fun AOT_theorem spec note axiom modallyStrict descr =
     ((long_statement || short_statement) >>
       (fn (long, binding, includes, elems, concl) =>
         (AOT_theorem_cmd axiom modallyStrict long
-          (if note then AOT_note_theorems else K I) binding includes elems concl)));
+          (if note then AOT_note_theorems else K (K I)) binding includes elems concl)));
 
 val _ = AOT_theorem \<^command_keyword>\<open>AOT_lemma\<close> false false true
   "AOT modally-strict lemma";
@@ -664,22 +833,6 @@ val _ =
   in Obtain.obtain a b fixes (map snd assumes) shows int state end))));
 
 end
-
-
-val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>thm_name\<close> "print theorems"
-    (Parse.thms1 >> (fn thms => Toplevel.keep (fn state => let
-val ctxt = Toplevel.context_of state
-val thms = Attrib.eval_thms ctxt thms
-val trms = map Thm.full_prop_of thms
-val result = maps (fn trm => let
-val result = Find_Theorems.find_theorems ctxt NONE NONE true
-  [(true, Find_Theorems.Pattern trm)] |> snd
-val _ = (map (Pretty.writeln o Find_Theorems.pretty_thm ctxt) result)
-in result end) trms
-val strs = map (Long_Name.base_name o Facts.ref_name o fst) result
-val _ = Pretty.writeln (Pretty.enum "" "" "" (map Pretty.str strs))
-in () end)));
 
 structure AOT_no_atp = Named_Thms(
   val name = @{binding "AOT_no_atp"}

@@ -2,11 +2,6 @@ theory AOT_Definitions
   imports AOT_semantics
 begin
 
-(* interpretation AOT_meta_syntax. *)
-(* interpretation AOT_no_meta_syntax. *)
-(* unbundle AOT_no_syntax *)
-unbundle AOT_syntax
-
 section\<open>Definitions of AOT\<close>
 
 AOT_theorem "conventions:1": \<open>\<phi> & \<psi> \<equiv>\<^sub>d\<^sub>f \<not>(\<phi> \<rightarrow> \<not>\<psi>)\<close>
@@ -27,6 +22,7 @@ declare "conventions:1"[AOT_defs] "conventions:2"[AOT_defs]
 notepad
 begin
   fix \<phi> \<psi> \<chi>
+  text\<open>\linelabel{precedence}\<close>
   have "conventions3[1]": \<open>\<guillemotleft>\<phi> \<rightarrow> \<psi> \<equiv> \<not>\<psi> \<rightarrow> \<not>\<phi>\<guillemotright> = \<guillemotleft>(\<phi> \<rightarrow> \<psi>) \<equiv> (\<not>\<psi> \<rightarrow> \<not>\<phi>)\<guillemotright>\<close>
     by blast
   have "conventions3[2]": \<open>\<guillemotleft>\<phi> & \<psi> \<rightarrow> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<rightarrow> \<chi>\<guillemotright>\<close>
@@ -34,7 +30,7 @@ begin
     by blast+
   have "conventions3[3]": \<open>\<guillemotleft>\<phi> \<or> \<psi> & \<chi>\<guillemotright> = \<guillemotleft>(\<phi> \<or> \<psi>) & \<chi>\<guillemotright>\<close>
                    and \<open>\<guillemotleft>\<phi> & \<psi> \<or> \<chi>\<guillemotright> = \<guillemotleft>(\<phi> & \<psi>) \<or> \<chi>\<guillemotright>\<close>
-     by blast+
+     by blast+ \<comment> \<open>Note that PLM instead generally uses parenthesis in these cases.\<close>
 end
 
 
@@ -78,7 +74,7 @@ AOT_theorem "identity:1":
              ([A!]x & [A!]y & \<box>\<forall>F (x[F] \<equiv> y[F]))\<close>
   unfolding AOT_model_equiv_def
   using AOT_sem_ind_eq[of _ x y]
-  by (simp add: AOT_sem_ordinary AOT_concrete_sem AOT_sem_abstract AOT_sem_conj
+  by (simp add: AOT_sem_ordinary AOT_sem_abstract AOT_sem_conj
                 AOT_sem_box AOT_sem_equiv AOT_sem_forall AOT_sem_disj AOT_sem_eq
                 AOT_sem_denotes)
 
@@ -137,8 +133,8 @@ no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
 end
 
 
-text\<open>The following are artifacts of the internal implementation of n-ary relations
-     as relations on tuples.\<close>
+text\<open>The following are purely technical pseudo-definitions required due to
+     our internal implementation of n-ary relations and ellipses using tuples.\<close>
 AOT_theorem tuple_denotes: \<open>\<guillemotleft>(\<tau>,\<tau>')\<guillemotright>\<down> \<equiv>\<^sub>d\<^sub>f \<tau>\<down> & \<tau>'\<down>\<close>
   by (simp add: AOT_model_denotes_prod_def AOT_model_equiv_def
                 AOT_sem_conj AOT_sem_denotes)
@@ -153,13 +149,5 @@ AOT_theorem tuple_exists: \<open>\<exists>\<alpha>\<^sub>1...\<exists>\<alpha>\<
                  AOT_model_denotes_prod_def)
 declare tuple_denotes[AOT_defs] tuple_identity_1[AOT_defs] tuple_forall[AOT_defs]
         tuple_exists[AOT_defs]
-
-
-(* Collect all theorems that are not in Main and not declared [AOT]
-   and store them in a blacklist. *)
-setup\<open>setup_AOT_no_atp\<close>
-bundle AOT_no_atp begin declare AOT_no_atp[no_atp] end
-(* Can be used as: "including AOT_no_atp sledgehammer" or
-   "sledgehammer(del: AOT_no_atp) *)
 
 end

@@ -23,9 +23,10 @@ with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..","
     split = line.strip().split('|')
     items = " ".join(map(lambda i: "("+i+")",split[2].split()))
     if len(split[1]) > 1:
-      theorems[split[1]] = items
+      theorems["{}.{}".format(split[0],split[1])] = items
       theorems[symbolPattern.sub(lambda m: symbols[m.group(0)], split[1])] = items
-theoremPattern = re.compile(r'([ >,)".;])(["]?)({})(["]?)([ <\[\n(,".;])'.format("|".join(map(re.escape, theorems.keys()))))
+theoremPattern = re.compile(r'id=["]({})[|]([^"]*)["]'.format("|".join(map(re.escape, theorems.keys()))))
+linkPattern = re.compile(r'href=["]([^"#]*)#({})[|]([^"]*)["]'.format("|".join(map(re.escape, theorems.keys()))))
 
 for filename in sys.argv[1:]:
   print("Patching: " + filename)
@@ -101,7 +102,8 @@ pre .linenumber span {
 </style>
 '''
 
-  output = theoremPattern.sub(lambda m: '{}<span title="{}">{}{}{}</span>{}'.format(m.group(1), theorems[m.group(3)], m.group(2), m.group(3), m.group(4), m.group(5)), output)
+  output = theoremPattern.sub(lambda m: 'id="{}|{}" title="{}"'.format(m.group(1), m.group(2), theorems[m.group(1)]), output)
+  output = linkPattern.sub(lambda m: 'href="{}#{}|{}" title="{}"'.format(m.group(1), m.group(2), m.group(3), theorems[m.group(2)]), output)
 
   with open(filename, 'w') as f:
     f.write(output);

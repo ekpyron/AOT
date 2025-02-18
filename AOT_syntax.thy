@@ -49,7 +49,7 @@ consts AOT_denotes :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
        AOT_exe :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> 'a \<Rightarrow> \<o>\<close>
        AOT_lambda :: \<open>('a::AOT_IndividualTerm \<Rightarrow> \<o>) \<Rightarrow> <'a>\<close>
        AOT_lambda0 :: \<open>\<o> \<Rightarrow> \<o>\<close>
-       AOT_concrete :: \<open><\<kappa>>\<close>
+       AOT_concrete :: \<open><'a::AOT_UnaryIndividualTerm> AOT_var\<close>
 
 nonterminal \<kappa>\<^sub>s and \<Pi> and \<Pi>0 and \<alpha> and exe_arg and exe_args
         and lambda_args and desc and free_var and free_vars
@@ -80,8 +80,13 @@ syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> ("_")
        "_AOT_box" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<box>_\<close> [49] 54)
        "_AOT_act" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<A>_\<close> [49] 54)
        "_AOT_all" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_ _\<close> [1,40])
+syntax (input)
        "_AOT_all_ellipse"
             :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_ _\<close> [1,40])
+syntax (output)
+       "_AOT_all_ellipse"
+            :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_'(_')\<close> [1,40])
+syntax
        "_AOT_eq" :: \<open>[\<tau>, \<tau>] \<Rightarrow> \<phi>\<close> (infixl \<open>=\<close> 50)
        "_AOT_desc" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> desc\<close> ("\<^bold>\<iota>__" [1,1000])
        "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> ("_")
@@ -174,7 +179,7 @@ translations
   "_AOT_act \<phi>" => "CONST AOT_act \<phi>"
   "_AOT_eq \<tau> \<tau>'" => "CONST AOT_eq \<tau> \<tau>'"
   "_AOT_lambda0 \<phi>" => "CONST AOT_lambda0 \<phi>"
-  "_AOT_concrete" => "CONST AOT_concrete"
+  "_AOT_concrete" => "CONST AOT_term_of_var (CONST AOT_concrete)"
   "_AOT_lambda \<alpha> \<phi>" => "CONST AOT_lambda (_abs \<alpha> \<phi>)"
   "_explicitRelation \<Pi>" => "\<Pi>"
 
@@ -197,7 +202,7 @@ AOT_syntax_print_translations
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (_abs x \<phi>)"
   "_AOT_desc x \<phi>" <= "CONST AOT_desc (\<lambda>x. \<phi>)"
   "_AOT_lambda0 \<phi>" <= "CONST AOT_lambda0 \<phi>"
-  "_AOT_concrete" <= "CONST AOT_concrete"
+  "_AOT_concrete" <= "CONST AOT_term_of_var (CONST AOT_concrete)"
 
 translations
   "_AOT_appl \<phi> (_AOT_args a b)" => "_AOT_appl (\<phi> a) b"
@@ -272,8 +277,7 @@ parse_ast_translation\<open>
   (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, fn ctx => fn [a,b,c] =>
       Ast.mk_appl (Ast.Constant \<^const_name>\<open>AOT_forall\<close>) [
         Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]
-      ]
-  ) (* TODO: restricted variables in ellipse quantification *)
+      ])
 ]
 \<close>
 
@@ -341,7 +345,7 @@ AOT_syntax_print_translations
     \<^const_syntax>\<open>AOT_lambda\<close>
     \<^syntax_const>\<open>_AOT_lambda\<close>
     (\<^syntax_const>\<open>_AOT_lambda_arg_ellipse\<close>, false)
-    \<^const_name>\<open>undefined\<close>, (* TODO: constrained variables *)
+    \<^const_name>\<open>undefined\<close>,
   AOT_binder_trans
     @{theory}
     @{binding "AOT_lambda_binder"}
@@ -383,8 +387,10 @@ no_notation AOT_exists (binder "\<^bold>\<exists>" 8)
 end
 
 
-syntax
+syntax (input)
    "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ _\<close> [1,40])
+syntax (output)
+   "_AOT_exists_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_...\<exists>_ '(_')\<close> [1,40])
 parse_ast_translation\<open>[(\<^syntax_const>\<open>_AOT_exists_ellipse\<close>, fn ctx => fn [a,b,c] =>
   Ast.mk_appl (Ast.Constant "AOT_exists")
     [Ast.mk_appl (Ast.Constant "_abs") [parseEllipseList "_AOT_vars" ctx [a,b],c]])]\<close>
@@ -404,9 +410,6 @@ print_translation\<open>AOT_syntax_print_translations [
 syntax "_AOT_DDDOT" :: "\<phi>" ("...")
 syntax "_AOT_DDDOT" :: "\<phi>" ("\<dots>")
 parse_translation\<open>[(\<^syntax_const>\<open>_AOT_DDDOT\<close>, parseDDOT)]\<close>
-
-(* TODO: experimental printing mode: *)
-
 
 print_translation\<open>AOT_syntax_print_translations
 [(\<^const_syntax>\<open>Pure.all\<close>, fn ctxt => fn [Abs (_, _,
@@ -570,7 +573,6 @@ in restr end
 print_translation\<open>
 AOT_syntax_print_translations
 [
-(* TODO: restricted variables *)
   (\<^const_syntax>\<open>AOT_model_equiv_def\<close>, fn ctxt => fn [x,y] =>
     Const (\<^syntax_const>\<open>_AOT_equiv_def\<close>, dummyT) $
     (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x) $
@@ -627,6 +629,19 @@ print_translation\<open>AOT_syntax_print_translations [
   (\<^const_syntax>\<open>print_term\<close>, fn ctxt => fn [x] => 
     (Const (\<^syntax_const>\<open>_AOT_process_frees\<close>, dummyT) $ x))
 ]\<close>
+
+
+(* To enable meta syntax: *)
+(* interpretation AOT_meta_syntax. *)
+(* To disable meta syntax: *)
+interpretation AOT_no_meta_syntax.
+
+(* To enable AOT syntax (takes precedence over meta syntax;
+                         can be done locally using "including" or "include"): *)
+unbundle AOT_syntax
+(* To disable AOT syntax (restoring meta syntax or no syntax;
+                          can be done locally using "including" or "include"): *)
+(* unbundle AOT_no_syntax *)
 
 (*<*)
 end
