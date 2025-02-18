@@ -693,10 +693,10 @@ val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (
 val trm = Thm.cterm_of (Context.proof_of ctxt) trm
 val ty = hd (Term.add_tvars (Thm.prop_of @{thm "\<forall>I"}) [])
 val typ = Thm.ctyp_of (Context.proof_of ctxt) trmty
-fun TVars_make x = x (* Next Isabelle release: = TVars.make x *)
-val TVars_empty = [] (* Next Isabelle release: = TVars.empty *)
-fun Vars_make x = x (* Next Isabelle release: = Vars.make x *)
-val Vars_empty = [] (* Next Isabelle release: = Vars.empty *)
+fun TVars_make x = TVars.make x
+val TVars_empty = TVars.empty
+fun Vars_make x = Vars.make x
+val Vars_empty = Vars.empty
 val allthm = Drule.instantiate_normalize (TVars_make [(ty, typ)],Vars_empty) @{thm "\<forall>I"}
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
 val allthm = Drule.instantiate_normalize (TVars_empty, Vars_make [(phi,trm)]) allthm
@@ -2979,10 +2979,10 @@ val abs = Syntax.check_term ctxt abs
 val substThm = Goal.prove ctxt [] [] abs
   (fn {context=ctxt, prems=_} => prove_AOT_subst_tac ctxt)
 val substThm = substThm RS @{thm AOT_subst}
-fun TVars_make x = x (* Next Isabelle release: = TVars.make x *)
-val TVars_empty = [] (* Next Isabelle release: = TVars.empty *)
-fun Vars_make x = x (* Next Isabelle release: = Vars.make x *)
-val Vars_empty = [] (* Next Isabelle release: = Vars.empty *)
+fun TVars_make x = TVars.make x
+val TVars_empty = TVars.empty
+fun Vars_make x = Vars.make x
+val Vars_empty = Vars.empty
 in if reversed then let
   val substThm = Drule.instantiate_normalize
           (TVars_empty,Vars_make [((("\<chi>", 0), p_ty), Thm.cterm_of ctxt p),
@@ -3000,10 +3000,10 @@ else
 
 method_setup AOT_subst = \<open>
 Scan.option (Scan.lift (Args.parens (Args.$$$ "reverse"))) --
-Scan.lift (Args.embedded_inner_syntax -- Args.embedded_inner_syntax) --
+Scan.lift (Parse.embedded_inner_syntax -- Parse.embedded_inner_syntax) --
 Scan.option (Scan.lift (Args.$$$ "for" -- Args.colon) |--
-Scan.repeat1 (Scan.lift (Args.embedded_inner_syntax) --
-Scan.option (Scan.lift (Args.$$$ "::" |-- Args.embedded_inner_syntax))))
+Scan.repeat1 (Scan.lift (Parse.embedded_inner_syntax) --
+Scan.option (Scan.lift (Args.$$$ "::" |-- Parse.embedded_inner_syntax))))
 >> (fn ((reversed,(raw_p,raw_q)),raw_bounds) => (fn ctxt =>
 (Method.SIMPLE_METHOD (Subgoal.FOCUS (fn {context = ctxt, params = _,
   prems = prems, asms = asms, concl = concl, schematics = _} =>
@@ -7215,11 +7215,7 @@ proof -
       by (metis "Act-Basic:1" "Act-Basic:2" act_ord_b "&I" "\<or>E"(2)
                 "\<equiv>E"(3) not_act_concrete_b "raa-cor:3")
   next AOT_show \<open>\<not>\<^bold>\<Delta>([O!]b & \<not>[E!]b)\<close>
-      by (metis (no_types, hide_lams) "conventions:5" "Act-Sub:1" "RM:1"
-                act_and_not_nec_not_delta "act-conj-act:3"
-                act_ord_b b_prop "&I" "&E"(1) "Conjunction Simplification"(2)
-                "df-rules-formulas[3]"
-                "\<equiv>E"(3) "raa-cor:1" "\<rightarrow>E")
+      by (metis (no_types, opaque_lifting) AOT_sem_act AOT_sem_conj AOT_sem_dia AOT_sem_not act_and_pos_not_not_delta act_ord_b b_prop)
   next AOT_show \<open>\<not>\<^bold>\<A>([O!]a & \<not>[E!]a)\<close>
       using "Act-Basic:2" "&E"(1) "\<equiv>E"(1) not_act_ord_a "raa-cor:3" by blast
   next AOT_have \<open>\<not>\<diamond>([O!]a & \<not>[E!]a)\<close>
@@ -7473,13 +7469,13 @@ qed
 
 AOT_theorem "o-objects-exist:3": \<open>\<box>\<not>\<forall>x O!x\<close>
   by (rule RN)
-     (metis (no_types, hide_lams) "\<exists>E" "cqt-orig:1[const_var]"
+     (metis (no_types, opaque_lifting) "\<exists>E" "cqt-orig:1[const_var]"
         "\<equiv>E"(4) "modus-tollens:1" "o-objects-exist:2" "oa-contingent:2"
         "qml:2"[axiom_inst] "reductio-aa:2")
 
 AOT_theorem "o-objects-exist:4": \<open>\<box>\<not>\<forall>x A!x\<close>
   by (rule RN)
-     (metis (mono_tags, hide_lams) "\<exists>E" "cqt-orig:1[const_var]"
+     (metis (mono_tags, opaque_lifting) "\<exists>E" "cqt-orig:1[const_var]"
         "\<equiv>E"(1) "modus-tollens:1" "o-objects-exist:1" "oa-contingent:2"
         "qml:2"[axiom_inst] "\<rightarrow>E")
 

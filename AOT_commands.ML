@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 fun AOT_item_by_name name = Option.map fst (List.find (fn (_,n) => n = name) AOT_items)
 fun AOT_name_of_item id = Option.map snd (List.find (fn (i,_) => id = i) AOT_items)
 
-val Sign_add_syntax = Sign.add_syntax (* Next Isabelle release: = Sign.syntax true *)
+val Sign_add_syntax = Sign.syntax true
 
 val print_AOT_syntax = Attrib.setup_config_bool @{binding "show_AOT_syntax"} (K false)
 local

@@ -947,9 +947,7 @@ next
   have \<open>AOT_model_denotes \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<guillemotleft>\<Pi>\<guillemotright>]\<nu>\<^sub>1...\<nu>\<^sub>n \<kappa>\<^sub>1'...\<kappa>\<^sub>n']\<guillemotright>\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close>
     unfolding AOT_model_lambda_denotes
-    by (metis (no_types, hide_lams)
-          that AOT_meta_prod_equivI(2) AOT_model_denotes_rel.abs_eq
-          AOT_sem_exe AOT_sem_exe_denoting Rep_rel_inverse)
+    by (metis AOT_meta_prod_equivI(2) AOT_model_denotes_rel.rep_eq AOT_sem_exe AOT_sem_exe_denoting that)
   moreover have \<open>AOT_model_denotes  \<guillemotleft>[\<lambda>\<nu>\<^sub>1...\<nu>\<^sub>n [\<guillemotleft>\<Pi>\<guillemotright>]\<kappa> \<nu>\<^sub>1...\<nu>\<^sub>n]\<guillemotright>\<close>
     if \<open>AOT_model_denotes \<Pi>\<close> for \<Pi> :: \<open><'a\<times>'b>\<close>
     unfolding AOT_model_lambda_denotes
