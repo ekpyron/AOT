@@ -8792,6 +8792,109 @@ next
     by (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I", rotated]) "cqt:2"
 qed
 
+AOT_theorem "kirchner-thm:2[2]":
+  \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down> \<equiv> \<box>\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2
+    (\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}))\<close>
+proof(rule "\<equiv>I"; rule "\<rightarrow>I")
+  AOT_assume \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down>\<close>
+  AOT_hence \<open>\<box>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down>\<close> by (metis "exist-nec" "\<rightarrow>E")
+  moreover AOT_have \<open>\<box>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down> \<rightarrow> \<box>\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2
+    (\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}))\<close>
+  proof (rule "RM:1"; rule "\<rightarrow>I"; rule GEN; rule GEN; rule GEN; rule GEN; rule "\<rightarrow>I")
+    AOT_modally_strict {
+      fix x\<^sub>1 x\<^sub>2 y\<^sub>1 y\<^sub>2
+      AOT_assume 0: \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down>\<close>
+      moreover AOT_assume \<open>\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2)\<close>
+      ultimately AOT_have \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]x\<^sub>1x\<^sub>2 \<equiv>
+                           [\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]y\<^sub>1y\<^sub>2\<close>
+        using "\<forall>E" by blast
+      moreover AOT_have \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]x\<^sub>1x\<^sub>2 \<equiv> \<phi>{x\<^sub>1,x\<^sub>2}\<close>
+        using "beta-C-meta"[THEN "\<rightarrow>E", OF 0, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, of "(_,_)",
+                        OF tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI"], OF "&I",
+                        OF "cqt:2[const_var]"[axiom_inst],
+                        OF "cqt:2[const_var]"[axiom_inst]]
+        by simp
+      moreover AOT_have \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]y\<^sub>1y\<^sub>2 \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}\<close>
+        using "beta-C-meta"[THEN "\<rightarrow>E", OF 0, unvarify \<nu>\<^sub>1\<nu>\<^sub>n, of "(_,_)",
+                        OF tuple_denotes[THEN "\<equiv>\<^sub>d\<^sub>fI"], OF "&I",
+                        OF "cqt:2[const_var]"[axiom_inst],
+                        OF "cqt:2[const_var]"[axiom_inst]]
+        by simp
+      ultimately AOT_show \<open>(\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+        using "intro-elim:3:f" by blast
+    }
+  qed
+  ultimately AOT_show \<open>\<box>\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2(
+    \<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2})
+  )\<close>
+    using "\<rightarrow>E" by blast
+next
+  AOT_have \<open>
+    \<box>(\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2
+      (\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2})))
+    \<rightarrow> \<box>\<forall>y\<^sub>1\<forall>y\<^sub>2
+        ((\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2})) \<equiv>
+         \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+  proof(rule "RM:1"; rule "\<rightarrow>I"; rule GEN; rule GEN)
+    AOT_modally_strict {
+      AOT_assume \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2
+        (\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}))\<close>
+      AOT_hence indisc: \<open>\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}\<close>
+        if \<open>\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2)\<close> for x\<^sub>1 x\<^sub>2 y\<^sub>1 y\<^sub>2
+        using "\<forall>E"(2) "\<rightarrow>E" that by blast
+      AOT_show \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2})) \<equiv>
+                \<phi>{y\<^sub>1,y\<^sub>2}\<close> for y\<^sub>1 y\<^sub>2
+      proof (rule "raa-cor:1")
+        AOT_assume \<open>\<not>((\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2})) \<equiv>
+                    \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+        AOT_hence \<open>((\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2)
+                    & \<phi>{x\<^sub>1,x\<^sub>2}))
+                    & \<not>\<phi>{y\<^sub>1,y\<^sub>2}) \<or>
+                  (\<not>(\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2}))
+                   & \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+          using "\<equiv>E"(1) "oth-class-taut:4:h" by blast
+        moreover {
+          AOT_assume 0: \<open>(\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2}))
+                         & \<not>\<phi>{y\<^sub>1,y\<^sub>2}\<close>
+          AOT_obtain a\<^sub>1 a\<^sub>2 where \<open>\<forall>F([F]a\<^sub>1a\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{a\<^sub>1,a\<^sub>2}\<close>
+            using "\<exists>E"[rotated] 0[THEN "&E"(1)]  by blast
+          AOT_hence \<open>\<phi>{y\<^sub>1,y\<^sub>2}\<close>
+            using indisc[THEN "\<equiv>E"(1)] "&E" by blast
+          AOT_hence \<open>p & \<not>p\<close> for p
+            using 0[THEN "&E"(2)] "&I" "raa-cor:3" by blast
+        }
+        moreover {
+          AOT_assume 0: \<open>\<not>(\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2}))
+                         & \<phi>{y\<^sub>1,y\<^sub>2}\<close>
+          AOT_hence \<open>\<forall>x\<^sub>1\<forall>x\<^sub>2 \<not>(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2})\<close>
+            using "&E"(1) "cqt-further:4" "\<rightarrow>E"
+            by (metis (mono_tags, lifting) "existential:2[const_var]" "raa-cor:3" "universal-cor")
+          AOT_hence \<open>\<not>(\<forall>F([F]y\<^sub>1y\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+            using "\<forall>E" by blast
+          AOT_hence \<open>\<not>\<forall>F([F]y\<^sub>1y\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<or> \<not>\<phi>{y\<^sub>1,y\<^sub>2}\<close>
+            using "\<equiv>E"(1) "oth-class-taut:5:c" by blast
+          moreover AOT_have \<open>\<forall>F([F]y\<^sub>1y\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2)\<close>
+            by (simp add: "oth-class-taut:3:a" "universal-cor")
+          ultimately AOT_have \<open>\<not>\<phi>{y\<^sub>1,y\<^sub>2}\<close>
+            by (metis "\<not>\<not>I" "\<or>E"(2))
+          AOT_hence \<open>p & \<not>p\<close> for p
+            using 0[THEN "&E"(2)] "&I" "raa-cor:3" by blast
+        }
+        ultimately AOT_show \<open>p & \<not>p\<close> for p
+          using "\<or>E"(3) "raa-cor:1" by blast
+      qed
+    }
+  qed
+  moreover AOT_assume \<open>\<box>\<forall>x\<^sub>1\<forall>x\<^sub>2\<forall>y\<^sub>1\<forall>y\<^sub>2
+    (\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) \<rightarrow> (\<phi>{x\<^sub>1,x\<^sub>2} \<equiv> \<phi>{y\<^sub>1,y\<^sub>2}))\<close>
+  ultimately AOT_have \<open>\<box>\<forall>y\<^sub>1\<forall>y\<^sub>2
+    ((\<exists>x\<^sub>1\<exists>x\<^sub>2(\<forall>F([F]x\<^sub>1x\<^sub>2 \<equiv> [F]y\<^sub>1y\<^sub>2) & \<phi>{x\<^sub>1,x\<^sub>2})) \<equiv>
+     \<phi>{y\<^sub>1,y\<^sub>2})\<close>
+    using "\<rightarrow>E" by blast
+  AOT_thus \<open>[\<lambda>x\<^sub>1x\<^sub>2 \<phi>{x\<^sub>1,x\<^sub>2}]\<down>\<close>
+    by (rule "safe-ext[2]"[axiom_inst, THEN "\<rightarrow>E", OF "&I", rotated]) "cqt:2"
+qed
+
 AOT_theorem "kirchner-thm-cor:1":
   \<open>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> \<box>(\<phi>{x} \<equiv> \<phi>{y}))\<close>
 proof(rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
