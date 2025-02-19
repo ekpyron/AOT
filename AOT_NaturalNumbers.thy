@@ -5496,26 +5496,28 @@ lemma \<alpha>\<sigma>_disc'[AOT_no_atp]:
   and \<open>(\<And>r. (r \<in> x) = (finite_card {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = Some n))\<close>
   shows \<open>x = y\<close>
 proof -
-  have \<open>{\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+  have \<open>{\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
     for r
   proof(rule; rule)
     fix \<kappa>
     assume \<open>\<kappa> \<in> {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}\<close>
     hence \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
       by blast
-    hence \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+    hence \<open>AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+      unfolding AOT_model_discernible_def
       by (metis AOT_model.AOT_term_of_var_cases AOT_sem_conj AOT_sem_denotes AOT_sem_exe Abs_rel_inverse UNIV_I model_disc urrel_to_rel_def)
-    thus \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    thus \<open>\<kappa> \<in> {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
       by auto
   next
     fix \<kappa>
     have den: \<open>AOT_model_denotes (Abs_rel (\<lambda>x. Rep_urrel r (\<kappa>\<upsilon> x)))\<close>
       by (simp add: AOT_model_denotes_\<kappa>_def AOT_model_denotes_rel.abs_eq AOT_model_term_equiv_\<kappa>_def AOT_model_unary_regular urrel_null_false)
-    assume \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
-    hence 0: \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+    assume \<open>\<kappa> \<in> {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    hence 0: \<open>AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
       by blast
     have \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa>]\<close>
       using 0[THEN conjunct1] model_disc
+      unfolding AOT_model_discernible_def
       by (metis "0" AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def urrel_null_false)
     moreover have \<open>[w\<^sub>0 \<Turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
       unfolding urrel_to_rel_def AOT_sem_exe Abs_rel_inverse[simplified]
@@ -5537,26 +5539,28 @@ lemma \<alpha>\<sigma>_disc_infinite'[AOT_no_atp]:
   and \<open>(\<And>r. (r \<in> x) = (infinite {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}))\<close>
   shows \<open>x = y\<close>
 proof -
-  have \<open>{\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+  have \<open>{\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
     for r
   proof(rule; rule)
     fix \<kappa>
     assume \<open>\<kappa> \<in> {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}\<close>
     hence \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
       by blast
-    hence \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+    hence \<open>AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+      unfolding AOT_model_discernible_def
       by (metis AOT_model.AOT_term_of_var_cases AOT_sem_conj AOT_sem_denotes AOT_sem_exe Abs_rel_inverse UNIV_I model_disc urrel_to_rel_def)
-    thus \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    thus \<open>\<kappa> \<in> {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
       by auto
   next
     fix \<kappa>
     have den: \<open>AOT_model_denotes (Abs_rel (\<lambda>x. Rep_urrel r (\<kappa>\<upsilon> x)))\<close>
       by (simp add: AOT_model_denotes_\<kappa>_def AOT_model_denotes_rel.abs_eq AOT_model_term_equiv_\<kappa>_def AOT_model_unary_regular urrel_null_false)
-    assume \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
-    hence 0: \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+    assume \<open>\<kappa> \<in> {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    hence 0: \<open>AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
       by blast
     have \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa>]\<close>
       using 0[THEN conjunct1] model_disc
+      unfolding AOT_model_discernible_def
       by (metis "0" AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def urrel_null_false)
     moreover have \<open>[w\<^sub>0 \<Turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
       unfolding urrel_to_rel_def AOT_sem_exe Abs_rel_inverse[simplified]
@@ -5576,8 +5580,9 @@ qed
 
 lemma countable_disc_prop[AOT_no_atp]: \<open>countable {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]}\<close>
 proof -
-  have \<open>{\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]} = {\<kappa>::\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> (\<forall>\<kappa>'. \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>')}\<close>
+  have \<open>{\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]} = {\<kappa>::\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> AOT_model_discernible \<kappa>}\<close>
     using model_disc
+    unfolding AOT_model_discernible_def
     by (metis (full_types) AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def AOT_sem_denotes AOT_sem_exe Collect_cong)
   thus ?thesis
     by (simp add: disc_countable)

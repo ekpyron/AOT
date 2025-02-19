@@ -227,14 +227,19 @@ text\<open>Individual terms are either ordinary objects, represented by ordinary
      represent non-denoting definite descriptions.\<close>
 datatype \<kappa> = \<omega>\<kappa> \<omega> | \<alpha>\<kappa> \<open>urrel set\<close> | is_null\<kappa>: null\<kappa> null
 
+definition AOT_pre_model_discernible :: \<open>(urrel set\<Rightarrow>\<sigma>) \<Rightarrow>\<kappa> \<Rightarrow> bool\<close> where
+  \<open>AOT_pre_model_discernible \<equiv> \<lambda> \<alpha>\<sigma> \<kappa> . \<forall> y . (case (y,\<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a=b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a=b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | _ \<Rightarrow> False)  \<longrightarrow> \<kappa> = y\<close>
+
+definition pre\<kappa>\<upsilon> :: \<open>(urrel set\<Rightarrow>\<sigma>) \<Rightarrow> \<kappa> \<Rightarrow> \<upsilon>\<close> where
+  \<open>pre\<kappa>\<upsilon> \<equiv> \<lambda> \<alpha>\<sigma> \<kappa> . case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x\<close>
+
 locale \<alpha>\<sigma>_props =
   fixes \<alpha>\<sigma> :: \<open>urrel set \<Rightarrow> \<sigma>\<close>
   assumes \<alpha>\<sigma>_surj: \<open>surj \<alpha>\<sigma>\<close>
-  assumes \<alpha>\<sigma>_disc_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. finite_card { \<kappa> . (\<forall> y . (case (y,\<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a=b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a=b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | _ \<Rightarrow> False)  \<longrightarrow> \<kappa> = y) \<and>
-            AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} = Some n} \<Longrightarrow> x = y\<close>
-  assumes \<alpha>\<sigma>_disc_infinite_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. infinite { \<kappa> . (\<forall> y . (case (y,\<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a=b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a=b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | _ \<Rightarrow> False)  \<longrightarrow> \<kappa> = y) \<and>
-            AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}} \<Longrightarrow> x = y\<close>
-  assumes disc_countable_pre: \<open>countable { \<kappa> . \<not>is_null\<kappa> \<kappa> \<and> (\<forall> y . (case (y,\<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a=b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a=b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | _ \<Rightarrow> False)  \<longrightarrow> \<kappa> = y)}\<close>begin
+  assumes \<alpha>\<sigma>_disc_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. finite_card { \<kappa> . AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))} = Some n} \<Longrightarrow> x = y\<close>
+  assumes \<alpha>\<sigma>_disc_infinite_pre: \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y \<Longrightarrow> x = { urrel. infinite { \<kappa> . AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> \<and>
+            AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))}} \<Longrightarrow> x = y\<close>
+  assumes disc_countable_pre: \<open>countable { \<kappa> . \<not>is_null\<kappa> \<kappa> \<and> AOT_pre_model_discernible \<alpha>\<sigma> \<kappa>}\<close>begin
 end
 
 lemma Aux: \<open>finite_card {u. case u of \<sigma>\<upsilon> (number\<sigma> \<sigma>') \<Rightarrow> \<sigma>' < n | _ \<Rightarrow> False} = Some n\<close>
@@ -669,21 +674,21 @@ proof
         apply auto
         by (smt (verit) "0" \<alpha>\<sigma>_def \<kappa>.case(2) \<kappa>.case_eq_if \<kappa>.collapse(2) \<sigma>.distinct(3) \<sigma>.simps(8) urrel_set_is_infinity_def)
     }
-    ultimately have simp1: \<open>(\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-         | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-        \<kappa> = y) = (\<upsilon>disc (\<kappa>\<upsilon> \<kappa>))\<close> if \<open>\<not>is_null\<kappa> \<kappa>\<close> for \<kappa>
+    ultimately have simp1: \<open>(AOT_pre_model_discernible \<alpha>\<sigma> \<kappa>) = (\<upsilon>disc (\<kappa>\<upsilon> \<kappa>))\<close> if \<open>\<not>is_null\<kappa> \<kappa>\<close> for \<kappa>
+      unfolding AOT_pre_model_discernible_def
       using that
       apply (induct \<kappa>)
         apply (simp_all add: \<kappa>\<upsilon>_def)
        apply (smt (verit, best) \<kappa>.case_eq_if \<kappa>.disc(4) \<kappa>.disc(7) \<kappa>.distinct_disc(1) \<kappa>.expand)
       by (metis \<sigma>.exhaust \<upsilon>disc.simps(2) \<upsilon>disc.simps(3) \<upsilon>disc.simps(4))
-    have simp2: \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x)) \<Longrightarrow> \<not>is_null\<kappa> \<kappa>\<close>
+    have simp2: \<open>AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>)) \<Longrightarrow> \<not>is_null\<kappa> \<kappa>\<close>
       for urrel \<kappa> using Rep_urrel
+      unfolding pre\<kappa>\<upsilon>_def
       by (metis (mono_tags, lifting) \<kappa>.case_eq_if \<kappa>.distinct_disc(3) \<kappa>.distinct_disc(6) mem_Collect_eq)
 
-    have simp3: \<open>{\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<kappa> = y) \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
-          {\<kappa> . \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}\<close>
+    have simp3: \<open>{\<kappa>. AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> \<and>
+              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))} =
+          {\<kappa> . \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))}\<close>
         (is \<open>?lhs = ?rhs\<close>)
       for urrel
     proof(rule; rule)
@@ -704,8 +709,7 @@ proof
         by auto
     qed
 
-    have simp4: \<open>{\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<kappa> = y) } =
-          {\<kappa> . \<upsilon>disc (\<kappa>\<upsilon> \<kappa>)}\<close>
+    have simp4: \<open>{\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> } = {\<kappa> . \<upsilon>disc (\<kappa>\<upsilon> \<kappa>)}\<close>
         (is \<open>?lhs = ?rhs\<close>)
     proof(rule; rule)
       fix \<kappa>
@@ -731,23 +735,23 @@ proof
         by (meson \<kappa>\<upsilon>_surj surj_f_inv_f)
       have \<open>\<upsilon>disc x \<Longrightarrow>
          AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel x) \<Longrightarrow>
-         \<exists>xa. \<upsilon>disc (\<kappa>\<upsilon> xa) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case xa of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x)) \<and> x = \<kappa>\<upsilon> xa\<close>
+         \<exists>xa. \<upsilon>disc (\<kappa>\<upsilon> xa) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> xa)) \<and> x = \<kappa>\<upsilon> xa\<close>
         apply (rule_tac x=y in exI)
         apply (auto simp add: y_def)
-        using \<kappa>\<upsilon>_def y_def by blast
+        using \<kappa>\<upsilon>_def y_def unfolding pre\<kappa>\<upsilon>_def by blast
     } note aux = this
     have bij_\<kappa>\<upsilon>: \<open>bij_betw \<kappa>\<upsilon>
-        {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}
+        {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))}
         {u. \<upsilon>disc u \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel u)}\<close> for urrel
       unfolding bij_betw_def
       apply auto
         apply (rule inj_onI)
         apply auto
       apply (smt (verit, ccfv_SIG) \<alpha>\<sigma>_def \<kappa>.case_eq_if \<kappa>.distinct_disc(1) \<kappa>.expand \<kappa>\<upsilon>_def \<sigma>.distinct(5) \<sigma>.inject(2) \<upsilon>.inject(1) \<upsilon>.inject(2) \<upsilon>.simps(5) \<upsilon>disc.simps(4) \<upsilon>disc.simps(5) simp2 the1_equality urrel_is_number_eq urrel_set_is_infinity_def urrel_set_is_number_def)
-      using \<kappa>\<upsilon>_def apply blast
+      using \<kappa>\<upsilon>_def unfolding pre\<kappa>\<upsilon>_def apply blast
       unfolding image_def
       apply auto
-      using aux by blast
+      using aux unfolding pre\<kappa>\<upsilon>_def by blast
 
   show \<open>\<alpha>\<sigma>_props \<alpha>\<sigma>\<close>
   proof
@@ -761,14 +765,14 @@ proof
     assume A: \<open>x =
        {urrel.
         finite_card
-         {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | _ \<Rightarrow> False) \<longrightarrow> \<kappa> = y) \<and>
-              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
+         {\<kappa>. AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> \<and>
+              AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))} =
         Some n}\<close>
 
     hence B: \<open>x =
     {urrel.
      finite_card
-      {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
+      {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>) \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))} =
      Some n}\<close> using simp3 by auto
 
     have x_num_n: \<open>urrel_set_is_number x n\<close>
@@ -798,10 +802,8 @@ proof
     assume 2: \<open>x =
            {urrel.
             infinite
-             {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                       | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                      \<kappa> = y) \<and>
-                 AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}}\<close> (is "x = ?set")
+             {\<kappa>. AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> \<and>
+                 AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa>))}}\<close> (is "x = ?set")
     have 3: \<open>urrel_set_is_infinity ?set\<close>
       unfolding simp3 using bij_\<kappa>\<upsilon>
       by (metis (no_types, lifting) Collect_cong bij_betw_finite urrel_infinity_def urrel_set_is_infinity_def)
@@ -845,9 +847,7 @@ proof
     ultimately have \<open>countable {\<kappa>. \<upsilon>disc (\<kappa>\<upsilon> \<kappa>)}\<close>
       by auto
     thus \<open>countable
-     {\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b
-              | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-             \<kappa> = y)}\<close>
+     {\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> AOT_pre_model_discernible \<alpha>\<sigma> \<kappa>}\<close>
       using simp4
       by argo
   qed
@@ -884,16 +884,11 @@ lemma urrel_null_false:
 
 thm \<alpha>\<sigma>_disc_pre
 
-lemma \<alpha>\<sigma>_disc:
-  assumes \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y\<close>
-  assumes \<open>\<And> r . (r \<in> x) = (finite_card {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))} = Some n)\<close>
-  shows \<open>x = y\<close>
-proof -
-  show \<open>x = y\<close>
-  proof (rule \<alpha>\<sigma>_disc_pre[OF assms(1)])
-    have 0: \<open>(\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                 | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                \<kappa> = y) = (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>')\<close> for \<kappa>
+definition AOT_model_discernible :: \<open>\<kappa> \<Rightarrow> bool\<close> where
+  \<open>AOT_model_discernible \<equiv> \<lambda> \<kappa> . \<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>'\<close>
+
+lemma AOT_model_discernible_from_pre: \<open>AOT_pre_model_discernible \<alpha>\<sigma> \<kappa> = AOT_model_discernible \<kappa>\<close> for \<kappa>
+      unfolding AOT_pre_model_discernible_def AOT_model_discernible_def
       apply (induct \<kappa>)
         apply auto
       apply (metis \<kappa>.collapse(1) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(4) \<upsilon>.disc(5) \<upsilon>.distinct(3) \<upsilon>.sel(1) is_\<alpha>\<kappa>_def is_null\<kappa>_def)
@@ -902,70 +897,28 @@ proof -
       apply (smt (z3) \<kappa>.case_eq_if \<kappa>.collapse(2) \<kappa>.disc(2) \<kappa>.disc(5) \<kappa>\<upsilon>.simps(2))
       apply (metis \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.inject(3) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def is_null\<kappa>_def)
       by (smt (verit, best) \<kappa>.case_eq_if \<kappa>.disc(3) \<kappa>.disc(6) \<kappa>.expand)
-    have 1: \<open>(case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x) = \<kappa>\<upsilon> \<kappa>\<close> for \<kappa>
-      by (metis \<kappa>.case_eq_if \<kappa>.collapse(1) \<kappa>.collapse(2) \<kappa>.collapse(3) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3))
-    show \<open>x =
-    {urrel.
-     finite_card
-      {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                 | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                \<kappa> = y) \<and>
-           AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))} =
-       Some n}\<close>
-      unfolding 0 1
-      using assms(2) by auto
-  qed
-qed
+
+lemma \<kappa>\<upsilon>_from_pre: \<open>pre\<kappa>\<upsilon> \<alpha>\<sigma> \<kappa> = \<kappa>\<upsilon> \<kappa>\<close>
+  by (metis \<kappa>.case_eq_if \<kappa>.collapse(1) \<kappa>.collapse(2) \<kappa>.collapse(3) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) pre\<kappa>\<upsilon>_def)
+
+lemma \<alpha>\<sigma>_disc:
+  assumes \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y\<close>
+  assumes \<open>\<And> r . (r \<in> x) = (finite_card {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))} = Some n)\<close>
+  shows \<open>x = y\<close>
+  using assms \<alpha>\<sigma>_disc_pre
+  unfolding AOT_model_discernible_from_pre \<kappa>\<upsilon>_from_pre by blast
 
 lemma \<alpha>\<sigma>_disc_infinite:
   assumes \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y\<close>
-  assumes \<open>\<And> r . (r \<in> x) = (infinite {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))})\<close>
+  assumes \<open>\<And> r . (r \<in> x) = (infinite {\<kappa> . AOT_model_discernible \<kappa> \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))})\<close>
   shows \<open>x = y\<close>
-proof -
-  show \<open>x = y\<close>
-  proof (rule \<alpha>\<sigma>_disc_infinite_pre[OF assms(1)])
-    have 0: \<open>(\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                 | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                \<kappa> = y) = (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>')\<close> for \<kappa>
-      apply (induct \<kappa>)
-        apply auto
-      apply (metis \<kappa>.collapse(1) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(4) \<upsilon>.disc(5) \<upsilon>.distinct(3) \<upsilon>.sel(1) is_\<alpha>\<kappa>_def is_null\<kappa>_def)
-      apply (smt (z3) \<kappa>.case_eq_if \<kappa>.collapse(1) \<kappa>.disc(1))
-      apply (smt (z3) \<kappa>.collapse(2) \<kappa>.exhaust_disc \<kappa>.simps(11) \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.inject(2) \<upsilon>.simps(5) is_\<omega>\<kappa>_def is_null\<kappa>_def)
-      apply (smt (z3) \<kappa>.case_eq_if \<kappa>.collapse(2) \<kappa>.disc(2) \<kappa>.disc(5) \<kappa>\<upsilon>.simps(2))
-      apply (metis \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.inject(3) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def is_null\<kappa>_def)
-      by (smt (verit, best) \<kappa>.case_eq_if \<kappa>.disc(3) \<kappa>.disc(6) \<kappa>.expand)
-    have 1: \<open>(case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x) = \<kappa>\<upsilon> \<kappa>\<close> for \<kappa>
-      by (metis \<kappa>.case_eq_if \<kappa>.collapse(1) \<kappa>.collapse(2) \<kappa>.collapse(3) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3))
-    show \<open>x =
-    {urrel.
-     infinite
-      {\<kappa>. (\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                 | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                \<kappa> = y) \<and>
-           AOT_model_valid_in w\<^sub>0 (Rep_urrel urrel (case \<kappa> of \<omega>\<kappa> x \<Rightarrow> \<omega>\<upsilon> x | \<alpha>\<kappa> x \<Rightarrow> \<sigma>\<upsilon> (\<alpha>\<sigma> x) | null\<kappa> x \<Rightarrow> null\<upsilon> x))}}\<close>
-      unfolding 0 1
-      using assms(2) by auto
-  qed
-qed
+  using assms \<alpha>\<sigma>_disc_infinite_pre
+  unfolding AOT_model_discernible_from_pre \<kappa>\<upsilon>_from_pre by blast
 
-lemma disc_countable: \<open>countable {\<kappa> . \<not>is_null\<kappa> \<kappa> \<and> (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') }\<close>
-proof -
-    have 0: \<open>(\<forall>y. (case (y, \<kappa>) of (\<omega>\<kappa> a, \<omega>\<kappa> b) \<Rightarrow> a = b | (\<omega>\<kappa> a, _) \<Rightarrow> False | (\<alpha>\<kappa> a, \<alpha>\<kappa> b) \<Rightarrow> \<alpha>\<sigma> a = \<alpha>\<sigma> b | (\<alpha>\<kappa> a, _) \<Rightarrow> False
-                 | (null\<kappa> a, null\<kappa> b) \<Rightarrow> a = b | (null\<kappa> a, _) \<Rightarrow> False) \<longrightarrow>
-                \<kappa> = y) = (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>')\<close> for \<kappa>
-      apply (induct \<kappa>)
-        apply auto
-      apply (metis \<kappa>.collapse(1) \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(4) \<upsilon>.disc(5) \<upsilon>.distinct(3) \<upsilon>.sel(1) is_\<alpha>\<kappa>_def is_null\<kappa>_def)
-      apply (smt (z3) \<kappa>.case_eq_if \<kappa>.collapse(1) \<kappa>.disc(1))
-      apply (smt (z3) \<kappa>.collapse(2) \<kappa>.exhaust_disc \<kappa>.simps(11) \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.inject(2) \<upsilon>.simps(5) is_\<omega>\<kappa>_def is_null\<kappa>_def)
-      apply (smt (z3) \<kappa>.case_eq_if \<kappa>.collapse(2) \<kappa>.disc(2) \<kappa>.disc(5) \<kappa>\<upsilon>.simps(2))
-      apply (metis \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1) \<kappa>\<upsilon>.simps(2) \<kappa>\<upsilon>.simps(3) \<upsilon>.disc(7) \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.inject(3) is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def is_null\<kappa>_def)
-      by (smt (verit, best) \<kappa>.case_eq_if \<kappa>.disc(3) \<kappa>.disc(6) \<kappa>.expand)
- thus ?thesis
+
+lemma disc_countable: \<open>countable {\<kappa> . \<not>is_null\<kappa> \<kappa> \<and> AOT_model_discernible \<kappa> }\<close>
   using disc_countable_pre
-  by presburger
-qed
+  unfolding AOT_model_discernible_from_pre by blast
 
 text\<open>AOT requires any ordinary object to be @{emph \<open>possibly concrete\<close>} and that
      there is an object that is not actually, but possibly concrete.\<close>
