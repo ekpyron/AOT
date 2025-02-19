@@ -5407,6 +5407,69 @@ proof -
     by auto
 qed
 
+lemma \<alpha>\<sigma>_disc_infinite':
+  assumes \<open>\<alpha>\<sigma> x = \<alpha>\<sigma> y\<close>
+  and \<open>(\<And>r. (r \<in> x) = (infinite {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}))\<close>
+  shows \<open>x = y\<close>
+proof -
+  have \<open>{\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]} = {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    for r
+  proof(rule; rule)
+    fix \<kappa>
+    assume \<open>\<kappa> \<in> {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}\<close>
+    hence \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
+      by blast
+    hence \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+      by (metis AOT_model.AOT_term_of_var_cases AOT_sem_conj AOT_sem_denotes AOT_sem_exe Abs_rel_inverse UNIV_I model_disc urrel_to_rel_def)
+    thus \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+      by auto
+  next
+    fix \<kappa>
+    have den: \<open>AOT_model_denotes (Abs_rel (\<lambda>x. Rep_urrel r (\<kappa>\<upsilon> x)))\<close>
+      by (simp add: AOT_model_denotes_\<kappa>_def AOT_model_denotes_rel.abs_eq AOT_model_term_equiv_\<kappa>_def AOT_model_unary_regular urrel_null_false)
+    assume \<open>\<kappa> \<in> {\<kappa> . (\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))}\<close>
+    hence 0: \<open>(\<forall>\<kappa>' . \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>') \<and> AOT_model_valid_in w\<^sub>0 (Rep_urrel r (\<kappa>\<upsilon> \<kappa>))\<close>
+      by blast
+    have \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa>]\<close>
+      using 0[THEN conjunct1] model_disc
+      by (metis "0" AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def urrel_null_false)
+    moreover have \<open>[w\<^sub>0 \<Turnstile> [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
+      unfolding urrel_to_rel_def AOT_sem_exe Abs_rel_inverse[simplified]
+      using den AOT_sem_denotes
+      using "russell-axiom[exe,1].\<psi>_denotes_asm" calculation
+      using "0" by blast
+    ultimately have \<open>[w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]\<close>
+      by (simp add: AOT_sem_conj)
+    thus \<open>\<kappa> \<in> {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<guillemotleft>urrel_to_rel r\<guillemotright>]\<kappa>]}\<close>
+      by blast
+  qed
+  thus ?thesis
+    using \<alpha>\<sigma>_disc_infinite assms
+    by auto
+qed
+
+
+lemma countable_disc_prop: \<open>countable {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]}\<close>
+proof -
+  have \<open>{\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]} = {\<kappa>::\<kappa>. \<not>is_null\<kappa> \<kappa> \<and> (\<forall>\<kappa>'. \<kappa>\<upsilon> \<kappa> = \<kappa>\<upsilon> \<kappa>' \<longrightarrow> \<kappa> = \<kappa>')}\<close>
+    using model_disc
+    by (metis (full_types) AOT_model.AOT_term_of_var_cases AOT_model_denotes_\<kappa>_def AOT_sem_denotes AOT_sem_exe Collect_cong)
+  thus ?thesis
+    by (simp add: disc_countable)
+qed
+
+lemma countable_disc_conj_prop: \<open>countable {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & \<phi>{\<kappa>}]}\<close>
+proof -
+  {
+    fix x
+    assume \<open>x \<in> {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & \<phi>{\<kappa>}]}\<close>
+    hence \<open>x \<in> {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa>]}\<close>
+      using "con-dis-i-e:2:a" by blast
+  }
+  thus ?thesis
+    using countable_disc_prop countable_subset subsetI by blast
+qed
+
 AOT_theorem numbers_zero_den: \<open>[\<lambda>x Numbers(x,[\<lambda>z D!z & z \<noteq>\<^sub>D z])]\<down>\<close>
 proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GEN)
   AOT_modally_strict {
@@ -5660,9 +5723,37 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
         by (simp add: \<alpha>\<sigma>_disc' \<alpha>\<sigma>_eq)
     }
     moreover {
-      assume \<open>infinite {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}\<close>
+      assume infinite_assm: \<open>infinite {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}\<close>
+      hence countable_assm: \<open>countable {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}\<close>
+        by (simp add: countable_disc_conj_prop)
+      have 1: \<open>bij_betw (to_nat_on {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}) {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]} UNIV\<close>
+        by (simp add: countable_assm infinite_assm to_nat_on_infinite)
+      have 2: \<open>bij_betw (from_nat_into {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}) UNIV {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [H]\<kappa>]}\<close>
+        by (simp add: countable_assm infinite_assm bij_betw_from_nat_into)
+        thm to_nat_on_infinite bij_betw_from_nat_into
+      thm \<alpha>\<sigma>_disc_infinite'
+      {
+        fix r
+        assume \<open>r \<in> a\<close>
+        hence \<open>infinite {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}\<close>
+          using r_in_a_cond infinite_assm bij_betw_finite by blast
+      }
+      moreover {
+        fix r
+        assume 3: \<open>infinite {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}\<close>
+        hence 4: \<open>countable {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}\<close>
+          by (simp add: countable_disc_conj_prop)
+        have \<open>(\<exists>f . bij_betw f {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}  {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [H] \<kappa>]})\<close>
+          apply (rule exI[where x="from_nat_into {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [H] \<kappa>]} o to_nat_on {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}"])
+          using "2" "3" "local.4" bij_betw_trans to_nat_on_infinite by blast
+        find_theorems \<open>countable ?s\<close>
+        hence \<open>r \<in> a\<close>
+          using r_in_a_cond
+          by blast
+      }
       hence \<open>a = b\<close>
-        sorry
+        using \<alpha>\<sigma>_disc_infinite'
+        using \<alpha>\<sigma>_eq calculation by blast
     }
     ultimately have \<open>a = b\<close>
       by blast
