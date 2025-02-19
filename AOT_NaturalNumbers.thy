@@ -2669,6 +2669,17 @@ AOT_theorem "numbers[den]":
                dest!: numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"])
   using "&E" by blast+
 
+AOT_theorem "num:1": \<open>\<exists>x Numbers(x,G)\<close>
+  by (AOT_subst \<open>Numbers(x,G)\<close> \<open>[A!]x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D G)\<close> for: x)
+     (auto simp: "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst]]
+                 "A-objects"[axiom_inst])
+
+AOT_theorem "num:2": \<open>\<exists>!x Numbers(x,G)\<close>
+  by (AOT_subst \<open>Numbers(x,G)\<close> \<open>[A!]x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D G)\<close> for: x)
+     (auto simp: "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst]]
+                 "A-objects!")
+
+
 AOT_theorem "num-tran:1":
   \<open>G \<approx>\<^sub>D H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
 proof (safe intro!: "\<rightarrow>I" "\<equiv>I")
@@ -2722,11 +2733,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
     using "approx-nec:2"[THEN "\<equiv>E"(2), OF GEN] by blast
 qed
 
-AOT_theorem "num-tran:3":
-  \<open>G \<equiv>\<^sub>D H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
-  using "apE-eqE:1" "Hypothetical Syllogism" "num-tran:1" by blast
-
-AOT_theorem "pre-Hume":
+AOT_theorem "pre-Hume:1":
   \<open>(Numbers(x,G) & Numbers(y,H)) \<rightarrow> (x = y \<equiv> G \<approx>\<^sub>D H)\<close>
 proof(safe intro!: "\<rightarrow>I" "\<equiv>I"; frule "&E"(1); drule "&E"(2))
   AOT_assume \<open>Numbers(x, G)\<close>
@@ -2754,6 +2761,64 @@ next
     finally AOT_show \<open>x[F] \<equiv> y[F]\<close>.
   qed
 qed
+
+AOT_theorem "pre-Hume:2": \<open>\<exists>x(Numbers(x,F) & Numbers(x,G)) \<equiv> F \<approx>\<^sub>D G\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>\<exists>x (Numbers(x,F) & Numbers(x,G))\<close>
+  then AOT_obtain x where \<open>Numbers(x,F) & Numbers(x,G)\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_thus \<open>F \<approx>\<^sub>D G\<close>
+    using "num-tran:2" "vdash-properties:10" by blast
+next
+  AOT_assume 0: \<open>F \<approx>\<^sub>D G\<close>
+  AOT_have \<open>\<exists>x(Numbers(x,F))\<close>
+    by (simp add: "num:1")
+  then AOT_obtain x where x: \<open>Numbers(x,F)\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_have \<open>\<exists>x(Numbers(x,G))\<close>
+    by (simp add: "num:1")
+  then AOT_obtain y where y: \<open>Numbers(y,G)\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_show \<open>\<exists>x(Numbers(x,F) & Numbers(x,G))\<close>
+    using x y "&I" "\<exists>I"
+    by (metis (no_types, lifting) "0" "cqt:2"(1) "num-tran:1.unvarify_G.unvarify_H.unvarify_x.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2")
+qed
+
+AOT_theorem "pre-Hume:3": \<open>\<exists>x\<exists>y(Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y) & x = y) \<equiv> F \<approx>\<^sub>D G\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume \<open>\<exists>x\<exists>y(Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y) & x = y)\<close>
+  then AOT_obtain x y where 0: \<open>Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y) & x = y\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_have \<open>Numbers(x,G)\<close>
+    using 0
+    by (metis (no_types, lifting) "con-dis-i-e:1" "con-dis-i-e:2:b" "con-dis-taut:1.\<rightarrow>E" "cqt:2"(1) "num-tran:1.unvarify_G.unvarify_H.unvarify_x.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1" "pre-Hume:1.unvarify_x.unvarify_G.unvarify_y.unvarify_H.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1")
+  AOT_thus \<open>F \<approx>\<^sub>D G\<close>
+    using 0
+    by (meson "con-dis-taut:1.\<rightarrow>E" "num-tran:2" "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E")
+next
+  AOT_assume 0: \<open>F \<approx>\<^sub>D G\<close>
+  AOT_have \<open>\<exists>!x(Numbers(x,F))\<close>
+    by (simp add: "num:2")
+  then AOT_obtain x where 1: \<open>Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x)\<close>
+    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "\<exists>E"[rotated] by blast
+  AOT_have \<open>\<exists>!x(Numbers(x,G))\<close>
+    by (simp add: "num:2")
+  then AOT_obtain y where 2: \<open>Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y)\<close>
+    using "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "\<exists>E"[rotated] by blast
+
+  AOT_have \<open>Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y) & x = y\<close>
+    using 1 2
+    by (metis (no_types, lifting) "0" "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "cqt:2"(1) "id-eq:2" "num-tran:1.unvarify_G.unvarify_H.unvarify_x.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2" "rule-ui:1" "vdash-properties:10")
+  AOT_thus \<open>\<exists>x\<exists>y(Numbers(x,F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) & Numbers(y,G) & \<forall>z(Numbers(z,G) \<rightarrow> z = y) & x = y)\<close>
+    using"\<exists>I"
+    by meson
+qed
+
+
+AOT_theorem "num-tran2":
+  \<open>G \<equiv>\<^sub>D H \<rightarrow> (Numbers(x, G) \<equiv> Numbers(x, H))\<close>
+  using "apE-eqE:1" "Hypothetical Syllogism" "num-tran:1" by blast
+
 
 AOT_theorem "two-num-not":
   \<open>\<exists>u\<exists>v(u \<noteq> v) \<rightarrow> \<exists>x\<exists>G\<exists>H(Numbers(x,G) & Numbers(x, H) & \<not>G \<equiv>\<^sub>D H)\<close>
@@ -2841,7 +2906,7 @@ proof (rule "\<rightarrow>I")
     qed
   qed
   ultimately AOT_have \<open>a = b\<close>
-    using "pre-Hume"[unvarify G H, OF eqE_den, OF eqE_den, THEN "\<rightarrow>E",
+    using "pre-Hume:1"[unvarify G H, OF eqE_den, OF eqE_den, THEN "\<rightarrow>E",
                      OF "&I", THEN "\<equiv>E"(2)] by blast
   AOT_hence num_a_eq_d: \<open>Numbers(a, [\<lambda>x x =\<^sub>D d])\<close>
     using num_b_eq_d "rule=E" id_sym by fast
@@ -2865,16 +2930,6 @@ proof (rule "\<rightarrow>I")
      apply (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x x =\<^sub>D d]\<guillemotright>\<close>])
     by (safe intro!: eqE_den "&I" num_a_eq_c num_a_eq_d not_equiv)
 qed
-
-AOT_theorem "num:1": \<open>\<exists>x Numbers(x,G)\<close>
-  by (AOT_subst \<open>Numbers(x,G)\<close> \<open>[A!]x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D G)\<close> for: x)
-     (auto simp: "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst]]
-                 "A-objects"[axiom_inst])
-
-AOT_theorem "num:2": \<open>\<exists>!x Numbers(x,G)\<close>
-  by (AOT_subst \<open>Numbers(x,G)\<close> \<open>[A!]x & \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D G)\<close> for: x)
-     (auto simp: "numbers[den]"[THEN "\<rightarrow>E", OF "cqt:2[const_var]"[axiom_inst]]
-                 "A-objects!")
 
 AOT_theorem "num-cont:1":
   \<open>\<exists>x\<exists>G(Numbers(x, G) & \<not>\<box>Numbers(x, G))\<close>
@@ -2983,6 +3038,63 @@ AOT_theorem "num-cont:3":
       ("cqt:2[lambda]" | rule "actuallyF:2"))
 
 
+AOT_theorem "num-cont:4":
+  \<open>\<^bold>\<A>Numbers(x, [G]) \<equiv> Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+proof -
+  AOT_have \<open>\<forall>F\<forall>G\<box>(\<exists>x (Numbers(x,F) & Numbers(x,G)) \<equiv> F \<approx>\<^sub>D G)\<close>
+    using "pre-Hume:2" RN GEN
+    by meson
+  moreover AOT_have den: \<open>[\<lambda>z \<^bold>\<A>[G]z]\<down>\<close>
+    by "cqt:2"
+  ultimately AOT_have \<open>\<box>(\<exists>x (Numbers(x,G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "\<forall>E"(1) "\<forall>E"(2) by blast
+  AOT_hence 0: \<open>\<^bold>\<A>(\<exists>x (Numbers(x,G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "nec-imp-act.\<rightarrow>E" by blast
+  AOT_hence 0: \<open>\<^bold>\<A>(\<exists>x (Numbers(x,G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]))) \<equiv> \<^bold>\<A>(G \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "Act-Basic:5" "intro-elim:3:a" by blast
+  AOT_hence \<open>\<^bold>\<A>(\<exists>x (Numbers(x,G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    using "actuallyF:1" "intro-elim:3:b" by blast
+  AOT_hence \<open>\<exists>x\<^bold>\<A>((Numbers(x,G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    by (meson "Act-Basic:10.\<equiv>E_1.\<exists>E'" "existential:2[const_var]")
+  then AOT_obtain a where x_prop: \<open>\<^bold>\<A>((Numbers(a,G) & Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<^bold>\<A>Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "Act-Basic:2.\<equiv>E_1.&E_2" by blast
+  moreover AOT_have \<open>\<box>(Numbers(a,[\<lambda>z \<^bold>\<A>[G]z]) \<rightarrow> \<box>(Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
+    using "RM:1.\<rightarrow>E" "cqt-orig:3" "num-cont:3" by blast
+  ultimately AOT_have D: \<open>Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])\<close>
+    using "sc-eq-fur:2.\<rightarrow>E.\<equiv>E_1" by blast
+  AOT_have B: \<open>\<^bold>\<A>Numbers(a,G)\<close>
+    using "Act-Basic:2.\<equiv>E_1.&E_1" x_prop by blast
+
+
+  AOT_show \<open>\<^bold>\<A>Numbers(x, [G]) \<equiv> Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume 0: \<open>\<^bold>\<A>Numbers(x,G)\<close>
+    AOT_hence \<open>\<^bold>\<A>\<exists>!y(Numbers(y,G))\<close>
+      using "RA[2]" "num:2" by blast
+    AOT_hence \<open>\<exists>!y\<^bold>\<A>(Numbers(y,G))\<close>
+      by (simp add: "A-Exists:1.\<equiv>E_1")
+    AOT_hence \<open>a = x\<close>
+      by (meson "0" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "rule=I:1" "uni-most.\<rightarrow>E.\<forall>E_1.\<forall>E_1.\<rightarrow>E.rule=E'" local.B)
+    AOT_thus \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+      using D by (meson "rule=E'")
+  next
+    AOT_assume 0: \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
+    AOT_hence \<open>\<^bold>\<A>\<exists>!y(Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]))\<close>
+      by (simp add: "RA[2]" "actuallyF:2" "df-rigid-rel:1.\<equiv>\<^sub>d\<^sub>fE.&E_1" "num:2.unvarify_G.\<forall>E_1")
+    AOT_hence \<open>\<exists>!y\<^bold>\<A>(Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]))\<close>
+      using "A-Exists:1.\<equiv>E_1" by blast
+    AOT_hence \<open>a = x\<close>
+      using D
+      by (metis (no_types, lifting) "0" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "eq-part:1.unvarify_F.\<forall>E_1" "pre-Hume:1.unvarify_x.unvarify_G.unvarify_y.unvarify_H.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2.rule=E'" "rule=I:1" den)
+    AOT_thus \<open>\<^bold>\<A>Numbers(x, G)\<close>
+      by (meson "Act-Basic:2.\<equiv>E_1.&E_1" "rule=E" x_prop)
+  qed
+qed
+
+(******************** START HERE *********************)
+
 AOT_theorem "num-uniq": \<open>\<^bold>\<iota>x Numbers(x, G)\<down>\<close>
   using "\<equiv>E"(2) "A-Exists:2" "RA[2]" "num:2" by blast
 
@@ -3074,7 +3186,7 @@ AOT_act_theorem "hume:1": \<open>Numbers(#G, G)\<close>
   using "num-uniq" "vdash-properties:10" "y-in:3" by blast
 
 AOT_act_theorem "hume:2": \<open>#F = #G \<equiv> F \<approx>\<^sub>D G\<close>
-  by (safe intro!: "pre-Hume"[unvarify x y, OF "num-def:2",
+  by (safe intro!: "pre-Hume:1"[unvarify x y, OF "num-def:2",
                               OF "num-def:2", THEN "\<rightarrow>E"] "&I" "hume:1")
 
 AOT_act_theorem "hume:3": \<open>#F = #G \<equiv> \<exists>R (R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oD G)\<close>
@@ -3141,7 +3253,7 @@ next
   moreover AOT_have \<open>\<forall>z (Numbers(z, F) \<rightarrow> z = x)\<close>
                 and \<open>\<forall>z (Numbers(z, G) \<rightarrow> z = x)\<close>
     using calculation
-    by (auto intro!: GEN "\<rightarrow>I" "pre-Hume"[THEN "\<rightarrow>E", OF "&I", THEN "\<equiv>E"(2),
+    by (auto intro!: GEN "\<rightarrow>I" "pre-Hume:1"[THEN "\<rightarrow>E", OF "&I", THEN "\<equiv>E"(2),
                                          rotated 2, OF "eq-part:1"] dest: "&E")
   ultimately AOT_have \<open>Numbers(x, F) & \<forall>z(Numbers(z,F) \<rightarrow> z = x) &
                        Numbers(x, G) & \<forall>z (Numbers(z, G) \<rightarrow> z = x) & x = x\<close>
@@ -3202,7 +3314,7 @@ proof -
                        THEN CBF[THEN "\<rightarrow>E"], THEN "\<forall>E"(2)]
     by (metis "\<equiv>E"(1) "sc-eq-fur:2" "vdash-properties:6")
   AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> Numbers(x, G) & Numbers(y, G) \<rightarrow> x = y\<close> for y
-    using "pre-Hume"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated, OF "eq-part:1"]
+    using "pre-Hume:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated, OF "eq-part:1"]
           "\<rightarrow>I" by blast
   show ?thesis
   proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
@@ -3218,7 +3330,7 @@ proof -
   next
     AOT_assume \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
     AOT_hence \<open>a = x\<close>
-      using "pre-Hume"[unvarify G H, THEN "\<rightarrow>E", OF act_den, OF act_den, OF "&I",
+      using "pre-Hume:1"[unvarify G H, THEN "\<rightarrow>E", OF act_den, OF act_den, OF "&I",
                        OF num_a_act_g, THEN "\<equiv>E"(2)]
             "eq-part:1"[unvarify F, OF act_den] by blast
     AOT_thus \<open>\<^bold>\<A>Numbers(x, G)\<close>
@@ -3272,7 +3384,7 @@ proof(rule "\<rightarrow>I")
     by (auto intro!: eqD[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" GEN "\<rightarrow>I" elim: "\<forall>E"(2))
   moreover AOT_assume \<open>Numbers(x, G)\<close>
   ultimately AOT_have \<open>Numbers(x, F)\<close>
-    using "num-tran:3"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2)]
+    using "num-tran2"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2)]
     by blast
   moreover AOT_have \<open>F \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[F]z]\<close>
     using \<theta> "approx-nec:1" "\<rightarrow>E" by blast
@@ -3355,7 +3467,7 @@ proof -
     apply (rule "eq-num:3"[unvarify G])
     by "cqt:2[lambda]"
   AOT_hence numbers0: \<open>Numbers(0, [\<lambda>x [D!]x & \<^bold>\<A>x \<noteq>\<^sub>D x])\<close>
-  proof (rule "num-tran:3"[unvarify x G H, THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated 4])
+  proof (rule "num-tran2"[unvarify x G H, THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated 4])
     AOT_show \<open>[\<lambda>y \<^bold>\<A>[\<lambda>x D!x & x \<noteq>\<^sub>D x]y] \<equiv>\<^sub>D [\<lambda>x [D!]x & \<^bold>\<A>x \<noteq>\<^sub>D x]\<close>
     proof (safe intro!: eqD[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" Discernible.GEN "\<rightarrow>I" "cqt:2")
       fix u
@@ -4508,7 +4620,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
             AOT_hence num0G: \<open>Numbers(0, G)\<close>
               using "0F:1"[THEN "\<equiv>E"(1)] by blast
             AOT_hence \<open>x = 0\<close>
-              using "pre-Hume"[unvarify x, THEN "\<rightarrow>E", OF "zero:2", OF "&I",
+              using "pre-Hume:1"[unvarify x, THEN "\<rightarrow>E", OF "zero:2", OF "&I",
                                THEN "\<equiv>E"(2), OF num0G, OF numxG, OF "eq-part:1"]
                 id_sym by blast
             moreover AOT_have \<open>\<not>x = 0\<close>
@@ -4578,7 +4690,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           using "P'-eq"[THEN "\<rightarrow>E", OF "&I", OF "&I"] 
                  u_prop v_prop "&E" by meson
         AOT_hence \<open>x = y\<close>
-          using "pre-Hume"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), OF "&I"]
+          using "pre-Hume:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), OF "&I"]
                 v_prop u_prop "&E" by blast
       }
       text\<open>The second case handles x being equal to zero.\<close>
@@ -4639,7 +4751,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           by (safe_step intro!: "eqP'"[unvarify F, THEN "\<rightarrow>E"])
              (auto dest: "&E" intro!: "cqt:2" "&I")
         with 1 2 AOT_have \<open>x = y\<close>
-          by (auto intro!: "pre-Hume"[unvarify G H, THEN "\<rightarrow>E",
+          by (auto intro!: "pre-Hume:1"[unvarify G H, THEN "\<rightarrow>E",
                                       THEN "\<equiv>E"(2), rotated 3, OF 3]
                            "F-u[den]"[unvarify F] "cqt:2" "&I"
                    dest: "&E")
@@ -5483,6 +5595,7 @@ proof -
     using countable_disc_prop countable_subset subsetI by blast
 qed
 
+(* Note: actually not needed anymore and subsumed in the theorem below *)
 theorem numbers_zero_den[AOT_no_atp]: \<open>[v \<Turnstile> [\<lambda>x Numbers(x,[\<lambda>z D!z & z \<noteq>\<^sub>D z])]\<down>]\<close>
 proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GEN)
   AOT_modally_strict {
@@ -5630,9 +5743,8 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
       using 0 "\<equiv>I" "\<rightarrow>I" by auto
   }
 qed
-declare numbers_zero_den[AOT_no_atp]
 
-theorem numbers_prop_den: \<open>[v \<Turnstile> [\<lambda>x Numbers(x,G)]\<down>]\<close>
+theorem numbers_prop_den[AOT_no_atp]: \<open>[v \<Turnstile> [\<lambda>x Numbers(x,G)]\<down>]\<close>
 proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GEN)
   AOT_modally_strict {
     fix x y
@@ -5807,7 +5919,6 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
       using 1 "\<equiv>I" "\<rightarrow>I" by auto
   }
 qed
-declare numbers_prop_den[AOT_no_atp]
 declare AOT_no_atp[no_atp]
 
 (************************************ MODEL LEVEL PROOFS END *************************************)
@@ -5876,7 +5987,7 @@ proof(rule "\<rightarrow>I")
     proof (safe intro!:
           "num-cont:2"[THEN "\<rightarrow>E", OF \<xi>, THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"],
                        THEN "\<forall>E"(2), THEN "\<rightarrow>E"]
-          "num-tran:3"[THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated, OF Numbers_xF]
+          "num-tran2"[THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated, OF Numbers_xF]
           eqD[THEN "\<equiv>\<^sub>d\<^sub>fI"]
             "&I" "cqt:2[const_var]"[axiom_inst] Discernible.GEN "\<rightarrow>I")
       AOT_show \<open>[F]u \<equiv> [G]u\<close> for u
@@ -5995,7 +6106,7 @@ proof (safe intro!: "df-1-1:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "pred-thm:2" "&
   then AOT_obtain v where v_prop: \<open>[G]v & Numbers(z,G) & Numbers(y,[G]\<^sup>-\<^sup>v)\<close>
     using "Discernible.\<exists>E"[rotated] by meson
   AOT_show \<open>x = y\<close>
-  proof (rule "pre-Hume"[unvarify G H, OF "F-u[den]", OF "F-u[den]",
+  proof (rule "pre-Hume:1"[unvarify G H, OF "F-u[den]", OF "F-u[den]",
                          THEN "\<rightarrow>E", OF "&I", THEN "\<equiv>E"(2)])
     AOT_show \<open>Numbers(x, [F]\<^sup>-\<^sup>u)\<close>
       using u_prop "&E" by blast
@@ -6143,7 +6254,7 @@ proof (safe intro!: "nnumber:3"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)]
     "assume1:5"[unvarify x y, OF "zero:2", OF "zero:2", THEN "\<equiv>E"(2)]
     "\<or>I"(2) "assume1:2"[unvarify x y, OF "zero:2", OF "zero:2", THEN "\<equiv>E"(2)])
   fix u
-  AOT_have den: \<open>[\<lambda>x D!x & x =\<^sub>Du]\<down>\<close> by "cqt:2[lambda]"
+  AOT_have den: \<open>[\<lambda>x D!x & x =\<^sub>D u]\<down>\<close> by "cqt:2[lambda]"
   AOT_obtain a where a_prop: \<open>Numbers(a, [\<lambda>x D!x & x =\<^sub>D u])\<close>
     using "num:1"[unvarify G, OF den] "\<exists>E"[rotated] by blast
   AOT_have \<open>[\<bbbP>]0a\<close>
@@ -6234,7 +6345,7 @@ proof(rule "\<rightarrow>I")
     by (metis "\<equiv>E"(1) "nnumber:3")
   AOT_hence \<open>[\<lambda>x \<box>[\<nat>]x]x\<close>
     using 0[THEN "\<rightarrow>E"] by blast
-  AOT_thus \<open>\<box>[\<nat>]x\<close>
+  AOT_thus \<open>\<box>[\<nat>]x\<close>                  
     by (rule "\<beta>\<rightarrow>C"(1))
 qed
 
@@ -6477,7 +6588,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
           a_prop[THEN "&E"(1), THEN "&E"(1)]
           b_prop[THEN "&E"(1), THEN "&E"(1)] by blast
   AOT_thus \<open>y = z\<close>
-    using "pre-Hume"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), OF "&I",
+    using "pre-Hume:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), OF "&I",
                      OF a_prop[THEN "&E"(1), THEN "&E"(2)],
                      OF b_prop[THEN "&E"(1), THEN "&E"(2)]]
     by blast
