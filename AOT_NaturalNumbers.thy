@@ -3093,8 +3093,6 @@ proof -
   qed
 qed
 
-(******************** START HERE *********************)
-
 AOT_theorem "num-uniq": \<open>\<^bold>\<iota>x Numbers(x, G)\<down>\<close>
   using "\<equiv>E"(2) "A-Exists:2" "RA[2]" "num:2" by blast
 
@@ -3165,20 +3163,75 @@ proof (rule id_trans[OF "num-can:1"]; rule "equiv-desc-eq:2"[THEN "\<rightarrow>
                     \<^bold>\<A>([A!]x & \<forall>F (x[F] \<equiv> F \<approx>\<^sub>D G))\<close>.
 qed
 
-AOT_define NaturalCardinal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NaturalCardinal'(_')\<close>)
-  card: \<open>NaturalCardinal(x) \<equiv>\<^sub>d\<^sub>f \<exists>G(x = #G)\<close>
-
-AOT_theorem "natcard-nec": \<open>NaturalCardinal(x) \<rightarrow> \<box>NaturalCardinal(x)\<close>
-proof(rule "\<rightarrow>I")
-  AOT_assume \<open>NaturalCardinal(x)\<close>
-  AOT_hence \<open>\<exists>G(x = #G)\<close> using card[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  then AOT_obtain G where \<open>x = #G\<close> using "\<exists>E"[rotated] by blast
-  AOT_hence \<open>\<box>x = #G\<close> by (metis "id-nec:2" "\<rightarrow>E")
-  AOT_hence \<open>\<exists>G \<box>x = #G\<close> by (rule "\<exists>I")
-  AOT_hence \<open>\<box>\<exists>G x = #G\<close> by (metis Buridan "\<rightarrow>E")
-  AOT_thus \<open>\<box>NaturalCardinal(x)\<close>
-    by (AOT_subst_def card)
+AOT_theorem "eq-num:1": \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G\<close>
+proof -
+  AOT_have 0: \<open>#G\<down>\<close>
+    using "num-def:2" by force
+  AOT_find_theorems item: 47
+  AOT_have \<theta>: \<open>#G = \<^bold>\<iota>x Numbers(x,G) \<equiv> \<forall>x(\<^bold>\<A>Numbers(x,G) \<equiv> x = #G)\<close>
+    using descriptions[axiom_inst, unvarify y, OF 0]
+    by auto
+  AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x,G) \<equiv> \<forall>x(Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G)\<close>
+    apply (AOT_subst \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])\<close> \<open>\<^bold>\<A>Numbers(x,G)\<close> for: x)
+    using "num-cont:4"[symmetric]
+     apply (simp add: "num-cont:4")
+    using \<theta> by simp
+  moreover AOT_have \<open>#G =\<^bold>\<iota>x(Numbers(x,G))\<close>
+    using "num-def:1" "num-uniq" "rule-id-df:1" by blast
+  ultimately AOT_have \<open>\<forall>x(Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G)\<close>
+    using "intro-elim:3:a" by blast
+  thus ?thesis using "\<forall>E"(2) by blast
 qed
+
+AOT_theorem "eq-num:2": \<open>Numbers(#G, [\<lambda>y \<^bold>\<A>[G]y])\<close>
+proof -
+  AOT_have \<open>#G = #G\<close>
+    by (simp add: "rule=I:1" "num-def:2")
+  thus ?thesis
+    using "eq-num:1"[unvarify x, OF "num-def:2", THEN "\<equiv>E"(2)] by blast
+qed
+
+AOT_theorem "eq-num:3":
+  \<open>A!#G & \<forall>F (#G[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
+  by (auto intro!: "&I" "eq-num:2"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"],
+                                   THEN "&E"(1), THEN "&E"(1)]
+                   "eq-num:2"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)])
+
+AOT_theorem "eq-num:4": \<open>#G[G]\<close>
+  by (auto intro!: "eq-num:3"[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)]
+                   "eq-part:1"[unvarify F] simp: "cqt:2")
+
+
+AOT_theorem "eq-num:5": \<open>Rigid(G) \<rightarrow> Numbers(#G, G)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 1: \<open>Rigid(G)\<close>
+  AOT_hence \<open>\<box>\<forall>x(Numbers(x,G) \<rightarrow> \<box>Numbers(x,G))\<close>
+    by (simp add: "df-rigid-rel:1.\<equiv>\<^sub>d\<^sub>fE.&E_1" "num-cont:2.unvarify_G.\<forall>E_1.\<rightarrow>E")
+  AOT_hence \<theta>: \<open>\<forall>x(Numbers(x,G) \<rightarrow> \<box>Numbers(x,G))\<close>
+    using "oth-class-taut:8:b.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E.&E_1" "qml:2" axiom_inst by blast
+  AOT_hence \<open>\<exists>!x(Numbers(x,G)) \<rightarrow> \<forall>y(y = \<^bold>\<iota>x(Numbers(x,G)) \<rightarrow> Numbers(y,G))\<close>
+    using "!box-desc:2" "deduction-theorem" "vdash-properties:6" by blast
+  moreover AOT_have \<open>\<exists>!x Numbers(x,G)\<close>
+    by (simp add: "num:2")
+  ultimately AOT_have \<open>\<forall>y(y = \<^bold>\<iota>x(Numbers(x,G)) \<rightarrow> Numbers(y,G))\<close>
+    using "vdash-properties:10" by blast
+  AOT_hence \<open>#G = \<^bold>\<iota>x(Numbers(x,G)) \<rightarrow> Numbers(#G,G)\<close>
+    using "num-def:2" "rule-ui:1" by blast
+  AOT_thus \<open>Numbers(#G,G)\<close>
+    using "1" "approx-nec:1.unvarify_F.\<forall>E_1.\<rightarrow>E" "df-rigid-rel:1.\<equiv>\<^sub>d\<^sub>fE.&E_1" "eq-num:2" "num-def:2.unvarify_G.\<forall>E_1" "num-tran:1.unvarify_G.unvarify_H.unvarify_x.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2" eq_den_2 by blast
+qed
+
+AOT_theorem "hume-strict": \<open>(Rigid(F) & Rigid(G)) \<rightarrow> (#F = #G \<equiv> F \<approx>\<^sub>D G)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume 0: \<open>Rigid(F) & Rigid(G)\<close>
+  AOT_have \<open>(Numbers(#F,F) & Numbers(#G, G)) \<rightarrow> (#F = #G \<equiv> F \<approx>\<^sub>D G)\<close>
+    using "pre-Hume:1"
+    by (metis "cqt:2"(1) "deduction-theorem" "intro-elim:2" "num-def:2" "pre-Hume:1.unvarify_x.unvarify_G.unvarify_y.unvarify_H.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1" "pre-Hume:1.unvarify_x.unvarify_G.unvarify_y.unvarify_H.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2.rule=E'" "rule=I:1")
+  AOT_thus \<open>#F = #G \<equiv> F \<approx>\<^sub>D G\<close>
+    using 0
+    by (metis "con-dis-i-e:2:a" "con-dis-i-e:2:b" "cqt:2"(1) "eq-num:5.unvarify_G.\<forall>E_1.\<rightarrow>E" "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E")
+qed
+
 
 AOT_act_theorem "hume:1": \<open>Numbers(#G, G)\<close>
   apply (rule "=\<^sub>d\<^sub>fI"(1)[OF "num-def:1"])
@@ -3198,7 +3251,8 @@ AOT_act_theorem "hume:3": \<open>#F = #G \<equiv> \<exists>R (R |: F \<^sub>1\<^
 AOT_act_theorem "hume:4": \<open>F \<equiv>\<^sub>D G \<rightarrow> #F = #G\<close>
   by (metis "apE-eqE:1" "deduction-theorem" "hume:2" "\<equiv>E"(2) "\<rightarrow>E")
 
-AOT_theorem "hume-strict:1":
+(* TODO: OLD VERSION *)
+AOT_theorem "hume-strict:1-old":
   \<open>\<exists>x (Numbers(x, F) & Numbers(x, G)) \<equiv> F \<approx>\<^sub>D G\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>\<exists>x (Numbers(x, F) & Numbers(x, G))\<close>
@@ -3218,7 +3272,8 @@ next
     by (rule "\<exists>I")
 qed
 
-AOT_theorem "hume-strict:2":
+(* TODO: OLD VERSION *)
+AOT_theorem "hume-strict:2-old":
   \<open>\<exists>x\<exists>y (Numbers(x, F) &
          \<forall>z(Numbers(z,F) \<rightarrow> z = x) &
          Numbers(y, G) &
@@ -3243,11 +3298,11 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_hence \<open>\<exists>y (Numbers(y, F) & Numbers(y, G))\<close>
     by (rule "\<exists>I")
   AOT_thus \<open>F \<approx>\<^sub>D G\<close>
-    using "hume-strict:1"[THEN "\<equiv>E"(1)] by blast
+    using "hume-strict:1-old"[THEN "\<equiv>E"(1)] by blast
 next
   AOT_assume \<open>F \<approx>\<^sub>D G\<close>
   AOT_hence \<open>\<exists>x (Numbers(x, F) & Numbers(x, G))\<close>
-    using "hume-strict:1"[THEN "\<equiv>E"(2)] by blast
+    using "hume-strict:1-old"[THEN "\<equiv>E"(2)] by blast
   then AOT_obtain x where \<open>Numbers(x, F) & Numbers(x, G)\<close>
     using "\<exists>E"[rotated] by blast
   moreover AOT_have \<open>\<forall>z (Numbers(z, F) \<rightarrow> z = x)\<close>
@@ -3263,114 +3318,11 @@ next
     by (auto intro!: "\<exists>I")
 qed
 
-AOT_theorem unotEu: \<open>\<not>\<exists>y[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
-proof(rule "raa-cor:2")
-  AOT_assume \<open>\<exists>y[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
-  then AOT_obtain y where \<open>[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
-    using "\<exists>E"[rotated] by blast
-  AOT_hence 0: \<open>D!y & y \<noteq>\<^sub>D y\<close>
-    by (rule "\<beta>\<rightarrow>C"(1))
-  AOT_hence \<open>\<not>(y =\<^sub>D y)\<close>
-    using "&E"(2) "\<equiv>E"(1) "thm-neg=D" by blast
-  moreover AOT_have \<open>y =\<^sub>D y\<close>
-    by (metis 0[THEN "&E"(1)] "disc=Dequiv:1")
-  ultimately AOT_show \<open>p & \<not>p\<close> for p
-    by (metis "raa-cor:3")
-qed
+AOT_define NaturalCardinal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>NaturalCardinal'(_')\<close>)
+  card: \<open>NaturalCardinal(x) \<equiv>\<^sub>d\<^sub>f \<exists>G(x = #G)\<close>
 
-AOT_define zero :: \<open>\<kappa>\<^sub>s\<close> (\<open>0\<close>)
-  "zero:1": \<open>0 =\<^sub>d\<^sub>f #[\<lambda>x D!x & x \<noteq>\<^sub>D x]\<close>
 
-AOT_theorem "zero:2": \<open>0\<down>\<close>
-  by (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"]; rule "num-def:2"[unvarify G]; "cqt:2")
-
-AOT_theorem "zero-card": \<open>NaturalCardinal(0)\<close>
-  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"])
-   apply (rule "num-def:2"[unvarify G]; "cqt:2")
-  apply (rule card[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-  apply (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x [D!]x & x \<noteq>\<^sub>D x]\<guillemotright>\<close>])
-   apply (rule "rule=I:1"; rule "num-def:2"[unvarify G]; "cqt:2")
-  by "cqt:2"
-
-AOT_theorem "eq-num:1":
-  \<open>\<^bold>\<A>Numbers(x, G) \<equiv> Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])\<close>
-proof -
-  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2"
-  AOT_have \<open>\<box>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
-    using "hume-strict:1"[unvarify G, OF act_den, THEN RN].
-  AOT_hence \<open>\<^bold>\<A>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])) \<equiv> G \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
-    using "nec-imp-act"[THEN "\<rightarrow>E"] by fast
-  AOT_hence \<open>\<^bold>\<A>(\<exists>x(Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
-    using "actuallyF:1" "Act-Basic:5" "\<equiv>E"(1) "\<equiv>E"(2) by fast
-  AOT_hence \<open>\<exists>x \<^bold>\<A>((Numbers(x, G) & Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])))\<close>
-    by (metis "Act-Basic:10" "intro-elim:3:a")
-  then AOT_obtain a where \<open>\<^bold>\<A>(Numbers(a, G) & Numbers(a,[\<lambda>z \<^bold>\<A>[G]z]))\<close>
-    using "\<exists>E"[rotated] by blast
-  AOT_hence act_a_num_G: \<open>\<^bold>\<A>Numbers(a, G)\<close>
-     and act_a_num_actG: \<open>\<^bold>\<A>Numbers(a,[\<lambda>z \<^bold>\<A>[G]z])\<close>
-    using "Act-Basic:2" "&E" "\<equiv>E"(1) by blast+
-  AOT_hence num_a_act_g: \<open>Numbers(a, [\<lambda>z \<^bold>\<A>[G]z])\<close>
-    using "num-cont:2"[unvarify G, OF act_den, THEN "\<rightarrow>E", OF "actuallyF:2",
-                       THEN CBF[THEN "\<rightarrow>E"], THEN "\<forall>E"(2)]
-    by (metis "\<equiv>E"(1) "sc-eq-fur:2" "vdash-properties:6")
-  AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> Numbers(x, G) & Numbers(y, G) \<rightarrow> x = y\<close> for y
-    using "pre-Hume:1"[THEN "\<rightarrow>E", THEN "\<equiv>E"(2), rotated, OF "eq-part:1"]
-          "\<rightarrow>I" by blast
-  show ?thesis
-  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
-    AOT_assume \<open>\<^bold>\<A>Numbers(x, G)\<close>
-    AOT_hence \<open>\<^bold>\<A>x = a\<close>
-      using 0[THEN "RA[2]", THEN "act-cond"[THEN "\<rightarrow>E"], THEN "\<rightarrow>E",
-              OF "Act-Basic:2"[THEN "\<equiv>E"(2)], OF "&I"]
-            act_a_num_G by blast
-    AOT_hence \<open>x = a\<close> by (metis "id-act:1" "\<equiv>E"(2))
-    AOT_hence \<open>a = x\<close> using id_sym by auto
-    AOT_thus \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
-      using "rule=E" num_a_act_g by fast
-  next
-    AOT_assume \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close>
-    AOT_hence \<open>a = x\<close>
-      using "pre-Hume:1"[unvarify G H, THEN "\<rightarrow>E", OF act_den, OF act_den, OF "&I",
-                       OF num_a_act_g, THEN "\<equiv>E"(2)]
-            "eq-part:1"[unvarify F, OF act_den] by blast
-    AOT_thus \<open>\<^bold>\<A>Numbers(x, G)\<close>
-      using act_a_num_G "rule=E" by fast
-  qed
-qed
-
-AOT_theorem "eq-num:2": \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G\<close>
-proof -
-  AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> x = \<^bold>\<iota>x Numbers(x, G) \<equiv> \<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = x)\<close> for x
-    by (AOT_subst (reverse) \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[G]z])\<close> \<open>\<^bold>\<A>Numbers(x, G)\<close> for: x)
-       (auto simp: "eq-num:1" descriptions[axiom_inst])
-  AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G) \<equiv> \<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close>
-    using 0[unvarify x, OF "num-def:2"].
-  moreover AOT_have \<open>#G = \<^bold>\<iota>x Numbers(x, G)\<close>
-    using "num-def:1" "num-uniq" "rule-id-df:1" by blast
-  ultimately AOT_have \<open>\<forall>y (Numbers(y, [\<lambda>z \<^bold>\<A>[G]z]) \<equiv> y = #G)\<close>
-    using "\<equiv>E" by blast
-  thus ?thesis using "\<forall>E"(2) by blast
-qed
-
-AOT_theorem "eq-num:3": \<open>Numbers(#G, [\<lambda>y \<^bold>\<A>[G]y])\<close>
-proof -
-  AOT_have \<open>#G = #G\<close>
-    by (simp add: "rule=I:1" "num-def:2")
-  thus ?thesis
-    using "eq-num:2"[unvarify x, OF "num-def:2", THEN "\<equiv>E"(2)] by blast
-qed
-
-AOT_theorem "eq-num:4":
-  \<open>A!#G & \<forall>F (#G[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z])\<close>
-  by (auto intro!: "&I" "eq-num:3"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"],
-                                   THEN "&E"(1), THEN "&E"(1)]
-                   "eq-num:3"[THEN numbers[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "&E"(2)])
-
-AOT_theorem "eq-num:5": \<open>#G[G]\<close>
-  by (auto intro!: "eq-num:4"[THEN "&E"(2), THEN "\<forall>E"(2), THEN "\<equiv>E"(2)]
-                   "eq-part:1"[unvarify F] simp: "cqt:2")
-
-AOT_theorem "eq-num:6": \<open>Numbers(x, G) \<rightarrow> NaturalCardinal(x)\<close>
+AOT_theorem "eq-df-num:1": \<open>Numbers(x, G) \<rightarrow> NaturalCardinal(x)\<close>
 proof(rule "\<rightarrow>I")
   AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F
     by "cqt:2"
@@ -3391,20 +3343,21 @@ proof(rule "\<rightarrow>I")
   ultimately AOT_have \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[F]z])\<close>
     using "num-tran:1"[unvarify H, OF act_den, THEN "\<rightarrow>E", THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>x = #F\<close>
-    using "eq-num:2"[THEN "\<equiv>E"(1)] by blast
+    using "eq-num:1"[THEN "\<equiv>E"(1)] by blast
   AOT_hence \<open>\<exists>F x = #F\<close>
     by (rule "\<exists>I")
   AOT_thus \<open>NaturalCardinal(x)\<close>
     using card[THEN "\<equiv>\<^sub>d\<^sub>fI"] by blast
 qed
 
-AOT_theorem "eq-df-num": \<open>\<exists>G (x = #G) \<equiv> \<exists>G (Numbers(x,G))\<close>
+
+AOT_theorem "eq-df-num:2": \<open>\<exists>G (x = #G) \<equiv> \<exists>G (Numbers(x,G))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>\<exists>G (x = #G)\<close>
   then AOT_obtain P where \<open>x = #P\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[P]z])\<close>
-    using "eq-num:2"[THEN "\<equiv>E"(2)] by blast
+    using "eq-num:1"[THEN "\<equiv>E"(2)] by blast
   moreover AOT_have \<open>[\<lambda>z \<^bold>\<A>[P]z]\<down>\<close> by "cqt:2"
   ultimately AOT_show \<open>\<exists>G(Numbers(x,G))\<close> by (rule "\<exists>I")
 next
@@ -3412,34 +3365,88 @@ next
   then AOT_obtain Q where \<open>Numbers(x,Q)\<close>
     using "\<exists>E"[rotated] by blast
   AOT_hence \<open>NaturalCardinal(x)\<close>
-    using "eq-num:6"[THEN "\<rightarrow>E"] by blast
+    using "eq-df-num:1"[THEN "\<rightarrow>E"] by blast
   AOT_thus \<open>\<exists>G (x = #G)\<close>
     using card[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
 qed
 
+AOT_theorem "natcard-nec:1": \<open>NaturalCardinal(x) \<rightarrow> \<box>NaturalCardinal(x)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>NaturalCardinal(x)\<close>
+  AOT_hence \<open>\<exists>G(x = #G)\<close> using card[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
+  then AOT_obtain G where \<open>x = #G\<close> using "\<exists>E"[rotated] by blast
+  AOT_hence \<open>\<box>x = #G\<close> by (metis "id-nec:2" "\<rightarrow>E")
+  AOT_hence \<open>\<exists>G \<box>x = #G\<close> by (rule "\<exists>I")
+  AOT_hence \<open>\<box>\<exists>G x = #G\<close> by (metis Buridan "\<rightarrow>E")
+  AOT_thus \<open>\<box>NaturalCardinal(x)\<close>
+    by (AOT_subst_def card)
+qed
+
+AOT_theorem "natcard-nec:2": \<open>Numbers(x,G) \<rightarrow> \<box>NaturalCardinal(x)\<close>
+  using "Hypothetical Syllogism" "eq-df-num:1" "natcard-nec:1" by blast
+
 AOT_theorem "card-en": \<open>NaturalCardinal(x) \<rightarrow> \<forall>F(x[F] \<equiv> x = #F)\<close>
-proof(rule "\<rightarrow>I"; rule GEN)
-  AOT_have act_den: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2"
+proof(safe intro!: "\<rightarrow>I" GEN)
   fix F
   AOT_assume \<open>NaturalCardinal(x)\<close>
-  AOT_hence \<open>\<exists>F x = #F\<close>
-    using card[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  then AOT_obtain P where x_def: \<open>x = #P\<close>
+  AOT_hence \<open>\<exists>G(x = #G)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" card by blast
+  then AOT_obtain P where x_eq: \<open>x = #P\<close>
     using "\<exists>E"[rotated] by blast
-  AOT_hence num_x_act_P: \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[P]z])\<close>
-    using "eq-num:2"[THEN "\<equiv>E"(2)] by blast
+  AOT_hence \<theta>: \<open>Numbers(x, [\<lambda>z \<^bold>\<A>[P]z])\<close>
+    by (simp add: "cqt:2"(1) "eq-num:1.unvarify_x.unvarify_G.\<forall>E_1.\<forall>E_1.\<equiv>E_2")
   AOT_have \<open>#P[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[P]z]\<close>
-    using "eq-num:4"[THEN "&E"(2), THEN "\<forall>E"(2)] by blast
-  AOT_hence \<open>x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[P]z]\<close>
-    using x_def[symmetric] "rule=E" by fast
-  also AOT_have \<open>\<dots> \<equiv> Numbers(x, [\<lambda>z \<^bold>\<A>[F]z])\<close>
-    using "num-tran:1"[unvarify G H, OF act_den, OF act_den]
-    using "num-tran:2"[unvarify G H, OF act_den, OF act_den]
-    by (metis "&I" "deduction-theorem" "\<equiv>I" "\<equiv>E"(2) num_x_act_P)
+    by (simp add: "cqt:2"(1) "deduction-theorem" "eq-num:3.unvarify_G.\<forall>E_1.&E_2.\<forall>E_1.\<equiv>E_1" "eq-num:3.unvarify_G.\<forall>E_1.&E_2.\<forall>E_1.\<equiv>E_2" "intro-elim:2")
+  AOT_hence \<xi>: \<open>x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[P]z]\<close>
+    using x_eq
+    by (metis "cqt:2"(1) "deduction-theorem" "eq-num:1.unvarify_x.unvarify_G.\<forall>E_1.\<forall>E_1.\<equiv>E_2" "intro-elim:2" "numbers.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<equiv>E_1" "numbers.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<equiv>E_2")
+
+  AOT_have 0: \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close>
+    by "cqt:2"
+  AOT_have 1: \<open>[\<lambda>z \<^bold>\<A>[P]z]\<down>\<close>
+    by "cqt:2"
+  AOT_have \<open>x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[P]z]\<close>
+    by (simp add: \<xi>)
+  also AOT_have \<open>\<dots> \<equiv> (Numbers(x,[\<lambda>z \<^bold>\<A>[F]z]) \<equiv> Numbers(x,[\<lambda>z \<^bold>\<A>[P]z]))\<close>
+    by (metis (no_types, lifting) "0" "1" "cqt:2"(1) "deduction-theorem" "eq-num:1.unvarify_x.unvarify_G.\<forall>E_1.\<forall>E_1.\<equiv>E_2" "eq-num:3.unvarify_G.\<forall>E_1.&E_2.\<forall>E_1.\<equiv>E_1" "eq-num:4.unvarify_G.\<forall>E_1" "eq-part:2[terms].\<rightarrow>E" "eq-part:3[terms]" "intro-elim:2" "intro-elim:3:b" "num-tran:1.unvarify_G.unvarify_H.unvarify_x.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_2" "numbers.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<equiv>E_1" "numbers.\<equiv>\<^sub>d\<^sub>fE.&E_2.\<forall>E_1.\<equiv>E_2" \<theta> x_eq)
+  also AOT_have \<open>\<dots> \<equiv> Numbers(x,[\<lambda>z \<^bold>\<A>[F]z])\<close>
+    by (metis "deduction-theorem" "intro-elim:2" "intro-elim:3:b" \<theta>)
   also AOT_have \<open>\<dots> \<equiv> x = #F\<close>
-    using "eq-num:2" by blast
+    by (simp add: "eq-num:1")
   finally AOT_show \<open>x[F] \<equiv> x = #F\<close>.
 qed
+
+
+AOT_theorem unotEu: \<open>\<not>\<exists>y[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
+proof(rule "raa-cor:2")
+  AOT_assume \<open>\<exists>y[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
+  then AOT_obtain y where \<open>[\<lambda>x D!x & x \<noteq>\<^sub>D x]y\<close>
+    using "\<exists>E"[rotated] by blast
+  AOT_hence 0: \<open>D!y & y \<noteq>\<^sub>D y\<close>
+    by (rule "\<beta>\<rightarrow>C"(1))
+  AOT_hence \<open>\<not>(y =\<^sub>D y)\<close>
+    using "&E"(2) "\<equiv>E"(1) "thm-neg=D" by blast
+  moreover AOT_have \<open>y =\<^sub>D y\<close>
+    by (metis 0[THEN "&E"(1)] "disc=Dequiv:1")
+  ultimately AOT_show \<open>p & \<not>p\<close> for p
+    by (metis "raa-cor:3")
+qed
+
+(******* START HERE *********)
+
+AOT_define zero :: \<open>\<kappa>\<^sub>s\<close> (\<open>0\<close>)
+  "zero:1": \<open>0 =\<^sub>d\<^sub>f #[\<lambda>x D!x & x \<noteq>\<^sub>D x]\<close>
+
+AOT_theorem "zero:2": \<open>0\<down>\<close>
+  by (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"]; rule "num-def:2"[unvarify G]; "cqt:2")
+
+AOT_theorem "zero-card": \<open>NaturalCardinal(0)\<close>
+  apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"])
+   apply (rule "num-def:2"[unvarify G]; "cqt:2")
+  apply (rule card[THEN "\<equiv>\<^sub>d\<^sub>fI"])
+  apply (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>[\<lambda>x [D!]x & x \<noteq>\<^sub>D x]\<guillemotright>\<close>])
+   apply (rule "rule=I:1"; rule "num-def:2"[unvarify G]; "cqt:2")
+  by "cqt:2"
 
 AOT_theorem "0F:1": \<open>\<not>\<exists>u [F]u \<equiv> Numbers(0, F)\<close>
 proof -
@@ -3464,7 +3471,7 @@ proof -
   AOT_have \<open>Numbers(0, [\<lambda>y \<^bold>\<A>[\<lambda>x D!x & x \<noteq>\<^sub>D x]y])\<close>
     apply (rule "=\<^sub>d\<^sub>fI"(2)[OF "zero:1"])
      apply (rule "num-def:2"[unvarify G]; "cqt:2")
-    apply (rule "eq-num:3"[unvarify G])
+    apply (rule "eq-num:2"[unvarify G])
     by "cqt:2[lambda]"
   AOT_hence numbers0: \<open>Numbers(0, [\<lambda>x [D!]x & \<^bold>\<A>x \<noteq>\<^sub>D x])\<close>
   proof (rule "num-tran2"[unvarify x G H, THEN "\<rightarrow>E", THEN "\<equiv>E"(1), rotated 4])
@@ -3515,7 +3522,11 @@ proof -
   qed
 qed
 
-AOT_theorem "0F:2": \<open>\<not>\<exists>u \<^bold>\<A>[F]u \<equiv> #F = 0\<close>
+
+AOT_theorem "0F:2": \<open>\<exists>u [F]u \<equiv> \<exists>x(Numbers(x,F) & x \<noteq> 0)\<close>
+  oops
+
+AOT_theorem "0F:3": \<open>\<not>\<exists>u \<^bold>\<A>[F]u \<equiv> #F = 0\<close>
 proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_assume 0: \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
   AOT_have \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
@@ -3533,13 +3544,13 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
     by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2"
   AOT_hence \<open>0 = #F\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
+    by (rule "eq-num:1"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
   AOT_thus \<open>#F = 0\<close> using id_sym by blast
 next
   AOT_assume \<open>#F = 0\<close>
   AOT_hence \<open>0 = #F\<close> using id_sym by blast
   AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)])
+    by (rule "eq-num:1"[unvarify x, OF "zero:2", THEN "\<equiv>E"(2)])
   AOT_hence 0: \<open>\<not>\<exists>u [\<lambda>z \<^bold>\<A>[F]z]u\<close>
     by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(2)]) "cqt:2"
   AOT_show \<open>\<not>\<exists>u \<^bold>\<A>[F]u\<close>
@@ -3556,7 +3567,8 @@ next
   qed
 qed
 
-AOT_theorem "0F:3": \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
+
+AOT_theorem "0F:4": \<open>\<box>\<not>\<exists>u [F]u \<rightarrow> #F = 0\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<box>\<not>\<exists>u [F]u\<close>
   AOT_hence 0: \<open>\<not>\<diamond>\<exists>u [F]u\<close>
@@ -3580,11 +3592,11 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>Numbers(0,[\<lambda>z \<^bold>\<A>[F]z])\<close>
     by (safe intro!: "0F:1"[unvarify F, THEN "\<equiv>E"(1)]) "cqt:2"
   AOT_hence \<open>0 = #F\<close>
-    by (rule "eq-num:2"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
+    by (rule "eq-num:1"[unvarify x, OF "zero:2", THEN "\<equiv>E"(1)])
   AOT_thus \<open>#F = 0\<close> using id_sym by blast
 qed
 
-AOT_theorem "0F:4": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<equiv> #[F]\<^sub>w = 0\<close>
+AOT_theorem "0F:5": \<open>w \<Turnstile> \<not>\<exists>u [F]u \<equiv> #[F]\<^sub>w = 0\<close>
 proof (rule "rule-id-df:2:b"[OF "w-index", where \<tau>\<^sub>1\<tau>\<^sub>n="(_,_)", simplified])
   AOT_show \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<down>\<close>
     by (simp add: "w-rel:3")
@@ -3619,12 +3631,12 @@ next
         using 0 "&I" by blast
     qed
     AOT_thus \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
-      by (safe intro!: "0F:2"[unvarify F, THEN "\<equiv>E"(1)] "w-rel:1"[THEN "\<rightarrow>E"])
+      by (safe intro!: "0F:3"[unvarify F, THEN "\<equiv>E"(1)] "w-rel:1"[THEN "\<rightarrow>E"])
          "cqt:2"
   next
     AOT_assume \<open>#[\<lambda>x w \<Turnstile> [F]x] = 0\<close>
     AOT_hence 0: \<open>\<not>\<exists>u \<^bold>\<A>[\<lambda>x w \<Turnstile> [F]x]u\<close>
-      by (safe intro!: "0F:2"[unvarify F, THEN "\<equiv>E"(2)] "w-rel:1"[THEN "\<rightarrow>E"])
+      by (safe intro!: "0F:3"[unvarify F, THEN "\<equiv>E"(2)] "w-rel:1"[THEN "\<rightarrow>E"])
          "cqt:2"
     AOT_have \<open>\<not>w \<Turnstile> \<exists>u [F]u\<close>
     proof (rule "raa-cor:2")
@@ -3852,6 +3864,10 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   qed
 qed
 
+AOT_theorem "anc-her:7": \<open>[G\<^sup>*]xy \<rightarrow> \<exists>z[G]xz\<close>
+  oops
+
+(* TODO: remove START *)
 AOT_define OneToOne :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>1-1'(_')\<close>)
   "df-1-1:1": \<open>1-1(R) \<equiv>\<^sub>d\<^sub>f R\<down> & \<forall>x\<forall>y\<forall>z([R]xz & [R]yz \<rightarrow> x = y)\<close>
 
@@ -4124,6 +4140,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   AOT_thus \<open>x =\<^sub>\<R> z\<close>
     using x_eq_z "\<equiv>E"(2) by blast
 qed
+(* TODO: remove END *)
 
 AOT_define WeakAncestral :: \<open>\<Pi> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sup>+\<close>)
   "w-ances-df": \<open>[\<R>]\<^sup>+ =\<^sub>d\<^sub>f [\<lambda>xy [\<R>]\<^sup>*xy \<or> x =\<^sub>\<R> y]\<close>
@@ -4530,7 +4547,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
         AOT_have \<open>\<exists>G x = #G\<close>
           using card[THEN "\<equiv>\<^sub>d\<^sub>fE", OF card_x].
         AOT_hence \<open>\<exists>G Numbers(x,G)\<close>
-          using "eq-df-num"[THEN "\<equiv>E"(1)] by blast
+          using "eq-df-num:2"[THEN "\<equiv>E"(1)] by blast
         then AOT_obtain G' where numxG': \<open>Numbers(x,G')\<close>
           using "\<exists>E"[rotated] by blast
         AOT_obtain G where \<open>Rigidifies(G,G')\<close>
@@ -4653,7 +4670,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
       AOT_assume indist: \<open>\<forall>F([F]x \<equiv> [F]y)\<close>
       AOT_assume numxF: \<open>Numbers(x,F)\<close> 
       AOT_hence 0: \<open>NaturalCardinal(x)\<close>
-        by (metis "eq-num:6" "vdash-properties:10")
+        by (meson "cqt:2"(1) "eq-df-num:1.unvarify_x.unvarify_G.\<forall>E_1.\<forall>E_1.\<rightarrow>E")
       text\<open>We show by case distinction that x equals y.
            As first case we consider x to be non-zero.\<close>
       {
@@ -4683,7 +4700,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
         then AOT_obtain v where v_prop: \<open>[F\<^sub>2]v & Numbers(x,F\<^sub>2) & Numbers(z,[F\<^sub>2]\<^sup>-\<^sup>v)\<close>
           using "Discernible.\<exists>E"[rotated] by meson
         AOT_have \<open>[F\<^sub>2]\<^sup>-\<^sup>v \<approx>\<^sub>D [F\<^sub>1]\<^sup>-\<^sup>u\<close>
-          using "hume-strict:1"[unvarify F G, THEN "\<equiv>E"(1), OF "F-u[den]",
+          using "hume-strict:1-old"[unvarify F G, THEN "\<equiv>E"(1), OF "F-u[den]",
                                 OF "F-u[den]", OF "\<exists>I"(2)[where \<beta>=z], OF "&I"]
                   v_prop u_prop "&E" by blast
         AOT_hence \<open>F\<^sub>2 \<approx>\<^sub>D F\<^sub>1\<close>
@@ -4743,7 +4760,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
         then AOT_obtain v where 2: \<open>[G]v & Numbers(z,[G]) & Numbers(y,[G]\<^sup>-\<^sup>v)\<close>
           using "Discernible.\<exists>E"[rotated] by meson
         with 1 2 AOT_have \<open>[\<lambda>z z =\<^sub>D u] \<approx>\<^sub>D G\<close>
-          by (auto intro!: "hume-strict:1"[unvarify F, THEN "\<equiv>E"(1), rotated,
+          by (auto intro!: "hume-strict:1-old"[unvarify F, THEN "\<equiv>E"(1), rotated,
                                 OF "\<exists>I"(2)[where \<beta>=z], OF "&I"] "cqt:2"
                    dest: "&E")
         AOT_hence 3: \<open>[\<lambda>z z =\<^sub>D u]\<^sup>-\<^sup>u \<approx>\<^sub>D [G]\<^sup>-\<^sup>v\<close>
