@@ -179,6 +179,15 @@ proof -
     by fast
 qed
 
+(*
+
+(x =\<^sub>D y) \<equiv>\<^sub>d\<^sub>f \<box>\<forall>F(Fx \<equiv> Fy)
+
+D!x & D!y \<rightarrow> ((x =\<^sub>D y) = (x = y))
+
+
+*)
+
 AOT_theorem "=D-simple:2": \<open>D!x \<rightarrow> (x =\<^sub>D y \<rightarrow> x = y)\<close>
 proof (rule "\<rightarrow>I"; rule "\<rightarrow>I")
   AOT_assume \<open>D!x\<close>
@@ -3432,8 +3441,6 @@ proof(rule "raa-cor:2")
     by (metis "raa-cor:3")
 qed
 
-(******* START HERE *********)
-
 AOT_define zero :: \<open>\<kappa>\<^sub>s\<close> (\<open>0\<close>)
   "zero:1": \<open>0 =\<^sub>d\<^sub>f #[\<lambda>x D!x & x \<noteq>\<^sub>D x]\<close>
 
@@ -3522,7 +3529,7 @@ proof -
   qed
 qed
 
-
+(* TODO: fill in proof *)
 AOT_theorem "0F:2": \<open>\<exists>u [F]u \<equiv> \<exists>x(Numbers(x,F) & x \<noteq> 0)\<close>
   oops
 
@@ -3864,6 +3871,7 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   qed
 qed
 
+(* TODO: fill in later *)
 AOT_theorem "anc-her:7": \<open>[G\<^sup>*]xy \<rightarrow> \<exists>z[G]xz\<close>
   oops
 
@@ -4237,6 +4245,7 @@ proof(rule "\<rightarrow>I"; (frule "&E"(1); drule "&E"(2))+)
   }
   moreover {
     AOT_assume \<open>x =\<^sub>D y\<close>
+    thm "=D-simple:1"
     AOT_hence \<open>\<forall>F([F]x \<equiv> [F]y)\<close>
       using "=D-simple:1"[THEN "\<equiv>E"(1)] "qml:2"[axiom_inst] "\<rightarrow>E" by blast
     AOT_hence \<open>[F]y\<close>
