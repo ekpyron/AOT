@@ -2721,6 +2721,8 @@ next
     using "rigid-truth-at:2"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
 qed
+AOT_theorem "conj-dist-w:2[meta]": \<open>w \<Turnstile> (\<phi> \<rightarrow> \<psi>) \<equiv> ((w \<Turnstile> \<phi>) \<rightarrow> (w \<Turnstile> \<psi>))\<close>
+  using "conj-dist-w:2"[unvarify p, unvarify q] "log-prop-prop:2" by blast
 
 AOT_theorem "conj-dist-w:3": \<open>w \<Turnstile> (p \<or> q) \<equiv> ((w \<Turnstile> p) \<or> (w \<Turnstile> q))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
