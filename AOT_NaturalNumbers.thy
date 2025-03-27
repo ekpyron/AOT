@@ -4537,19 +4537,47 @@ proof(safe intro!: "\<rightarrow>I")
     using "\<beta>\<rightarrow>C"(1) by blast
 qed
 
+(*** NOTE: PLM skips over the subproof of D!z ***)
 AOT_theorem "pre-ind":
-  \<open>
-D!z \<rightarrow> (
-([F]z & \<forall>x\<forall>y(([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy) \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))) \<rightarrow>
-   \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)
-)\<close>
+  \<open>([F]z & \<forall>x\<forall>y(([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy) \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))) \<rightarrow>
+   \<forall>x ([\<R>]\<^sup>+zx \<rightarrow> [F]x)\<close>
 proof(safe intro!: "\<rightarrow>I" GEN)
-  AOT_assume Dz: \<open>D!z\<close>
   AOT_have den: \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]\<down>\<close> by "cqt:2"
   fix x
   AOT_assume \<theta>: \<open>[F]z & \<forall>x\<forall>y(([\<R>]\<^sup>+zx & [\<R>]\<^sup>+zy) \<rightarrow> ([\<R>]xy \<rightarrow> ([F]x \<rightarrow> [F]y)))\<close>
   AOT_assume 0: \<open>[\<R>]\<^sup>+zx\<close>
-
+  AOT_hence \<open>[\<R>]\<^sup>*zx \<or> z =\<^sub>D x\<close>
+    by (simp add: "cqt:2"(1) "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<equiv>E_1" OnDiscernibles.restricted_var_condition)
+  moreover AOT_have OnDisc: \<open>[\<R>]xy \<rightarrow> (D!x & D!y)\<close> for x y
+    using OnDiscerniblesE by blast
+  moreover {
+    AOT_assume 1: \<open>[\<R>]\<^sup>*zx\<close>
+    AOT_hence 2: \<open>\<forall>F (\<forall>y ([\<R>]zy \<rightarrow> [F]y) & Hereditary(F,\<R>) \<rightarrow> [F]x)\<close>
+      using ances[THEN "\<equiv>E"(1)] by blast
+    AOT_have \<open>D!z\<close>
+    proof(rule "raa-cor:1")
+      fix p
+      AOT_assume \<open>\<not>D!z\<close>
+      AOT_hence \<open>\<not>[\<R>]zy\<close> for y
+        by (metis "OnDiscerniblesE.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.&E_1" "cqt:2"(1) "raa-cor:6" OnDiscernibles.restricted_var_condition)
+      AOT_hence \<open>\<forall>F \<forall>y ([\<R>]zy \<rightarrow> [F]y)\<close>
+        by (meson "deduction-theorem" "universal-cor" "useful-tautologies:3.\<rightarrow>E.\<rightarrow>E")
+      moreover AOT_have \<open>Hereditary([\<lambda>x p & \<not>p],\<R>)\<close>
+        apply (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Discernible_den GEN "\<rightarrow>I")
+        using "beta-C-cor:2.\<rightarrow>E.\<forall>E_1.\<equiv>E_2" "betaC:1:a" "cqt:2"(1) "prop-prop2:2" by blast
+      ultimately AOT_have \<open>[\<lambda>x p & \<not>p]x\<close>
+        using "2" "hered:1.\<equiv>\<^sub>d\<^sub>fE.&E_1.&E_2" "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" "rule-ui:1" by blast
+      AOT_thus \<open>p & \<not>p\<close>
+        using "betaC:1:a" by blast
+    qed
+  }
+  moreover {
+    AOT_assume \<open>z =\<^sub>D x\<close>
+    AOT_hence \<open>D!z\<close>
+      using "=D-simple:1.unvarify_x.unvarify_y.\<forall>E_1.\<forall>E_1.\<equiv>E_1.&E_1.&E_1" "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" "russell-axiom[exe,2,1,2].\<psi>_denotes_asm" by force
+  }
+  ultimately AOT_have Dz: \<open>D!z\<close>
+    using "con-dis-i-e:4:c" "raa-cor:2" by blast
   AOT_have \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]x\<close>
   proof (rule "wances-her:2"[unvarify F, OF den, THEN "\<rightarrow>E"]; safe intro!: "&I")
     AOT_show \<open>[\<lambda>y [F]y & [\<R>]\<^sup>+zy]z\<close>
@@ -6628,7 +6656,7 @@ proof(rule "\<rightarrow>I")
   AOT_have 1: \<open>[\<lambda>x \<box>[\<nat>]x]0 &
     \<forall>x\<forall>y ([[\<bbbP>]\<^sup>+]0x & [[\<bbbP>]\<^sup>+]0y \<rightarrow> ([\<bbbP>]xy \<rightarrow> ([\<lambda>x \<box>[\<nat>]x]x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]y))) \<rightarrow>
     \<forall>x ([[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
-    using "pre-ind"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2", THEN "\<rightarrow>E", OF "pred-rel-disc[aux]", unvarify z, OF "zero:2", THEN "\<rightarrow>E", OF zero_disc, unvarify F, OF necN_den].
+    using "pre-ind"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2", THEN "\<rightarrow>E", OF "pred-rel-disc[aux]", unvarify z, OF "zero:2", unvarify F, OF necN_den].
   AOT_have \<open>\<forall>x ([[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
   proof (rule 1[THEN "\<rightarrow>E"]; safe intro!: "&I" GEN "\<rightarrow>I" nec0N;
          frule "&E"(1); drule "&E"(2))
