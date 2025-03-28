@@ -3936,9 +3936,25 @@ proof (rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   qed
 qed
 
-(* TODO: fill in later *)
+(* TODO: Note: PLM uses a wrongly restricted variable in the proof! *)
 AOT_theorem "anc-her:7": \<open>[G\<^sup>*]xy \<rightarrow> \<exists>z[G]xz\<close>
-  oops
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume A: \<open>[G\<^sup>*]xy\<close>
+  AOT_show \<open>\<exists>z[G]xz\<close>
+  proof(rule "raa-cor:1")
+    fix p
+    AOT_assume \<open>\<not>\<exists>z[G]xz\<close>
+    AOT_hence \<open>\<forall>y ([G]xy \<rightarrow> [\<lambda>x p & \<not>p]y)\<close>
+      by (metis (no_types, lifting) "\<rightarrow>I" "\<exists>I"(2) GEN "useful-tautologies:3.\<rightarrow>E.\<rightarrow>E")
+    moreover AOT_have \<open>Hereditary([\<lambda>x p & \<not>p],G)\<close>
+      using "beta-C-cor:2.\<rightarrow>E.\<forall>E_1.\<equiv>E_2" "betaC:1:a" "cqt:2"(1) "prop-prop2:2"
+      by (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Discernible_den GEN "\<rightarrow>I") blast
+    ultimately AOT_have \<open>[\<lambda>x p & \<not>p]y\<close>
+      by (safe intro!: "anc-her:2"[unvarify F, THEN "\<rightarrow>E", rotated, OF "&I", OF "&I", OF A] "&I" "cqt:2")
+    AOT_thus \<open>p & \<not>p\<close>
+      using "betaC:1:a" by blast
+  qed
+qed
 
 (* TODO: remove START *)
 (*
@@ -4552,24 +4568,8 @@ proof(safe intro!: "\<rightarrow>I" GEN)
     using OnDiscerniblesE by blast
   moreover {
     AOT_assume 1: \<open>[\<R>]\<^sup>*zx\<close>
-    AOT_hence 2: \<open>\<forall>F (\<forall>y ([\<R>]zy \<rightarrow> [F]y) & Hereditary(F,\<R>) \<rightarrow> [F]x)\<close>
-      using ances[THEN "\<equiv>E"(1)] by blast
-    AOT_have \<open>D!z\<close>
-    proof(rule "raa-cor:1")
-      fix p
-      AOT_assume \<open>\<not>D!z\<close>
-      AOT_hence \<open>\<not>[\<R>]zy\<close> for y
-        by (metis "OnDiscerniblesE.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<rightarrow>E.&E_1" "cqt:2"(1) "raa-cor:6" OnDiscernibles.restricted_var_condition)
-      AOT_hence \<open>\<forall>F \<forall>y ([\<R>]zy \<rightarrow> [F]y)\<close>
-        by (meson "deduction-theorem" "universal-cor" "useful-tautologies:3.\<rightarrow>E.\<rightarrow>E")
-      moreover AOT_have \<open>Hereditary([\<lambda>x p & \<not>p],\<R>)\<close>
-        apply (safe intro!: "hered:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Discernible_den GEN "\<rightarrow>I")
-        using "beta-C-cor:2.\<rightarrow>E.\<forall>E_1.\<equiv>E_2" "betaC:1:a" "cqt:2"(1) "prop-prop2:2" by blast
-      ultimately AOT_have \<open>[\<lambda>x p & \<not>p]x\<close>
-        using "2" "hered:1.\<equiv>\<^sub>d\<^sub>fE.&E_1.&E_2" "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" "rule-ui:1" by blast
-      AOT_thus \<open>p & \<not>p\<close>
-        using "betaC:1:a" by blast
-    qed
+    AOT_hence \<open>D!z\<close>
+      by (meson "anc-her:7.unvarify_G.unvarify_x.unvarify_y.\<forall>E_1.\<forall>E_1.\<forall>E_1.\<rightarrow>E.\<exists>E'" "con-dis-taut:1" "cqt:2"(1) "oth-class-taut:4:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" OnDiscerniblesE)
   }
   moreover {
     AOT_assume \<open>z =\<^sub>D x\<close>
