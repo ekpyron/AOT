@@ -219,7 +219,7 @@ parse_translation\<open>
   (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
   (\<^syntax_const>\<open>_AOT_world_relative_prop\<close>, fn ctxt => fn [x] => let
     val (x, premises) = processFreesAndPremises ctxt x
-    val (world::formulas) = Variable.variant_frees ctxt [x]
+    val (world::formulas) = Variable.variant_names (Variable.declare_names x ctxt)
         (("v", dummyT)::(map (fn _ => ("\<phi>", dummyT)) premises))
     val term = HOLogic.mk_Trueprop
         (@{const AOT_model_valid_in} $ Free world $ processFrees ctxt x)
@@ -246,7 +246,7 @@ parse_translation\<open>
   (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] =>
       HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ x)),
   (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, fn ctxt => fn [trm] => let
-    val world = singleton (Variable.variant_frees ctxt [trm]) ("v", @{typ w})
+    val world = singleton (Variable.variant_names (Variable.declare_names trm ctxt)) ("v", @{typ w})
     val trm = HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Free world $ trm)
     val trm = Term.absfree world trm
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ trm
@@ -337,9 +337,7 @@ AOT_syntax_print_translations
     (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, true)
     \<^const_name>\<open>AOT_imp\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_forall_binder"} \<^syntax_const>\<open>_AOT_all\<close>,
-  Syntax_Trans.preserve_binder_abs_tr'
-    \<^const_syntax>\<open>AOT_desc\<close>
-    \<^syntax_const>\<open>_AOT_desc\<close>,
+ (\<^const_syntax>\<open>AOT_desc\<close>, fn ctxt => Syntax_Trans.preserve_binder_abs_tr' \<^syntax_const>\<open>_AOT_desc\<close> ctxt dummyT),
   AOT_binder_trans @{theory} @{binding "AOT_desc_binder"} \<^syntax_const>\<open>_AOT_desc\<close>,
   AOT_preserve_binder_abs_tr'
     \<^const_syntax>\<open>AOT_lambda\<close>
@@ -586,7 +584,8 @@ AOT_syntax_print_translations [
   fn [lhs as Abs (lhsName, lhsTy, lhsTrm), rhs as Abs (rhsName, rhsTy, rhsTrm)] =>
     let
       val (name,_) = Name.variant lhsName
-        (Term.declare_term_names rhsTrm (Term.declare_term_names lhsTrm Name.context));
+        (Syntax_Trans.declare_term_names ctxt rhsTrm
+          (Name.build_context (Syntax_Trans.declare_term_names ctxt lhsTrm)));
       val lhs = Term.betapply (lhs, Const ("_bound", dummyT) $ Free (name, lhsTy))
       val rhs = Term.betapply (rhs, Const ("_bound", dummyT) $ Free (name, rhsTy))
     in

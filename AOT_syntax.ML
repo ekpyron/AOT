@@ -117,8 +117,9 @@ val _ =
 
 
 fun decode_pos str =
-  case (Term_Position.decode str) of SOME pos => pos
-  | _ => raise Fail "expected position"
+  case Term_Position.decode str of
+    [] => raise Fail "expected position"
+  | {pos, ...} :: _ => pos
 fun unconstrain_var
   (Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) =
     (name, decode_pos pos)
@@ -127,7 +128,7 @@ fun unconstrain_var
 fun make_constrained_var sx =
   (Ast.Appl [Ast.Constant "_constrain", Ast.Variable (Symbol_Pos.implode sx),
              Ast.Variable (Term_Position.encode
-                (Position.range_position (Symbol_Pos.range sx)))])
+                [Term_Position.no_syntax (Position.range_position (Symbol_Pos.range sx))])])
 fun implode_pos x = (Symbol_Pos.implode_range (Symbol_Pos.range x) x) |>
   (fn (x,y) => (x,Position.range_position y))
 fun splitFormulaParts x = x |> unconstrain_var |> Symbol_Pos.explode |>
@@ -150,7 +151,7 @@ fun dropConstraints (Const ("_constrain", _) $ x $ _) = dropConstraints x
 
 local
 fun constrain (name, pos) = Ast.mk_appl (Ast.Constant "_constrain")
-  [Ast.Variable name, Ast.Variable (Term_Position.encode pos)]
+  [Ast.Variable name, Ast.Variable (Term_Position.encode [Term_Position.no_syntax pos])]
 in
 fun AOT_split_exe_vars [x] = x |> parseFormulaParts |> map constrain |> 
   map (fn x => Ast.mk_appl (Ast.Constant "_AOT_term_var") [x]) |>
@@ -352,7 +353,7 @@ fun unconstrain (Ast.Appl (Ast.Constant "_constrain"::x::tl)) =
       addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_var"::[x]))
   | unconstrain trm = (trm, fn x => x)
 fun isDefinedConst ctxt name = let
-  val unmarkedName = Lexicon.unmark {case_class = fn str => NONE,
+  val unmarkedName = Lexicon.unmark_entity {case_class = fn str => NONE,
       case_type = fn name => NONE,
       case_const = fn name => SOME name,
       case_fixed = fn name => NONE,
@@ -475,7 +476,7 @@ val trm = case printVarKind name of SingleVariable name =>
         | _ => NONE
       val terms = case optBody of SOME trm => Abs (name, T, trm)::trms | _ => trms
     in
-        snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+        Syntax_Trans.preserve_binder_abs_tr' syntaxConst ctxt dummyT terms
     end
   | Ellipses (s,e) =>
     let
@@ -493,12 +494,12 @@ val trm = case printVarKind name of SingleVariable name =>
            Syntax_Trans.mark_bound_abs (e,dummyT)) $ body, trms)
     end
   | Verbatim _ => (* TODO *)
-    snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+    Syntax_Trans.preserve_binder_abs_tr' syntaxConst ctxt dummyT terms
 in SOME trm end
 | _ => NONE
 in
 case term_opt of SOME trm => trm | _ =>
-snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+Syntax_Trans.preserve_binder_abs_tr' syntaxConst ctxt dummyT terms
 end
 )
 

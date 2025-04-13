@@ -705,7 +705,7 @@ val typ = Thm.ctyp_of (Context.proof_of ctxt) trmty
 val allthm = Drule.instantiate_normalize (TVars.make [(ty, typ)], Vars.empty) @{thm "\<forall>I"}
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
 val allthm = Drule.instantiate_normalize (TVars.empty, Vars.make [(phi,trm)]) allthm
-val allthm = Thm.put_name_hint ("unvarify_"^fst (fst var)) allthm
+val allthm = Thm.put_name_hint (Thm_Name.parse ("unvarify_"^fst (fst var))) allthm
 in
 allthm
 end

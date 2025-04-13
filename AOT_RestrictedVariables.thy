@@ -215,7 +215,7 @@ val trm = Abs (Term.string_of_vname (fst var), trmty, Term.abstract_over (vartrm
 val trm = Thm.cterm_of ctxt trm
 val phi = hd (Term.add_vars (Thm.prop_of allthm) [])
 val allthm = Drule.instantiate_normalize (TVars.empty, Vars.make [(phi,trm)]) allthm
-val allthm = Thm.put_name_hint ("unconstrain_"^fst (fst var)) allthm
+val allthm = Thm.put_name_hint (Thm_Name.parse ("unconstrain_"^fst (fst var))) allthm
 in
 allthm
 end
