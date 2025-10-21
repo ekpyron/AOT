@@ -6716,7 +6716,37 @@ proof(safe intro!: "\<rightarrow>I")
 qed
 
 (* TODO: start again here with Ed and Daniel *)
+(* Note: fixed F\<^sup>-\<^sup>u to use \<noteq> instead of \<noteq>\<^sub>D ; no major problems per se, but: *)
+(*
+  Remark (embedding):
+    the embedding might not strictly follow Remark (340) about restricted variables in definitions-by-identity
+ *)
+(*
+  Remark (Principia):
+    The remark below (754.1) seems to be wrong in its appeal to (340.2) (where is the definition-by-identity in (754.1)?)
 
+    Given (340), there may be some disconnect between (754.1) and (754.2).
+    Does (754.1) need to be [\<lambda>z D!y & Fz & z \<noteq> y]\<down> to be able to argue for (754.2) to be "safe"?
+    As given, (754.1) is really D!y \<rightarrow> [\<lambda>z Fz & z \<noteq> y]\<down> and *not* [\<lambda>z D!y & Fz & z \<noteq> y]\<down>
+    (340.2) does not apply, but instead (342) does.
+
+    I'm not sure whether there's other occurrences of this issue in Principia.
+  *)
+(*
+  Remark: All seems to work out with a plain
+    F\<^sup>-\<^sup>x =\<^sub>d\<^sub>f [\<lambda>z Fz & z \<noteq> x]
+  While F\<^sup>-\<^sup>x\<down> is just not a theorem, but F\<^sup>-\<^sup>u\<down> is.
+  Is it better, for an indiscernible a, to have \<not>F\<^sup>-\<^sup>a\<down> or to have F\<^sup>-\<^sup>a\<down>, but empty? In both cases, we'd have
+  \<forall>x \<not>F\<^sup>-\<^sup>ax, but there are some subtle differences (like F\<^sup>-\<^sup>a = F\<^sup>-\<^sup>a vs F\<^sup>-\<^sup>a \<noteq> F\<^sup>-\<^sup>a).
+  This may be fine in general - arguably a nice way to avoid the complexity of (340.3)
+
+  Conversely, for {u} =\<^sub>d\<^sub>f {y|y = u} the situation may be reversed.
+
+  Minor remark:
+    typo in (340.3): [\<lambda>\<nu>\<^sub>1...nu\<^sub>n \<phi>]
+
+
+*)
 
 AOT_theorem "assume-anc:1":
   \<open>\<bbbP>\<^sup>* = [\<lambda>xy \<forall>F((\<forall>z([\<bbbP>]xz \<rightarrow> [F]z) & Hereditary(F,\<bbbP>)) \<rightarrow> [F]y)]\<close>
@@ -7484,6 +7514,7 @@ proof (rule "\<rightarrow>I")
     by (rule "=I"(1)[OF "def-suc[den2]"])
 qed
 
+(*
 AOT_theorem "ind-gnd": \<open>m = 0 \<or> \<exists>n(m = n\<^bold>')\<close>
 proof -
   AOT_have \<open>[[\<bbbP>]\<^sup>+]0m\<close>
@@ -7631,7 +7662,7 @@ proof (safe intro!: "inf-card:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "inf-car
   qed
 qed
 *)
-
+*)
 
 (*<*)
 end
