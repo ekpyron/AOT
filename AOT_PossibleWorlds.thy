@@ -3496,8 +3496,234 @@ next
     by(safe intro!: "pos"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "Situation.\<psi>")
 qed
 
+AOT_define routley_star :: \<open>\<tau> \<Rightarrow> \<tau>\<close> (\<open>_\<^sup>*\<close>)
+  "routley-star:1": \<open>s\<^sup>* =\<^sub>d\<^sub>f \<^bold>\<iota>s' \<forall>p(s' \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+
+AOT_theorem "routley-star:2": \<open>\<forall>p(s\<^sup>* \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+        and "routley-star[Situation]": \<open>Situation(s\<^sup>*)\<close>
+proof -
+  AOT_have 0: \<open>s\<^sup>* = \<^bold>\<iota>s' \<forall>p(s' \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+    using "rule-id-df:1"[OF "routley-star:1", OF "sit-comp-simp:3"]
+    by blast
+  AOT_obtain y where 1: \<open>y = \<^bold>\<iota>s' \<forall>p(s' \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+    using "free-thms:3[const_var].unvarify_\<alpha>.\<forall>E(1).\<exists>E'" "sit-comp-simp:3" by meson
+  AOT_have \<open>\<forall>p(y \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+  proof(safe intro!: "sit-comp-simp:4"[THEN "\<rightarrow>E"] "strict-can:1[I]" 1)
+    AOT_modally_strict {
+      AOT_show \<open>\<forall>p (\<not>s \<Turnstile> ((p)\<^sup>-) \<rightarrow> \<box>\<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+      proof(safe intro!: GEN "\<rightarrow>I")
+        fix p
+        AOT_assume 0: \<open>\<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+        AOT_show \<open>\<box>\<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+        proof(rule "raa-cor:1")
+          AOT_assume \<open>\<not>\<box>\<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+          AOT_hence \<open>\<diamond>s \<Turnstile> ((p)\<^sup>-)\<close>
+            using "KBasic:11.\<equiv>E(1)" "RM:4.\<equiv>E(2)" "oth-class-taut:3:b" by blast
+          AOT_hence \<open>s \<Turnstile> ((p)\<^sup>-)\<close>
+            using "lem2:2.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2" "situations:3.\<rightarrow>E"
+              Situation.restricted_var_condition by presburger
+          AOT_thus \<open>s \<Turnstile> ((p)\<^sup>-) & \<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+            using 0 "&I" by blast
+        qed
+      qed
+    }
+  qed
+  moreover AOT_have 2: \<open>y = s\<^sup>*\<close>
+    using "0" "1" "rule=E" id_sym by blast
+  ultimately AOT_show \<open>\<forall>p(s\<^sup>* \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+    by (meson "rule=E")
+  AOT_show \<open>Situation(s\<^sup>*)\<close>
+    by (metis (no_types, lifting) "1" "2" "Act-Sub:3" "KBasic2:3.\<rightarrow>E.&E(1)" "actual-desc:4" "id_sym.rule=E'"
+        "possit-sit:2.unvarify_x.\<forall>E(1).\<equiv>E(1)" "rule=E'" "t=t-proper:2" "vdash-properties:6")
+qed
+
+AOT_theorem "routley-star:2[not]": \<open>s\<^sup>* \<Turnstile> p \<equiv> \<not>s \<Turnstile> \<not>p\<close>
+  by (metis "deduction-theorem" "id_sym.rule=E'" "intro-elim:2" "log-prop-prop:2" "reductio-aa:2"
+      "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)"
+      "situations:3.\<rightarrow>E" "thm-relation-negation:7" "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'"
+      Situation.restricted_var_condition)
+
+AOT_theorem "routley-star:3": \<open>\<forall>p(s \<Turnstile> ((p)\<^sup>-) \<equiv> \<not>s\<^sup>* \<Turnstile> p)\<close>
+  by (metis (lifting) "\<equiv>I" "log-prop-prop:2" "raa-cor:3" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)"
+      "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)" "situations:3.\<rightarrow>E" CP GEN Situation.\<psi>)
+
+AOT_define GlutOn :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>GlutOn'(_,_')\<close>)
+  "routley-star:4": \<open>GlutOn(s,p) \<equiv>\<^sub>d\<^sub>f s \<Turnstile> p & s \<Turnstile> ((p)\<^sup>-)\<close>
+
+AOT_theorem "routley-star:4[not]": \<open>GlutOn(s,p) \<equiv> (s \<Turnstile> p & s \<Turnstile> \<not>p)\<close>
+proof -
+  AOT_have \<open>GlutOn(s,p) \<equiv> (Situation(s) & (s \<Turnstile> p & s \<Turnstile> \<not>p))\<close>
+    using "routley-star:4"[THEN "\<equiv>Df"]
+    by (meson "log-prop-prop:2" "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'")
+  thus ?thesis
+    using "df-simplify:1" Situation.restricted_var_condition by blast
+qed
+
 AOT_define GapOn :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>GapOn'(_,_')\<close>)
-  "routley-star:5": \<open>GapOn(s,p) \<equiv>\<^sub>d\<^sub>f \<not>s \<Turnstile> p & \<not>s \<Turnstile> \<not>p\<close>
+  "routley-star:5": \<open>GapOn(s,p) \<equiv>\<^sub>d\<^sub>f \<not>s \<Turnstile> p & \<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+
+AOT_theorem "routley-star:5[not]": \<open>GapOn(s,p) \<equiv> (\<not>s \<Turnstile> p & \<not>s \<Turnstile> \<not>p)\<close>
+proof -
+  AOT_have \<open>GapOn(s,p) \<equiv> (Situation(s) & (\<not>s \<Turnstile> p & \<not>s \<Turnstile> \<not>p))\<close>
+    using "routley-star:5"[THEN "\<equiv>Df"]
+    by (meson "log-prop-prop:2" "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'")
+  thus ?thesis
+    using "df-simplify:1" Situation.restricted_var_condition by blast
+qed
+
+(* TODO: move; or make s\<^sup>*\<^sup>* work *)
+syntax "" :: \<open>\<tau> \<Rightarrow> \<tau>\<close> ("'(_')")
+
+AOT_theorem "routley-star:6": \<open>s = ((s\<^sup>*)\<^sup>*) \<rightarrow> (GlutOn(s, p) \<rightarrow> GapOn(s\<^sup>*, p))\<close>
+  by (smt (verit, ccfv_threshold) "\<equiv>\<^sub>d\<^sub>fE" "\<equiv>\<^sub>d\<^sub>fI" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+      "cqt:2"(1) "deduction-theorem" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)"
+      "routley-star:3.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)" "routley-star:4" "routley-star:5"
+      "routley-star[Situation]" "rule=E'"
+      "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(1).\<forall>E(1).\<equiv>E(1)" "situations:3.\<rightarrow>E")
+
+AOT_theorem "routley-star:7": \<open>s = ((s\<^sup>*)\<^sup>*) \<rightarrow> (GapOn(s, p) \<rightarrow> GlutOn(s\<^sup>*, p))\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume 0: \<open>s = ((s\<^sup>*)\<^sup>*)\<close>
+  AOT_assume 1: \<open>GapOn(s, p)\<close>
+  AOT_hence 2: \<open>\<not>s \<Turnstile> p & \<not>s \<Turnstile> \<not>p\<close>
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)"
+        "routley-star:5[not].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(2)" AOT_restricted_type.\<psi>
+        Situation.AOT_restricted_type_axioms)
+  AOT_hence \<open>(s\<^sup>* \<Turnstile> p & s\<^sup>* \<Turnstile> \<not>p)\<close>
+    by (metis "0" "1" "con-dis-i-e:2:a" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "log-prop-prop:2" "raa-cor:1"
+        "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)"
+        "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(1).\<forall>E(1).\<equiv>E(1)" "situations:3.\<rightarrow>E"
+        "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)" Situation.restricted_var_condition
+        id_sym)
+  AOT_thus \<open>GlutOn(s\<^sup>*, p)\<close>
+    using "con-dis-i-e:2:b" "log-prop-prop:2" "routley-star:4[not].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)"
+      "situations:3.\<rightarrow>E" "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)" by blast
+qed
+
+AOT_theorem "routley-star:8": \<open>(\<not>GlutOn(s, p) & \<not>GapOn(s, p)) \<rightarrow> (s\<^sup>* \<Turnstile> p \<equiv> s \<Turnstile> p)\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>\<not>GlutOn(s, p) & \<not>GapOn(s, p)\<close>
+  AOT_hence \<open>(s \<Turnstile> p \<or> s \<Turnstile> \<not>p) & (\<not>s \<Turnstile> p \<or> \<not>s \<Turnstile> \<not>p)\<close>
+    by (metis "con-dis-i-e:3:a" "con-dis-i-e:3:b" "con-dis-i-e:4:b" "intro-elim:3:a" "intro-elim:3:b"
+        "log-prop-prop:2" "oth-class-taut:5:c" "raa-cor:1"
+        "routley-star:4[not].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)" "routley-star:5[not]" "situations:3.\<rightarrow>E"
+        Situation.restricted_var_condition)
+  AOT_thus \<open>s\<^sup>* \<Turnstile> p \<equiv> s \<Turnstile> p\<close>
+    by (metis "\<not>\<not>I" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-i-e:4:b" "con-dis-i-e:4:c" "deduction-theorem"
+        "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b" "routley-star:2[not]")
+qed
+
+AOT_theorem "routley-star:9": \<open>\<forall>p(\<not>GlutOn(s, p) & \<not>GapOn(s, p)) \<rightarrow> (s\<^sup>* = s)\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>\<forall>p(\<not>GlutOn(s, p) & \<not>GapOn(s, p))\<close>
+  AOT_hence \<open>\<forall>p(s\<^sup>* \<Turnstile> p \<equiv> s \<Turnstile> p)\<close>
+    by (metis (lifting) "routley-star:8" "rule-ui:3" "universal-cor" "vdash-properties:10")
+  AOT_thus \<open>s\<^sup>* = s\<close>
+    using "routley-star[Situation]" "rule=I:1"
+      "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(2).rule=E'" "situations:3.\<rightarrow>E"
+      Situation.restricted_var_condition by blast
+qed
+
+AOT_theorem "routley-star:10": \<open>\<forall>p(\<not>GlutOn(s,p) & \<not>GapOn(s,p)) \<equiv> \<forall>p(s \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
+  fix p
+  AOT_assume \<open>\<forall>p(\<not>GlutOn(s,p) & \<not>GapOn(s,p))\<close>
+  moreover AOT_assume \<open>s \<Turnstile> p\<close>
+  ultimately AOT_show \<open>\<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+    by (meson "cqt:2"(1) "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)"
+        "routley-star:8.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<rightarrow>E.\<equiv>E(2)" "rule-ui:2[const_var]"
+        Situation.restricted_var_condition)
+next
+  fix p
+  AOT_assume \<open>\<forall>p(\<not>GlutOn(s,p) & \<not>GapOn(s,p))\<close>
+  moreover AOT_assume \<open>\<not>s \<Turnstile> ((p)\<^sup>-)\<close>
+  ultimately AOT_show \<open>s \<Turnstile> p\<close>
+    using "log-prop-prop:2" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)"
+      "routley-star:8.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<rightarrow>E.\<equiv>E(1)" "rule-ui:1" "situations:3.\<rightarrow>E"
+      Situation.restricted_var_condition by blast
+next
+  fix p
+  AOT_assume \<open>\<forall>p(s \<Turnstile> p \<equiv> \<not>s \<Turnstile> ((p)\<^sup>-))\<close>
+  AOT_thus \<open>\<not>GlutOn(s,p) & \<not>GapOn(s,p)\<close>
+    by (metis "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "intro-elim:3:a" "intro-elim:3:b" "log-prop-prop:2" "raa-cor:1"
+        "routley-star:4.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)" "routley-star:4.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)"
+        "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "rule-ui:1")
+qed
+
+AOT_theorem "rouley-star:11": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>\<emptyset>)\<^sup>* = \<^bold>s\<^sub>V\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>s((s\<^sup>*)\<^sup>* = s)\<close>
+  AOT_have 1: \<open>\<not>\<exists>p (\<^bold>s\<^sub>\<emptyset>) \<Turnstile> p\<close>
+    using "df-null-trivial:1.\<equiv>\<^sub>d\<^sub>fE.&E(2)" "null-triv-sc:3" by blast
+  AOT_hence 2: \<open>\<forall>p ((\<^bold>s\<^sub>\<emptyset>)\<^sup>* \<Turnstile> p)\<close>
+    by (simp add: "cqt-further:4.\<rightarrow>E.\<forall>E(1)" "df-null-trivial:1.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "log-prop-prop:2" "null-triv-sc:3"
+        "routley-star:2[not].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)" "situations:3.\<rightarrow>E" "universal-cor")
+  moreover AOT_have 3: \<open>\<forall>p \<^bold>s\<^sub>V \<Turnstile> p\<close>
+    by (simp add: "df-null-trivial:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1)" "log-prop-prop:2" "null-triv-sc:4" "universal-cor")
+  ultimately AOT_have 4: \<open>\<forall>p ((\<^bold>s\<^sub>\<emptyset>)\<^sup>* \<Turnstile> p \<equiv> \<^bold>s\<^sub>V \<Turnstile> p)\<close>
+    by (simp add: "deduction-theorem" "intro-elim:2" "rule-ui:3" "universal-cor")
+  AOT_thus \<open>(\<^bold>s\<^sub>\<emptyset>)\<^sup>* = \<^bold>s\<^sub>V\<close>
+    by (metis (full_types) "2" "df-null-trivial:2.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "log-prop-prop:2" "null-triv-sc:4" "rule-ui:1"
+        "rule=I:1" "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(2).rule=E'" "situations:3.\<rightarrow>E"
+        "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)")
+qed
+
+AOT_theorem "rouley-star:12": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>V)\<^sup>* = \<^bold>s\<^sub>\<emptyset>\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume 0: \<open>\<forall>s((s\<^sup>*)\<^sup>* = s)\<close>
+  AOT_have 1: \<open>\<forall>p \<^bold>s\<^sub>V \<Turnstile> p\<close>
+    by (simp add: "df-null-trivial:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1)" "log-prop-prop:2" "null-triv-sc:4" "universal-cor")
+  AOT_hence 2: \<open>\<not>\<exists>p (\<^bold>s\<^sub>V)\<^sup>* \<Turnstile> p\<close>
+    by (metis "cqt-basic:6.\<equiv>E(2).\<forall>E(1).\<forall>E(1)" "instantiation" "log-prop-prop:2" "raa-cor:2"
+        "routley-star:2[not].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "situations:3.\<rightarrow>E"
+        "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "useful-tautologies:3.\<rightarrow>E.\<rightarrow>E")
+  moreover AOT_have 3: \<open>\<not>\<exists>p (\<^bold>s\<^sub>\<emptyset>) \<Turnstile> p\<close>
+    using "df-null-trivial:1.\<equiv>\<^sub>d\<^sub>fE.&E(2)" "null-triv-sc:3" by blast
+  ultimately AOT_have 4: \<open>\<forall>p ((\<^bold>s\<^sub>V)\<^sup>* \<Turnstile> p \<equiv> \<^bold>s\<^sub>\<emptyset> \<Turnstile> p)\<close>
+    by (metis (no_types, lifting) "deduction-theorem" "existential:2[const_var]" "intro-elim:2" "universal-cor"
+        "useful-tautologies:3.\<rightarrow>E.\<rightarrow>E")
+  moreover AOT_have \<open>Situation(\<^bold>s\<^sub>\<emptyset>)\<close>
+    by (simp add: "df-null-trivial:1.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "null-triv-sc:3")
+  moreover AOT_have \<open>Situation((\<^bold>s\<^sub>V)\<^sup>*)\<close>
+    using "df-null-trivial:2.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "df-the-null-sit:2" "null-triv-sc:4"
+      "routley-star:2.1.unconstrain_s.\<forall>E(1).\<rightarrow>E" "rule-id-df:2:b[zero]" "thm-null-trivial:4" by blast
+  ultimately AOT_show \<open>(\<^bold>s\<^sub>V)\<^sup>* = \<^bold>s\<^sub>\<emptyset>\<close>
+    by (metis (full_types) "rule=I:1" "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(2).rule=E'"
+        "situations:3.\<rightarrow>E")
+qed
+
+AOT_theorem "rouley-star:13": \<open>((s\<^sup>*)\<^sup>* = s) \<equiv> \<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> ((((p)\<^sup>-))\<^sup>-))\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
+  fix p
+  AOT_assume \<open>((s\<^sup>*)\<^sup>* = s)\<close>
+  moreover AOT_assume \<open>s \<Turnstile> p\<close>
+  ultimately AOT_show \<open>s \<Turnstile> ((((p)\<^sup>-))\<^sup>-)\<close>
+    by (metis "log-prop-prop:2" "reductio-aa:1" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)"
+        "routley-star:3.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)" "routley-star[Situation]" "rule=E'"
+        "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(1).\<forall>E(1).\<equiv>E(1)" "situations:3.\<rightarrow>E"
+        Situation.restricted_var_condition id_sym)
+next
+  fix p
+  AOT_assume \<open>((s\<^sup>*)\<^sup>* = s)\<close>
+  moreover AOT_assume \<open>s \<Turnstile> ((((p)\<^sup>-))\<^sup>-)\<close>
+  ultimately AOT_show \<open>s \<Turnstile> p\<close>
+    by (metis "cqt:2"(1) "rel-neg-T:3[zero]" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)"
+        "routley-star:2.1.unconstrain_s.\<forall>E(1).\<rightarrow>E" "routley-star:3.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)"
+        "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(1).\<forall>E(1).\<equiv>E(1)" "situations:3.\<rightarrow>E"
+        AOT_restricted_type.\<psi> Situation.AOT_restricted_type_axioms)
+next
+  AOT_assume \<open>\<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> ((((p)\<^sup>-))\<^sup>-))\<close>
+  AOT_hence \<open>((s\<^sup>*)\<^sup>*) \<Turnstile> p \<equiv> s \<Turnstile> p\<close> for p
+    by (metis (lifting) "deduction-theorem" "intro-elim:2" "intro-elim:3:a" "intro-elim:3:b" "log-prop-prop:2"
+        "raa-cor:3" "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(1)"
+        "routley-star:2.0.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<equiv>E(2)" "routley-star[Situation]" "rule-ui:3" "situations:3.\<rightarrow>E"
+        Situation.restricted_var_condition)
+  moreover AOT_have \<open>Situation(((s\<^sup>*)\<^sup>*))\<close>
+    using "routley-star:2.1.unconstrain_s.\<forall>E(1).\<rightarrow>E" "routley-star[Situation]" "situations:3.\<rightarrow>E" by blast
+  ultimately AOT_show \<open>((s\<^sup>*)\<^sup>* = s)\<close>
+    by (smt (verit) "rule=I:1" "sit-identity.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(2).rule=E'"
+        "situations:3.\<rightarrow>E" "universal-cor" Situation.restricted_var_condition)
+qed
 
 (*<*)
 end

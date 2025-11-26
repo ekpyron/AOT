@@ -1029,6 +1029,8 @@ proof(safe intro!: "\<rightarrow>I")
   AOT_hence \<open>\<not>s\<^sub>\<box> \<Turnstile> \<not>p\<close>
     using absolute_necessity_matrix[THEN "\<forall>E"(1), OF "log-prop-prop:2", THEN "\<equiv>E"(1)]
           "reductio-aa:2" by blast
+  AOT_hence \<open>\<not>s\<^sub>\<box> \<Turnstile> ((p)\<^sup>-)\<close>
+    by (metis "log-prop-prop:2" "reductio-aa:1" "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'")
 
   moreover {
     AOT_have \<open>\<diamond>\<not>p\<close>
@@ -1194,7 +1196,7 @@ qed
 AOT_theorem "possibilities:14": \<open>GapOn(\<ss>,p) \<rightarrow> Contingent0(p)\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume 0: \<open>GapOn(\<ss>,p)\<close>
-  AOT_hence 1: \<open>\<not>\<ss> \<Turnstile> p\<close> and 2: \<open>\<not>\<ss> \<Turnstile> \<not>p\<close>
+  AOT_hence 1: \<open>\<not>\<ss> \<Turnstile> p\<close> and 2: \<open>\<not>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
     by (auto simp add: "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)")
   AOT_show \<open>Contingent0(p)\<close>
   proof(rule "raa-cor:1")
@@ -1206,9 +1208,9 @@ proof(safe intro!: "\<rightarrow>I")
                 "con-dis-i-e:3:b" "reductio-aa:2")
     moreover {
       AOT_assume \<open>\<box>\<not>p\<close>
-      AOT_hence \<open>\<ss> \<Turnstile> \<not>p\<close>
-        by (simp add: "cqt:2"(1) "log-prop-prop:2"
-                      "possibilities:4.unvarify_p.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E" Possibilities.\<psi>)
+      AOT_hence \<open>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
+        by (meson "RM:3.\<equiv>E(2)" "cqt:2"(1) "log-prop-prop:2" "possibilities:4.unvarify_p.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E"
+            "thm-relation-negation:3" Possibilities.restricted_var_condition)
       AOT_hence \<open>p & \<not>p\<close>
         using "2" "raa-cor:3" by blast
     }
@@ -1284,17 +1286,19 @@ proof(safe intro!: "\<rightarrow>I" "&I")
                 "reductio-aa:2" Possibilities_are_Situations PossibleWorld.\<psi>)
           AOT_hence \<open>\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> \<not>p\<close> for w
             by (metis "\<equiv>E"(2) "coherent:1" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "reductio-aa:2" CP)
-          AOT_hence \<open>\<forall>w (\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> \<not>p)\<close>
+          AOT_hence \<open>\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> ((p)\<^sup>-)\<close> for w
+            by (metis "deduction-theorem" "id_sym.rule=E'" "thm-relation-negation:7" "vdash-properties:10")
+          AOT_hence \<open>\<forall>w (\<ss> \<unlhd> w \<rightarrow> w \<Turnstile> ((p)\<^sup>-))\<close>
             using "PossibleWorld.\<forall>I" by force
-          AOT_hence \<open>Actual(\<ss>) \<Rightarrow> \<not>p\<close>
+          AOT_hence \<open>Actual(\<ss>) \<Rightarrow> ((p)\<^sup>-)\<close>
             by (simp add: "log-prop-prop:2"
                 "poss-sit-part-w:3[newproof].unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)"
                 "situations:3.\<rightarrow>E" Possibilities_are_Situations)
-          AOT_hence \<open>\<ss> \<Turnstile> \<not>p\<close>
+          AOT_hence \<open>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
             by (meson "log-prop-prop:2" "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)"
                       "sit-clo.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1).\<rightarrow>E" AOT_restricted_type.\<psi>
                       Possibilities.AOT_restricted_type_axioms)
-          moreover AOT_have \<open>\<not>\<ss> \<Turnstile> \<not>p\<close>
+          moreover AOT_have \<open>\<not>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
             using "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" A by auto
           ultimately AOT_show \<open>p & \<not>p\<close>
             using "raa-cor:3" by blast
@@ -1322,11 +1326,15 @@ proof(safe intro!: "\<rightarrow>I" "&I")
     AOT_show \<open>GapOn(\<ss>, \<not>p)\<close>
     proof(rule "raa-cor:1")
       AOT_assume 2: \<open>\<not>GapOn(\<ss>, \<not>p)\<close>
+      AOT_hence \<open>\<ss> \<Turnstile> \<not>p \<or> \<ss> \<Turnstile> ((\<not>p)\<^sup>-)\<close>
+        by (metis "1" "con-dis-i-e:1" "con-dis-i-e:3:a" "con-dis-taut:4.\<rightarrow>E" "raa-cor:3" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(1)"
+            "routley-star:5.\<equiv>\<^sub>d\<^sub>fI")
       AOT_hence \<open>\<ss> \<Turnstile> \<not>p \<or> \<ss> \<Turnstile> \<not>\<not>p\<close>
-        by (metis "1" "con-dis-i-e:1" "con-dis-taut:4.\<rightarrow>E" "raa-cor:3" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(1)"
-                  "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "routley-star:5.\<equiv>\<^sub>d\<^sub>fI")
+        by (meson "log-prop-prop:2" "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'")
       moreover {
         AOT_assume \<open>\<ss> \<Turnstile> \<not>p\<close>
+        AOT_hence \<open>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
+          using "id_sym.rule=E'" "thm-relation-negation:7" by blast
         AOT_hence \<open>\<forall>p(p & \<not>p)\<close>
           by (smt (verit) "1" "raa-cor:3" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)")
       }
@@ -1350,7 +1358,8 @@ proof(safe intro!: "\<rightarrow>I" "&I")
           using "1" "raa-cor:4" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)" by blast
       }
       ultimately AOT_show \<open>p & \<not>p\<close>
-        using "1" "con-dis-i-e:4:b" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "rule-ui:3" by blast
+        using "1" "con-dis-i-e:4:b" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "rule-ui:3"
+        using "raa-cor:1" by blast
     qed
   qed
         
@@ -1390,6 +1399,8 @@ proof(safe intro!: "\<rightarrow>I")
     }
     moreover {
       AOT_assume b: \<open>\<not>\<ss> \<Turnstile> \<not>p\<close>
+      AOT_hence \<open>\<not>\<ss> \<Turnstile> ((p)\<^sup>-)\<close>
+        using "propositions-lemma:1.rule=E'" "raa-cor:2" "rel-neg-T:2[zero].rule=E'" calculation by blast
       AOT_hence \<open>GapOn(\<ss>, p)\<close>
         using "0" "con-dis-i-e:1" "routley-star:5.\<equiv>\<^sub>d\<^sub>fI" Possibilities_are_Situations by presburger
       AOT_hence \<open>\<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> \<not>p)\<close>
@@ -1456,7 +1467,8 @@ next
     AOT_hence \<open>\<not>\<ss> \<Turnstile> p\<close>
       using "1" "rule-ui:3" "vdash-properties:10" Possibilities.restricted_var_condition by blast
     AOT_hence \<open>GapOn(\<ss>, p)\<close>
-      by (simp add: "2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "routley-star:5.\<equiv>\<^sub>d\<^sub>fI" Possibilities_are_Situations)
+      by (smt (verit, ccfv_threshold) "2" "\<equiv>\<^sub>d\<^sub>fI" "con-dis-i-e:1" "cqt:2"(1) "raa-cor:2" "routley-star:5"
+          "thm-relation-negation:7.unvarify_p.\<forall>E(1).rule=E'" Possibilities_are_Situations)
     AOT_hence \<open>\<exists>\<ss>'(\<ss>' \<unrhd> \<ss> & \<ss>' \<Turnstile> p)\<close>
       using "con-dis-taut:1" "oth-class-taut:4:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" "possibilities:16" by blast
     then AOT_obtain \<ss>\<^sub>1 where 3: \<open>\<ss>\<^sub>1 \<unrhd> \<ss> & \<ss>\<^sub>1 \<Turnstile> p\<close>
