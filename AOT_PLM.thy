@@ -161,6 +161,13 @@ AOT_theorem "df-rules-terms[3]":
   shows \<open>(\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}) &
          (\<not>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down> \<rightarrow> \<not>\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<down>)\<close>
   using "df-rules-terms[1]"[axiom_inst, OF assms].
+AOT_theorem "df-rules-terms[schematic]":
+  assumes \<open>\<tau>{\<guillemotleft>\<alpha>\<guillemotright>} =\<^sub>d\<^sub>f \<sigma>{\<guillemotleft>\<alpha>\<guillemotright>}\<close>
+  shows \<open>(\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<down> \<rightarrow> \<tau>{\<guillemotleft>\<tau>'\<guillemotright>} = \<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}) &
+         (\<not>\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<down> \<rightarrow> \<not>\<tau>{\<guillemotleft>\<tau>'\<guillemotright>}\<down>)\<close>
+  using assms
+  by (simp add: AOT_model_axiomI AOT_sem_conj AOT_sem_imp AOT_sem_eq
+                AOT_sem_not AOT_sem_denotes AOT_model_id_def)
 AOT_theorem "df-rules-terms[4]":
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close>
   shows \<open>(\<sigma>\<down> \<rightarrow> \<tau> = \<sigma>) & (\<not>\<sigma>\<down> \<rightarrow> \<not>\<tau>\<down>)\<close>
@@ -1404,6 +1411,16 @@ proof -
     using assms(2) "\<rightarrow>E" by blast
 qed
 
+AOT_theorem "rule-id-df:1[schematic]":
+  assumes \<open>\<tau>{\<guillemotleft>\<alpha>\<guillemotright>} =\<^sub>d\<^sub>f \<sigma>{\<guillemotleft>\<alpha>\<guillemotright>}\<close> and \<open>\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<down>\<close>
+  shows \<open>\<tau>{\<guillemotleft>\<tau>'\<guillemotright>} = \<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<close>
+proof -
+  AOT_have \<open>\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<down> \<rightarrow> \<tau>{\<guillemotleft>\<tau>'\<guillemotright>} = \<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<close>
+    using "df-rules-terms[schematic]" assms(1) "&E" by fast
+  AOT_thus \<open>\<tau>{\<guillemotleft>\<tau>'\<guillemotright>} = \<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<close>
+    using assms(2) "\<rightarrow>E" by blast
+qed
+
 AOT_theorem "rule-id-df:1[zero]":
   assumes \<open>\<tau> =\<^sub>d\<^sub>f \<sigma>\<close> and \<open>\<sigma>\<down>\<close>
   shows \<open>\<tau> = \<sigma>\<close>
@@ -1452,6 +1469,17 @@ proof -
   AOT_hence \<open>\<sigma>{\<tau>\<^sub>1...\<tau>\<^sub>n} = \<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}\<close>
     using "rule=E" "=I"(1) "t=t-proper:1" "\<rightarrow>E" by fast
   AOT_thus \<open>\<phi>{\<tau>{\<tau>\<^sub>1...\<tau>\<^sub>n}}\<close> using assms(3) "rule=E" by blast
+qed
+
+AOT_theorem "rule-id-df:2:b[schematic]":
+  assumes \<open>\<tau>{\<guillemotleft>\<alpha>\<guillemotright>} =\<^sub>d\<^sub>f \<sigma>{\<guillemotleft>\<alpha>\<guillemotright>}\<close> and \<open>\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<down>\<close> and \<open>\<phi>{\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}}\<close>
+  shows \<open>\<phi>{\<tau>{\<guillemotleft>\<tau>'\<guillemotright>}}\<close>
+proof -
+  AOT_have \<open>\<tau>{\<guillemotleft>\<tau>'\<guillemotright>} = \<sigma>{\<guillemotleft>\<tau>'\<guillemotright>}\<close>
+    using "rule-id-df:1[schematic]" assms(1,2) by fast
+  AOT_hence \<open>\<sigma>{\<guillemotleft>\<tau>'\<guillemotright>} = \<tau>{\<guillemotleft>\<tau>'\<guillemotright>}\<close>
+    using "rule=E" "=I"(1) "t=t-proper:1" "\<rightarrow>E" by fast
+  AOT_thus \<open>\<phi>{\<tau>{\<guillemotleft>\<tau>'\<guillemotright>}}\<close> using assms(3) "rule=E" by blast
 qed
 
 AOT_theorem "rule-id-df:2:b[2]":
