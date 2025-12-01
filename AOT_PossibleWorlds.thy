@@ -949,6 +949,128 @@ AOT_theorem "strict-sit":
 
 (* TODO: exercise (479) sit-lit *)
 
+AOT_define SitSum :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau>\<close> (infix \<open>\<oplus>\<close> 500)
+  "sit-lat:1": \<open>s' \<oplus> s'' =\<^sub>d\<^sub>f \<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
+
+AOT_theorem "sit-lat:1[denotes]": \<open>s' \<oplus> s''\<down>\<close>
+  using "sit-comp-simp:3" "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:1", of _ "(_, _)", simplified]
+  by presburger
+
+AOT_theorem "sit-lat:1[sit]": \<open>Situation(s' \<oplus> s'')\<close>
+proof (rule "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:1", of _ "(_, _)", simplified])
+  AOT_show 0: \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<down>\<close>
+    by (simp add: "sit-comp-simp:3")
+  moreover AOT_have \<open>\<^bold>\<A>Situation(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)))\<close>
+    using "0" "Act-Basic:2.\<equiv>E(1).&E(1)" "actual-desc:4.\<rightarrow>E" by blast  
+  ultimately AOT_show \<open>Situation(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)))\<close>
+    by (rule "possit-sit:4"[unvarify x, THEN "\<equiv>E"(1)])
+qed
+
+AOT_theorem "sit-lat:1[prop]": \<open>s' \<oplus> s'' \<Turnstile> p \<equiv> s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
+proof (rule "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:1", of _ "(_, _)", simplified])
+  AOT_show 0: \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<down>\<close>
+    by (simp add: "sit-comp-simp:3")
+  AOT_hence \<open>\<^bold>\<A>\<forall>p(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
+    using "Act-Basic:2.\<equiv>E(1).&E(2)" "actual-desc:4.\<rightarrow>E" by blast
+  AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
+    using "RA[2]" "act-cond.\<rightarrow>E.\<rightarrow>E" "cqt-orig:3" by blast
+  AOT_hence 1: \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p) \<equiv> \<^bold>\<A>(s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close>
+    using "Act-Basic:5" "intro-elim:3:a" by blast
+  AOT_show \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p \<equiv> s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
+  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p\<close>
+    AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p)\<close>
+      using "0" "lem2:4.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)" "log-prop-prop:2"
+        "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)" by blast
+    AOT_hence \<open>\<^bold>\<A>(s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close>
+      using "1" "intro-elim:3:a" by blast
+    AOT_thus \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
+      using "Act-Basic:9.\<equiv>E(1)" "intro-elim:1" "lem2:4" by blast
+  next
+    AOT_assume \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
+    AOT_hence \<open>\<^bold>\<A>(s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close>
+      using "KBasic:15.\<rightarrow>E" "intro-elim:1" "lem2:1" "nec-imp-act.\<rightarrow>E" by blast
+    AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p)\<close>
+        using "1" "intro-elim:3:b" by blast
+    AOT_thus \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p \<or> s'' \<Turnstile> p)) \<Turnstile> p\<close>
+      using "0" "Act-Basic:2.\<equiv>E(1).&E(1)" "actual-desc:4.\<rightarrow>E"
+        "lem2:4.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2"
+        "possit-sit:4.unvarify_x.\<forall>E(1).\<equiv>E(1)" by blast
+  qed
+qed
+
+AOT_define SitProd :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau>\<close> (infix \<open>\<otimes>\<close> 500)
+  "sit-lat:2": \<open>s' \<otimes> s'' =\<^sub>d\<^sub>f \<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p))\<close>
+
+AOT_theorem "sit-lat:2[denotes]": \<open>s' \<otimes> s''\<down>\<close>
+  using "sit-comp-simp:3" "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:2", of _ "(_, _)", simplified]
+  by presburger
+
+AOT_theorem "sit-lat:2[sit]": \<open>Situation(s' \<otimes> s'')\<close>
+proof (rule "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:2", of _ "(_, _)", simplified])
+  AOT_show 0: \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p))\<down>\<close>
+    by (simp add: "sit-comp-simp:3")
+  moreover AOT_have \<open>\<^bold>\<A>Situation(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)))\<close>
+    using "0" "Act-Basic:2.\<equiv>E(1).&E(1)" "actual-desc:4.\<rightarrow>E" by blast  
+  ultimately AOT_show \<open>Situation(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)))\<close>
+    by (rule "possit-sit:4"[unvarify x, THEN "\<equiv>E"(1)])
+qed
+
+AOT_theorem "sit-lat:2[prop]": \<open>s' \<otimes> s'' \<Turnstile> p \<equiv> s' \<Turnstile> p & s'' \<Turnstile> p\<close>
+proof (rule "=\<^sub>d\<^sub>fI"(1)[OF "sit-lat:2", of _ "(_, _)", simplified])
+  AOT_show 0: \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p))\<down>\<close>
+    by (simp add: "sit-comp-simp:3")
+  AOT_hence \<open>\<^bold>\<A>\<forall>p(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p))\<close>
+    using "Act-Basic:2.\<equiv>E(1).&E(2)" "actual-desc:4.\<rightarrow>E" by blast
+  AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p))\<close>
+    using "RA[2]" "act-cond.\<rightarrow>E.\<rightarrow>E" "cqt-orig:3" by blast
+  AOT_hence 1: \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p) \<equiv> \<^bold>\<A>(s' \<Turnstile> p & s'' \<Turnstile> p)\<close>
+    using "Act-Basic:5" "intro-elim:3:a" by blast
+  AOT_show \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p \<equiv> s' \<Turnstile> p & s'' \<Turnstile> p\<close>
+  proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+    AOT_assume \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p\<close>
+    AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p)\<close>
+      using "0" "lem2:4.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)" "log-prop-prop:2"
+        "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)" by blast
+    AOT_hence \<open>\<^bold>\<A>(s' \<Turnstile> p & s'' \<Turnstile> p)\<close>
+      using "1" "intro-elim:3:a" by blast
+    AOT_thus \<open>s' \<Turnstile> p & s'' \<Turnstile> p\<close>
+      by (meson "Act-Basic:2.\<equiv>E(1).&E(1)" "Act-Basic:2.\<equiv>E(1).&E(2)" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+          "lem2:4.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2" "situations:3.\<rightarrow>E"
+          Situation.restricted_var_condition)
+  next
+    AOT_assume \<open>s' \<Turnstile> p & s'' \<Turnstile> p\<close>
+    AOT_hence \<open>\<^bold>\<A>(s' \<Turnstile> p & s'' \<Turnstile> p)\<close>
+      by (metis "KBasic2:3.\<rightarrow>E.&E(1)" "KBasic2:3.\<rightarrow>E.&E(2)" "T-S5-fund:1.\<rightarrow>E" "act-conj-act:3.\<rightarrow>E"
+          "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "lem2:3.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2"
+          "nec-imp-act.\<rightarrow>E" "situations:3.\<rightarrow>E" Situation.restricted_var_condition)
+    AOT_hence \<open>\<^bold>\<A>(\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p)\<close>
+        using "1" "intro-elim:3:b" by blast
+    AOT_thus \<open>\<^bold>\<iota>s \<forall>p(s \<Turnstile> p \<equiv> (s' \<Turnstile> p & s'' \<Turnstile> p)) \<Turnstile> p\<close>
+      using "0" "Act-Basic:2.\<equiv>E(1).&E(1)" "actual-desc:4.\<rightarrow>E"
+        "lem2:4.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2"
+        "possit-sit:4.unvarify_x.\<forall>E(1).\<equiv>E(1)" by blast
+  qed
+qed
+
+AOT_theorem  "sit-lat:3": \<open>\<forall>p((s' \<Turnstile> p \<or> s'' \<Turnstile> p) \<rightarrow> \<box>(s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
+proof(safe intro!: GEN "\<rightarrow>I")
+  fix p
+  AOT_assume \<open>s' \<Turnstile> p \<or> s'' \<Turnstile> p\<close>
+  AOT_thus \<open>\<box>(s' \<Turnstile> p \<or> s'' \<Turnstile> p)\<close>
+    using "KBasic:15.\<rightarrow>E" "intro-elim:1" "lem2:1" by blast
+qed
+AOT_theorem  "sit-lat:4": \<open>\<forall>p((s' \<Turnstile> p & s'' \<Turnstile> p) \<rightarrow> \<box>(s' \<Turnstile> p & s'' \<Turnstile> p))\<close>
+proof(safe intro!: GEN "\<rightarrow>I")
+  fix p
+  AOT_assume \<open>s' \<Turnstile> p & s'' \<Turnstile> p\<close>
+  AOT_thus \<open>\<box>(s' \<Turnstile> p & s'' \<Turnstile> p)\<close>
+    by (metis "KBasic:3" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "df-simplify:1.\<equiv>E(2)"
+        "lem2:1.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2" "situations:3.\<rightarrow>E"
+        "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)")
+qed
+
+
 AOT_define actual :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Actual'(_')\<close>)
   \<open>Actual(s) \<equiv>\<^sub>d\<^sub>f \<forall>p (s \<Turnstile> p \<rightarrow> p)\<close>
 
@@ -1385,12 +1507,14 @@ proof(rule "\<rightarrow>I")
     by (metis "0" "KBasic2:3" "&E"(2) "raa-cor:3" "vdash-properties:10")
 qed
 
-AOT_theorem "pos-cons-sit:1": \<open>Possible(s) \<rightarrow> Consistent(s)\<close>
+AOT_theorem "sit-pos:3": \<open>Possible(s) \<rightarrow> Consistent(s)\<close>
   by (auto simp: "sit-cons"[THEN "RM\<diamond>", THEN "\<rightarrow>E",
                             THEN "cons-rigid:2"[THEN "\<equiv>E"(1)]]
            intro!: "\<rightarrow>I" dest!: pos[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2))
 
-AOT_theorem "pos-cons-sit:2": \<open>\<exists>s (Consistent(s) & \<not>Possible(s))\<close>
+lemmas "pos-cons-sit:1" = "sit-pos:3" \<comment> \<open>Keep previous name as alias\<close>
+
+AOT_theorem "sit-pos:4": \<open>\<exists>s (Consistent(s) & \<not>Possible(s))\<close>
 proof -
   AOT_obtain q\<^sub>1 where \<open>q\<^sub>1 & \<diamond>\<not>q\<^sub>1\<close>
     using "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1" by blast
@@ -1473,6 +1597,71 @@ proof -
   qed
   show ?thesis
     by(rule "\<exists>I"(2)[where \<beta>=x]; safe intro!: "&I" 2 s_sit cons[THEN "\<equiv>\<^sub>d\<^sub>fI"] 1)
+qed
+lemmas "pos-cons-sit:2" = "sit-pos:4" \<comment> \<open>Keep previous name as alias\<close>
+
+AOT_define IncompSit :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infix \<open>!\<close> 80)
+  "incomp-sit:1": \<open>s!s' \<equiv>\<^sub>d\<^sub>f \<exists>p(s \<Turnstile> p & s' \<Turnstile> ((p)\<^sup>-))\<close>
+
+AOT_define IncompSit2 :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infix \<open>\<Join>\<close> 80)
+  "incomp-sit:2": \<open>s \<Join> s' \<equiv>\<^sub>d\<^sub>f \<exists>p\<exists>q(\<not>\<diamond>(p & q) & s \<Turnstile> p & s' \<Turnstile> q)\<close>
+
+AOT_define IncompSit3 :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infix \<open>|\<close> 80)
+  "incomp-sit:3": \<open>s | s' \<equiv>\<^sub>d\<^sub>f \<exists>p\<exists>q(\<not>(p & q) & s \<Turnstile> p & s' \<Turnstile> q)\<close>
+
+AOT_theorem "incomp-sit:4": \<open>s!s' \<rightarrow> s \<Join> s'\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>s!s'\<close>
+  then AOT_obtain p where \<open>s \<Turnstile> p & s' \<Turnstile> ((p)\<^sup>-)\<close>
+    using "incomp-sit:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<exists>E'" by blast
+  moreover AOT_have \<open>\<not>\<diamond>(p & ((p)\<^sup>-))\<close>
+    by (meson "KBasic2:1.\<equiv>E(1)" "con-dis-taut:1" "con-dis-taut:2" "log-prop-prop:2" "modus-tollens:1"
+        "raa-cor:2" "thm-relation-negation:4.unvarify_p.\<forall>E(1).\<equiv>E(2)" RN)
+  ultimately AOT_have \<open>\<not>\<diamond>(p & ((p)\<^sup>-)) & s \<Turnstile> p & s' \<Turnstile> ((p)\<^sup>-)\<close>
+    by (metis "con-dis-i-e:2:b" "con-dis-taut:1.\<rightarrow>E" "deduction-theorem"
+        "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E")
+  AOT_hence \<open>\<exists>p\<exists>q(\<not>\<diamond>(p & q) & s \<Turnstile> p & s' \<Turnstile> q)\<close>
+    using "\<exists>I" by (metis (no_types, lifting) "log-prop-prop:2")
+  AOT_thus \<open>s \<Join> s'\<close>
+    using "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "incomp-sit:2.\<equiv>\<^sub>d\<^sub>fI" Situation.\<psi>
+    by presburger
+qed
+
+AOT_theorem "incomp-sit:5": \<open>s \<Join> s' \<rightarrow> s|s'\<close>
+proof (safe intro!: "\<rightarrow>I" "incomp-sit:3"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" Situation.\<psi>)
+  AOT_assume \<open>s \<Join> s'\<close>
+  then AOT_obtain p q where 1: \<open>\<not>\<diamond>(p & q) & s \<Turnstile> p & s' \<Turnstile> q\<close>
+    using "\<exists>E'" "incomp-sit:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<exists>E'" by blast
+  AOT_hence \<open>\<not>(p & q)\<close>
+    using "T\<diamond>" "con-dis-taut:1.\<rightarrow>E" "modus-tollens:1" by blast
+  AOT_hence \<open>\<not>(p & q) & s \<Turnstile> p & s' \<Turnstile> q\<close>
+    using 1
+    by (metis "con-dis-i-e:1" "con-dis-i-e:2:a" "con-dis-i-e:2:b")
+  AOT_thus \<open>\<exists>p\<exists>q (\<not>(p & q) & s \<Turnstile> p & s' \<Turnstile> q)\<close>
+    by (meson "existential:1" "log-prop-prop:2")
+qed
+
+AOT_theorem "incomp-sit:6": \<open>s!s' \<rightarrow> s|s'\<close>
+  by (simp add: "deduction-theorem" "incomp-sit:1.\<equiv>\<^sub>d\<^sub>fE.&E(1).&E(1)"
+      "incomp-sit:1.\<equiv>\<^sub>d\<^sub>fE.&E(1).&E(2)"
+      "incomp-sit:4.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<rightarrow>E"
+      "incomp-sit:5.unconstrain_s.unconstrain_s'.\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "situations:3.\<rightarrow>E")
+
+(* TODO: incomp-sit:7 - incomp-sit:9 *)
+
+AOT_theorem "incomp-sit:10": \<open>s!s' \<rightarrow> s \<oplus> s'' ! s' \<oplus> s'''\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume \<open>s!s'\<close>
+  then AOT_obtain p where \<open>s \<Turnstile> p & s' \<Turnstile> ((p)\<^sup>-)\<close>
+    using "incomp-sit:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<exists>E'" by blast
+  AOT_hence \<open>s \<oplus> s'' \<Turnstile> p & s' \<oplus> s''' \<Turnstile> ((p)\<^sup>-)\<close>
+    by (metis "con-dis-i-e:2:b" "con-dis-i-e:3:a" "con-dis-taut:1.\<rightarrow>E" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+        "cqt:2"(1) "log-prop-prop:2"
+        "sit-lat:1[prop].unconstrain_s'.unconstrain_s''.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<forall>E(1).\<rightarrow>E.\<equiv>E(2)"
+        Situation.restricted_var_condition)
+  AOT_thus \<open>s \<oplus> s'' ! s' \<oplus> s'''\<close>
+    by (simp add: "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1" "incomp-sit:1.\<equiv>\<^sub>d\<^sub>fI" "log-prop-prop:2"
+        "sit-lat:1[sit]")
 qed
 
 AOT_theorem "sit-classical:1": \<open>\<forall>p (s \<Turnstile> p \<equiv> p) \<rightarrow> \<forall>q(s \<Turnstile> \<not>q \<equiv> \<not>s \<Turnstile> q)\<close>
@@ -3650,7 +3839,7 @@ next
         "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" "rule-ui:1")
 qed
 
-AOT_theorem "rouley-star:11": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>\<emptyset>)\<^sup>* = \<^bold>s\<^sub>V\<close>
+AOT_theorem "routley-star:11": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>\<emptyset>)\<^sup>* = \<^bold>s\<^sub>V\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume 0: \<open>\<forall>s((s\<^sup>*)\<^sup>* = s)\<close>
   AOT_have 1: \<open>\<not>\<exists>p (\<^bold>s\<^sub>\<emptyset>) \<Turnstile> p\<close>
@@ -3668,7 +3857,7 @@ proof(safe intro!: "\<rightarrow>I")
         "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)")
 qed
 
-AOT_theorem "rouley-star:12": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>V)\<^sup>* = \<^bold>s\<^sub>\<emptyset>\<close>
+AOT_theorem "routley-star:12": \<open>\<forall>s((s\<^sup>*)\<^sup>* = s) \<rightarrow> (\<^bold>s\<^sub>V)\<^sup>* = \<^bold>s\<^sub>\<emptyset>\<close>
 proof(safe intro!: "\<rightarrow>I")
   AOT_assume 0: \<open>\<forall>s((s\<^sup>*)\<^sup>* = s)\<close>
   AOT_have 1: \<open>\<forall>p \<^bold>s\<^sub>V \<Turnstile> p\<close>
@@ -3692,7 +3881,7 @@ proof(safe intro!: "\<rightarrow>I")
         "situations:3.\<rightarrow>E")
 qed
 
-AOT_theorem "rouley-star:13": \<open>((s\<^sup>*)\<^sup>* = s) \<equiv> \<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> ((((p)\<^sup>-))\<^sup>-))\<close>
+AOT_theorem "routley-star:13": \<open>((s\<^sup>*)\<^sup>* = s) \<equiv> \<forall>p(s \<Turnstile> p \<equiv> s \<Turnstile> ((((p)\<^sup>-))\<^sup>-))\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   fix p
   AOT_assume \<open>((s\<^sup>*)\<^sup>* = s)\<close>

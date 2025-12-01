@@ -7393,15 +7393,333 @@ next
   finally AOT_show \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]u \<equiv> [[\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x]u\<close>.
 qed
 
-(**************** START HERE ***********************)
-(* Ok, the rest will change anyways *)
+AOT_theorem "th-succ-lem:3[lem]": \<open>[\<bbbP>\<^sup>+]xy \<rightarrow> \<box>[\<bbbP>\<^sup>+]xy\<close>
+proof(rule "\<rightarrow>I")
+  AOT_assume \<open>[\<bbbP>\<^sup>+]xy\<close>
+  AOT_hence \<open>[\<bbbP>\<^sup>*]xy \<or> x =\<^sub>D y\<close>
+    using "w-ances"
+    by (simp add: "cqt:2"(1) "pred-rel-disc[aux]" "pred-thm:2"
+        "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)")
+  moreover {
+    AOT_assume \<open>[\<bbbP>\<^sup>*]xy\<close>
+    AOT_hence \<open>\<box>[\<bbbP>\<^sup>*]xy\<close>
+      using "assume-anc:4"[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF "df-rigid-rel:1"], THEN "&E"(2), THEN CBF[THEN "\<rightarrow>E"],
+            THEN tuple_forall[THEN "\<equiv>\<^sub>d\<^sub>fE"], THEN "\<forall>E"(2)[where \<beta>=x], THEN "\<forall>E"(2)[where \<beta>=y]]
+      using "T-S5-fund:1.\<rightarrow>E" "con-dis-i-e:3:a" "sc-eq-box-box:2.\<rightarrow>E.\<equiv>E(1)" by presburger
+  }
+  moreover {
+    AOT_assume \<open>x =\<^sub>D y\<close>
+    AOT_hence \<open>\<box>x =\<^sub>D y\<close>
+      by (simp add: "cqt:2"(1) "discern-obj:21.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<equiv>E(1)")
+  }
+  ultimately AOT_have \<open>\<box>[\<bbbP>\<^sup>*]xy \<or> \<box>x =\<^sub>D y\<close>
+    using "con-dis-i-e:3:c" "deduction-theorem" by blast
+  AOT_thus \<open>\<box>[\<bbbP>\<^sup>+]xy\<close>
+    apply (AOT_subst \<open>[\<bbbP>\<^sup>+]xy\<close> \<open>[\<bbbP>\<^sup>*]xy \<or> x =\<^sub>D y\<close>)
+    apply (simp add: "cqt:2"(1) "deduction-theorem" "intro-elim:2" "pred-rel-disc[aux]" "pred-thm:2"
+        "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)"
+        "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)")
+    using "KBasic:15.\<rightarrow>E" by blast
+qed
+
+AOT_theorem "th-succ-lem:3[lem']": \<open>Rigid([\<lambda>z [\<bbbP>\<^sup>+]zy])\<close>
+proof (safe intro!: "df-rigid-rel:1.\<equiv>\<^sub>d\<^sub>fI" "&I" GEN "\<rightarrow>I" BF[THEN "\<rightarrow>E"])
+  AOT_show \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]\<down>\<close>
+    by "cqt:2"
+  AOT_show \<open>\<box>([\<lambda>z [\<bbbP>\<^sup>+]zy]x \<rightarrow> \<box>([\<lambda>z [\<bbbP>\<^sup>+]zy]x))\<close> for x
+  proof(rule RN; rule "\<rightarrow>I")
+    AOT_modally_strict {
+      AOT_assume \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]x\<close>
+      AOT_hence \<open>[\<bbbP>\<^sup>+]xy\<close>
+        using "betaC:1:a" by blast
+      AOT_hence 4: \<open>\<box>[\<bbbP>\<^sup>+]xy\<close>
+        by (simp add: "cqt:2"(1) "th-succ-lem:3[lem].unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E")
+      AOT_show \<open>\<box>[\<lambda>z [\<bbbP>\<^sup>+]zy]x\<close>
+      proof (AOT_subst \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]x\<close> \<open>[\<bbbP>\<^sup>+]xy\<close>)
+        AOT_modally_strict {
+          AOT_have \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]\<down>\<close>
+            by "cqt:2"
+          AOT_thus \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]x \<equiv> [\<bbbP>\<^sup>+]xy\<close>
+            using "beta-C-cor:2" "rule-ui:3" "vdash-properties:10" by blast
+        }
+      next
+        AOT_show \<open>\<box>[\<bbbP>\<^sup>+]xy\<close>
+          using 4.
+      qed
+    }
+  qed
+qed
+
+AOT_theorem "th-succ-lem:3": \<open>([\<nat>]x & [\<bbbP>]yx) \<rightarrow> #[\<lambda>z [\<bbbP>\<^sup>+]zy] = #[\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x\<close>
+proof(safe intro!: "\<rightarrow>I")
+  AOT_assume 1: \<open>[\<nat>]x & [\<bbbP>]yx\<close>
+  AOT_have 2: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy]\<down>\<close>
+    by "cqt:2"
+  AOT_have 3: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x\<down>\<close>
+    using "F-u:2[den].unconstrain_u.\<forall>E(1).\<rightarrow>E" "con-dis-i-e:2:a" "cqt:2"(1)
+      "nat-card:2.unvarify_x.\<forall>E(1).\<rightarrow>E" 1 by blast
+  AOT_have Dx: \<open>D!x\<close>
+    using "1" "con-dis-i-e:2:a" "nat-card:2.unvarify_x.\<forall>E(1).\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm"
+    by blast
+  AOT_obtain a where \<open>Numbers(a,[\<lambda>z [\<bbbP>\<^sup>+]zy])\<close>
+    using "2" "num:1.unvarify_G.\<forall>E(1).\<exists>E'" by blast
+  moreover AOT_have \<open>Numbers(a,[\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x)\<close>
+    using calculation "th-succ-lem:2"[THEN "\<rightarrow>E", OF 1]
+    using "intro-elim:3:a" by blast
+  ultimately AOT_have \<open>[\<lambda>z [\<bbbP>\<^sup>+]zy] \<approx>\<^sub>D [\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x\<close>
+    using "num-tran:2"[unvarify G H, THEN "\<rightarrow>E"]
+    using "3" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" 2 by blast
+  AOT_thus \<open>#[\<lambda>z [\<bbbP>\<^sup>+]zy] = #[\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x\<close>
+  proof (safe intro!: "hume-strict"[unvarify F G, THEN "\<rightarrow>E", THEN "\<equiv>E"(2)] 2 3 "&I")
+    AOT_show \<open>Rigid([\<lambda>z [\<bbbP>\<^sup>+]zy])\<close>
+      using "th-succ-lem:3[lem']".
+    AOT_obtain u where u_is_x: \<open>u = x\<close>
+      by (metis (no_types, lifting) "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "existential:1" "rule=I:1"
+          Discernible.instantiation Dx id_sym)
+    AOT_have \<open>Rigid([\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u)\<close>
+    proof (safe intro!: "df-rigid-rel:1.\<equiv>\<^sub>d\<^sub>fI" "&I" GEN "\<rightarrow>I" BF[THEN "\<rightarrow>E"])
+      AOT_have \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<down>\<close>
+        by "cqt:2"
+      AOT_thus \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u\<down>\<close>
+        using "F-u:2[den]" by blast
+      AOT_show \<open>\<box>([\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y \<rightarrow> \<box>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y)\<close> for y
+      proof(rule RN; rule "\<rightarrow>I")
+        AOT_modally_strict {
+          fix y
+          AOT_assume \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y\<close>
+          AOT_hence \<open>[\<bbbP>\<^sup>+]yu & y \<noteq> u\<close>
+            by (metis "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(1)"
+                "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(2)" "betaC:1:a"
+                "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) Discernible.restricted_var_condition)
+          AOT_hence \<open>\<box>([\<bbbP>\<^sup>+]yu & y \<noteq> u)\<close>
+            by (metis "KBasic:3.\<equiv>E(2)" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "deduction-theorem" "id-nec2:2"
+                "oth-class-taut:7:b.\<rightarrow>E.\<rightarrow>E" "th-succ-lem:3[lem]")
+          AOT_thus \<open>\<box>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y\<close>
+          proof (AOT_subst \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y\<close> \<open>[\<bbbP>\<^sup>+]yu & y \<noteq> u\<close>)
+            AOT_modally_strict {
+              AOT_have 1: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<down>\<close>
+                by "cqt:2"
+              AOT_hence 2: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u\<down>\<close>
+                by (simp add: "F-u:2[den]")
+              AOT_thus \<open>[\<lambda>z [\<bbbP>\<^sup>+]zu]\<^sup>-\<^sup>u y \<equiv> [\<bbbP>\<^sup>+]yu & y \<noteq> u\<close>
+                by (metis "1" "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(1)"
+                    "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(2)"
+                    "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)" "betaC:1:a" "betaC:2:a"
+                    "con-dis-taut:1.\<rightarrow>E" "con-dis-taut:2" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "cqt:2"(1) "deduction-theorem"
+                    "intro-elim:2" "intro-elim:3:b" Discernible.restricted_var_condition)
+            }
+          qed(auto)
+        }
+      qed
+    qed
+    AOT_thus \<open>Rigid([\<lambda>z [\<bbbP>\<^sup>+]zx]\<^sup>-\<^sup>x)\<close>
+      using "rule=E" u_is_x by fast
+  qed
+qed
+
+AOT_theorem "th-succ-lem:4": \<open>[\<lambda>x \<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)]\<down>\<close>
+proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E"]; safe intro!: "&I" RN GEN)
+  AOT_show \<open>[\<lambda>x D!x & \<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)]\<down>\<close>
+    by (simp add: "discern-obj:13")
+next
+  AOT_modally_strict {
+    fix x
+    AOT_show \<open>(D!x & \<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)) \<equiv> \<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)\<close>
+    proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I")
+      AOT_assume \<open>D!x & \<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)\<close>
+      AOT_thus \<open>\<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)\<close>
+        using "con-dis-i-e:2:b" by blast
+    next
+      AOT_assume \<open>\<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy)\<close>
+      then AOT_obtain y where \<open>Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & [\<bbbP>]xy\<close>
+        using "\<exists>E"[rotated] by blast
+      AOT_thus \<open>D!x\<close>
+        using "OnDiscerniblesE.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<rightarrow>E.&E(1)"
+          "con-dis-i-e:2:b" "cqt:2"(1) "pred-rel-disc[aux]" "pred-thm:2" by blast
+    qed
+  }
+qed
+
+AOT_theorem "th-succ-lem:5": \<open>[\<lambda>x [\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]]\<down>\<close>
+proof(rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E"]; safe intro!: "&I" RN GEN)
+  AOT_show \<open>[\<lambda>x D!x & [\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]]\<down>\<close>
+    by (simp add: "discern-obj:13")
+next
+  AOT_modally_strict {
+    fix x
+    AOT_show \<open>(D!x & [\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]) \<equiv> [\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]\<close>
+    proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I")
+      AOT_assume \<open>D!x & [\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]\<close>
+      AOT_thus \<open>[\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]\<close>
+        using "con-dis-i-e:2:b" by blast
+    next
+      AOT_assume \<open>[\<bbbP>]x#[\<lambda>z [\<bbbP>\<^sup>+]zx]\<close>
+      AOT_thus \<open>D!x\<close>
+        using "OnDiscerniblesE.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<rightarrow>E.&E(1)"
+          "pred-rel-disc[aux]" "pred-thm:2" "russell-axiom[exe,2,1,1].\<psi>_denotes_asm"
+          "russell-axiom[exe,2,1,2].\<psi>_denotes_asm" by blast
+    qed
+  }
+qed
+
+AOT_theorem "th-succ-lem:6": \<open>\<forall>n\<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zn]) & [\<bbbP>]ny)\<close>
+proof(rule "Number.GEN")
+  fix n
+  AOT_have \<open>[\<lambda>x \<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & \<bbbP>xy)]n\<close>
+  proof(rule induction[THEN "\<forall>E"(1), OF "th-succ-lem:4", THEN "\<rightarrow>E", THEN "Number.\<forall>E"];
+        safe intro!: "&I" "Number.GEN" "\<rightarrow>I")
+    AOT_have 0: \<open>[\<lambda>z [\<bbbP>\<^sup>+]z 0]\<down>\<close>
+      by "cqt:2"
+    AOT_obtain y where y: \<open>Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]z 0])\<close>
+      using "0" "num:1.unvarify_G.\<forall>E(1).\<exists>E'" by blast
+    moreover AOT_have \<open>\<bbbP>0y\<close>
+    proof(safe intro!: "pred-thm:3"[unvarify x, THEN "\<equiv>E"(2)] "zero:2")
+      AOT_have \<open>[\<lambda>z [\<bbbP>\<^sup>+]z 0]0 & Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]z 0]) & Numbers(0,[\<lambda>z [\<bbbP>\<^sup>+]z 0]\<^sup>-\<^sup>0)\<close>
+      proof(safe intro!: "&I" y)
+        AOT_have \<open>[\<bbbP>\<^sup>+]0 0\<close>
+          using "0-n" "nnumber:3.unvarify_x.\<forall>E(1).\<equiv>E(1)" "russell-axiom[exe,1].\<psi>_denotes_asm"
+          by blast
+        AOT_thus \<open>[\<lambda>z [\<bbbP>\<^sup>+]z 0]0\<close>
+          using "0" "0-n" "betaC:2:a" "russell-axiom[exe,1].\<psi>_denotes_asm" by blast
+      next
+        AOT_have \<open>\<not>\<exists>u [\<lambda>z [\<bbbP>\<^sup>+]z 0]\<^sup>-\<^sup>0 u\<close>
+        proof(rule "raa-cor:2")
+          AOT_assume \<open>\<exists>u [\<lambda>z [\<bbbP>\<^sup>+]z 0]\<^sup>-\<^sup>0 u\<close>
+          then AOT_obtain u where \<open>[\<lambda>z [\<bbbP>\<^sup>+]z 0]\<^sup>-\<^sup>0 u\<close>
+            using "Discernible.\<exists>E"[rotated] by meson
+          AOT_hence \<open>[\<bbbP>\<^sup>+]u 0 & u \<noteq> 0\<close>
+            by (metis "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(1)"
+                "F-u:2[equiv].unconstrain_u.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1).&E(2)" "betaC:1:a"
+                "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm" zero_disc)
+          moreover AOT_have \<open>\<not>(u =\<^sub>D 0)\<close>
+            by (metis "con-dis-i-e:2:b" "discern-obj:18.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<equiv>E(1).&E(2).rule=E'"
+                "discern-obj:3.unvarify_x.\<forall>E(1).\<equiv>E(1).\<forall>E(1).\<rightarrow>E.\<exists>E'"
+                "discern-obj:31.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<rightarrow>E" "oth-class-taut:3:a" "reductio-aa:1"
+                "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" "russell-axiom[exe,2,1,2].\<psi>_denotes_asm" calculation
+                zero_disc)
+          ultimately AOT_have \<open>[\<bbbP>\<^sup>*]u 0\<close>
+            using "w-ances"[unvarify y, OF "zero:2"]
+            using "con-dis-i-e:4:c" "con-dis-taut:1.\<rightarrow>E" "cqt:2"(1) "pred-rel-disc[aux]" "pred-thm:2"
+              "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "zero:2"
+            by blast
+          moreover AOT_have \<open>\<not>[\<bbbP>\<^sup>*]u 0\<close>
+            using "existential:2[const_var]" "no-pred-0:2" "reductio-aa:2" by blast
+          ultimately AOT_show \<open>p & \<not>p\<close> for p
+            using "raa-cor:4" by blast
+        qed
+        AOT_thus \<open>Numbers(0,[\<lambda>z [\<bbbP>\<^sup>+]z 0]\<^sup>-\<^sup>0)\<close>
+          using "0F:1.unvarify_F.\<forall>E(1).\<equiv>E(1)" "F-u:2[den].unconstrain_u.\<forall>E(1).\<rightarrow>E"
+            "russell-axiom[exe,1].\<psi>_denotes_asm" zero_disc by blast
+      qed
+      AOT_thus \<open>\<exists>F \<exists>u ([F]u & Numbers(y,F) & Numbers(0,[F]\<^sup>-\<^sup>u))\<close>
+        by (metis (no_types, lifting) "0" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1"
+            "russell-axiom[exe,1].\<psi>_denotes_asm" zero_disc)
+    qed
+    ultimately AOT_have \<open>\<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]z 0]) & \<bbbP>0y)\<close>
+      by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:2[const_var]")
+    AOT_thus \<open>[\<lambda>x \<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & \<bbbP>xy)]0\<close>
+      by (simp add: "betaC:2:a" "th-succ-lem:4" "zero:2")
+  next
+    fix n m
+    AOT_assume Pnm: \<open>[\<bbbP>]nm\<close>
+    AOT_assume \<open>[\<lambda>x \<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & \<bbbP>xy)]n\<close>
+    AOT_hence \<open>\<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zn]) & \<bbbP>ny)\<close>
+      using "betaC:1:a" by blast
+    then AOT_obtain y where y: \<open>Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zn]) & \<bbbP>ny\<close>
+      using "\<exists>E"[rotated] by blast
+    AOT_have 1: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zm]\<down>\<close>
+      by "cqt:2"
+    then AOT_obtain c where c: \<open>Numbers(c, [\<lambda>z [\<bbbP>\<^sup>+]zm])\<close>
+      using "num:1.unvarify_G.\<forall>E(1).\<exists>E'" by blast
+    moreover AOT_have \<open>\<bbbP>mc\<close>
+    proof(safe intro!: "pred-thm:3"[THEN "\<equiv>E"(2)])
+      AOT_have \<open>[\<lambda>z [\<bbbP>\<^sup>+]zm]m & Numbers(c,[\<lambda>z [\<bbbP>\<^sup>+]zm]) & Numbers(m,[\<lambda>z [\<bbbP>\<^sup>+]zm]\<^sup>-\<^sup>m)\<close>
+      proof(safe intro!: "&I" c)
+        AOT_have \<open>[\<bbbP>\<^sup>+]mm\<close>
+          by (meson "con-dis-i-e:3:b" "discern-obj:30.unvarify_x.\<forall>E(1).\<rightarrow>E" "nat-card:2.unvarify_x.\<forall>E(1).\<rightarrow>E"
+              "pred-rel-disc[aux]" "pred-thm:2" "russell-axiom[exe,1].\<psi>_denotes_asm"
+              "w-ances.unconstrain_\<R>.unvarify_x.unvarify_y.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(2)"
+              Number.restricted_var_condition)
+        AOT_thus \<open>[\<lambda>z [\<bbbP>\<^sup>+]zm]m\<close>
+          by (simp add: "1" "betaC:2:a" "cqt:2"(1))
+      next
+        AOT_show \<open>Numbers(m,[\<lambda>z [\<bbbP>\<^sup>+]zm]\<^sup>-\<^sup>m)\<close>
+        proof(rule "th-succ-lem:2"[THEN "\<rightarrow>E", THEN "\<equiv>E"(1)]; (safe intro!: "&I")?)
+          AOT_show \<open>[\<nat>]m\<close>
+            by (simp add: Number.restricted_var_condition)
+          AOT_show \<open>[\<bbbP>]nm\<close>
+            using Pnm.
+          AOT_have \<open>y = m\<close>
+            by (meson "con-dis-i-e:1" "con-dis-taut:2" "pred-func:1" "vdash-properties:10" Pnm y)
+          AOT_thus \<open>Numbers(m,[\<lambda>z [\<bbbP>\<^sup>+]zn])\<close>
+            using "con-dis-i-e:2:a" "rule=E" y by fast
+        qed
+      qed
+      AOT_thus \<open>\<exists>F \<exists>u ([F]u & Numbers(c,F) & Numbers(m,[F]\<^sup>-\<^sup>u))\<close>
+        by (metis (no_types, lifting) "1" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1"
+            "nat-card:2.unvarify_x.\<forall>E(1).\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm"
+            Number.restricted_var_condition)
+    qed
+    ultimately AOT_have \<open>Numbers(c, [\<lambda>z [\<bbbP>\<^sup>+]zm]) & \<bbbP>mc\<close>
+      using "&I" by blast
+    AOT_hence \<open>\<exists>y (Numbers(y, [\<lambda>z [\<bbbP>\<^sup>+]zm]) & \<bbbP>my)\<close>
+      using "\<exists>I" by fast
+    AOT_thus \<open>[\<lambda>x \<exists>y (Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zx]) & \<bbbP>xy)]m\<close>
+      using "betaC:2:a" "russell-axiom[exe,1].\<psi>_denotes_asm" "th-succ-lem:4"
+        Number.restricted_var_condition by blast
+  qed
+  AOT_thus \<open>\<exists>y(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zn]) & [\<bbbP>]ny)\<close>
+    using "betaC:1:a" by blast
+qed
+
+AOT_theorem "th-succ-lem:7": \<open>\<forall>n [\<bbbP>]n#[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+proof(safe intro!: "Number.\<forall>I")
+  fix n
+  AOT_have 1: \<open>[\<lambda>z [\<bbbP>\<^sup>+]zn]\<down>\<close>
+    by "cqt:2"
+  AOT_obtain y where y: \<open>(Numbers(y,[\<lambda>z [\<bbbP>\<^sup>+]zn]) & [\<bbbP>]ny)\<close>
+    using "russell-axiom[exe,1].\<psi>_denotes_asm" "th-succ-lem:6.\<forall>E(1).\<rightarrow>E.\<exists>E'"
+      Number.restricted_var_condition by blast
+  moreover AOT_have 2: \<open>Numbers(#[\<lambda>z [\<bbbP>\<^sup>+]zn], [\<lambda>z [\<bbbP>\<^sup>+]zn])\<close>
+    using "eq-num:5"[unvarify G, OF 1, THEN "\<rightarrow>E", OF "th-succ-lem:3[lem']"].
+  AOT_have \<open>y = #[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+  proof(rule "pre-Hume:1"[unvarify y H G, OF 1, OF 1, THEN "\<rightarrow>E", THEN "\<equiv>E"(2)]; (safe intro!: "&I" y[THEN "&E"(1)] 2)?)
+    AOT_show \<open>#[\<lambda>z [\<bbbP>\<^sup>+]zn]\<down>\<close>
+      by (simp add: "1" "num-def:2.unvarify_G.\<forall>E(1)")
+    AOT_show \<open>[\<lambda>z [\<bbbP>\<^sup>+]zn] \<approx>\<^sub>D [\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+      using "1" "eq-part:1.unvarify_F.\<forall>E(1)" by blast
+  qed
+  AOT_thus \<open>[\<bbbP>]n#[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+    using y
+    by (meson "con-dis-i-e:2:b" "rule=E'")
+qed
 
 AOT_theorem "th-succ": \<open>\<forall>n\<exists>!m [\<bbbP>]nm\<close>
 proof(safe intro!: Number.GEN "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   fix n
-  AOT_show \<open>\<exists>x ([\<nat>]x & [\<bbbP>]nx & \<forall>y([\<nat>]y & [\<bbbP>]ny \<rightarrow> y = x))\<close>
-    sorry
+  AOT_have \<open>[\<nat>]#[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+    using "russell-axiom[exe,1].\<psi>_denotes_asm" "russell-axiom[exe,2,1,2].\<psi>_denotes_asm"
+      "suc-num:1.unconstrain_n.unvarify_x.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "th-succ-lem:7.\<forall>E(1).\<rightarrow>E"
+      Number.restricted_var_condition by blast
+  moreover AOT_have 1: \<open>[\<bbbP>]n#[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+    using "russell-axiom[exe,1].\<psi>_denotes_asm" "th-succ-lem:7.\<forall>E(1).\<rightarrow>E" Number.restricted_var_condition
+    by force
+  moreover AOT_have \<open>\<forall>y([\<nat>]y & [\<bbbP>]ny \<rightarrow> y = #[\<lambda>z [\<bbbP>\<^sup>+]zn])\<close>
+  proof(safe intro!: GEN "\<rightarrow>I")
+    fix y
+    AOT_assume 2: \<open>[\<nat>]y & [\<bbbP>]ny\<close>
+    AOT_thus \<open>y = #[\<lambda>z [\<bbbP>\<^sup>+]zn]\<close>
+      by (metis "1" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+          "pred-func:1.unvarify_x.unvarify_y.unvarify_z.\<forall>E(1).\<forall>E(1).\<forall>E(1).\<rightarrow>E.rule=E'" "rule=I:1"
+          "russell-axiom[exe,2,1,1].\<psi>_denotes_asm" "russell-axiom[exe,2,1,2].\<psi>_denotes_asm")
+  qed
+  ultimately AOT_show \<open>\<exists>x ([\<nat>]x & [\<bbbP>]nx & \<forall>y([\<nat>]y & [\<bbbP>]ny \<rightarrow> y = x))\<close>
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1" "russell-axiom[exe,1].\<psi>_denotes_asm")
 qed
+
+(**************** START HERE ***********************)
+
+
 AOT_find_theorems item: 806
 (*
 proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
