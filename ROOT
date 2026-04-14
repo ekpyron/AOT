@@ -13,10 +13,9 @@ session "AOT" = "HOL-Cardinals" +
     AOT_PLM
     AOT_BasicLogicalObjects
     AOT_RestrictedVariables
-    AOT_ExtendedRelationComprehension
     AOT_PossibleWorlds
     AOT_NaturalNumbers
-	  AOT_Possibilities
+	AOT_Possibilities
     AOT_misc
   theories [document = false]
     ExportInfo

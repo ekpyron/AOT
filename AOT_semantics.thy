@@ -1104,6 +1104,11 @@ lemma AOT_instance_of_cqt_2_intros_not[AOT_instance_of_cqt_2_intro]:
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<not>\<phi>{\<tau>}\<guillemotright>)\<close>
   using assms
   by (metis (no_types, lifting) AOT_instance_of_cqt_2_def)
+lemma AOT_instance_of_cqt_2_intros_nested_enc[AOT_instance_of_cqt_2_intro]:
+  assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close>
+  shows "AOT_instance_of_cqt_2 (\<lambda>\<kappa>\<^sub>1\<kappa>\<^sub>n. \<guillemotleft>\<kappa>[\<lambda>z \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}]\<guillemotright>)"
+  using assms
+  by (auto simp add: AOT_instance_of_cqt_2_def)
 lemma AOT_instance_of_cqt_2_intros_imp[AOT_instance_of_cqt_2_intro]:
   assumes \<open>AOT_instance_of_cqt_2 \<phi>\<close> and \<open>AOT_instance_of_cqt_2 \<psi>\<close>
   shows \<open>AOT_instance_of_cqt_2 (\<lambda>\<tau>. \<guillemotleft>\<phi>{\<tau>} \<rightarrow> \<psi>{\<tau>}\<guillemotright>)\<close>

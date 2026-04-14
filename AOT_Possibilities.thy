@@ -1307,7 +1307,7 @@ proof(safe intro!: "\<rightarrow>I" "&I")
           by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "poss-sit-part-w:8.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<equiv>E(1)"
                         "situations:3.\<rightarrow>E")
         AOT_thus \<open>Consistent(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
-          by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "situations:3.\<rightarrow>E" sit)
+          using "sit-pos:3.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "situations:3.\<rightarrow>E" sit by blast
         AOT_show \<open>ModallyClosed(\<ss>\<^sup>+p\<^sup>\<star>)\<close>
           by (simp add: "pos.\<equiv>\<^sub>d\<^sub>fE.&E(1)" "poss-sit-part-w:9.unconstrain_s.\<forall>E(1).\<rightarrow>E"
                         "situations:3.\<rightarrow>E" local.B)
@@ -1417,8 +1417,7 @@ proof(safe intro!: "\<rightarrow>I")
         using "possibilities:8"[THEN "\<forall>E"(1), OF "log-prop-prop:2"] 1[THEN "&E"(2)] 2[THEN "&E"(1)]
               "oth-class-taut:7:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" by blast
       AOT_have \<open>Consistent(\<ss>\<^sub>3)\<close>
-        by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E(1)"
-                      "possibilities:15[b]" "situations:3.\<rightarrow>E")
+        using "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)" Possibilities.restricted_var_condition by auto
       AOT_hence \<open>\<not>\<exists>p (\<ss>\<^sub>3 \<Turnstile> p & \<ss>\<^sub>3 \<Turnstile> \<not>p)\<close>
         by (simp add: "cons.\<equiv>\<^sub>d\<^sub>fE.&E(2)")
       moreover AOT_have \<open>\<exists>p (\<ss>\<^sub>3 \<Turnstile> p & \<ss>\<^sub>3 \<Turnstile> \<not>p)\<close>
@@ -1451,8 +1450,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "Possibilities.GEN")
     AOT_hence \<open>\<not>Consistent(\<ss>')\<close>
       using "cons.\<equiv>\<^sub>d\<^sub>fE.&E(2)" "raa-cor:3" by blast
     moreover AOT_have \<open>Consistent(\<ss>')\<close>
-      by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "pos.\<equiv>\<^sub>d\<^sub>fE.&E(1)"
-                    "possibilities:15[b]" "situations:3.\<rightarrow>E")
+      by (simp add: "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(1)" Possibilities.restricted_var_condition)
     ultimately AOT_show \<open>p & \<not>p\<close>
       using "raa-cor:3" by blast
   qed
