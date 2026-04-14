@@ -5735,7 +5735,9 @@ proof -
       AOT_hence \<open>\<exists>!u([\<Pi>]u & [R]u\<kappa>)\<close>
         using "con-dis-i-e:2:a" "con-dis-i-e:2:b" "equi:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm" R_prop by blast
       AOT_hence \<open>\<exists>x ((D!x & [\<Pi>]x) & \<kappa> = \<^bold>\<iota>u([\<Pi>']u & [R]xu))\<close>
-        by (smt (z3) "!-exists:2.\<equiv>E(2).\<exists>E'" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm" "y-in:3.\<rightarrow>E" AOT_sem_desc_denotes AOT_sem_eq AOT_sem_exists assm desc_den_\<Pi>')
+        by (smt (verit, del_insts) "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E"
+            "russell-axiom[exe,1].\<psi>_denotes_asm" "y-in:3.\<rightarrow>E" AOT_sem_desc_denotes AOT_sem_eq AOT_sem_exists assm desc_den_\<Pi>
+            desc_den_\<Pi>')
       thus \<open>\<kappa> \<in> (\<lambda> \<kappa> . \<guillemotleft>\<^bold>\<iota>u ([\<Pi>']u & [R]\<kappa>u)\<guillemotright>) ` {\<kappa>. [w\<^sub>0 \<Turnstile> [D!]\<kappa> & [\<Pi>]\<kappa>]}\<close>
         unfolding image_def apply simp
         by (smt (verit, del_insts) "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "y-in:3.\<rightarrow>E" AOT_sem_desc_denotes AOT_sem_eq AOT_sem_exists)
@@ -6020,7 +6022,7 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
         using x_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(1)] by blast
       AOT_hence \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[\<lambda>z D!z & z \<noteq>\<^sub>D z]z]\<close>
         using empty_approx_act_empty
-        by (smt (z3) "eq-part:3[terms]")
+        by (smt (verit, del_insts) "eq-part:3[terms]")
       AOT_hence act_approx: \<open>\<^bold>\<A>\<guillemotleft>urrel_to_rel r\<guillemotright> \<approx>\<^sub>D [\<lambda>z D!z & z \<noteq>\<^sub>D z]\<close>
         by (safe intro!: act_approx_lem[unvarify F G, THEN "\<equiv>E"(1)] "cqt:2" r_den)
       AOT_actually {
@@ -6052,7 +6054,7 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
           qed
         qed
         ultimately have \<open>finite_card {\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [\<guillemotleft>(urrel_to_rel r)\<guillemotright>]\<kappa>]} = Some 0\<close>
-          by (smt (z3) Abs_rel_inverse Collect_cong iso_tuple_UNIV_I urrel_to_rel_def)
+          by (smt (verit, del_insts) Abs_rel_inverse Collect_cong iso_tuple_UNIV_I urrel_to_rel_def)
       }
       hence \<open>finite_card {\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> & [\<guillemotleft>(urrel_to_rel r)\<guillemotright>]\<kappa>]} = Some 0\<close>
         by blast
@@ -6085,7 +6087,7 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
             AOT_assume \<open>\<exists>v [\<lambda>z D!z & z \<noteq>\<^sub>D z]v\<close>
             then AOT_obtain v where v: \<open>[\<lambda>z D!z & z \<noteq>\<^sub>D z]v\<close>
               using "Discernible.\<exists>E" by blast
-            AOT_hence \<open>\<not>(v =\<^sub>D v)\<close> by (smt (z3) "existential:2[const_var]" "raa-cor:5" unotEu)
+            AOT_hence \<open>\<not>(v =\<^sub>D v)\<close> by (smt (verit, del_insts) "existential:2[const_var]" "raa-cor:5" unotEu)
             moreover AOT_have \<open>v =\<^sub>D v\<close>
               using "discern-obj:30.unvarify_x.\<forall>E(1).\<rightarrow>E" "russell-axiom[exe,1].\<psi>_denotes_asm" Discernible.restricted_var_condition by force
             ultimately AOT_show \<open>p & \<not>p\<close> for p using "reductio-aa:1" by blast
@@ -6093,7 +6095,7 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
         qed
       }
     AOT_hence \<open>\<^bold>\<A>(\<guillemotleft>urrel_to_rel r\<guillemotright> \<approx>\<^sub>D [\<lambda>z D!z & z \<noteq>\<^sub>D z])\<close>
-         by (smt (z3) AOT_sem_act)
+         by (smt (verit, del_insts) AOT_sem_act)
      AOT_hence \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[\<lambda>z D!z & z \<noteq>\<^sub>D z]z]\<close>
        by (safe intro!: act_approx_lem[unvarify F G, THEN "\<equiv>E"(2)] "cqt:2" r_den)
      AOT_hence \<open>[\<lambda>z \<^bold>\<A>[\<guillemotleft>urrel_to_rel r\<guillemotright>]z] \<approx>\<^sub>D [\<lambda>z D!z & z \<noteq>\<^sub>D z]\<close>
@@ -6101,14 +6103,14 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
      AOT_hence \<open>x[\<guillemotleft>urrel_to_rel r\<guillemotright>]\<close>
        using x_prop[THEN "\<forall>E"(1), THEN "\<equiv>E"(2), OF r_den] by blast
      hence \<open>r \<in> a\<close>
-       by (smt (z3) AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def Quotient3_abs_rep \<kappa>.simps(11) a_prop urrel_quotient3)
+       by (smt (verit, del_insts) AOT_enc_\<kappa>_meta AOT_model_enc_\<kappa>_def Quotient3_abs_rep \<kappa>.simps(11) a_prop urrel_quotient3)
    }
     ultimately have \<open>a = b\<close> using \<alpha>\<sigma>_disc'[OF \<alpha>\<sigma>_eq] by blast
     AOT_hence \<open>x = y\<close>
       by (metis "rule=I:2[const_var]" a_prop b_prop)
 
     AOT_hence \<open>Numbers(y,[\<lambda>z D!z & z \<noteq>\<^sub>D z])\<close>
-       by (smt (z3) \<open>a = b\<close> a_prop b_prop x_numbers_zero)
+       by (smt (verit, del_insts) \<open>a = b\<close> a_prop b_prop x_numbers_zero)
   } note 0 = this
   AOT_modally_strict {
     fix x y

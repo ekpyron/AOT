@@ -1085,8 +1085,8 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "possibilities:1"] "&I" absolu
       AOT_hence \<open>\<diamond>(\<not>(Situation(s\<^sub>\<box>) & \<forall>p (s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)))\<close>
         by (AOT_subst_def (reverse) actual)
       AOT_hence \<open>\<diamond>(\<not>\<forall>p (s\<^sub>\<box> \<Turnstile> p \<rightarrow> p))\<close>
-        by (smt (z3) "RM\<diamond>" "con-dis-i-e:1" "deduction-theorem" "raa-cor:3"
-                     "vdash-properties:6" absolute_necessity_situation)
+        by (smt (verit, del_insts) "RM:2.\<rightarrow>E" "con-dis-i-e:1" "contraposition:1[1]" "deduction-theorem"
+            absolute_necessity_situation)
       AOT_hence \<open>\<diamond>(\<exists>p \<not>(s\<^sub>\<box> \<Turnstile> p \<rightarrow> p))\<close>
         using "RM:2.\<rightarrow>E" "cqt-further:2" by blast
       AOT_hence \<open>\<exists>p \<diamond>\<not>(s\<^sub>\<box> \<Turnstile> p \<rightarrow> p)\<close>
