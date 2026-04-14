@@ -302,7 +302,7 @@ AOT_define Incompatible :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<ph
 AOT_define WorldState :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>WorldState'(_')\<close>)
   \<open>WorldState(s) \<equiv>\<^sub>d\<^sub>f Possible(s) & \<forall>t(t \<unlhd> s \<or> Incompatible(t, s))\<close>
 
-AOT_theorem \<open>WorldState(s) \<equiv> PossibleWorld(s)\<close>
+AOT_theorem WorldStatePossibleWorld: \<open>WorldState(s) \<equiv> PossibleWorld(s)\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume A: \<open>WorldState(s)\<close>
   AOT_hence 0: \<open>Possible(s)\<close> and B: \<open>\<forall>t(t \<unlhd> s \<or> Incompatible(t, s))\<close>
@@ -490,8 +490,8 @@ next
         using "raa-cor:4" by blast
     qed      
     AOT_hence 3: \<open>\<not>Possible(s\<^sup>+q\<^sub>1)\<close>
-      by (simp add: "pos-cons-sit:1.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" "reductio-aa:2"
-          pext_denotes pext_situation)
+      using "raa-cor:6" "sit-pos:3.unconstrain_s.\<forall>E(1).\<rightarrow>E.\<rightarrow>E" pext_denotes pext_situation
+      by blast
     moreover AOT_have \<open>s\<^sup>+q\<^sub>1 \<unlhd> t\<^sub>1 \<squnion> s\<close>
     proof(safe intro!: "sit-part-whole"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" pext_situation
                        PairFusion_situation GEN "\<rightarrow>I")
