@@ -279,8 +279,6 @@ next
     using "1" "con-dis-i-e:2:a" "df-simplify:1" "intro-elim:3:b" "world=maxpos:2" by blast
 qed
 
-AOT_find_theorems "Possible(\<kappa>)"
-
 AOT_define p_ext :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<tau>\<close> ("_\<^sup>+_")
   "p-ext": \<open>s\<^sup>+p =\<^sub>d\<^sub>f \<^bold>\<iota>s' \<forall>q(s' \<Turnstile> q \<equiv> (s \<Turnstile> q \<or> q = p))\<close>
 
@@ -1126,7 +1124,6 @@ AOT_theorem Aux: \<open>s \<unlhd> s' \<equiv> Situation(s) & Situation(s') & \<
 AOT_theorem "possibilities:12": \<open>\<forall>s((s \<unlhd> s\<^sub>\<box> & s \<noteq> s\<^sub>\<box>) \<rightarrow> \<not>Possibility(s))\<close>
 proof (safe intro!: "\<rightarrow>I" "Situation.GEN")
   fix s
-  AOT_find_theorems item: 474
   AOT_assume 1: \<open>s \<unlhd> s\<^sub>\<box> & s \<noteq> s\<^sub>\<box>\<close>
   AOT_hence \<open>\<not>(s = s\<^sub>\<box>)\<close>
     using "=-infix" "\<equiv>\<^sub>d\<^sub>fE" "con-dis-i-e:2:b" by blast
@@ -1338,7 +1335,6 @@ proof(safe intro!: "\<rightarrow>I" "&I")
         AOT_hence \<open>\<forall>p(p & \<not>p)\<close>
           by (smt (verit) "1" "raa-cor:3" "routley-star:5.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)")
       }
-      AOT_find_theorems item: 529
       moreover {
         AOT_have \<open>ModallyClosed(\<ss>)\<close>
           by (simp add: "possibilities:1.\<equiv>\<^sub>d\<^sub>fE.&E(2).&E(2)" Possibilities.restricted_var_condition)

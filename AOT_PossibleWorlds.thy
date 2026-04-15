@@ -27,7 +27,6 @@ proof -
     AOT_assume \<open>c[F]\<close>
     AOT_hence F_eq: \<open>F = [\<lambda>y [R]ab]\<close>
       using "con-dis-i-e:2:b" "intro-elim:3:a" "rule-ui:3" c_prop by blast
-    AOT_find_theorems \<open>Propositional([\<Pi>])\<close>
     AOT_show \<open>Propositional([F])\<close>
     proof(rule "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
       AOT_show "\<exists>p F = [\<lambda>y p]"

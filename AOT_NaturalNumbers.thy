@@ -3402,7 +3402,6 @@ AOT_theorem "eq-num:1": \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv>
 proof -
   AOT_have 0: \<open>#G\<down>\<close>
     using "num-def:2" by force
-  AOT_find_theorems item: 47
   AOT_have \<theta>: \<open>#G = \<^bold>\<iota>x Numbers(x,G) \<equiv> \<forall>x(\<^bold>\<A>Numbers(x,G) \<equiv> x = #G)\<close>
     using descriptions[axiom_inst, unvarify y, OF 0]
     by auto
@@ -5242,9 +5241,6 @@ proof -
     using "\<equiv>I" "\<rightarrow>I" assms by auto
 qed
 
-AOT_find_theorems \<open>[\<lambda>z \<^bold>\<A>[\<Pi>]z]\<close>
-AOT_find_theorems \<open>\<Pi> \<approx>\<^sub>D \<Pi>'\<close>
-
 AOT_theorem act_approx_lem: \<open>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z] \<equiv> \<^bold>\<A>(F \<approx>\<^sub>D G)\<close>
 proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>[\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>D [\<lambda>z \<^bold>\<A>[G]z]\<close>
@@ -6251,7 +6247,6 @@ proof (safe intro!: "kirchner-thm:1"[THEN "\<equiv>E"(2)] RN "\<rightarrow>I" GE
         have \<open>(\<exists>f . bij_betw f {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}  {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [H] \<kappa>]})\<close>
           apply (rule exI[where x="from_nat_into {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [H] \<kappa>]} o to_nat_on {\<kappa>::\<kappa>. [w\<^sub>0 \<Turnstile> D!\<kappa> &  [\<guillemotleft>urrel_to_rel r\<guillemotright>] \<kappa>]}"])
           using "2" "3" "local.4" bij_betw_trans to_nat_on_infinite by blast
-        find_theorems \<open>countable ?s\<close>
         hence \<open>r \<in> a\<close>
           using r_in_a_cond
           by blast
@@ -6635,7 +6630,6 @@ proof -
     by (rule RN)
   AOT_hence \<open>\<forall>y \<box>(D!y \<rightarrow> [\<lambda>x x = y]y)\<close>
     by (meson "RM:1.\<rightarrow>E" "cqt-basic:5" "universal-cor")
-  AOT_find_theorems item: 274
   AOT_hence \<open>\<box>(D!a \<rightarrow> [\<lambda>x x = a]a)\<close>
     by (simp add: "betaC:2:a" "cqt:2"(1) "deduction-theorem" "discern-obj:34.unvarify_y.\<forall>E(1).\<rightarrow>E" "rule=I:2[const_var]" RN)
   AOT_hence \<open>\<^bold>\<A>(D!a \<rightarrow> [\<lambda>x x = a]a)\<close>
@@ -6993,7 +6987,6 @@ proof(rule "\<rightarrow>I")
     by "cqt:2"
   AOT_have nec0N: \<open>[\<lambda>x \<box>[\<nat>]x]0\<close>
     by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2" simp: "zero:2" RN "0-n")
-  AOT_find_theorems "OnDiscernibles\<^sup>2(\<bbbP>)"
   AOT_have 1: \<open>[\<lambda>x \<box>[\<nat>]x]0 &
     \<forall>x\<forall>y ([[\<bbbP>]\<^sup>+]0x & [[\<bbbP>]\<^sup>+]0y \<rightarrow> ([\<bbbP>]xy \<rightarrow> ([\<lambda>x \<box>[\<nat>]x]x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]y))) \<rightarrow>
     \<forall>x ([[\<bbbP>]\<^sup>+]0x \<rightarrow> [\<lambda>x \<box>[\<nat>]x]x)\<close>
@@ -7103,14 +7096,11 @@ proof (safe intro!: GEN[where 'a=\<open><\<kappa>>\<close>] Number.GEN "&I" "\<r
   } note 1 = this
   AOT_have 0: \<open>[[\<bbbP>]\<^sup>+]0n\<close>
     by (metis "\<equiv>E"(1) "nnumber:3" Number.\<psi>)
-  AOT_find_theorems "D!\<down>"
   AOT_show \<open>[F]n\<close>
     apply (rule "pre-ind"[unconstrain \<R>, unvarify \<beta>, OF "pred-thm:2", THEN "\<rightarrow>E", OF "pred-rel-disc[aux]", unvarify z, OF "zero:2", THEN "\<rightarrow>E", THEN "\<forall>E"(2), THEN "\<rightarrow>E"])
     apply (safe intro!: 0 "&I" GEN "\<rightarrow>I" F0)
     using 1 by blast
 qed
-
-AOT_find_theorems \<open>NaturalCardinal(\<kappa>)\<close>
 
 AOT_theorem "nat-card:1": \<open>[\<nat>]x \<rightarrow> NaturalCardinal(x)\<close>
 proof(safe intro!: "\<rightarrow>I")
@@ -7722,7 +7712,6 @@ qed
 (**************** START HERE ***********************)
 
 
-AOT_find_theorems item: 806
 (*
 proof(safe intro!: Number.GEN "\<rightarrow>I" "uniqueness:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
   fix n
