@@ -3292,7 +3292,6 @@ proof(rule "\<rightarrow>I")
     by (rule "PossibleWorld.\<exists>I")
 qed
 
-
 AOT_theorem "two-worlds-exist:2": \<open>\<exists>p(ContingentlyFalse(p)) \<rightarrow> \<exists>w (\<not>Actual(w))\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume \<open>\<exists>p ContingentlyFalse(p)\<close>
@@ -3343,6 +3342,321 @@ proof -
     by (rule "PossibleWorld.\<exists>I")
   thus ?thesis
     by (rule "PossibleWorld.\<exists>I")
+qed
+
+AOT_theorem "kaplan-axiom:1": \<open>\<exists>p(p & \<forall>q(q \<rightarrow> \<box>(p \<rightarrow> q)))\<close>
+proof -
+  AOT_obtain s\<^sub>0 where s: \<open>\<forall>p(s\<^sub>0 \<Turnstile> p \<equiv> p)\<close>
+    using "sit-comp-simp:1" "Situation.\<exists>E"[rotated] by meson
+  AOT_hence \<open>\<forall>p(s\<^sub>0 \<Turnstile> p \<rightarrow> p)\<close>
+    by (metis (no_types, lifting) "deduction-theorem" "intro-elim:3:a" "rule-ui:3" "universal-cor")
+  moreover AOT_have \<open>\<forall>q (q \<rightarrow> \<box>(\<forall>p(s\<^sub>0 \<Turnstile> p \<rightarrow> p) \<rightarrow> q))\<close>
+  proof(safe intro!: GEN "\<rightarrow>I")
+    fix q
+    AOT_assume q: q
+    AOT_hence 1: \<open>s\<^sub>0 \<Turnstile> q\<close>
+      using "intro-elim:3:b" "rule-ui:3" s by blast
+    AOT_hence \<open>\<box>s\<^sub>0 \<Turnstile> q\<close>
+      by (simp add: "lem2:1.unconstrain_s.unvarify_p.\<forall>E(1).\<forall>E(1).\<rightarrow>E.\<equiv>E(1)" "log-prop-prop:2" "situations:3.\<rightarrow>E"
+          "true-in-s.\<equiv>\<^sub>d\<^sub>fE.&E(1)")
+    moreover AOT_have \<open>\<forall>r\<box>(s\<^sub>0 \<Turnstile> r \<rightarrow> (\<forall>p(s\<^sub>0 \<Turnstile> p \<rightarrow> p) \<rightarrow> r))\<close>
+      by (meson "RM:3.\<equiv>E(2)" "cqt-basic:5" "oth-class-taut:8:a" "universal-cor" RN)
+    ultimately AOT_show \<open>\<box>(\<forall>p(s\<^sub>0 \<Turnstile> p \<rightarrow> p) \<rightarrow> q)\<close>
+      by (meson "RM:1.\<rightarrow>E" "cqt-orig:3" "intro-elim:3:b" "oth-class-taut:8:a")
+  qed
+  ultimately show ?thesis
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1" "log-prop-prop:2")
+qed
+
+AOT_define MaxPos :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>MaxPos'(_')\<close>)
+  "kaplan-axiom:2": \<open>MaxPos(p) \<equiv>\<^sub>d\<^sub>f \<diamond>p & \<forall>q(\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q))\<close> (* Note: this is Atom(p) in Gallin *)
+
+AOT_theorem "kaplan-axiom:3": \<open>\<box>\<exists>p(MaxPos(p) & p)\<close> (* Note: this is At\<^sub>1 in Gallin *)
+proof(rule RN)
+  AOT_modally_strict {
+    AOT_obtain p where p: \<open>p & \<forall>q(q \<rightarrow> \<box>(p \<rightarrow> q))\<close>
+      using "kaplan-axiom:1" "\<exists>E"[rotated] by blast
+    AOT_have \<open>MaxPos(p)\<close>
+    proof(safe intro!: "kaplan-axiom:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I")
+      AOT_show \<open>\<diamond>p\<close>
+        using "T-S5-fund:1.\<rightarrow>E" "con-dis-i-e:2:a" p by blast
+    next
+      AOT_show \<open>\<forall>q (\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q))\<close>
+      proof(rule GEN)
+        fix q
+        {
+          AOT_assume \<open>q\<close>
+          AOT_hence \<open>\<box>(p \<rightarrow> q)\<close>
+            using "con-dis-i-e:2:b" "log-prop-prop:2" "rule-ui:1" "vdash-properties:10" p by blast
+        }
+        moreover {
+          AOT_assume \<open>\<not>q\<close>
+          AOT_hence \<open>\<box>(p \<rightarrow> \<not>q)\<close>
+            using "con-dis-i-e:2:b" "log-prop-prop:2" "rule-ui:1" "vdash-properties:10" p by blast
+        }
+        ultimately AOT_show \<open>\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q)\<close>
+          using "con-dis-i-e:3:a" "con-dis-taut:4.\<rightarrow>E" "raa-cor:2" by blast
+      qed
+    qed
+    AOT_thus \<open>\<exists>p(MaxPos(p) & p)\<close>
+      by (meson "con-dis-taut:1.\<rightarrow>E" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1" "log-prop-prop:2" p)
+  }
+qed
+
+AOT_define Maximal' :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>M'(_')\<close>)
+ "kaplan-axiom:4": \<open>M(p) \<equiv>\<^sub>d\<^sub>f \<forall>q(\<box>(p \<rightarrow> \<not>q) \<equiv> \<not>\<box>(p \<rightarrow> q))\<close>
+
+AOT_theorem "kaplan-axiom:5": \<open>M(p) \<equiv> MaxPos(p)\<close>
+proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
+  AOT_assume 1: \<open>M(p)\<close>
+  AOT_hence \<open>\<box>(p \<rightarrow> \<not>p) \<equiv> \<not>\<box>(p \<rightarrow> p)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" "kaplan-axiom:4" "rule-ui:2[const_var]" by blast
+  AOT_hence \<open>\<diamond>p\<close>
+    by (metis "T-S5-fund:1.\<rightarrow>E" "deduction-theorem" "intro-elim:3:a" "raa-cor:3" "sc-eq-box-box:1.\<equiv>E(2)"
+        "sc-eq-box-box:6.\<rightarrow>E.\<rightarrow>E")
+  AOT_thus \<open>MaxPos(p)\<close>
+  proof(safe intro!: "kaplan-axiom:2"[THEN "\<equiv>\<^sub>d\<^sub>fI", OF "&I"] GEN)
+    fix q
+    AOT_show \<open>\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q)\<close>
+      by (meson "1" "con-dis-i-e:3:a" "con-dis-taut:4.\<rightarrow>E" "kaplan-axiom:4.\<equiv>\<^sub>d\<^sub>fE.\<forall>E(1).\<equiv>E(2)" "log-prop-prop:2"
+          "raa-cor:2")
+  qed
+next
+  AOT_assume 1: \<open>MaxPos(p)\<close>
+  AOT_hence 2: \<open>\<diamond>p & \<forall>q(\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q))\<close>
+    using "\<equiv>\<^sub>d\<^sub>fE" "kaplan-axiom:2" by blast
+  AOT_have \<open>\<forall>q(\<box>(p \<rightarrow> \<not>q) \<equiv> \<not>\<box>(p \<rightarrow> q))\<close>
+  proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+    fix q
+    AOT_assume 3: \<open>\<box>(p \<rightarrow> \<not>q)\<close>
+    AOT_show \<open>\<not>\<box>(p \<rightarrow> q)\<close>
+    proof(rule "raa-cor:2")
+      AOT_assume 4: \<open>\<box>(p \<rightarrow> q)\<close>
+      moreover AOT_have \<open>\<box>(p \<rightarrow> q) \<rightarrow> \<box>((p \<rightarrow> \<not>q) \<rightarrow> \<not>p)\<close>
+        using "RM:1" "deduction-theorem" "useful-tautologies:10.\<rightarrow>E.\<rightarrow>E" by presburger
+      ultimately AOT_have \<open>(\<box>(p \<rightarrow> \<not>q) \<rightarrow> \<box>\<not>p)\<close>
+        by (meson "2" "KBasic:11.\<equiv>E(2)" "KBasic:13.\<rightarrow>E.\<rightarrow>E" "RM:1.\<rightarrow>E" "con-dis-i-e:2:a" "useful-tautologies:3"
+            "useful-tautologies:6" "vdash-properties:10")
+      AOT_hence \<open>\<box>\<not>p\<close>
+        using "3" "vdash-properties:10" by blast
+      AOT_thus \<open>\<diamond>p & \<not>\<diamond>p\<close>
+        by (simp add: "1" "KBasic2:1.\<equiv>E(1)" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "kaplan-axiom:2.\<equiv>\<^sub>d\<^sub>fE.&E(1)")
+    qed
+  next
+    fix q
+    AOT_assume \<open>\<not>\<box>(p \<rightarrow> q)\<close>
+    AOT_thus \<open>\<box>(p \<rightarrow> \<not>q)\<close>
+      using "2" "con-dis-i-e:2:b" "con-dis-i-e:4:b" "rule-ui:3" by blast
+  qed
+  AOT_thus \<open>M(p)\<close>
+    using "\<equiv>\<^sub>d\<^sub>fI" "kaplan-axiom:4" by blast
+qed
+
+AOT_theorem "kaplan-axiom:6": \<open>\<box>(MaxPos(p) \<rightarrow> \<box>MaxPos(p))\<close>
+proof(rule RN; rule "\<rightarrow>I")
+  AOT_modally_strict {
+    AOT_assume \<open>MaxPos(p)\<close>
+    AOT_hence 1: \<open>\<diamond>p & \<forall>q (\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q))\<close>
+      using "\<equiv>\<^sub>d\<^sub>fE" "kaplan-axiom:2" by blast
+    AOT_have \<open>\<box>\<diamond>p\<close>
+      using 1[THEN "&E"(1)] by (simp add: "S5Basic:1.\<equiv>E(1)")
+    moreover AOT_have \<open>\<box>\<forall>q (\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q))\<close>
+      by (safe intro!: "BF"[THEN "\<rightarrow>E"] GEN)
+         (metis "1" "KBasic:15.\<rightarrow>E" "S5Basic:5" "S5Basic:5.\<rightarrow>E" "con-dis-i-e:2:b" "con-dis-i-e:3:a" "con-dis-i-e:4:c"
+          "con-dis-taut:4" "log-prop-prop:2" "modus-tollens:1" "raa-cor:2" "rule-ui:1")
+    ultimately AOT_have \<open>\<box>(\<diamond>p & \<forall>q (\<box>(p \<rightarrow> q) \<or> \<box>(p \<rightarrow> \<not>q)))\<close>
+      using "KBasic:3.\<equiv>E(2)" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" by blast
+    AOT_thus \<open>\<box>MaxPos(p)\<close>
+      by (AOT_subst_def "kaplan-axiom:2")
+  }
+qed
+
+AOT_theorem "kaplan-axiom:7": \<open>\<forall>p(\<diamond>p \<rightarrow> \<exists>q(MaxPos(q) & \<box>(q \<rightarrow> p)))\<close>
+proof(safe intro!: GEN "\<rightarrow>I")
+  fix p
+  AOT_assume 0: \<open>\<diamond>p\<close>
+  AOT_hence \<open>\<diamond>(p & \<exists>q(MaxPos(q) & q))\<close>
+    using "KBasic2:4.\<equiv>E(1).\<rightarrow>E" "RM:2.\<rightarrow>E" "con-dis-taut:5" "kaplan-axiom:3" by blast
+  moreover AOT_modally_strict {
+    AOT_assume \<open>p & \<exists>q(MaxPos(q) & q)\<close>
+    AOT_hence \<open>\<exists>q(MaxPos(q) & q & p)\<close>
+      by (metis "con-dis-i-e:2:a" "con-dis-i-e:2:b" "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:2[const_var]"
+          "instantiation")
+  }
+  ultimately AOT_have \<open>\<diamond>\<exists>q(MaxPos(q) & q & p)\<close>
+    using "RM:2.\<rightarrow>E" "deduction-theorem" by blast
+  AOT_hence \<open>\<exists>q\<diamond>(MaxPos(q) & q & p)\<close>
+    by (meson "BFs:3.\<rightarrow>E.\<exists>E'" "existential:2[const_var]")
+  then AOT_obtain q where q: \<open>\<diamond>(MaxPos(q) & q & p)\<close>
+    using "\<exists>E'" by blast
+  AOT_have MaxPos_q: \<open>MaxPos(q)\<close>
+    by (metis "KBasic2:3.\<rightarrow>E.&E(1)" "S5Basic:4.\<rightarrow>E" "T-S5-fund:1.\<rightarrow>E" "kaplan-axiom:6.unvarify_p.\<forall>E(1)"
+        "log-prop-prop:2" "sc-eq-box-box:1.\<equiv>E(1).\<rightarrow>E" q)
+  moreover {
+    AOT_have \<open>\<box>(q \<rightarrow> p) \<or> \<box>(q \<rightarrow> \<not>p)\<close>
+      using "kaplan-axiom:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1)" "log-prop-prop:2" calculation by auto
+    moreover {
+      AOT_have \<open>\<diamond>(q & p)\<close>
+        using "RM:2.\<rightarrow>E" "RM:4.\<equiv>E(2)" "con-dis-taut:2" "oth-class-taut:2:b" q by blast
+      AOT_hence \<open>\<diamond>\<not>(q \<rightarrow> \<not>p)\<close>
+        by (meson "RM:2.\<rightarrow>E" "\<not>\<not>I" "con-dis-i-e:2:a" "con-dis-i-e:2:b" "deduction-theorem"
+            "useful-tautologies:8.\<rightarrow>E.\<rightarrow>E")
+      AOT_hence \<open>\<not>\<box>(q \<rightarrow> \<not>p)\<close>
+        using "KBasic:11.\<equiv>E(2)" by auto
+    }
+    ultimately AOT_have \<open>\<box>(q \<rightarrow> p)\<close>
+      using "con-dis-i-e:4:c" by blast
+  }
+  ultimately AOT_show \<open>\<exists>q (MaxPos(q) & \<box>(q \<rightarrow> p))\<close>
+    by (meson "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "existential:1" "log-prop-prop:2")
+qed
+
+AOT_define Rigid :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigid'(_')\<close>)
+  "df-rigid-rel:1":
+\<open>Rigid(F) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
+
+AOT_define Rigidifies :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigidifies'(_,_')\<close>)
+  "df-rigid-rel:2":
+\<open>Rigidifies(F, G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
+
+(* Note: only optionally used below *)
+(* Suggestion: make this with \<box>,\<diamond>,\<A> proper theorems as (575.3-5)
+               This would also replace (761.2) (actuallyF.2) in the Numbers chapter for \<A>. *)
+(* Note: Could also generalize to [\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}])
+         with some more care in the modal reasoning. *)
+AOT_theorem nec_lam_rigid: assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
+  shows \<open>Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}])\<close>
+proof(safe intro!: "\<rightarrow>I" "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" assms)
+  AOT_modally_strict {
+    fix x\<^sub>1x\<^sub>n
+    AOT_have \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
+      using assms by "cqt:2"
+    AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<box>\<phi>{x\<^sub>1...x\<^sub>n}\<close>
+      using "beta-C-cor:2" "rule-ui:3" "vdash-properties:10" by blast
+  } note 0 = this
+  AOT_have \<open>\<box>([\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n
+    by (AOT_subst_thm 0) (simp add: "S5Basic:5" RN)
+  AOT_thus \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n \<box>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n)\<close>
+    by (simp add: "BFs:1.\<rightarrow>E" "universal-cor")
+qed
+(* Note: not needed, but generalizes (761.2) *)
+AOT_theorem act_lam_rigid: assumes \<open>INSTANCE_OF_CQT_2(\<phi>)\<close>
+  shows \<open>Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}])\<close>
+proof(safe intro!: "\<rightarrow>I" "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" assms)
+  AOT_modally_strict {
+    fix x\<^sub>1x\<^sub>n
+    AOT_have \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
+      using assms by "cqt:2"
+    AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<equiv> \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}\<close>
+      using "beta-C-cor:2" "rule-ui:3" "vdash-properties:10" by blast
+  } note 0 = this
+  AOT_have \<open>\<box>([\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n
+    using "Act-Basic:6" "KBasic:4.\<equiv>E(1).&E(1)" RN by (AOT_subst_thm 0) blast
+  AOT_thus \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n \<^bold>\<A>\<phi>{x\<^sub>1...x\<^sub>n}]x\<^sub>1...x\<^sub>n)\<close>
+    by (simp add: "BFs:1.\<rightarrow>E" "universal-cor")
+qed
+
+
+AOT_theorem "kaplan-axiom:8": \<open>\<exists>F Rigidifies(F,G)\<close>
+proof -
+  AOT_obtain p where p: \<open>MaxPos(p) & p\<close>
+    by (metis (mono_tags, lifting) "S5Basic:4.\<rightarrow>E" "T-S5-fund:1.\<rightarrow>E" "instantiation" "kaplan-axiom:3")
+  AOT_have 1: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]\<down>\<close>
+    by "cqt:2"
+  AOT_have \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
+  proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+    fix x\<^sub>1x\<^sub>n
+    AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n\<close>
+    AOT_hence \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close>
+      using "betaC:1:a" by blast
+    AOT_thus \<open>[G]x\<^sub>1...x\<^sub>n\<close>
+      using "S5Basic:2.\<equiv>E(1)" "S5Basic:4.\<rightarrow>E" "con-dis-taut:2" "oth-class-taut:4:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" p by blast
+  next
+    fix x\<^sub>1x\<^sub>n
+    AOT_assume 2: \<open>[G]x\<^sub>1...x\<^sub>n\<close>
+    AOT_hence \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n) \<or> \<box>(p \<rightarrow> \<not>[G]x\<^sub>1...x\<^sub>n)\<close>
+      using "con-dis-i-e:2:a" "kaplan-axiom:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1)" "log-prop-prop:2" p by blast
+    moreover AOT_have \<open>\<not>\<box>(p \<rightarrow> \<not>[G]x\<^sub>1...x\<^sub>n)\<close>
+      by (metis "2" "S5Basic:4.\<rightarrow>E" "T-S5-fund:1.\<rightarrow>E" "con-dis-i-e:2:b" "raa-cor:3" "vdash-properties:10" p)
+    ultimately AOT_have \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close>
+      using "con-dis-i-e:4:c" by blast
+    AOT_thus \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n\<close>
+      by (simp add: "1" "betaC:2:a" "cqt:2"(1))
+  qed
+  moreover AOT_have \<open>Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)])\<close>
+  (* by (safe intro!: nec_lam_rigid "cqt:2") *)
+  proof(safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" "BF"[THEN "\<rightarrow>E"] GEN)
+    fix x\<^sub>1x\<^sub>n
+    AOT_modally_strict {
+      (* Remark: This would be a "questinable use of a modally-strict subproof under assumptions",
+                 which Isabelle accepts, which is sound, since it won't let me use any assumptions on
+                 p or G in the subproof, e.g.:
+         AOT_have \<open>p\<close> sledgehammer (* no proof *)
+                 I.e. one could say generalization and instantiation are implicit.
+       *)
+      AOT_have \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]\<down>\<close>
+        by "cqt:2"
+      AOT_hence \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n \<equiv> \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close>
+        by (metis "betaC:1:a" "betaC:2:a" "cqt:2"(1) "deduction-theorem" "intro-elim:2")
+    } note 0 = this
+    AOT_show \<open>\<box>([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]x\<^sub>1...x\<^sub>n)\<close>
+      by (AOT_subst_thm 0) (simp add: "S5Basic:5" RN)
+  qed
+  ultimately AOT_have \<open>Rigidifies([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)],G)\<close>
+    using "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "df-rigid-rel:2.\<equiv>\<^sub>d\<^sub>fI" by blast
+  AOT_thus \<open>\<exists>F Rigidifies(F,G)\<close>
+    by (simp add: "1" "existential:1")
+qed
+
+AOT_theorem "kaplan-axiom:8[alt]": \<open>\<exists>F Rigidifies(F,G)\<close>
+proof -
+  AOT_obtain p where p: \<open>MaxPos(p) & p\<close>
+    by (metis (mono_tags, lifting) "S5Basic:4.\<rightarrow>E" "T-S5-fund:1.\<rightarrow>E" "instantiation" "kaplan-axiom:3")
+  (* Note: from the looks of it Gallin does something similar in 11.5.1, but uses
+           [\<lambda>x\<^sub>1...x\<^sub>n \<diamond>(p & [G]x\<^sub>1...x\<^sub>n)], which is more complicated below (it needs maximality in the \<rightarrow> direction) *)
+  AOT_have 1: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]\<down>\<close>
+    by "cqt:2"
+  then AOT_obtain R where R: \<open>R = [\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)]\<close>
+    using "free-thms:3[const_var].unvarify_\<alpha>.\<forall>E(1).\<exists>E'" by blast
+  AOT_have 2: \<open>[R]x\<^sub>1...x\<^sub>n \<equiv> \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close> for x\<^sub>1x\<^sub>n
+    by (rule "rule=E"[rotated, OF R[symmetric]])
+       (metis 1 "beta-C-cor:2.\<rightarrow>E.\<forall>E(1).\<equiv>E(2)" "betaC:1:a" "cqt:2"(1) "deduction-theorem" "intro-elim:2")
+  AOT_have \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n([R]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
+  proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I")
+    fix x\<^sub>1x\<^sub>n
+    AOT_assume \<open>[R]x\<^sub>1...x\<^sub>n\<close>
+    AOT_hence \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close>
+      using 2 "intro-elim:3:a" by blast
+    AOT_thus \<open>[G]x\<^sub>1...x\<^sub>n\<close>
+      using "S5Basic:2.\<equiv>E(1)" "S5Basic:4.\<rightarrow>E" "con-dis-taut:2" "oth-class-taut:4:a.\<rightarrow>E.\<rightarrow>E.\<rightarrow>E" p by blast
+  next
+    fix x\<^sub>1x\<^sub>n
+    AOT_assume 3: \<open>[G]x\<^sub>1...x\<^sub>n\<close>
+    AOT_hence \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n) \<or> \<box>(p \<rightarrow> \<not>[G]x\<^sub>1...x\<^sub>n)\<close>
+      using "con-dis-i-e:2:a" "kaplan-axiom:2.\<equiv>\<^sub>d\<^sub>fE.&E(2).\<forall>E(1)" "log-prop-prop:2" p by blast
+    moreover AOT_have \<open>\<not>\<box>(p \<rightarrow> \<not>[G]x\<^sub>1...x\<^sub>n)\<close>
+      by (metis 3 "S5Basic:4.\<rightarrow>E" "T-S5-fund:1.\<rightarrow>E" "con-dis-i-e:2:b" "raa-cor:3" "vdash-properties:10" p)
+    ultimately AOT_have \<open>\<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)\<close>
+      using "con-dis-i-e:4:c" by blast
+    AOT_thus \<open>[R]x\<^sub>1...x\<^sub>n\<close>
+      using 2 "intro-elim:3:b" by blast
+  qed
+  moreover AOT_have \<open>Rigid(R)\<close>
+    by (rule "rule=E"[rotated, OF R[symmetric]])
+       (safe intro!: nec_lam_rigid "cqt:2")
+  (* more detailed version: *)
+  (* moreover {
+    AOT_have \<open>\<forall>p\<forall>G Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)])\<close>
+      by (safe intro!: GEN nec_lam_rigid "cqt:2")
+    AOT_hence \<open>Rigid([\<lambda>x\<^sub>1...x\<^sub>n \<box>(p \<rightarrow> [G]x\<^sub>1...x\<^sub>n)])\<close>
+      using "\<forall>E"(2) by metis
+    AOT_hence \<open>Rigid(R)\<close>
+      by (rule "rule=E"[rotated, OF R[symmetric]])
+  } *)
+  ultimately AOT_have \<open>Rigidifies(R,G)\<close>
+    using "con-dis-taut:5.\<rightarrow>E.\<rightarrow>E" "df-rigid-rel:2.\<equiv>\<^sub>d\<^sub>fI" by blast
+  AOT_thus \<open>\<exists>F Rigidifies(F,G)\<close>
+    by (simp add: "existential:2[const_var]")
 qed
 
 (* TODO: more theorems *)
@@ -3420,14 +3734,6 @@ AOT_theorem "w-rel:3": \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]
 
 AOT_define WorldIndexedRelation :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sub>_\<close>)
   "w-index": \<open>[F]\<^sub>w =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [F]x\<^sub>1...x\<^sub>n]\<close>
-
-AOT_define Rigid :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigid'(_')\<close>)
-  "df-rigid-rel:1":
-\<open>Rigid(F) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[F]x\<^sub>1...x\<^sub>n)\<close>
-
-AOT_define Rigidifies :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>Rigidifies'(_,_')\<close>)
-  "df-rigid-rel:2":
-\<open>Rigidifies(F, G) \<equiv>\<^sub>d\<^sub>f Rigid(F) & \<forall>x\<^sub>1...\<forall>x\<^sub>n([F]x\<^sub>1...x\<^sub>n \<equiv> [G]x\<^sub>1...x\<^sub>n)\<close>
 
 AOT_theorem "rigid-der:1": \<open>[[F]\<^sub>w]x\<^sub>1...x\<^sub>n \<equiv> w \<Turnstile> [F]x\<^sub>1...x\<^sub>n\<close>
   apply (rule "rule-id-df:2:b[2]"[where \<tau>="\<lambda> (\<Pi>, \<kappa>). \<guillemotleft>[\<Pi>]\<^sub>\<kappa>\<guillemotright>" and

@@ -10,6 +10,7 @@ text\<open>\label{PLM: 9}\<close>
 (* constrain sledgehammer to the abstraction layer *)
 unbundle AOT_no_atp
 
+
 subsection\<open>Primitive Rule of PLM: Modus Ponens\<close>
 text\<open>\label{PLM: 9.1}\<close>
 
@@ -2829,7 +2830,14 @@ class AOT_subst =
   assumes AOT_subst:
     "AOT_subst \<phi> \<Longrightarrow> AOT_subst_cond \<psi> \<chi> \<Longrightarrow> [v \<Turnstile> \<guillemotleft>\<phi> \<psi>\<guillemotright> \<equiv> \<guillemotleft>\<phi> \<chi>\<guillemotright>]"
 
-named_theorems AOT_substI
+ML\<open>
+structure AOT_substI = Named_Thms(
+  val name = @{binding "AOT_substI"}
+  val description = "AOT Substitution introduction rules"
+)
+\<close>
+
+setup\<open>AOT_substI.setup\<close>
 
 instantiation \<o> :: AOT_subst
 begin
@@ -2998,7 +3006,7 @@ fun prove_AOT_subst_tac ctxt = REPEAT (SUBGOAL (fn (trm,_) => let
       (AOT_Definitions.get ctxt)
       | _ => []
   val tac = case defs of
-            [] => safe_step_tac (ctxt addSIs @{thms AOT_substI}) 1
+            [] => safe_step_tac (ctxt addSIs (List.rev (AOT_substI.get ctxt))) 1
             | _ => resolve_tac ctxt defs 1
   in tac end) 1)
 fun getSubstThm ctxt reversed phi p q = let
